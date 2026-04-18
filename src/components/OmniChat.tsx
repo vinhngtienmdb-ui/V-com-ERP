@@ -1,0 +1,301 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  MessageSquare, 
+  Facebook, 
+  Globe, 
+  Search, 
+  Send, 
+  Bot, 
+  User, 
+  Zap, 
+  MoreVertical, 
+  PhoneCall,
+  History,
+  CheckCheck,
+  X,
+  Plus
+} from 'lucide-react';
+import { cn, formatCurrency } from '../lib/utils';
+import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
+import { getAiChatResponse } from '../services/geminiService';
+
+const MOCK_THREADS: ChatThread[] = [
+  { id: 'T1', channel: 'zalo', userName: 'Phạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
+  { id: 'T2', channel: 'facebook', userName: 'Hoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
+  { id: 'T3', channel: 'web', userName: 'Khách vãng lai #42', lastMessage: 'Sản phẩm này có bảo hành không ạ?', unreadCount: 1, updatedAt: '10:15' },
+];
+
+export function OmniChat() {
+  const [activeThreadId, setActiveThreadId] = useState<string>('T1');
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: 'm1', channel: 'zalo', senderId: 'user', senderName: 'Phạm Thị Lan', text: 'Chào shop, đơn hàng ORD-9921 bao giờ giao vậy?', isAi: false, timestamp: '14:15' },
+    { id: 'm2', channel: 'zalo', senderId: 'ai', senderName: 'AI Assistant', text: 'Chào chị Lan, em là trợ lý ảo V-Ecom. Để em kiểm tra mã đơn ORD-9921 cho chị nhé!', isAi: true, timestamp: '14:16' },
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const activeThread = MOCK_THREADS.find(t => t.id === activeThreadId);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    const userMsg: ChatMessage = {
+      id: Date.now().toString(),
+      channel: activeThread?.channel || 'web',
+      senderId: 'user',
+      senderName: 'You',
+      text: inputValue,
+      isAi: false,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setInputValue('');
+    setIsAiProcessing(true);
+
+    // Call Gemini AI
+    const history = messages.map(m => ({
+      role: m.isAi ? 'model' as const : 'user' as const,
+      content: m.text
+    }));
+
+    const aiText = await getAiChatResponse(inputValue, history);
+
+    const aiMsg: ChatMessage = {
+      id: (Date.now() + 1).toString(),
+      channel: activeThread?.channel || 'web',
+      senderId: 'ai',
+      senderName: 'AI Assistant',
+      text: aiText,
+      isAi: true,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, aiMsg]);
+    setIsAiProcessing(false);
+  };
+
+  return (
+    <div className="flex bg-white rounded-lg border border-[#E5E7EB] shadow-sm h-[calc(100vh-180px)] overflow-hidden animate-in fade-in duration-500">
+      {/* Sidebar - Thread List */}
+      <div className="w-[320px] border-r border-[#F3F4F6] flex flex-col">
+        <div className="p-4 border-b border-[#F3F4F6]">
+          <h2 className="text-lg font-bold text-[#111827] flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-[#2563EB]" /> OmniChat Center
+          </h2>
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+            <input 
+              type="text" 
+              placeholder="Tìm khách hàng..." 
+              className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+            />
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {MOCK_THREADS.map(thread => (
+            <button
+              key={thread.id}
+              onClick={() => setActiveThreadId(thread.id)}
+              className={cn(
+                "w-full p-4 flex gap-3 hover:bg-slate-50 transition-all border-b border-[#F3F4F6] text-left relative",
+                activeThreadId === thread.id && "bg-blue-50/50 after:absolute after:left-0 after:top-0 after:bottom-0 after:w-1 after:bg-blue-600"
+              )}
+            >
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-slate-500 font-bold overflow-hidden shadow-sm">
+                  {thread.userAvatar ? <img src={thread.userAvatar} alt="" /> : thread.userName[0]}
+                </div>
+                <div className="absolute -bottom-1 -right-1 p-1 bg-white rounded-full shadow-sm">
+                   {thread.channel === 'zalo' && <div className="w-3.5 h-3.5 bg-blue-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">Z</div>}
+                   {thread.channel === 'facebook' && <Facebook className="w-3.5 h-3.5 text-blue-700" />}
+                   {thread.channel === 'web' && <Globe className="w-3.5 h-3.5 text-slate-500" />}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start">
+                   <h3 className="text-sm font-bold text-[#111827] truncate">{thread.userName}</h3>
+                   <span className="text-[10px] text-[#9CA3AF]">{thread.updatedAt}</span>
+                </div>
+                <p className="text-xs text-[#6B7280] truncate mt-0.5">{thread.lastMessage}</p>
+              </div>
+              {thread.unreadCount > 0 && (
+                <div className="absolute top-1/2 -translate-y-1/2 right-4 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-md">
+                   {thread.unreadCount}
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-[#F9FAFB]">
+        {/* Chat Header */}
+        <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center z-10">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs border border-slate-200">
+                 {activeThread?.userName[0]}
+              </div>
+              <div>
+                 <h3 className="text-sm font-bold text-[#111827] flex items-center gap-2">
+                    {activeThread?.userName}
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                 </h3>
+                 <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">{activeThread?.channel} OA Channel</p>
+              </div>
+           </div>
+           <div className="flex items-center gap-2">
+              <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-[#6B7280]" /></button>
+              <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
+              <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+              <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
+           </div>
+        </div>
+
+        {/* Messages List */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={scrollRef}>
+           {messages.map((msg, idx) => (
+             <div key={msg.id} className={cn(
+               "flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300",
+               msg.senderId === 'ai' ? "flex-row" : "flex-row-reverse"
+             )}>
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shadow-sm",
+                  msg.senderId === 'ai' ? "bg-blue-600 text-white" : "bg-slate-900 text-white"
+                )}>
+                   {msg.senderId === 'ai' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                </div>
+                <div className={cn(
+                  "max-w-[70%] space-y-1",
+                  msg.senderId === 'ai' ? "items-start" : "items-end flex flex-col"
+                )}>
+                   <div className={cn(
+                     "p-4 rounded-lg text-sm shadow-sm",
+                     msg.senderId === 'ai' 
+                       ? "bg-white text-[#111827] border border-[#F3F4F6] rounded-tl-none" 
+                       : "bg-blue-600 text-white rounded-tr-none"
+                   )}>
+                      {msg.text}
+                   </div>
+                   <div className="flex items-center gap-2 px-1">
+                      <span className="text-[10px] text-[#9CA3AF] font-medium">{msg.senderName} • {msg.timestamp}</span>
+                      {msg.senderId === 'user' && <CheckCheck className="w-3 h-3 text-blue-500" />}
+                   </div>
+                </div>
+             </div>
+           ))}
+           {isAiProcessing && (
+             <div className="flex items-center gap-3">
+               <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center animate-pulse">
+                  <Bot className="w-4 h-4" />
+               </div>
+               <div className="bg-white border border-[#F3F4F6] p-3 rounded-lg rounded-tl-none shadow-sm flex items-center gap-2">
+                  <span className="text-xs text-[#6B7280] font-bold">AI Assistant đang soạn câu trả lời</span>
+                  <div className="flex gap-1">
+                     <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                     <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                     <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" />
+                  </div>
+               </div>
+             </div>
+           )}
+        </div>
+
+        {/* Input Area */}
+        <div className="p-4 bg-white border-t border-[#F3F4F6]">
+           <div className="flex items-center gap-3">
+              <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 border border-transparent hover:border-slate-200 transition-all">
+                 <Plus className="w-5 h-5" />
+              </button>
+              <div className="flex-1 relative">
+                 <input 
+                   type="text" 
+                   value={inputValue}
+                   onChange={(e) => setInputValue(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                   placeholder="Nhập tin nhắn..." 
+                   className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                 />
+                 <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiProcessing}>
+                    <Send className="w-5 h-5" />
+                 </button>
+              </div>
+              <button className="bg-slate-100 p-3 rounded-xl hover:bg-slate-200 transition-colors">
+                 <Zap className="w-5 h-5 text-orange-500 fill-current" />
+              </button>
+           </div>
+           <div className="mt-2 text-center">
+              <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest">Powered by Gemini AI Engine</p>
+           </div>
+        </div>
+      </div>
+
+      {/* Right Sidebar - Info */}
+      <div className="w-[300px] border-l border-[#F3F4F6] bg-white hidden xl:flex flex-col p-6 space-y-8 overflow-y-auto">
+         <div className="text-center space-y-3">
+            <div className="w-20 h-20 rounded-full bg-slate-100 border-4 border-white shadow-md mx-auto flex items-center justify-center text-2xl font-bold text-slate-400">
+               {activeThread?.userName[0]}
+            </div>
+            <div>
+               <h3 className="font-bold text-[#111827]">{activeThread?.userName}</h3>
+               <p className="text-xs text-[#6B7280]">{activeThread?.channel === 'zalo' ? 'Vietnam' : 'Social Hub'}</p>
+            </div>
+            <div className="flex justify-center gap-2">
+               <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
+               <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold">VIP Hạng Bạc</span>
+            </div>
+         </div>
+
+         <div className="space-y-4">
+            <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest border-b border-[#F3F4F6] pb-2">Thông tin liên hệ</h4>
+            <div className="space-y-3">
+               <div>
+                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase">Số điện thoại</p>
+                  <p className="text-xs font-semibold text-[#111827]">0901234xxx</p>
+               </div>
+               <div>
+                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase">Email</p>
+                  <p className="text-xs font-semibold text-[#111827]">lan.pham@gmail.com</p>
+               </div>
+            </div>
+         </div>
+
+         <div className="space-y-4">
+            <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest border-b border-[#F3F4F6] pb-2">Đơn hàng gần đây</h4>
+            <div className="space-y-3">
+               {[
+                 { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
+                 { id: 'ORD-8840', status: 'delivered', amount: 850000 }
+               ].map(order => (
+                 <div key={order.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1 group hover:border-blue-200 transition-all cursor-pointer">
+                    <div className="flex justify-between items-start">
+                       <span className="text-xs font-bold text-[#111827] font-mono">{order.id}</span>
+                       <span className={cn(
+                         "text-[9px] font-bold uppercase",
+                         order.status === 'shipping' ? "text-blue-600" : "text-emerald-600"
+                       )}>{order.status}</span>
+                    </div>
+                    <p className="text-sm font-bold text-[#2563EB]">{formatCurrency(order.amount)}</p>
+                 </div>
+               ))}
+            </div>
+         </div>
+
+         <div className="bg-blue-50 p-4 rounded-lg space-y-2 border border-blue-100">
+            <h4 className="text-[10px] font-bold text-blue-600 uppercase flex items-center gap-2">
+               <Bot className="w-3 h-3" /> AI Summary
+            </h4>
+            <p className="text-[11px] text-[#4B5563] leading-relaxed">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng thân thiết, thường xuyên tương tác qua Zalo.</p>
+         </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,1074 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Package, 
+  CheckCircle2, 
+  Clock, 
+  AlertCircle, 
+  Calculator,
+  Info,
+  ChevronDown,
+  Filter,
+  Search,
+  DollarSign,
+  MoreVertical,
+  Sparkles,
+  ShieldCheck,
+  Target,
+  Activity,
+  ArrowRight,
+  Zap,
+  Trash2,
+  Plus,
+  ArrowUpCircle,
+  Hash,
+  X,
+  UploadCloud,
+  DownloadCloud,
+  ScanBarcode,
+  Camera,
+  Maximize2
+} from 'lucide-react';
+import { formatCurrency, cn } from '../lib/utils';
+import { Product } from '../types/erp';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+
+const MOCK_PIM_PRODUCTS: Product[] = [
+  {
+    id: 'PRD-001',
+    name: 'iPhone 15 Pro Max 256GB',
+    sku: 'AAPL-I15PM-256',
+    price: 34990000,
+    costPrice: 28000000,
+    hiddenCosts: 500000,
+    margin: 18.5,
+    profit: 6490000,
+    stock: 45,
+    category: 'Điện thoại',
+    brand: 'Apple',
+    sellerName: 'Mobile World',
+    status: 'in_stock',
+    image: 'https://picsum.photos/seed/iphone/100/100'
+  },
+  {
+    id: 'PRD-002',
+    name: 'Tủ lạnh Samsung Inverter 400L',
+    sku: 'SS-RF-400I',
+    price: 15500000,
+    costPrice: 12000000,
+    hiddenCosts: 1200000,
+    margin: 14.8,
+    profit: 2300000,
+    stock: 8,
+    category: 'Gia dụng',
+    brand: 'Samsung',
+    sellerName: 'Electronics Pro',
+    status: 'pending_approval',
+    image: 'https://picsum.photos/seed/fridge/100/100'
+  },
+  {
+    id: 'PRD-003',
+    name: 'Áo thun Cotton Uniqlo',
+    sku: 'UQ-TSH-WHT-L',
+    price: 399000,
+    costPrice: 150000,
+    hiddenCosts: 20000,
+    margin: 57.3,
+    profit: 229000,
+    stock: 120,
+    category: 'Thời trang',
+    brand: 'Uniqlo',
+    sellerName: 'Fashion Hub',
+    status: 'in_stock',
+    image: 'https://picsum.photos/seed/shirt/100/100'
+  }
+];
+
+export function PIM() {
+  const [products, setProducts] = useState<Product[]>(MOCK_PIM_PRODUCTS);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock'>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  
+  const [isScanning, setIsScanning] = useState(false);
+  const [isScanMode, setIsScanMode] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [scannedSkus, setScannedSkus] = useState<string[]>([]);
+  const [currentSku, setCurrentSku] = useState('');
+  const [inventoryUpdateMode, setInventoryUpdateMode] = useState(false);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  useEffect(() => {
+    if (isCameraActive) {
+      const scanner = new Html5QrcodeScanner(
+        "reader", 
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false
+      );
+      
+      scanner.render((decodedText) => {
+        // Success callback
+        if (decodedText) {
+          handleScannedResult(decodedText);
+          scanner.clear();
+          setIsCameraActive(false);
+        }
+      }, (error) => {
+        // Error callback (usually just 'no code found in frame')
+        // console.warn(error);
+      });
+
+      scannerRef.current = scanner;
+    }
+
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(err => console.error("Failed to clear scanner", err));
+      }
+    };
+  }, [isCameraActive]);
+
+  const handleScannedResult = (sku: string) => {
+    if (inventoryUpdateMode) {
+      // Find product and increment stock
+      const productIndex = products.findIndex(p => p.sku === sku || p.id === sku);
+      if (productIndex > -1) {
+        const updatedProducts = [...products];
+        updatedProducts[productIndex].stock += 1;
+        setProducts(updatedProducts);
+        alert(`Đã nhận diện: ${updatedProducts[productIndex].name}. Đã cập nhật tồn kho +1 (Tổng: ${updatedProducts[productIndex].stock})`);
+      } else {
+        alert(`Không tìm thấy sản phẩm có SKU: ${sku}`);
+      }
+    } else {
+      if (!scannedSkus.includes(sku)) {
+        setScannedSkus(prev => [...prev, sku]);
+      }
+    }
+  };
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, name: string } | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
+  const [fileValidation, setFileValidation] = useState<{status: 'idle'|'validating'|'success'|'error', message: string, data?: any}>({status: 'idle', message: ''});
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    category: 'Điện thoại',
+    brand: '',
+    price: '',
+    stock: '',
+    sku: '',
+    description: '',
+    weight: '',
+    dimensions: ''
+  });
+
+  const generateSKU = () => {
+    const brandPart = newProduct.brand ? newProduct.brand.substring(0, 3).toUpperCase() : 'GEN';
+    const catPart = newProduct.category.substring(0, 2).toUpperCase();
+    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const sku = `${brandPart}-${catPart}-${randomPart}`;
+    setNewProduct({ ...newProduct, sku });
+  };
+
+  const toggleScanMode = () => {
+    setIsScanMode(true);
+    setScannedSkus([]);
+  };
+
+  const addSku = () => {
+    if (currentSku && !scannedSkus.includes(currentSku)) {
+      setScannedSkus([...scannedSkus, currentSku]);
+      setCurrentSku('');
+    }
+  };
+
+  const toggleScan = () => {
+    setIsScanning(true);
+    setTimeout(() => setIsScanning(false), 3000);
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm) {
+      setProducts(prev => prev.filter(p => p.id !== deleteConfirm.id));
+      setDeleteConfirm(null);
+    }
+  };
+
+  const handleBulkApprove = () => {
+    setIsScanning(true);
+    setTimeout(() => {
+      setIsScanning(false);
+      alert('Đã phê duyệt toàn bộ 245 sản phẩm từ các Seller (Bulk Approve Success)');
+    }, 2000);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv') && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+       setFileValidation({status: 'error', message: 'Vui lòng tải lên định dạng .csv hoặc .xlsx'});
+       return;
+    }
+
+    setFileValidation({status: 'validating', message: 'Hệ thống đang AI-Scan và chuẩn hóa cấu trúc dữ liệu...'});
+    
+    // Simulate validation and processing
+    setTimeout(() => {
+       if (file.size > 5 * 1024 * 1024) {
+          setFileValidation({status: 'error', message: 'File vượt quá kích thước cho phép (Max: 5MB).'});
+       } else {
+          // Mock successful parse with a random number of items
+          const parsedCount = Math.floor(Math.random() * 50) + 10;
+          setFileValidation({status: 'success', message: `Xác thực thành công. Phát hiện ${parsedCount} sản phẩm hợp lệ, 0 lỗi.`, data: parsedCount});
+       }
+    }, 2000);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      // Simulate file input change
+      handleFileUpload({ target: { files: [file] } } as any);
+    }
+  };
+
+  const handleAddProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (uploadMode === 'bulk') {
+      if (fileValidation.status !== 'success') return;
+      
+      const count = fileValidation.data || 12;
+      const newBulkProducts: Product[] = Array.from({length: count}).map((_, i) => ({
+        id: `PRD-BLK-${Math.floor(Math.random() * 9000) + 1000}`,
+        name: `Sản phẩm Data Import ${i + 1}`,
+        sku: `CSV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        price: 150000 + Math.floor(Math.random() * 500000),
+        costPrice: 100000,
+        hiddenCosts: 10000,
+        margin: 25,
+        profit: 50000,
+        stock: Math.floor(Math.random() * 100) + 10,
+        category: 'Nhập khẩu CSV',
+        brand: 'Bulk Data',
+        sellerName: 'Hệ thống (Self-managed)',
+        status: 'pending_approval' as const,
+        image: `https://picsum.photos/seed/bulk${i}/100/100`
+      }));
+      setProducts([...newBulkProducts, ...products]);
+      setIsUploadModalOpen(false);
+      setFileValidation({status: 'idle', message: ''});
+      return;
+    }
+
+    const product: Product = {
+      id: `PRD-${Math.floor(Math.random() * 900) + 100}`,
+      name: newProduct.name,
+      sku: newProduct.sku,
+      price: Number(newProduct.price),
+      costPrice: Number(newProduct.price) * 0.7,
+      hiddenCosts: 50000,
+      margin: 30,
+      profit: Number(newProduct.price) * 0.3,
+      stock: Number(newProduct.stock),
+      category: newProduct.category,
+      brand: newProduct.brand,
+      sellerName: 'Hệ thống (Self-managed)',
+      status: 'in_stock',
+      image: `https://picsum.photos/seed/${newProduct.name}/100/100`
+    };
+    setProducts([product, ...products]);
+    setIsUploadModalOpen(false);
+    setNewProduct({ name: '', category: 'Điện thoại', brand: '', price: '', stock: '', sku: '', description: '', weight: '', dimensions: '' });
+  };
+
+  const categories = Array.from(new Set(products.map(p => p.category)));
+  const brands = Array.from(new Set(products.map(p => p.brand).filter(Boolean)));
+
+  const filteredProducts = products.filter(p => {
+    const matchStatus = filterStatus === 'all' || p.status === filterStatus;
+    const matchCategory = filterCategory === 'all' || p.category === filterCategory;
+    const matchBrand = filterBrand === 'all' || p.brand === filterBrand;
+    
+    const queries = searchQuery.split(',').map(q => q.trim().toLowerCase()).filter(Boolean);
+    const matchSearch = queries.length === 0 || queries.some(q =>
+      p.name.toLowerCase().includes(q) ||
+      p.sku.toLowerCase().includes(q) ||
+      p.sellerName.toLowerCase().includes(q) ||
+      (p.brand && p.brand.toLowerCase().includes(q)) ||
+      p.id.toLowerCase().includes(q)
+    );
+
+    return matchStatus && matchCategory && matchBrand && matchSearch;
+  });
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+      {/* Banner Khuyến mãi/Tính năng mới */}
+      <div className="relative w-full h-48 rounded-xl overflow-hidden shadow-lg group">
+        <img 
+          src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200&h=400" 
+          alt="Banner giới thiệu tính năng" 
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-12">
+           <h2 className="text-3xl font-black text-white italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
+           <p className="text-blue-100 text-sm mt-3 max-w-lg">Tối ưu hoá giá bán tự động dựa trên dữ liệu đối thủ và tồn kho thực tế. Giúp tăng 15% biên lợi nhuận chỉ trong 1 thao tác.</p>
+           <button className="mt-6 w-fit px-8 py-3 bg-white text-blue-800 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg">
+             Trải nghiệm ngay
+           </button>
+        </div>
+      </div>
+
+      {/* Modal Bổ sung sản phẩm */}
+      {isUploadModalOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-[#E5E7EB] overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-8 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-blue-600 rounded-[1.5rem] shadow-lg shadow-blue-500/20">
+                  <ArrowUpCircle className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-[#111827] tracking-tight">Thêm sản phẩm mới</h2>
+                  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-[0.2em] mt-1">Automatic SKU & AI Validation flow</p>
+                </div>
+              </div>
+              
+              <div className="flex bg-slate-100 p-1.5 rounded-lg mx-8">
+                 <button 
+                   onClick={() => setUploadMode('single')}
+                   className={cn("px-6 py-2.5 text-xs font-black rounded-xl transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Nhập thủ công</button>
+                 <button 
+                   onClick={() => setUploadMode('bulk')}
+                   className={cn("px-6 py-2.5 text-xs font-black rounded-xl transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Tải lên (CSV/Excel)</button>
+              </div>
+
+              <button 
+                onClick={() => { setIsUploadModalOpen(false); setUploadMode('single'); setFileValidation({status: 'idle', message: ''}); }}
+                className="p-3 hover:bg-white rounded-lg text-[#9CA3AF] transition-all hover:text-[#111827] border border-transparent hover:border-[#E5E7EB] group"
+              >
+                <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddProduct} className="flex-1 overflow-y-auto flex flex-col">
+              {uploadMode === 'single' ? (
+                <div className="p-10 space-y-8">
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
+                      <input 
+                        type="text" required placeholder="Ví dụ: iPhone 16 Pro Max..." 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all font-medium"
+                        value={newProduct.name}
+                        onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Thương hiệu</label>
+                      <input 
+                        type="text" required placeholder="Apple, Samsung, Sony..." 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all font-medium"
+                        value={newProduct.brand}
+                        onChange={e => setNewProduct({...newProduct, brand: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ngành hàng</label>
+                      <select 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all font-bold appearance-none"
+                        value={newProduct.category}
+                        onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                      >
+                        <option>Điện thoại</option>
+                        <option>Gia dụng</option>
+                        <option>Thời trang</option>
+                        <option>Điện tử</option>
+                      </select>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mã SKU (Tự động hoặc Thủ công)</label>
+                      <div className="relative">
+                        <input 
+                          type="text" required placeholder="Mã SKU định danh..." 
+                          className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg pl-5 pr-12 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold text-blue-600"
+                          value={newProduct.sku}
+                          onChange={e => setNewProduct({...newProduct, sku: e.target.value})}
+                        />
+                        <button 
+                          type="button"
+                          onClick={generateSKU}
+                          title="Sinh mã SKU tự động"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-blue-50 text-blue-600 rounded-xl transition-all"
+                        >
+                          <Hash className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá niêm yết (VNĐ)</label>
+                      <input 
+                        type="number" required placeholder="30.000.000" 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.price}
+                        onChange={e => setNewProduct({...newProduct, price: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tồn kho ban đầu</label>
+                      <input 
+                        type="number" required placeholder="Số lượng nhập kho..." 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.stock}
+                        onChange={e => setNewProduct({...newProduct, stock: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Add additional details per user request */}
+                  <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mô tả sản phẩm chi tiết</label>
+                      <textarea 
+                        rows={3} placeholder="Mô tả công năng, đặc điểm nổi bật..."
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all font-medium resize-none"
+                        value={newProduct.description}
+                        onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                      ></textarea>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Trọng lượng (Gram)</label>
+                      <input 
+                        type="number" placeholder="Ví dụ: 500" 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.weight}
+                        onChange={e => setNewProduct({...newProduct, weight: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Kích thước (DxRxC) (cm)</label>
+                      <input 
+                        type="text" placeholder="Ví dụ: 15x10x5" 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.dimensions}
+                        onChange={e => setNewProduct({...newProduct, dimensions: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-10 space-y-8 flex-1 flex flex-col justify-center">
+                  <div 
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    className={cn(
+                      "border-2 border-dashed rounded-xl p-12 text-center transition-all relative flex flex-col items-center justify-center gap-6",
+                      fileValidation.status === 'validating' ? "border-blue-300 bg-blue-50/50" : 
+                      fileValidation.status === 'error' ? "border-red-300 bg-red-50/50" :
+                      fileValidation.status === 'success' ? "border-emerald-300 bg-emerald-50/50" :
+                      "border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-blue-400"
+                    )}
+                  >
+                    <input 
+                      type="file" 
+                      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      onChange={handleFileUpload}
+                      disabled={fileValidation.status === 'validating'}
+                    />
+                    
+                    {fileValidation.status === 'idle' && (
+                      <>
+                        <div className="w-20 h-20 bg-white shadow-xl shadow-slate-200/50 rounded-full flex items-center justify-center text-blue-600">
+                           <UploadCloud className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-[#111827]">Kéo thả file CSV/Excel vào đây</h3>
+                          <p className="text-sm text-[#6B7280] font-medium mt-2">Hoặc click để chọn file từ máy tính của bạn (Tối đa 50MB)</p>
+                        </div>
+                        <p className="text-[10px] uppercase font-black tracking-widest text-[#9CA3AF]">Hỗ trợ: .CSV, .XLS, .XLSX</p>
+                      </>
+                    )}
+
+                    {fileValidation.status === 'validating' && (
+                      <>
+                        <div className="w-20 h-20 bg-white shadow-xl shadow-blue-200/50 rounded-full flex items-center justify-center text-blue-600">
+                           <Sparkles className="w-8 h-8 animate-pulse" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-blue-600">Đang quét và chuẩn hóa dữ liệu...</h3>
+                          <p className="text-sm text-blue-500 font-medium mt-2">{fileValidation.message}</p>
+                        </div>
+                      </>
+                    )}
+
+                    {fileValidation.status === 'error' && (
+                      <>
+                        <div className="w-20 h-20 bg-white shadow-xl shadow-red-200/50 rounded-full flex items-center justify-center text-red-600">
+                           <AlertCircle className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-red-600">Lỗi xác thực dữ liệu</h3>
+                           <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-medium text-left">
+                              Phát hiện dữ liệu thiếu định dạng tiền tệ (Cột Giá Bán) hoặc các trường bắt buộc bị trống. <br />
+                              Bạn có thể sử dụng <b>AI Auto-correction</b> để hỗ trợ điền tự động các trường này.
+                           </div>
+                        </div>
+                        <div className="flex gap-4 relative z-20 mt-4">
+                            <button 
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); setFileValidation({status:'idle', message:''}); }}
+                              className="px-6 py-2.5 bg-white text-red-600 border border-red-200 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-red-50 transition-all"
+                            >Chỉnh sửa & Thử lại</button>
+                            <button 
+                              type="button"
+                              onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  setFileValidation({status: 'validating', message: 'AI đang tiến hành sửa lỗi và chuẩn hóa dữ liệu...'});
+                                  setTimeout(() => {
+                                      const parsedCount = Math.floor(Math.random() * 50) + 10;
+                                      setFileValidation({status: 'success', message: `AI đã xử lý xong. Cập nhật ${parsedCount} sản phẩm hợp vệ, 0 lỗi.`, data: parsedCount});
+                                  }, 2500);
+                              }}
+                              className="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-lg shadow-red-500/20"
+                            ><Sparkles className="w-4 h-4"/> Sửa lỗi với AI</button>
+                        </div>
+                      </>
+                    )}
+
+                    {fileValidation.status === 'success' && (
+                      <>
+                        <div className="w-20 h-20 bg-white shadow-xl shadow-emerald-200/50 rounded-full flex items-center justify-center text-emerald-600">
+                           <CheckCircle2 className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-emerald-600">Pass: Dữ liệu đạt chuẩn ERP</h3>
+                          <p className="text-sm text-emerald-500 font-medium mt-2">{fileValidation.message}</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {fileValidation.status === 'idle' && (
+                    <div className="flex justify-between items-center bg-blue-50/50 border border-blue-100 rounded-xl p-6 hover:border-blue-200 transition-all">
+                       <div className="flex items-center gap-4">
+                           <div className="p-3 bg-white rounded-lg shadow-sm">
+                              <DownloadCloud className="w-6 h-6 text-blue-600" />
+                           </div>
+                           <div>
+                              <p className="text-sm font-bold text-[#111827]">Tải File Mẫu (Template)</p>
+                              <p className="text-[10px] text-[#6B7280] font-bold mt-0.5">Bản chuẩn 2.0 đã bao gồm schema của AI Server.</p>
+                           </div>
+                       </div>
+                       <a href="#" className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white px-5 py-2.5 rounded-xl border border-blue-100 shadow-sm transition-all relative z-20 uppercase tracking-widest">
+                          Tải Template
+                       </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-4 p-8 border-t border-slate-100 bg-white mt-auto">
+                <button 
+                  type="button"
+                  onClick={() => setIsUploadModalOpen(false)}
+                  className="px-8 py-5 border border-[#E5E7EB] text-[#4B5563] font-black rounded-lg text-[11px] hover:bg-slate-50 transition-all uppercase tracking-[0.2em]"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  type="submit"
+                  disabled={uploadMode === 'bulk' && fileValidation.status !== 'success'}
+                  className="flex-1 py-5 bg-[#111827] text-white font-black rounded-lg text-[11px] hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/40 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploadMode === 'bulk' ? 'Import Dữ Liệu' : 'Duyệt & Thêm vào hệ thống'} <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isScanMode && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-8 animate-in zoom-in-95">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-black">Quét mã vạch & Kiểm kê</h2>
+                <button onClick={() => { setIsScanMode(false); setIsCameraActive(false); }} className="p-2 hover:bg-slate-100 rounded-lg">
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+
+              <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-xl">
+                 <button 
+                  onClick={() => setInventoryUpdateMode(false)}
+                  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-blue-600 shadow-sm" : "text-slate-500")}
+                 >Tìm kiếm chung</button>
+                 <button 
+                  onClick={() => setInventoryUpdateMode(true)}
+                  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", inventoryUpdateMode ? "bg-white text-blue-600 shadow-sm" : "text-slate-500")}
+                 >Bổ sung tồn kho (+1)</button>
+              </div>
+
+              {!isCameraActive ? (
+                <div className="space-y-6">
+                  <div className="aspect-video bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
+                    <Camera className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm font-bold">Bật Camera để quét mã vạch</p>
+                    <p className="text-[10px] uppercase tracking-widest mt-1">Hỗ trợ QR, Barcode, SKU</p>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase font-bold text-slate-400">
+                      <span className="bg-white px-4">Hoặc nhập thủ công</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={currentSku}
+                      onChange={(e) => setCurrentSku(e.target.value)}
+                      placeholder="Nhập mã SKU/Barcode..."
+                      className="flex-1 bg-slate-50 border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleScannedResult(currentSku);
+                          setCurrentSku('');
+                        }
+                      }}
+                    />
+                    <button 
+                      onClick={() => {
+                        handleScannedResult(currentSku);
+                        setCurrentSku('');
+                      }} 
+                      className="px-6 py-2 bg-[#111827] text-white font-bold rounded-xl text-xs hover:bg-slate-800"
+                    >Thêm</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div id="reader" className="w-full h-full overflow-hidden rounded-2xl border-4 border-blue-600/20 shadow-inner"></div>
+                  <button 
+                    onClick={() => setIsCameraActive(false)}
+                    className="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl text-xs hover:bg-red-100 transition-all flex items-center justify-center gap-2"
+                  >
+                    <X className="w-4 h-4" /> Dừng quét Camera
+                  </button>
+                </div>
+              )}
+
+              {!inventoryUpdateMode && (
+                <div className="mt-8">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Danh sách SKU đã quét ({scannedSkus.length})</h4>
+                    {scannedSkus.length > 0 && (
+                      <button onClick={() => setScannedSkus([])} className="text-[10px] font-bold text-red-500 hover:underline">Xóa tất cả</button>
+                    )}
+                  </div>
+                  <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
+                    {scannedSkus.map(sku => (
+                      <div key={sku} className="flex justify-between items-center bg-slate-50 p-3 rounded-xl text-xs font-mono font-bold border border-slate-100 animate-in slide-in-from-right-4 transition-all">
+                        <span className="text-blue-600">{sku}</span>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] text-slate-400">
+                            {products.find(p => p.sku === sku || p.id === sku)?.name || 'SKU chưa xác định'}
+                          </span>
+                          <button onClick={() => setScannedSkus(scannedSkus.filter(s => s !== sku))} className="p-1 hover:bg-red-50 text-red-400 rounded transition-all">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {scannedSkus.length === 0 && (
+                      <div className="p-8 text-center border-2 border-dashed border-slate-100 rounded-xl text-slate-400 text-[11px] font-medium italic">
+                        Chưa có SKU nào được quét
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex gap-4 mt-8">
+                    <button 
+                      onClick={() => {
+                        setSearchQuery(scannedSkus.join(', '));
+                        setIsScanMode(false); 
+                      }} 
+                      disabled={scannedSkus.length === 0}
+                      className="flex-1 py-4 bg-[#111827] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
+                    >
+                      Tìm kiếm {scannedSkus.length} SKU
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {inventoryUpdateMode && (
+                <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                  <div className="flex gap-3">
+                    <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
+                      <Zap className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-blue-900">Chế độ Bổ sung Tồn kho</p>
+                      <p className="text-[10px] text-blue-600 font-medium mt-1">Khi quét thành công một mã vạch hợp lệ, hệ thống sẽ tự động cộng 1 đơn vị vào tồn kho của sản phẩm đó ngay lập tức.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+           </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#111827]/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-[#E5E7EB] overflow-hidden p-8 animate-in zoom-in-95 duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-4 bg-red-50 rounded-full text-red-600">
+                <Trash2 className="w-8 h-8" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-[#111827]">Xác nhận xóa sản phẩm?</h3>
+                <p className="text-sm text-[#6B7280]">
+                  Bạn có chắc chắn muốn xóa sản phẩm <span className="font-bold text-[#111827]">"{deleteConfirm.name}"</span> không? Hành động này không thể hoàn tác.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4 mt-8">
+              <button 
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 py-4 border border-[#E5E7EB] text-[#4B5563] font-bold rounded-lg text-xs hover:bg-slate-50 transition-all uppercase tracking-widest"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 py-4 bg-red-600 text-white font-bold rounded-lg text-xs hover:bg-red-700 transition-all uppercase tracking-widest shadow-lg shadow-red-500/20"
+              >
+                Xóa ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
+        <div className="header-title">
+          <h1 className="text-2xl font-semibold text-[#111827]">Quản lý Sản phẩm (PIM)</h1>
+          <p className="text-sm text-[#6B7280] mt-1">Chuẩn hóa dữ liệu, quản lý duyệt sản phẩm Seller và vận hành AI Governance.</p>
+        </div>
+        <div className="flex gap-3">
+          <button 
+            onClick={toggleScanMode}
+            className="bg-white border border-[#E5E7EB] px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
+          >
+            <ScanBarcode className="w-5 h-5 text-[#2563EB]" />
+            Quét mã / Kiểm kê
+          </button>
+          <button 
+            onClick={toggleScan}
+            disabled={isScanning}
+            className={cn(
+              "bg-white border border-[#E5E7EB] px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 group shadow-sm",
+              isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
+            )}
+          >
+            <Sparkles className={cn("w-4 h-4 text-[#2563EB] group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
+            {isScanning ? "AI đang quét dữ liệu..." : "AI Auto-Scan SP"}
+          </button>
+          <button 
+            onClick={() => setIsUploadModalOpen(true)}
+            className="bg-[#111827] text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg flex items-center gap-2 active:scale-95"
+          >
+            <Plus className="w-4 h-4" /> Bổ sung sản phẩm
+          </button>
+          <button 
+            onClick={handleBulkApprove}
+            disabled={isScanning}
+            className="bg-[#2563EB] text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
+          >
+            Duyệt sản phẩm mới (Bulk)
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
+           <div className="flex justify-between items-start mb-3">
+              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
+              <Clock className="w-5 h-5 text-amber-500" />
+           </div>
+           <div className="text-3xl font-bold text-[#111827]">245</div>
+           <p className="text-[10px] text-amber-600 mt-2 font-bold bg-amber-50 px-2 py-0.5 rounded w-fit">Cần SLA xử lý: 4h</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
+           <div className="flex justify-between items-start mb-3">
+              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Lỗi chuẩn hóa (AI)</span>
+              <AlertCircle className="w-5 h-5 text-red-500" />
+           </div>
+           <div className="text-3xl font-bold text-red-500">18</div>
+           <p className="text-[10px] text-slate-400 mt-2">Phát hiện bởi AI Auto-Scan</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
+           <div className="flex justify-between items-start mb-3">
+              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
+              <Calculator className="w-5 h-5 text-blue-600" />
+           </div>
+           <div className="text-3xl font-bold text-[#111827]">22.4%</div>
+           <p className="text-[10px] text-emerald-600 mt-2 font-bold">Tối ưu +1.2% Target</p>
+        </div>
+        <div className="bg-[#111827] p-6 rounded-lg shadow-xl shadow-slate-200 relative overflow-hidden group">
+           <div className="relative z-10 flex flex-col justify-between h-full">
+              <div className="flex justify-between items-start mb-3">
+                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Category AI</span>
+                 <Zap className="w-5 h-5 text-blue-500" />
+              </div>
+              <div>
+                 <div className="text-3xl font-bold text-white tracking-tighter">99.2%</div>
+                 <p className="text-[10px] text-emerald-400 font-bold mt-1 uppercase">Accuracy Rate</p>
+              </div>
+           </div>
+           <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-[#F3F4F6] space-y-4">
+           <div className="flex flex-col xl:flex-row gap-4 justify-between items-start">
+              <div className="relative flex-1 max-w-2xl">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Tìm sản phẩm (Tên, SKU, ID, Nhà bán, Thương hiệu)..." 
+                  className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg pl-12 pr-4 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                />
+              </div>
+              <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap">
+                 <button 
+                  onClick={() => setFilterStatus('all')}
+                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-[#111827] shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Tất cả trạng thái</button>
+                 <button 
+                  onClick={() => setFilterStatus('pending_approval')}
+                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'pending_approval' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Chờ AI duyệt</button>
+                 <button 
+                  onClick={() => setFilterStatus('in_stock')}
+                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'in_stock' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Đang kinh doanh</button>
+              </div>
+           </div>
+
+           <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest pl-1"><Filter className="w-4 h-4"/> Lọc nâng cao:</div>
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option value="all">Tất cả ngành hàng</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+
+              <select
+                value={filterBrand}
+                onChange={(e) => setFilterBrand(e.target.value)}
+                className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option value="all">Tất cả thương hiệu</option>
+                {brands.map(brand => (
+                  <option key={brand} value={brand}>{brand}</option>
+                ))}
+              </select>
+           </div>
+        </div>
+
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="group flex flex-col bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-blue-200 transition-all animate-in fade-in relative">
+              {/* Delete Button - Hover only */}
+              <button 
+                onClick={() => setDeleteConfirm({ id: product.id, name: product.name })}
+                className="absolute top-8 right-8 p-3 bg-red-50 text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:text-white shadow-sm z-20"
+                title="Xóa sản phẩm"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+
+              {/* Image & Badges */}
+              <div className="relative h-60 w-full rounded-xl bg-slate-50 border border-[#E5E7EB] overflow-hidden mb-6 group-hover:shadow-md transition-all">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+                  <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-xl text-[9px] font-black text-slate-500 shadow-sm border border-slate-100 uppercase tracking-tighter">
+                    {product.id}
+                  </div>
+                  {/* Status Badge */}
+                  <div className="absolute bottom-3 left-3 flex gap-2">
+                     <span className={cn(
+                        "px-4 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-2 shadow-lg uppercase tracking-widest border backdrop-blur-md",
+                        product.status === 'in_stock' ? "bg-emerald-500/90 text-white border-emerald-400" : "bg-amber-500/90 text-white border-amber-400"
+                      )}>
+                        {product.status === 'in_stock' ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                        {product.status === 'in_stock' ? 'Đang kinh doanh' : 'Chờ AI duyệt'}
+                      </span>
+                  </div>
+              </div>
+
+              {/* Info Area */}
+              <div className="flex flex-col flex-1">
+                  <div className="flex justify-between items-start mb-3">
+                     <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100 uppercase tracking-widest shadow-sm inline-block">
+                        {product.category}
+                     </span>
+                  </div>
+                  <h3 className="text-xl font-black text-[#111827] group-hover:text-blue-600 transition-colors line-clamp-2 tracking-tight leading-tight mb-5 flex-1">
+                      {product.name}
+                  </h3>
+
+                  <div className="space-y-4 mb-6">
+                      <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg border border-slate-100">
+                           <div className="flex items-center gap-2.5 text-xs text-[#4B5563] font-bold">
+                              <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                              <span className="truncate max-w-[120px]">{product.sellerName}</span>
+                           </div>
+                           <div className="flex items-center gap-2 text-xs text-[#6B7280] font-medium">
+                              <Hash className="w-4 h-4 text-blue-400" />
+                              <span className="font-mono text-[11px] uppercase font-black">{product.sku}</span>
+                           </div>
+                      </div>
+
+                      <div className="flex justify-between items-end px-2">
+                         <div className="space-y-1.5">
+                            <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest">Giá bán</p>
+                            <p className="text-2xl font-black text-[#111827] font-mono leading-none">
+                              {formatCurrency(product.price)}
+                            </p>
+                         </div>
+                         <div className="text-right space-y-1.5">
+                            <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest flex items-center justify-end gap-1">
+                              <Target className="w-3.5 h-3.5" /> Profit
+                            </p>
+                            <div className="flex items-baseline gap-2">
+                              <p className="text-lg font-black text-emerald-600 font-mono leading-none">
+                                 +{formatCurrency(product.profit)}
+                              </p>
+                              <span className="text-[10px] font-black text-emerald-500/80 bg-emerald-50 px-1.5 py-0.5 rounded-lg border border-emerald-100">+{product.margin}%</span>
+                            </div>
+                         </div>
+                      </div>
+                  </div>
+
+                  {/* Footer Metrics */}
+                  <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
+                     <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-blue-600">
+                           <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" /> AI Verified
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <div className={cn("w-2.5 h-2.5 rounded-full", product.stock < 10 ? "bg-red-500 animate-pulse" : "bg-emerald-500")}></div>
+                           <p className="text-[11px] text-[#111827] font-black uppercase tracking-tighter">Kho: {product.stock} SP</p>
+                        </div>
+                     </div>
+
+                     <button className="flex items-center gap-2 text-[11px] font-black text-blue-600 hover:translate-x-1 transition-all bg-blue-50 px-4 py-2.5 rounded-xl group/btn">
+                        Chi tiết P&L <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                     </button>
+                  </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+         <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-10 rounded-xl text-white relative overflow-hidden shadow-2xl flex flex-col justify-between group">
+            <div className="relative z-10 space-y-6">
+               <div className="flex items-center gap-4">
+                  <div className="p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                     <Sparkles className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-extrabold italic font-serif tracking-tight">AI Metadata Engine</h3>
+                    <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mt-1 pl-1">Data Governance v2.0</p>
+                  </div>
+               </div>
+               <p className="text-blue-50 text-sm leading-relaxed max-w-sm">
+                  Tự động trích xuất thông tin kỹ thuật từ hình ảnh sản phẩm, tự động gắn tag SEO và đề xuất hạng mục tối ưu hóa P&L dựa trên dữ thị trường thời gian thực.
+               </p>
+            </div>
+            <div className="relative z-10 pt-8">
+               <button className="px-10 py-4 bg-[#111827] text-white font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-xl shadow-slate-900/40">Launch Data AI Matrix</button>
+            </div>
+            <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
+         </div>
+
+         <div className="bg-white p-10 border border-[#E5E7EB] rounded-xl shadow-sm space-y-8 relative overflow-hidden group">
+            <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3">
+               <ShieldCheck className="w-6 h-6 text-emerald-500" /> P&L Configuration Engine
+            </h3>
+            <div className="space-y-6">
+               <div className="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-emerald-500/30 transition-all cursor-pointer">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global P&L Rules</span>
+                    <Info className="w-4 h-4 text-slate-300" />
+                  </div>
+                  <div className="flex items-end gap-3">
+                    <div className="text-3xl font-bold text-[#111827]">94%</div>
+                    <p className="text-[10px] text-emerald-600 font-bold uppercase pb-1.5 tracking-tighter">Độ chính xác định mức</p>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-slate-200/50 flex justify-between items-center">
+                     <span className="text-[10px] text-slate-500 font-medium italic">Bao gồm: Chi phí Marketing (15%), Vận hành (5%)</span>
+                     <ArrowRight className="w-4 h-4 text-slate-300" />
+                  </div>
+               </div>
+               <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-[0.2em] pl-2">Top Profit Categories</h4>
+                  <div className="space-y-3">
+                     {[
+                       { name: 'Thời trang', share: 45, color: 'bg-blue-500' },
+                       { name: 'Gia dụng', share: 28, color: 'bg-emerald-500' },
+                       { name: 'Điện thoại', share: 15, color: 'bg-amber-500' }
+                     ].map((c, i) => (
+                        <div key={i} className="space-y-2">
+                           <div className="flex justify-between text-[11px] font-bold">
+                              <span>{c.name}</span>
+                              <span className="text-slate-400">{c.share}%</span>
+                           </div>
+                           <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className={cn("h-full transition-all duration-1000", c.color)} style={{ width: `${c.share}%` }} />
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+            <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-50 opacity-50 group-hover:scale-105 transition-transform duration-700" />
+         </div>
+      </div>
+    </div>
+  );
+}
