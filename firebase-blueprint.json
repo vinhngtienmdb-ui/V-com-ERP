@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Sản phẩm trong hệ thống PIM và iPOS",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "sku": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "stock": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "sku", "price", "category", "stock"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Đơn hàng từ các kênh bán hàng hoặc iPOS",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" }
+            }
+          }
+        },
+        "total": { "type": "number" },
+        "discount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "cancelled", "returned"] },
+        "paymentMethod": { "type": "string", "enum": ["cash", "qr", "pos"] },
+        "staffId": { "type": "string" },
+        "storeId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["items", "total", "status", "paymentMethod"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Thông tin khách hàng và lòng trung thành",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "tier": { "type": "string", "enum": ["Standard", "Silver", "Gold", "Platinum"] },
+        "points": { "type": "number" },
+        "aiInsight": { "type": "string" },
+        "lastPurchase": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone"]
+    },
+    "Staff": {
+      "title": "Staff",
+      "description": "Nhân viên vận hành hệ thống",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "branch": { "type": "string" }
+      },
+      "required": ["name", "email", "role"]
+    },
+    "FinanceTransaction": {
+      "title": "FinanceTransaction",
+      "description": "Giao dịch tài chính (thu/chi)",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "orderId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "amount", "category"]
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Danh mục sản phẩm trung tâm"
+    },
+    "orders": {
+      "schema": "Order",
+      "description": "Bộ lưu trữ đơn hàng tập trung"
+    },
+    "customers": {
+      "schema": "Customer",
+      "description": "Dữ liệu khách hàng và CRM"
+    },
+    "staff": {
+      "schema": "Staff",
+      "description": "Hồ sơ nhân viên"
+    },
+    "transactions": {
+      "schema": "FinanceTransaction",
+      "description": "Nhật ký tài chính"
+    }
+  }
+}

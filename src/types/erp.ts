@@ -51,6 +51,9 @@ export interface Customer {
   channels: ('zalo' | 'facebook' | 'web' | 'hotline')[];
   rfmScore?: { recency: number; frequency: number; monetary: number };
   activities?: CustomerActivity[];
+  tier?: string;
+  points?: number;
+  aiInsight?: string;
 }
 
 export interface ShippingInfo {

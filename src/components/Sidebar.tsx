@@ -31,33 +31,36 @@ import {
   Sparkles,
   Building2,
   Monitor,
+  Zap
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useAuth } from '../context/AuthContext';
 
 const navGroups = [
   {
     title: 'Điều hành & Hệ thống',
     items: [
-      { icon: LayoutDashboard, label: 'Tổng quan Sàn', path: '/' },
-      { icon: PieChart, label: 'Phân tích & Báo cáo (BI)', path: '/bi' },
-      { icon: Sparkles, label: 'Vận hành AI (AIOps)', path: '/ai-ops' },
-      { icon: Activity, label: 'Trung tâm Điều phối', path: '/workflow' },
+      { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+      { icon: PieChart, label: 'Phân tích dữ liệu', path: '/bi' },
+      { icon: Sparkles, label: 'Trung tâm vận hành AI', path: '/ai-ops' },
+      { icon: Activity, label: 'Trung tâm điều hành', path: '/workflow' },
     ]
   },
   {
     title: 'Kinh doanh Đa kênh',
     items: [
-      { icon: Monitor, label: 'Điểm bán hàng (iPOS)', path: '/ipos' },
+      { icon: Monitor, label: 'iPOS Phần mềm bán hàng', path: '/ipos' },
       { icon: ShoppingBag, label: 'Quản lý Đơn hàng', path: '/orders' },
-      { icon: Video, label: 'Bán hàng Livestream', path: '/live' },
-      { icon: MessageCircle, label: 'Cộng đồng & Mạng xã hội', path: '/social' },
+      { icon: Video, label: 'Quản lý Livestream', path: '/live' },
+      { icon: MessageCircle, label: 'Mạng xã hội người dùng', path: '/social' },
     ]
   },
   {
     title: 'Sản phẩm & Marketing',
     items: [
-      { icon: Box, label: 'Quản lý Sản phẩm (PIM)', path: '/pim' },
-      { icon: Megaphone, label: 'Marketing & Flash Sale', path: '/marketing' },
+      { icon: Box, label: 'Quản lý sản phẩm', path: '/pim' },
+      { icon: Megaphone, label: 'Marketing & Social', path: '/marketing' },
+      { icon: Zap, label: 'Flash Sale & Mua chung', path: '/flash-sale' },
       { icon: Share2, label: 'Tiếp thị liên kết', path: '/affiliate' },
       { icon: Gem, label: 'Khách hàng thân thiết', path: '/loyalty' },
       { icon: Megaphone, label: 'Quản lý Quảng cáo (Ads)', path: '/ads' },
@@ -109,6 +112,7 @@ const navGroups = [
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <aside className="w-[280px] bg-white border-r border-[#E5E7EB] flex flex-col h-full py-6">
@@ -156,7 +160,10 @@ export function Sidebar() {
       </nav>
 
       <div className="px-4 mt-auto">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-[#4B5563] hover:bg-[#F9FAFB] transition-colors">
+        <button 
+          onClick={() => signOut()}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-[#4B5563] hover:bg-[#F9FAFB] transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           <span>Đăng xuất</span>
         </button>

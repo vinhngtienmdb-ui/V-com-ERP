@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ShoppingBag, 
   Search, 
@@ -16,12 +16,15 @@ import {
   User,
   Clock,
   Download,
-  BrainCircuit
+  BrainCircuit,
+  PieChart as PieIcon
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -90,6 +93,16 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
               <p className="font-bold text-slate-800">{order.carrier || 'Chưa vận chuyển'}</p>
               <p className="font-mono text-xs text-blue-600">{order.tracking || 'N/A'}</p>
             </div>
+            {order.paymentMethod === 'cod' && order.status === 'delivered' && (
+               <button className="ml-auto bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-600 shadow-sm flex items-center gap-1.5 focus:ring-2 ring-emerald-200">
+                  <DollarSign className="w-4 h-4" /> Xác nhận thực thu COD
+               </button>
+            )}
+            {order.paymentMethod === 'cod' && order.status === 'processing' && (
+               <button className="ml-auto bg-slate-100 text-slate-400 px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed flex items-center gap-1.5 border border-slate-200">
+                  <Clock className="w-3.5 h-3.5" /> Chờ giao để thu COD
+               </button>
+            )}
           </div>
           {(order.status === ('returning' as any) || order.status === 'returning') && (
             <div className="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-100">
@@ -111,7 +124,7 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
     date: '2024-03-15 14:30',
     total: 2500000,
     status: 'delivered',
-    paymentMethod: 'bank_transfer',
+    paymentMethod: 'cod',
     items: [],
     carrier: 'GHTK',
     tracking: 'GHTK123456789',
@@ -182,15 +195,36 @@ export function Orders() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateQuery, setDateQuery] = useState<string>('');
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+  const [dbOrders, setDbOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(doc => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          ...d,
+          date: d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')
+        };
+      });
+      setDbOrders(data);
+    });
+    return () => unsub();
+  }, []);
+
+  const allOrders = useMemo(() => {
+    return [...MOCK_ORDERS, ...dbOrders];
+  }, [dbOrders]);
 
   const filteredOrders = useMemo(() => {
-    return MOCK_ORDERS.filter(order => {
+    return allOrders.filter(order => {
       const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-      const matchesDate = !dateQuery || order.date.includes(dateQuery);
+      const matchesDate = !dateQuery || (order.date && order.date.includes(dateQuery));
       const matchesActiveStep = activeStep === 'all' || (activeStep === 'rma' && order.status === 'returning');
       return matchesStatus && matchesDate && matchesActiveStep;
     });
-  }, [activeStep, statusFilter, dateQuery]);
+  }, [allOrders, activeStep, statusFilter, dateQuery]);
 
   const [aiResponse, setAiResponse] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);

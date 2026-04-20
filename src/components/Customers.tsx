@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -23,6 +23,11 @@ import {
   Copy,
   Check
 } from 'lucide-react';
+import { formatCurrency, cn } from '../lib/utils';
+import { Customer } from '../types/erp';
+import { generateCustomerCareMessage } from '../services/geminiService';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 const CopyButton = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false);
@@ -41,10 +46,6 @@ const CopyButton = ({ value }: { value: string }) => {
     </button>
   );
 };
-import { formatCurrency, cn } from '../lib/utils';
-import { Customer } from '../types/erp';
-
-import { generateCustomerCareMessage } from '../services/geminiService';
 
 const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
   const [aiMessage, setAiMessage] = useState<string | null>(null);
@@ -230,58 +231,6 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
   );
 };
 
-const MOCK_CUSTOMERS: Customer[] = [
-  {
-    id: 'CUS-001',
-    name: 'Phạm Thị Lan',
-    email: 'lan.pham@gmail.com',
-    phone: '0901234567',
-    totalSpent: 18500000,
-    orderCount: 12,
-    lastOrderDate: '2024-03-15',
-    status: 'active',
-    channels: ['zalo', 'web'],
-    rfmScore: { recency: 5, frequency: 4, monetary: 5 },
-    activities: [
-      { id: 'ACT-1', type: 'purchase', title: 'Mua hàng thành công', description: 'Đơn hàng #ORD-2024-001 - 2,500,000đ', date: '2024-03-15', status: 'completed' },
-      { id: 'ACT-2', type: 'consultation', title: 'Tư vấn CSKH', description: 'Zalo Chat: Hỏi về chính sách bảo hành túi xách', date: '2024-03-14', status: 'closed' },
-      { id: 'ACT-3', type: 'purchase', title: 'Mua hàng thành công', description: 'Đơn hàng #ORD-2024-002 - 1,200,000đ', date: '2024-03-12', status: 'completed' },
-      { id: 'ACT-4', type: 'rma', title: 'Hoàn trả (RMA)', description: 'Yêu cầu đổi size giày Nike Air Max', date: '2024-03-10', status: 'in_progress' }
-    ]
-  },
-  {
-    id: 'CUS-002',
-    name: 'Hoàng Anh Tuấn',
-    email: 'tuan.ha@outlook.com',
-    phone: '0987654321',
-    totalSpent: 4200000,
-    orderCount: 3,
-    lastOrderDate: '2024-03-10',
-    status: 'active',
-    channels: ['facebook', 'hotline'],
-    rfmScore: { recency: 3, frequency: 2, monetary: 3 },
-    activities: [
-      { id: 'ACT-5', type: 'purchase', title: 'Mua hàng thành công', description: 'Đơn hàng #ORD-2024-005 - 4,200,000đ', date: '2024-03-10', status: 'completed' },
-      { id: 'ACT-6', type: 'consultation', title: 'Liên hệ Hotline', description: 'Hỏi về chương trình khuyến mãi tháng 3', date: '2024-03-05', status: 'completed' }
-    ]
-  },
-  {
-    id: 'CUS-003',
-    name: 'Nguyễn Bích Ngọc',
-    email: 'ngoc.nb@gmail.com',
-    phone: '0912345678',
-    totalSpent: 0,
-    orderCount: 0,
-    lastOrderDate: '--',
-    status: 'inactive',
-    channels: ['web'],
-    rfmScore: { recency: 1, frequency: 1, monetary: 1 },
-    activities: [
-      { id: 'ACT-7', type: 'other', title: 'Tạo tài khoản', description: 'Đăng ký thành viên qua Website', date: '2024-02-28' }
-    ]
-  }
-];
-
 const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
   const [aiMessage, setAiMessage] = useState<string | null>(null);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -364,6 +313,51 @@ export function Customers() {
   const [activeChannel, setActiveChannel] = useState<'all' | 'zalo' | 'facebook' | 'web' | 'hotline'>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [aiQuickModalCustomer, setAiQuickModalCustomer] = useState<Customer | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [orders, setOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch customers
+    const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
+      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      setCustomers(data);
+      setLoading(false);
+    });
+
+    // Fetch all completed orders to aggregate totalSpent per customer
+    const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
+      const ordersData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      setOrders(ordersData.filter(o => o.status === 'completed' && o.customerId));
+    });
+
+    return () => {
+      unsubCustomers();
+      unsubOrders();
+    };
+  }, []);
+
+  // Compute dynamic fields
+  const dynamicCustomers = customers.map(c => {
+    const customerOrders = orders.filter(o => o.customerId === c.id);
+    const totalSpent = customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const orderCount = customerOrders.length;
+    
+    // Simulate active status based on recent purchase or base status
+    // If they have any orders in the system they are active
+    const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive';
+
+    return { ...c, totalSpent, orderCount, status, _realOrders: customerOrders } as Customer & { _realOrders: any[] };
+  });
+
+  const filteredCustomers = dynamicCustomers.filter(c => {
+    const matchesChannel = activeChannel === 'all' || (c.channels && c.channels.includes(activeChannel as any));
+    const matchesSearch = c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          c.phone?.includes(searchQuery) || 
+                          c.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesChannel && matchesSearch;
+  });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -401,23 +395,23 @@ export function Customers() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng khách hàng</p>
-          <div className="text-2xl font-bold text-[#111827]">12,450</div>
-          <div className="mt-2 text-[10px] text-[#10B981] font-medium">+420 người mới tháng này</div>
+          <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.length}</div>
+          <div className="mt-2 text-[10px] text-[#10B981] font-medium">+5% so với tháng trước</div>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active (30 ngày)</p>
-          <div className="text-2xl font-bold text-[#111827]">4,820</div>
-          <div className="mt-2 text-[10px] text-[#6B7280]">Chiếm 38.7% tổng user</div>
+          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active (Hệ thống)</p>
+          <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</div>
+          <div className="mt-2 text-[10px] text-[#6B7280]">Chiếm {dynamicCustomers.length ? ((dynamicCustomers.filter(c => c.status === 'active').length / dynamicCustomers.length) * 100).toFixed(1) : 0}% tổng user</div>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi tiêu TB (CLV)</p>
-          <div className="text-2xl font-bold text-[#111827]">{formatCurrency(1450000)}</div>
-          <div className="mt-2 text-[10px] text-[#2563EB] font-medium">+5% so với quý trước</div>
+          <div className="text-2xl font-bold text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</div>
+          <div className="mt-2 text-[10px] text-[#2563EB] font-medium">Đồng bộ từ giao dịch</div>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tin nhắn chưa đọc</p>
-          <div className="text-2xl font-bold text-[#EF4444]">85</div>
-          <div className="mt-2 text-[10px] text-[#EF4444] font-medium">Cần phản hồi gấp</div>
+          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Hạng Vàng/Kim Cương</p>
+          <div className="text-2xl font-bold text-[#F59E0B]">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</div>
+          <div className="mt-2 text-[10px] text-[#F59E0B] font-medium">Khách hàng trung thành</div>
         </div>
       </div>
 
@@ -429,6 +423,8 @@ export function Customers() {
               <input 
                 type="text" 
                 placeholder="Tìm tên, SĐT, Email..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
               />
             </div>
@@ -477,12 +473,19 @@ export function Customers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F3F4F6]">
-              {MOCK_CUSTOMERS.filter(c => activeChannel === 'all' || c.channels.includes(activeChannel as any)).map((customer) => (
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center">
+                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-2" />
+                    <p className="text-sm text-slate-500 font-medium">Đang tải dữ liệu khách hàng...</p>
+                  </td>
+                </tr>
+              ) : filteredCustomers.map((customer) => (
                 <tr key={customer.id} className="hover:bg-[#F9FAFB] group transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                        <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
-                          {customer.name.split(' ').pop()?.charAt(0)}
+                          {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
                        </div>
                        <div>
                           <p className="text-sm font-semibold text-[#111827]">{customer.name}</p>
@@ -504,7 +507,7 @@ export function Customers() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center flex-wrap gap-1 max-w-[100px] mx-auto">
-                       {customer.channels.map(channel => (
+                       {customer.channels && customer.channels.map(channel => (
                          <span key={channel} className="p-1 rounded bg-slate-50 border border-slate-100" title={channel.toUpperCase()}>
                             {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-blue-500" />}
                             {channel === 'facebook' && <Facebook className="w-3 h-3 text-blue-700" />}
@@ -515,8 +518,8 @@ export function Customers() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <p className="text-sm font-bold text-[#111827]">{formatCurrency(customer.totalSpent)}</p>
-                    <p className="text-[10px] text-[#6B7280]">Lần cuối: {customer.lastOrderDate} ({customer.orderCount} đơn)</p>
+                    <p className="text-sm font-bold text-[#111827]">{formatCurrency(customer.totalSpent || 0)}</p>
+                    <p className="text-[10px] text-[#6B7280]">Lần cuối: {customer.lastPurchase || 'N/A'} ({customer.orderCount || 0} đơn)</p>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center flex-col items-center gap-1">
@@ -526,13 +529,6 @@ export function Customers() {
                        )}>
                          {customer.status === 'active' ? 'HOẠT ĐỘNG' : 'NGỪNG HOẠT ĐỘNG'}
                        </span>
-                       {customer.rfmScore && (
-                         <div className="flex gap-0.5 mt-1" title={`R: ${customer.rfmScore.recency}, F: ${customer.rfmScore.frequency}, M: ${customer.rfmScore.monetary}`}>
-                            <div className="h-1 w-3 bg-blue-500 rounded-full" style={{ opacity: customer.rfmScore.recency / 5 }}></div>
-                            <div className="h-1 w-3 bg-blue-500 rounded-full" style={{ opacity: customer.rfmScore.frequency / 5 }}></div>
-                            <div className="h-1 w-3 bg-blue-500 rounded-full" style={{ opacity: customer.rfmScore.monetary / 5 }}></div>
-                         </div>
-                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">

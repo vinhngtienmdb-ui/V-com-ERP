@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calculator, 
   FileText, 
@@ -17,32 +17,30 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { JournalEntry } from '../types/erp';
-
-const MOCK_JOURNAL: JournalEntry[] = [
-  {
-    id: 'JE-001',
-    date: '2024-03-15',
-    voucherNumber: 'PKT-001/03',
-    description: 'Bán hàng cho KH Nguyễn Văn A - Đơn ORD-001',
-    entries: [
-      { id: '1', accountCode: '131', accountName: 'Phải thu khách hàng', debit: 2500000, credit: 0, date: '2024-03-15', description: 'Ghi nợ 131' },
-      { id: '2', accountCode: '5111', accountName: 'Doanh thu bán hàng', debit: 0, credit: 2500000, date: '2024-03-15', description: 'Ghi có 5111' }
-    ]
-  },
-  {
-    id: 'JE-002',
-    date: '2024-03-15',
-    voucherNumber: 'PKT-002/03',
-    description: 'Thu tiền gửi ngân hàng phí hoa hồng Seller - T3/2024',
-    entries: [
-      { id: '3', accountCode: '112', accountName: 'Tiền gửi ngân hàng', debit: 45000000, credit: 0, date: '2024-03-15', description: 'Ghi nợ 112' },
-      { id: '4', accountCode: '5113', accountName: 'Doanh thu phí dịch vụ sàn', debit: 0, credit: 45000000, date: '2024-03-15', description: 'Ghi có 5113' }
-    ]
-  }
-];
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 export function Finance() {
   const [activeTab, setActiveTab] = useState<'journal' | 'ledger' | 'reports'>('journal');
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(db, 'transactions'), orderBy('createdAt', 'desc'), limit(50));
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        date: doc.data().createdAt?.toDate().toLocaleDateString('vi-VN') || '...'
+      }));
+      setTransactions(data);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -66,25 +64,25 @@ export function Finance() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu Thuần (Net Revenue)</p>
-           <div className="text-2xl font-bold text-[#111827]">{formatCurrency(1245000000)}</div>
+           <div className="text-2xl font-bold text-[#111827]">{formatCurrency(totalIncome)}</div>
            <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
               <TrendingUp className="w-3 h-3" /> +12.5% so với tháng trước
            </div>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lợi nhuận gộp (Gross Profit)</p>
-           <div className="text-2xl font-bold text-[#111827]">{formatCurrency(450500000)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Biên lợi nhuận: 36.2%</p>
+           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi phí (Total Expense)</p>
+           <div className="text-2xl font-bold text-[#EF4444]">{formatCurrency(totalExpense)}</div>
+           <p className="text-[10px] text-[#6B7280] mt-1">Biên chi phí: {totalIncome ? ((totalExpense/totalIncome)*100).toFixed(1) : 0}%</p>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tiền mặt & Ngân hàng</p>
-           <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(2850000000)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Khoản tương đương tiền sẵn có</p>
+           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lợi nhuận ròng (Net Profit)</p>
+           <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(totalIncome - totalExpense)}</div>
+           <p className="text-[10px] text-[#6B7280] mt-1">Lợi nhuận sẵn dụng</p>
         </div>
         <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Thuế phải nộp (VAT/CIT)</p>
-           <div className="text-2xl font-bold text-[#EF4444]">{formatCurrency(125400000)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Hạn nộp: 20/04/2024</p>
+           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Thuế phải nộp (VAT/CIT Est.)</p>
+           <div className="text-2xl font-bold text-[#F59E0B]">{formatCurrency(totalIncome * 0.1)}</div>
+           <p className="text-[10px] text-[#6B7280] mt-1">Tạm tính (10%)</p>
         </div>
       </div>
 
@@ -110,7 +108,7 @@ export function Finance() {
 
         {activeTab === 'journal' && (
            <div className="p-0 animate-in fade-in duration-300">
-              <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+              <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
                 <div className="flex gap-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
@@ -133,44 +131,35 @@ export function Finance() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thời gian & Chứng từ</th>
+                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest w-48">Thời gian</th>
                       <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nội dung diễn giải</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Tài khoản (Nợ/Có)</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền Nợ</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền Có</th>
+                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
+                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Thu / Chi (VND)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F3F4F6]">
-                    {MOCK_JOURNAL.map((journal) => (
-                      <React.Fragment key={journal.id}>
-                        {journal.entries.map((entry, idx) => (
-                          <tr key={entry.id} className={cn("hover:bg-[#F9FAFB] group transition-colors", idx === 0 ? "border-t border-[#F3F4F6]" : "")}>
-                            <td className="px-6 py-4">
-                               {idx === 0 && (
-                                 <>
-                                   <p className="text-xs font-bold text-[#111827]">{journal.date}</p>
-                                   <p className="text-[10px] font-mono text-[#2563EB] mt-0.5">{journal.voucherNumber}</p>
-                                 </>
-                               )}
-                            </td>
-                            <td className="px-6 py-4 max-w-xs">
-                               <p className="text-xs text-[#4B5563] truncate">{entry.description}</p>
-                            </td>
-                            <td className="px-6 py-4">
-                               <div className="flex items-center gap-2">
-                                  <span className="text-xs font-mono font-bold text-[#111827] w-12">{entry.accountCode}</span>
-                                  <span className="text-[10px] text-[#6B7280] truncate">{entry.accountName}</span>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                               <span className="text-xs font-bold text-[#111827]">{entry.debit > 0 ? formatCurrency(entry.debit) : ''}</span>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                               <span className="text-xs font-bold text-[#111827]">{entry.credit > 0 ? formatCurrency(entry.credit) : ''}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </React.Fragment>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id} className="hover:bg-[#F9FAFB] group transition-colors">
+                        <td className="px-6 py-4">
+                           <div className="text-xs font-bold text-[#111827]">{tx.date}</div>
+                        </td>
+                        <td className="px-6 py-4 max-w-xs">
+                           <p className="text-xs text-[#4B5563] truncate font-medium">{tx.description}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                           <span className="px-2.5 py-1 bg-slate-100 text-[#6B7280] text-[9px] font-bold uppercase rounded-md tracking-wider">
+                              {tx.category}
+                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                           <span className={cn(
+                             "text-xs font-bold",
+                             tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
+                           )}>
+                              {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                           </span>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>

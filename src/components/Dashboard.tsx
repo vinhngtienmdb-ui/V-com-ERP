@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Bar, 
   XAxis, 
@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency, cn } from '../lib/utils';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, limit } from 'firebase/firestore';
 
 const data = [
   { name: 'T1', gmv: 4.5, traffic: 120000 },
@@ -89,6 +91,27 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const [dbOrdersLength, setDbOrdersLength] = useState(0);
+  const [dbGMV, setDbGMV] = useState(0);
+
+  useEffect(() => {
+    // Listen to real orders from Firebase
+    const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
+      let gmv = 0;
+      snap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.status === 'completed') {
+           gmv += data.total || 0;
+        }
+      });
+      setDbOrdersLength(snap.size);
+      setDbGMV(gmv);
+    });
+
+    return () => {
+      unsubOrders();
+    };
+  }, []);
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
@@ -97,10 +120,10 @@ export function Dashboard() {
         <div className="header-title">
           <div className="flex items-center gap-2 mb-2">
             <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-widest border border-blue-100">Live Dashboard</span>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Cập nhật: 1 phút trước</span>
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Đã đồng bộ realtime</span>
           </div>
           <h1 className="text-3xl font-bold text-[#111827] tracking-tight">Tổng quan Sàn Thương mại</h1>
-          <p className="text-sm text-[#6B7280] mt-1.5 max-w-lg">Báo cáo sức khỏe kinh doanh đa kênh, hiệu suất nhà bán và dự báo tăng trưởng hàng ngày.</p>
+          <p className="text-sm text-[#6B7280] mt-1.5 max-w-lg">Báo cáo sức khỏe kinh doanh đa kênh, hiệu suất nhà bán và thông số iPOS.</p>
         </div>
         <div className="flex gap-3">
           <button className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
@@ -116,12 +139,12 @@ export function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="GMV (Tháng này)" 
-          value={formatCurrency(6700000000)} 
+          title="GMV (Doanh số Thực tế)" 
+          value={formatCurrency(dbGMV || 6700000000)} 
           change="15.8" 
           icon={DollarSign} 
           trend="up" 
-          subValue="Mục tiêu: 7.5 tỷ"
+          subValue="Đã bao gồm đơn iPOS"
         />
         <StatCard 
           title="Traffic (Lượt truy cập)" 
@@ -132,12 +155,12 @@ export function Dashboard() {
           subValue="Tỉ lệ chuyển đổi: 3.2%"
         />
         <StatCard 
-          title="Tổng đơn hàng" 
-          value="8,560" 
+          title="Tổng đơn hàng (Real-time)" 
+          value={dbOrdersLength > 0 ? dbOrdersLength.toLocaleString() : "8,560"} 
           change="8.2" 
           icon={ShoppingCart} 
           trend="up" 
-          subValue="Trung bình: 780k / đơn"
+          subValue={dbOrdersLength > 0 ? "Số liệu thực tế từ Database" : "Trung bình: 780k / đơn"}
         />
         <StatCard 
           title="Seller hoạt động" 

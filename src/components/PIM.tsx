@@ -31,61 +31,53 @@ import {
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-
-const MOCK_PIM_PRODUCTS: Product[] = [
-  {
-    id: 'PRD-001',
-    name: 'iPhone 15 Pro Max 256GB',
-    sku: 'AAPL-I15PM-256',
-    price: 34990000,
-    costPrice: 28000000,
-    hiddenCosts: 500000,
-    margin: 18.5,
-    profit: 6490000,
-    stock: 45,
-    category: 'Điện thoại',
-    brand: 'Apple',
-    sellerName: 'Mobile World',
-    status: 'in_stock',
-    image: 'https://picsum.photos/seed/iphone/100/100'
-  },
-  {
-    id: 'PRD-002',
-    name: 'Tủ lạnh Samsung Inverter 400L',
-    sku: 'SS-RF-400I',
-    price: 15500000,
-    costPrice: 12000000,
-    hiddenCosts: 1200000,
-    margin: 14.8,
-    profit: 2300000,
-    stock: 8,
-    category: 'Gia dụng',
-    brand: 'Samsung',
-    sellerName: 'Electronics Pro',
-    status: 'pending_approval',
-    image: 'https://picsum.photos/seed/fridge/100/100'
-  },
-  {
-    id: 'PRD-003',
-    name: 'Áo thun Cotton Uniqlo',
-    sku: 'UQ-TSH-WHT-L',
-    price: 399000,
-    costPrice: 150000,
-    hiddenCosts: 20000,
-    margin: 57.3,
-    profit: 229000,
-    stock: 120,
-    category: 'Thời trang',
-    brand: 'Uniqlo',
-    sellerName: 'Fashion Hub',
-    status: 'in_stock',
-    image: 'https://picsum.photos/seed/shirt/100/100'
-  }
-];
+import { db, serverTimestamp, handleFirestoreError } from '../lib/firebase';
+import { 
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  query, 
+  orderBy, 
+  limit,
+  doc,
+  updateDoc,
+  deleteDoc,
+  where
+} from 'firebase/firestore';
 
 export function PIM() {
-  const [products, setProducts] = useState<Product[]>(MOCK_PIM_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock'>('all');
+  
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, 'products'), (snap) => {
+      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      setProducts(data);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const addProduct = async (productData: Partial<Product>) => {
+    try {
+      await addDoc(collection(db, 'products'), {
+        ...productData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, 'create', 'products');
+    }
+  };
+
+  const deleteProduct = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (error) {
+      handleFirestoreError(error, 'delete', 'products');
+    }
+  };
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterBrand, setFilterBrand] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');

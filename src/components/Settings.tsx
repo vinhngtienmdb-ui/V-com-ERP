@@ -20,7 +20,8 @@ import {
   Target,
   MapPin,
   Search,
-  Edit2
+  Edit2,
+  Store
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
@@ -128,6 +129,7 @@ export function SettingsPage() {
              { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
              { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
              { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
+             { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Building2 },
            ].map((tab) => (
              <button 
                 key={tab.id}
@@ -437,6 +439,66 @@ export function SettingsPage() {
                  </div>
                </div>
              </div>
+           )}
+
+           {activeTab === 'stores' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div className="flex justify-between items-center">
+                       <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                          <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
+                       </h3>
+                       <button className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-100 flex items-center gap-2">
+                          <Plus className="w-4 h-4" /> Thêm Cửa hàng
+                       </button>
+                    </div>
+
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
+                       <h4 className="font-bold text-indigo-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
+                       <p className="text-sm text-indigo-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-white p-3 rounded-lg shadow-sm border border-indigo-50 flex justify-between items-center">
+                             <div className="space-y-1">
+                                <span className="text-[10px] uppercase font-bold text-slate-400">Chi nhánh Quận 1</span>
+                                <p className="font-mono text-sm text-slate-900">sg1.v-erp.com</p>
+                             </div>
+                             <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg shadow-sm border border-indigo-50 flex justify-between items-center">
+                             <div className="space-y-1">
+                                <span className="text-[10px] uppercase font-bold text-slate-400">Chi nhánh Cầu Giấy</span>
+                                <p className="font-mono text-sm text-slate-900">hn1.v-erp.com</p>
+                             </div>
+                             <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+                          </div>
+                       </div>
+                    </div>
+
+                    <h4 className="font-bold text-slate-800 border-b border-slate-100 pb-2">Danh sách Cửa hàng & Nhân sự</h4>
+                    
+                    <div className="space-y-4">
+                       {[
+                         { id: 'STORE_001', name: 'Chi nhánh Quận 1 - Sài Gòn', address: '123 Lê Lợi, Q.1, TP.HCM', staff: 5, manager: 'Nguyễn Văn A' },
+                         { id: 'STORE_002', name: 'Chi nhánh Cầu Giấy - Hà Nội', address: '45 Xuân Thủy, Cầu Giấy, HN', staff: 8, manager: 'Trần Thị B' },
+                       ].map(store => (
+                         <div key={store.id} className="border border-slate-200 rounded-xl p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
+                            <div>
+                               <h5 className="font-bold text-slate-900 text-lg flex items-center gap-2">{store.name}</h5>
+                               <p className="text-sm text-slate-500 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
+                               <div className="flex gap-4 mt-3">
+                                  <span className="text-xs bg-slate-200/50 text-slate-600 px-2 py-1 rounded-md font-medium">Quản lý: <span className="font-bold">{store.manager}</span></span>
+                                  <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
+                               </div>
+                            </div>
+                            <div className="flex gap-2">
+                               <button className="p-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-100"><Edit2 className="w-4 h-4" /></button>
+                               <button className="p-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"><Trash2 className="w-4 h-4" /></button>
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+              </div>
            )}
         </div>
       </div>

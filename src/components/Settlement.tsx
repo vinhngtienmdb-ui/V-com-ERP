@@ -4,19 +4,41 @@ import {
   CreditCard, 
   Wallet, 
   CheckCircle2, 
-  Clock, 
-  ArrowUpRight, 
-  ArrowDownRight, 
   Search, 
   Filter, 
   Download, 
   RefreshCcw,
   ShieldCheck,
-  Building2,
-  Receipt
+  Receipt,
+  Truck,
+  AlertCircle
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
-import { SettlementRow, WithdrawalRequest, EInvoice } from '../types/erp';
+import { SettlementRow, WithdrawalRequest } from '../types/erp';
+
+const MOCK_COD_SETTLEMENTS = [
+  {
+    id: 'COD-GHTK-0301',
+    carrier: 'Giao Hàng Tiết Kiệm',
+    period: '01/04 - 07/04',
+    totalOrders: 1450,
+    expectedCod: 345000000,
+    transferredCod: 345000000,
+    shippingFee: 28500000,
+    status: 'matched'
+  },
+  {
+    id: 'COD-GHN-0301',
+    carrier: 'Giao Hàng Nhanh',
+    period: '01/04 - 07/04',
+    totalOrders: 842,
+    expectedCod: 124500000,
+    transferredCod: 120000000,
+    shippingFee: 15600000,
+    status: 'discrepancy',
+    note: 'Lệch 4.5M (Đã tạo Ticket xử lý)'
+  }
+];
 
 const MOCK_SETTLEMENTS: SettlementRow[] = [
   {
@@ -67,7 +89,7 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
 ];
 
 export function SettlementManagement() {
-  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice'>('settlement');
+  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -117,6 +139,7 @@ export function SettlementManagement() {
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
+             { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
              { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
              { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
            ].map((tab) => (
@@ -174,6 +197,16 @@ export function SettlementManagement() {
                   <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái duyệt</th>
                 </tr>
               )}
+              {activeTab === 'cod' && (
+                <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đơn vị Vận chuyển</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát / Số ĐH</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng Cước phí</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">COD Hệ thống ghi nhận</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">COD Thực chuyển</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái Kế toán</th>
+                </tr>
+              )}
             </thead>
             <tbody className="divide-y divide-[#F3F4F6]">
               {activeTab === 'settlement' && MOCK_SETTLEMENTS.map((stl) => (
@@ -225,6 +258,40 @@ export function SettlementManagement() {
                            </span>
                         </div>
                      )}
+                  </td>
+                </tr>
+              ))}
+              {activeTab === 'cod' && MOCK_COD_SETTLEMENTS.map((cod) => (
+                <tr key={cod.id} className="hover:bg-[#F9FAFB] group transition-colors">
+                  <td className="px-6 py-4">
+                     <p className="text-sm font-bold text-[#111827]">{cod.carrier}</p>
+                     <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{cod.id}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                     <p className="text-xs font-bold text-[#4B5563]">{cod.period}</p>
+                     <p className="text-[10px] text-[#6B7280]">Tổng {cod.totalOrders} đơn</p>
+                  </td>
+                  <td className="px-6 py-4 text-right font-semibold text-slate-700">
+                     {formatCurrency(cod.shippingFee)}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                     <p className="text-sm font-bold text-slate-800">{formatCurrency(cod.expectedCod)}</p>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                     <p className="text-sm font-bold text-[#10B981]">{formatCurrency(cod.transferredCod)}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                     <div className="flex justify-center">
+                        {cod.status === 'matched' ? (
+                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> ĐÃ KHỚP COD
+                           </span>
+                        ) : (
+                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 flex items-center gap-1" title={cod.note}>
+                              <AlertCircle className="w-3 h-3" /> LỆCH ĐỐI SOÁT
+                           </span>
+                        )}
+                     </div>
                   </td>
                 </tr>
               ))}

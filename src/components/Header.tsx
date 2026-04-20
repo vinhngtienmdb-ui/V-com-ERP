@@ -1,11 +1,15 @@
 import React from 'react';
 import { Search, Bell, User } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext';
+
 export function Header() {
+  const { staffInfo } = useAuth();
+  
   return (
     <header className="h-20 px-4 md:px-8 flex items-center justify-between sticky top-0 z-10 bg-slate-50/80 backdrop-blur-md">
       <div className="header-title">
-        <h1 className="text-xl md:text-2xl font-semibold text-[#111827]">Chào buổi sáng, Admin</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-[#111827]">Chào buổi sáng, {staffInfo?.name || 'Nhân viên'}</h1>
         <p className="text-xs md:text-sm text-[#6B7280] mt-1 hidden sm:block">Hệ thống vận hành ổn định. Có 12 đơn hàng mới cần xử lý.</p>
       </div>
 
