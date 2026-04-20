@@ -132,6 +132,44 @@ const HR_METRICS_DATA = [
   { month: 'T6', attrition: 1.2, hiring: 25 },
 ];
 
+// --- ATTENDANCE INSTALLATION SETTINGS ---
+export type AttendanceSetting = {
+  method: 'gps' | 'wifi' | 'face' | 'qr' | 'device';
+  enabled: boolean;
+  config: Record<string, any>;
+};
+
+const INITIAL_ATTENDANCE_SETTINGS: AttendanceSetting[] = [
+  { method: 'gps', enabled: true, config: { radius: 100 } },
+  { method: 'wifi', enabled: false, config: { ssid: '' } },
+  { method: 'face', enabled: true, config: { minMatch: 0.8 } },
+  { method: 'qr', enabled: true, config: { refreshRate: 30 } },
+  { method: 'device', enabled: true, config: { ip: '' } },
+];
+// --- PAYROLL INTELLIGENT ENGINE ---
+const autoCalculatePayroll = (employee: Employee, attendance: AttendanceRecord[], kpi: KPI[]) => {
+  const baseSalary = 15000000;
+  const attendanceRecords = attendance.filter(a => a.employeeId === employee.id);
+  const overtimeHours = attendanceRecords.reduce((sum, a) => sum + a.overtimeHours, 0);
+  const lateCount = attendanceRecords.filter(a => a.status === 'late').length;
+  
+  const empKPI = kpi.find(k => k.employeeId === employee.id);
+  const kpiBonus = empKPI ? (empKPI.current >= empKPI.target ? 2000000 : 0) : 0;
+  
+  const bonus = (overtimeHours * 100000) + kpiBonus;
+  const deduction = lateCount * 500000;
+
+  return {
+    baseSalary,
+    allowance: 2000000,
+    bonus,
+    deduction,
+    pitAmount: (baseSalary + 2000000 + bonus - deduction) * 0.05,
+    insuranceAmount: baseSalary * 0.1,
+    netSalary: baseSalary + 2000000 + bonus - deduction - ((baseSalary + 2000000 + bonus - deduction) * 0.05) - (baseSalary * 0.1)
+  };
+};
+
 const HR_MODULE_GROUPS = [
   {
     title: 'Hành chính & Nhân sự',
@@ -139,6 +177,7 @@ const HR_MODULE_GROUPS = [
       { id: 'personnel', label: 'Hồ sơ nhân sự', desc: 'Quản lý thông tin & lưu trữ.', icon: Users, color: 'blue' },
       { id: 'skills', label: 'Skill Matrix', desc: 'Sơ đồ kỹ năng & AI Scan.', icon: BrainCircuit, color: 'emerald' },
       { id: 'attendance', label: 'Chấm công GPS', desc: 'Quản lý chấm công đa nền tảng.', icon: MapPin, color: 'orange' },
+      { id: 'attendance_config', label: 'Cài đặt Chấm công', desc: 'Cấu hình GPS, Wifi, Face, QR.', icon: Settings, color: 'orange' },
       { id: 'leave', label: 'Quản lý nghỉ phép', desc: 'Quy trình phép, công tác, OT.', icon: CalendarOff, color: 'indigo' },
       { id: 'kpi', label: 'KPI & Hiệu suất', desc: 'Đánh giá KPI & OKR.', icon: TrendingUp, color: 'purple' },
       { id: 'payroll', label: 'Lương & Payslip', desc: 'Bảng lương, phụ cấp.', icon: Wallet, color: 'rose' },
@@ -201,6 +240,15 @@ function getColorClasses(color: string) {
 
 export function HumanResources() {
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
+
+  const toggleAttendanceSetting = (method: string) => {
+    setAttendanceSettings(prev => prev.map(s => s.method === method ? { ...s, enabled: !s.enabled } : s));
+  };
+
+  const updateSettingConfig = (method: string, key: string, value: any) => {
+    setAttendanceSettings(prev => prev.map(s => s.method === method ? { ...s, config: { ...s.config, [key]: value } } : s));
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
@@ -433,7 +481,7 @@ export function HumanResources() {
            </button>
         </div>
         
-        {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'payroll'].includes(activeTab) ? (
+        {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'payroll', 'attendance_config'].includes(activeTab) ? (
           <>
             <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center px-6">
               <div className="flex gap-4">
@@ -452,6 +500,20 @@ export function HumanResources() {
               
               <div className="flex gap-3">
                  {activeTab === 'payroll' && (
+                    <button 
+                      onClick={() => {
+                        const results = MOCK_EMPLOYEES.map(emp => ({
+                          employeeId: emp.id,
+                          ...autoCalculatePayroll(emp, [], MOCK_KPIs)
+                        }));                
+                        console.table(results);                
+                        alert("Đã tính lương tự động thành công (Kiểm tra console/table)!");
+                      }}
+                      className="bg-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
+                       <Zap className="w-4 h-4" /> Tính lương AI (Batch)
+                    </button>
+                 )}
+                 {activeTab === 'payroll' && (
                     <button className="bg-[#111827] text-white px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 transition-all">
                        <BadgeDollarSign className="w-4 h-4 text-blue-400" /> Xuất phiếu lương đồng loạt
                     </button>
@@ -460,259 +522,354 @@ export function HumanResources() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
-                    {activeTab === 'personnel' && (
-                      <>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Họ tên & ID</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phòng ban / Vị trí</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Loại hợp đồng</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Sentiment & Leave</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày tham gia</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
-                  </>
-                )}
-                {activeTab === 'skills' && (
-                  <>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân sự</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỹ năng cốt lõi</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Skill Coverage</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đề xuất đào tạo</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Action</th>
-                  </>
-                )}
-                {activeTab === 'leave' && (
-                  <>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Số ngày nghỉ phép</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Đã sử dụng</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Chờ duyệt</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
-                  </>
-                )}
-                {activeTab === 'kpi' && (
-                  <>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chỉ số KPI</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Mục tiêu</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Hiện tại</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tiến độ</th>
-                  </>
-                )}
-                {activeTab === 'sentiment' && (
-                  <>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cảm xúc gần đây</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Phân tích AI</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Gợi ý</th>
-                    <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hành động</th>
-                  </>
-                )}
-                {(activeTab === 'attendance' || activeTab === 'payroll') && (
-                   <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest" colSpan={5}>
-                      {activeTab === 'attendance' ? 'Dữ liệu chấm công GPS' : 'Danh sách lương tháng'}
-                   </th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#F3F4F6]">
-              {activeTab === 'personnel' && MOCK_EMPLOYEES.map((emp) => (
-                <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-5">
-                     <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
-                     <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
-                  </td>
-                  <td className="px-6 py-5">
-                     <p className="text-xs font-bold text-[#111827] tracking-tight">{emp.department}</p>
-                     <p className="text-[10px] text-[#6B7280] uppercase opacity-70 font-medium">{emp.position}</p>
-                  </td>
-                  <td className="px-6 py-5 font-mono">
-                     <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg uppercase">
-                       {emp.employeeType.replace('_', ' ')}
-                     </span>
-                  </td>
-                  <td className="px-6 py-5">
-                    <div className="flex flex-col gap-1 text-xs">
-                      <div className="flex items-center gap-1.5 font-bold">
-                        {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1"><Smile className="w-3.5 h-3.5"/> Good</span>}
-                        {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1"><MoreVertical className="w-3.5 h-3.5"/> OK</span>}
-                        {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5"/> High Risk</span>}
+              <div className="overflow-x-auto">
+                {activeTab === 'attendance_config' ? (
+                <div className="p-8 space-y-6">
+                  <h2 className="text-lg font-bold flex items-center gap-2"><Settings className="w-5 h-5"/> Cài đặt Chấm công</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
+                    {attendanceSettings.map(setting => (
+                      <div key={setting.method} className="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col gap-4 shadow-sm relative overflow-hidden group">
+                         <div className={cn("absolute top-0 left-0 w-1 h-full transition-all duration-300", setting.enabled ? "bg-emerald-500" : "bg-slate-200")}></div>
+                         <div className="flex justify-between items-start pl-2">
+                             <div>
+                                <p className="font-bold text-slate-800 text-base">{
+                                   setting.method === 'gps' ? 'Chấm công GPS (Địa điểm)' :
+                                   setting.method === 'wifi' ? 'Chấm công qua mạng Wi-Fi' :
+                                   setting.method === 'face' ? 'Chấm công nhận diện khuôn mặt' :
+                                   setting.method === 'qr' ? 'Chấm công bằng mã QR động' :
+                                   'Đồng bộ từ máy chấm công'
+                                }</p>
+                                <p className="text-slate-500 text-xs mt-1">Phương thức: <span className="uppercase font-mono font-bold text-indigo-600">{setting.method}</span></p>
+                             </div>
+                             <button
+                               onClick={() => toggleAttendanceSetting(setting.method)}
+                               className={cn(
+                                 "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500/20",
+                                 setting.enabled ? "bg-emerald-500" : "bg-slate-200"
+                               )}
+                             >
+                                <span className={cn(
+                                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
+                                  setting.enabled ? "translate-x-6" : "translate-x-1"
+                                )} />
+                             </button>
+                         </div>
+                         
+                         {setting.enabled && (
+                            <div className="pl-2 pt-4 border-t border-slate-100 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                               {setting.method === 'gps' && (
+                                  <div className="flex flex-col gap-1.5">
+                                     <label className="text-xs font-bold text-slate-600">Bán kính cho phép (mét)</label>
+                                     <input 
+                                       type="number" 
+                                       value={setting.config.radius}
+                                       onChange={(e) => updateSettingConfig('gps', 'radius', Number(e.target.value))}
+                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
+                                     />
+                                     <p className="text-[10px] text-slate-500 mt-1">Số mét tối đa cho phép nhân viên cách vị trí chuẩn.</p>
+                                  </div>
+                               )}
+                               {setting.method === 'wifi' && (
+                                  <div className="flex flex-col gap-1.5">
+                                     <label className="text-xs font-bold text-slate-600">SSID Mạng Wi-Fi (Tên hoặc MAC)</label>
+                                     <input 
+                                       type="text" 
+                                       placeholder="Ví dụ: CongTy_HQ_5G"
+                                       value={setting.config.ssid}
+                                       onChange={(e) => updateSettingConfig('wifi', 'ssid', e.target.value)}
+                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-medium"
+                                     />
+                                  </div>
+                               )}
+                               {setting.method === 'face' && (
+                                  <div className="flex flex-col gap-1.5">
+                                     <label className="text-xs font-bold text-slate-600">Ngưỡng khớp khuôn mặt (0.1 - 1.0)</label>
+                                     <input 
+                                       type="number" 
+                                       step="0.1"
+                                       min="0.1"
+                                       max="1.0"
+                                       value={setting.config.minMatch}
+                                       onChange={(e) => updateSettingConfig('face', 'minMatch', Number(e.target.value))}
+                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
+                                     />
+                                     <p className="text-[10px] text-slate-500 mt-1">* 0.8 là mức lý tưởng để kích hoạt AI Spoofing Guard.</p>
+                                  </div>
+                               )}
+                               {setting.method === 'qr' && (
+                                  <div className="flex flex-col gap-1.5">
+                                     <label className="text-xs font-bold text-slate-600">Thời gian làm mới mã (giây)</label>
+                                     <input 
+                                       type="number" 
+                                       value={setting.config.refreshRate}
+                                       onChange={(e) => updateSettingConfig('qr', 'refreshRate', Number(e.target.value))}
+                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
+                                     />
+                                  </div>
+                               )}
+                               {setting.method === 'device' && (
+                                  <div className="flex flex-col gap-1.5">
+                                     <label className="text-xs font-bold text-slate-600">IP Thiết bị</label>
+                                     <input 
+                                       type="text" 
+                                       placeholder="Ví dụ: 192.168.1.100"
+                                       value={setting.config.ip}
+                                       onChange={(e) => updateSettingConfig('device', 'ip', e.target.value)}
+                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
+                                     />
+                                     <div className="flex justify-start mt-2">
+                                        <button className="bg-slate-900 text-white text-[10px] uppercase tracking-widest font-bold px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors shadow-md">Ping Test</button>
+                                     </div>
+                                  </div>
+                               )}
+                            </div>
+                         )}
                       </div>
-                      {emp.leaveBalance && (
-                        <p className="text-[10px] text-[#6B7280] mt-1">Leaves: <span className={cn("font-bold text-[#111827]", emp.leaveBalance.total - emp.leaveBalance.used <= 2 && "text-red-600")}>{emp.leaveBalance.total - emp.leaveBalance.used} left</span></p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 text-xs text-[#4B5563] font-medium">{emp.joinDate}</td>
-                  <td className="px-6 py-5">
-                    <div className="flex justify-center">
-                       <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold shadow-sm inline-flex items-center gap-1.5 uppercase tracking-wide">
-                          <CheckCircle2 className="w-3 h-3" /> Hoạt động
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
+                      {activeTab === 'personnel' && (
+                        <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Họ tên & ID</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phòng ban / Vị trí</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Loại hợp đồng</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Sentiment & Leave</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày tham gia</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+                    </>
+                  )}
+                  {activeTab === 'skills' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân sự</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỹ năng cốt lõi</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Skill Coverage</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đề xuất đào tạo</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Action</th>
+                    </>
+                  )}
+                  {activeTab === 'leave' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Số ngày nghỉ phép</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Đã sử dụng</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Chờ duyệt</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+                    </>
+                  )}
+                  {activeTab === 'kpi' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chỉ số KPI</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Mục tiêu</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Hiện tại</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tiến độ</th>
+                    </>
+                  )}
+                  {activeTab === 'sentiment' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cảm xúc gần đây</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Phân tích AI</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Gợi ý</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hành động</th>
+                    </>
+                  )}
+                  {(activeTab === 'attendance' || activeTab === 'payroll') && (
+                     <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest" colSpan={5}>
+                        {activeTab === 'attendance' ? 'Dữ liệu chấm công GPS' : 'Danh sách lương tháng'}
+                     </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F3F4F6]">
+                {activeTab === 'personnel' && MOCK_EMPLOYEES.map((emp) => (
+                  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5">
+                       <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
+                       <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
+                    </td>
+                    <td className="px-6 py-5">
+                       <p className="text-xs font-bold text-[#111827] tracking-tight">{emp.department}</p>
+                       <p className="text-[10px] text-[#6B7280] uppercase opacity-70 font-medium">{emp.position}</p>
+                    </td>
+                    <td className="px-6 py-5 font-mono">
+                       <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg uppercase">
+                         {emp.employeeType.replace('_', ' ')}
                        </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {activeTab === 'skills' && MOCK_EMPLOYEES.map((emp) => (
-                <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-5 font-bold text-sm text-[#111827]">{emp.fullName}</td>
-                  <td className="px-6 py-5">
-                     <div className="flex gap-2">
-                        {emp.skills?.map((s, idx) => (
-                          <span key={idx} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg border border-blue-100">
-                             {s.name}
-                          </span>
-                        ))}
-                     </div>
-                  </td>
-                  <td className="px-6 py-5">
-                     <div className="flex flex-col items-center gap-1">
-                        <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                           <div className="h-full bg-blue-500" style={{ width: `${(emp.skills?.[0]?.level || 50)}%` }} />
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-1 text-xs">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1"><Smile className="w-3.5 h-3.5"/> Good</span>}
+                          {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1"><MoreVertical className="w-3.5 h-3.5"/> OK</span>}
+                          {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5"/> High Risk</span>}
                         </div>
-                        <span className="text-[10px] font-bold text-slate-400">{(emp.skills?.[0]?.level || 50)}% Mastered</span>
-                     </div>
-                  </td>
-                  <td className="px-6 py-5 text-[10px] font-bold text-emerald-600 italic">
-                     AI Suggested: Advanced Analytics
-                  </td>
-                  <td className="px-6 py-5 text-right">
-                     <button className="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800 transition-all uppercase tracking-widest shadow-md">Đề cử Training</button>
-                  </td>
-                </tr>
-              ))}
-              {activeTab === 'payroll' && MOCK_PAYROLL.map((pay) => (
-                <tr key={pay.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-5">
-                     <p className="text-sm font-bold text-[#111827]">{pay.employeeName}</p>
-                     <p className="text-[10px] text-[#6B7280] uppercase tracking-widest font-bold opacity-40">Kỳ lương: {pay.month}</p>
-                  </td>
-                  <td className="px-6 py-5 text-right font-mono font-bold text-xs">{formatCurrency(pay.baseSalary)}</td>
-                  <td className="px-6 py-5 text-right">
-                     <p className="text-xs font-bold text-emerald-600">+{formatCurrency(pay.allowance + pay.bonus)}</p>
-                  </td>
-                  <td className="px-6 py-5 text-right text-xs text-red-500 font-bold">-{formatCurrency(pay.pitAmount + pay.insuranceAmount)}</td>
-                  <td className="px-6 py-5 text-right">
-                     <p className="text-sm font-bold text-[#2563EB]">{formatCurrency(pay.netSalary)}</p>
-                  </td>
-                  <td className="px-6 py-5">
-                     <div className="flex justify-center">
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm",
-                          pay.status === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
-                        )}>
-                           {pay.status === 'paid' ? 'ĐÃ PHÁT LƯƠNG' : 'CHỜ DUYỆT CHI'}
-                        </span>
-                     </div>
-                  </td>
-                </tr>
-              ))}
-              {activeTab === 'leave' && (
-                <>
-                  {MOCK_EMPLOYEES.map(emp => (
-                    <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                        {emp.leaveBalance && (
+                          <p className="text-[10px] text-[#6B7280] mt-1">Leaves: <span className={cn("font-bold text-[#111827]", emp.leaveBalance.total - emp.leaveBalance.used <= 2 && "text-red-600")}>{emp.leaveBalance.total - emp.leaveBalance.used} left</span></p>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-xs text-[#4B5563] font-medium">{emp.joinDate}</td>
+                    <td className="px-6 py-5">
+                      <div className="flex justify-center">
+                         <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold shadow-sm inline-flex items-center gap-1.5 uppercase tracking-wide">
+                            <CheckCircle2 className="w-3 h-3" /> Hoạt động
+                         </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {activeTab === 'skills' && MOCK_EMPLOYEES.map((emp) => (
+                  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5 font-bold text-sm text-[#111827]">{emp.fullName}</td>
+                    <td className="px-6 py-5">
+                       <div className="flex gap-2">
+                          {emp.skills?.map((s, idx) => (
+                            <span key={idx} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg border border-blue-100">
+                               {s.name}
+                            </span>
+                          ))}
+                       </div>
+                    </td>
+                    <td className="px-6 py-5">
+                       <div className="flex flex-col items-center gap-1">
+                          <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                             <div className="h-full bg-blue-500" style={{ width: `${(emp.skills?.[0]?.level || 50)}%` }} />
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-400">{(emp.skills?.[0]?.level || 50)}% Mastered</span>
+                       </div>
+                    </td>
+                    <td className="px-6 py-5 text-[10px] font-bold text-emerald-600 italic">
+                       AI Suggested: Advanced Analytics
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                       <button className="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800 transition-all uppercase tracking-widest shadow-md">Đề cử Training</button>
+                    </td>
+                  </tr>
+                ))}
+                {activeTab === 'payroll' && MOCK_PAYROLL.map((pay) => (
+                  <tr key={pay.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5">
+                       <p className="text-sm font-bold text-[#111827]">{pay.employeeName}</p>
+                       <p className="text-[10px] text-[#6B7280] uppercase tracking-widest font-bold opacity-40">Kỳ lương: {pay.month}</p>
+                    </td>
+                    <td className="px-6 py-5 text-right font-mono font-bold text-xs">{formatCurrency(pay.baseSalary)}</td>
+                    <td className="px-6 py-5 text-right">
+                       <p className="text-xs font-bold text-emerald-600">+{formatCurrency(pay.allowance + pay.bonus)}</p>
+                    </td>
+                    <td className="px-6 py-5 text-right text-xs text-red-500 font-bold">-{formatCurrency(pay.pitAmount + pay.insuranceAmount)}</td>
+                    <td className="px-6 py-5 text-right">
+                       <p className="text-sm font-bold text-[#2563EB]">{formatCurrency(pay.netSalary)}</p>
+                    </td>
+                    <td className="px-6 py-5">
+                       <div className="flex justify-center">
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm",
+                            pay.status === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                          )}>
+                             {pay.status === 'paid' ? 'ĐÃ PHÁT LƯƠNG' : 'CHỜ DUYỆT CHI'}
+                          </span>
+                       </div>
+                    </td>
+                  </tr>
+                ))}
+                {activeTab === 'leave' && MOCK_EMPLOYEES.map(emp => (
+                  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5">
+                      <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
+                      <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className="text-sm font-bold text-[#111827]">{emp.leaveBalance?.total ?? 0}</span>
+                      <span className="text-[10px] text-slate-400 ml-1">ngày</span>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className="text-sm font-bold text-emerald-600">{emp.leaveBalance?.used ?? 0}</span>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className="text-sm font-bold text-amber-600">{emp.leaveBalance?.pending ?? 0}</span>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                       <div className="flex justify-end">
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
+                            (emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
+                          )}>
+                             {(emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? <AlertCircle className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                             {(emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? 'SẮP HẾT PHÉP' : 'AN TOÀN'}
+                          </span>
+                       </div>
+                    </td>
+                  </tr>
+                ))}
+                {activeTab === 'kpi' && MOCK_KPIs.map(kpi => {
+                  const emp = MOCK_EMPLOYEES.find(e => e.id === kpi.employeeId);
+                  const progress = (kpi.current / kpi.target) * 100;
+                  return (
+                    <tr key={kpi.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-bold text-[#111827]">{emp?.fullName ?? 'Unknown'}</p>
+                        <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{kpi.employeeId}</p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-xs font-bold text-[#111827]">{kpi.title}</p>
+                        <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-tight">Kỳ đánh giá: {kpi.period}</p>
+                      </td>
+                      <td className="px-6 py-5 text-center">
+                        <span className="text-sm font-bold text-slate-600">{kpi.target.toLocaleString()} {kpi.unit}</span>
+                      </td>
+                      <td className="px-6 py-5 text-center">
+                        <span className={cn("text-sm font-bold", progress >= 100 ? "text-emerald-600" : "text-blue-600")}>{kpi.current.toLocaleString()} {kpi.unit}</span>
+                      </td>
+                      <td className="px-6 py-5 text-right w-48">
+                         <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-center text-[10px] font-bold">
+                               <span className={cn(progress >= 100 ? "text-emerald-600" : "text-blue-600")}>{progress.toFixed(1)}%</span>
+                               <span className="text-slate-400">{progress >= 100 ? 'Đạt' : 'Đang xử lý'}</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                               <div className={cn("h-full rounded-full transition-all duration-1000", progress >= 100 ? "bg-emerald-500" : "bg-blue-500")} style={{ width: `${Math.min(progress, 100)}%` }} />
+                            </div>
+                         </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {activeTab === 'sentiment' && MOCK_EMPLOYEES.map(emp => (
+                   <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
                         <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
                       </td>
-                      <td className="px-6 py-5 text-center">
-                        <span className="text-sm font-bold text-[#111827]">{emp.leaveBalance?.total ?? 0}</span>
-                        <span className="text-[10px] text-slate-400 ml-1">ngày</span>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1 bg-emerald-50 px-3 py-1.5 rounded-xl"><Smile className="w-4 h-4"/> Good</span>}
+                          {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-xl"><MoreVertical className="w-4 h-4"/> Neutral</span>}
+                          {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-xl"><AlertCircle className="w-4 h-4"/> Critical Risk</span>}
+                        </div>
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <span className="text-sm font-bold text-emerald-600">{emp.leaveBalance?.used ?? 0}</span>
+                        <p className="text-[10px] font-medium text-slate-500 leading-relaxed max-w-[200px] mx-auto text-left">
+                          {emp.recentSentiment === 'critical' ? 'Dấu hiệu burn-out, thường xuyên OT trong 2 tuần qua.' : 'Cảm xúc ổn định, tương tác tốt tại nơi làm.'}
+                        </p>
                       </td>
-                      <td className="px-6 py-5 text-center">
-                        <span className="text-sm font-bold text-amber-600">{emp.leaveBalance?.pending ?? 0}</span>
+                      <td className="px-6 py-5">
+                         <p className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl max-w-[150px]">
+                            {emp.recentSentiment === 'critical' ? 'Đề nghị nghỉ dưỡng / 1-1 meeting' : 'Không có đề xuất'}
+                         </p>
                       </td>
                       <td className="px-6 py-5 text-right">
-                         <div className="flex justify-end">
-                            <span className={cn(
-                              "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
-                              (emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
-                            )}>
-                               {(emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? <AlertCircle className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
-                               {(emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? 'SẮP HẾT PHÉP' : 'AN TOÀN'}
-                            </span>
-                         </div>
+                         <button className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-slate-800 transition-all shadow-sm">Lên lịch 1-on-1</button>
                       </td>
-                    </tr>
-                  ))}
-                </>
-              )}
-              {activeTab === 'kpi' && (
-                <>
-                  {MOCK_KPIs.map(kpi => {
-                    const emp = MOCK_EMPLOYEES.find(e => e.id === kpi.employeeId);
-                    const progress = (kpi.current / kpi.target) * 100;
-                    return (
-                      <tr key={kpi.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-5">
-                          <p className="text-sm font-bold text-[#111827]">{emp?.fullName ?? 'Unknown'}</p>
-                          <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{kpi.employeeId}</p>
-                        </td>
-                        <td className="px-6 py-5">
-                          <p className="text-xs font-bold text-[#111827]">{kpi.title}</p>
-                          <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-tight">Kỳ đánh giá: {kpi.period}</p>
-                        </td>
-                        <td className="px-6 py-5 text-center">
-                          <span className="text-sm font-bold text-slate-600">{kpi.target.toLocaleString()} {kpi.unit}</span>
-                        </td>
-                        <td className="px-6 py-5 text-center">
-                          <span className={cn("text-sm font-bold", progress >= 100 ? "text-emerald-600" : "text-blue-600")}>{kpi.current.toLocaleString()} {kpi.unit}</span>
-                        </td>
-                        <td className="px-6 py-5 text-right w-48">
-                           <div className="flex flex-col gap-2">
-                              <div className="flex justify-between items-center text-[10px] font-bold">
-                                 <span className={cn(progress >= 100 ? "text-emerald-600" : "text-blue-600")}>{progress.toFixed(1)}%</span>
-                                 <span className="text-slate-400">{progress >= 100 ? 'Đạt' : 'Đang xử lý'}</span>
-                              </div>
-                              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                 <div className={cn("h-full rounded-full transition-all duration-1000", progress >= 100 ? "bg-emerald-500" : "bg-blue-500")} style={{ width: `${Math.min(progress, 100)}%` }} />
-                              </div>
-                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </>
-              )}
-              {activeTab === 'sentiment' && (
-                <>
-                  {MOCK_EMPLOYEES.map(emp => (
-                     <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-5">
-                          <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
-                          <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
-                        </td>
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-1.5 font-bold">
-                            {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1 bg-emerald-50 px-3 py-1.5 rounded-xl"><Smile className="w-4 h-4"/> Good</span>}
-                            {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-xl"><MoreVertical className="w-4 h-4"/> Neutral</span>}
-                            {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-xl"><AlertCircle className="w-4 h-4"/> Critical Risk</span>}
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 text-center">
-                          <p className="text-[10px] font-medium text-slate-500 leading-relaxed max-w-[200px] mx-auto text-left">
-                            {emp.recentSentiment === 'critical' ? 'Dấu hiệu burn-out, thường xuyên OT trong 2 tuần qua.' : 'Cảm xúc ổn định, tương tác tốt tại nơi làm.'}
-                          </p>
-                        </td>
-                        <td className="px-6 py-5">
-                           <p className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl max-w-[150px]">
-                              {emp.recentSentiment === 'critical' ? 'Đề nghị nghỉ dưỡng / 1-1 meeting' : 'Không có đề xuất'}
-                           </p>
-                        </td>
-                        <td className="px-6 py-5 text-right">
-                           <button className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-slate-800 transition-all shadow-sm">Lên lịch 1-on-1</button>
-                        </td>
-                     </tr>
-                  ))}
-                </>
-              )}
-            </tbody>
-          </table>
+                   </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           </div>
           </>
         ) : (

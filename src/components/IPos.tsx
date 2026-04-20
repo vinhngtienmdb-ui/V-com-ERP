@@ -52,6 +52,7 @@ import { useAuth } from '../context/AuthContext';
 import { useStore } from '../context/StoreContext';
 import { sePayService } from '../services/sepayService';
 
+import { posSyncService } from '../services/posSyncService';
 import { StoreSelector } from './StoreSelector';
 
 export function IPosModule() {
@@ -116,7 +117,7 @@ export function IPosModule() {
     }
     try {
       const q = query(
-        collection(db, 'customers'), 
+        collection(db, 'pos_customers'), 
         where('phone', '==', val)
       );
       const snap = await getDocs(q);
@@ -131,7 +132,7 @@ export function IPosModule() {
 
   // Real-time products
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'products'), (snap) => {
+    const unsub = onSnapshot(collection(db, 'pos_products'), (snap) => {
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setProducts(data);
       if (data.length === 0) seedDemoProducts();
@@ -997,6 +998,15 @@ export function IPosModule() {
 
       {/* Header with Shift Stats and Staff */}
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm gap-6">
+        <button 
+          onClick={async () => {
+             const result = await posSyncService.syncFromErp();
+             if(result.success) alert("Đã đồng bộ thành công!");
+          }}
+          className="px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg text-xs hover:bg-indigo-100 flex items-center gap-2 transition-all"
+        >
+          <RefreshCcw className="w-3.5 h-3.5" /> Đồng bộ dữ liệu
+        </button>
         <div className="flex items-center gap-6">
           <button 
              onClick={() => window.location.href = '/'}

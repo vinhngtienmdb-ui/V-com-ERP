@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import ReactFlow, { Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
+import 'reactflow/dist/style.css';
 import { 
   Activity, 
   AlertCircle, 
@@ -15,22 +17,46 @@ import {
   Users2,
   Cpu,
   RefreshCw,
-  Bell
+  Bell,
+  PanelTop
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
 import { useNavigate } from 'react-router-dom';
+
+const initialNodes = [
+  { id: '1', data: { label: 'Đơn hàng mới' }, position: { x: 250, y: 5 } },
+  { id: '2', data: { label: 'Kiểm tra tồn kho' }, position: { x: 250, y: 100 } },
+];
+const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const MOCK_TASKS: WorkflowTask[] = [
   { id: 'WF-101', module: 'Legal', title: 'Thẩm định tranh chấp hàng giả LV-002', priority: 'critical', status: 'pending', deadline: '2 giờ tới', link: '/compliance' },
   { id: 'WF-102', module: 'Finance', title: 'Phê duyệt 12 yêu cầu Early Payout', priority: 'high', status: 'pending', deadline: 'Hôm nay', link: '/seller-finance' },
   { id: 'WF-103', module: 'PIM', title: 'Duyệt 450 sản phẩm Flash Sale mới', priority: 'medium', status: 'in_progress', deadline: 'Ngày mai', link: '/pim' },
   { id: 'WF-104', module: 'Logistic', title: 'Cảnh báo tồn kho an toàn Kho Hà Nội', priority: 'critical', status: 'pending', deadline: 'Ngay lập tức', link: '/scm' },
+  { id: 'WF-105', module: 'Orders', title: 'Xử lý các đơn hàng trạng thái Pending', priority: 'high', status: 'pending', deadline: 'Ngay lập tức', link: '/orders' },
 ];
 
 export function WorkflowHub() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'critical' | 'high'>('all');
+  const [viewMode, setViewMode] = useState<'tasks' | 'builder'>('tasks');
+  const [nodes, setNodes] = useState(initialNodes);
+  const [edges, setEdges] = useState(initialEdges);
+
+  const onNodesChange = useCallback(
+    (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    []
+  );
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
@@ -40,9 +66,12 @@ export function WorkflowHub() {
           <p className="text-sm text-[#6B7280] mt-1">Theo dõi toàn bộ workflow hệ thống và xử lý các điểm nghẽn vận hành.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <Activity className="w-4 h-4" />
-            Giám sát Luồng (Live)
+          <button 
+             onClick={() => setViewMode(viewMode === 'tasks' ? 'builder' : 'tasks')}
+             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            {viewMode === 'tasks' ? <PanelTop className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+            {viewMode === 'tasks' ? 'Mở Trình tạo Luồng' : 'Xem danh sách Task'}
           </button>
           <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
             <Cpu className="w-4 h-4" />
@@ -51,48 +80,63 @@ export function WorkflowHub() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-red-50 border border-red-100 p-6 rounded-xl">
-           <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-red-500 rounded-xl shadow-lg shadow-red-500/20">
-                 <ShieldAlert className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-red-600 font-bold uppercase tracking-widest">Điểm nghẽn rủi ro</span>
-           </div>
-           <div className="text-2xl font-extrabold text-red-700">08</div>
-           <p className="text-[10px] text-red-500 font-medium mt-1">Cần hành động ngay lập tức</p>
+      {viewMode === 'builder' ? (
+        <div className="h-[600px] w-full border border-[#E5E7EB] rounded-xl bg-white">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+          >
+            <Background />
+            <Controls />
+          </ReactFlow>
         </div>
-        <div className="bg-blue-50 border border-blue-100 p-6 rounded-xl">
-           <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
-                 <Boxes className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Task SCM & Vận hành</span>
-           </div>
-           <div className="text-2xl font-extrabold text-blue-700">124</div>
-           <p className="text-[10px] text-blue-500 font-medium mt-1">Đang xử lý trong luồng</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-red-50 border border-red-100 p-6 rounded-xl">
+             <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-red-500 rounded-xl shadow-lg shadow-red-500/20">
+                   <ShieldAlert className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] text-red-600 font-bold uppercase tracking-widest">Điểm nghẽn rủi ro</span>
+             </div>
+             <div className="text-2xl font-extrabold text-red-700">08</div>
+             <p className="text-[10px] text-red-500 font-medium mt-1">Cần hành động ngay lập tức</p>
+          </div>
+          <div className="bg-blue-50 border border-blue-100 p-6 rounded-xl">
+             <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                   <Boxes className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Task SCM & Vận hành</span>
+             </div>
+             <div className="text-2xl font-extrabold text-blue-700">124</div>
+             <p className="text-[10px] text-blue-500 font-medium mt-1">Đang xử lý trong luồng</p>
+          </div>
+          <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
+             <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20">
+                   <CheckCircle2 className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Workflow hoàn tất</span>
+             </div>
+             <div className="text-2xl font-extrabold text-emerald-700">92%</div>
+             <p className="text-[10px] text-emerald-500 font-medium mt-1">Hiệu suất vận hành tháng</p>
+          </div>
+          <div className="bg-slate-50 border border-slate-200 p-6 rounded-xl">
+             <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-slate-400 rounded-xl shadow-lg shadow-slate-400/20">
+                   <Users2 className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nguồn lực sẵn sàng</span>
+             </div>
+             <div className="text-2xl font-extrabold text-slate-700">42/48</div>
+             <p className="text-[10px] text-slate-400 font-medium mt-1">Nhân sự đang trực tuyến</p>
+          </div>
         </div>
-        <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
-           <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20">
-                 <CheckCircle2 className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Workflow hoàn tất</span>
-           </div>
-           <div className="text-2xl font-extrabold text-emerald-700">92%</div>
-           <p className="text-[10px] text-emerald-500 font-medium mt-1">Hiệu suất vận hành tháng</p>
-        </div>
-        <div className="bg-slate-50 border border-slate-200 p-6 rounded-xl">
-           <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-slate-400 rounded-xl shadow-lg shadow-slate-400/20">
-                 <Users2 className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nguồn lực sẵn sàng</span>
-           </div>
-           <div className="text-2xl font-extrabold text-slate-700">42/48</div>
-           <p className="text-[10px] text-slate-400 font-medium mt-1">Nhân sự đang trực tuyến</p>
-        </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
          <div className="lg:col-span-2 space-y-6">
