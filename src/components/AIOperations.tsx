@@ -78,7 +78,7 @@ export function AIOperations() {
           </button>
           <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2">
              <RefreshCw className="w-4 h-4" />
-             Re-train MoE Models
+             Huấn luyện lại MoE
           </button>
         </div>
       </div>
@@ -90,11 +90,11 @@ export function AIOperations() {
                  <div className="p-2 bg-blue-500 rounded-lg shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
                     <Cpu className="w-6 h-6" />
                  </div>
-                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Models</span>
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mô hình Hoạt động</span>
               </div>
               <div>
-                 <div className="text-2xl font-bold">12 Agents</div>
-                 <p className="text-[10px] text-[#10B981] font-bold mt-1 tracking-tight">System Health: 99.9%</p>
+                 <div className="text-2xl font-bold">12 Tác nhân</div>
+                 <p className="text-[10px] text-[#10B981] font-bold mt-1 tracking-tight">Sức khỏe Hệ thống: 99.9%</p>
               </div>
            </div>
            <Sparkles className="absolute -bottom-6 -right-6 w-32 h-32 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
@@ -105,7 +105,7 @@ export function AIOperations() {
            </div>
            <div>
               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Duyệt AI tự động</p>
-              <div className="text-xl font-bold text-[#111827]">8,421 <span className="text-xs font-normal text-slate-400">task/day</span></div>
+              <div className="text-xl font-bold text-[#111827]">8,421 <span className="text-xs font-normal text-slate-400">tác vụ/ngày</span></div>
            </div>
         </div>
         <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm flex items-center gap-4">
@@ -114,7 +114,7 @@ export function AIOperations() {
            </div>
            <div>
               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Cảnh báo rủi ro</p>
-              <div className="text-xl font-bold text-red-600">12 <span className="text-xs font-normal text-slate-400">flags</span></div>
+              <div className="text-xl font-bold text-red-600">12 <span className="text-xs font-normal text-slate-400">cảnh báo</span></div>
            </div>
         </div>
         <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm flex items-center gap-4">
@@ -122,7 +122,7 @@ export function AIOperations() {
               <Activity className="w-6 h-6 text-[#2563EB]" />
            </div>
            <div>
-              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Latent Space Latency</p>
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Độ trễ Suy luận</p>
               <div className="text-xl font-bold text-[#111827]">140ms</div>
            </div>
         </div>
@@ -131,12 +131,12 @@ export function AIOperations() {
       <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-lg overflow-hidden p-2">
         <div className="flex border-b border-[#F3F4F6] bg-slate-50/50 overflow-x-auto whitespace-nowrap scrollbar-hide rounded-t-[2rem]">
            {[
-             { id: 'moderation', label: 'AI Content Guard', icon: ShieldCheck },
-             { id: 'pricing', label: 'Dynamic Price AI', icon: Zap },
-             { id: 'fraud', label: 'Fraud Detection', icon: AlertTriangle },
-             { id: 'recommendation', label: 'Recommendation', icon: Network },
+             { id: 'moderation', label: 'Bảo vệ Nội dung AI', icon: ShieldCheck },
+             { id: 'pricing', label: 'AI Giá linh hoạt', icon: Zap },
+             { id: 'fraud', label: 'Phát hiện Gian lận', icon: AlertTriangle },
+             { id: 'recommendation', label: 'Gợi ý Sản phẩm', icon: Network },
              { id: 'chatbot', label: 'CSKH (Bot)', icon: Bot },
-             { id: 'review', label: 'Review Queue', icon: UserCheck }
+             { id: 'review', label: 'Hàng đợi Duyệt', icon: UserCheck }
            ].map((tab) => (
              <button 
                 key={tab.id}
@@ -167,7 +167,7 @@ export function AIOperations() {
                  </button>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /> Live Feed
+                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /> Nguồn cấp Trực tiếp
               </div>
            </div>
 
@@ -183,13 +183,13 @@ export function AIOperations() {
                              <div>
                                 <h4 className="font-bold text-[#111827] flex items-center gap-3">
                                    {item.id}
-                                   <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded uppercase tracking-widest font-bold">Manual Review</span>
+                                   <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded uppercase tracking-widest font-bold">Duyệt Thủ công</span>
                                 </h4>
-                                <p className="text-[10px] text-slate-400 mt-0.5">{item.timestamp} • Confidence: {(item.confidence * 100).toFixed(0)}%</p>
+                                <p className="text-[10px] text-slate-400 mt-0.5">{item.timestamp} • Độ tin cậy: {(item.confidence * 100).toFixed(0)}%</p>
                              </div>
                              <div className="flex gap-2">
-                                <button className="px-4 py-2 bg-white border border-slate-200 text-red-600 font-bold rounded-lg text-[10px] uppercase hover:bg-red-50 transition-all">Reject</button>
-                                <button className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-lg text-[10px] uppercase hover:bg-emerald-700 transition-all shadow-sm">Approve AI</button>
+                                <button className="px-4 py-2 bg-white border border-slate-200 text-red-600 font-bold rounded-lg text-[10px] uppercase hover:bg-red-50 transition-all">Từ chối</button>
+                                <button className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-lg text-[10px] uppercase hover:bg-emerald-700 transition-all shadow-sm">Phê duyệt AI</button>
                              </div>
                           </div>
                           <div className="p-3 bg-white/80 rounded-lg border border-amber-100">
@@ -213,9 +213,9 @@ export function AIOperations() {
                              <h4 className="font-bold text-[#111827] flex items-center gap-3 italic">
                                 {log.id} 
                                 <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                                <span className="text-[10px] text-slate-400 not-italic uppercase tracking-widest font-sans">Confidence: {(log.confidence * 100).toFixed(0)}%</span>
+                                <span className="text-[10px] text-slate-400 not-italic uppercase tracking-widest font-sans">Độ tin cậy: {(log.confidence * 100).toFixed(0)}%</span>
                              </h4>
-                             <p className="text-[10px] text-slate-400 mt-0.5">{log.timestamp} • Target: {log.targetId}</p>
+                             <p className="text-[10px] text-slate-400 mt-0.5">{log.timestamp} • Mục tiêu: {log.targetId}</p>
                           </div>
                           <div className="flex gap-2">
                              <button className="px-5 py-2 bg-slate-100 text-[#111827] font-bold rounded-lg text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Ghi đè (Override)</button>
@@ -241,25 +241,25 @@ export function AIOperations() {
          <div className="bg-white p-8 rounded-lg border border-[#E5E7EB] shadow-sm">
             <div className="flex justify-between items-center mb-6">
                <h3 className="text-lg font-bold flex items-center gap-3">
-                  <DollarSign className="w-5 h-5 text-emerald-500" /> AI Spending & Budget
+                  <DollarSign className="w-5 h-5 text-emerald-500" /> Chi phí & Ngân sách AI
                </h3>
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Limit: $2,500</span>
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hạn mức tháng: 60,000,000đ</span>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-6">
                <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">MTD Spending</p>
-                  <p className="text-xl font-bold text-slate-900">$1,240.50</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Chi phí Tháng</p>
+                  <p className="text-xl font-bold text-slate-900">31,012,500đ</p>
                </div>
                <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Token Cache Rate</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Tỉ lệ Cache Token</p>
                   <p className="text-xl font-bold text-emerald-600">32.4%</p>
                </div>
             </div>
             <div className="space-y-3">
                {[
-                 { provider: 'OpenAI (GPT-4o)', cost: '$420.2', usage: 'High' },
-                 { provider: 'Google (Gemini 1.5)', cost: '$580.1', usage: 'Med' },
-                 { provider: 'Self-Hosted (Llama 3)', cost: '$240.2', usage: 'Low' },
+                 { provider: 'OpenAI (GPT-4o)', cost: '10,505,000đ', usage: 'Cao' },
+                 { provider: 'Google (Gemini 1.5)', cost: '14,502,500đ', usage: 'Trung bình' },
+                 { provider: 'Self-Hosted (Llama 3)', cost: '6,005,000đ', usage: 'Thấp' },
                ].map((p, idx) => (
                  <div key={idx} className="flex justify-between items-center text-xs border-b border-slate-50 pb-2">
                     <div className="flex items-center gap-2">
@@ -276,17 +276,17 @@ export function AIOperations() {
          <div className="bg-white p-8 rounded-lg border border-[#E5E7EB] shadow-sm">
             <div className="flex justify-between items-center mb-6">
                <h3 className="text-lg font-bold flex items-center gap-3">
-                  <LineChart className="w-5 h-5 text-blue-600" /> Model Arena Results
+                  <LineChart className="w-5 h-5 text-blue-600" /> Hiệu suất Các Mô hình
                </h3>
-               <button className="text-[10px] font-bold text-blue-600 hover:underline px-2 py-1 bg-blue-50 rounded">Run A/B Test</button>
+               <button className="text-[10px] font-bold text-blue-600 hover:underline px-2 py-1 bg-blue-50 rounded">Chạy A/B Test</button>
             </div>
             <div className="overflow-x-auto">
                <table className="w-full text-left">
                   <thead>
                      <tr className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                        <th className="pb-3">Model Engine</th>
-                        <th className="pb-3">Latency</th>
-                        <th className="pb-3 text-right">Accuracy</th>
+                        <th className="pb-3">Hệ thống Mô hình</th>
+                        <th className="pb-3">Độ trễ</th>
+                        <th className="pb-3 text-right">Độ chính xác</th>
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -314,14 +314,14 @@ export function AIOperations() {
                   <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
                      <BarChart4 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-3xl font-extrabold tracking-tight font-serif italic">MoE Analytics & Routing</h3>
+                  <h3 className="text-3xl font-extrabold tracking-tight font-serif italic">Phân tích & Điều phối MoE</h3>
                </div>
                <p className="text-blue-100/80 leading-relaxed max-w-md">
-                  Phân tích dữ liệu từ hàng tỷ tham số để tối ưu hóa tỷ lệ chuyển đổi. Hệ thống Mixture of Experts tự động điều phối task cho model dựa trên chi phí phân bổ (LLaMA 3, GPT-4o, Gemini 1.5).
+                  Phân tích dữ liệu từ hàng tỷ tham số để tối ưu hóa tỷ lệ chuyển đổi. Hệ thống Hỗn hợp Chuyên gia (MoE) tự động phân bổ tác vụ cho các mô hình dựa trên chi phí (LLaMA 3, GPT-4o, Gemini 1.5).
                </p>
                <div className="flex gap-4 pt-4">
-                  <button className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all shadow-xl shadow-blue-900/10">Inference Logs</button>
-                  <button className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold rounded-lg text-sm hover:bg-white/20 transition-all">Cost Analysis</button>
+                  <button className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all shadow-xl shadow-blue-900/10">Nhật ký Suy luận</button>
+                  <button className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold rounded-lg text-sm hover:bg-white/20 transition-all">Phân tích Chi phí</button>
                </div>
             </div>
             <Layers className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 opacity-50" />
@@ -329,35 +329,35 @@ export function AIOperations() {
 
          <div className="bg-white p-10 border border-[#E5E7EB] rounded-lg shadow-sm space-y-8">
             <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3">
-               <Activity className="w-6 h-6 text-blue-600" /> Model Performance Drifts
+               <Activity className="w-6 h-6 text-blue-600" /> Biến động Hiệu suất Mô hình
             </h3>
             <div className="space-y-6">
                {[
-                 { name: 'Fraud Shield v4', drift: 1.2, health: 'Stable' },
-                 { name: 'Vector Search v2', drift: -4.5, health: 'Warning' },
-                 { name: 'Price Opt Hybrid', drift: 0.1, health: 'Stable' }
+                 { name: 'Bảo vệ Gian lận v4', drift: 1.2, health: 'Ổn định', statusColor: 'bg-emerald-50 text-emerald-600' },
+                 { name: 'Tìm kiếm Vector v2', drift: -4.5, health: 'Cảnh báo', statusColor: 'bg-red-50 text-red-600' },
+                 { name: 'Tối ưu Giá Lai', drift: 0.1, health: 'Ổn định', statusColor: 'bg-emerald-50 text-emerald-600' }
                ].map((m, i) => (
                  <div key={i} className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
                        <span className="font-bold text-[#111827]">{m.name}</span>
                        <span className={cn(
                          "text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest",
-                         m.health === 'Stable' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                         m.statusColor
                        )}>{m.health}</span>
                     </div>
                     <div className="h-2 bg-slate-50 rounded-full overflow-hidden flex">
                        <div 
-                         className={cn("h-full transition-all duration-1000", m.health === 'Stable' ? "bg-emerald-500" : "bg-red-500")} 
+                         className={cn("h-full transition-all duration-1000", m.health === 'Ổn định' ? "bg-emerald-500" : "bg-red-500")} 
                          style={{ width: `${90 + (i * -10)}%` }} 
                        />
                     </div>
                     <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                       <span>Drift: {m.drift}%</span>
+                       <span>Độ lệch: {m.drift}%</span>
                        <span>Uptime: 99.99%</span>
                     </div>
                  </div>
                ))}
-               <button className="w-full py-4 bg-slate-50 text-slate-400 text-xs font-bold rounded-lg border border-slate-100 hover:text-[#111827] hover:bg-slate-100 transition-all uppercase tracking-widest">Xem toàn bộ Registry Model</button>
+               <button className="w-full py-4 bg-slate-50 text-slate-400 text-xs font-bold rounded-lg border border-slate-100 hover:text-[#111827] hover:bg-slate-100 transition-all uppercase tracking-widest">Xem toàn bộ Danh mục Mô hình</button>
             </div>
          </div>
       </div>
@@ -367,12 +367,12 @@ export function AIOperations() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h3 className="text-xl font-bold flex items-center gap-3">
-              <Server className="w-6 h-6 text-[#10B981]" /> Hardware & Compute Orchestration
+              <Server className="w-6 h-6 text-[#10B981]" /> Điều phối Phần cứng & Tài nguyên Tính toán
             </h3>
-            <p className="text-sm text-slate-500 mt-1">Giám sát tải của các cụm GPU dành cho AI Serving & Training.</p>
+            <p className="text-sm text-slate-500 mt-1">Giám sát tải của các cụm GPU dành cho AI Phục vụ & Huấn luyện.</p>
           </div>
           <button className="px-4 py-2 border border-emerald-200 text-emerald-700 font-bold text-sm rounded-lg hover:bg-emerald-50 transition-all flex items-center gap-2">
-             <RefreshCw className="w-4 h-4" /> Sync Cluster
+             <RefreshCw className="w-4 h-4" /> Đồng bộ Cụm
           </button>
         </div>
 
@@ -380,12 +380,12 @@ export function AIOperations() {
            <div className="border border-slate-200 rounded-lg p-6 bg-slate-50">
              <div className="flex justify-between items-center mb-4">
                <h4 className="font-bold text-slate-800">Cụm A100-80GB</h4>
-               <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold">LLM Training</span>
+               <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold">Huấn luyện LLM</span>
              </div>
              <div className="space-y-4">
                <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                     <span>VRAM Usage</span>
+                     <span>Dung lượng VRAM</span>
                      <span>92% (73/80GB)</span>
                   </div>
                   <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
@@ -394,26 +394,26 @@ export function AIOperations() {
                </div>
                <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                     <span>Compute Load</span>
+                     <span>Tải Tính toán GPU</span>
                      <span>85%</span>
                   </div>
                   <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                      <div className="h-full bg-orange-500 w-[85%]"></div>
                   </div>
                </div>
-               <p className="text-[10px] text-slate-400 font-mono mt-4">Current task: Fine-tuning Vietnamese NLP</p>
+               <p className="text-[10px] text-slate-400 font-mono mt-4">Tác vụ đang chạy: Tinh chỉnh NLP Tiếng Việt</p>
              </div>
            </div>
 
            <div className="border border-slate-200 rounded-lg p-6 bg-white shadow-sm ring-1 ring-blue-500/20">
              <div className="flex justify-between items-center mb-4">
-               <h4 className="font-bold text-slate-800">Cụm L4-24GB (Inference)</h4>
-               <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">Serving</span>
+               <h4 className="font-bold text-slate-800">Cụm L4-24GB (Suy luận)</h4>
+               <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">Phục vụ</span>
              </div>
              <div className="space-y-4">
                <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                     <span>VRAM Usage</span>
+                     <span>Dung lượng VRAM</span>
                      <span>45% (11/24GB)</span>
                   </div>
                   <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
@@ -422,21 +422,21 @@ export function AIOperations() {
                </div>
                <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                     <span>Requests / sec</span>
+                     <span>Yêu cầu / giây</span>
                      <span>2,400 rps</span>
                   </div>
                   <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                      <div className="h-full bg-[#10B981] w-[60%]"></div>
                   </div>
                </div>
-               <p className="text-[10px] text-slate-400 font-mono mt-4">Models: Content Guard, RecSys</p>
+               <p className="text-[10px] text-slate-400 font-mono mt-4">Mô hình: Giám sát Nội dung, Hệ thống Gợi ý</p>
              </div>
            </div>
 
            <div className="border border-slate-200 rounded-lg p-6 bg-slate-50 text-slate-400 border-dashed flex flex-col items-center justify-center min-h-[200px] hover:bg-blue-50/50 hover:border-blue-300 hover:text-blue-500 transition-colors cursor-pointer group">
               <Plus className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
-              <span className="font-bold">Provision New Cluster</span>
-              <span className="text-xs font-medium mt-1">AWS / GCP Integrations</span>
+              <span className="font-bold">Cấp phát Cụm Mới</span>
+              <span className="text-xs font-medium mt-1">Tích hợp AWS / GCP</span>
            </div>
         </div>
       </div>

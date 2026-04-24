@@ -183,6 +183,21 @@ export function PIM() {
     }
   };
 
+  const updateHiddenCost = async (product: Product, value: number) => {
+    try {
+      const newProfit = product.price - (product.costPrice || 0) - value;
+      const newMargin = product.price > 0 ? (newProfit / product.price) * 100 : 0;
+      await updateDoc(doc(db, 'products', product.id), {
+        hiddenCosts: value,
+        profit: newProfit,
+        margin: Number(newMargin.toFixed(1)),
+        updatedAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, 'update', 'products');
+    }
+  };
+
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterBrand, setFilterBrand] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -1093,6 +1108,17 @@ export function PIM() {
                               <span className="text-[10px] font-black text-emerald-500/80 bg-emerald-50 px-1.5 py-0.5 rounded-lg border border-emerald-100">+{product.margin}%</span>
                             </div>
                          </div>
+                      </div>
+
+                      <div className="border-t border-slate-100 pt-4 mt-4 flex justify-between items-center px-2 relative z-20">
+                         <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest" title="Bao gồm phí vận chuyển, đóng gói,...">Chi phí ẩn (VC, Đóng gói...)</p>
+                         <input 
+                             type="number"
+                             defaultValue={product.hiddenCosts || 0}
+                             onBlur={(e) => updateHiddenCost(product, Number(e.target.value))}
+                             className="w-28 text-right bg-white border border-[#E5E7EB] hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-[#111827] shadow-sm transition-all"
+                             placeholder="VD: 15000"
+                         />
                       </div>
                   </div>
 

@@ -27,6 +27,7 @@ import {
   Users,
   Settings2,
   LayoutDashboard,
+  CheckCircle2,
   X,
   Activity,
   PieChart as PieChartIcon,
@@ -284,47 +285,48 @@ export function Dashboard() {
 
       <div className="space-y-6">
           {isConfigOpen && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-end">
+              <div className="bg-white w-full max-w-sm h-full shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+                <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                      <LayoutDashboard className="w-5 h-5" />
+                      <Settings2 className="w-5 h-5" />
                     </div>
-                    <h3 className="font-bold text-slate-900">Tùy biến Dashboard</h3>
+                    <h3 className="font-bold text-slate-900 text-lg">Tùy chỉnh Giao diện</h3>
                   </div>
-                  <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-slate-600">
+                  <button onClick={() => setIsConfigOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="p-6">
-                   <p className="text-sm font-medium text-slate-500 mb-6">Chọn các Widget bạn muốn hiển thị trên thẻ Báo cáo.</p>
-                   <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 bg-white custom-scrollbar">
+                   <p className="text-sm font-medium text-slate-500 mb-6">Chọn các Widget (thẻ Báo cáo) bạn muốn hiển thị trên biểu đồ chính, bảng xếp hạng và lối tắt.</p>
+                   <div className="space-y-4">
                      {[
-                       { id: 'showStats', label: 'Chỉ số Kinh doanh (GMV, Đơn hàng,...)', icon: DollarSign },
-                       { id: 'showMainChart', label: 'Biểu đồ Tăng trưởng xu hướng', icon: LineChartIcon },
+                       { id: 'showStats', label: 'Chỉ số Kinh doanh (Thẻ Stats)', icon: DollarSign },
+                       { id: 'showMainChart', label: 'Biểu đồ chính (Tăng trưởng)', icon: LineChartIcon },
+                       { id: 'showTopSellers', label: 'Bảng xếp hạng (Top Sellers)', icon: Store },
+                       { id: 'showQuickNav', label: 'Lối tắt chức năng', icon: ArrowUpRight },
                        { id: 'showCategorySplit', label: 'Biểu đồ Tỷ trọng Ngành hàng', icon: PieChartIcon },
-                       { id: 'showQuickNav', label: 'Lối tắt chức năng (Sidebar)', icon: ArrowUpRight },
-                       { id: 'showTopSellers', label: 'Bảng xếp hạng Nhà bán hàng', icon: Store },
                        { id: 'showCommunity', label: 'Thông tin Cộng đồng', icon: Users },
                        { id: 'showSLA', label: 'Chỉ số SLA Vận hành', icon: ShieldCheck },
                        { id: 'showHourlyOrders', label: 'Biểu đồ Đơn hàng theo giờ', icon: ListOrdered },
                      ].map(item => (
-                       <div key={item.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => handleConfigChange(item.id)}>
+                       <label key={item.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blue-50/50 hover:border-blue-100 transition-colors cursor-pointer group">
                          <div className="flex items-center gap-3">
-                            <item.icon className="w-4 h-4 text-slate-500" />
-                            <span className="text-sm font-bold text-slate-700">{item.label}</span>
+                            <item.icon className={cn("w-5 h-5", config[item.id] ? "text-blue-500" : "text-slate-400 group-hover:text-blue-400")} />
+                            <span className={cn("text-sm font-bold", config[item.id] ? "text-slate-900" : "text-slate-500 group-hover:text-slate-700")}>{item.label}</span>
                          </div>
-                         <div className={cn("w-10 h-6 rounded-full p-1 transition-colors relative", config[item.id] ? "bg-emerald-500" : "bg-slate-200")}>
-                            <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200", config[item.id] ? "translate-x-4" : "translate-x-0")}></div>
+                         <div className={cn("w-11 h-6 rounded-full p-1 transition-colors relative shadow-inner", config[item.id] ? "bg-blue-600" : "bg-slate-300")}>
+                            <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200", config[item.id] ? "translate-x-5" : "translate-x-0")}></div>
                          </div>
-                       </div>
+                         <input type="checkbox" className="sr-only" checked={config[item.id]} onChange={() => handleConfigChange(item.id)} />
+                       </label>
                      ))}
                    </div>
                 </div>
-                <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
-                   <button onClick={() => setIsConfigOpen(false)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-sm transition-colors">
-                      Hoàn tất
+                <div className="p-5 border-t border-slate-100 bg-slate-50 flex justify-end shrink-0">
+                   <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 shadow-xl shadow-slate-900/10 hover:shadow-blue-600/30 transition-all flex justify-center items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5" /> Lưu tùy chỉnh
                    </button>
                 </div>
               </div>
