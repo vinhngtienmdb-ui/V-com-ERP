@@ -45,7 +45,7 @@ interface PartnerData extends SellerMetric {
   activeModules: string[];
 }
 
-const MOCK_SELLERS: PartnerData[] = [
+export const MOCK_SELLERS: PartnerData[] = [
   {
     id: 'SEL-001',
     name: 'Mobile World',

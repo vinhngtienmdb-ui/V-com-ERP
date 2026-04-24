@@ -404,6 +404,7 @@ export function HumanResources() {
   const [filterStatus, setFilterStatus] = useState('all');
 
   const [filterDateAtt, setFilterDateAtt] = useState('');
+  const [attendanceView, setAttendanceView] = useState<'week' | 'month'>('month');
 
   const filteredEmployees = MOCK_EMPLOYEES.filter(emp => {
     if (searchEmployee && !emp.fullName.toLowerCase().includes(searchEmployee.toLowerCase()) && !emp.id.toLowerCase().includes(searchEmployee.toLowerCase())) return false;
@@ -764,9 +765,23 @@ export function HumanResources() {
                       </div>
                     )}
                     {activeTab === 'attendance' && (
-                       <div className="flex gap-2">
+                       <div className="flex gap-2 items-center">
+                         <div className="flex bg-slate-100 p-1 rounded-lg">
+                           <button 
+                             onClick={() => setAttendanceView('week')}
+                             className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-colors", attendanceView === 'week' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                           >
+                             Theo Tuần
+                           </button>
+                           <button 
+                             onClick={() => setAttendanceView('month')}
+                             className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-colors", attendanceView === 'month' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                           >
+                             Theo Tháng
+                           </button>
+                         </div>
                          <input
-                           type="month"
+                           type={attendanceView === 'month' ? "month" : "week"}
                            value={filterDateAtt}
                            onChange={(e) => setFilterDateAtt(e.target.value)}
                            className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -1320,7 +1335,13 @@ export function HumanResources() {
                   const [inH, inM] = record.checkIn.split(':').map(Number);
                   const [outH, outM] = record.checkOut.split(':').map(Number);
                   const totalMinutes = (outH * 60 + outM) - (inH * 60 + inM);
-                  const hoursWorked = totalMinutes > 0 ? (totalMinutes / 60).toFixed(1) : 0;
+                  const hoursWorked = totalMinutes > 0 ? (totalMinutes / 60).toFixed(1) : parseFloat('0');
+                  
+                  const hw = Number(hoursWorked);
+                  let warning = '';
+                  if (hw < 8 && hw > 0) warning = 'Cảnh báo thiếu giờ';
+                  else if (record.overtimeHours > 2) warning = 'Cảnh báo OT quá mức';
+                  else if (inH >= 9) warning = 'Cảnh báo đi muộn';
 
                   return (
                     <tr key={record.id} className="hover:bg-slate-50 transition-colors">
@@ -1354,14 +1375,21 @@ export function HumanResources() {
                          <p className="text-xs font-medium text-slate-600">{record.location}</p>
                       </td>
                       <td className="px-6 py-5 text-right">
-                         <span className={cn(
-                           "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
-                           record.status === 'on_time' ? "bg-emerald-50 text-emerald-600" :
-                           record.status === 'late' ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
-                         )}>
-                            {record.status === 'on_time' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                            {record.status === 'on_time' ? 'Đúng giờ' : record.status === 'late' ? 'Muộn' : 'Vắng'}
-                         </span>
+                         <div className="flex flex-col items-end gap-2">
+                           <span className={cn(
+                             "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
+                             record.status === 'on_time' ? "bg-emerald-50 text-emerald-600" :
+                             record.status === 'late' ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
+                           )}>
+                              {record.status === 'on_time' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                              {record.status === 'on_time' ? 'Đúng giờ' : record.status === 'late' ? 'Muộn' : 'Vắng'}
+                           </span>
+                           {warning && (
+                             <span className="text-[9px] bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                               <AlertCircle className="w-3 h-3" /> {warning}
+                             </span>
+                           )}
+                         </div>
                       </td>
                     </tr>
                   );
