@@ -23,13 +23,16 @@ import {
   Copy,
   Check,
   Send,
-  Settings
+  Settings,
+  Lock,
+  Unlock,
+  Wallet
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
 
 const CopyButton = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false);
@@ -707,6 +710,9 @@ export function Customers() {
   const [aiQuickModalCustomer, setAiQuickModalCustomer] = useState<Customer | null>(null);
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [adjustingCustomer, setAdjustingCustomer] = useState<Customer | null>(null);
+  const [adjustAmount, setAdjustAmount] = useState('');
+  const [adjustType, setAdjustType] = useState<'wallet' | 'points'>('wallet');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -731,6 +737,34 @@ export function Customers() {
       unsubOrders();
     };
   }, []);
+
+  const handleToggleLock = async (id: string, currentStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await updateDoc(doc(db, 'customers', id), {
+        status: currentStatus === 'locked' ? 'active' : 'locked'
+      });
+    } catch(err) {
+      console.error('Error toggling lock state', err);
+    }
+  };
+
+  const submitAdjust = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adjustingCustomer || !adjustAmount) return;
+    
+    try {
+      const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
+      const currentVal = (adjustingCustomer as any)[field] || 0;
+      await updateDoc(doc(db, 'customers', adjustingCustomer.id), {
+        [field]: currentVal + Number(adjustAmount)
+      });
+      setAdjustingCustomer(null);
+      setAdjustAmount('');
+    } catch(err) {
+      console.error('Error adjusting balance', err);
+    }
+  };
 
   // Compute dynamic fields
   const dynamicCustomers = customers.map(c => {
@@ -946,14 +980,28 @@ export function Customers() {
                     <div className="flex justify-center">
                        <span className={cn(
                          "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
-                         customer.status === 'active' ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"
+                         customer.status === 'active' ? "bg-emerald-500 text-white" : customer.status === 'locked' ? "bg-red-500 text-white" : "bg-slate-200 text-slate-400"
                        )}>
-                         {customer.status === 'active' ? 'ACTIVE' : 'OFF'}
+                         {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
                        </span>
                     </div>
                   </td>
                   <td className="px-4 py-4 text-right">
                     <div className="flex justify-end gap-2">
+                       <button 
+                         onClick={(e) => { e.stopPropagation(); setAdjustingCustomer(customer); }}
+                         className="p-1.5 bg-green-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                         title="Cộng/Trừ Điểm & Tiền"
+                       >
+                          <Wallet className="w-3.5 h-3.5" />
+                       </button>
+                       <button 
+                         onClick={(e) => handleToggleLock(customer.id!, customer.status, e)}
+                         className={cn("p-1.5 rounded-lg transition-all shadow-sm", customer.status === 'locked' ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white" : "bg-red-50 text-red-600 hover:bg-red-600 hover:text-white")}
+                         title={customer.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
+                       >
+                          {customer.status === 'locked' ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                       </button>
                        <button 
                          onClick={() => setAiQuickModalCustomer(customer)}
                          className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
@@ -975,6 +1023,71 @@ export function Customers() {
           </table>
         </div>
       </div>
+
+      {adjustingCustomer && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                 <div>
+                    <h2 className="text-lg font-bold text-slate-900">Điều chỉnh Điểm / Ví</h2>
+                    <p className="text-xs text-slate-500">Khách hàng: {adjustingCustomer.name}</p>
+                 </div>
+                 <button onClick={() => setAdjustingCustomer(null)} className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-500" /></button>
+              </div>
+              <form onSubmit={submitAdjust} className="p-6 space-y-6">
+                 <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase mb-2 block">Loại điều chỉnh</label>
+                    <select 
+                      value={adjustType}
+                      onChange={(e) => setAdjustType(e.target.value as any)}
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    >
+                       <option value="wallet">Ví Điện Tử (VNĐ)</option>
+                       <option value="points">Điểm Thưởng (Points)</option>
+                    </select>
+                 </div>
+                 <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                       <label className="text-xs font-bold text-slate-700 uppercase">Số dư hiện tại</label>
+                    </div>
+                    <div className="text-xl font-bold text-slate-900">
+                       {adjustType === 'wallet' ? formatCurrency(adjustingCustomer.walletBalance || 0) : (adjustingCustomer.points || 0) + ' pts'}
+                    </div>
+                 </div>
+                 <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                       <label className="text-xs font-bold text-slate-700 uppercase">Số tiền/điểm cộng hoặc trừ</label>
+                    </div>
+                    <input 
+                      type="number" 
+                      required
+                      value={adjustAmount}
+                      onChange={(e) => setAdjustAmount(e.target.value)}
+                      placeholder="VD: 500000 (cộng) hoặc -1000 (trừ)"
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+                    />
+                    <p className="text-[11px] text-slate-500 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
+                 </div>
+                 <div className="flex gap-4 pt-4 border-t border-slate-100">
+                    <button 
+                      type="button"
+                      onClick={() => setAdjustingCustomer(null)}
+                      className="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
+                    >
+                       Hủy
+                    </button>
+                    <button 
+                      type="submit"
+                      className="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+                    >
+                       Xác nhận
+                    </button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -26,7 +26,8 @@ import {
   AlertCircle,
   Image,
   Bell,
-  Send
+  Send,
+  BadgeDollarSign
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
@@ -69,6 +70,7 @@ const MOCK_ROLES: PermissionRole[] = [
   { id: '1', name: 'Siêu quản trị (Super Admin)', permissions: ['all'] },
   { id: '2', name: 'Kế toán trưởng', permissions: ['finance.read', 'finance.approve', 'settlement.read'] },
   { id: '3', name: 'Quản lý Kho', permissions: ['inventory.read', 'inventory.write', 'scm.read'] },
+  { id: '4', name: 'Chăm sóc Khách hàng', permissions: ['wallet.balance.adjust', 'loyalty.points.adjust', 'account.lock'] },
 ];
 
 const MOCK_WEBHOOKS: WebhookConfig[] = [
@@ -85,7 +87,7 @@ const MOCK_PROVINCES = [
 ];
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'notifications'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup'>('general');
   const [notiTitle, setNotiTitle] = useState('');
   const [notiMessage, setNotiMessage] = useState('');
   const [notiStatus, setNotiStatus] = useState('');
@@ -100,6 +102,14 @@ export function SettingsPage() {
   const [customDomains, setCustomDomains] = useState<string[]>(['erp.vcom.vn']);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+
+  // Popup States
+  const [isPopupActive, setIsPopupActive] = useState(false);
+  const [popupTitle, setPopupTitle] = useState('Khuyến Mãi Hè 2024');
+  const [popupDesc, setPopupDesc] = useState('Săn deal chớp nhoáng với rổ hàng giảm giá 50% cùng nhiều voucher độc quyền.');
+  const [popupImage, setPopupImage] = useState('');
+  const [popupCtaText, setPopupCtaText] = useState('Xem ngay');
+  const [popupCtaLink, setPopupCtaLink] = useState('');
 
   const addDomain = () => setCustomDomains([...customDomains, '']);
   const updateDomain = (index: number, value: string) => {
@@ -167,9 +177,10 @@ export function SettingsPage() {
         {/* Nav Sidebar */}
         <div className="w-64 space-y-1">
            {[
-             { id: 'general', label: 'Cấu hình chung & Phí sàn', icon: Settings },
-             { id: 'website', label: 'Cấu hình Website & Popup', icon: AppWindow },
-             { id: 'notifications', label: 'Gửi Thông báo', icon: Bell },
+             { id: 'general', label: 'Cấu hình chung', icon: Settings },
+             { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
+             { id: 'website', label: 'Cấu hình Website', icon: Globe },
+             { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
              { id: 'comms', label: 'Tích hợp Kênh (SMS/Zalo)', icon: MessageSquare },
              { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
              { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
@@ -195,79 +206,6 @@ export function SettingsPage() {
         <div className="flex-1 space-y-6">
            {activeTab === 'general' && (
               <div className="animate-in fade-in duration-300 space-y-6">
-                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
-                    <div className="flex justify-between items-center">
-                       <h3 className="font-bold text-[#111827] flex items-center gap-2">
-                          <CreditCard className="w-4 h-4 text-emerald-500" /> Cấu hình Phí sàn (Commission Fee)
-                       </h3>
-                       <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">AI ANALYZING BIAS: OFF</span>
-                       </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {[
-                         { cat: 'Điện tử & Công nghệ', fee: '3%' },
-                         { cat: 'Thời trang & Phụ kiện', fee: '8%' },
-                         { cat: 'Gia dụng & Đời sống', fee: '5%' },
-                         { cat: 'Sức khỏe & Sắc đẹp', fee: '10%' },
-                       ].map(item => (
-                         <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-lg border border-[#F3F4F6] flex justify-between items-center group relative overflow-hidden">
-                            <span className="text-sm font-medium text-[#4B5563]">{item.cat}</span>
-                            <div className="flex items-center gap-4">
-                               <input type="text" defaultValue={item.fee} className="w-16 bg-white border border-[#E5E7EB] rounded-lg px-2 py-1 text-center font-bold text-[#111827] outline-none focus:border-[#2563EB]" />
-                               <button className="text-[10px] font-bold text-[#2563EB] hover:underline">Cập nhật</button>
-                            </div>
-                         </div>
-                       ))}
-                    </div>
-
-                    {/* AI Optimization Section */}
-                    <div className="mt-8 pt-8 border-t border-slate-100 space-y-4">
-                       <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-blue-600">
-                             <Sparkles className="w-5 h-5" />
-                             <h4 className="text-sm font-bold uppercase tracking-widest">AI Fee Optimization Suggestions</h4>
-                          </div>
-                          <button className="text-[10px] font-bold text-white bg-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/10">
-                             Duyệt tất cả đề xuất AI
-                          </button>
-                       </div>
-                       
-                       <div className="grid grid-cols-1 gap-4">
-                          {MOCK_AI_FEE_SUGGESTIONS.map((suggestion, idx) => (
-                             <div key={idx} className="bg-slate-50 border border-blue-100 rounded-[1.5rem] p-5 flex flex-col md:flex-row gap-6 relative group hover:border-blue-300 transition-all">
-                                <div className="flex-1 space-y-2">
-                                   <div className="flex items-center gap-2">
-                                      <span className="text-xs font-bold text-[#111827]">{suggestion.category}</span>
-                                      <ArrowRight className="w-3 h-3 text-slate-300" />
-                                      <div className="flex items-center gap-2">
-                                         <span className="text-xs font-bold text-slate-400 line-through">{suggestion.currentFee}%</span>
-                                         <span className="text-sm font-black text-blue-600">{suggestion.suggestedFee}%</span>
-                                      </div>
-                                      <span className="ml-auto md:ml-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
-                                         {suggestion.impactOnGmv}
-                                      </span>
-                                   </div>
-                                   <p className="text-[11px] text-[#6B7280] leading-relaxed">
-                                      <span className="font-bold text-slate-500">Lý do AI:</span> {suggestion.reasoning}
-                                   </p>
-                                </div>
-                                <div className="flex items-center gap-4 border-t md:border-t-0 md:border-l border-slate-200 pt-4 md:pt-0 md:pl-6">
-                                   <div className="text-center min-w-[80px]">
-                                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">TB Đối thủ</p>
-                                      <p className="text-sm font-bold text-[#111827]">{suggestion.competitorAvg}%</p>
-                                   </div>
-                                   <button className="flex-1 md:flex-none px-6 py-2 bg-white border border-blue-200 text-blue-600 rounded-lg text-[10px] font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                                      Áp dụng gợi ý
-                                   </button>
-                                </div>
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 -rotate-45 translate-x-12 -translate-y-12"></div>
-                             </div>
-                          ))}
-                       </div>
-                    </div>
-                 </div>
-
                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
                     <h3 className="font-bold text-[#111827]">Cấu hình ví & Payout</h3>
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
@@ -288,6 +226,116 @@ export function SettingsPage() {
                     <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
                        Lưu cấu hình
                     </button>
+                 </div>
+              </div>
+           )}
+
+           {activeTab === 'fees' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+                     <div className="flex items-center justify-between mb-4">
+                       <div>
+                         <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm">
+                            <BadgeDollarSign className="w-4 h-4 text-[#2563EB]" /> Phí hoa hồng theo Ngành hàng & Loại Nhà Bán
+                         </h3>
+                         <p className="text-xs text-slate-500 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
+                       </div>
+                       <button 
+                         onClick={() => setShowAddCategory(true)}
+                         className="flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
+                       >
+                          <Plus className="w-4 h-4" /> Thêm ngành hàng
+                       </button>
+                     </div>
+
+                     {showAddCategory && (
+                       <div className="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-200">
+                          <label className="text-sm font-bold text-slate-700 whitespace-nowrap">Tên ngành hàng:</label>
+                          <input 
+                            type="text" 
+                            placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
+                            className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                          />
+                          <button onClick={handleAddCategory} className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700">Lưu</button>
+                          <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Hủy</button>
+                       </div>
+                     )}
+
+                     <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+                        <table className="w-full text-sm">
+                           <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                              <tr>
+                                 <th className="px-5 py-4 text-left font-bold text-[#6B7280] text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
+                                 <th className="px-5 py-4 text-center border-l border-slate-200 bg-blue-50/50 w-[25%]">
+                                    <div className="flex flex-col items-center gap-1">
+                                       <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
+                                       <span className="text-[9px] font-medium text-blue-600">Nhà bán cá nhân/nhỏ lẻ</span>
+                                    </div>
+                                 </th>
+                                 <th className="px-5 py-4 text-center border-l border-slate-200 bg-amber-50/50 w-[25%]">
+                                    <div className="flex flex-col items-center gap-1">
+                                       <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
+                                       <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
+                                    </div>
+                                 </th>
+                                 <th className="px-5 py-4 text-right font-bold text-[#6B7280] text-[10px] uppercase tracking-wider w-[20%]">Tối ưu AI</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-[#E5E7EB] bg-white">
+                              {categoryFees.map((cf) => (
+                                 <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-5 py-4 text-sm font-bold text-slate-800">{cf.name}</td>
+                                    <td className="px-5 py-4 border-l border-slate-100 bg-blue-50/10">
+                                       <div className="flex justify-center flex-col items-center gap-1.5">
+                                          <div className="flex items-center gap-2">
+                                            <input 
+                                               type="number"
+                                               value={cf.sellerFee}
+                                               onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
+                                               className="w-16 p-1.5 text-sm border-2 border-blue-100 rounded-lg text-center focus:outline-none focus:border-blue-500 font-bold text-blue-900 bg-white"
+                                            />
+                                            <span className="text-xs font-bold text-blue-400">%</span>
+                                          </div>
+                                          {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
+                                            <span className="text-[10px] text-blue-600 font-bold bg-blue-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
+                                          )}
+                                       </div>
+                                    </td>
+                                    <td className="px-5 py-4 border-l border-slate-100 bg-amber-50/10">
+                                       <div className="flex justify-center flex-col items-center gap-1.5">
+                                          <div className="flex items-center gap-2">
+                                            <input 
+                                               type="number"
+                                               value={cf.mallFee}
+                                               onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, mallFee: parseFloat(e.target.value) } : p))}
+                                               className="w-16 p-1.5 text-sm border-2 border-amber-100 rounded-lg text-center focus:outline-none focus:border-amber-500 font-bold text-amber-900 bg-white"
+                                            />
+                                            <span className="text-xs font-bold text-amber-400">%</span>
+                                          </div>
+                                          {cf.aiSuggestedMallFee && cf.aiSuggestedMallFee !== cf.mallFee && (
+                                            <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
+                                          )}
+                                       </div>
+                                    </td>
+                                    <td className="px-5 py-4 text-right">
+                                       {cf.aiSuggestedSellerFee && (
+                                          <button 
+                                             onClick={() => handleApplyAiSuggestion(cf.id)}
+                                             className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
+                                             title={`Gợi ý: ${cf.aiReasoning}`}
+                                          >
+                                             <Sparkles className="w-4 h-4" /> Áp dụng
+                                          </button>
+                                       )}
+                                    </td>
+                                 </tr>
+                              ))}
+                           </tbody>
+                        </table>
+                     </div>
                  </div>
               </div>
            )}
@@ -327,112 +375,6 @@ export function SettingsPage() {
                         </div>
 
                         <div className="space-y-4">
-                           <div className="flex items-center justify-between mb-4">
-                             <div>
-                               <label className="block text-sm font-bold text-[#111827]">Phí hoa hồng theo Ngành hàng & Loại Nhà Bán</label>
-                               <p className="text-xs text-slate-500 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
-                             </div>
-                             <button 
-                               onClick={() => setShowAddCategory(true)}
-                               className="flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
-                             >
-                                <Plus className="w-4 h-4" /> Thêm ngành hàng
-                             </button>
-                           </div>
-
-                           {showAddCategory && (
-                             <div className="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-200">
-                                <label className="text-sm font-bold text-slate-700 whitespace-nowrap">Tên ngành hàng:</label>
-                                <input 
-                                  type="text" 
-                                  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
-                                  className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
-                                  value={newCategoryName}
-                                  onChange={(e) => setNewCategoryName(e.target.value)}
-                                  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                                />
-                                <button onClick={handleAddCategory} className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700">Lưu</button>
-                                <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Hủy</button>
-                             </div>
-                           )}
-
-                           <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
-                              <table className="w-full text-sm">
-                                 <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                                    <tr>
-                                       <th className="px-5 py-4 text-left font-bold text-[#6B7280] text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
-                                       <th className="px-5 py-4 text-center border-l border-slate-200 bg-blue-50/50 w-[25%]">
-                                          <div className="flex flex-col items-center gap-1">
-                                             <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
-                                             <span className="text-[9px] font-medium text-blue-600">Nhà bán cá nhân/nhỏ lẻ</span>
-                                          </div>
-                                       </th>
-                                       <th className="px-5 py-4 text-center border-l border-slate-200 bg-amber-50/50 w-[25%]">
-                                          <div className="flex flex-col items-center gap-1">
-                                             <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
-                                             <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
-                                          </div>
-                                       </th>
-                                       <th className="px-5 py-4 text-right font-bold text-[#6B7280] text-[10px] uppercase tracking-wider w-[20%]">Tối ưu AI</th>
-                                    </tr>
-                                 </thead>
-                                 <tbody className="divide-y divide-[#E5E7EB] bg-white">
-                                    {categoryFees.map((cf) => (
-                                       <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
-                                          <td className="px-5 py-4 text-sm font-bold text-slate-800">{cf.name}</td>
-                                          <td className="px-5 py-4 border-l border-slate-100 bg-blue-50/10">
-                                             <div className="flex justify-center flex-col items-center gap-1.5">
-                                                <div className="flex items-center gap-2">
-                                                  <input 
-                                                     type="number"
-                                                     value={cf.sellerFee}
-                                                     onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
-                                                     className="w-16 p-1.5 text-sm border-2 border-blue-100 rounded-lg text-center focus:outline-none focus:border-blue-500 font-bold text-blue-900 bg-white"
-                                                  />
-                                                  <span className="text-xs font-bold text-blue-400">%</span>
-                                                </div>
-                                                {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
-                                                  <span className="text-[10px] text-blue-600 font-bold bg-blue-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
-                                                )}
-                                             </div>
-                                          </td>
-                                          <td className="px-5 py-4 border-l border-slate-100 bg-amber-50/10">
-                                             <div className="flex justify-center flex-col items-center gap-1.5">
-                                                <div className="flex items-center gap-2">
-                                                  <input 
-                                                     type="number"
-                                                     value={cf.mallFee}
-                                                     onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, mallFee: parseFloat(e.target.value) } : p))}
-                                                     className="w-16 p-1.5 text-sm border-2 border-amber-100 rounded-lg text-center focus:outline-none focus:border-amber-500 font-bold text-amber-900 bg-white"
-                                                  />
-                                                  <span className="text-xs font-bold text-amber-400">%</span>
-                                                </div>
-                                                {cf.aiSuggestedMallFee && cf.aiSuggestedMallFee !== cf.mallFee && (
-                                                  <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
-                                                )}
-                                             </div>
-                                          </td>
-                                          <td className="px-5 py-4 text-right">
-                                             {cf.aiSuggestedSellerFee && (
-                                                <button 
-                                                   onClick={() => handleApplyAiSuggestion(cf.id)}
-                                                   className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
-                                                   title={`Gợi ý: ${cf.aiReasoning}`}
-                                                >
-                                                   <Sparkles className="w-4 h-4" /> Áp dụng
-                                                </button>
-                                             )}
-                                          </td>
-                                       </tr>
-                                    ))}
-                                 </tbody>
-                              </table>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[#F3F4F6]">
-                        <div className="space-y-4">
                            <div>
                               <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
                               <div className="border-2 border-dashed border-[#E5E7EB] rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
@@ -463,64 +405,6 @@ export function SettingsPage() {
                            Lưu cấu hình website
                         </button>
                      </div>
-                 </div>
-
-                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
-                    <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
-                       <AppWindow className="w-4 h-4 text-[#2563EB]" /> Quản lý Popup Website
-                    </h3>
-                    
-                    <div className="space-y-4">
-                       <div className="flex items-center justify-between">
-                          <label className="block text-xs font-bold text-[#6B7280] uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
-                          <div className="flex items-center gap-2">
-                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">Không tự động hiển thị</span>
-                             <div className="w-10 h-5 bg-slate-200 rounded-full relative cursor-pointer">
-                                <div className="absolute left-1 top-1.5 w-2 h-2 bg-white rounded-full transition-all" />
-                             </div>
-                          </div>
-                       </div>
-                       
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                          <div className="space-y-4">
-                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Tiêu đề Popup</label>
-                                <input type="text" placeholder="VD: Khuyến Mãi Hè 2024" className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
-                             </div>
-                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Hình ảnh (URL hoặc upload)</label>
-                                <input type="text" placeholder="https://example.com/banner.jpg" className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
-                             </div>
-                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
-                                <div className="flex gap-2">
-                                  <input type="text" placeholder="Tên nút (VD: Xem ngay)" className="w-1/3 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
-                                  <input type="text" placeholder="Link (URL)" className="flex-1 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
-                                </div>
-                             </div>
-                          </div>
-                          
-                          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
-                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
-                             <div className="w-full max-w-[240px] bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden mt-4">
-                               <div className="h-24 bg-indigo-100 flex items-center justify-center">
-                                  <Image className="w-8 h-8 text-indigo-300" />
-                               </div>
-                               <div className="p-3 text-center space-y-2">
-                                  <h4 className="font-bold text-sm text-slate-800">Khuyến Mãi Hè 2024</h4>
-                                  <p className="text-[10px] text-slate-500 line-clamp-2">Săn deal chớp nhoáng với rổ hàng giảm giá 50% cùng nhiều voucher độc quyền.</p>
-                                  <button className="w-full py-1.5 bg-indigo-600 text-white text-[10px] font-bold rounded-md hover:bg-indigo-700">Xem ngay</button>
-                               </div>
-                             </div>
-                          </div>
-                       </div>
-                       
-                       <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
-                          <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95">
-                             Lưu thiết lập Popup
-                          </button>
-                       </div>
-                    </div>
                  </div>
               </div>
            )}
@@ -896,11 +780,11 @@ export function SettingsPage() {
               </div>
            )}
 
-           {activeTab === 'notifications' && (
+           {activeTab === 'popup' && (
               <div className="animate-in fade-in duration-300 space-y-6">
                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
                     <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
-                       <Send className="w-4 h-4 text-[#2563EB]" /> Trung tâm Gửi thông báo & Push Notification
+                       <Send className="w-4 h-4 text-[#2563EB]" /> Trung tâm Gửi thông báo (Push Notification)
                     </h3>
 
                     <div className="space-y-4">
@@ -955,6 +839,114 @@ export function SettingsPage() {
                             className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
                           >
                              <Send className="w-4 h-4" /> Bắn thông báo ngay
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+                    <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
+                       <AppWindow className="w-4 h-4 text-[#2563EB]" /> Quản lý Popup Website
+                    </h3>
+                    
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold text-[#6B7280] uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
+                          <div className="flex items-center gap-2">
+                             <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-400 bg-slate-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
+                             <div 
+                               onClick={() => setIsPopupActive(!isPopupActive)}
+                               className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", isPopupActive ? "bg-emerald-500" : "bg-slate-200")}
+                             >
+                                <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", isPopupActive ? "left-[22px]" : "left-1")} />
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                          <div className="space-y-4">
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Tiêu đề Popup</label>
+                                <input 
+                                  type="text" 
+                                  placeholder="VD: Khuyến Mãi Hè 2024" 
+                                  value={popupTitle}
+                                  onChange={(e) => setPopupTitle(e.target.value)}
+                                  className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                                />
+                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Nội dung / Mô tả</label>
+                                <textarea 
+                                  placeholder="Nhập nội dung hiển thị trong popup..." 
+                                  value={popupDesc}
+                                  rows={2}
+                                  onChange={(e) => setPopupDesc(e.target.value)}
+                                  className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
+                                />
+                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Hình ảnh (URL hoặc upload)</label>
+                                <input 
+                                  type="text" 
+                                  placeholder="https://example.com/banner.jpg" 
+                                  value={popupImage}
+                                  onChange={(e) => setPopupImage(e.target.value)}
+                                  className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                                />
+                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
+                                <div className="flex gap-2">
+                                  <input 
+                                    type="text" 
+                                    placeholder="Tên nút (VD: Xem ngay)" 
+                                    value={popupCtaText}
+                                    onChange={(e) => setPopupCtaText(e.target.value)}
+                                    className="w-1/3 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                                  />
+                                  <input 
+                                    type="text" 
+                                    placeholder="Link (URL)" 
+                                    value={popupCtaLink}
+                                    onChange={(e) => setPopupCtaLink(e.target.value)}
+                                    className="flex-1 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                                  />
+                                </div>
+                             </div>
+                          </div>
+                          
+                          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
+                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
+                             <div className="w-full max-w-[240px] bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden mt-4">
+                               {popupImage ? (
+                                  <div className="h-24 overflow-hidden relative">
+                                    <img src={popupImage} alt="Popup Banner Preview" className="w-full h-full object-cover" />
+                                  </div>
+                               ) : (
+                                 <div className="h-24 bg-indigo-100 flex items-center justify-center">
+                                    <Image className="w-8 h-8 text-indigo-300" />
+                                 </div>
+                               )}
+                               <div className="p-3 text-center space-y-2">
+                                  <h4 className="font-bold text-sm text-slate-800 break-words">{popupTitle || '...'}</h4>
+                                  <p className="text-[10px] text-slate-500 line-clamp-3 break-words">{popupDesc || '...'}</p>
+                                  {(popupCtaText || popupCtaLink) && (
+                                     <button className="w-full py-1.5 bg-indigo-600 text-white text-[10px] font-bold rounded-md hover:bg-indigo-700 mt-2 truncate px-2">
+                                        {popupCtaText || 'Click here'}
+                                     </button>
+                                  )}
+                               </div>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
+                          <button 
+                             onClick={() => alert('Đã lưu cấu hình Popup!')}
+                             className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
+                          >
+                             Lưu thiết lập Popup
                           </button>
                        </div>
                     </div>

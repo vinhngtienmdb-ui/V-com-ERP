@@ -22,7 +22,12 @@ import {
   UserCog,
   Trash2,
   Edit2,
-  Settings2
+  Settings2,
+  Building,
+  Lock,
+  Unlock,
+  MapPin,
+  Wallet
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { SellerMetric } from '../types/erp';
@@ -36,7 +41,7 @@ interface SellerPosAccount {
 }
 
 interface PartnerData extends SellerMetric {
-  partnerType: 'seller' | 'dealer';
+  partnerType: 'seller' | 'dealer' | 'factory';
   activeModules: string[];
 }
 
@@ -50,6 +55,8 @@ const MOCK_SELLERS: PartnerData[] = [
     status: 'active',
     taxCode: '0101234567',
     identityCard: '001090123456',
+    address: '123 Nguyen Trai, Q1, HCMC',
+    representative: 'Nguyen Van A',
     commissionRate: 5,
     joinDate: '2023-12-01',
     onboardingStep: 'completed',
@@ -145,15 +152,77 @@ const MOCK_SELLERS: PartnerData[] = [
     onboardingStep: 'verification',
     partnerType: 'dealer',
     activeModules: []
+  },
+  {
+    id: 'SEL-005',
+    name: 'Gia dụng T&T (Factory)',
+    totalProducts: 45,
+    rating: 4.9,
+    gmv: 890000000,
+    status: 'active',
+    taxCode: '0315923940',
+    identityCard: '001090123999',
+    commissionRate: 3,
+    joinDate: '2024-02-15',
+    onboardingStep: 'completed',
+    partnerType: 'factory',
+    activeModules: ['scm', 'pim', 'marketing']
   }
 ];
 
 export function SellerManagement() {
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer'>('all');
+  const [sellers, setSellers] = useState<PartnerData[]>(MOCK_SELLERS);
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer' | 'factory'>('all');
+  const [showConfig, setShowConfig] = useState(false);
   const [selectedSeller, setSelectedSeller] = useState<PartnerData | null>(null);
   const [approvingSeller, setApprovingSeller] = useState<PartnerData | null>(null);
-  const [approvalType, setApprovalType] = useState<'seller' | 'dealer'>('seller');
+  const [adjustingSeller, setAdjustingSeller] = useState<PartnerData | null>(null);
+  const [adjustAmount, setAdjustAmount] = useState('');
+  const [approvalType, setApprovalType] = useState<'seller' | 'dealer' | 'factory'>('seller');
   const [iposFeeStatus, setIposFeeStatus] = useState<string>('paid');
+
+  // Seller config states
+  const [sellerAutoApprove, setSellerAutoApprove] = useState(false);
+  const [sellerRequireTaxId, setSellerRequireTaxId] = useState(true);
+  const [sellerRequireLicense, setSellerRequireLicense] = useState(true);
+  const [sellerUploadLimit, setSellerUploadLimit] = useState('1000');
+  const [sellerPayoutSchedule, setSellerPayoutSchedule] = useState('weekly');
+
+  // Aditional config states
+  const [productModeration, setProductModeration] = useState('auto');
+  const [minRatingActive, setMinRatingActive] = useState('4.0');
+  const [maxPenaltyPoints, setMaxPenaltyPoints] = useState('12');
+  const [requiredFulfillment, setRequiredFulfillment] = useState(false);
+  const [sellerAllowCod, setSellerAllowCod] = useState(true);
+
+  // Advanced config states
+  const [sellerShippingMode, setSellerShippingMode] = useState('platform');
+  const [slaHours, setSlaHours] = useState('24');
+  const [autoReturnLimit, setAutoReturnLimit] = useState('200000');
+
+  const handleToggleLock = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSellers(sellers.map(s => {
+      if (s.id === id) {
+        return { ...s, status: s.status === 'suspended' ? 'active' : 'suspended' as any };
+      }
+      return s;
+    }));
+  };
+
+  const submitAdjustBalance = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adjustingSeller || !adjustAmount) return;
+    
+    setSellers(sellers.map(s => {
+      if (s.id === adjustingSeller.id) {
+         return { ...s, walletBalance: (s.walletBalance || 0) + Number(adjustAmount) };
+      }
+      return s;
+    }));
+    setAdjustingSeller(null);
+    setAdjustAmount('');
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -163,17 +232,239 @@ export function SellerManagement() {
           <p className="text-sm text-[#6B7280] mt-1">Hồ sơ nhà bán, đối soát MST/CCCD và quản lý hoa hồng.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            Báo cáo đối soát
+          <button 
+             onClick={() => setShowConfig(!showConfig)}
+             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2 text-indigo-600"
+          >
+            <Settings2 className="w-4 h-4" />
+            {showConfig ? 'Quay lại Quản lý' : 'Cấu hình'}
           </button>
-          <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
-            Kích hoạt Seller nhanh
-          </button>
+          {!showConfig && (
+             <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
+               Kích hoạt Seller nhanh
+             </button>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {showConfig ? (
+        <div className="animate-in fade-in duration-300 space-y-6">
+           <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+              <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
+                 <Briefcase className="w-4 h-4 text-[#2563EB]" /> Cấu hình Nhà bán hàng
+              </h3>
+
+              <div className="space-y-6">
+                 {/* Section 1: Seller Onboarding & Approval */}
+                 <div>
+                    <h4 className="text-sm font-bold text-slate-800 mb-3">Quy trình Đăng ký & Duyệt</h4>
+                    <div className="space-y-3">
+                       <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
+                          <div>
+                             <label className="text-sm font-bold text-slate-700">Duyệt tự động (Auto-Approve)</label>
+                             <p className="text-xs text-slate-500">Tự động duyệt Seller nộp đủ hồ sơ không cần qua kiểm duyệt tay.</p>
+                          </div>
+                          <div 
+                            onClick={() => setSellerAutoApprove(!sellerAutoApprove)}
+                            className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAutoApprove ? "bg-emerald-500" : "bg-slate-200")}
+                          >
+                             <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", sellerAutoApprove ? "left-[22px]" : "left-1")} />
+                          </div>
+                       </div>
+
+                       <div className="flex items-center gap-4">
+                         <div className="flex-1 flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                            <div>
+                               <label className="text-sm font-bold text-slate-700">Bắt buộc CMND/CCCD/Mã số thuế</label>
+                            </div>
+                            <input 
+                               type="checkbox" 
+                               checked={sellerRequireTaxId} 
+                               onChange={(e) => setSellerRequireTaxId(e.target.checked)}
+                               className="w-4 h-4 text-blue-600 rounded" 
+                            />
+                         </div>
+                         <div className="flex-1 flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                            <div>
+                               <label className="text-sm font-bold text-slate-700">Bắt buộc Giấy phép kinh doanh (Đối với DN)</label>
+                            </div>
+                            <input 
+                               type="checkbox" 
+                               checked={sellerRequireLicense} 
+                               onChange={(e) => setSellerRequireLicense(e.target.checked)}
+                               className="w-4 h-4 text-blue-600 rounded" 
+                            />
+                         </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Section 2: Quotas & Limits */}
+                 <div>
+                    <h4 className="text-sm font-bold text-slate-800 mb-3">Giới hạn & Định mức mặc định</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Số sản phẩm tối đa (Mới mở shop)</label>
+                          <input 
+                            type="number" 
+                            value={sellerUploadLimit}
+                            onChange={(e) => setSellerUploadLimit(e.target.value)}
+                            className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                          />
+                       </div>
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Chu kỳ Đối soát / Payout mặc định</label>
+                          <select 
+                            value={sellerPayoutSchedule}
+                            onChange={(e) => setSellerPayoutSchedule(e.target.value)}
+                            className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+                          >
+                             <option value="daily">Hàng ngày (Daily)</option>
+                             <option value="weekly">Hàng tuần (Weekly)</option>
+                             <option value="biweekly">2 tuần / lần (Bi-weekly)</option>
+                             <option value="monthly">Hàng tháng (Monthly)</option>
+                          </select>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Section 3: Product Moderation */}
+                 <div>
+                    <h4 className="text-sm font-bold text-slate-800 mb-3">Kiểm duyệt sản phẩm & Vận hành</h4>
+                    <div className="space-y-4">
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                             <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Chế độ kiểm duyệt sản phẩm mới</label>
+                             <select 
+                               value={productModeration}
+                               onChange={(e) => setProductModeration(e.target.value)}
+                               className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+                             >
+                                <option value="auto">Tự động duyệt (AI Auto-Approve)</option>
+                                <option value="manual">Duyệt thủ công (Manual review)</option>
+                             </select>
+                          </div>
+                          <div>
+                             <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Yêu cầu tham gia FBP (Fulfillment By Platform)</label>
+                             <select 
+                               value={requiredFulfillment ? "yes" : "no"}
+                               onChange={(e) => setRequiredFulfillment(e.target.value === "yes")}
+                               className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+                             >
+                                <option value="no">Không bắt buộc (Nhà bán tự ship)</option>
+                                <option value="yes">Bắt buộc gửi kho xử lý</option>
+                             </select>
+                          </div>
+                       </div>
+                       
+                       <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50 gap-4">
+                          <div>
+                             <label className="text-sm font-bold text-slate-700">Cho phép Nhà bán bật COD</label>
+                             <p className="text-xs text-slate-500">Khách hàng được quyền nhận hàng mới thanh toán cho các đơn của Seller.</p>
+                          </div>
+                          <div className="flex-shrink-0">
+                             <div 
+                                onClick={() => setSellerAllowCod(!sellerAllowCod)}
+                                className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAllowCod ? "bg-emerald-500" : "bg-slate-200")}
+                             >
+                                <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", sellerAllowCod ? "left-[22px]" : "left-1")} />
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Section 4: Performance & Penalty */}
+                 <div>
+                    <h4 className="text-sm font-bold text-slate-800 mb-3">Hiệu suất & Chế tài vi phạm</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Điểm đánh giá tối thiểu (Duy trì Shop)</label>
+                          <div className="relative">
+                             <input 
+                               type="number" step="0.1"
+                               value={minRatingActive}
+                               onChange={(e) => setMinRatingActive(e.target.value)}
+                               className="w-full p-2 pl-3 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                             />
+                             <span className="absolute right-3 top-1.5 text-sm text-slate-400">⭐</span>
+                          </div>
+                       </div>
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Ngưỡng điểm phạt (Khóa tài khoản)</label>
+                          <div className="relative">
+                             <input 
+                               type="number"
+                               value={maxPenaltyPoints}
+                               onChange={(e) => setMaxPenaltyPoints(e.target.value)}
+                               className="w-full p-2 pl-3 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                             />
+                             <span className="absolute right-3 top-2 text-sm text-slate-400 font-bold text-xs uppercase pt-[2px]">Điểm</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Section 5: Shipping & SLA */}
+                 <div>
+                    <h4 className="text-sm font-bold text-slate-800 mb-3">Vận chuyển & Xử lý đơn hàng (SLA)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Hình thức vận chuyển</label>
+                          <select 
+                            value={sellerShippingMode}
+                            onChange={(e) => setSellerShippingMode(e.target.value)}
+                            className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+                          >
+                             <option value="platform">Sàn lấy và giao hàng (Bưu cục sàn)</option>
+                             <option value="custom">Nhà bán tự cấu hình đối tác vận chuyển</option>
+                             <option value="mixed">Linh hoạt theo vùng</option>
+                          </select>
+                       </div>
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">SLA Xác nhận & Giao hàng (Giờ)</label>
+                          <div className="relative">
+                             <input 
+                               type="number"
+                               value={slaHours}
+                               onChange={(e) => setSlaHours(e.target.value)}
+                               className="w-full p-2 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                             />
+                             <span className="absolute right-3 top-2 text-sm text-slate-400 font-bold text-xs uppercase pt-[2px]">Giờ</span>
+                          </div>
+                       </div>
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Hạn mức hoàn trả tự động (VNĐ)</label>
+                          <div className="relative">
+                             <input 
+                               type="number"
+                               value={autoReturnLimit}
+                               onChange={(e) => setAutoReturnLimit(e.target.value)}
+                               className="w-full p-2 pr-12 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                             />
+                             <span className="absolute right-3 top-2 text-sm text-slate-400 font-bold text-xs pt-[2px]">VNĐ</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
+                    <button 
+                       onClick={() => {
+                          alert('Đã lưu cấu hình Module Nhà bán hàng!');
+                          setShowConfig(false);
+                       }}
+                       className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
+                    >
+                       Lưu cấu hình
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
@@ -239,6 +530,10 @@ export function SellerManagement() {
                 className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'dealer' ? "bg-[#2563EB] text-white" : "text-[#4B5563] hover:bg-slate-50")}
              >Đại lý (Offline)</button>
              <button 
+                onClick={() => setActiveTab('factory')}
+                className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'factory' ? "bg-[#2563EB] text-white" : "text-[#4B5563] hover:bg-slate-50")}
+             >Nhà máy (M2C)</button>
+             <button 
                 onClick={() => setActiveTab('pending')}
                 className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'pending' ? "bg-[#2563EB] text-white" : "text-[#4B5563] hover:bg-slate-50")}
              >Đang chờ duyệt</button>
@@ -257,10 +552,11 @@ export function SellerManagement() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F3F4F6]">
-              {MOCK_SELLERS.filter(s => {
+              {sellers.filter(s => {
                 if (activeTab === 'pending') return s.status === 'pending';
                 if (activeTab === 'seller') return s.partnerType === 'seller';
                 if (activeTab === 'dealer') return s.partnerType === 'dealer';
+                if (activeTab === 'factory') return s.partnerType === 'factory';
                 return true;
               }).map((seller) => (
                 <tr key={seller.id} className="hover:bg-[#F9FAFB] group transition-colors">
@@ -271,11 +567,16 @@ export function SellerManagement() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                           <p className="text-sm font-semibold text-[#111827]">{seller.name}</p>
+                           <p 
+                             className="text-sm font-semibold text-[#111827] cursor-pointer hover:text-blue-600 transition-colors"
+                             onClick={() => setSelectedSeller(seller)}
+                           >{seller.name}</p>
                            {seller.partnerType === 'seller' ? (
                              <span className="text-[9px] bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà bán</span>
-                           ) : (
+                           ) : seller.partnerType === 'dealer' ? (
                              <span className="text-[9px] bg-teal-50 text-teal-600 border border-teal-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Đại lý Offline</span>
+                           ) : (
+                             <span className="text-[9px] bg-purple-50 text-purple-600 border border-purple-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà máy (M2C)</span>
                            )}
                         </div>
                         <p className="text-[10px] text-[#9CA3AF] mt-0.5">Ngày gia nhập: {seller.joinDate}</p>
@@ -297,7 +598,8 @@ export function SellerManagement() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <p className="text-sm font-bold text-[#111827]">{formatCurrency(seller.gmv)}</p>
-                    <p className="text-[10px] text-[#2563EB] font-medium">Hoa hồng: {seller.commissionRate}%</p>
+                    <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-slate-500">Wallet</span></p>
+                    <p className="text-[10px] text-[#2563EB] font-medium mt-0.5">Hoa hồng: {seller.commissionRate}%</p>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col items-center">
@@ -329,8 +631,19 @@ export function SellerManagement() {
                             >
                               <Briefcase className="w-3.5 h-3.5" /> Phân quyền
                             </button>
-                            <button className="p-2 hover:bg-[#F3F4F6] rounded-lg text-[#9CA3AF] hover:text-[#2563EB] transition-all">
-                              <MoreVertical className="w-4 h-4" />
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setAdjustingSeller(seller); }}
+                              className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-all"
+                              title="Cộng/Trừ tiền Wallet"
+                            >
+                              <Wallet className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={(e) => handleToggleLock(seller.id, e)}
+                              className={cn("p-2 rounded-lg transition-all", seller.status === 'suspended' ? "bg-amber-50 text-amber-600 hover:bg-amber-100" : "bg-red-50 text-red-600 hover:bg-red-100")}
+                              title={seller.status === 'suspended' ? "Mở khóa tài khoản" : "Khóa tài khoản"}
+                            >
+                              {seller.status === 'suspended' ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             </button>
                           </>
                         )}
@@ -378,7 +691,7 @@ export function SellerManagement() {
                     </div>
                     <div>
                        <h2 className="text-xl font-bold text-slate-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</h2>
-                       <p className="text-xs text-slate-500 font-medium">Đối tác: <span className="font-bold text-indigo-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : 'Đại lý Offline'}) • MST: {selectedSeller.taxCode}</p>
+                       <p className="text-xs text-slate-500 font-medium">Đối tác: <span className="font-bold text-indigo-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
                     </div>
                  </div>
                  <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-500" /></button>
@@ -431,18 +744,19 @@ export function SellerManagement() {
                        <p className="text-[11px] text-slate-500 mb-4">Chọn các module trên hệ thống ERP mà đối tác này được phép truy cập dựa trên mô hình kinh doanh.</p>
                        <div className="grid grid-cols-2 gap-3">
                          {[
-                           { id: 'dashboard', label: 'Dashboard & Phân tích', reqDealer: true, reqSeller: true },
-                           { id: 'orders', label: 'Quản lý Đơn hàng', reqDealer: false, reqSeller: true },
-                           { id: 'pim', label: 'Quản lý Sản phẩm (PIM)', reqDealer: true, reqSeller: true },
-                           { id: 'ipos', label: 'iPOS Bán hàng', reqDealer: true, reqSeller: false },
-                           { id: 'marketing', label: 'Chiến dịch Marketing', reqDealer: false, reqSeller: true },
-                           { id: 'flashsale', label: 'Flash Sale (Mua chung)', reqDealer: false, reqSeller: true },
-                           { id: 'scm', label: 'Chuỗi cung ứng (Kho)', reqDealer: true, reqSeller: false },
-                           { id: 'hr', label: 'Nhân sự (Giao ca, Lương)', reqDealer: true, reqSeller: false }
+                           { id: 'dashboard', label: 'Dashboard & Phân tích', reqDealer: true, reqSeller: true, reqFactory: true },
+                           { id: 'orders', label: 'Quản lý Đơn hàng', reqDealer: false, reqSeller: true, reqFactory: true },
+                           { id: 'pim', label: 'Quản lý Sản phẩm (PIM)', reqDealer: true, reqSeller: true, reqFactory: true },
+                           { id: 'ipos', label: 'iPOS Bán hàng', reqDealer: true, reqSeller: false, reqFactory: false },
+                           { id: 'marketing', label: 'Chiến dịch Marketing', reqDealer: false, reqSeller: true, reqFactory: true },
+                           { id: 'flashsale', label: 'Flash Sale (Mua chung)', reqDealer: false, reqSeller: true, reqFactory: true },
+                           { id: 'scm', label: 'Chuỗi cung ứng (Kho)', reqDealer: true, reqSeller: false, reqFactory: true },
+                           { id: 'hr', label: 'Nhân sự (Giao ca, Lương)', reqDealer: true, reqSeller: false, reqFactory: true }
                          ].map(mod => {
                            const isActive = selectedSeller.activeModules.includes(mod.id) || 
                                             (selectedSeller.partnerType === 'seller' && mod.reqSeller) ||
-                                            (selectedSeller.partnerType === 'dealer' && mod.reqDealer);
+                                            (selectedSeller.partnerType === 'dealer' && mod.reqDealer) ||
+                                            (selectedSeller.partnerType === 'factory' && mod.reqFactory);
                            
                            return (
                              <label key={mod.id} className={cn("flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-slate-50 transition-all", isActive ? "border-indigo-200 bg-indigo-50/30" : "border-slate-100")}>
@@ -554,7 +868,7 @@ export function SellerManagement() {
                   <div className="md:col-span-5 space-y-6">
                     <div>
                         <h3 className="font-bold text-slate-900 mb-3">Loại hình Đối tác</h3>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                            <button 
                              onClick={() => setApprovalType('seller')}
                              className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'seller' ? "border-blue-500 bg-blue-50/50 shadow-sm" : "border-slate-200 hover:bg-slate-50")}
@@ -577,6 +891,18 @@ export function SellerManagement() {
                               <div>
                                  <p className="text-sm font-bold text-slate-900">Cửa hàng iPOS</p>
                                  <p className="text-[10px] text-slate-500 mt-1">F&B / Retail Offline</p>
+                              </div>
+                           </button>
+                           <button 
+                             onClick={() => setApprovalType('factory')}
+                             className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'factory' ? "border-purple-500 bg-purple-50/50 shadow-sm" : "border-slate-200 hover:bg-slate-50")}
+                           >
+                              <div className={cn("p-2 rounded-full", approvalType === 'factory' ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-500")}>
+                                <Building className="w-5 h-5" />
+                              </div>
+                              <div>
+                                 <p className="text-sm font-bold text-slate-900">Nhà máy M2C</p>
+                                 <p className="text-[10px] text-slate-500 mt-1">Bán trực tiếp</p>
                               </div>
                            </button>
                         </div>
@@ -677,7 +1003,7 @@ export function SellerManagement() {
                                </label>
                              </div>
                            </div>
-                         ) : (
+                         ) : approvalType === 'dealer' ? (
                            <div className="space-y-4 animate-in fade-in duration-300">
                              <div>
                                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Thiết lập Phí phần mềm iPOS</label>
@@ -755,6 +1081,31 @@ export function SellerManagement() {
                                </label>
                              </div>
                            </div>
+                         ) : (
+                           <div className="space-y-4 animate-in fade-in duration-300">
+                             <div>
+                               <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Mức phí Sàn mặc định (M2C) (%)</label>
+                               <input type="number" defaultValue={2.5} step="0.1" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+                             </div>
+                             <div>
+                               <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Phân bổ chiết khấu Nhà Máy - Sàn (%)</label>
+                               <input type="text" defaultValue="80 / 20" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+                             </div>
+                             <div>
+                               <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Hạn mức Lưu kho tĩnh (m³)</label>
+                               <input type="number" defaultValue={1000} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+                             </div>
+                             <div className="pt-2">
+                               <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg cursor-pointer">
+                                 <input type="checkbox" defaultChecked className="rounded text-purple-600 border-slate-300 focus:ring-purple-500" />
+                                 <span className="text-sm font-medium text-slate-700">Xác thực chứng nhận Nguồn gốc (C/O) tự động</span>
+                               </label>
+                               <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg cursor-pointer mt-2">
+                                 <input type="checkbox" defaultChecked className="rounded text-purple-600 border-slate-300 focus:ring-purple-500" />
+                                 <span className="text-sm font-medium text-slate-700">Cổng thanh toán B2B & Công nợ 30 ngày</span>
+                               </label>
+                             </div>
+                           </div>
                          )}
                      </div>
 
@@ -767,7 +1118,7 @@ export function SellerManagement() {
                         </button>
                         <button 
                           onClick={() => setApprovingSeller(null)}
-                          className={cn("flex-1 py-3 text-white rounded-xl font-bold text-sm shadow-sm transition-all shadow-lg hover:-translate-y-0.5", approvalType === 'seller' ? "bg-blue-600 shadow-blue-500/30 hover:bg-blue-700" : "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700")}
+                          className={cn("flex-1 py-3 text-white rounded-xl font-bold text-sm shadow-sm transition-all shadow-lg hover:-translate-y-0.5", approvalType === 'seller' ? "bg-blue-600 shadow-blue-500/30 hover:bg-blue-700" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
                         >
                            Phê duyệt & Kích hoạt
                         </button>
@@ -776,6 +1127,117 @@ export function SellerManagement() {
               </div>
            </div>
         </div>
+      )}
+
+      {selectedSeller && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                 <div>
+                    <h2 className="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-3">Thông tin chi tiết Đối tác</h2>
+                    <p className="text-xs text-slate-500 mt-1 ml-4 font-mono">ID: {selectedSeller.id}</p>
+                 </div>
+                 <button onClick={() => setSelectedSeller(null)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="w-5 h-5" />
+                 </button>
+              </div>
+              <div className="p-6 space-y-6">
+                 <div>
+                    <div className="flex items-center justify-between mb-2">
+                       <h3 className="font-bold text-slate-800 text-lg">{selectedSeller.name}</h3>
+                       <span className={cn(
+                          "px-3 py-1 text-xs font-bold rounded-lg border",
+                          selectedSeller.status === 'active' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                          selectedSeller.status === 'suspended' ? "bg-red-50 text-red-600 border-red-100" :
+                          selectedSeller.status === 'warning' ? "bg-amber-50 text-amber-600 border-amber-100" :
+                          "bg-slate-50 text-slate-600 border-slate-200"
+                        )}>
+                          Trạng thái: {selectedSeller.status.toUpperCase()}
+                       </span>
+                    </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                       <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Mã số thuế</p>
+                       <p className="text-slate-900 font-mono text-sm">{selectedSeller.taxCode || '---'}</p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                       <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">CCCD người đại diện</p>
+                       <p className="text-slate-900 font-mono text-sm">{selectedSeller.identityCard || '---'}</p>
+                    </div>
+                 </div>
+
+                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                    <div>
+                       <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><UserCheck className="w-3.5 h-3.5"/> Người đại diện</p>
+                       <p className="text-slate-900 text-sm font-semibold">{selectedSeller.representative || 'Chưa cập nhật'}</p>
+                    </div>
+                    <div className="pt-2 border-t border-slate-200">
+                       <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><MapPin className="w-3.5 h-3.5"/> Địa chỉ / Trụ sở</p>
+                       <p className="text-slate-900 text-sm">{selectedSeller.address || 'Chưa cập nhật'}</p>
+                    </div>
+                 </div>
+              </div>
+              <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                 <button onClick={() => setSelectedSeller(null)} className="px-5 py-2.5 bg-slate-800 text-white rounded-lg text-sm font-bold shadow-md hover:bg-slate-900 transition-all">Đóng</button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {adjustingSeller && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                 <div>
+                    <h2 className="text-lg font-bold text-slate-900">Điều chỉnh ví điện tử</h2>
+                    <p className="text-xs text-slate-500">Đối tác: {adjustingSeller.name}</p>
+                 </div>
+                 <button onClick={() => setAdjustingSeller(null)} className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-500" /></button>
+              </div>
+              <form onSubmit={submitAdjustBalance} className="p-6 space-y-6">
+                 <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                       <label className="text-xs font-bold text-slate-700 uppercase">Số dư hiện tại</label>
+                    </div>
+                    <div className="text-xl font-bold text-slate-900">{formatCurrency(adjustingSeller.walletBalance || 0)}</div>
+                 </div>
+                 <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                       <label className="text-xs font-bold text-slate-700 uppercase">Số tiền cộng / trừ</label>
+                    </div>
+                    <input 
+                      type="number" 
+                      required
+                      value={adjustAmount}
+                      onChange={(e) => setAdjustAmount(e.target.value)}
+                      placeholder="VD: 500000 (cộng) hoặc -500000 (trừ)"
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+                    />
+                    <p className="text-[11px] text-slate-500 mt-2">Dùng số âm để trừ tiền. Viết liền không dấu phẩy.</p>
+                 </div>
+                 <div className="flex gap-4 pt-4 border-t border-slate-100">
+                    <button 
+                      type="button"
+                      onClick={() => setAdjustingSeller(null)}
+                      className="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
+                    >
+                       Hủy
+                    </button>
+                    <button 
+                      type="submit"
+                      className="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+                    >
+                       Xác nhận
+                    </button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
+
+        </>
       )}
     </div>
   );

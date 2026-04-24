@@ -162,7 +162,7 @@ const MOCK_EMPLOYEES: Employee[] = [
     joinDate: '2023-01-15',
     employeeType: 'full_time',
     status: 'active',
-    contracts: [],
+    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '2024-01-15', expiryDate: '2025-01-14' }],
     skills: [{ name: 'Logistics', level: 90 }, { name: 'Leadership', level: 75 }],
     leaveBalance: { total: 12, used: 4, pending: 1 },
     recentSentiment: 'positive'
@@ -177,7 +177,7 @@ const MOCK_EMPLOYEES: Employee[] = [
     joinDate: '2023-06-01',
     employeeType: 'full_time',
     status: 'active',
-    contracts: [],
+    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '2023-06-01', expiryDate: '2024-05-31' }],
     skills: [{ name: 'Social Media', level: 95 }, { name: 'Creativity', level: 88 }],
     leaveBalance: { total: 12, used: 11, pending: 0 },
     recentSentiment: 'critical'
@@ -202,12 +202,12 @@ const MOCK_PAYROLL: Payroll[] = [
 ];
 
 const HR_METRICS_DATA = [
-  { month: 'T1', attrition: 2.1, hiring: 15 },
-  { month: 'T2', attrition: 1.8, hiring: 12 },
-  { month: 'T3', attrition: 2.4, hiring: 20 },
-  { month: 'T4', attrition: 1.5, hiring: 8 },
-  { month: 'T5', attrition: 1.9, hiring: 18 },
-  { month: 'T6', attrition: 1.2, hiring: 25 },
+  { month: 'T1', attrition: 2.1, hiring: 15, late: 45, absent: 12 },
+  { month: 'T2', attrition: 1.8, hiring: 12, late: 38, absent: 8 },
+  { month: 'T3', attrition: 2.4, hiring: 20, late: 52, absent: 15 },
+  { month: 'T4', attrition: 1.5, hiring: 8, late: 30, absent: 5 },
+  { month: 'T5', attrition: 1.9, hiring: 18, late: 40, absent: 10 },
+  { month: 'T6', attrition: 1.2, hiring: 25, late: 25, absent: 4 },
 ];
 
 // --- ATTENDANCE INSTALLATION SETTINGS ---
@@ -398,6 +398,26 @@ export function HumanResources() {
   ]);
   const [copilotInput, setCopilotInput] = useState('');
 
+  const [searchEmployee, setSearchEmployee] = useState('');
+  const [filterDept, setFilterDept] = useState('all');
+  const [filterPosition, setFilterPosition] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  const [filterDateAtt, setFilterDateAtt] = useState('');
+
+  const filteredEmployees = MOCK_EMPLOYEES.filter(emp => {
+    if (searchEmployee && !emp.fullName.toLowerCase().includes(searchEmployee.toLowerCase()) && !emp.id.toLowerCase().includes(searchEmployee.toLowerCase())) return false;
+    if (filterDept !== 'all' && emp.department !== filterDept) return false;
+    if (filterPosition !== 'all' && emp.position !== filterPosition) return false;
+    if (filterStatus !== 'all' && emp.status !== filterStatus) return false;
+    return true;
+  });
+
+  const filteredAttendance = MOCK_ATTENDANCE.filter(att => {
+    if (filterDateAtt && !att.date.startsWith(filterDateAtt)) return false;
+    return true;
+  });
+
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedCandidateId(id);
     // Needed for Firefox
@@ -515,8 +535,9 @@ export function HumanResources() {
          <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
             <Activity className="w-5 h-5 text-blue-600" /> HR Dashboard Insight
          </h3>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-             <div className="h-72 w-full">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+             <div className="h-72 w-full space-y-2">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Tỷ lệ Tuyển dụng & Nghỉ việc</h4>
                 <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -530,6 +551,21 @@ export function HumanResources() {
                      <Bar yAxisId="left" dataKey="hiring" name="Tuyển mới" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={24} />
                      <Bar yAxisId="right" dataKey="attrition" name="Tỷ lệ nghỉ việc (%)" fill="#FBBF24" radius={[4, 4, 0, 0]} barSize={24} />
                    </BarChart>
+                </ResponsiveContainer>
+             </div>
+             <div className="h-72 w-full space-y-2">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Biểu đồ Vi phạm Chấm công</h4>
+                <ResponsiveContainer width="100%" height="100%">
+                   <RechartsLineChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                     <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
+                     <Tooltip 
+                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+                     />
+                     <Line type="monotone" dataKey="late" name="Đi muộn" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 2, stroke: '#fff' }} />
+                     <Line type="monotone" dataKey="absent" name="Vắng mặt" stroke="#EF4444" strokeWidth={3} dot={{ r: 4, fill: '#EF4444', strokeWidth: 2, stroke: '#fff' }} />
+                   </RechartsLineChart>
                 </ResponsiveContainer>
              </div>
              <div className="space-y-6">
@@ -683,32 +719,74 @@ export function HumanResources() {
         
         {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'attendance_config'].includes(activeTab) ? (
           <>
-            <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center px-6">
-              <div className="flex gap-4">
-                 <div className="relative">
-                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
-                   <input 
-                     type="text" 
-                     placeholder="Tìm nhân viên, kỹ năng, vị trí..." 
-                     className="bg-slate-50 border border-slate-200 rounded-lg px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-64 transition-all" 
-                   />
+             <div className="p-4 bg-white border-b border-[#F3F4F6] flex flex-col gap-4 px-6 relative z-30">
+               <div className="flex justify-between items-center">
+                 <div className="flex gap-4 items-center">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                      <input 
+                        type="text" 
+                        placeholder="Tìm nhân viên, ID..." 
+                        value={searchEmployee}
+                        onChange={(e) => setSearchEmployee(e.target.value)}
+                        className="bg-slate-50 border border-slate-200 rounded-lg px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-64 transition-all" 
+                      />
+                    </div>
+                    {activeTab === 'personnel' && (
+                      <div className="flex gap-2">
+                        <select 
+                          value={filterDept}
+                          onChange={(e) => setFilterDept(e.target.value)}
+                          className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        >
+                          <option value="all">Tất cả Phòng ban</option>
+                          <option value="Marketing">Marketing</option>
+                          <option value="Vận hành Sàn">Vận hành Sàn</option>
+                        </select>
+                        <select 
+                          value={filterPosition}
+                          onChange={(e) => setFilterPosition(e.target.value)}
+                          className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        >
+                          <option value="all">Tất cả Chức danh</option>
+                          <option value="Quản lý kho">Quản lý kho</option>
+                          <option value="KOL Specialist">KOL Specialist</option>
+                        </select>
+                        <select 
+                          value={filterStatus}
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                          className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        >
+                          <option value="all">Tất cả Trạng thái làm việc</option>
+                          <option value="active">Đang làm việc</option>
+                          <option value="inactive">Đã nghỉ việc</option>
+                        </select>
+                      </div>
+                    )}
+                    {activeTab === 'attendance' && (
+                       <div className="flex gap-2">
+                         <input
+                           type="month"
+                           value={filterDateAtt}
+                           onChange={(e) => setFilterDateAtt(e.target.value)}
+                           className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                         />
+                       </div>
+                    )}
                  </div>
-                 <button className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50 transition-all">
-                    <Filter className="w-4 h-4" /> Bộ lọc
-                 </button>
-              </div>
-              {activeTab === 'attendance_config' ? (
-                <div className="flex gap-3">
-                   <button className="bg-white border border-slate-200 px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
-                      <History className="w-4 h-4" /> Nhật ký thay đổi
+                 {activeTab === 'attendance_config' ? (
+                   <div className="flex gap-3">
+                      <button className="bg-white border border-slate-200 px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
+                         <History className="w-4 h-4" /> Nhật ký thay đổi
+                      </button>
+                   </div>
+                 ) : (
+                   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 w-max">
+                      <PlusCircle className="w-4 h-4" /> Thêm mới
                    </button>
-                </div>
-              ) : (
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
-                   <PlusCircle className="w-4 h-4" /> Thêm mới
-                </button>
-              )}
-            </div>
+                 )}
+               </div>
+             </div>
             
             <div className="flex-1 overflow-auto">
                {activeTab === 'attendance_config' ? (
@@ -1080,7 +1158,7 @@ export function HumanResources() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F3F4F6]">
-                {activeTab === 'personnel' && MOCK_EMPLOYEES.map((emp) => (
+                {activeTab === 'personnel' && filteredEmployees.map((emp) => (
                   <tr key={emp.id} onClick={() => setSelectedEmployee(emp)} className="hover:bg-slate-50 transition-colors cursor-pointer group">
                     <td className="px-6 py-5">
                        <p className="text-sm font-bold text-[#111827] group-hover:text-blue-600 transition-colors">{emp.fullName}</p>
@@ -1235,8 +1313,15 @@ export function HumanResources() {
                       </td>
                    </tr>
                 ))}
-                {activeTab === 'attendance' && MOCK_ATTENDANCE.map(record => {
+                {activeTab === 'attendance' && filteredAttendance.map(record => {
                   const emp = MOCK_EMPLOYEES.find(e => e.id === record.employeeId);
+                  
+                  // Calculate hours
+                  const [inH, inM] = record.checkIn.split(':').map(Number);
+                  const [outH, outM] = record.checkOut.split(':').map(Number);
+                  const totalMinutes = (outH * 60 + outM) - (inH * 60 + inM);
+                  const hoursWorked = totalMinutes > 0 ? (totalMinutes / 60).toFixed(1) : 0;
+
                   return (
                     <tr key={record.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-5">
@@ -1244,9 +1329,10 @@ export function HumanResources() {
                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{record.date}</p>
                       </td>
                       <td className="px-6 py-5 text-center">
-                         <div className="flex flex-col">
-                            <span className="text-xs font-bold text-slate-700">In: {record.checkIn}</span>
-                            <span className="text-xs font-medium text-slate-400">Out: {record.checkOut}</span>
+                         <div className="flex flex-col items-center">
+                            <span className="text-xs font-bold text-emerald-600">In: {record.checkIn}</span>
+                            <span className="text-xs font-bold text-amber-600 mt-0.5">Out: {record.checkOut}</span>
+                            <span className="text-[10px] font-bold text-slate-400 mt-1 bg-slate-100 px-2 py-0.5 rounded-full">{hoursWorked} giờ (OT: {record.overtimeHours}h)</span>
                          </div>
                       </td>
                       <td className="px-6 py-5">
@@ -1522,6 +1608,35 @@ export function HumanResources() {
                            <Radar name="Kỹ năng" dataKey="level" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.4} />
                          </RadarChart>
                        </ResponsiveContainer>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                       {selectedEmployee.skills?.map((s, i) => (
+                         <div key={i} className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 flex items-center justify-between gap-3 text-xs flex-1 min-w-[140px]">
+                           <span className="font-bold">{s.name}</span>
+                           <span className="font-mono">{s.level}%</span>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+
+                 {/* Contracts */}
+                 <div className="space-y-4">
+                    <h3 className="font-bold tracking-widest uppercase text-xs text-slate-400 flex items-center gap-2">
+                       <FileText className="w-4 h-4 text-purple-500"/> Lịch sử Hợp đồng
+                    </h3>
+                    <div className="space-y-2">
+                       {selectedEmployee.contracts?.map((c, i) => (
+                         <div key={i} className="bg-slate-50 border border-slate-100 rounded-lg p-3">
+                           <p className="text-xs font-bold text-slate-800 mb-1">{c.type}</p>
+                           <div className="flex justify-between items-center text-[10px] text-slate-500 uppercase font-mono">
+                              <span>Ký: {c.signDate}</span>
+                              <span className="text-blue-500 font-bold">Hết hạn: {c.expiryDate}</span>
+                           </div>
+                         </div>
+                       ))}
+                       {(!selectedEmployee.contracts || selectedEmployee.contracts.length === 0) && (
+                         <p className="text-xs text-slate-400 italic">Chưa có dữ liệu hợp đồng</p>
+                       )}
                     </div>
                  </div>
 

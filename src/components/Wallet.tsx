@@ -75,13 +75,26 @@ const MOCK_GATEWAYS: PaymentGateway[] = [
 ];
 
 export function WalletHub() {
-  const [activeTab, setActiveTab] = useState<'wallet' | 'escrow' | 'gateway' | 'banking'>('wallet');
+  const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking'>('history');
   const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);
   const [transactionAmount, setTransactionAmount] = useState('');
   const [selectedBank, setSelectedBank] = useState(MOCK_BANK_ACCOUNTS[0]);
   const [gateways, setGateways] = useState(MOCK_GATEWAYS);
+
+  const [searchHistory, setSearchHistory] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterDate, setFilterDate] = useState('');
+
+  const filteredTransactions = MOCK_TRANSACTIONS.filter((txn) => {
+    if (searchHistory && !txn.id.toLowerCase().includes(searchHistory.toLowerCase()) && !txn.userId.toLowerCase().includes(searchHistory.toLowerCase())) return false;
+    if (filterType !== 'all' && txn.type !== filterType) return false;
+    if (filterStatus !== 'all' && txn.status !== filterStatus) return false;
+    if (filterDate && !txn.timestamp.startsWith(filterDate)) return false;
+    return true;
+  });
 
   const setPreferredGateway = (id: string) => {
     setGateways(gateways.map(gw => ({
@@ -315,7 +328,7 @@ export function WalletHub() {
       <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden p-2 min-h-[600px]">
         <div className="flex border-b border-slate-100 bg-slate-50/50 p-1.5 overflow-x-auto scrollbar-hide">
            {[
-             { id: 'wallet', label: 'Giao dịch', icon: History },
+             { id: 'history', label: 'Lịch sử giao dịch', icon: History },
              { id: 'banking', label: 'Tài khoản Ngân hàng', icon: Landmark },
              { id: 'escrow', label: 'Bảo mật Ký quỹ', icon: ShieldCheck },
              { id: 'gateway', label: 'Cổng thanh toán', icon: Smartphone }
@@ -335,32 +348,52 @@ export function WalletHub() {
 
         <div className="p-8">
            <AnimatePresence mode="wait">
-             {activeTab === 'wallet' && (
+             {activeTab === 'history' && (
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
                  className="space-y-6"
                >
-                 <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-50 p-4 rounded-lg">
-                    <div className="relative flex-1 group">
+                 <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center bg-slate-50 p-4 rounded-lg">
+                    <div className="relative flex-1 group w-full xl:max-w-md">
                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                        <input 
                          type="text" 
-                         placeholder="Tìm theo Mã giao dịch, User ID, Đơn hàng..." 
+                         value={searchHistory}
+                         onChange={(e) => setSearchHistory(e.target.value)}
+                         placeholder="Tìm theo Mã GD, User ID..." 
                          className="w-full bg-white border border-slate-200 rounded-lg pl-12 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                        />
                     </div>
-                    <div className="flex gap-2">
-                       <button 
-                          onClick={createVirtualVA}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+                    <div className="flex flex-wrap gap-2 w-full xl:w-auto">
+                       <input 
+                         type="date"
+                         value={filterDate}
+                         onChange={(e) => setFilterDate(e.target.value)}
+                         className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 focus:outline-none focus:border-blue-500"
+                       />
+                       <select 
+                         value={filterType}
+                         onChange={(e) => setFilterType(e.target.value)}
+                         className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 focus:outline-none focus:border-blue-500"
                        >
-                          <Plus className="w-3.5 h-3.5" /> Tạo Virtual Account
-                       </button>
-                       <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 flex items-center gap-2 hover:bg-white transition-all">
-                          <Filter className="w-3.5 h-3.5" /> Bộ lọc
-                       </button>
-                       <button className="px-4 py-2 bg-[#111827] text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-all">
+                         <option value="all">Loại GD: Tất cả</option>
+                         <option value="deposit">Nạp tiền</option>
+                         <option value="withdraw">Rút tiền</option>
+                         <option value="payment">Thanh toán</option>
+                         <option value="payout">Payout</option>
+                       </select>
+                       <select 
+                         value={filterStatus}
+                         onChange={(e) => setFilterStatus(e.target.value)}
+                         className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 focus:outline-none focus:border-blue-500"
+                       >
+                         <option value="all">Trạng thái: Tất cả</option>
+                         <option value="success">Thành công</option>
+                         <option value="pending">Đang xử lý</option>
+                         <option value="failed">Thất bại</option>
+                       </select>
+                       <button className="px-4 py-2 bg-[#111827] text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-all ml-auto xl:ml-0">
                           Xuất CSV <ArrowDownRight className="w-3.5 h-3.5" />
                        </button>
                     </div>
@@ -379,7 +412,11 @@ export function WalletHub() {
                           </tr>
                        </thead>
                        <tbody className="divide-y divide-slate-50">
-                          {MOCK_TRANSACTIONS.map(txn => (
+                          {filteredTransactions.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className="py-8 text-center text-sm text-slate-500 font-medium">Không tìm thấy giao dịch nào phù hợp.</td>
+                            </tr>
+                          ) : filteredTransactions.map(txn => (
                              <tr key={txn.id} className="hover:bg-slate-50 transition-all group">
                                 <td className="px-6 py-4">
                                    <div className="flex items-center gap-2">

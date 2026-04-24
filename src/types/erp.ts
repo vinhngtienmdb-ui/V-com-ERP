@@ -21,9 +21,12 @@ export interface SellerMetric {
   totalProducts: number;
   rating: number;
   gmv: number;
+  walletBalance?: number;
   status: 'active' | 'suspended' | 'warning' | 'pending';
   taxCode: string;
   identityCard: string;
+  address?: string;
+  representative?: string;
   commissionRate: number;
   joinDate: string;
   onboardingStep: 'documents' | 'verification' | 'completed';
@@ -47,7 +50,7 @@ export interface Customer {
   totalSpent: number;
   orderCount: number;
   lastOrderDate: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'locked';
   channels: ('zalo' | 'facebook' | 'web' | 'hotline')[];
   rfmScore?: { recency: number; frequency: number; monetary: number };
   activities?: CustomerActivity[];
