@@ -23,14 +23,27 @@ import {
   Edit2,
   Store,
   MessageSquare,
-  AlertCircle
+  AlertCircle,
+  Image,
+  Bell,
+  Send
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
+import { useNotifications } from '../context/NotificationContext';
 
 interface Department { id: string; name: string; manager: string; staffCount: number; parentId?: string; }
 interface JobTitle { id: string; name: string; department: string; }
 interface JobRank { id: string; name: string; level: number; }
+interface CategoryFee { 
+  id: string; 
+  name: string; 
+  sellerFee: number; 
+  mallFee: number; 
+  aiSuggestedSellerFee?: number; 
+  aiSuggestedMallFee?: number; 
+  aiReasoning?: string;
+}
 
 const MOCK_DEPARTMENTS: Department[] = [
   { id: 'D-001', name: 'Vận hành Sàn', manager: 'Lê Hoàng Minh', staffCount: 45 },
@@ -72,15 +85,21 @@ const MOCK_PROVINCES = [
 ];
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website'>('general');
-  const [fees, setFees] = useState({
-    'Điện tử & Công nghệ': '3%',
-    'Thời trang & Phụ kiện': '8%',
-    'Gia dụng & Đời sống': '5%',
-    'Sức khỏe & Sắc đẹp': '10%',
-  });
+  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'notifications'>('general');
+  const [notiTitle, setNotiTitle] = useState('');
+  const [notiMessage, setNotiMessage] = useState('');
+  const [notiStatus, setNotiStatus] = useState('');
+  const { addNotification } = useNotifications();
+  const [categoryFees, setCategoryFees] = useState<CategoryFee[]>([
+    { id: '1', name: 'Điện tử & Công nghệ', sellerFee: 3, mallFee: 5, aiSuggestedSellerFee: 3.5, aiSuggestedMallFee: 5.5, aiReasoning: 'Nhu cầu cao, biên lợi nhuận seller ổn định ở mức 18%.' },
+    { id: '2', name: 'Thời trang & Phụ kiện', sellerFee: 8, mallFee: 12, aiSuggestedSellerFee: 7.2, aiSuggestedMallFee: 10.5, aiReasoning: 'Cạnh tranh gắt gao, giảm phí để hút Seller chất lượng cao.' },
+    { id: '3', name: 'Gia dụng & Đời sống', sellerFee: 5, mallFee: 8 },
+    { id: '4', name: 'Sức khỏe & Sắc đẹp', sellerFee: 10, mallFee: 15 },
+  ]);
   const [isSaving, setIsSaving] = useState(false);
   const [customDomains, setCustomDomains] = useState<string[]>(['erp.vcom.vn']);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const addDomain = () => setCustomDomains([...customDomains, '']);
   const updateDomain = (index: number, value: string) => {
@@ -100,21 +119,32 @@ export function SettingsPage() {
     }, 1000);
   };
 
-  const handleApplyAiSuggestion = (category: string, suggestedFee: number) => {
-    setFees(prev => ({
-      ...prev,
-      [category]: `${suggestedFee}%`
+  const handleApplyAiSuggestion = (id: string) => {
+    setCategoryFees(prev => prev.map(cf => {
+      if (cf.id === id && cf.aiSuggestedSellerFee && cf.aiSuggestedMallFee) {
+        return {
+          ...cf,
+          sellerFee: cf.aiSuggestedSellerFee,
+          mallFee: cf.aiSuggestedMallFee
+        };
+      }
+      return cf;
     }));
-    alert(`Đã áp dụng đề xuất AI cho ngành hàng ${category} (${suggestedFee}%)`);
+    const category = categoryFees.find(c => c.id === id);
+    alert(`Đã áp dụng đề xuất tối ưu AI cho ngành hàng ${category?.name}`);
   };
 
-  const handleApproveAllSuggestions = () => {
-    const updatedFees = { ...fees };
-    MOCK_AI_FEE_SUGGESTIONS.forEach(s => {
-      updatedFees[s.category] = `${s.suggestedFee}%`;
-    });
-    setFees(updatedFees);
-    alert('Đã áp dụng toàn bộ đề xuất tối ưu từ AI!');
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return;
+    const newId = (categoryFees.length + 1).toString();
+    setCategoryFees([...categoryFees, {
+      id: newId,
+      name: newCategoryName,
+      sellerFee: 5,
+      mallFee: 7
+    }]);
+    setNewCategoryName('');
+    setShowAddCategory(false);
   };
 
   return (
@@ -138,13 +168,14 @@ export function SettingsPage() {
         <div className="w-64 space-y-1">
            {[
              { id: 'general', label: 'Cấu hình chung & Phí sàn', icon: Settings },
-             { id: 'website', label: 'Cấu hình Website', icon: AppWindow },
+             { id: 'website', label: 'Cấu hình Website & Popup', icon: AppWindow },
+             { id: 'notifications', label: 'Gửi Thông báo', icon: Bell },
              { id: 'comms', label: 'Tích hợp Kênh (SMS/Zalo)', icon: MessageSquare },
              { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
              { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
              { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
              { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
-             { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Building2 },
+             { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
            ].map((tab) => (
              <button 
                 key={tab.id}
@@ -296,48 +327,106 @@ export function SettingsPage() {
                         </div>
 
                         <div className="space-y-4">
-                           <div>
-                              <label className="block text-xs font-bold text-[#6B7280] mb-4 uppercase tracking-wider">Cấu hình Hoa hồng (Commission Rate)</label>
-                              <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
-                                 <table className="w-full text-sm">
-                                    <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                                       <tr>
-                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Ngành hàng</th>
-                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Phí hiện tại</th>
-                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Thao tác</th>
+                           <div className="flex items-center justify-between mb-4">
+                             <div>
+                               <label className="block text-sm font-bold text-[#111827]">Phí hoa hồng theo Ngành hàng & Loại Nhà Bán</label>
+                               <p className="text-xs text-slate-500 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
+                             </div>
+                             <button 
+                               onClick={() => setShowAddCategory(true)}
+                               className="flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
+                             >
+                                <Plus className="w-4 h-4" /> Thêm ngành hàng
+                             </button>
+                           </div>
+
+                           {showAddCategory && (
+                             <div className="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-200">
+                                <label className="text-sm font-bold text-slate-700 whitespace-nowrap">Tên ngành hàng:</label>
+                                <input 
+                                  type="text" 
+                                  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
+                                  className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
+                                  value={newCategoryName}
+                                  onChange={(e) => setNewCategoryName(e.target.value)}
+                                  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                                />
+                                <button onClick={handleAddCategory} className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700">Lưu</button>
+                                <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Hủy</button>
+                             </div>
+                           )}
+
+                           <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+                              <table className="w-full text-sm">
+                                 <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                                    <tr>
+                                       <th className="px-5 py-4 text-left font-bold text-[#6B7280] text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
+                                       <th className="px-5 py-4 text-center border-l border-slate-200 bg-blue-50/50 w-[25%]">
+                                          <div className="flex flex-col items-center gap-1">
+                                             <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
+                                             <span className="text-[9px] font-medium text-blue-600">Nhà bán cá nhân/nhỏ lẻ</span>
+                                          </div>
+                                       </th>
+                                       <th className="px-5 py-4 text-center border-l border-slate-200 bg-amber-50/50 w-[25%]">
+                                          <div className="flex flex-col items-center gap-1">
+                                             <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
+                                             <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
+                                          </div>
+                                       </th>
+                                       <th className="px-5 py-4 text-right font-bold text-[#6B7280] text-[10px] uppercase tracking-wider w-[20%]">Tối ưu AI</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody className="divide-y divide-[#E5E7EB] bg-white">
+                                    {categoryFees.map((cf) => (
+                                       <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
+                                          <td className="px-5 py-4 text-sm font-bold text-slate-800">{cf.name}</td>
+                                          <td className="px-5 py-4 border-l border-slate-100 bg-blue-50/10">
+                                             <div className="flex justify-center flex-col items-center gap-1.5">
+                                                <div className="flex items-center gap-2">
+                                                  <input 
+                                                     type="number"
+                                                     value={cf.sellerFee}
+                                                     onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
+                                                     className="w-16 p-1.5 text-sm border-2 border-blue-100 rounded-lg text-center focus:outline-none focus:border-blue-500 font-bold text-blue-900 bg-white"
+                                                  />
+                                                  <span className="text-xs font-bold text-blue-400">%</span>
+                                                </div>
+                                                {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
+                                                  <span className="text-[10px] text-blue-600 font-bold bg-blue-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
+                                                )}
+                                             </div>
+                                          </td>
+                                          <td className="px-5 py-4 border-l border-slate-100 bg-amber-50/10">
+                                             <div className="flex justify-center flex-col items-center gap-1.5">
+                                                <div className="flex items-center gap-2">
+                                                  <input 
+                                                     type="number"
+                                                     value={cf.mallFee}
+                                                     onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, mallFee: parseFloat(e.target.value) } : p))}
+                                                     className="w-16 p-1.5 text-sm border-2 border-amber-100 rounded-lg text-center focus:outline-none focus:border-amber-500 font-bold text-amber-900 bg-white"
+                                                  />
+                                                  <span className="text-xs font-bold text-amber-400">%</span>
+                                                </div>
+                                                {cf.aiSuggestedMallFee && cf.aiSuggestedMallFee !== cf.mallFee && (
+                                                  <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
+                                                )}
+                                             </div>
+                                          </td>
+                                          <td className="px-5 py-4 text-right">
+                                             {cf.aiSuggestedSellerFee && (
+                                                <button 
+                                                   onClick={() => handleApplyAiSuggestion(cf.id)}
+                                                   className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
+                                                   title={`Gợi ý: ${cf.aiReasoning}`}
+                                                >
+                                                   <Sparkles className="w-4 h-4" /> Áp dụng
+                                                </button>
+                                             )}
+                                          </td>
                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-[#E5E7EB]">
-                                       {Object.entries(fees).map(([category, fee]) => {
-                                          const suggestion = MOCK_AI_FEE_SUGGESTIONS.find(s => s.category === category);
-                                          return (
-                                             <tr key={category}>
-                                                <td className="px-4 py-3 text-xs font-medium text-slate-800">{category}</td>
-                                                <td className="px-4 py-3">
-                                                   <input 
-                                                      type="text"
-                                                      value={fee}
-                                                      onChange={(e) => setFees(prev => ({ ...prev, [category]: e.target.value }))}
-                                                      className="w-16 p-1 text-xs border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                   />
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                   {suggestion && (
-                                                      <button 
-                                                         onClick={() => setFees(prev => ({ ...prev, [category]: `${suggestion.suggestedFee}%` }))}
-                                                         className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800"
-                                                         title={`Gợi ý: ${suggestion.suggestedFee}% - ${suggestion.reasoning}`}
-                                                      >
-                                                         <Sparkles className="w-3 h-3" /> AI
-                                                      </button>
-                                                   )}
-                                                </td>
-                                             </tr>
-                                          );
-                                       })}
-                                    </tbody>
-                                 </table>
-                              </div>
+                                    ))}
+                                 </tbody>
+                              </table>
                            </div>
                         </div>
                      </div>
@@ -374,6 +463,64 @@ export function SettingsPage() {
                            Lưu cấu hình website
                         </button>
                      </div>
+                 </div>
+
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+                    <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
+                       <AppWindow className="w-4 h-4 text-[#2563EB]" /> Quản lý Popup Website
+                    </h3>
+                    
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold text-[#6B7280] uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
+                          <div className="flex items-center gap-2">
+                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">Không tự động hiển thị</span>
+                             <div className="w-10 h-5 bg-slate-200 rounded-full relative cursor-pointer">
+                                <div className="absolute left-1 top-1.5 w-2 h-2 bg-white rounded-full transition-all" />
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                          <div className="space-y-4">
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Tiêu đề Popup</label>
+                                <input type="text" placeholder="VD: Khuyến Mãi Hè 2024" className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Hình ảnh (URL hoặc upload)</label>
+                                <input type="text" placeholder="https://example.com/banner.jpg" className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
+                                <div className="flex gap-2">
+                                  <input type="text" placeholder="Tên nút (VD: Xem ngay)" className="w-1/3 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                                  <input type="text" placeholder="Link (URL)" className="flex-1 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                                </div>
+                             </div>
+                          </div>
+                          
+                          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
+                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
+                             <div className="w-full max-w-[240px] bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden mt-4">
+                               <div className="h-24 bg-indigo-100 flex items-center justify-center">
+                                  <Image className="w-8 h-8 text-indigo-300" />
+                               </div>
+                               <div className="p-3 text-center space-y-2">
+                                  <h4 className="font-bold text-sm text-slate-800">Khuyến Mãi Hè 2024</h4>
+                                  <p className="text-[10px] text-slate-500 line-clamp-2">Săn deal chớp nhoáng với rổ hàng giảm giá 50% cùng nhiều voucher độc quyền.</p>
+                                  <button className="w-full py-1.5 bg-indigo-600 text-white text-[10px] font-bold rounded-md hover:bg-indigo-700">Xem ngay</button>
+                               </div>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
+                          <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95">
+                             Lưu thiết lập Popup
+                          </button>
+                       </div>
+                    </div>
                  </div>
               </div>
            )}
@@ -743,6 +890,72 @@ export function SettingsPage() {
                              <span className="text-sm font-medium text-slate-700 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
                              <button className="text-[10px] font-bold text-blue-500 hover:text-blue-700 underline">Cấu hình Mẫu tin</button>
                           </label>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           )}
+
+           {activeTab === 'notifications' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+                    <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
+                       <Send className="w-4 h-4 text-[#2563EB]" /> Trung tâm Gửi thông báo & Push Notification
+                    </h3>
+
+                    <div className="space-y-4">
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Tiêu đề thông báo</label>
+                          <input 
+                            type="text" 
+                            placeholder="VD: Thông báo bảo trì hệ thống" 
+                            value={notiTitle}
+                            onChange={(e) => setNotiTitle(e.target.value)}
+                            className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+                          />
+                       </div>
+
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Nội dung thông báo (hỗ trợ văn bản)</label>
+                          <textarea 
+                            rows={4} 
+                            placeholder="Chi tiết thông báo..." 
+                            value={notiMessage}
+                            onChange={(e) => setNotiMessage(e.target.value)}
+                            className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
+                          />
+                       </div>
+
+                       <div>
+                          <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
+                          <select className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
+                             <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
+                             <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
+                             <option value="customer">Tất cả Khách hàng (Storefront App)</option>
+                             <option value="dept_operations">Phòng Vận hành</option>
+                             <option value="dept_cskh">Phòng Chăm sóc Khách hàng</option>
+                          </select>
+                       </div>
+
+                       <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6 items-center">
+                          {notiStatus && (
+                            <span className="text-emerald-600 font-bold text-sm flex items-center gap-1 mr-4">
+                              <CheckCircle2 className="w-4 h-4" /> {notiStatus}
+                            </span>
+                          )}
+                          <button 
+                            onClick={() => {
+                              if (!notiTitle.trim() || !notiMessage.trim()) return;
+                              addNotification(notiTitle, notiMessage);
+                              setNotiStatus('Đã gửi thông báo thành công!');
+                              setNotiTitle('');
+                              setNotiMessage('');
+                              setTimeout(() => setNotiStatus(''), 3000);
+                            }}
+                            className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+                          >
+                             <Send className="w-4 h-4" /> Bắn thông báo ngay
+                          </button>
                        </div>
                     </div>
                  </div>

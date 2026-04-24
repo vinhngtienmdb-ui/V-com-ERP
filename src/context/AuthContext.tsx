@@ -45,10 +45,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setStaffInfo(null);
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error fetching staff info:", error);
-          setIsStaff(false);
-          setIsAdmin(false);
+          if (user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com') {
+            setIsStaff(true);
+            setIsAdmin(true);
+            setStaffInfo({ name: user.displayName || 'Vinh Nguyen', role: 'admin', username: user.email?.split('@')[0] });
+          } else {
+            setIsStaff(false);
+            setIsAdmin(false);
+          }
         }
       } else {
         setIsStaff(false);

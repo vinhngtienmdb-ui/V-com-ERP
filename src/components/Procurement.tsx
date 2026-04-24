@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
   Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
-  Briefcase, Search, Filter, BadgeDollarSign
+  Briefcase, Search, Filter, BadgeDollarSign, Phone, Mail
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -43,6 +43,153 @@ function getColorClasses(color: string) {
     case 'slate':
     default: return 'bg-slate-50 text-slate-600';
   }
+}
+
+const MOCK_SUPPLIERS = [
+  { id: 'SUP-001', name: 'Công ty CP Điện tử LG Việt Nam', category: 'Điện tử & Công nghệ', phone: '0901234567', email: 'sales@lg.com.vn', rating: 4.8, policies: 'Công nợ 30 ngày, Giao hàng miễn phí', status: 'active' },
+  { id: 'SUP-002', name: 'Nhà phân phối Thời trang Yody', category: 'Thời trang & Phụ kiện', phone: '0987654321', email: 'contact@yody.vn', rating: 4.5, policies: 'Thanh toán trước 50%, Đổi trả trong 7 ngày', status: 'active' },
+  { id: 'SUP-003', name: 'Sunhouse VN', category: 'Gia dụng & Đời sống', phone: '0911223344', email: 'partner@sunhouse.com', rating: 4.9, policies: 'Công nợ 45 ngày, Chiết khấu 5% đơn sỉ', status: 'active' },
+  { id: 'SUP-004', name: 'L\'Oréal Việt Nam', category: 'Sức khỏe & Sắc đẹp', phone: '0888999777', email: 'b2b@loreal.vn', rating: 4.7, policies: 'Thanh toán ngay, Hỗ trợ marketing', status: 'active' },
+  { id: 'SUP-005', name: 'Unilever Việt Nam', category: 'Gia dụng & Đời sống', phone: '19001234', email: 'sales.unilever@unilever.com', rating: 4.2, policies: 'Công nợ 60 ngày', status: 'inactive' },
+];
+
+function SupplierManagement({ onBack }: { onBack: () => void }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const filteredSuppliers = MOCK_SUPPLIERS.filter(sup => {
+    const matchesSearch = sup.name.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || sup.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = Array.from(new Set(MOCK_SUPPLIERS.map(s => s.category)));
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onBack} 
+            className="flex items-center justify-center p-2 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-200"
+            title="Quay lại"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Quản lý Nhà cung cấp</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Danh sách {filteredSuppliers.length} nhà cung cấp</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Tìm theo tên, ID NCC..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+            />
+          </div>
+          <div className="relative">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="appearance-none bg-white border border-slate-200 rounded-lg pl-9 pr-8 py-2 text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+            >
+              <option value="all">Tất cả ngành hàng</option>
+              {categories.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          </div>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm">
+            + Thêm NCC
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-200">
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Nhà cung cấp</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Ngành hàng</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Liên hệ</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Chính sách & Hợp đồng</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Đánh giá</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white">
+            {filteredSuppliers.map((supplier) => (
+              <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors group">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm shrink-0">
+                      {supplier.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer">{supplier.name}</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">{supplier.id}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center px-2 py-1 rounded bg-slate-100 text-slate-600 text-[11px] font-semibold">
+                    {supplier.category}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                      <Phone className="w-3 h-3 text-slate-400" />
+                      <span className="font-medium">{supplier.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                      <Mail className="w-3 h-3 text-slate-400" />
+                      <span className="italic">{supplier.email}</span>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-start gap-2 max-w-[200px]">
+                    <FileText className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <p className="text-xs text-slate-600 leading-snug">{supplier.policies}</p>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <span className="text-sm font-bold text-slate-800">{supplier.rating}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span className={cn(
+                    "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider",
+                    supplier.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"
+                  )}>
+                    {supplier.status === 'active' ? 'Đang hợp tác' : 'Tạm dừng'}
+                  </span>
+                </td>
+              </tr>
+            ))}
+            {filteredSuppliers.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                  <Building2 className="w-10 h-10 mx-auto text-slate-300 mb-3" />
+                  <p className="text-sm font-medium">Không tìm thấy nhà cung cấp nào phù hợp.</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 export function Procurement() {
@@ -89,7 +236,9 @@ export function Procurement() {
         </>
       )}
 
-      {activeTab !== 'overview' && (
+      {activeTab === 'sup_list' && <SupplierManagement onBack={() => setActiveTab('overview')} />}
+
+      {activeTab !== 'overview' && activeTab !== 'sup_list' && (
       <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
         <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
            <button 

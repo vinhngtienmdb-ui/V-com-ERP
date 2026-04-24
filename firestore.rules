@@ -121,8 +121,8 @@ service cloud.firestore {
       function isValidOrder(data) {
         return data.total is number && data.total >= 0 &&
                data.items is list && data.items.size() > 0 &&
-               data.status in ['pending', 'completed', 'cancelled', 'returned'] &&
-               (data.paymentMethod == null || data.paymentMethod in ['cash', 'qr', 'pos', 'loyalty', 'loyalty_full']);
+               data.status in ['pending', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returning', 'returned'] &&
+               (data.paymentMethod == null || data.paymentMethod in ['cash', 'qr', 'pos', 'loyalty', 'loyalty_full', 'cod', 'bank_transfer', 'e_wallet']);
       }
     }
 
@@ -139,7 +139,12 @@ service cloud.firestore {
       function isValidCustomer(data) {
         return data.name is string && data.name.size() > 0 &&
                data.phone is string && data.phone.size() >= 10 &&
-               (data.points == null || data.points is number);
+               (data.points == null || data.points is number) &&
+               (data.email == null || data.email is string) &&
+               (data.status == null || data.status is string) &&
+               (data.totalSpent == null || data.totalSpent is number) &&
+               (data.orderCount == null || data.orderCount is number) &&
+               (data.channels == null || data.channels is list);
       }
     }
 

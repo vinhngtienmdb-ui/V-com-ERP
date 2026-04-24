@@ -13,12 +13,13 @@ import {
   Download,
   ShieldCheck,
   Calendar,
-  MoreVertical
+  MoreVertical,
+  Sparkles
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { JournalEntry } from '../types/erp';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export function Finance() {
   const [activeTab, setActiveTab] = useState<'journal' | 'ledger' | 'reports'>('journal');
@@ -42,6 +43,51 @@ export function Finance() {
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
 
+  const addDemoTransactions = async () => {
+    const demo: any[] = [
+      {
+        date: '2024-03-01',
+        description: 'Vốn góp cổ phần',
+        amount: 2000000000,
+        type: 'income',
+        category: 'Vốn',
+        reference: 'PT-01',
+        status: 'completed'
+      },
+      {
+        date: '2024-03-05',
+        description: 'Thanh toán tiền thuê mặt bằng',
+        amount: 150000000,
+        type: 'expense',
+        category: '642 - Chi phí QLDN',
+        reference: 'PC-01',
+        status: 'completed'
+      },
+      {
+         date: '2024-03-10',
+         description: 'Doanh thu bán hàng kỳ 1',
+         amount: 450000000,
+         type: 'income',
+         category: '511 - Doanh thu',
+         reference: 'HD-01',
+         status: 'completed'
+      }
+    ];
+
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (!currentUser) return alert("Cần đăng nhập!");
+
+    for (const t of demo) {
+      await addDoc(collection(db, 'transactions'), {
+        ...t,
+        staffId: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
@@ -50,6 +96,13 @@ export function Finance() {
           <p className="text-sm text-[#6B7280] mt-1">Hệ thống kế toán chuyên sâu theo Thông tư 99/2025/TT-BTC.</p>
         </div>
         <div className="flex gap-3">
+          <button 
+            onClick={addDemoTransactions}
+            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            Thêm Demo
+          </button>
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
             <Printer className="w-4 h-4" />
             In Sổ sách

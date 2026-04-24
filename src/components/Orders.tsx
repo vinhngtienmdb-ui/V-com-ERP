@@ -17,14 +17,15 @@ import {
   Clock,
   Download,
   BrainCircuit,
-  PieChart as PieIcon
+  PieChart as PieIcon,
+  Sparkles
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -233,7 +234,11 @@ const statusLabels = {
 const paymentMethodLabels: Record<string, string> = {
   cod: "Tiền mặt (COD)",
   bank_transfer: "Chuyển khoản",
-  e_wallet: "Ví điện tử"
+  e_wallet: "Ví điện tử",
+  cash: "Tiền mặt (Tại quầy)",
+  qr: "Quét mã QR",
+  pos: "Quẹt thẻ POS",
+  loyalty: "Điểm thưởng"
 };
 
 export function Orders() {
@@ -286,6 +291,51 @@ export function Orders() {
     setIsGenerating(false);
   };
 
+  const addDemoOrders = async () => {
+    // Note: status must be one of: 'pending', 'completed', 'cancelled', 'returned' according to firestore rules
+    // paymentMethod must be 'cash', 'qr', 'pos', 'loyalty', 'loyalty_full', or null
+    const demo = [
+      {
+        customerName: 'Nguyễn Văn A',
+        total: 2500000,
+        status: 'delivered',
+        paymentMethod: 'cod',
+        items: [{name: 'Bàn phím cơ', price: 2500000}],
+        carrier: 'GHTK',
+        tracking: 'GHTK123456789',
+        shippingCost: 35000,
+        source: 'erp'
+      },
+      {
+        customerName: 'Trần Thị B',
+        total: 1200000,
+        status: 'pending',
+        paymentMethod: 'bank_transfer',
+        items: [{name: 'Chuột không dây', price: 1200000}],
+        carrier: 'GHN',
+        tracking: 'GHN987654321',
+        shippingCost: 28000,
+        source: 'erp'
+      }
+    ];
+
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      alert("Bạn cần đăng nhập để thêm demo orders!");
+      return;
+    }
+
+    for (const o of demo) {
+      await addDoc(collection(db, 'orders'), {
+        ...o,
+        staffId: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* ... (Header and Stats Cards remain as is) */}
@@ -295,6 +345,13 @@ export function Orders() {
           <p className="text-sm text-[#6B7280] mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
         </div>
         <div className="flex gap-3">
+          <button 
+            onClick={addDemoOrders}
+            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            Thêm Demo
+          </button>
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
             <Truck className="w-4 h-4" />
             Đẩy đơn hàng loạt (GHTK/GHN)

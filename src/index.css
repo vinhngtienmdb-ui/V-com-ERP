@@ -50,3 +50,34 @@ body {
   animation-name: slide-in-from-bottom;
 }
 
+html[data-theme="dark"] {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #f9fbfc; /* Inverts to roughly very dark slate */
+}
+
+/* Revert images and elements that shouldn't be inverted */
+html[data-theme="dark"] img,
+html[data-theme="dark"] video,
+html[data-theme="dark"] iframe,
+html[data-theme="dark"] .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="nature"] {
+  /* A slight tint for nature theme */
+  position: relative;
+}
+
+html[data-theme="nature"] body {
+  background-color: #f4fdf4 !important;
+}
+
+html[data-theme="nature"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: rgba(16, 185, 129, 0.02); /* emerald tint */
+  pointer-events: none;
+  z-index: 9999;
+}
+

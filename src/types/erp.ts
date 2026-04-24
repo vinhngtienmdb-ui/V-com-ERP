@@ -54,6 +54,9 @@ export interface Customer {
   tier?: string;
   points?: number;
   aiInsight?: string;
+  referrerName?: string;
+  walletBalance?: number;
+  downlineCount?: number;
 }
 
 export interface ShippingInfo {

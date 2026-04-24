@@ -21,6 +21,7 @@ import { AnalyticsBI } from './components/AnalyticsBI';
 import { SalesManagement } from './components/Sales';
 import { LoyaltyManagement } from './components/Loyalty';
 import { SettingsPage } from './components/Settings';
+import { UserProfile } from './components/UserProfile';
 import { WalletHub } from './components/Wallet';
 import { LiveCommerce } from './components/LiveCommerce';
 import { AdManager } from './components/AdManager';
@@ -95,6 +96,7 @@ function AppLayout() {
               <Route path="/org" element={<OrgStructure />} />
               <Route path="/analytics" element={<AnalyticsBI />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<UserProfile />} />
               <Route path="*" element={<Dashboard />} />
             </Routes>
             <AIChatBot />
@@ -132,10 +134,17 @@ function AppContent() {
   );
 }
 
+import { PreferencesProvider } from './context/PreferencesContext';
+import { NotificationProvider } from './context/NotificationContext';
+
 export default function App() {
   return (
-    <StoreProvider>
-      <AppContent />
-    </StoreProvider>
+    <PreferencesProvider>
+      <NotificationProvider>
+        <StoreProvider>
+          <AppContent />
+        </StoreProvider>
+      </NotificationProvider>
+    </PreferencesProvider>
   );
 }
