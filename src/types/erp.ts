@@ -119,6 +119,11 @@ export interface Affiliate {
   ordersCount: number;
   clickThroughRate: number;
   status: 'active' | 'pending';
+  platforms?: ('tiktok' | 'youtube' | 'facebook' | 'instagram')[];
+  followers?: number;
+  bookingPrice?: number;
+  phone?: string;
+  categoryTags?: string[];
 }
 
 // --- SCM & PURCHASING ---

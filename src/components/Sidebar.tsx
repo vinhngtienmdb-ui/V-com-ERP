@@ -62,7 +62,7 @@ const navGroups = [
       { icon: Box, label: 'Quản lý sản phẩm', path: '/pim' },
       { icon: Megaphone, label: 'Marketing & Social', path: '/marketing' },
       { icon: Zap, label: 'Flash Sale & Mua chung', path: '/flash-sale' },
-      { icon: Share2, label: 'Tiếp thị liên kết', path: '/affiliate' },
+      { icon: Share2, label: 'KOL/KOC & Affiliate', path: '/affiliate' },
       { icon: Gem, label: 'Khách hàng thân thiết', path: '/loyalty' },
       { icon: Megaphone, label: 'Quản lý Quảng cáo (Ads)', path: '/ads' },
     ]
