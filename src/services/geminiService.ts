@@ -1,6 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiModel: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiModel) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key || key === 'undefined') {
+      console.warn("GEMINI_API_KEY is not set. Generating mock response.");
+      return null;
+    }
+    aiModel = new GoogleGenAI({ apiKey: key });
+  }
+  return aiModel;
+}
 
 const SYSTEM_INSTRUCTION = `
 You are a helpful customer support AI for VComm, a major e-commerce marketplace in Vietnam. 
@@ -42,6 +54,11 @@ export async function getAiChatResponse(message: string, history: { role: 'user'
       role: 'user',
       parts: [{ text: message }]
     });
+
+    const ai = getAI();
+    if (!ai) {
+      return "Xin chào! (Mock response: Chưa cấu hình GEMINI_API_KEY. Vui lòng thêm vào Variables trên Vercel)";
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
