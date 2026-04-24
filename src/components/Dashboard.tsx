@@ -7,7 +7,13 @@ import {
   Tooltip, 
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  Legend
 } from 'recharts';
 import { 
   DollarSign, 
@@ -18,7 +24,13 @@ import {
   ShieldCheck,
   Package,
   ListOrdered,
-  Users
+  Users,
+  Settings2,
+  LayoutDashboard,
+  X,
+  Activity,
+  PieChart as PieChartIcon,
+  LineChart as LineChartIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency, cn } from '../lib/utils';
@@ -34,6 +46,26 @@ const data = [
   { name: 'T6', gmv: 6.7, traffic: 192000 },
 ];
 
+const categoryData = [
+  { name: 'Thời trang', value: 35 },
+  { name: 'Điện tử', value: 25 },
+  { name: 'Mẹ & Bé', value: 15 },
+  { name: 'Gia dụng', value: 15 },
+  { name: 'Khác', value: 10 },
+];
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+
+const hourlyData = [
+  { time: '08:00', orders: 120 },
+  { time: '10:00', orders: 250 },
+  { time: '12:00', orders: 480 },
+  { time: '14:00', orders: 390 },
+  { time: '16:00', orders: 420 },
+  { time: '18:00', orders: 650 },
+  { time: '20:00', orders: 810 },
+  { time: '22:00', orders: 350 },
+];
+
 const sellerData = [
   { name: 'Mobile World', gmv: '450tr', rating: 4.8 },
   { name: 'Fashion Hub', gmv: '280tr', rating: 4.6 },
@@ -42,25 +74,30 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue }: any) => (
-  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all group">
-    <div className="flex justify-between items-start mb-4">
-      <div className="p-2.5 bg-slate-50 text-slate-500 rounded-lg group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors">
-        <Icon className="w-5 h-5" />
-      </div>
-      <div className={cn(
-        "text-[10px] flex items-center gap-1 font-bold px-2 py-0.5 rounded-full",
-        trend === 'up' ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50"
-      )}>
-        {trend === 'up' ? '▲' : '▼'} {change}%
-      </div>
+  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
+    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 group-hover:scale-110 pointer-events-none">
+       <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
     </div>
-    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">{title}</div>
-    <div className="text-2xl font-bold text-[#111827] tracking-tight">{value}</div>
-    {subValue && (
-      <div className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-slate-50">
-        <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{subValue}</span>
-      </div>
-    )}
+    <div className="relative z-10">
+        <div className="flex justify-between items-start mb-4">
+          <div className="p-3 bg-slate-50 text-slate-600 rounded-xl group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors border border-slate-100 group-hover:border-blue-100 shadow-sm">
+            <Icon className="w-5 h-5" />
+          </div>
+          <div className={cn(
+            "text-xs flex items-center gap-1 font-bold px-2.5 py-1 rounded-full border shadow-sm",
+            trend === 'up' ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200"
+          )}>
+            {trend === 'up' ? '↗' : '↘'} {change}%
+          </div>
+        </div>
+        <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1.5">{title}</div>
+        <div className="text-2xl font-black text-slate-900 tracking-tight">{value}</div>
+        {subValue && (
+          <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500 font-medium">
+            {subValue}
+          </div>
+        )}
+    </div>
   </div>
 );
 
@@ -68,31 +105,56 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
   <button 
     onClick={onClick}
     className={cn(
-      "relative group overflow-hidden p-6 rounded-lg border transition-all hover:shadow-lg text-left",
-      color === 'bg-blue-600' ? "bg-blue-600 border-blue-500" : 
-      color === 'bg-emerald-600' ? "bg-emerald-600 border-emerald-500" : 
-      "bg-slate-900 border-slate-800"
+      "relative group overflow-hidden p-6 rounded-2xl border transition-all duration-300 hover:shadow-xl text-left",
+      color === 'bg-blue-600' ? "bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500 hover:shadow-blue-500/30" : 
+      color === 'bg-emerald-600' ? "bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-500 hover:shadow-emerald-500/30" : 
+      "bg-gradient-to-br from-slate-800 to-slate-950 border-slate-700 hover:shadow-slate-900/30"
     )}
   >
+    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
     <div className="relative z-10 flex flex-col h-full">
-      <div className="p-3 bg-white/10 rounded-lg w-fit mb-4 backdrop-blur-md group-hover:scale-110 transition-transform">
-        <Icon className="w-6 h-6 text-white" />
+      <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
+        <Icon className="w-5 h-5 text-white" />
       </div>
-      <div className="mt-auto">
-        <h3 className="text-white font-bold text-lg leading-tight">{title}</h3>
-        <p className="text-white/60 text-xs mt-1 font-medium">{description}</p>
+      <div className="mt-auto relative z-10">
+        <h3 className="text-white font-bold tracking-tight text-lg mb-1 group-hover:translate-x-1 transition-transform">{title}</h3>
+        <p className="text-white/70 text-xs font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{description}</p>
       </div>
     </div>
-    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-       <Icon className="w-24 h-24 -mr-8 -mt-8" />
+    <div className="absolute -top-8 -right-8 p-4 opacity-[0.08] group-hover:opacity-[0.15] group-hover:rotate-12 transition-all transform scale-150 duration-500 pointer-events-none">
+       <Icon className="w-32 h-32 text-white" />
     </div>
   </button>
 );
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'overview'|'performance'>('overview');
   const [dbOrdersLength, setDbOrdersLength] = useState(0);
   const [dbGMV, setDbGMV] = useState(0);
+  const [dbCustomersLength, setDbCustomersLength] = useState(0);
+  
+  const [config, setConfig] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('dashboard_config');
+    if (saved) return JSON.parse(saved);
+    return {
+      showStats: true,
+      showMainChart: true,
+      showCategorySplit: true,
+      showHourlyOrders: true,
+      showTopSellers: true,
+      showSLA: true,
+      showCommunity: true,
+      showQuickNav: true,
+    };
+  });
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+
+  const handleConfigChange = (key: string) => {
+    const newConfig = { ...config, [key]: !config[key] };
+    setConfig(newConfig);
+    localStorage.setItem('dashboard_config', JSON.stringify(newConfig));
+  };
 
   const [delayedOrdersCount, setDelayedOrdersCount] = useState(0);
 
@@ -123,261 +185,339 @@ export function Dashboard() {
       setDelayedOrdersCount(delayedCount);
     });
 
+    const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
+      setDbCustomersLength(snap.size);
+    });
+
     return () => {
       unsubOrders();
+      unsubCustomers();
     };
   }, []);
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
-      
-      {delayedOrdersCount > 0 && (
-         <div 
-          onClick={() => navigate('/orders')}
-          className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-center justify-between cursor-pointer hover:bg-red-100 transition-all animate-in slide-in-from-top-4 duration-500 shadow-sm"
-         >
-            <div className="flex items-center gap-3">
-               <div className="p-2 bg-red-100 text-red-600 rounded-lg">
-                  <ShoppingCart className="w-5 h-5" />
-               </div>
-               <div>
-                  <h4 className="text-sm font-black text-red-900 tracking-tight">Cảnh báo SLA: Có {delayedOrdersCount} đơn hàng tồn đọng {">"}24h</h4>
-                  <p className="text-xs text-red-700 mt-0.5">Một số đơn hàng đang ở trạng thái 'Chờ xác nhận' hoặc 'Đang đóng gói' quá hạn cam kết vận hành.</p>
-               </div>
-            </div>
-            <button className="px-4 py-2 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md shadow-red-200 hover:bg-red-700 transition-all">Xử lý ngay</button>
-         </div>
-      )}
-
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="header-title">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-widest border border-blue-100">Live Dashboard</span>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Đã đồng bộ realtime</span>
+    <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12">
+      {/* Header Dashboard */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-lg uppercase tracking-widest border border-blue-200/60 shadow-sm">Live Dashboard</span>
+            <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
+               <span className="relative flex h-2 w-2">
+                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+               </span>
+               Đồng bộ realtime
+            </span>
           </div>
-          <h1 className="text-3xl font-bold text-[#111827] tracking-tight">Tổng quan Sàn Thương mại</h1>
-          <p className="text-sm text-[#6B7280] mt-1.5 max-w-lg">Báo cáo sức khỏe kinh doanh đa kênh, hiệu suất nhà bán và thông số iPOS.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Tổng quan Hệ thống</h1>
+          <p className="text-sm text-slate-500 mt-2 max-w-lg font-medium">Theo dõi hiệu suất đa kênh.</p>
         </div>
+        
         <div className="flex gap-3">
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <button className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all flex items-center justify-center gap-2 shadow-sm">
+            <Activity className="w-4 h-4 text-emerald-500" />
             Báo cáo Vận hành
           </button>
-          <button className="bg-[#111827] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-slate-200">
+          <button className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-600 transition-all shadow-md shadow-slate-900/10 hover:shadow-blue-600/30">
             Xuất dữ liệu BI
+          </button>
+          <button 
+            onClick={() => setIsConfigOpen(true)}
+            className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
+          >
+            <Settings2 className="w-4 h-4 text-blue-500" />
+            Tùy biến
           </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="GMV (Doanh số Thực tế)" 
-          value={formatCurrency(dbGMV || 6700000000)} 
-          change="15.8" 
-          icon={DollarSign} 
-          trend="up" 
-          subValue="Đã bao gồm đơn iPOS"
-        />
-        <StatCard 
-          title="Traffic (Lượt truy cập)" 
-          value="192,450" 
-          change="24.2" 
-          icon={Eye} 
-          trend="up" 
-          subValue="Tỉ lệ chuyển đổi: 3.2%"
-        />
-        <StatCard 
-          title="Tổng đơn hàng (Real-time)" 
-          value={dbOrdersLength > 0 ? dbOrdersLength.toLocaleString() : "8,560"} 
-          change="8.2" 
-          icon={ShoppingCart} 
-          trend="up" 
-          subValue={dbOrdersLength > 0 ? "Số liệu thực tế từ Database" : "Trung bình: 780k / đơn"}
-        />
-        <StatCard 
-          title="Seller hoạt động" 
-          value="426" 
-          change="2.1" 
-          icon={Store} 
-          trend="up" 
-          subValue="12 Seller mới tuần này"
-        />
+      {config.showQuickNav && (
+        <div className="flex flex-wrap items-center gap-3">
+           <button onClick={() => navigate('/pim')} className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all flex items-center gap-2 shadow-sm group">
+              <Package className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
+              PIM System
+           </button>
+           <button onClick={() => navigate('/orders')} className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
+              <ListOrdered className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+              Order Center
+           </button>
+           <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
+              <Users className="w-4 h-4 text-slate-700 group-hover:scale-110 transition-transform" />
+              Seller Hub
+           </button>
+        </div>
+      )}
+
+      {delayedOrdersCount > 0 && (
+        <div 
+          onClick={() => navigate('/orders')}
+          className="bg-gradient-to-br from-red-50 to-white border border-red-200 p-4 rounded-xl cursor-pointer hover:shadow-md transition-all group"
+        >
+           <div className="flex items-start gap-4">
+              <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all shadow-sm shrink-0 mt-0.5">
+                 <ShoppingCart className="w-5 h-5" />
+              </div>
+              <div>
+                 <h4 className="text-sm font-black text-red-900 tracking-tight flex items-center gap-2">
+                    Cảnh báo SLA: {delayedOrdersCount} đơn &gt;24h
+                    <span className="relative flex h-2 w-2">
+                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                 </h4>
+                 <p className="text-[13px] text-red-700 mt-1 font-medium leading-relaxed">Đơn chờ xác nhận hoặc đóng gói trễ hạn. Cần xử lý ngay.</p>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-slate-200 shrink-0">
+        <button onClick={() => setActiveTab('overview')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'overview' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-900")}>
+          Kinh doanh & Bán hàng
+        </button>
+        <button onClick={() => setActiveTab('performance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'performance' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-900")}>
+          Hiệu suất Vận hành
+        </button>
       </div>
 
-      {/* Main Insights Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
-        <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden h-full flex flex-col">
-            <div className="px-6 py-5 border-b border-[#F3F4F6] flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-[#111827]">Biểu đồ Tăng trưởng & Xu hướng</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Thời gian: 6 tháng gần nhất</p>
-              </div>
-              <div className="flex gap-6">
-                 <div className="flex items-center gap-2">
-                   <div className="w-2.5 h-2.5 bg-blue-600 rounded-sm"></div>
-                   <span className="text-xs font-bold text-slate-600 uppercase tracking-tighter">GMV (Tỷ)</span>
-                 </div>
-                 <div className="flex items-center gap-2">
-                   <div className="w-2.5 h-2.5 bg-slate-200 rounded-sm"></div>
-                   <span className="text-xs font-bold text-slate-600 uppercase tracking-tighter">Traffic</span>
-                 </div>
-              </div>
-            </div>
-            <div className="p-6 flex-1 min-h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
-                  <defs>
-                    <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                  <XAxis 
-                    dataKey="name" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }}
-                    dy={12}
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }}
-                    tickFormatter={(value) => `${value}T`}
-                  />
-                  <YAxis 
-                    yAxisId="right"
-                    orientation="right"
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }}
-                    tickFormatter={(value) => `${value / 1000}k`}
-                  />
-                  <Tooltip 
-                    cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                  />
-                  <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
-                  {/* @ts-ignore */}
-                  <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:col-span-4 space-y-6">
-          {/* Quick Nav Cards */}
-          <div className="grid grid-cols-1 gap-4">
-             <QuickActionCard 
-                title="PIM System" 
-                description="Quản lý danh mục & SKU"
-                icon={Package} 
-                onClick={() => navigate('/pim')} 
-                color="bg-blue-600" 
-             />
-             <QuickActionCard 
-                title="Order Center" 
-                description="Xử lý đơn & Logistics"
-                icon={ListOrdered} 
-                onClick={() => navigate('/orders')} 
-                color="bg-emerald-600" 
-             />
-             <QuickActionCard 
-                title="Seller Hub" 
-                description="Quản trị nhà bán hàng"
-                icon={Users} 
-                onClick={() => navigate('/sellers')} 
-                color="bg-slate-900" 
-             />
-          </div>
-
-          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#F3F4F6] flex items-center justify-between">
-              <h3 className="font-bold text-sm text-[#111827]">Top Sellers</h3>
-              <button className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline">Xem tất cả</button>
-            </div>
-            <div className="divide-y divide-[#F9FAFB]">
-              {sellerData.map((seller, index) => (
-                <div key={seller.name} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] transition-colors group cursor-pointer">
+      <div className="space-y-6">
+          {isConfigOpen && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-slate-50 text-slate-400 font-bold text-xs flex items-center justify-center border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
-                      {index + 1}
+                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                      <LayoutDashboard className="w-5 h-5" />
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-[#111827]">{seller.name}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                         <span className="text-[10px] text-amber-500">★ {seller.rating}</span>
-                         <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
-                         <span className="text-[10px] text-slate-400 font-medium lowercase">Gold Tier</span>
+                    <h3 className="font-bold text-slate-900">Tùy biến Dashboard</h3>
+                  </div>
+                  <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-slate-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6">
+                   <p className="text-sm font-medium text-slate-500 mb-6">Chọn các Widget bạn muốn hiển thị trên thẻ Báo cáo.</p>
+                   <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                     {[
+                       { id: 'showStats', label: 'Chỉ số Kinh doanh (GMV, Đơn hàng,...)', icon: DollarSign },
+                       { id: 'showMainChart', label: 'Biểu đồ Tăng trưởng xu hướng', icon: LineChartIcon },
+                       { id: 'showCategorySplit', label: 'Biểu đồ Tỷ trọng Ngành hàng', icon: PieChartIcon },
+                       { id: 'showQuickNav', label: 'Lối tắt chức năng (Sidebar)', icon: ArrowUpRight },
+                       { id: 'showTopSellers', label: 'Bảng xếp hạng Nhà bán hàng', icon: Store },
+                       { id: 'showCommunity', label: 'Thông tin Cộng đồng', icon: Users },
+                       { id: 'showSLA', label: 'Chỉ số SLA Vận hành', icon: ShieldCheck },
+                       { id: 'showHourlyOrders', label: 'Biểu đồ Đơn hàng theo giờ', icon: ListOrdered },
+                     ].map(item => (
+                       <div key={item.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => handleConfigChange(item.id)}>
+                         <div className="flex items-center gap-3">
+                            <item.icon className="w-4 h-4 text-slate-500" />
+                            <span className="text-sm font-bold text-slate-700">{item.label}</span>
+                         </div>
+                         <div className={cn("w-10 h-6 rounded-full p-1 transition-colors relative", config[item.id] ? "bg-emerald-500" : "bg-slate-200")}>
+                            <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200", config[item.id] ? "translate-x-4" : "translate-x-0")}></div>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                </div>
+                <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                   <button onClick={() => setIsConfigOpen(false)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-sm transition-colors">
+                      Hoàn tất
+                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'overview' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              {config.showStats && (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <StatCard title="GMV Thực tế" value={formatCurrency(dbGMV || 6700000000)} change="15.8" icon={DollarSign} trend="up" />
+                <StatCard title="Traffic (Truy cập)" value="192,450" change="24.2" icon={Eye} trend="up" />
+                <StatCard title="Tổng đơn hàng" value={dbOrdersLength > 0 ? dbOrdersLength.toLocaleString() : "8,560"} change="8.2" icon={ShoppingCart} trend="up" />
+                <StatCard title="Khách hàng" value={dbCustomersLength > 0 ? dbCustomersLength.toLocaleString() : "15,248"} change="5.4" icon={Users} trend="up" />
+                <StatCard title="Seller hoạt động" value="426" change="2.1" icon={Store} trend="up" />
+                <StatCard title="Tỉ lệ chuyển đổi" value="3.8%" change="1.2" icon={ListOrdered} trend="up" />
+              </div>
+              )}
+
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                <div className="xl:col-span-8 space-y-6">
+                  {config.showMainChart && (
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                      <div>
+                        <h3 className="font-bold text-slate-900 tracking-tight text-lg">Biểu đồ Tăng trưởng & Xu hướng</h3>
+                      </div>
+                      <div className="flex gap-6">
+                         <div className="flex items-center gap-2">
+                           <div className="w-2.5 h-2.5 bg-blue-600 rounded-sm"></div>
+                           <span className="text-xs font-bold text-slate-600 uppercase">GMV (Tỷ)</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div className="w-2.5 h-2.5 bg-slate-200 rounded-sm"></div>
+                           <span className="text-xs font-bold text-slate-600 uppercase">Traffic</span>
+                         </div>
                       </div>
                     </div>
+                    <div className="p-6 h-[400px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={data}>
+                          <defs>
+                            <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
+                              <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} dy={12}/>
+                          <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value}T`}/>
+                          <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value / 1000}k`}/>
+                          <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}/>
+                          <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
+                          {/* @ts-ignore */}
+                          <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-[#111827]">{seller.gmv}</p>
-                    <p className="text-[10px] text-emerald-600 font-bold">+12%</p>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {config.showCommunity && (
+                    <div className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-xl p-8 text-white relative overflow-hidden shadow-md shadow-slate-900/10 border border-slate-800 flex flex-col justify-between">
+                      <div className="relative z-10">
+                         <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-lg shadow-lg shadow-blue-500/20 shadow-inner border border-blue-400/50">
+                               <Users className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold tracking-tight">Cộng đồng Seller</h3>
+                            </div>
+                         </div>
+                         <p className="text-slate-400 text-xs leading-relaxed max-w-sm">Hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.</p>
+                      </div>
+                      <div className="mt-6">
+                         <button className="px-5 py-2 bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-blue-50 transition-all shadow-md">Duyệt Seller mới</button>
+                      </div>
+                      <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-white opacity-[0.02]" />
+                    </div>
+                    )}
+
+                    {config.showCategorySplit && (
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                      <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 className="font-bold text-slate-900 text-sm">Tỷ trọng Ngành</h3>
+                      </div>
+                      <div className="p-4 flex-1 h-[220px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value">
+                              {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                            </Pie>
+                            <Tooltip />
+                            <Legend verticalAlign="bottom" height={24} iconType="circle" wrapperStyle={{ fontSize: '11px' }}/>
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-         <div className="bg-[#111827] rounded-lg p-8 text-white relative overflow-hidden shadow-xl shadow-slate-200">
-            <div className="relative z-10 flex flex-col h-full bg-blend-soft-light">
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-blue-500 rounded-lg">
-                     <Users className="w-6 h-6 text-white" />
+                <div className="xl:col-span-4 space-y-6">
+                  {config.showTopSellers && (
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-t-xl">
+                      <h3 className="font-bold text-slate-900 text-sm tracking-tight">Top Sellers</h3>
+                      <button className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors">Xem tất cả</button>
+                    </div>
+                    <div className="divide-y divide-slate-100">
+                      {sellerData.map((seller, index) => (
+                        <div key={seller.name} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center border border-slate-200/60 group-hover:bg-blue-50 group-hover:text-blue-700 transition-all">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900">{seller.name}</p>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                 <span className="text-[10px] text-amber-500 font-bold">★ {seller.rating}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs font-bold text-slate-900">{seller.gmv}</p>
+                            <p className="text-[10px] text-emerald-600 font-bold mt-0.5">+12%</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Cộng đồng Nhà bán hàng</h3>
-                    <p className="text-blue-300/60 text-xs font-bold uppercase tracking-widest mt-0.5">Tăng trưởng: +24% YoY</p>
-                  </div>
-               </div>
-               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-                  Ghi nhận sự bùng nổ của các thương hiệu Local Brand và xu hướng Direct-to-Consumer (D2C). Hiện có hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.
-               </p>
-               <div className="mt-8 flex gap-4">
-                  <button className="px-6 py-2.5 bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-blue-50 transition-colors">Duyệt Seller mới</button>
-                  <button className="px-6 py-2.5 bg-white/10 text-white font-bold rounded-lg text-xs hover:bg-white/20 transition-colors border border-white/10">Phân tích Phân khúc</button>
-               </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <Users className="absolute -bottom-10 -right-10 w-64 h-64 text-white opacity-[0.03]" />
-         </div>
+          )}
 
-         <div className="bg-white p-8 rounded-lg border border-[#E5E7EB] shadow-sm">
-            <div className="flex items-center justify-between mb-8">
-               <h3 className="font-bold text-[#111827]">Chỉ số Hiệu vận hành (SLA)</h3>
-               <div className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-100 uppercase tracking-widest">Hệ thống ổn định</div>
-            </div>
-            <div className="space-y-8">
-               {[
-                 { label: 'Tỷ lệ Hoàn thành Đơn (SLA)', value: 94.2, color: 'bg-blue-600' },
-                 { label: 'Tỉ lệ Duyệt Sản phẩm Tự động', value: 82.5, color: 'bg-emerald-500' },
-                 { label: 'Tỷ lệ Phản hồi Chat sàn', value: 3.2, color: 'bg-amber-500', max: 5 }
-               ].map((item) => (
-                 <div key={item.label} className="group cursor-default">
-                   <div className="flex justify-between items-end mb-2.5">
-                     <span className="text-xs font-bold text-slate-500 uppercase tracking-tight group-hover:text-slate-900 transition-colors">{item.label}</span>
-                     <span className="text-sm font-bold text-[#111827]">{item.value}%</span>
-                   </div>
-                   <div className="h-2 w-full bg-slate-50 rounded-full border border-slate-100 overflow-hidden">
-                     <div 
-                        className={cn("h-full transition-all duration-1000 ease-out", item.color)} 
-                        style={{ width: `${item.max ? (item.value / item.max) * 100 : item.value}%` }}
-                     ></div>
-                   </div>
+          {activeTab === 'performance' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                 {config.showSLA && (
+                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                       <h3 className="font-bold text-slate-900 text-lg">Hiệu vận hành (SLA)</h3>
+                       <div className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200 uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                          Ổn định
+                       </div>
+                    </div>
+                    <div className="space-y-5">
+                       {[
+                         { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-500', unit: '%' },
+                         { label: 'Tỉ lệ Duyệt Tự động', value: 82.5, color: 'bg-emerald-500', unit: '%' },
+                         { label: 'Tỷ lệ Hủy/Hoàn trả', value: 2.4, color: 'bg-rose-500', unit: '%' },
+                         { label: 'Đóng gói TB', value: 3.2, color: 'bg-amber-500', max: 5, unit: 'h' },
+                       ].map((item) => (
+                         <div key={item.label} className="group">
+                           <div className="flex justify-between items-end mb-2">
+                             <span className="text-xs font-bold text-slate-600">{item.label}</span>
+                             <span className="text-sm font-black text-slate-900">{item.value}{item.unit}</span>
+                           </div>
+                           <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                             <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.max ? (item.value / item.max) * 100 : item.value}%` }}></div>
+                           </div>
+                         </div>
+                       ))}
+                    </div>
                  </div>
-               ))}
+                 )}
+
+                 {config.showHourlyOrders && (
+                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                      <h3 className="font-bold text-slate-900 text-lg">Đơn hàng theo Giờ</h3>
+                    </div>
+                    <div className="p-6 flex-1 min-h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={hourlyData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                          <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} dy={8} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} />
+                          <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }} />
+                          <Line type="monotone" dataKey="orders" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                 </div>
+                 )}
+              </div>
             </div>
-         </div>
-      </div>
+          )}
+        </div>
     </div>
   );
 }
