@@ -110,7 +110,7 @@ export function SellerManagement() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                 <ShieldCheck className="w-5 h-5" />
@@ -123,7 +123,7 @@ export function SellerManagement() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
                 <Percent className="w-5 h-5" />
@@ -134,7 +134,7 @@ export function SellerManagement() {
           <p className="mt-4 text-[10px] text-[#6B7280]">Tổng doanh thu phí sàn: {formatCurrency(850000000)}</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
              <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
                 <Star className="w-5 h-5" />
@@ -146,7 +146,7 @@ export function SellerManagement() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
           <div className="flex gap-4">
             <div className="relative">
@@ -298,10 +298,10 @@ export function SellerManagement() {
 
       {selectedSeller && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-300">
+           <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-300">
               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold text-xl">
+                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-bold text-xl">
                        {selectedSeller.name.charAt(0)}
                     </div>
                     <div>
@@ -384,7 +384,7 @@ export function SellerManagement() {
                  </div>
 
                  {/* Right Col: RBAC Staff Setup */}
-                 <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                 <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
                     <div className="flex justify-between items-center mb-6">
                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
                           <UserCog className="w-5 h-5 text-indigo-600" /> Phân quyền Tài khoản
@@ -395,7 +395,7 @@ export function SellerManagement() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                       <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm relative overflow-hidden group">
                           <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500" />
                           <div className="flex justify-between items-start">
                              <div className="flex gap-3">
@@ -412,7 +412,7 @@ export function SellerManagement() {
                           </div>
                        </div>
 
-                       <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                       <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm relative overflow-hidden group">
                           <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
                           <div className="flex justify-between items-start">
                              <div className="flex gap-3">
@@ -435,7 +435,7 @@ export function SellerManagement() {
                           </div>
                        </div>
 
-                       <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                       <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm relative overflow-hidden group">
                           <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500" />
                           <div className="flex justify-between items-start">
                              <div className="flex gap-3">

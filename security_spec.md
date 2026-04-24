@@ -1,4 +1,4 @@
-# Security Specification: V-ERP Enterprise Edition
+# Security Specification: VCom ERP Enterprise Edition
 
 ## 1. Data Invariants
 - Một sản phẩm (Product) không thể có số lượng tồn kho âm.

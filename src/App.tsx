@@ -34,6 +34,8 @@ import { AIChatBot } from './components/AIChatBot';
 import { OrgStructure } from './components/OrgStructure';
 import { IPosModule } from './components/IPos';
 import { EMenu } from './components/EMenu';
+import { CustomerService } from './components/CustomerService';
+
 import { useAuth } from './context/AuthContext';
 import { StoreProvider } from './context/StoreContext';
 import { StoreSelector } from './components/StoreSelector';
@@ -71,6 +73,7 @@ function AppLayout() {
               <Route path="/flash-sale" element={<FlashSale />} />
               <Route path="/affiliate" element={<AffiliateManagement />} />
               <Route path="/customers" element={<Customers />} />
+              <Route path="/cskh" element={<CustomerService />} />
               <Route path="/scm" element={<Procurement />} />
               <Route path="/warehouse" element={<WarehouseModule />} />
               <Route path="/finance" element={<Finance />} />
@@ -87,7 +90,6 @@ function AppLayout() {
               <Route path="/compliance" element={<Compliance />} />
               <Route path="/seller-finance" element={<SellerFinance />} />
               <Route path="/social" element={<SocialCommerce />} />
-              <Route path="/omnichat" element={<OmniChat />} />
               <Route path="/workflow" element={<WorkflowHub />} />
               <Route path="/ai-ops" element={<AIOperations />} />
               <Route path="/org" element={<OrgStructure />} />

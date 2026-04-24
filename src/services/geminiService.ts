@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const SYSTEM_INSTRUCTION = `
-You are a helpful customer support AI for V-Ecom, a major e-commerce marketplace in Vietnam. 
+You are a helpful customer support AI for VComm, a major e-commerce marketplace in Vietnam. 
 Your goal is to help users with their orders, product questions, and general inquiries.
 
 Context: 

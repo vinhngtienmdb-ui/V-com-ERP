@@ -61,7 +61,7 @@ export function Procurement() {
         <>
           <div className="space-y-12 bg-transparent mt-4">
             {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
-              <div key={gIdx} className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-8">
+              <div key={gIdx} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
                   <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
@@ -71,9 +71,9 @@ export function Procurement() {
                       <button 
                          key={item.id}
                          onClick={() => setActiveTab(item.id)}
-                         className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
+                         className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
                       >
-                         <div className={cn("p-3 rounded-xl shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
+                         <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
                             <item.icon className="w-6 h-6" />
                          </div>
                          <div className="flex-1 min-w-0">
@@ -90,11 +90,11 @@ export function Procurement() {
       )}
 
       {activeTab !== 'overview' && (
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
         <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
            <button 
              onClick={() => setActiveTab('overview')} 
-             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-xl w-fit shadow-sm"
+             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg w-fit shadow-sm"
            >
               <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
            </button>

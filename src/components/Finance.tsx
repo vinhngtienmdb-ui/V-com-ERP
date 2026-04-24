@@ -62,31 +62,31 @@ export function Finance() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu Thuần (Net Revenue)</p>
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(totalIncome)}</div>
            <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
               <TrendingUp className="w-3 h-3" /> +12.5% so với tháng trước
            </div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi phí (Total Expense)</p>
            <div className="text-2xl font-bold text-[#EF4444]">{formatCurrency(totalExpense)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Biên chi phí: {totalIncome ? ((totalExpense/totalIncome)*100).toFixed(1) : 0}%</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lợi nhuận ròng (Net Profit)</p>
            <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(totalIncome - totalExpense)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Lợi nhuận sẵn dụng</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Thuế phải nộp (VAT/CIT Est.)</p>
            <div className="text-2xl font-bold text-[#F59E0B]">{formatCurrency(totalIncome * 0.1)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Tạm tính (10%)</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'journal', label: 'Bút toán & Nhật ký chung', icon: BookOpen },
@@ -180,7 +180,7 @@ export function Finance() {
                          <h4 className="text-base font-bold text-[#111827]">{report.title}</h4>
                          <p className="text-sm text-[#6B7280]">{report.desc}</p>
                       </div>
-                      <div className="p-3 bg-white rounded-xl shadow-sm group-hover:bg-[#2563EB] group-hover:text-white transition-all">
+                      <div className="p-3 bg-white rounded-lg shadow-sm group-hover:bg-[#2563EB] group-hover:text-white transition-all">
                          <ArrowUpRight className="w-5 h-5" />
                       </div>
                    </div>
@@ -191,7 +191,7 @@ export function Finance() {
       </div>
 
       <div className="bg-emerald-50 rounded-lg p-6 border border-emerald-100 flex items-start gap-4">
-         <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+         <div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg">
             <ShieldCheck className="w-6 h-6" />
          </div>
          <div className="space-y-1">

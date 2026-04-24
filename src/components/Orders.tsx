@@ -44,7 +44,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-black text-[#111827]">Chi tiết đơn hàng {order.id}</h2>
@@ -105,7 +105,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
             )}
           </div>
           {(order.status === ('returning' as any) || order.status === 'returning') && (
-            <div className="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-100">
+            <div className="mt-4 p-4 rounded-lg bg-blue-50 border border-blue-100">
                <button onClick={() => handleDraftRma(order)} className="text-xs font-bold text-blue-700 flex items-center gap-2 mb-2">
                   <BrainCircuit className="w-4 h-4" /> {isGenerating ? 'Đang tạo...' : 'Tạo phản hồi RMA bằng AI'}
                </button>
@@ -163,8 +163,54 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
     carrier: 'ViettelPost',
     tracking: 'VT0987123',
     shippingCost: 45000
+  },
+  {
+    id: 'ORD-DELAY-001',
+    customerName: 'Lê Hoàng Minh',
+    date: new Date(Date.now() - 30 * 60 * 60 * 1000).toLocaleString('vi-VN'), // 30 hours ago
+    total: 3500000,
+    status: 'pending',
+    paymentMethod: 'bank_transfer',
+    items: [],
+    shippingCost: 0
   }
 ];
+
+const isDelayed = (dateStr: string, status: string) => {
+  if (status !== 'pending' && status !== 'processing') return false;
+  try {
+    // Attempt to handle both 'YYYY-MM-DD HH:mm' and 'toLocaleDateString' formats
+    let orderDate: Date;
+    if (dateStr.includes('/')) {
+      // Assuming 'DD/MM/YYYY, HH:mm:ss' or similar from toLocaleString('vi-VN')
+      const [datePart, timePart] = dateStr.split(', ');
+      const [d, m, y] = datePart.split('/').map(Number);
+      if (timePart) {
+        const [h, min] = timePart.split(':').map(Number);
+        orderDate = new Date(y, m - 1, d, h, min);
+      } else {
+        orderDate = new Date(y, m - 1, d);
+      }
+    } else {
+      // Assuming 'YYYY-MM-DD HH:mm'
+      orderDate = new Date(dateStr.replace(/-/g, '/'));
+    }
+
+    const diffMs = Date.now() - orderDate.getTime();
+    return diffMs > 24 * 60 * 60 * 1000;
+  } catch (e) {
+    return false;
+  }
+};
+
+const statusIcons = {
+  pending: Clock,
+  processing: Package,
+  shipped: Truck,
+  delivered: PackageCheck,
+  cancelled: X,
+  returning: RotateCcw
+};
 
 const statusStyles = {
   pending: "bg-[#FEF3C7] text-[#92400E]",
@@ -260,7 +306,17 @@ export function Orders() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm ring-2 ring-red-100">
+           <div className="flex justify-between items-start mb-2">
+              <span className="text-[10px] text-red-600 font-bold uppercase italic">Cảnh báo chậm trễ</span>
+              <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
+           </div>
+           <div className="text-2xl font-black text-red-600">
+             {allOrders.filter(o => isDelayed(o.date, o.status)).length}
+           </div>
+           <div className="mt-1 text-[10px] text-red-400 font-bold tracking-tight">Đơn {">"}24h chưa xử lý</div>
+        </div>
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cần đóng gói</span>
               <PackageCheck className="w-4 h-4 text-blue-500" />
@@ -268,7 +324,7 @@ export function Orders() {
            <div className="text-2xl font-bold text-[#111827]">42</div>
            <div className="mt-1 text-[10px] text-[#6B7280]">12 đơn đóng muộn ({">"}24h)</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Đang vận chuyển</span>
               <Truck className="w-4 h-4 text-purple-500" />
@@ -276,7 +332,7 @@ export function Orders() {
            <div className="text-2xl font-bold text-[#111827]">156</div>
            <div className="mt-1 text-[10px] text-[#6B7280]">Chủ yếu: GHTK (65%)</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Yêu cầu Đổi trả (RMA)</span>
               <RotateCcw className="w-4 h-4 text-orange-500" />
@@ -284,7 +340,7 @@ export function Orders() {
            <div className="text-2xl font-bold text-[#111827]">08</div>
            <div className="mt-1 text-[10px] text-[#EF4444] font-medium">3 đơn cần xử lý gấp</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng cước phí dự kiến</span>
               <DollarSign className="w-4 h-4 text-emerald-500" />
@@ -294,7 +350,7 @@ export function Orders() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
           <div className="flex gap-4">
             <div className="relative">
@@ -358,22 +414,30 @@ export function Orders() {
               {filteredOrders.map((order) => (
                 <tr 
                   key={order.id} 
-                  className="hover:bg-[#F9FAFB] group transition-colors cursor-pointer"
+                  className={cn(
+                    "bg-white hover:bg-slate-50 group hover:shadow-md transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600",
+                    isDelayed(order.date, order.status) && "bg-red-50/30 border-l-red-500"
+                  )}
                   onClick={() => setSelectedOrder(order)}
                 >
                   <td className="px-6 py-4">
-                    <p className="text-sm font-bold text-[#111827]">#{order.id.split('-').pop()}</p>
-                    <p className="text-[11px] text-[#6B7280] mt-0.5">{order.customerName}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-bold text-[#111827] group-hover:text-blue-600 transition-colors">#{order.id.split('-').pop()}</p>
+                      {isDelayed(order.date, order.status) && (
+                        <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Delayed</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
                     <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
                   </td>
                   <td className="px-6 py-4">
                     {order.carrier ? (
                       <div className="flex items-center gap-3">
-                         <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-100 shadow-sm min-w-[80px]">
+                         <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-100 shadow-sm min-w-[80px] group-hover:border-blue-200 transition-colors">
                             <span className="text-[10px] font-bold text-slate-700 uppercase">{order.carrier}</span>
                             <span className="text-[10px] font-mono text-[#2563EB] font-bold">{order.tracking}</span>
                          </div>
-                        <button className="text-[10px] text-blue-600 hover:bg-blue-50 px-2 py-1 rounded bg-blue-50/50 flex items-center gap-1">
+                        <button className="text-[10px] text-blue-600 hover:bg-blue-100 px-2 py-1 rounded bg-blue-50 transition-all flex items-center gap-1">
                            <MapPin className="w-3 h-3" /> Tra cứu
                         </button>
                       </div>
@@ -391,16 +455,17 @@ export function Orders() {
                   <td className="px-6 py-4">
                     <div className="flex justify-center">
                        <span className={cn(
-                         "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap",
-                         statusStyles[order.status]
+                         "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",
+                         statusStyles[order.status as keyof typeof statusStyles]
                        )}>
-                         {statusLabels[order.status]}
+                         {React.createElement(statusIcons[order.status as keyof typeof statusIcons], { className: "w-3 h-3" })}
+                         {statusLabels[order.status as keyof typeof statusLabels]}
                        </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                       <button className="p-2 hover:bg-[#F3F4F6] rounded-md text-[#6B7280] hover:text-[#2563EB] transition-all">
+                    <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
+                       <button className="p-2.5 bg-white border border-slate-200 shadow-sm hover:border-indigo-500 hover:bg-indigo-50 rounded-lg text-slate-400 hover:text-indigo-600 transition-all active:scale-95">
                           <MoreHorizontal className="w-4 h-4" />
                        </button>
                     </div>
@@ -419,8 +484,8 @@ export function Orders() {
         />
       )}
 
-      <div className="bg-amber-50 rounded-xl p-6 border border-amber-100 flex items-start gap-4">
-         <div className="p-3 bg-amber-100 text-amber-600 rounded-xl">
+      <div className="bg-amber-50 rounded-lg p-6 border border-amber-100 flex items-start gap-4">
+         <div className="p-3 bg-amber-100 text-amber-600 rounded-lg">
             <ShieldAlert className="w-6 h-6" />
          </div>
          <div>

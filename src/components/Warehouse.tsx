@@ -117,7 +117,7 @@ export function WarehouseModule() {
         <>
           <div className="space-y-12 bg-transparent mt-4">
             {WAREHOUSE_MODULE_GROUPS.map((group, gIdx) => (
-              <div key={gIdx} className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-8">
+              <div key={gIdx} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
                   <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
@@ -127,9 +127,9 @@ export function WarehouseModule() {
                       <button 
                          key={item.id}
                          onClick={() => setActiveTab(item.id)}
-                         className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
+                         className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
                       >
-                         <div className={cn("p-3 rounded-xl shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
+                         <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
                             <item.icon className="w-6 h-6" />
                          </div>
                          <div className="flex-1 min-w-0">
@@ -146,15 +146,15 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_partners' && (
-        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
              <button 
                onClick={() => setActiveTab('overview')} 
-               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-xl w-fit shadow-sm"
+               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg w-fit shadow-sm"
              >
                 <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
              </button>
-             <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
+             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
                 <Plus className="w-4 h-4" /> Thêm đơn vị vận chuyển
              </button>
           </div>
@@ -164,18 +164,18 @@ export function WarehouseModule() {
             <div className="flex justify-between items-center mb-8">
                <div className="relative w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" placeholder="Tìm kiếm đơn vị vận chuyển..." className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" />
+                  <input type="text" placeholder="Tìm kiếm đơn vị vận chuyển..." className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
                </div>
-               <button className="flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl">
+               <button className="flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg">
                   <Filter className="w-4 h-4" /> Lọc
                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                {LOGISTICS_PARTNERS.map(partner => (
-                  <div key={partner.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all group">
+                  <div key={partner.id} className="bg-white border border-slate-200 rounded-lg p-6 hover:shadow-lg transition-all group">
                      <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
                            <Warehouse className="w-6 h-6" />
                         </div>
                         <button className="text-slate-300 hover:text-slate-600">
@@ -197,7 +197,7 @@ export function WarehouseModule() {
                         </div>
                      </div>
 
-                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                     <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-1">
                            <Percent className="w-3.5 h-3.5 text-blue-600" />
                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Chính sách chiết khấu</span>
@@ -247,12 +247,12 @@ export function WarehouseModule() {
                       {selectedPartnerForFees}
                     </span>
                   </div>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
                     <Plus className="w-4 h-4" /> Thêm khoản phí mới
                   </button>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
@@ -317,17 +317,17 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_ff_orders' && (
-        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
              <button 
                onClick={() => setActiveTab('overview')} 
-               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-xl w-fit shadow-sm"
+               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg w-fit shadow-sm"
              >
                 <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
              </button>
              <div className="flex gap-3">
-               <button className="bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-sm font-bold border border-slate-200">Xuất báo cáo</button>
-               <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
+               <button className="bg-slate-50 text-slate-600 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200">Xuất báo cáo</button>
+               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20">
                   <Plus className="w-4 h-4" /> Tạo đơn vận mới
                </button>
              </div>
@@ -337,9 +337,9 @@ export function WarehouseModule() {
             <div className="flex gap-4 mb-8">
                <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" placeholder="Mã vận đơn, mã đơn hàng, shipper..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" />
+                  <input type="text" placeholder="Mã vận đơn, mã đơn hàng, shipper..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
                </div>
-               <select className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none">
+               <select className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none">
                   <option>Tất cả trạng thái</option>
                   <option>Đang giao</option>
                   <option>Đã giao</option>
@@ -347,7 +347,7 @@ export function WarehouseModule() {
                </select>
             </div>
 
-            <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -405,7 +405,7 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_ff_tracking' && (
-        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
            <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
              <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600">
                 <ArrowLeft className="w-4 h-4" /> Quay lại
@@ -415,7 +415,7 @@ export function WarehouseModule() {
              <div className="w-80 border-r border-slate-100 p-6 space-y-4 overflow-y-auto">
                 <h3 className="font-bold text-slate-900 border-b pb-4 mb-4">Đơn đang giao (2)</h3>
                 {MOCK_SHIPMENTS.filter(s => s.status === 'In Transit').map(s => (
-                  <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-blue-200 cursor-pointer hover:bg-white transition-all">
+                  <div key={s.id} className="p-4 bg-slate-50 rounded-lg border border-blue-200 cursor-pointer hover:bg-white transition-all">
                       <div className="flex justify-between items-start mb-2">
                          <span className="font-bold text-sm text-blue-600">{s.id}</span>
                          <span className="text-[10px] font-bold text-slate-400">Đang chạy</span>
@@ -435,7 +435,7 @@ export function WarehouseModule() {
                       <p className="text-xs">Đang tải dữ liệu vệ tinh GPS...</p>
                    </div>
                 </div>
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl space-y-3 w-48">
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur p-4 rounded-lg shadow-xl space-y-3 w-48">
                    <div className="flex items-center justify-between text-xs font-bold text-slate-600 border-b pb-2">
                       <span>Tổng số xe</span>
                       <span className="text-blue-600">12</span>
@@ -455,8 +455,8 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_ff_optimize' && (
-        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4 p-12 items-center justify-center text-center">
-           <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center mb-6 animate-bounce">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4 p-12 items-center justify-center text-center">
+           <div className="w-20 h-20 bg-emerald-50 rounded-lg flex items-center justify-center mb-6 animate-bounce">
               <MapPin className="w-10 h-10 text-emerald-600" />
            </div>
            <h2 className="text-2xl font-bold text-slate-900 mb-4">Tối ưu Tuyến đường Giao hàng</h2>
@@ -464,10 +464,10 @@ export function WarehouseModule() {
               Sử dụng thuật toán AI để sắp xếp thứ tự các điểm giao hàng, giảm 20% quãng đường di chuyển và tối ưu hóa thời gian nhận hàng của khách hàng.
            </p>
            <div className="flex gap-4">
-              <button className="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-emerald-600/20">Chạy Optimization ngay</button>
+              <button className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-emerald-600/20">Chạy Optimization ngay</button>
               <button 
                 onClick={() => setActiveTab('overview')}
-                className="bg-slate-100 text-slate-600 px-8 py-3 rounded-2xl font-bold"
+                className="bg-slate-100 text-slate-600 px-8 py-3 rounded-lg font-bold"
               >
                 Hủy bỏ
               </button>
@@ -476,11 +476,11 @@ export function WarehouseModule() {
       )}
 
       {activeTab !== 'overview' && activeTab !== 'wh_partners' && !activeTab.startsWith('wh_ff_') && (
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
         <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
            <button 
              onClick={() => setActiveTab('overview')} 
-             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-xl w-fit shadow-sm"
+             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg w-fit shadow-sm"
            >
               <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
            </button>

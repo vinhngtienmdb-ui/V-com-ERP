@@ -21,7 +21,9 @@ import {
   MapPin,
   Search,
   Edit2,
-  Store
+  Store,
+  MessageSquare,
+  AlertCircle
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
@@ -70,7 +72,7 @@ const MOCK_PROVINCES = [
 ];
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website'>('general');
   const [fees, setFees] = useState({
     'Điện tử & Công nghệ': '3%',
     'Thời trang & Phụ kiện': '8%',
@@ -78,6 +80,17 @@ export function SettingsPage() {
     'Sức khỏe & Sắc đẹp': '10%',
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [customDomains, setCustomDomains] = useState<string[]>(['erp.vcom.vn']);
+
+  const addDomain = () => setCustomDomains([...customDomains, '']);
+  const updateDomain = (index: number, value: string) => {
+    const newDomains = [...customDomains];
+    newDomains[index] = value;
+    setCustomDomains(newDomains);
+  };
+  const removeDomain = (index: number) => {
+    setCustomDomains(customDomains.filter((_, i) => i !== index));
+  };
 
   const handleSave = () => {
     setIsSaving(true);
@@ -114,7 +127,7 @@ export function SettingsPage() {
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-[#2563EB] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
+          className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
         >
           {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
         </button>
@@ -125,6 +138,8 @@ export function SettingsPage() {
         <div className="w-64 space-y-1">
            {[
              { id: 'general', label: 'Cấu hình chung & Phí sàn', icon: Settings },
+             { id: 'website', label: 'Cấu hình Website', icon: AppWindow },
+             { id: 'comms', label: 'Tích hợp Kênh (SMS/Zalo)', icon: MessageSquare },
              { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
              { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
              { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
@@ -135,7 +150,7 @@ export function SettingsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group",
                   activeTab === tab.id ? "bg-white text-[#2563EB] shadow-sm border border-[#E5E7EB]" : "text-[#6B7280] hover:bg-slate-100"
                 )}
              >
@@ -165,7 +180,7 @@ export function SettingsPage() {
                          { cat: 'Gia dụng & Đời sống', fee: '5%' },
                          { cat: 'Sức khỏe & Sắc đẹp', fee: '10%' },
                        ].map(item => (
-                         <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-xl border border-[#F3F4F6] flex justify-between items-center group relative overflow-hidden">
+                         <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-lg border border-[#F3F4F6] flex justify-between items-center group relative overflow-hidden">
                             <span className="text-sm font-medium text-[#4B5563]">{item.cat}</span>
                             <div className="flex items-center gap-4">
                                <input type="text" defaultValue={item.fee} className="w-16 bg-white border border-[#E5E7EB] rounded-lg px-2 py-1 text-center font-bold text-[#111827] outline-none focus:border-[#2563EB]" />
@@ -182,7 +197,7 @@ export function SettingsPage() {
                              <Sparkles className="w-5 h-5" />
                              <h4 className="text-sm font-bold uppercase tracking-widest">AI Fee Optimization Suggestions</h4>
                           </div>
-                          <button className="text-[10px] font-bold text-white bg-blue-600 px-4 py-1.5 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/10">
+                          <button className="text-[10px] font-bold text-white bg-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/10">
                              Duyệt tất cả đề xuất AI
                           </button>
                        </div>
@@ -211,7 +226,7 @@ export function SettingsPage() {
                                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">TB Đối thủ</p>
                                       <p className="text-sm font-bold text-[#111827]">{suggestion.competitorAvg}%</p>
                                    </div>
-                                   <button className="flex-1 md:flex-none px-6 py-2 bg-white border border-blue-200 text-blue-600 rounded-xl text-[10px] font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                   <button className="flex-1 md:flex-none px-6 py-2 bg-white border border-blue-200 text-blue-600 rounded-lg text-[10px] font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                       Áp dụng gợi ý
                                    </button>
                                 </div>
@@ -224,7 +239,7 @@ export function SettingsPage() {
 
                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
                     <h3 className="font-bold text-[#111827]">Cấu hình ví & Payout</h3>
-                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
                        <div className="space-y-1">
                           <p className="text-sm font-bold text-slate-900">Tính năng Duyệt Payout tự động</p>
                           <p className="text-[10px] text-slate-500 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
@@ -236,12 +251,129 @@ export function SettingsPage() {
                  </div>
 
                  <div className="flex justify-end gap-3 pt-4">
-                    <button className="px-6 py-2.5 rounded-xl text-sm font-bold text-[#6B7280] hover:bg-slate-100 transition-all border border-transparent">
+                    <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-[#6B7280] hover:bg-slate-100 transition-all border border-transparent">
                        Hủy bỏ
                     </button>
-                    <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                    <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
                        Lưu cấu hình
                     </button>
+                 </div>
+              </div>
+           )}
+
+           {activeTab === 'website' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+                    <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
+                       <Globe className="w-4 h-4 text-[#2563EB]" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-4">
+                           <div>
+                              <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Danh sách tên miền</label>
+                              <div className="space-y-2">
+                                 {customDomains.map((domain, index) => (
+                                   <div key={index} className="flex gap-2">
+                                      <input 
+                                         type="text" 
+                                         value={domain} 
+                                         onChange={(e) => updateDomain(index, e.target.value)}
+                                         placeholder="ví dụ: store.domain.com" 
+                                         className="flex-1 p-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
+                                      />
+                                      <button onClick={() => removeDomain(index)} className="p-3 text-red-500 hover:bg-red-50 rounded-lg">
+                                         <Trash2 className="w-4 h-4" />
+                                      </button>
+                                   </div>
+                                 ))}
+                                 <button onClick={addDomain} className="text-xs font-bold text-[#2563EB] hover:underline flex items-center gap-1 mt-2">
+                                    <Plus className="w-3 h-3" /> Thêm tên miền mới
+                                 </button>
+                               </div>
+                              <p className="text-[10px] text-[#9CA3AF] mt-1.5 leading-relaxed">Tên miền trỏ về hệ thống VComm ERP.</p>
+                           </div>
+                        </div>
+
+                        <div className="space-y-4">
+                           <div>
+                              <label className="block text-xs font-bold text-[#6B7280] mb-4 uppercase tracking-wider">Cấu hình Hoa hồng (Commission Rate)</label>
+                              <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
+                                 <table className="w-full text-sm">
+                                    <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                                       <tr>
+                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Ngành hàng</th>
+                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Phí hiện tại</th>
+                                          <th className="px-4 py-2 text-left font-bold text-[#6B7280]">Thao tác</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#E5E7EB]">
+                                       {Object.entries(fees).map(([category, fee]) => {
+                                          const suggestion = MOCK_AI_FEE_SUGGESTIONS.find(s => s.category === category);
+                                          return (
+                                             <tr key={category}>
+                                                <td className="px-4 py-3 text-xs font-medium text-slate-800">{category}</td>
+                                                <td className="px-4 py-3">
+                                                   <input 
+                                                      type="text"
+                                                      value={fee}
+                                                      onChange={(e) => setFees(prev => ({ ...prev, [category]: e.target.value }))}
+                                                      className="w-16 p-1 text-xs border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                   />
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                   {suggestion && (
+                                                      <button 
+                                                         onClick={() => setFees(prev => ({ ...prev, [category]: `${suggestion.suggestedFee}%` }))}
+                                                         className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800"
+                                                         title={`Gợi ý: ${suggestion.suggestedFee}% - ${suggestion.reasoning}`}
+                                                      >
+                                                         <Sparkles className="w-3 h-3" /> AI
+                                                      </button>
+                                                   )}
+                                                </td>
+                                             </tr>
+                                          );
+                                       })}
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[#F3F4F6]">
+                        <div className="space-y-4">
+                           <div>
+                              <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
+                              <div className="border-2 border-dashed border-[#E5E7EB] rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
+                                 <input type="file" id="logo-upload" className="hidden" accept="image/*" />
+                                 <label htmlFor="logo-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
+                                    Nhấn để tải lên hoặc kéo thả Logo
+                                 </label>
+                                 <p className="text-[10px] text-[#9CA3AF] mt-1">PNG, JPG tối đa 5MB</p>
+                              </div>
+                           </div>
+                        </div>
+                        <div className="space-y-4">
+                           <div>
+                              <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
+                              <div className="border-2 border-dashed border-[#E5E7EB] rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
+                                 <input type="file" id="favicon-upload" className="hidden" accept="image/x-icon,image/png" />
+                                 <label htmlFor="favicon-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
+                                    Nhấn để tải lên hoặc kéo thả Favicon
+                                 </label>
+                                 <p className="text-[10px] text-[#9CA3AF] mt-1">ICO, PNG (32x32px)</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
+                        <button className="px-6 py-2.5 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95">
+                           Lưu cấu hình website
+                        </button>
+                     </div>
                  </div>
               </div>
            )}
@@ -297,8 +429,8 @@ export function SettingsPage() {
                           <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
                        </h3>
                        <p className="text-xs text-[#6B7280]">Cấp quyền cho bên thứ 3 (Brand, Logistics) truy cập trực tiếp vào API sàn.</p>
-                       <div className="p-3 bg-slate-50 rounded-xl font-mono text-[10px] text-slate-500 flex justify-between items-center">
-                          <span>sk_live_vecom_*********************</span>
+                       <div className="p-3 bg-slate-50 rounded-lg font-mono text-[10px] text-slate-500 flex justify-between items-center">
+                          <span>sk_live_vcomm_*********************</span>
                           <button className="text-[#2563EB] font-bold">Copy</button>
                        </div>
                        <button className="w-full py-2 border border-[#E5E7EB] rounded-lg text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
@@ -310,7 +442,7 @@ export function SettingsPage() {
                        <p className="text-xs text-[#6B7280]">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
                        <div className="space-y-3">
                           {MOCK_WEBHOOKS.map(wb => (
-                            <div key={wb.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                            <div key={wb.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
                                <div className="space-y-1">
                                   <p className="text-[10px] font-bold text-slate-900">{wb.name}</p>
                                   <p className="text-[9px] text-slate-400 font-mono truncate max-w-[150px]">{wb.url}</p>
@@ -358,7 +490,7 @@ export function SettingsPage() {
                        </div>
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg overflow-hidden">
                        <table className="w-full text-left text-sm">
                           <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB] text-[#6B7280]">
                              <tr>
@@ -408,14 +540,14 @@ export function SettingsPage() {
 
            {activeTab === 'org' && (
              <div className="animate-in fade-in duration-300 space-y-6">
-               <div className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm space-y-6">
+               <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
                  <div className="flex justify-between items-center">
                    <h3 className="font-bold text-[#111827] flex items-center gap-2">
                      <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
                    </h3>
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 md:col-span-1">
+                   <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
                      <h4 className="font-bold text-slate-800 mb-4">Phòng ban</h4>
                      {MOCK_DEPARTMENTS.map((dept) => (
                        <div key={dept.id} className={cn("bg-white p-3 rounded-lg border border-slate-100 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
@@ -426,7 +558,7 @@ export function SettingsPage() {
                    </div>
                    {[{ title: 'Chức danh', data: MOCK_JOB_TITLES },
                      { title: 'Cấp bậc', data: MOCK_JOB_RANKS }].map(section => (
-                     <div key={section.title} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                     <div key={section.title} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                        <h4 className="font-bold text-slate-800 mb-4">{section.title}</h4>
                        {section.data.map((item: any, i) => (
                          <div key={i} className="bg-white p-3 rounded-lg border border-slate-100 mb-2 flex justify-between items-center">
@@ -443,17 +575,17 @@ export function SettingsPage() {
 
            {activeTab === 'stores' && (
               <div className="animate-in fade-in duration-300 space-y-6">
-                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6">
                     <div className="flex justify-between items-center">
                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
                           <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
                        </h3>
-                       <button className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-100 flex items-center gap-2">
+                       <button className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 flex items-center gap-2">
                           <Plus className="w-4 h-4" /> Thêm Cửa hàng
                        </button>
                     </div>
 
-                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-5 mb-6">
                        <h4 className="font-bold text-indigo-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
                        <p className="text-sm text-indigo-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
                        <div className="grid grid-cols-2 gap-4">
@@ -481,7 +613,7 @@ export function SettingsPage() {
                          { id: 'STORE_001', name: 'Chi nhánh Quận 1 - Sài Gòn', address: '123 Lê Lợi, Q.1, TP.HCM', staff: 5, manager: 'Nguyễn Văn A' },
                          { id: 'STORE_002', name: 'Chi nhánh Cầu Giấy - Hà Nội', address: '45 Xuân Thủy, Cầu Giấy, HN', staff: 8, manager: 'Trần Thị B' },
                        ].map(store => (
-                         <div key={store.id} className="border border-slate-200 rounded-xl p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
+                         <div key={store.id} className="border border-slate-200 rounded-lg p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
                             <div>
                                <h5 className="font-bold text-slate-900 text-lg flex items-center gap-2">{store.name}</h5>
                                <p className="text-sm text-slate-500 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
@@ -496,6 +628,122 @@ export function SettingsPage() {
                             </div>
                          </div>
                        ))}
+                    </div>
+                 </div>
+              </div>
+           )}
+           {activeTab === 'comms' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6">
+                    <div className="flex justify-between items-center">
+                       <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                          <MessageSquare className="w-5 h-5 text-blue-600" /> Tích hợp SMS OTP & Zalo ZNS
+                       </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       {/* Zalo ZNS Config */}
+                       <div className="border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition-colors">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                             <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
+                                <div>
+                                   <h4 className="font-bold text-slate-900">Zalo ZNS (Zalo Notification Service)</h4>
+                                   <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1 border border-emerald-100">Đang hoạt động</p>
+                                </div>
+                             </div>
+                             <div className="h-8 w-14 bg-blue-100 rounded-full p-1 cursor-pointer">
+                                <div className="w-6 h-6 bg-blue-600 rounded-full translate-x-6"></div>
+                             </div>
+                          </div>
+                          <div className="space-y-4">
+                             <div>
+                                <label className="text-xs font-bold text-slate-600 block mb-1">Official Account ID (OA ID)</label>
+                                <input type="text" defaultValue="2938475928374928" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono" />
+                             </div>
+                             <div>
+                                <label className="text-xs font-bold text-slate-600 block mb-1">Zalo App ID</label>
+                                <input type="text" defaultValue="142345234523" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono" />
+                             </div>
+                             <div>
+                                <label className="text-xs font-bold text-slate-600 block mb-1">Access Token</label>
+                                <div className="flex gap-2">
+                                   <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono" />
+                                   <button className="px-3 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 text-sm font-bold text-slate-600">Đồng bộ</button>
+                                </div>
+                                <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sẽ hết hạn vào 20:00 25/04/2026. Bật auto-refresh để tự làm mới.</p>
+                             </div>
+                          </div>
+                          <button className="w-full mt-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm">
+                             Kiểm tra kết nối ZNS
+                          </button>
+                       </div>
+
+                       {/* SMS OTP Config */}
+                       <div className="border border-slate-200 rounded-lg p-5 hover:border-emerald-400 transition-colors">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                             <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
+                                <div>
+                                   <h4 className="font-bold text-slate-900">SMS OTP & Brandname</h4>
+                                   <p className="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">Chưa thiết lập</p>
+                                </div>
+                             </div>
+                             <div className="h-8 w-14 bg-slate-200 rounded-full p-1 cursor-pointer">
+                                <div className="w-6 h-6 bg-white rounded-full shadow-sm"></div>
+                             </div>
+                          </div>
+                          <div className="space-y-4 opacity-70">
+                             <div>
+                                <label className="text-xs font-bold text-slate-600 block mb-1">Nhà cung cấp (SMS Vendor)</label>
+                                <select className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                                   <option>eSMS.vn</option>
+                                   <option>VietGuys</option>
+                                   <option>FPT SMS</option>
+                                   <option>Viettel MKT</option>
+                                </select>
+                             </div>
+                             <div>
+                                <label className="text-xs font-bold text-slate-600 block mb-1">Brandname đăng ký</label>
+                                <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
+                             </div>
+                             <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                   <label className="text-xs font-bold text-slate-600 block mb-1">API Key</label>
+                                   <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+                                </div>
+                                <div>
+                                   <label className="text-xs font-bold text-slate-600 block mb-1">Secret Key</label>
+                                   <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+                                </div>
+                             </div>
+                          </div>
+                          <button className="w-full mt-6 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
+                             Lưu thiết lập SMS
+                          </button>
+                       </div>
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-5 mt-6">
+                       <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
+                       <p className="text-sm text-blue-700 mb-4">Cấu hình các sự kiện hệ thống tự động gọi API ZNS/SMS để thông báo chăm sóc khách hàng.</p>
+                       <div className="space-y-3">
+                          <label className="flex items-center gap-3 p-3 bg-white border border-blue-100 rounded-lg cursor-pointer">
+                             <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
+                             <span className="text-sm font-medium text-slate-700 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
+                             <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-white border border-blue-100 rounded-lg cursor-pointer">
+                             <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
+                             <span className="text-sm font-medium text-slate-700 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
+                             <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-white border border-blue-100 rounded-lg cursor-pointer">
+                             <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
+                             <span className="text-sm font-medium text-slate-700 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
+                             <button className="text-[10px] font-bold text-blue-500 hover:text-blue-700 underline">Cấu hình Mẫu tin</button>
+                          </label>
+                       </div>
                     </div>
                  </div>
               </div>

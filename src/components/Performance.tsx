@@ -25,7 +25,7 @@ const MOCK_KPIs: KPI[] = [
 ];
 
 const MOCK_COURSES: TrainingCourse[] = [
-  { id: '1', title: 'Quy trình vận hành Sàn V-Ecom', category: 'Cơ bản', enrolledCount: 124, progress: 85 },
+  { id: '1', title: 'Quy trình vận hành Sàn VComm', category: 'Cơ bản', enrolledCount: 124, progress: 85 },
   { id: '2', title: 'Kỹ năng CSKH đa kênh nâng cao', category: 'Kỹ năng', enrolledCount: 45, progress: 40 },
   { id: '3', title: 'An toàn thông tin dữ liệu sàn', category: 'Bắt buộc', enrolledCount: 156, progress: 100 },
 ];
@@ -53,7 +53,7 @@ export function Performance() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg w-fit mb-3">
               <Target className="w-5 h-5" />
            </div>
@@ -61,7 +61,7 @@ export function Performance() {
            <div className="text-2xl font-bold text-[#111827]">92.4%</div>
            <div className="mt-1 text-[10px] text-[#10B981] font-medium">+2.1% so với tháng trước</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg w-fit mb-3">
               <GraduationCap className="w-5 h-5" />
            </div>
@@ -69,7 +69,7 @@ export function Performance() {
            <div className="text-2xl font-bold text-[#111827]">08</div>
            <p className="text-[10px] text-[#6B7280] mt-1">1,240 lượt đăng ký học</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="p-2 bg-orange-50 text-orange-600 rounded-lg w-fit mb-3">
               <Users className="w-5 h-5" />
            </div>
@@ -77,7 +77,7 @@ export function Performance() {
            <div className="text-2xl font-bold text-[#F59E0B]">Đợt 1/2024</div>
            <p className="text-[10px] text-[#EF4444] font-medium">15 nhân sự chưa hoàn tất</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg w-fit mb-3">
               <Trophy className="w-5 h-5" />
            </div>
@@ -89,7 +89,7 @@ export function Performance() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'kpi', label: 'Quản trị KPI/OKR', icon: Target },
@@ -152,7 +152,7 @@ export function Performance() {
          <p className="text-slate-400 text-sm max-w-2xl">
             Tự động tổng hợp ý kiến từ Đồng nghiệp, Quản lý trực tiếp và Nhân viên cấp dưới để đưa ra cái nhìn khách quan nhất về năng lực. Kết nối trực tiếp kết quả học tập từ LMS để đề xuất thăng tiến hoặc điều chỉnh quỹ lương.
          </p>
-         <button className="px-8 py-3 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
+         <button className="px-8 py-3 bg-[#2563EB] text-white font-bold rounded-lg hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
             Mở cổng Đánh giá Định kỳ <ArrowRight className="w-4 h-4" />
          </button>
       </div>

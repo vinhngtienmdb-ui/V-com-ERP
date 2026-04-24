@@ -28,7 +28,7 @@ export function OrgStructure() {
           <h1 className="text-2xl font-semibold text-[#111827]">Cơ cấu Tổ chức</h1>
           <p className="text-sm text-[#6B7280]">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
         </div>
-        <button className="bg-[#2563EB] text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-700">
+        <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-blue-700">
           <Plus className="w-4 h-4" /> Thêm đơn vị/chức danh
         </button>
       </div>
@@ -39,13 +39,13 @@ export function OrgStructure() {
           { title: 'Chức danh', data: MOCK_JOB_TITLES, icon: Briefcase },
           { title: 'Cấp bậc', data: MOCK_JOB_RANKS, icon: Users }
         ].map(section => (
-          <div key={section.title} className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm">
+          <div key={section.title} className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
             <h3 className="font-bold text-[#111827] flex items-center gap-2 mb-6">
               <section.icon className="w-5 h-5 text-blue-600" /> {section.title}
             </h3>
             <div className="space-y-3">
               {section.data.map((item: any, i) => (
-                <div key={i} className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-between items-center hover:shadow-sm transition-all">
+                <div key={i} className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex justify-between items-center hover:shadow-sm transition-all">
                   <span className="text-sm font-semibold">{item.name}</span>
                   <button className="text-[10px] bg-white border border-[#E5E7EB] px-2 py-1 rounded shadow-sm text-[#2563EB] font-bold">Chi tiết</button>
                 </div>

@@ -18,11 +18,11 @@ export function StoreSelector() {
   if (activeStore) return null;
 
   return (
-    <div className="h-full bg-slate-900 rounded-3xl flex items-center justify-center p-6 selection-overlay animate-in fade-in zoom-in-95 duration-500 overflow-hidden relative shadow-2xl">
-      <div className="max-w-4xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row relative z-10">
+    <div className="h-full bg-slate-900 rounded-lg flex items-center justify-center p-6 selection-overlay animate-in fade-in zoom-in-95 duration-500 overflow-hidden relative shadow-2xl">
+      <div className="max-w-4xl w-full bg-white rounded-lg overflow-hidden shadow-2xl flex flex-col md:flex-row relative z-10">
         <div className="md:w-[45%] bg-[#0F172A] p-12 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10 flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 backdrop-blur-md">
+            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center border border-white/20 backdrop-blur-md">
               <Store className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -34,11 +34,11 @@ export function StoreSelector() {
           </div>
           
           <div className="relative z-10 mt-12 space-y-4">
-             <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-3">
+             <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center gap-3">
                 <Building2 className="w-8 h-8 text-blue-400" />
                 <div>
                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Tài khoản Doanh nghiệp</p>
-                   <p className="font-bold text-slate-100">V-ERP Corporation</p>
+                   <p className="font-bold text-slate-100">VComm ERP Corporation</p>
                 </div>
              </div>
           </div>
@@ -62,7 +62,7 @@ export function StoreSelector() {
               <button
                 key={store.id}
                 onClick={() => setActiveStore(store)}
-                className="w-full text-left bg-white p-5 rounded-2xl border-2 border-transparent hover:border-blue-600 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden"
+                className="w-full text-left bg-white p-5 rounded-lg border-2 border-transparent hover:border-blue-600 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-3xl -translate-y-full translate-x-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                 <div className="flex items-center justify-between relative z-10">

@@ -111,31 +111,31 @@ export function SettlementManagement() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
            <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
               <CheckCircle2 className="w-3 h-3" /> Tài khoản Escrow an toàn
            </div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đang chờ giải ngân (Payout)</p>
            <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(2450000000)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Sẽ tự động chuyển sau 3 ngày</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lệnh rút tiền chờ duyệt</p>
            <div className="text-2xl font-bold text-[#F59E0B]">42</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Ưu tiên: Nhà bán hàng (35)</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu hoa hồng (Margin)</p>
            <div className="text-2xl font-bold text-[#10B981]">{formatCurrency(845000000)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Tháng: 03/2024</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
@@ -303,18 +303,18 @@ export function SettlementManagement() {
       <div className="bg-slate-900 text-white rounded-lg p-8 overflow-hidden relative">
          <div className="relative z-10 space-y-4">
             <div className="flex items-center gap-3">
-               <div className="p-2 bg-blue-500 rounded-xl">
+               <div className="p-2 bg-blue-500 rounded-lg">
                   <CreditCard className="w-6 h-6 text-white" />
                </div>
                <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
             </div>
             <p className="text-slate-400 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
             <div className="flex gap-4 pt-2">
-               <div className="bg-slate-800/50 px-4 py-3 rounded-xl border border-slate-700 flex flex-col">
+               <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Hạn mức Payout Ngày</span>
                   <span className="text-base font-bold text-white leading-none mt-1">2,000,000,000đ</span>
                </div>
-               <div className="bg-slate-800/50 px-4 py-3 rounded-xl border border-slate-700 flex flex-col">
+               <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Phí Payout Trung bình</span>
                   <span className="text-base font-bold text-blue-400 leading-none mt-1">1,200đ / Giao dịch</span>
                </div>

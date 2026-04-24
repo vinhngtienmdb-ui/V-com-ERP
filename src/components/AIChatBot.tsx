@@ -42,13 +42,13 @@ export function AIChatBot() {
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-xl shadow-2xl border border-[#E5E7EB] flex flex-col z-[1000] animate-in slide-in-from-bottom-10 fade-in duration-300">
+        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-lg shadow-2xl border border-[#E5E7EB] flex flex-col z-[1000] animate-in slide-in-from-bottom-10 fade-in duration-300">
           <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50 rounded-t-[2rem]">
             <div className="flex items-center gap-3">
-               <div className="p-2 bg-blue-600 rounded-xl">
+               <div className="p-2 bg-blue-600 rounded-lg">
                  <Bot className="w-5 h-5 text-white" />
                </div>
-               <h3 className="font-black text-[#111827]">Trợ lý V-Ecom</h3>
+               <h3 className="font-black text-[#111827]">Trợ lý VComm</h3>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-[#9CA3AF] hover:text-[#111827]">
               <X className="w-5 h-5" />
@@ -77,9 +77,9 @@ export function AIChatBot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Nhập yêu cầu của bạn..."
-              className="flex-1 bg-slate-50 border border-[#E5E7EB] rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/10"
+              className="flex-1 bg-slate-50 border border-[#E5E7EB] rounded-lg px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/10"
             />
-            <button onClick={handleSend} className="p-3 bg-[#111827] text-white rounded-xl hover:bg-slate-800">
+            <button onClick={handleSend} className="p-3 bg-[#111827] text-white rounded-lg hover:bg-slate-800">
               <Send className="w-4 h-4" />
             </button>
           </div>

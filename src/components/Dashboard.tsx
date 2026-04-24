@@ -42,7 +42,7 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue }: any) => (
-  <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all group">
+  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all group">
     <div className="flex justify-between items-start mb-4">
       <div className="p-2.5 bg-slate-50 text-slate-500 rounded-lg group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors">
         <Icon className="w-5 h-5" />
@@ -68,7 +68,7 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
   <button 
     onClick={onClick}
     className={cn(
-      "relative group overflow-hidden p-6 rounded-xl border transition-all hover:shadow-lg text-left",
+      "relative group overflow-hidden p-6 rounded-lg border transition-all hover:shadow-lg text-left",
       color === 'bg-blue-600' ? "bg-blue-600 border-blue-500" : 
       color === 'bg-emerald-600' ? "bg-emerald-600 border-emerald-500" : 
       "bg-slate-900 border-slate-800"
@@ -94,18 +94,33 @@ export function Dashboard() {
   const [dbOrdersLength, setDbOrdersLength] = useState(0);
   const [dbGMV, setDbGMV] = useState(0);
 
+  const [delayedOrdersCount, setDelayedOrdersCount] = useState(0);
+
   useEffect(() => {
     // Listen to real orders from Firebase
     const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
       let gmv = 0;
+      let delayedCount = 0;
+      const now = Date.now();
+      const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
+
       snap.docs.forEach(doc => {
         const data = doc.data();
         if (data.status === 'completed') {
            gmv += data.total || 0;
         }
+
+        // Logic for delayed orders check (pending or processing for > 24h)
+        if (data.status === 'pending' || data.status === 'processing') {
+           const createdAt = data.createdAt?.toDate?.() || (data.date ? new Date(data.date) : null);
+           if (createdAt && createdAt.getTime() < twentyFourHoursAgo) {
+              delayedCount++;
+           }
+        }
       });
       setDbOrdersLength(snap.size);
       setDbGMV(gmv);
+      setDelayedOrdersCount(delayedCount);
     });
 
     return () => {
@@ -116,6 +131,24 @@ export function Dashboard() {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       
+      {delayedOrdersCount > 0 && (
+         <div 
+          onClick={() => navigate('/orders')}
+          className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-center justify-between cursor-pointer hover:bg-red-100 transition-all animate-in slide-in-from-top-4 duration-500 shadow-sm"
+         >
+            <div className="flex items-center gap-3">
+               <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                  <ShoppingCart className="w-5 h-5" />
+               </div>
+               <div>
+                  <h4 className="text-sm font-black text-red-900 tracking-tight">Cảnh báo SLA: Có {delayedOrdersCount} đơn hàng tồn đọng {">"}24h</h4>
+                  <p className="text-xs text-red-700 mt-0.5">Một số đơn hàng đang ở trạng thái 'Chờ xác nhận' hoặc 'Đang đóng gói' quá hạn cam kết vận hành.</p>
+               </div>
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md shadow-red-200 hover:bg-red-700 transition-all">Xử lý ngay</button>
+         </div>
+      )}
+
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="header-title">
           <div className="flex items-center gap-2 mb-2">
@@ -175,7 +208,7 @@ export function Dashboard() {
       {/* Main Insights Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden h-full flex flex-col">
+          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden h-full flex flex-col">
             <div className="px-6 py-5 border-b border-[#F3F4F6] flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-[#111827]">Biểu đồ Tăng trưởng & Xu hướng</h3>
@@ -263,7 +296,7 @@ export function Dashboard() {
              />
           </div>
 
-          <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-[#F3F4F6] flex items-center justify-between">
               <h3 className="font-bold text-sm text-[#111827]">Top Sellers</h3>
               <button className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline">Xem tất cả</button>
@@ -296,10 +329,10 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-         <div className="bg-[#111827] rounded-xl p-8 text-white relative overflow-hidden shadow-xl shadow-slate-200">
+         <div className="bg-[#111827] rounded-lg p-8 text-white relative overflow-hidden shadow-xl shadow-slate-200">
             <div className="relative z-10 flex flex-col h-full bg-blend-soft-light">
                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-blue-500 rounded-xl">
+                  <div className="p-3 bg-blue-500 rounded-lg">
                      <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -318,7 +351,7 @@ export function Dashboard() {
             <Users className="absolute -bottom-10 -right-10 w-64 h-64 text-white opacity-[0.03]" />
          </div>
 
-         <div className="bg-white p-8 rounded-xl border border-[#E5E7EB] shadow-sm">
+         <div className="bg-white p-8 rounded-lg border border-[#E5E7EB] shadow-sm">
             <div className="flex items-center justify-between mb-8">
                <h3 className="font-bold text-[#111827]">Chỉ số Hiệu vận hành (SLA)</h3>
                <div className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-100 uppercase tracking-widest">Hệ thống ổn định</div>

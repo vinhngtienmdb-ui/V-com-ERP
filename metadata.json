@@ -1,6 +1,6 @@
 {
-  "name": "V-ERP: Hệ quản trị Sàn TMĐT",
-  "description": "Hệ thống quản trị tài nguyên doanh nghiệp dành riêng cho các sàn thương mại điện tử tại Việt Nam, tích hợp quản lý đơn hàng, kho vận và báo cáo doanh thu.",
+  "name": "VComm ERP: Hệ quản trị Sàn TMĐT",
+  "description": "Hệ thống quản trị tài nguyên doanh nghiệp dành riêng cho các sàn thương mại điện tử tại Việt Nam, tích hợp quản lý đơn hàng, kho vận, báo cáo doanh thu và module iPOS - giải pháp bán hàng tại quầy (Point of Sale) chuyên nghiệp, độc lập.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": []
 }

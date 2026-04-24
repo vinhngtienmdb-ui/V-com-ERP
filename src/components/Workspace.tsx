@@ -65,7 +65,7 @@ export function Workspace() {
       {activeModule === 'overview' && (
         <>
           {/* News & Announcements Widget */}
-          <div className="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10">
+          <div className="bg-slate-900 rounded-lg p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10">
             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
               <div className="flex-1 space-y-4">
                 <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ export function Workspace() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                    {INTERNAL_NEWS.map(news => (
-                      <div key={news.id} className="bg-white/5 border border-white/10 p-5 rounded-2xl hover:bg-white/10 transition-all cursor-pointer group">
+                      <div key={news.id} className="bg-white/5 border border-white/10 p-5 rounded-lg hover:bg-white/10 transition-all cursor-pointer group">
                          <div className="flex justify-between items-start mb-3">
                             <span className={cn(
                                "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider",
@@ -98,7 +98,7 @@ export function Workspace() {
                 </div>
               </div>
               <div className="shrink-0 hidden xl:block">
-                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20">
+                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-lg shadow-blue-600/20">
                     Tất cả tin tức
                  </button>
               </div>
@@ -110,7 +110,7 @@ export function Workspace() {
 
           <div className="space-y-12">
             {MODULE_GROUPS.map((group, gIdx) => (
-            <div key={gIdx} className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-8">
+            <div key={gIdx} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-8">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-1.5 h-8 bg-blue-600 rounded-full" />
                 <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
@@ -120,9 +120,9 @@ export function Workspace() {
                     <button 
                        key={item.id} 
                        onClick={() => setActiveModule(item.id)}
-                       className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
+                       className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
                     >
-                       <div className={cn("p-3 rounded-xl shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
+                       <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
                           <item.icon className="w-6 h-6" />
                        </div>
                        <div className="flex-1 min-w-0">

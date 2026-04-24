@@ -44,31 +44,31 @@ export function SalesManagement() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng doanh số tháng 03</p>
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(8300000000)}</div>
            <p className="text-[10px] text-[#10B981] font-medium mt-1">Hoàn thành 92% kế hoạch</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng hoa hồng chi trả</p>
            <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(124500000)}</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Tỷ lệ trung bình: 1.5%</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Người dẫn đầu (Champion)</p>
            <div className="text-lg font-bold text-[#111827] truncate mt-1">Trần Thị Thu</div>
            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#10B981] font-bold">
               <Crown className="w-3.5 h-3.5 fill-current" /> 108% Target
            </div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active Sales Rep</p>
            <div className="text-2xl font-bold text-[#111827]">24/25</div>
            <p className="text-[10px] text-[#6B7280] mt-1">Đang hoạt động tại thực địa</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
           <div className="flex gap-4">
             <div className="relative">
@@ -158,7 +158,7 @@ export function SalesManagement() {
 
       <div className="bg-slate-900 rounded-lg p-6 text-white border border-slate-800 flex items-center justify-between">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg">
                <Trophy className="w-6 h-6" />
             </div>
             <div>
@@ -166,7 +166,7 @@ export function SalesManagement() {
                <p className="text-slate-400 text-sm">Hệ thống vinh danh Sales có thành tích tốt nhất trong ngày. Tự động tính thưởng nóng "Hổ báo" cho các hợp đồng Seller có GMV trên 100tr.</p>
             </div>
          </div>
-         <button className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">Mở Dashboard Thi đua</button>
+         <button className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20">Mở Dashboard Thi đua</button>
       </div>
     </div>
   );

@@ -68,29 +68,29 @@ export function AffiliateManagement() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng Publisher/KOL</p>
            <div className="text-2xl font-bold text-[#111827]">1,240</div>
            <div className="mt-1 text-[10px] text-[#10B981] font-medium">+12 người mới tuần này</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng hoa hồng đã chi</p>
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(2450000000)}</div>
            <div className="mt-1 text-[10px] text-[#6B7280]">Chiếm 8.2% tổng GMV sàn</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">CTR Trung bình</p>
            <div className="text-2xl font-bold text-[#2563EB]">6.8%</div>
            <div className="mt-1 text-[10px] text-[#2563EB] font-medium">+1.2% so với tháng trước</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đơn hàng Affiliate</p>
            <div className="text-2xl font-bold text-[#111827]">42,850</div>
            <div className="mt-1 text-[10px] text-[#111827]">24% tổng lượng đơn sàn</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
           <div className="flex gap-4">
             <div className="relative">
@@ -178,7 +178,7 @@ export function AffiliateManagement() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+      <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
          <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                <DollarSign className="w-5 h-5" />
@@ -191,7 +191,7 @@ export function AffiliateManagement() {
               { cat: 'Điện tử', rate: '3%' },
               { cat: 'Gia dụng', rate: '5%' }
             ].map((item) => (
-              <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-xl border border-[#F3F4F6] flex justify-between items-center group hover:border-[#2563EB] transition-all cursor-pointer">
+              <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-lg border border-[#F3F4F6] flex justify-between items-center group hover:border-[#2563EB] transition-all cursor-pointer">
                  <span className="text-sm font-medium text-[#4B5563]">{item.cat}</span>
                  <div className="flex items-center gap-2">
                     <span className="text-lg font-bold text-[#111827]">{item.rate}</span>

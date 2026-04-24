@@ -36,7 +36,7 @@ export function LoginPage() {
           <div className="flex items-center gap-3 mb-12">
             <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-lg shadow-blue-500/20"></div>
             <h1 className="text-2xl font-black text-white tracking-tight">
-              V-Ecom <span className="text-blue-400">ERP</span>
+              VComm <span className="text-blue-400">ERP</span>
             </h1>
           </div>
           
@@ -53,14 +53,14 @@ export function LoginPage() {
 
         <div className="relative z-10 grid grid-cols-2 gap-8">
           <div>
-            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
+            <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
               <Zap className="w-6 h-6 text-amber-400" />
             </div>
             <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">AIOps Execution</h3>
             <p className="text-slate-500 text-xs">Vận hành thông minh bằng AI, giảm 40% chi phí nhân sự.</p>
           </div>
           <div>
-            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
+            <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
               <ShieldCheck className="w-6 h-6 text-emerald-400" />
             </div>
             <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">Enterprise Security</h3>
@@ -75,7 +75,7 @@ export function LoginPage() {
           <div className="space-y-2">
             <div className="md:hidden flex items-center gap-2 mb-8">
               <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45"></div>
-              <span className="text-xl font-bold text-[#111827]">V-Ecom ERP</span>
+              <span className="text-xl font-bold text-[#111827]">VComm ERP</span>
             </div>
             <h2 className="text-3xl font-bold text-[#111827] tracking-tight">Chào mừng trở lại</h2>
             <p className="text-[#6B7280] text-sm font-medium">Nhập thông tin tài khoản được cấp để tiếp tục</p>
@@ -94,7 +94,7 @@ export function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
-                  className="w-full bg-white border border-[#E5E7EB] rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+                  className="w-full bg-white border border-[#E5E7EB] rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
                 />
               </div>
             </div>
@@ -111,13 +111,13 @@ export function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white border border-[#E5E7EB] rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+                  className="w-full bg-white border border-[#E5E7EB] rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
+              <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                 <div className="text-xs font-medium text-red-600 leading-relaxed">
                   {error} <br />
@@ -129,7 +129,7 @@ export function LoginPage() {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 bg-[#2563EB] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+              className="w-full py-4 bg-[#2563EB] text-white rounded-lg font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

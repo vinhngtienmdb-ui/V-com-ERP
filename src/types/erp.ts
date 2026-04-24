@@ -236,6 +236,8 @@ export interface AttendanceRecord {
   status: 'on_time' | 'late' | 'absent' | 'off';
   overtimeHours: number;
   location?: string; // GPS app integration
+  method?: 'gps' | 'wifi' | 'face' | 'qr' | 'device';
+  deviceInfo?: string;
 }
 
 export interface Payroll {
@@ -345,6 +347,31 @@ export interface WebhookConfig {
   status: 'active' | 'inactive';
 }
 
+// --- IPOS SPECIFIC PERMISSIONS ---
+export interface IPosStaff {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: 'admin' | 'manager' | 'employee';
+  assignedStoreId: string;
+  status: 'active' | 'inactive';
+  lastActive?: string;
+}
+
+export interface IPosStore {
+  id: string;
+  name: string;
+  address: string;
+  managerId: string;
+  status: 'active' | 'inactive';
+  config?: {
+    printReceiptAutomatically: boolean;
+    allowReturns: boolean;
+    requireShiftOpening: boolean;
+  };
+}
+
 // --- WALLET & ESCROW ---
 export interface WalletTransaction {
   id: string;
@@ -373,6 +400,26 @@ export interface PaymentGateway {
   transactionFee: number;
   isPreferred: boolean;
   webhookUrl?: string;
+}
+
+export interface BankAccount {
+  id: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  type: 'checking' | 'savings' | 'credit';
+  balance: number;
+  isDefault: boolean;
+}
+
+export interface PaymentLink {
+  id: string;
+  amount: number;
+  description: string;
+  url: string;
+  qrCode: string;
+  status: 'active' | 'expired' | 'completed';
+  createdAt: string;
 }
 
 // --- LIVE-COMMERCE ---
@@ -468,7 +515,7 @@ export interface WorkflowTask {
 // --- AI OPERATIONS & QUALITY ---
 export interface AiTaskResult {
   id: string;
-  type: 'image_moderation' | 'content_fix' | 'fraud_alert' | 'dynamic_pricing';
+  type: 'image_moderation' | 'content_fix' | 'fraud_alert' | 'dynamic_pricing' | 'recommendation' | 'chatbot';
   targetId: string;
   confidence: number;
   result: any;

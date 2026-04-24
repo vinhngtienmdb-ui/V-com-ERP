@@ -55,15 +55,15 @@ const MOCK_CAMPAIGNS: Campaign[] = [
 ];
 
 const SOCIAL_ACCOUNTS = [
-  { id: 'fb', platform: 'Facebook', name: 'V-Ecom Official', status: 'connected', followers: '150k', color: 'bg-blue-600', icon: Facebook },
-  { id: 'tt', platform: 'TikTok', name: '@vecom_shop_vn', status: 'connected', followers: '850k', color: 'bg-slate-950', icon: Music2 },
-  { id: 'ig', platform: 'Instagram', name: 'vecom.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Instagram },
-  { id: 'x', platform: 'Twitter/X', name: 'vecom_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
+  { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-blue-600', icon: Facebook },
+  { id: 'tt', platform: 'TikTok', name: '@vcomm_shop_vn', status: 'connected', followers: '850k', color: 'bg-slate-950', icon: Music2 },
+  { id: 'ig', platform: 'Instagram', name: 'vcomm.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Instagram },
+  { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
 ];
 
 export function Marketing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'campaigns' | 'omnichannel' | 'ads'>('campaigns');
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'omnichannel' | 'ads' | 'vouchers'>('campaigns');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -90,6 +90,7 @@ export function Marketing() {
       <div className="flex border-b border-slate-200 gap-8">
         {[
           { id: 'campaigns', label: 'Chiến dịch (Campaigns)', icon: Megaphone },
+          { id: 'vouchers', label: 'Mã giảm giá (Vouchers)', icon: Calendar },
           { id: 'omnichannel', label: 'Kết nối Đa kênh (Social Sync)', icon: Share2 },
           { id: 'ads', label: 'Quản lý Ads & Tracking', icon: TrendingUp },
         ].map(tab => (
@@ -119,7 +120,7 @@ export function Marketing() {
             className="space-y-6"
           >
             {/* Social Accounts Area */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                   <div>
                      <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -135,9 +136,9 @@ export function Marketing() {
                <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                      {SOCIAL_ACCOUNTS.map(acc => (
-                        <div key={acc.id} className="p-4 rounded-xl border border-slate-100 bg-white hover:border-blue-200 transition-all shadow-sm relative group">
+                        <div key={acc.id} className="p-4 rounded-lg border border-slate-100 bg-white hover:border-blue-200 transition-all shadow-sm relative group">
                            <div className="flex items-center gap-4 mb-4">
-                              <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shadow-lg", acc.color)}>
+                              <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center shadow-lg", acc.color)}>
                                  <acc.icon className="w-6 h-6 text-white" />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -170,7 +171,7 @@ export function Marketing() {
 
                <div className="p-6 bg-blue-50/30 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="flex gap-4">
-                     <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
+                     <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
                         <MessageSquare className="w-5 h-5" />
                      </div>
                      <div>
@@ -179,7 +180,7 @@ export function Marketing() {
                      </div>
                   </div>
                   <div className="flex gap-4">
-                     <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
+                     <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
                         <Repeat className="w-5 h-5" />
                      </div>
                      <div>
@@ -188,7 +189,7 @@ export function Marketing() {
                      </div>
                   </div>
                   <div className="flex gap-4">
-                     <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
+                     <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-blue-100 flex items-center justify-center text-blue-600">
                         <Smartphone className="w-5 h-5" />
                      </div>
                      <div>
@@ -201,6 +202,55 @@ export function Marketing() {
           </motion.div>
         )}
 
+        {activeTab === 'vouchers' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
+          >
+           <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+              <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                 <h3 className="font-bold text-slate-800 text-sm">Danh sách mã giảm giá</h3>
+                 <button className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                    <Plus className="w-3 h-3" /> Tạo mã giảm giá
+                 </button>
+              </div>
+              <table className="w-full text-left text-sm">
+                 <thead>
+                    <tr className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold">
+                       <th className="px-6 py-3">Tên chiến dịch</th>
+                       <th className="px-6 py-3">Loại mã</th>
+                       <th className="px-6 py-3">Mức giảm</th>
+                       <th className="px-6 py-3">Áp dụng cho</th>
+                       <th className="px-6 py-3 text-right">Thao tác</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-100">
+                    <tr className="hover:bg-slate-50">
+                       <td className="px-6 py-4 font-bold text-slate-900">Flash Sale 15/3</td>
+                       <td className="px-6 py-4">Giảm %</td>
+                       <td className="px-6 py-4">10%</td>
+                       <td className="px-6 py-4 text-xs text-slate-600">Điện tử, Thời trang</td>
+                       <td className="px-6 py-4 text-right">
+                          <button className="text-xs font-bold text-slate-500 hover:text-blue-600">Sửa</button>
+                       </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                       <td className="px-6 py-4 font-bold text-slate-900">Đơn hàng đầu tiên</td>
+                       <td className="px-6 py-4">Miễn phí vận chuyển</td>
+                       <td className="px-6 py-4">Tối đa 30k</td>
+                       <td className="px-6 py-4 text-xs text-slate-600">Tất cả sản phẩm</td>
+                       <td className="px-6 py-4 text-right">
+                          <button className="text-xs font-bold text-slate-500 hover:text-blue-600">Sửa</button>
+                       </td>
+                    </tr>
+                 </tbody>
+              </table>
+           </div>
+          </motion.div>
+        )}
+
         {activeTab === 'campaigns' && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -208,7 +258,7 @@ export function Marketing() {
             exit={{ opacity: 0, y: -20 }}
             className="space-y-6"
           >
-            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+            <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
               <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
                 <div className="flex gap-4">
                   <div className="relative">
@@ -244,7 +294,7 @@ export function Marketing() {
                       <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                             <div className="p-3 rounded-xl bg-blue-50 text-blue-600">
+                             <div className="p-3 rounded-lg bg-blue-50 text-blue-600">
                                 <Megaphone className="w-5 h-5" />
                              </div>
                              <div>
@@ -294,7 +344,7 @@ export function Marketing() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2 text-blue-600">
                 <Megaphone className="w-5 h-5 fill-current" />
@@ -335,7 +385,7 @@ export function Marketing() {
                   <input type="date" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none" required />
                 </div>
               </div>
-              <button className="w-full bg-[#2563EB] text-white py-3 rounded-xl font-bold mt-6 hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all">
+              <button className="w-full bg-[#2563EB] text-white py-3 rounded-lg font-bold mt-6 hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all">
                  Khởi tạo chiến dịch Đa kênh
               </button>
             </form>

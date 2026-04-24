@@ -65,7 +65,7 @@ export function AnalyticsBI() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">LTV (Customer Lifetime Value)</span>
               <TrendingUp className="w-4 h-4 text-emerald-500" />
@@ -73,7 +73,7 @@ export function AnalyticsBI() {
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(3500000)}</div>
            <div className="mt-1 text-[10px] text-[#10B981] font-medium">+12% so với Q4/2023</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">CAC (Customer Acquisition Cost)</span>
               <ArrowDownRight className="w-4 h-4 text-emerald-500" />
@@ -81,7 +81,7 @@ export function AnalyticsBI() {
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(125000)}</div>
            <div className="mt-1 text-[10px] text-[#10B981] font-medium">-4.5% (Tối ưu hóa ads)</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">AOV (Average Order Value)</span>
               <ArrowUpRight className="w-4 h-4 text-[#2563EB]" />
@@ -89,7 +89,7 @@ export function AnalyticsBI() {
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(550000)}</div>
            <div className="mt-1 text-[10px] text-[#2563EB] font-medium">+8% nhờ Bundle/Groupbuy</div>
         </div>
-        <div className="bg-[#FEF2F2] p-5 rounded-xl border border-[#FEE2E2] shadow-sm">
+        <div className="bg-[#FEF2F2] p-5 rounded-lg border border-[#FEE2E2] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#991B1B] font-bold uppercase">Fraud Alerts (Cảnh báo gian lận)</span>
               <ShieldAlert className="w-4 h-4 text-[#EF4444] animate-pulse" />
@@ -168,7 +168,7 @@ export function AnalyticsBI() {
         </div>
       </div>
 
-      <div className="bg-[#111827] text-white p-8 rounded-xl relative overflow-hidden">
+      <div className="bg-[#111827] text-white p-8 rounded-lg relative overflow-hidden">
          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
                <div className="flex items-center gap-3">
@@ -181,8 +181,8 @@ export function AnalyticsBI() {
                   Hệ thống phân tích hành vi đơn hàng theo thời gian thực. Tự động gắn cờ đỏ (flag) cho các tài khoản có dấu hiệu buff đơn ảo (sybil attack) hoặc spam voucher quy mô lớn từ một dải IP.
                </p>
                <div className="flex gap-4 pt-4">
-                  <button className="px-6 py-2.5 bg-white text-[#111827] font-bold rounded-xl text-xs hover:bg-slate-100 transition-all">Xem bảng tin Fraud</button>
-                  <button className="px-6 py-2.5 border border-slate-700 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition-all">Cấu hình Rule AI</button>
+                  <button className="px-6 py-2.5 bg-white text-[#111827] font-bold rounded-lg text-xs hover:bg-slate-100 transition-all">Xem bảng tin Fraud</button>
+                  <button className="px-6 py-2.5 border border-slate-700 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-all">Cấu hình Rule AI</button>
                </div>
             </div>
             <div className="space-y-4">

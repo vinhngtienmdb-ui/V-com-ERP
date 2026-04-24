@@ -26,7 +26,9 @@ import {
   DownloadCloud,
   ScanBarcode,
   Camera,
-  Maximize2
+  Maximize2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
@@ -48,16 +50,106 @@ import {
 export function PIM() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
   
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'products'), (snap) => {
-      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      data = data.filter(p => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category));
       setProducts(data);
+      if (data.length === 0) seedDemoPimProducts();
       setLoading(false);
     });
     return () => unsub();
   }, []);
+
+  const seedDemoPimProducts = async () => {
+    console.log("Seeding PIM products...");
+    const demoItems = [
+      {
+        name: 'iPhone 15 Pro Max 256GB - VN/A',
+        sku: 'APP-IP15PM-256',
+        price: 34990000,
+        costPrice: 31000000,
+        margin: 11.4,
+        stock: 45,
+        category: 'Thết bị số',
+        brand: 'Apple',
+        sellerName: 'VComm Electronics',
+        status: 'in_stock',
+        image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80',
+        weight: '221',
+        dimensions: '159.9 x 76.7 x 8.25'
+      },
+      {
+        name: 'MacBook Air M2 13.6" 8CPU 8GPU 8GB/256GB',
+        sku: 'APP-MBA-M2-8-256',
+        price: 26490000,
+        costPrice: 23500000,
+        margin: 11.2,
+        stock: 20,
+        category: 'Thiết bị số',
+        brand: 'Apple',
+        sellerName: 'VComm Electronics',
+        status: 'in_stock',
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80',
+        weight: '1240',
+        dimensions: '304.1 x 215 x 11.3'
+      },
+      {
+        name: 'Bàn phím cơ không dây Logitech MX Mechanical Mini',
+        sku: 'LOG-MX-MECH-MINI',
+        price: 3590000,
+        costPrice: 2800000,
+        margin: 22,
+        stock: 120,
+        category: 'Phụ kiện',
+        brand: 'Logitech',
+        sellerName: 'VComm Accessories',
+        status: 'in_stock',
+        image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400&q=80',
+        weight: '612',
+        dimensions: '312.6 x 131.5 x 26.1'
+      },
+      {
+        name: 'Chuột không dây Logitech MX Master 3S',
+        sku: 'LOG-MX-MASTER-3S',
+        price: 2590000,
+        costPrice: 1900000,
+        margin: 26.6,
+        stock: 85,
+        category: 'Phụ kiện',
+        brand: 'Logitech',
+        sellerName: 'VComm Accessories',
+        status: 'pending_approval',
+        image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&q=80',
+        weight: '141',
+        dimensions: '124.9 x 84.3 x 51'
+      },
+      {
+        name: 'Sony FE 24-70mm f/2.8 GM II',
+        sku: 'SONY-SEL2470GM2',
+        price: 45990000,
+        costPrice: 40000000,
+        margin: 13,
+        stock: 8,
+        category: 'Nhiếp ảnh',
+        brand: 'Sony',
+        sellerName: 'Camera Pro Studio',
+        status: 'in_stock',
+        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80',
+        weight: '695',
+        dimensions: '87.8 x 119.9 x 87.8'
+      }
+    ];
+    for (const item of demoItems) {
+      await addDoc(collection(db, 'products'), {
+        ...item,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+    }
+  };
 
   const addProduct = async (productData: Partial<Product>) => {
     try {
@@ -78,6 +170,19 @@ export function PIM() {
       handleFirestoreError(error, 'delete', 'products');
     }
   };
+
+  const toggleVisibility = async (id: string, currentStatus: string) => {
+    try {
+      const newStatus = currentStatus === 'hidden' ? 'in_stock' : 'hidden';
+      await updateDoc(doc(db, 'products', id), {
+        status: newStatus,
+        updatedAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, 'update', 'products');
+    }
+  };
+
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterBrand, setFilterBrand] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -138,6 +243,7 @@ export function PIM() {
       }
     }
   };
+  const [showPnLForProduct, setShowPnLForProduct] = useState<Product | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, name: string } | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
@@ -303,7 +409,7 @@ export function PIM() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       {/* Banner Khuyến mãi/Tính năng mới */}
-      <div className="relative w-full h-48 rounded-xl overflow-hidden shadow-lg group">
+      <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-lg group">
         <img 
           src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200&h=400" 
           alt="Banner giới thiệu tính năng" 
@@ -313,7 +419,7 @@ export function PIM() {
         <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-12">
            <h2 className="text-3xl font-black text-white italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
            <p className="text-blue-100 text-sm mt-3 max-w-lg">Tối ưu hoá giá bán tự động dựa trên dữ liệu đối thủ và tồn kho thực tế. Giúp tăng 15% biên lợi nhuận chỉ trong 1 thao tác.</p>
-           <button className="mt-6 w-fit px-8 py-3 bg-white text-blue-800 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg">
+           <button className="mt-6 w-fit px-8 py-3 bg-white text-blue-800 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg">
              Trải nghiệm ngay
            </button>
         </div>
@@ -322,7 +428,7 @@ export function PIM() {
       {/* Modal Bổ sung sản phẩm */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-[#E5E7EB] overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white w-full max-w-4xl rounded-lg shadow-2xl border border-[#E5E7EB] overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-8 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
               <div className="flex items-center gap-4">
                 <div className="p-4 bg-blue-600 rounded-[1.5rem] shadow-lg shadow-blue-500/20">
@@ -337,11 +443,11 @@ export function PIM() {
               <div className="flex bg-slate-100 p-1.5 rounded-lg mx-8">
                  <button 
                    onClick={() => setUploadMode('single')}
-                   className={cn("px-6 py-2.5 text-xs font-black rounded-xl transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                   className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
                  >Nhập thủ công</button>
                  <button 
                    onClick={() => setUploadMode('bulk')}
-                   className={cn("px-6 py-2.5 text-xs font-black rounded-xl transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                   className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
                  >Tải lên (CSV/Excel)</button>
               </div>
 
@@ -404,7 +510,7 @@ export function PIM() {
                           type="button"
                           onClick={generateSKU}
                           title="Sinh mã SKU tự động"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-blue-50 text-blue-600 rounded-xl transition-all"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-all"
                         >
                           <Hash className="w-5 h-5" />
                         </button>
@@ -471,7 +577,7 @@ export function PIM() {
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                     className={cn(
-                      "border-2 border-dashed rounded-xl p-12 text-center transition-all relative flex flex-col items-center justify-center gap-6",
+                      "border-2 border-dashed rounded-lg p-12 text-center transition-all relative flex flex-col items-center justify-center gap-6",
                       fileValidation.status === 'validating' ? "border-blue-300 bg-blue-50/50" : 
                       fileValidation.status === 'error' ? "border-red-300 bg-red-50/50" :
                       fileValidation.status === 'success' ? "border-emerald-300 bg-emerald-50/50" :
@@ -518,7 +624,7 @@ export function PIM() {
                         </div>
                         <div>
                           <h3 className="text-xl font-black text-red-600">Lỗi xác thực dữ liệu</h3>
-                           <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-medium text-left">
+                           <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 font-medium text-left">
                               Phát hiện dữ liệu thiếu định dạng tiền tệ (Cột Giá Bán) hoặc các trường bắt buộc bị trống. <br />
                               Bạn có thể sử dụng <b>AI Auto-correction</b> để hỗ trợ điền tự động các trường này.
                            </div>
@@ -527,7 +633,7 @@ export function PIM() {
                             <button 
                               type="button"
                               onClick={(e) => { e.preventDefault(); setFileValidation({status:'idle', message:''}); }}
-                              className="px-6 py-2.5 bg-white text-red-600 border border-red-200 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-red-50 transition-all"
+                              className="px-6 py-2.5 bg-white text-red-600 border border-red-200 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-red-50 transition-all"
                             >Chỉnh sửa & Thử lại</button>
                             <button 
                               type="button"
@@ -539,7 +645,7 @@ export function PIM() {
                                       setFileValidation({status: 'success', message: `AI đã xử lý xong. Cập nhật ${parsedCount} sản phẩm hợp vệ, 0 lỗi.`, data: parsedCount});
                                   }, 2500);
                               }}
-                              className="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-lg shadow-red-500/20"
+                              className="px-6 py-2.5 bg-red-600 text-white font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-lg shadow-red-500/20"
                             ><Sparkles className="w-4 h-4"/> Sửa lỗi với AI</button>
                         </div>
                       </>
@@ -559,7 +665,7 @@ export function PIM() {
                   </div>
                   
                   {fileValidation.status === 'idle' && (
-                    <div className="flex justify-between items-center bg-blue-50/50 border border-blue-100 rounded-xl p-6 hover:border-blue-200 transition-all">
+                    <div className="flex justify-between items-center bg-blue-50/50 border border-blue-100 rounded-lg p-6 hover:border-blue-200 transition-all">
                        <div className="flex items-center gap-4">
                            <div className="p-3 bg-white rounded-lg shadow-sm">
                               <DownloadCloud className="w-6 h-6 text-blue-600" />
@@ -569,7 +675,7 @@ export function PIM() {
                               <p className="text-[10px] text-[#6B7280] font-bold mt-0.5">Bản chuẩn 2.0 đã bao gồm schema của AI Server.</p>
                            </div>
                        </div>
-                       <a href="#" className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white px-5 py-2.5 rounded-xl border border-blue-100 shadow-sm transition-all relative z-20 uppercase tracking-widest">
+                       <a href="#" className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white px-5 py-2.5 rounded-lg border border-blue-100 shadow-sm transition-all relative z-20 uppercase tracking-widest">
                           Tải Template
                        </a>
                     </div>
@@ -600,7 +706,7 @@ export function PIM() {
 
       {isScanMode && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
-           <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-8 animate-in zoom-in-95">
+           <div className="bg-white w-full max-w-xl rounded-lg shadow-2xl p-8 animate-in zoom-in-95">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-black">Quét mã vạch & Kiểm kê</h2>
                 <button onClick={() => { setIsScanMode(false); setIsCameraActive(false); }} className="p-2 hover:bg-slate-100 rounded-lg">
@@ -608,7 +714,7 @@ export function PIM() {
                 </button>
               </div>
 
-              <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-xl">
+              <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-lg">
                  <button 
                   onClick={() => setInventoryUpdateMode(false)}
                   className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-blue-600 shadow-sm" : "text-slate-500")}
@@ -621,7 +727,7 @@ export function PIM() {
 
               {!isCameraActive ? (
                 <div className="space-y-6">
-                  <div className="aspect-video bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
+                  <div className="aspect-video bg-slate-900 rounded-lg flex flex-col items-center justify-center text-white/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
                     <Camera className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform" />
                     <p className="text-sm font-bold">Bật Camera để quét mã vạch</p>
                     <p className="text-[10px] uppercase tracking-widest mt-1">Hỗ trợ QR, Barcode, SKU</p>
@@ -642,7 +748,7 @@ export function PIM() {
                       value={currentSku}
                       onChange={(e) => setCurrentSku(e.target.value)}
                       placeholder="Nhập mã SKU/Barcode..."
-                      className="flex-1 bg-slate-50 border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                      className="flex-1 bg-slate-50 border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm font-mono font-bold"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleScannedResult(currentSku);
@@ -655,16 +761,16 @@ export function PIM() {
                         handleScannedResult(currentSku);
                         setCurrentSku('');
                       }} 
-                      className="px-6 py-2 bg-[#111827] text-white font-bold rounded-xl text-xs hover:bg-slate-800"
+                      className="px-6 py-2 bg-[#111827] text-white font-bold rounded-lg text-xs hover:bg-slate-800"
                     >Thêm</button>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div id="reader" className="w-full h-full overflow-hidden rounded-2xl border-4 border-blue-600/20 shadow-inner"></div>
+                  <div id="reader" className="w-full h-full overflow-hidden rounded-lg border-4 border-blue-600/20 shadow-inner"></div>
                   <button 
                     onClick={() => setIsCameraActive(false)}
-                    className="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl text-xs hover:bg-red-100 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-red-50 text-red-600 font-bold rounded-lg text-xs hover:bg-red-100 transition-all flex items-center justify-center gap-2"
                   >
                     <X className="w-4 h-4" /> Dừng quét Camera
                   </button>
@@ -681,7 +787,7 @@ export function PIM() {
                   </div>
                   <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
                     {scannedSkus.map(sku => (
-                      <div key={sku} className="flex justify-between items-center bg-slate-50 p-3 rounded-xl text-xs font-mono font-bold border border-slate-100 animate-in slide-in-from-right-4 transition-all">
+                      <div key={sku} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg text-xs font-mono font-bold border border-slate-100 animate-in slide-in-from-right-4 transition-all">
                         <span className="text-blue-600">{sku}</span>
                         <div className="flex items-center gap-4">
                           <span className="text-[10px] text-slate-400">
@@ -694,7 +800,7 @@ export function PIM() {
                       </div>
                     ))}
                     {scannedSkus.length === 0 && (
-                      <div className="p-8 text-center border-2 border-dashed border-slate-100 rounded-xl text-slate-400 text-[11px] font-medium italic">
+                      <div className="p-8 text-center border-2 border-dashed border-slate-100 rounded-lg text-slate-400 text-[11px] font-medium italic">
                         Chưa có SKU nào được quét
                       </div>
                     )}
@@ -707,7 +813,7 @@ export function PIM() {
                         setIsScanMode(false); 
                       }} 
                       disabled={scannedSkus.length === 0}
-                      className="flex-1 py-4 bg-[#111827] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
+                      className="flex-1 py-4 bg-[#111827] text-white rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
                     >
                       Tìm kiếm {scannedSkus.length} SKU
                     </button>
@@ -716,7 +822,7 @@ export function PIM() {
               )}
 
               {inventoryUpdateMode && (
-                <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-lg">
                   <div className="flex gap-3">
                     <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
                       <Zap className="w-5 h-5 text-blue-600" />
@@ -735,7 +841,7 @@ export function PIM() {
       {/* Confirmation Dialog */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#111827]/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-[#E5E7EB] overflow-hidden p-8 animate-in zoom-in-95 duration-300">
+          <div className="bg-white w-full max-w-md rounded-lg shadow-2xl border border-[#E5E7EB] overflow-hidden p-8 animate-in zoom-in-95 duration-300">
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-4 bg-red-50 rounded-full text-red-600">
                 <Trash2 className="w-8 h-8" />
@@ -773,7 +879,7 @@ export function PIM() {
         <div className="flex gap-3">
           <button 
             onClick={toggleScanMode}
-            className="bg-white border border-[#E5E7EB] px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
+            className="bg-white border border-[#E5E7EB] px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
           >
             <ScanBarcode className="w-5 h-5 text-[#2563EB]" />
             Quét mã / Kiểm kê
@@ -782,7 +888,7 @@ export function PIM() {
             onClick={toggleScan}
             disabled={isScanning}
             className={cn(
-              "bg-white border border-[#E5E7EB] px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 group shadow-sm",
+              "bg-white border border-[#E5E7EB] px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm",
               isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
             )}
           >
@@ -791,14 +897,14 @@ export function PIM() {
           </button>
           <button 
             onClick={() => setIsUploadModalOpen(true)}
-            className="bg-[#111827] text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg flex items-center gap-2 active:scale-95"
+            className="bg-[#111827] text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-lg flex items-center gap-2 active:scale-95"
           >
             <Plus className="w-4 h-4" /> Bổ sung sản phẩm
           </button>
           <button 
             onClick={handleBulkApprove}
             disabled={isScanning}
-            className="bg-[#2563EB] text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
+            className="bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
           >
             Duyệt sản phẩm mới (Bulk)
           </button>
@@ -845,7 +951,7 @@ export function PIM() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-6 border-b border-[#F3F4F6] space-y-4">
            <div className="flex flex-col xl:flex-row gap-4 justify-between items-start">
               <div className="relative flex-1 max-w-2xl">
@@ -861,16 +967,20 @@ export function PIM() {
               <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap">
                  <button 
                   onClick={() => setFilterStatus('all')}
-                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-[#111827] shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                  className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-[#111827] shadow-sm" : "text-slate-500 hover:text-slate-700")}
                  >Tất cả trạng thái</button>
                  <button 
                   onClick={() => setFilterStatus('pending_approval')}
-                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'pending_approval' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
-                 >Chờ AI duyệt</button>
+                  className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'pending_approval' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Chờ duyệt</button>
                  <button 
                   onClick={() => setFilterStatus('in_stock')}
-                  className={cn("px-6 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap", filterStatus === 'in_stock' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
-                 >Đang kinh doanh</button>
+                  className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'in_stock' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Kinh doanh</button>
+                 <button 
+                  onClick={() => setFilterStatus('hidden')}
+                  className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'hidden' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                 >Đã ẩn</button>
               </div>
            </div>
 
@@ -879,7 +989,7 @@ export function PIM() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="bg-white border border-[#E5E7EB] rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 <option value="all">Tất cả ngành hàng</option>
                 {categories.map(category => (
@@ -890,7 +1000,7 @@ export function PIM() {
               <select
                 value={filterBrand}
                 onChange={(e) => setFilterBrand(e.target.value)}
-                className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="bg-white border border-[#E5E7EB] rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 <option value="all">Tất cả thương hiệu</option>
                 {brands.map(brand => (
@@ -902,30 +1012,42 @@ export function PIM() {
 
         <div className="p-8 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="group flex flex-col bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-blue-200 transition-all animate-in fade-in relative">
-              {/* Delete Button - Hover only */}
-              <button 
-                onClick={() => setDeleteConfirm({ id: product.id, name: product.name })}
-                className="absolute top-8 right-8 p-3 bg-red-50 text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:text-white shadow-sm z-20"
-                title="Xóa sản phẩm"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+            <div key={product.id} className="group flex flex-col bg-white border border-[#E5E7EB] rounded-lg p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-blue-200 transition-all animate-in fade-in relative">
+              {/* Actions - Hover only */}
+              <div className="absolute top-8 right-8 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+                  <button 
+                    onClick={() => toggleVisibility(product.id, product.status)}
+                    className="p-3 bg-slate-50 text-slate-600 rounded-lg hover:bg-slate-200 shadow-sm transition-all"
+                    title={product.status === 'hidden' ? "Hiển thị sản phẩm" : "Ẩn sản phẩm"}
+                  >
+                    {product.status === 'hidden' ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                  </button>
+                  <button 
+                    onClick={() => setDeleteConfirm({ id: product.id, name: product.name })}
+                    className="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white shadow-sm transition-all"
+                    title="Xóa sản phẩm"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+              </div>
 
               {/* Image & Badges */}
-              <div className="relative h-60 w-full rounded-xl bg-slate-50 border border-[#E5E7EB] overflow-hidden mb-6 group-hover:shadow-md transition-all">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
-                  <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-xl text-[9px] font-black text-slate-500 shadow-sm border border-slate-100 uppercase tracking-tighter">
+              <div className="relative h-60 w-full rounded-lg bg-slate-50 border border-[#E5E7EB] overflow-hidden mb-6 group-hover:shadow-md transition-all">
+                  <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover group-hover:scale-105 transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
+                  <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[9px] font-black text-slate-500 shadow-sm border border-slate-100 uppercase tracking-tighter z-10">
                     {product.id}
                   </div>
                   {/* Status Badge */}
-                  <div className="absolute bottom-3 left-3 flex gap-2">
+                  <div className="absolute bottom-3 left-3 flex gap-2 z-10">
                      <span className={cn(
                         "px-4 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-2 shadow-lg uppercase tracking-widest border backdrop-blur-md",
+                        product.status === 'hidden' ? "bg-slate-600/90 text-white border-slate-500" :
                         product.status === 'in_stock' ? "bg-emerald-500/90 text-white border-emerald-400" : "bg-amber-500/90 text-white border-amber-400"
                       )}>
-                        {product.status === 'in_stock' ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
-                        {product.status === 'in_stock' ? 'Đang kinh doanh' : 'Chờ AI duyệt'}
+                        {product.status === 'hidden' ? <EyeOff className="w-4 h-4" /> :
+                         product.status === 'in_stock' ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                        {product.status === 'hidden' ? 'Đã ẩn' : 
+                         product.status === 'in_stock' ? 'Đang kinh doanh' : 'Chờ AI duyệt'}
                       </span>
                   </div>
               </div>
@@ -933,7 +1055,7 @@ export function PIM() {
               {/* Info Area */}
               <div className="flex flex-col flex-1">
                   <div className="flex justify-between items-start mb-3">
-                     <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100 uppercase tracking-widest shadow-sm inline-block">
+                     <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 uppercase tracking-widest shadow-sm inline-block">
                         {product.category}
                      </span>
                   </div>
@@ -986,7 +1108,10 @@ export function PIM() {
                         </div>
                      </div>
 
-                     <button className="flex items-center gap-2 text-[11px] font-black text-blue-600 hover:translate-x-1 transition-all bg-blue-50 px-4 py-2.5 rounded-xl group/btn">
+                     <button 
+                        onClick={() => setShowPnLForProduct(product)}
+                        className="flex items-center gap-2 text-[11px] font-black text-blue-600 hover:translate-x-1 transition-all bg-blue-50 px-4 py-2.5 rounded-lg group/btn"
+                     >
                         Chi tiết P&L <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                      </button>
                   </div>
@@ -997,10 +1122,10 @@ export function PIM() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-10 rounded-xl text-white relative overflow-hidden shadow-2xl flex flex-col justify-between group">
+         <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-10 rounded-lg text-white relative overflow-hidden shadow-2xl flex flex-col justify-between group">
             <div className="relative z-10 space-y-6">
                <div className="flex items-center gap-4">
-                  <div className="p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                  <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
                      <Sparkles className="w-8 h-8" />
                   </div>
                   <div>
@@ -1018,12 +1143,12 @@ export function PIM() {
             <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
          </div>
 
-         <div className="bg-white p-10 border border-[#E5E7EB] rounded-xl shadow-sm space-y-8 relative overflow-hidden group">
+         <div className="bg-white p-10 border border-[#E5E7EB] rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
             <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3">
                <ShieldCheck className="w-6 h-6 text-emerald-500" /> P&L Configuration Engine
             </h3>
             <div className="space-y-6">
-               <div className="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-emerald-500/30 transition-all cursor-pointer">
+               <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 hover:border-emerald-500/30 transition-all cursor-pointer">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global P&L Rules</span>
                     <Info className="w-4 h-4 text-slate-300" />
@@ -1061,6 +1186,144 @@ export function PIM() {
             <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-50 opacity-50 group-hover:scale-105 transition-transform duration-700" />
          </div>
       </div>
+      
+      {/* P&L Details Modal */}
+      {showPnLForProduct && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-all">
+           <div className="bg-white rounded-lg w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              {/* Header */}
+              <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-100 flex items-center justify-center text-blue-600">
+                       <Calculator className="w-6 h-6" />
+                    </div>
+                    <div>
+                       <h3 className="text-xl font-black text-slate-900 tracking-tight">Chi tiết P&L Sản phẩm</h3>
+                       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                          Ref: {showPnLForProduct.sku || showPnLForProduct.id}
+                       </p>
+                    </div>
+                 </div>
+                 <button 
+                  onClick={() => setShowPnLForProduct(null)}
+                  className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                 >
+                    <X className="w-6 h-6" />
+                 </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-8 overflow-y-auto no-scrollbar space-y-8">
+                 {/* Product Info Summary */}
+                 <div className="flex items-center gap-6 pb-8 border-b border-slate-100">
+                    {showPnLForProduct.image ? (
+                       <img src={showPnLForProduct.image} alt={showPnLForProduct.name} className="w-20 h-20 rounded-lg object-cover border border-slate-100 shadow-sm" referrerPolicy="no-referrer" />
+                    ) : (
+                       <div className="w-20 h-20 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
+                          <Package className="w-8 h-8" />
+                       </div>
+                    )}
+                    <div>
+                       <h4 className="text-lg font-bold text-slate-900">{showPnLForProduct.name}</h4>
+                       <div className="flex items-center gap-3 mt-2">
+                          <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                             {showPnLForProduct.category || 'N/A'}
+                          </span>
+                          <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                             {showPnLForProduct.brand || 'No Brand'}
+                          </span>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Financial Metrics Grid */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông số cơ bản</h5>
+                       
+                       <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+                          <div className="flex justify-between items-center text-sm">
+                             <span className="text-slate-500 font-medium">Giá bán lẻ (Retail)</span>
+                             <span className="text-slate-900 font-bold">{formatCurrency((showPnLForProduct.price || 0))}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                             <span className="text-slate-500 font-medium">Giá vốn (COGS)</span>
+                             <span className="text-slate-900 font-bold">{formatCurrency((showPnLForProduct.costPrice || 0))}</span>
+                          </div>
+                          <div className="pt-3 border-t border-slate-200 flex justify-between items-center text-sm">
+                             <span className="text-slate-900 font-bold">Biên lợi nhuận gộp (Gross Margin)</span>
+                             <div className="text-right">
+                                <span className="text-emerald-600 font-black">
+                                   {formatCurrency((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0))}
+                                </span>
+                                <p className="text-[10px] text-emerald-500 font-bold uppercase mt-0.5">
+                                   {(((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0)) / (showPnLForProduct.price || 1) * 100).toFixed(1)}%
+                                </p>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Khấu trừ ước tính (Estimated Deductions)</h5>
+                       
+                       <div className="bg-red-50/50 rounded-lg p-4 space-y-3">
+                          <div className="flex justify-between items-center text-sm">
+                             <span className="text-slate-500 font-medium">Phí sàn (Platform Fee ~ 5%)</span>
+                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.05)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                             <span className="text-slate-500 font-medium">Phí thanh toán (Payment Fee ~ 2%)</span>
+                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.02)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                             <span className="text-slate-500 font-medium">Chi phí Marketing dự kiến (~ 8%)</span>
+                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.08)}</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Net Profit Summary */}
+                 <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-lg p-6 text-white relative overflow-hidden flex items-center justify-between">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-10 translate-x-10" />
+                    
+                    <div className="relative z-10">
+                       <h5 className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Lợi nhuận ròng ước tính (Net Profit)</h5>
+                       <div className="flex items-end gap-3">
+                          <span className="text-3xl font-black tracking-tight">
+                             {formatCurrency(
+                                (showPnLForProduct.price || 0) - 
+                                (showPnLForProduct.costPrice || 0) - 
+                                ((showPnLForProduct.price || 0) * 0.15) // Total deductions approx 15%
+                             )}
+                          </span>
+                          <span className="text-sm font-bold text-blue-200 pb-1.5">
+                             / sản phẩm
+                          </span>
+                       </div>
+                    </div>
+
+                    <div className="relative z-10 text-right">
+                       <div className="text-2xl font-black">
+                          {((((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0) - ((showPnLForProduct.price || 0) * 0.15)) / (showPnLForProduct.price || 1)) * 100).toFixed(1)}%
+                       </div>
+                       <div className="text-[9px] font-bold text-blue-200 uppercase tracking-widest">
+                          Net Margin
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-xs font-medium text-amber-700 leading-relaxed">
+                       * Đây là ước tính lợi nhuận trên mỗi đơn vị sản phẩm dựa trên các mức phí sàn trung bình. Lợi nhuận thực tế có thể thay đổi tùy thuộc vào các chương trình khuyến mãi và phí vận chuyển.
+                    </p>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }

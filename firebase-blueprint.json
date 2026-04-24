@@ -87,6 +87,44 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["type", "amount", "category"]
+    },
+    "IPosStaff": {
+      "title": "IPosStaff",
+      "description": "Nhân viên iPOS được phân quyền theo chi nhánh",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "manager", "employee"] },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "assignedStoreId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "role", "assignedStoreId"]
+    },
+    "IPosStore": {
+      "title": "IPosStore",
+      "description": "Cấu hình chi nhánh iPOS",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "managerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "config": {
+          "type": "object",
+          "properties": {
+            "printReceiptAutomatically": { "type": "boolean" },
+            "allowReturns": { "type": "boolean" },
+            "requireShiftOpening": { "type": "boolean" }
+          }
+        }
+      },
+      "required": ["name", "managerId", "status"]
     }
   },
   "firestore": {
@@ -109,6 +147,35 @@
     "transactions": {
       "schema": "FinanceTransaction",
       "description": "Nhật ký tài chính"
+    },
+    "ipos_staff": {
+      "schema": "IPosStaff",
+      "description": "Quản lý nhân sự iPOS theo chi nhánh"
+    },
+    "ipos_stores": {
+      "schema": "IPosStore",
+      "description": "Cấu hình vận hành chi nhánh iPOS"
+    },
+    "pos_products": {
+      "schema": "Product",
+      "description": "Bản sao sản phẩm tại chi nhánh"
+    },
+    "pos_customers": {
+      "schema": "Customer",
+      "description": "Bản sao khách hàng tại chi nhánh"
+    },
+    "campaigns": {
+       "title": "Campaign",
+       "type": "object",
+       "properties": {
+          "name": { "type": "string" },
+          "discount": { "type": "number" },
+          "status": { "type": "string" }
+       }
+    },
+    "pos_campaigns": {
+       "schema": "Campaign",
+       "description": "Bản sao khuyến mãi tại chi nhánh"
     }
   }
 }

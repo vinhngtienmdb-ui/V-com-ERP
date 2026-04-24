@@ -222,13 +222,13 @@ export function OmniChat() {
                    onChange={(e) => setInputValue(e.target.value)}
                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                    placeholder="Nhập tin nhắn..." 
-                   className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                   className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                  />
                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiProcessing}>
                     <Send className="w-5 h-5" />
                  </button>
               </div>
-              <button className="bg-slate-100 p-3 rounded-xl hover:bg-slate-200 transition-colors">
+              <button className="bg-slate-100 p-3 rounded-lg hover:bg-slate-200 transition-colors">
                  <Zap className="w-5 h-5 text-orange-500 fill-current" />
               </button>
            </div>
@@ -275,7 +275,7 @@ export function OmniChat() {
                  { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
                  { id: 'ORD-8840', status: 'delivered', amount: 850000 }
                ].map(order => (
-                 <div key={order.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1 group hover:border-blue-200 transition-all cursor-pointer">
+                 <div key={order.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 space-y-1 group hover:border-blue-200 transition-all cursor-pointer">
                     <div className="flex justify-between items-start">
                        <span className="text-xs font-bold text-[#111827] font-mono">{order.id}</span>
                        <span className={cn(

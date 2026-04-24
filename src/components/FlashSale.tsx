@@ -74,7 +74,7 @@ export function FlashSale() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-xl">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl">
             <div className="flex justify-between items-center mb-6">
                <div className="flex items-center gap-2 text-rose-600">
                  <Zap className="w-5 h-5 fill-current" />
@@ -143,7 +143,7 @@ export function FlashSale() {
                  </div>
               </div>
 
-              <button className="w-full bg-rose-600 text-white p-3 rounded-xl font-bold mt-6 shadow-lg shadow-rose-500/25 hover:bg-rose-700 transition">
+              <button className="w-full bg-rose-600 text-white p-3 rounded-lg font-bold mt-6 shadow-lg shadow-rose-500/25 hover:bg-rose-700 transition">
                  Khởi chạy Mua Chung Sập Giá
               </button>
             </form>
@@ -152,7 +152,7 @@ export function FlashSale() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex justify-between items-start mb-4">
              <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
                 <Users2 className="w-5 h-5" />
@@ -163,7 +163,7 @@ export function FlashSale() {
           <div className="text-2xl font-bold text-[#111827]">24</div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex justify-between items-start mb-4">
              <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
                 <Zap className="w-5 h-5" />
@@ -174,7 +174,7 @@ export function FlashSale() {
           <div className="text-2xl font-bold text-[#111827]">03</div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex justify-between items-start mb-4">
              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                 <TrendingUp className="w-5 h-5" />
@@ -185,7 +185,7 @@ export function FlashSale() {
           <div className="text-2xl font-bold text-[#111827]">15,400</div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
           <div className="flex justify-between items-start mb-4">
              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
                 <BarChart2 className="w-5 h-5" />
@@ -197,7 +197,7 @@ export function FlashSale() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
           <div className="flex gap-4">
             <div className="relative">
@@ -231,7 +231,7 @@ export function FlashSale() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                        <div className={cn(
-                         "p-3 rounded-xl",
+                         "p-3 rounded-lg",
                          campaign.type === 'group_buy' ? "bg-rose-50 text-rose-600" : "bg-orange-50 text-orange-600"
                        )}>
                           {campaign.type === 'group_buy' ? <Users2 className="w-5 h-5" /> : <Zap className="w-5 h-5 fill-current" />}

@@ -9,7 +9,7 @@ export function LoadingScreen() {
           <div className="absolute inset-0 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-xl font-bold text-white tracking-tight">Đang tải V-ERP...</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">Đang tải VComm ERP...</h2>
           <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Đang thiết lập kết nối an toàn</p>
         </div>
       </div>

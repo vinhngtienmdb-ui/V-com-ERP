@@ -23,6 +23,7 @@ import {
   Gem,
   Smartphone,
   Video,
+  Headphones,
   Scale,
   Banknote,
   MessageCircle,
@@ -88,7 +89,7 @@ const navGroups = [
     items: [
       { icon: Store, label: 'Nhà bán hàng (Seller)', path: '/sellers' },
       { icon: Users, label: 'Khách hàng (CRM)', path: '/customers' },
-      { icon: LifeBuoy, label: 'Hỗ trợ CSKH Đa kênh', path: '/omnichat' },
+      { icon: Headphones, label: 'Chăm sóc khánh hàng (CSKH & Omni)', path: '/cskh' },
       { icon: UserPlus2, label: 'Đội ngũ Kinh doanh', path: '/sales' },
     ]
   },
@@ -119,7 +120,7 @@ export function Sidebar() {
       <div className="px-6 mb-8 flex items-center gap-3">
         <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45 shadow-lg shadow-blue-500/20"></div>
         <h1 className="text-xl font-black text-[#111827] tracking-tight">
-          V-Ecom <span className="text-[#2563EB]">ERP</span>
+          VComm <span className="text-[#2563EB]">ERP</span>
         </h1>
       </div>
 
@@ -137,7 +138,7 @@ export function Sidebar() {
                     key={item.path}
                     onClick={() => navigate(item.path)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all duration-200 group relative",
+                      "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 group relative",
                       isActive 
                         ? "bg-blue-50 text-[#2563EB] font-bold shadow-sm shadow-blue-100/50" 
                         : "text-[#4B5563] hover:bg-slate-50 hover:text-[#111827]"

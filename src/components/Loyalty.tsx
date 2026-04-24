@@ -62,7 +62,7 @@ const MOCK_LOYALTY: (LoyaltyProgram & { color: string; textColor: string; nextTi
 
 const REWARDS = [
   { id: 'R1', title: 'Voucher 200k All Stores', points: 2000, type: 'voucher', stock: 45 },
-  { id: 'R2', title: 'Bình nước giữ nhiệt VECOM', points: 5000, type: 'item', stock: 12 },
+  { id: 'R2', title: 'Bình nước giữ nhiệt VCOMM', points: 5000, type: 'item', stock: 12 },
   { id: 'R3', title: 'Thẻ Starbucks 100k', points: 1500, type: 'giftcard', stock: 88 },
 ];
 
@@ -95,8 +95,8 @@ export function LoyaltyManagement() {
           { label: 'Redemption Rate', value: '24.5%', sub: '+5% tháng trước', icon: RotateCcw, color: 'text-emerald-600', bg: 'bg-emerald-50' },
           { label: 'Retention Boost', value: '8,450', sub: 'Daily active users', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-4">
-            <div className={cn("p-3 rounded-xl", stat.bg)}>
+          <div key={i} className="bg-white p-5 rounded-lg border border-slate-100 shadow-sm flex items-start gap-4">
+            <div className={cn("p-3 rounded-lg", stat.bg)}>
               <stat.icon className={cn("w-5 h-5", stat.color)} />
             </div>
             <div>
@@ -108,7 +108,7 @@ export function LoyaltyManagement() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[500px]">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden min-h-[500px]">
          <div className="flex border-b border-slate-100 bg-slate-50/50 p-1">
             {[
               { id: 'tiers', label: 'Hạng thành viên', icon: Crown },
@@ -120,7 +120,7 @@ export function LoyaltyManagement() {
                  key={tab.id}
                  onClick={() => setActiveTab(tab.id as any)}
                  className={cn(
-                   "flex-1 px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2",
+                   "flex-1 px-4 py-3 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
                    activeTab === tab.id ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
                  )}
               >
@@ -140,7 +140,7 @@ export function LoyaltyManagement() {
                 >
                   {MOCK_LOYALTY.map(tier => (
                     <div key={tier.id} className={cn(
-                      "relative h-[450px] rounded-[2rem] p-8 flex flex-col justify-between overflow-hidden group shadow-xl transition-transform hover:-translate-y-2",
+                      "relative h-[450px] rounded-lg p-8 flex flex-col justify-between overflow-hidden group shadow-xl transition-transform hover:-translate-y-2",
                       "bg-gradient-to-br", tier.color
                     )}>
                        {/* Background pattern */}
@@ -150,7 +150,7 @@ export function LoyaltyManagement() {
                        
                        <div className="relative z-10">
                           <div className="flex justify-between items-start">
-                             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+                             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center">
                                 {tier.tier === 'diamond' ? <Gem className="w-6 h-6 text-white" /> : <Star className="w-6 h-6 text-white" />}
                              </div>
                              <div className="text-right">
@@ -192,7 +192,7 @@ export function LoyaltyManagement() {
                              </div>
                           </div>
 
-                          <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white py-3 rounded-2xl font-bold text-sm transition-all border border-white/10 flex items-center justify-center gap-2">
+                          <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white py-3 rounded-lg font-bold text-sm transition-all border border-white/10 flex items-center justify-center gap-2">
                              Chi tiết đặc quyền <ArrowRight className="w-4 h-4" />
                           </button>
                        </div>
@@ -213,10 +213,10 @@ export function LoyaltyManagement() {
                      { title: 'Đánh giá 5 sao kèm ảnh', reward: '200 Pts / lượt', progress: 1, total: 3, icon: Heart, color: 'text-pink-500' },
                      { title: 'Mua sắm tại quầy iPOS', reward: '100 Pts Bonus', progress: 0, total: 1, icon: LayoutGrid, color: 'text-indigo-500' },
                    ].map((task, i) => (
-                     <div key={i} className="p-6 bg-white border border-slate-100 rounded-3xl space-y-6 hover:shadow-xl transition-all group border-b-4 border-b-slate-100 hover:border-b-blue-500">
+                     <div key={i} className="p-6 bg-white border border-slate-100 rounded-lg space-y-6 hover:shadow-xl transition-all group border-b-4 border-b-slate-100 hover:border-b-blue-500">
                         <div className="flex justify-between items-start">
                            <div className="flex gap-4">
-                              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 group-hover:scale-110 transition-transform", task.color)}>
+                              <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center bg-slate-50 group-hover:scale-110 transition-transform", task.color)}>
                                  <task.icon className="w-6 h-6" />
                               </div>
                               <div>
@@ -242,7 +242,7 @@ export function LoyaltyManagement() {
                            </div>
                         </div>
 
-                        <button className="w-full py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                        <button className="w-full py-2.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
                            Xem hướng dẫn nhiệm vụ
                         </button>
                      </div>
@@ -267,7 +267,7 @@ export function LoyaltyManagement() {
 
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {REWARDS.map(reward => (
-                        <div key={reward.id} className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+                        <div key={reward.id} className="bg-white border border-slate-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
                            <div className="h-40 bg-slate-50 flex items-center justify-center relative">
                               {reward.type === 'voucher' ? <Ticket className="w-12 h-12 text-blue-500 opacity-40" /> : <Gift className="w-12 h-12 text-pink-500 opacity-40" />}
                               <div className="absolute top-4 right-4 px-2 py-1 bg-white/80 backdrop-blur-md rounded-lg text-[10px] font-bold text-slate-500 uppercase">
@@ -283,7 +283,7 @@ export function LoyaltyManagement() {
                                     <span className="text-xs font-bold text-slate-400 uppercase">Points</span>
                                  </div>
                               </div>
-                              <button className="w-full py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                              <button className="w-full py-3 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                                  Đổi quà ngay <ArrowRight className="w-4 h-4" />
                               </button>
                            </div>
@@ -334,12 +334,12 @@ export function LoyaltyManagement() {
                       <h3 className="text-3xl font-black italic text-slate-900 tracking-tight leading-none uppercase">Vòng quay May mắn<br/>(Elite Lucky Spin)</h3>
                       <p className="text-sm text-slate-500 leading-relaxed">Sử dụng lượt quay từ nhiệm vụ hàng ngày để nhận quà tặng hiện vật hoặc xu thưởng. Hạng Diamond được x2 tỷ lệ trúng quà giá trị.</p>
                       
-                      <div className="p-4 bg-slate-50 rounded-2xl space-y-3">
+                      <div className="p-4 bg-slate-50 rounded-lg space-y-3">
                          <div className="flex justify-between text-xs font-bold">
                             <span className="text-slate-400">Lượt quay khả dụng</span>
                             <span className="text-slate-900">03 Lượt</span>
                          </div>
-                         <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                         <button className="w-full py-4 bg-slate-900 text-white rounded-lg font-bold text-sm shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
                             <RotateCcw className="w-4 h-4" /> Bắt đầu quay (1 Lượt)
                          </button>
                       </div>
@@ -351,7 +351,7 @@ export function LoyaltyManagement() {
       </div>
 
       {/* Retention Marketing Engine Footer */}
-      <div className="bg-slate-900 rounded-3xl p-10 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
+      <div className="bg-slate-900 rounded-lg p-10 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
          <div className="absolute inset-0 opacity-10">
             <div className="grid grid-cols-12 gap-1 h-full w-full">
                {Array.from({ length: 48 }).map((_, i) => (
@@ -360,7 +360,7 @@ export function LoyaltyManagement() {
             </div>
          </div>
          
-         <div className="p-4 bg-white/5 rounded-2xl border border-white/10 relative z-10 backdrop-blur-sm">
+         <div className="p-4 bg-white/5 rounded-lg border border-white/10 relative z-10 backdrop-blur-sm">
             <Sparkles className="w-10 h-10 text-blue-400" />
          </div>
          
@@ -372,10 +372,10 @@ export function LoyaltyManagement() {
          </div>
 
          <div className="flex flex-wrap justify-center gap-4 relative z-10">
-            <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-2xl hover:bg-slate-100 transition-all shadow-xl text-sm flex items-center gap-2">
+            <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-xl text-sm flex items-center gap-2">
                Phân tích Retention Report <ArrowRight className="w-4 h-4" />
             </button>
-            <button className="px-8 py-3 bg-white/5 text-white font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
+            <button className="px-8 py-3 bg-white/5 text-white font-bold rounded-lg hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
                Quản lý Notification <Smartphone className="w-4 h-4" />
             </button>
          </div>

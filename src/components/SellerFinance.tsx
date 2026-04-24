@@ -52,9 +52,9 @@ export function SellerFinance() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-[#111827] text-white p-6 rounded-xl shadow-xl shadow-slate-900/10">
+        <div className="bg-[#111827] text-white p-6 rounded-lg shadow-xl shadow-slate-900/10">
            <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-blue-500 rounded-xl">
+              <div className="p-2 bg-blue-500 rounded-lg">
                  <BadgeDollarSign className="w-6 h-6" />
               </div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tổng dư nợ Seller</span>
@@ -64,25 +64,25 @@ export function SellerFinance() {
               <TrendingUp className="w-3 h-3" /> Tỷ lệ nợ xấu: 0.24%
            </div>
         </div>
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Yêu cầu ứng vốn sớm (Early Payouts)</p>
            <div className="text-2xl font-bold text-[#111827]">42</div>
            <p className="text-[10px] text-amber-600 font-medium mt-1">12 yêu cầu đang chờ duyệt gấp</p>
         </div>
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm relative overflow-hidden">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm relative overflow-hidden">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu phí dịch vụ Tài chính</p>
            <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(450000000)}</div>
            <p className="text-[10px] text-[#10B981] font-medium mt-1">Phí 1-2% giá trị ứng vốn</p>
            <Star className="absolute -bottom-4 -right-4 w-24 h-24 text-blue-50/50" />
         </div>
-        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
            <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Seller AAA (Tín dụng cao)</p>
            <div className="text-2xl font-bold text-emerald-600">125</div>
            <p className="text-[10px] text-slate-400 mt-1">Đủ điều kiện vay thấu chi 0%</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-lg overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-lg overflow-hidden">
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'credit', label: 'Xếp hạng Tín dụng Seller', icon: ShieldCheck },
@@ -182,11 +182,11 @@ export function SellerFinance() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-black text-white p-10 rounded-xl relative overflow-hidden border border-white/5 shadow-2xl">
+      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-black text-white p-10 rounded-lg relative overflow-hidden border border-white/5 shadow-2xl">
          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
                <div className="flex items-center gap-4">
-                  <div className="p-4 bg-[#2563EB] rounded-xl shadow-xl shadow-blue-500/20">
+                  <div className="p-4 bg-[#2563EB] rounded-lg shadow-xl shadow-blue-500/20">
                      <GanttChartSquare className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-3xl font-bold font-serif italic tracking-tight">Financial Scoring Engine</h3>
@@ -200,7 +200,7 @@ export function SellerFinance() {
                </div>
             </div>
             <div className="hidden lg:flex justify-end">
-               <div className="w-80 p-8 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 space-y-6 relative overflow-hidden">
+               <div className="w-80 p-8 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 space-y-6 relative overflow-hidden">
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                      <ShieldCheck className="w-4 h-4 text-blue-400" /> Tình trạng thanh khoản
                   </h4>

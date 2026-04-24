@@ -51,7 +51,7 @@ export function Compliance() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Thương hiệu đã bảo quyền</span>
               <ShieldCheck className="w-4 h-4 text-[#2563EB]" />
@@ -59,7 +59,7 @@ export function Compliance() {
            <div className="text-2xl font-bold text-[#111827]">842</div>
            <p className="text-[10px] text-[#10B981] font-medium mt-1">Đã xác thực sở hữu trí tuệ</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tranh chấp đang xử lý</span>
               <Gavel className="w-4 h-4 text-orange-500" />
@@ -67,7 +67,7 @@ export function Compliance() {
            <div className="text-2xl font-bold text-[#111827]">15</div>
            <p className="text-[10px] text-orange-600 font-medium mt-1">Cần Admin thẩm định bằng chứng</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cảnh báo vi phạm (Policy)</span>
               <AlertTriangle className="w-4 h-4 text-red-500" />
@@ -75,7 +75,7 @@ export function Compliance() {
            <div className="text-2xl font-bold text-[#111827]">124</div>
            <p className="text-[10px] text-red-600 font-medium mt-1">Sản phẩm bị gỡ bỏ do vi phạm</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Compliance Score</span>
               <Scale className="w-4 h-4 text-emerald-500" />
@@ -85,7 +85,7 @@ export function Compliance() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="flex border-b border-[#F3F4F6]">
            {[
              { id: 'brand', label: 'Brand Portal (Bản quyền)', icon: ShieldCheck },
@@ -200,7 +200,7 @@ export function Compliance() {
         </div>
       </div>
 
-      <div className="bg-slate-900 text-white p-8 rounded-xl overflow-hidden relative border border-slate-800">
+      <div className="bg-slate-900 text-white p-8 rounded-lg overflow-hidden relative border border-slate-800">
          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
                <div className="flex items-center gap-3">
@@ -218,7 +218,7 @@ export function Compliance() {
                </div>
             </div>
             <div className="hidden md:block">
-               <div className="p-6 bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-sm space-y-4">
+               <div className="p-6 bg-slate-800/40 rounded-lg border border-slate-700/50 backdrop-blur-sm space-y-4">
                   <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
                      <Clock className="w-3.5 h-3.5" /> Real-time Legal Feed
                   </h4>

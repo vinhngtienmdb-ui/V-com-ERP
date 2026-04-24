@@ -19,8 +19,9 @@ import {
   Target,
   Rocket,
   ArrowLeft,
+  ArrowRight,
   BrainCircuit,
-  PieChart,
+  PieChart as LucidePieChart,
   CheckCircle2,
   Activity,
   Smile,
@@ -38,19 +39,45 @@ import {
   Send,
   BarChart2,
   Settings,
-  Video
+  Video,
+  Sparkles,
+  Wifi,
+  QrCode,
+  ScanFace,
+  Cpu,
+  Fingerprint,
+  Globe,
+  Lock,
+  Smartphone,
+  Plus,
+  PlusCircle,
+  History,
+  Trash2,
+  X
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI } from '../types/erp';
 import {
   BarChart,
   Bar,
+  LineChart as RechartsLineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { motion, AnimatePresence } from 'motion/react';
 
 const MOCK_KPIs: KPI[] = [
   {
@@ -73,11 +100,62 @@ const MOCK_KPIs: KPI[] = [
   }
 ];
 
+const MOCK_ATTENDANCE: AttendanceRecord[] = [
+  {
+    id: 'ATT-001',
+    employeeId: 'EMP-001',
+    date: '2024-03-20',
+    checkIn: '08:00',
+    checkOut: '17:30',
+    status: 'on_time',
+    overtimeHours: 0.5,
+    location: 'Trụ sở chính (Zone A)',
+    method: 'face',
+    deviceInfo: 'Face Terminal 01'
+  },
+  {
+    id: 'ATT-002',
+    employeeId: 'EMP-002',
+    date: '2024-03-20',
+    checkIn: '08:15',
+    checkOut: '17:00',
+    status: 'late',
+    overtimeHours: 0,
+    location: 'Marketing Office',
+    method: 'wifi',
+    deviceInfo: 'VComm ERP_Office_5G'
+  },
+  {
+    id: 'ATT-003',
+    employeeId: 'EMP-001',
+    date: '2024-03-21',
+    checkIn: '07:55',
+    checkOut: '17:15',
+    status: 'on_time',
+    overtimeHours: 0,
+    location: 'Kho Long Biên',
+    method: 'gps',
+    deviceInfo: 'GPS App (±5m)'
+  },
+  {
+    id: 'ATT-004',
+    employeeId: 'EMP-002',
+    date: '2024-03-21',
+    checkIn: '08:05',
+    checkOut: '18:00',
+    status: 'on_time',
+    overtimeHours: 1,
+    location: 'Trụ sở chính',
+    method: 'qr',
+    deviceInfo: 'QR Dynamic Scan'
+  }
+];
+
 const MOCK_EMPLOYEES: Employee[] = [
   {
     id: 'EMP-001',
     fullName: 'Lê Hoàng Minh',
-    email: 'minh.lh@vecom.vn',
+    email: 'minh.lh@vcomm.vn',
     phone: '0901234567',
     department: 'Vận hành Sàn',
     position: 'Quản lý kho',
@@ -92,7 +170,7 @@ const MOCK_EMPLOYEES: Employee[] = [
   {
     id: 'EMP-002',
     fullName: 'Nguyễn Diệu Nhi',
-    email: 'nhi.nd@vecom.vn',
+    email: 'nhi.nd@vcomm.vn',
     phone: '0987123456',
     department: 'Marketing',
     position: 'KOL Specialist',
@@ -140,12 +218,75 @@ export type AttendanceSetting = {
 };
 
 const INITIAL_ATTENDANCE_SETTINGS: AttendanceSetting[] = [
-  { method: 'gps', enabled: true, config: { radius: 100 } },
-  { method: 'wifi', enabled: false, config: { ssid: '' } },
-  { method: 'face', enabled: true, config: { minMatch: 0.8 } },
-  { method: 'qr', enabled: true, config: { refreshRate: 30 } },
-  { method: 'device', enabled: true, config: { ip: '' } },
+  { 
+    method: 'gps', 
+    enabled: true, 
+    config: { 
+      radius: 100,
+      zones: [
+        { name: 'Trụ sở chính', lat: 21.0285, lng: 105.8542, radius: 100 },
+        { name: 'Kho Long Biên', lat: 21.0385, lng: 105.8942, radius: 200 }
+      ]
+    } 
+  },
+  { 
+    method: 'wifi', 
+    enabled: false, 
+    config: { 
+      ssids: ['VComm ERP_Office_5G', 'VComm ERP_Warehouse'],
+      macRestricted: true 
+    } 
+  },
+  { 
+    method: 'face', 
+    enabled: true, 
+    config: { 
+      minMatch: 0.8,
+      livenessCheck: true,
+      antiSpoofing: true,
+      autoCapture: true
+    } 
+  },
+  { 
+    method: 'qr', 
+    enabled: true, 
+    config: { 
+      refreshRate: 30,
+      encryption: 'AES-256',
+      dynamicSalt: true
+    } 
+  },
+  { 
+    method: 'device', 
+    enabled: true, 
+    config: { 
+      ip: '192.168.1.200',
+      port: 4370,
+      model: 'ZKTeco K40',
+      syncInterval: 15
+    } 
+  },
 ];
+
+// --- ATS & RECRUITMENT MOCK DATA ---
+export type Candidate = {
+  id: string;
+  name: string;
+  role: string;
+  status: 'sourced' | 'interview' | 'offered' | 'hired';
+  matchScore: number;
+};
+
+const INITIAL_CANDIDATES: Candidate[] = [
+  { id: 'C-001', name: 'Nguyễn Văn A', role: 'Frontend Dev', status: 'sourced', matchScore: 85 },
+  { id: 'C-002', name: 'Trần Thị B', role: 'UX Designer', status: 'interview', matchScore: 92 },
+  { id: 'C-003', name: 'Lê C', role: 'Product Manager', status: 'offered', matchScore: 98 },
+  { id: 'C-004', name: 'Hoàng D', role: 'Backend Dev', status: 'sourced', matchScore: 78 },
+  { id: 'C-005', name: 'Phạm E', role: 'Marketing Lead', status: 'interview', matchScore: 88 },
+];
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
 // --- PAYROLL INTELLIGENT ENGINE ---
 const autoCalculatePayroll = (employee: Employee, attendance: AttendanceRecord[], kpi: KPI[]) => {
   const baseSalary = 15000000;
@@ -242,6 +383,55 @@ export function HumanResources() {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
+  // New features state
+  const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
+  const [draggedCandidateId, setDraggedCandidateId] = useState<string | null>(null);
+  
+  // ATS Modal state
+  const [showATSModal, setShowATSModal] = useState(false);
+  const [activeATSView, setActiveATSView] = useState<'request' | 'candidates' | 'interview' | 'email'>('candidates');
+  
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [copilotMessages, setCopilotMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
+    { role: 'assistant', content: 'Xin chào! Tôi là AI Copilot hỗ trợ nhân sự. Bạn muốn tôi phân tích dữ liệu, xuất báo cáo hay tìm kiếm nhân viên có kỹ năng cụ thể?' }
+  ]);
+  const [copilotInput, setCopilotInput] = useState('');
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedCandidateId(id);
+    // Needed for Firefox
+    e.dataTransfer.setData('text/plain', id);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, status: Candidate['status']) => {
+    e.preventDefault();
+    if (draggedCandidateId) {
+      setCandidates(prev => 
+        prev.map(c => c.id === draggedCandidateId ? { ...c, status } : c)
+      );
+    }
+    setDraggedCandidateId(null);
+  };
+
+  const handleSendCopilotMessage = () => {
+    if (!copilotInput.trim()) return;
+    setCopilotMessages(prev => [...prev, { role: 'user', content: copilotInput }]);
+    
+    // Simulate AI thinking and replying
+    setTimeout(() => {
+      setCopilotMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: `Dựa trên dữ liệu hiện tại, tôi đã nhận yêu cầu của bạn về: "${copilotInput}". Đang cập nhật báo cáo và đánh giá kỹ năng liên quan.` 
+      }]);
+    }, 1000);
+    setCopilotInput('');
+  };
+
   const toggleAttendanceSetting = (method: string) => {
     setAttendanceSettings(prev => prev.map(s => s.method === method ? { ...s, enabled: !s.enabled } : s));
   };
@@ -266,7 +456,10 @@ export function HumanResources() {
             <BrainCircuit className="w-4 h-4 text-purple-600" />
             AI Talent Scan
           </button>
-          <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2">
+          <button 
+            onClick={() => setActiveTab('rec_candidates')}
+            className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+          >
             <UserPlus className="w-4 h-4" />
             Tuyển dụng nhân sự
           </button>
@@ -362,7 +555,7 @@ export function HumanResources() {
           
        <div className="space-y-12 bg-transparent rounded-b-xl border-t-0 border-[#F3F4F6] mt-4">
             {HR_MODULE_GROUPS.map((group, gIdx) => (
-              <div key={gIdx} className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-8">
+              <div key={gIdx} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
                   <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
@@ -371,10 +564,17 @@ export function HumanResources() {
                    {group.items.map(item => (
                       <button 
                          key={item.id}
-                         onClick={() => setActiveTab(item.id)}
-                         className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
+                         onClick={() => {
+                            if (['rec_request', 'rec_candidates', 'rec_interview', 'rec_email'].includes(item.id)) {
+                               setActiveATSView(item.id === 'rec_request' ? 'request' : item.id === 'rec_candidates' ? 'candidates' : item.id === 'rec_interview' ? 'interview' : 'email');
+                               setShowATSModal(true);
+                            } else {
+                               setActiveTab(item.id);
+                            }
+                         }}
+                         className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
                       >
-                         <div className={cn("p-3 rounded-xl shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
+                         <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
                             <item.icon className="w-6 h-6" />
                          </div>
                          <div className="flex-1 min-w-0">
@@ -389,7 +589,7 @@ export function HumanResources() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-             <div className="bg-white p-10 border border-[#E5E7EB] rounded-xl shadow-sm space-y-8 relative overflow-hidden group">
+             <div className="bg-white p-10 border border-[#E5E7EB] rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
                 <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3 relative z-10">
                    <Rocket className="w-6 h-6 text-emerald-500" /> New Hire Launchpad
                 </h3>
@@ -414,13 +614,13 @@ export function HumanResources() {
                    ))}
                    <button className="w-full py-4 bg-[#111827] text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-lg shadow-slate-900/20">Quản lý lộ trình Onboarding</button>
                 </div>
-                <PieChart className="absolute -bottom-12 -right-12 w-48 h-48 text-slate-50 group-hover:scale-110 transition-transform duration-700" />
+                <LucidePieChart className="absolute -bottom-12 -right-12 w-48 h-48 text-slate-50 group-hover:scale-110 transition-transform duration-700" />
              </div>
 
-             <div className="bg-gradient-to-br from-[#2563EB] to-[#1E40AF] p-10 rounded-xl text-white relative overflow-hidden shadow-2xl flex flex-col justify-between">
+             <div className="bg-gradient-to-br from-[#2563EB] to-[#1E40AF] p-10 rounded-lg text-white relative overflow-hidden shadow-2xl flex flex-col justify-between">
                 <div className="relative z-10 space-y-4">
                    <div className="flex items-center gap-4">
-                      <div className="p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                      <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
                          <BrainCircuit className="w-8 h-8" />
                       </div>
                       <div>
@@ -440,12 +640,12 @@ export function HumanResources() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative mt-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent pointer-events-none rounded-xl" />
-             <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent pointer-events-none rounded-lg" />
+             <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
                 <h3 className="text-sm font-bold text-[#111827] mb-4 flex items-center gap-2">
                    <MapPin className="w-4 h-4 text-[#2563EB]" /> Live Map Chấm công Giao hàng
                 </h3>
-                <div className="h-48 bg-slate-50 rounded-xl border border-[#F3F4F6] relative overflow-hidden flex items-center justify-center">
+                <div className="h-48 bg-slate-50 rounded-lg border border-[#F3F4F6] relative overflow-hidden flex items-center justify-center">
                    <div className="text-center space-y-2 opacity-40">
                       <MapPin className="w-8 h-8 mx-auto" />
                       <p className="text-xs font-medium">Bản đồ GPS đang hoạt động (Mock)</p>
@@ -455,13 +655,13 @@ export function HumanResources() {
                 </div>
                 <p className="text-[10px] text-[#6B7280] mt-3">Tích hợp GPS App để chấm công tự động cho nhân viên vận chuyển và Sale hiện trường khi vào vùng kho/cửa hàng.</p>
              </div>
-             <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-8 rounded-xl flex flex-col justify-between">
+             <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-8 rounded-lg flex flex-col justify-between">
                 <div>
                    <h3 className="text-xl font-bold italic mb-2">Dynamic Salary Engine</h3>
                    <p className="text-slate-400 text-sm leading-relaxed">Cấu hình công thức tính lương động theo từng vị trí (Kinh doanh: Lương cứng + % Hoa hồng; Kho: Lương theo sản lượng). Tự động kết nối dữ liệu từ module Seller & Đơn hàng để tính thưởng nóng.</p>
                 </div>
                 <div className="pt-6">
-                   <button className="w-full bg-white text-slate-900 font-bold py-3 rounded-xl text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                   <button className="w-full bg-white text-slate-900 font-bold py-3 rounded-lg text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
                       <Briefcase className="w-4 h-4" /> Cấu hình công thức tính lương
                    </button>
                 </div>
@@ -471,17 +671,17 @@ export function HumanResources() {
       )}
 
       {activeTab !== 'overview' && (
-      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
         <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
            <button 
              onClick={() => setActiveTab('overview')} 
-             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-xl w-fit shadow-sm"
+             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg w-fit shadow-sm"
            >
               <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
            </button>
         </div>
         
-        {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'payroll', 'attendance_config'].includes(activeTab) ? (
+        {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'attendance_config'].includes(activeTab) ? (
           <>
             <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center px-6">
               <div className="flex gap-4">
@@ -490,142 +690,332 @@ export function HumanResources() {
                    <input 
                      type="text" 
                      placeholder="Tìm nhân viên, kỹ năng, vị trí..." 
-                     className="bg-slate-50 border border-[#E5E7EB] rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none w-72 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
+                     className="bg-slate-50 border border-slate-200 rounded-lg px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-64 transition-all" 
                    />
                  </div>
-                 <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-xl text-sm text-[#4B5563] flex items-center gap-2 font-bold hover:bg-slate-50">
-                    <Filter className="w-4 h-4" /> Lọc phòng ban
+                 <button className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50 transition-all">
+                    <Filter className="w-4 h-4" /> Bộ lọc
                  </button>
               </div>
-              
-              <div className="flex gap-3">
-                 {activeTab === 'payroll' && (
-                    <button 
-                      onClick={() => {
-                        const results = MOCK_EMPLOYEES.map(emp => ({
-                          employeeId: emp.id,
-                          ...autoCalculatePayroll(emp, [], MOCK_KPIs)
-                        }));                
-                        console.table(results);                
-                        alert("Đã tính lương tự động thành công (Kiểm tra console/table)!");
-                      }}
-                      className="bg-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
-                       <Zap className="w-4 h-4" /> Tính lương AI (Batch)
-                    </button>
-                 )}
-                 {activeTab === 'payroll' && (
-                    <button className="bg-[#111827] text-white px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 transition-all">
-                       <BadgeDollarSign className="w-4 h-4 text-blue-400" /> Xuất phiếu lương đồng loạt
-                    </button>
-                 )}
-                 <button className="text-slate-500 hover:text-slate-700 px-3 py-2 rounded-lg font-bold text-sm border border-transparent hover:bg-slate-50">Xuất Excel</button>
-              </div>
+              {activeTab === 'attendance_config' ? (
+                <div className="flex gap-3">
+                   <button className="bg-white border border-slate-200 px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
+                      <History className="w-4 h-4" /> Nhật ký thay đổi
+                   </button>
+                </div>
+              ) : (
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
+                   <PlusCircle className="w-4 h-4" /> Thêm mới
+                </button>
+              )}
             </div>
+            
+            <div className="flex-1 overflow-auto">
+               {activeTab === 'attendance_config' ? (
+                 <div className="p-8 space-y-8 bg-slate-50/30">
+                   <div className="flex justify-between items-center">
+                     <div className="space-y-1">
+                       <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900"><Settings className="w-6 h-6 text-blue-600"/> Cấu hình Hệ thống Chấm công</h2>
+                       <p className="text-sm text-slate-500 font-medium">Thiết lập các phương thức và quy tắc xác thực chấm công cho toàn doanh nghiệp.</p>
+                     </div>
+                   </div>
 
-              <div className="overflow-x-auto">
-                {activeTab === 'attendance_config' ? (
-                <div className="p-8 space-y-6">
-                  <h2 className="text-lg font-bold flex items-center gap-2"><Settings className="w-5 h-5"/> Cài đặt Chấm công</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
                     {attendanceSettings.map(setting => (
-                      <div key={setting.method} className="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col gap-4 shadow-sm relative overflow-hidden group">
-                         <div className={cn("absolute top-0 left-0 w-1 h-full transition-all duration-300", setting.enabled ? "bg-emerald-500" : "bg-slate-200")}></div>
-                         <div className="flex justify-between items-start pl-2">
-                             <div>
-                                <p className="font-bold text-slate-800 text-base">{
-                                   setting.method === 'gps' ? 'Chấm công GPS (Địa điểm)' :
-                                   setting.method === 'wifi' ? 'Chấm công qua mạng Wi-Fi' :
-                                   setting.method === 'face' ? 'Chấm công nhận diện khuôn mặt' :
-                                   setting.method === 'qr' ? 'Chấm công bằng mã QR động' :
-                                   'Đồng bộ từ máy chấm công'
-                                }</p>
-                                <p className="text-slate-500 text-xs mt-1">Phương thức: <span className="uppercase font-mono font-bold text-indigo-600">{setting.method}</span></p>
+                      <div key={setting.method} className={cn(
+                        "bg-white rounded-lg border transition-all duration-300 shadow-sm overflow-hidden flex flex-col group",
+                        setting.enabled ? "border-blue-200 ring-1 ring-blue-50/50" : "border-slate-200 opacity-80"
+                      )}>
+                         <div className="p-6 flex justify-between items-start border-b border-slate-50">
+                             <div className="flex gap-4">
+                                <div className={cn(
+                                  "w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110",
+                                  setting.enabled ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "bg-slate-100 text-slate-400"
+                                )}>
+                                   {setting.method === 'gps' && <MapPin className="w-6 h-6" />}
+                                   {setting.method === 'wifi' && <Wifi className="w-6 h-6" />}
+                                   {setting.method === 'face' && <ScanFace className="w-6 h-6" />}
+                                   {setting.method === 'qr' && <QrCode className="w-6 h-6" />}
+                                   {setting.method === 'device' && <Fingerprint className="w-6 h-6" />}
+                                </div>
+                                <div>
+                                   <div className="flex items-center gap-2">
+                                      <p className="font-bold text-slate-900 text-lg">{
+                                         setting.method === 'gps' ? 'Chấm công GPS (Địa điểm)' :
+                                         setting.method === 'wifi' ? 'Chấm công qua mạng Wi-Fi' :
+                                         setting.method === 'face' ? 'Chấm công Face ID (AI)' :
+                                         setting.method === 'qr' ? 'Chấm công QR Code động' :
+                                         'Máy chấm công Vân tay/Thẻ'
+                                      }</p>
+                                      {setting.enabled && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
+                                   </div>
+                                   <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-0.5">Protocol: {setting.method}</p>
+                                </div>
                              </div>
-                             <button
-                               onClick={() => toggleAttendanceSetting(setting.method)}
-                               className={cn(
-                                 "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500/20",
-                                 setting.enabled ? "bg-emerald-500" : "bg-slate-200"
-                               )}
-                             >
-                                <span className={cn(
-                                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
-                                  setting.enabled ? "translate-x-6" : "translate-x-1"
-                                )} />
-                             </button>
+                             <div className="flex flex-col items-end gap-2">
+                                <button
+                                  onClick={() => toggleAttendanceSetting(setting.method)}
+                                  className={cn(
+                                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
+                                    setting.enabled ? "bg-blue-600" : "bg-slate-200"
+                                  )}
+                                >
+                                   <span className={cn(
+                                     "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
+                                     setting.enabled ? "translate-x-6" : "translate-x-1"
+                                   )} />
+                                </button>
+                                <span className={cn("text-[10px] font-bold uppercase", setting.enabled ? "text-blue-600" : "text-slate-400")}>
+                                   {setting.enabled ? 'Đang bật' : 'Đã tắt'}
+                                </span>
+                             </div>
                          </div>
                          
-                         {setting.enabled && (
-                            <div className="pl-2 pt-4 border-t border-slate-100 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                               {setting.method === 'gps' && (
-                                  <div className="flex flex-col gap-1.5">
-                                     <label className="text-xs font-bold text-slate-600">Bán kính cho phép (mét)</label>
-                                     <input 
-                                       type="number" 
-                                       value={setting.config.radius}
-                                       onChange={(e) => updateSettingConfig('gps', 'radius', Number(e.target.value))}
-                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
-                                     />
-                                     <p className="text-[10px] text-slate-500 mt-1">Số mét tối đa cho phép nhân viên cách vị trí chuẩn.</p>
-                                  </div>
-                               )}
-                               {setting.method === 'wifi' && (
-                                  <div className="flex flex-col gap-1.5">
-                                     <label className="text-xs font-bold text-slate-600">SSID Mạng Wi-Fi (Tên hoặc MAC)</label>
-                                     <input 
-                                       type="text" 
-                                       placeholder="Ví dụ: CongTy_HQ_5G"
-                                       value={setting.config.ssid}
-                                       onChange={(e) => updateSettingConfig('wifi', 'ssid', e.target.value)}
-                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-medium"
-                                     />
-                                  </div>
-                               )}
-                               {setting.method === 'face' && (
-                                  <div className="flex flex-col gap-1.5">
-                                     <label className="text-xs font-bold text-slate-600">Ngưỡng khớp khuôn mặt (0.1 - 1.0)</label>
-                                     <input 
-                                       type="number" 
-                                       step="0.1"
-                                       min="0.1"
-                                       max="1.0"
-                                       value={setting.config.minMatch}
-                                       onChange={(e) => updateSettingConfig('face', 'minMatch', Number(e.target.value))}
-                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
-                                     />
-                                     <p className="text-[10px] text-slate-500 mt-1">* 0.8 là mức lý tưởng để kích hoạt AI Spoofing Guard.</p>
-                                  </div>
-                               )}
-                               {setting.method === 'qr' && (
-                                  <div className="flex flex-col gap-1.5">
-                                     <label className="text-xs font-bold text-slate-600">Thời gian làm mới mã (giây)</label>
-                                     <input 
-                                       type="number" 
-                                       value={setting.config.refreshRate}
-                                       onChange={(e) => updateSettingConfig('qr', 'refreshRate', Number(e.target.value))}
-                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
-                                     />
-                                  </div>
-                               )}
-                               {setting.method === 'device' && (
-                                  <div className="flex flex-col gap-1.5">
-                                     <label className="text-xs font-bold text-slate-600">IP Thiết bị</label>
-                                     <input 
-                                       type="text" 
-                                       placeholder="Ví dụ: 192.168.1.100"
-                                       value={setting.config.ip}
-                                       onChange={(e) => updateSettingConfig('device', 'ip', e.target.value)}
-                                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-full font-mono font-medium"
-                                     />
-                                     <div className="flex justify-start mt-2">
-                                        <button className="bg-slate-900 text-white text-[10px] uppercase tracking-widest font-bold px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors shadow-md">Ping Test</button>
+                         <div className="p-6 bg-slate-50/30 flex-1">
+                            {setting.enabled ? (
+                               <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                  {setting.method === 'gps' && (
+                                     <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                           <div className="space-y-1.5">
+                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Bán kính mặc định (m)</label>
+                                              <div className="relative">
+                                                 <input 
+                                                   type="number" 
+                                                   value={setting.config.radius}
+                                                   onChange={(e) => updateSettingConfig('gps', 'radius', Number(e.target.value))}
+                                                   className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none"
+                                                 />
+                                                 <Timer className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                              </div>
+                                           </div>
+                                           <div className="space-y-1.5">
+                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Số lượng Vùng</label>
+                                              <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-bold text-blue-600 flex justify-between items-center">
+                                                 {setting.config.zones?.length || 0} Vùng an toàn
+                                                 <button className="text-blue-500 hover:scale-110 transition-transform"><PlusCircle className="w-4 h-4" /></button>
+                                              </div>
+                                           </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Danh sách Vùng an toàn</label>
+                                           <div className="space-y-2">
+                                              {setting.config.zones?.map((zone: any, i: number) => (
+                                                 <div key={i} className="bg-white border border-slate-200 p-3 rounded-lg flex justify-between items-center group/item hover:border-blue-300 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                       <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500"><MapPin className="w-4 h-4" /></div>
+                                                       <div>
+                                                          <p className="text-xs font-bold text-slate-800">{zone.name}</p>
+                                                          <p className="text-[10px] text-slate-500 font-mono italic">{zone.lat}, {zone.lng} (±{zone.radius}m)</p>
+                                                       </div>
+                                                    </div>
+                                                    <button className="p-2 text-slate-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-all"><Trash2 className="w-4 h-4" /></button>
+                                                 </div>
+                                              ))}
+                                           </div>
+                                        </div>
                                      </div>
+                                  )}
+                                  {setting.method === 'wifi' && (
+                                     <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Danh sách Wi-Fi Tin cậy</label>
+                                           <div className="flex flex-wrap gap-2">
+                                              {setting.config.ssids?.map((ssid: string, i: number) => (
+                                                 <div key={i} className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-100 text-xs font-bold">
+                                                    <Wifi className="w-3 h-3" />
+                                                    {ssid}
+                                                    <button className="hover:text-blue-900 ml-1">×</button>
+                                                 </div>
+                                              ))}
+                                              <button className="flex items-center gap-2 border border-dashed border-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all">
+                                                 <Plus className="w-3 h-3" /> Thêm mạng
+                                              </button>
+                                           </div>
+                                        </div>
+                                        <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
+                                           <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                                           <p className="text-[11px] text-amber-800 leading-relaxed font-bold uppercase tracking-tight">Cảnh báo: Luôn kích hoạt "MAC Restricted" để tránh nhân viên fake SSID thủ công.</p>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg">
+                                           <div className="flex items-center gap-3">
+                                              <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500"><Lock className="w-4 h-4" /></div>
+                                              <div>
+                                                 <p className="text-xs font-bold text-slate-800">Xác thực qua MAC Address</p>
+                                                 <p className="text-[10px] text-slate-500 font-medium">Bảo mật cao nhất cho môi trường văn phòng.</p>
+                                              </div>
+                                           </div>
+                                           <input type="checkbox" defaultChecked={setting.config.macRestricted} className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                        </div>
+                                     </div>
+                                  )}
+                                  {setting.method === 'face' && (
+                                     <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Độ chính xác yêu cầu (0.8 - 0.99)</label>
+                                           <div className="flex items-center gap-4">
+                                              <input 
+                                                type="range" 
+                                                min="0.5" 
+                                                max="0.99" 
+                                                step="0.01"
+                                                value={setting.config.minMatch}
+                                                onChange={(e) => updateSettingConfig('face', 'minMatch', Number(e.target.value))}
+                                                className="flex-1 accent-blue-600"
+                                              />
+                                              <span className="text-sm font-mono font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">{setting.config.minMatch}</span>
+                                           </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-2">
+                                           {[
+                                              { id: 'livenessCheck', label: 'Bật Liveness Check (Chống ảnh giả/Video)', icon: Globe },
+                                              { id: 'antiSpoofing', label: 'AI Anti-Spoofing Guard', icon: ShieldCheck },
+                                              { id: 'autoCapture', label: 'Tự động chụp khi phát hiện gương mặt', icon: Video }
+                                           ].map(feat => (
+                                              <label key={feat.id} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                                 <div className="flex items-center gap-3">
+                                                    <feat.icon className="w-4 h-4 text-blue-500" />
+                                                    <span className="text-xs font-bold text-slate-700">{feat.label}</span>
+                                                 </div>
+                                                 <input 
+                                                   type="checkbox" 
+                                                   checked={!!setting.config[feat.id]} 
+                                                   onChange={(e) => updateSettingConfig('face', feat.id, e.target.checked)}
+                                                   className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                                 />
+                                              </label>
+                                           ))}
+                                        </div>
+                                     </div>
+                                  )}
+                                  {setting.method === 'qr' && (
+                                     <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian làm mới mã (giây)</label>
+                                           <div className="relative">
+                                              <input 
+                                                type="number" 
+                                                value={setting.config.refreshRate}
+                                                onChange={(e) => updateSettingConfig('qr', 'refreshRate', Number(e.target.value))}
+                                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none"
+                                              />
+                                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GIÂY</span>
+                                           </div>
+                                        </div>
+                                        <div className="p-4 bg-indigo-900/5 border border-indigo-100 rounded-lg space-y-3">
+                                           <h5 className="text-[10px] font-bold text-indigo-900 uppercase tracking-widest flex items-center gap-2">
+                                              <Lock className="w-3 h-3" /> Bảo mật & Mã hóa
+                                           </h5>
+                                           <div className="flex justify-between items-center">
+                                              <span className="text-xs font-medium text-slate-700">Thuật toán mã hóa</span>
+                                              <span className="text-xs font-bold text-indigo-600 px-2 py-1 bg-white border border-indigo-100 rounded-lg">{setting.config.encryption}</span>
+                                           </div>
+                                           <label className="flex items-center gap-3">
+                                              <input 
+                                                type="checkbox" 
+                                                checked={setting.config.dynamicSalt}
+                                                onChange={(e) => updateSettingConfig('qr', 'dynamicSalt', e.target.checked)}
+                                                className="w-4 h-4 rounded border-slate-300 text-indigo-600" 
+                                              />
+                                              <span className="text-xs font-medium text-slate-700">Sử dụng Mobile-ID as Dynamic Salt</span>
+                                           </label>
+                                        </div>
+                                     </div>
+                                  )}
+                                  {setting.method === 'device' && (
+                                     <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                           <div className="space-y-1.5">
+                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Địa chỉ IP thiết bị</label>
+                                              <input 
+                                                type="text" 
+                                                placeholder="192.168.1.xxx"
+                                                value={setting.config.ip}
+                                                onChange={(e) => updateSettingConfig('device', 'ip', e.target.value)}
+                                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none"
+                                              />
+                                           </div>
+                                           <div className="space-y-1.5">
+                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Cổng kết nối (Port)</label>
+                                              <input 
+                                                type="number" 
+                                                value={setting.config.port}
+                                                onChange={(e) => updateSettingConfig('device', 'port', Number(e.target.value))}
+                                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none"
+                                              />
+                                           </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Model thiết bị & Giao thức</label>
+                                           <select 
+                                             value={setting.config.model}
+                                             onChange={(e) => updateSettingConfig('device', 'model', e.target.value)}
+                                             className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none bg-white font-bold"
+                                           >
+                                              <option>ZKTeco K40 (Standalone)</option>
+                                              <option>Ronald Jack F18 (TCP/IP)</option>
+                                              <option>Hikvision Face Terminal (Web SDK)</option>
+                                              <option>Khác (Generic ADMS)</option>
+                                           </select>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg">
+                                           <div className="space-y-0.5">
+                                              <p className="text-xs font-bold text-slate-800">Khoảng cách đồng bộ</p>
+                                              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Sync every {setting.config.syncInterval} minutes</p>
+                                           </div>
+                                           <div className="flex gap-2">
+                                              <button className="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">Ping test</button>
+                                              <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all border border-blue-100"><Zap className="w-4 h-4 fill-current" /></button>
+                                           </div>
+                                        </div>
+                                     </div>
+                                  )}
+                               </div>
+                            ) : (
+                               <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center p-8 space-y-3">
+                                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
+                                     <Lock className="w-6 h-6" />
                                   </div>
-                               )}
-                            </div>
-                         )}
+                                  <div>
+                                     <p className="text-sm font-bold text-slate-400">Phương thức này đang tắt</p>
+                                     <p className="text-xs text-slate-300 mt-1">Bật switch để cấu hình chi tiết cho hệ thống.</p>
+                                  </div>
+                               </div>
+                            )}
+                         </div>
+
+                         <div className="p-4 border-t border-slate-50 flex justify-between items-center bg-white px-6">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Last Update: 2 mins ago</span>
+                            <button className={cn(
+                              "text-xs font-bold transition-all flex items-center gap-2",
+                              setting.enabled ? "text-blue-600 hover:text-blue-800" : "text-slate-300 cursor-not-allowed"
+                            )}>
+                               Xem tài liệu API <ArrowRight className="w-3 h-3" />
+                            </button>
+                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="bg-indigo-900 text-white p-8 rounded-lg shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
+                     <div className="relative z-10 space-y-4">
+                        <div className="flex items-center gap-4">
+                           <div className="p-4 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20">
+                              <Sparkles className="w-8 h-8 text-blue-300" />
+                           </div>
+                           <div>
+                              <h3 className="text-2xl font-extrabold tracking-tight">AI Smart-Sync Optimizer</h3>
+                              <p className="text-blue-200/60 text-xs font-bold uppercase tracking-widest">Enterprise Edition features</p>
+                           </div>
+                        </div>
+                        <p className="text-blue-100 text-sm leading-relaxed max-w-lg">
+                           Kích hoạt AI để tự động phát hiện các hành vi chấm công bất thường (Buddy Punching), tối ưu hóa luồng dữ liệu từ máy chấm công vân tay và tự động gợi ý lịch trình làm việc dựa trên dữ liệu lịch sử.
+                        </p>
+                     </div>
+                     <div className="relative z-10 w-full md:w-auto">
+                        <button className="w-full px-8 py-4 bg-white text-indigo-900 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-xl">Kích hoạt AI Optimizer</button>
+                     </div>
+                     <Layers className="absolute -bottom-24 -right-12 w-64 h-64 text-white/5 rotate-12" />
                   </div>
                 </div>
               ) : (
@@ -678,18 +1068,22 @@ export function HumanResources() {
                       <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hành động</th>
                     </>
                   )}
-                  {(activeTab === 'attendance' || activeTab === 'payroll') && (
-                     <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest" colSpan={5}>
-                        {activeTab === 'attendance' ? 'Dữ liệu chấm công GPS' : 'Danh sách lương tháng'}
-                     </th>
+                  {activeTab === 'attendance' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên & Ngày</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Giờ vào/ra</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phương thức & Thiết bị</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Vị trí xác thực</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+                    </>
                   )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F3F4F6]">
                 {activeTab === 'personnel' && MOCK_EMPLOYEES.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={emp.id} onClick={() => setSelectedEmployee(emp)} className="hover:bg-slate-50 transition-colors cursor-pointer group">
                     <td className="px-6 py-5">
-                       <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
+                       <p className="text-sm font-bold text-[#111827] group-hover:text-blue-600 transition-colors">{emp.fullName}</p>
                        <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
                     </td>
                     <td className="px-6 py-5">
@@ -747,33 +1141,7 @@ export function HumanResources() {
                        AI Suggested: Advanced Analytics
                     </td>
                     <td className="px-6 py-5 text-right">
-                       <button className="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800 transition-all uppercase tracking-widest shadow-md">Đề cử Training</button>
-                    </td>
-                  </tr>
-                ))}
-                {activeTab === 'payroll' && MOCK_PAYROLL.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-5">
-                       <p className="text-sm font-bold text-[#111827]">{pay.employeeName}</p>
-                       <p className="text-[10px] text-[#6B7280] uppercase tracking-widest font-bold opacity-40">Kỳ lương: {pay.month}</p>
-                    </td>
-                    <td className="px-6 py-5 text-right font-mono font-bold text-xs">{formatCurrency(pay.baseSalary)}</td>
-                    <td className="px-6 py-5 text-right">
-                       <p className="text-xs font-bold text-emerald-600">+{formatCurrency(pay.allowance + pay.bonus)}</p>
-                    </td>
-                    <td className="px-6 py-5 text-right text-xs text-red-500 font-bold">-{formatCurrency(pay.pitAmount + pay.insuranceAmount)}</td>
-                    <td className="px-6 py-5 text-right">
-                       <p className="text-sm font-bold text-[#2563EB]">{formatCurrency(pay.netSalary)}</p>
-                    </td>
-                    <td className="px-6 py-5">
-                       <div className="flex justify-center">
-                          <span className={cn(
-                            "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm",
-                            pay.status === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
-                          )}>
-                             {pay.status === 'paid' ? 'ĐÃ PHÁT LƯƠNG' : 'CHỜ DUYỆT CHI'}
-                          </span>
-                       </div>
+                       <button className="px-4 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-slate-800 transition-all uppercase tracking-widest shadow-md">Đề cử Training</button>
                     </td>
                   </tr>
                 ))}
@@ -847,9 +1215,9 @@ export function HumanResources() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-1.5 font-bold">
-                          {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1 bg-emerald-50 px-3 py-1.5 rounded-xl"><Smile className="w-4 h-4"/> Good</span>}
-                          {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-xl"><MoreVertical className="w-4 h-4"/> Neutral</span>}
-                          {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-xl"><AlertCircle className="w-4 h-4"/> Critical Risk</span>}
+                          {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1 bg-emerald-50 px-3 py-1.5 rounded-lg"><Smile className="w-4 h-4"/> Good</span>}
+                          {emp.recentSentiment === 'neutral' && <span className="text-slate-500 flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-lg"><MoreVertical className="w-4 h-4"/> Neutral</span>}
+                          {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg"><AlertCircle className="w-4 h-4"/> Critical Risk</span>}
                         </div>
                       </td>
                       <td className="px-6 py-5 text-center">
@@ -858,7 +1226,7 @@ export function HumanResources() {
                         </p>
                       </td>
                       <td className="px-6 py-5">
-                         <p className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl max-w-[150px]">
+                         <p className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg max-w-[150px]">
                             {emp.recentSentiment === 'critical' ? 'Đề nghị nghỉ dưỡng / 1-1 meeting' : 'Không có đề xuất'}
                          </p>
                       </td>
@@ -867,11 +1235,239 @@ export function HumanResources() {
                       </td>
                    </tr>
                 ))}
+                {activeTab === 'attendance' && MOCK_ATTENDANCE.map(record => {
+                  const emp = MOCK_EMPLOYEES.find(e => e.id === record.employeeId);
+                  return (
+                    <tr key={record.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-5">
+                         <p className="text-sm font-bold text-slate-800">{emp?.fullName ?? 'Hệ thống'}</p>
+                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{record.date}</p>
+                      </td>
+                      <td className="px-6 py-5 text-center">
+                         <div className="flex flex-col">
+                            <span className="text-xs font-bold text-slate-700">In: {record.checkIn}</span>
+                            <span className="text-xs font-medium text-slate-400">Out: {record.checkOut}</span>
+                         </div>
+                      </td>
+                      <td className="px-6 py-5">
+                         <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+                               {record.method === 'gps' && <MapPin className="w-4 h-4" />}
+                               {record.method === 'wifi' && <Wifi className="w-4 h-4" />}
+                               {record.method === 'face' && <ScanFace className="w-4 h-4" />}
+                               {record.method === 'qr' && <QrCode className="w-4 h-4" />}
+                               {record.method === 'device' && <Fingerprint className="w-4 h-4" />}
+                            </div>
+                            <div>
+                               <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{record.method}</p>
+                               <p className="text-[10px] text-slate-500">{record.deviceInfo}</p>
+                            </div>
+                         </div>
+                      </td>
+                      <td className="px-6 py-5">
+                         <p className="text-xs font-medium text-slate-600">{record.location}</p>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                         <span className={cn(
+                           "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
+                           record.status === 'on_time' ? "bg-emerald-50 text-emerald-600" :
+                           record.status === 'late' ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
+                         )}>
+                            {record.status === 'on_time' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                            {record.status === 'on_time' ? 'Đúng giờ' : record.status === 'late' ? 'Muộn' : 'Vắng'}
+                         </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
           </div>
           </>
+        ) : activeTab === 'payroll' ? (
+           <div className="p-8 bg-slate-50 min-h-[500px]">
+              <div className="flex justify-between items-center mb-8">
+                 <div>
+                    <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800"><Wallet className="w-6 h-6 text-blue-600"/> Quản lý Quỹ lương & Payslip</h2>
+                    <p className="text-xs text-slate-500 mt-1">Kỳ lương hiển thị: <strong className="text-slate-700">Tháng 03/2024</strong></p>
+                 </div>
+                 <div className="flex gap-3">
+                    <button 
+                      onClick={() => {
+                        const results = MOCK_EMPLOYEES.map(emp => ({
+                          employeeId: emp.id,
+                          ...autoCalculatePayroll(emp, [], MOCK_KPIs)
+                        }));                
+                        console.table(results);                
+                        alert("Đã tính lương tự động thành công (Kiểm tra console/table)!");
+                      }}
+                      className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 active:scale-95 transition-all hover:bg-indigo-700">
+                       <Zap className="w-4 h-4" /> Tính lương AI (Batch)
+                    </button>
+                    <button className="bg-[#111827] text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 transition-all hover:bg-slate-800">
+                       <BadgeDollarSign className="w-4 h-4 text-emerald-400" /> Xuất phiếu lương đồng loạt
+                    </button>
+                 </div>
+              </div>
+
+              {/* Payroll Dashboard Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                 <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng lương cơ bản</p>
+                    <p className="text-2xl font-bold text-slate-800 relative z-10">{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.baseSalary, 0))}</p>
+                 </div>
+                 <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng Phụ cấp & Thưởng</p>
+                    <p className="text-2xl font-bold text-emerald-600 relative z-10">+{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.allowance + pay.bonus, 0))}</p>
+                 </div>
+                 <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Thuế TNCN & BH</p>
+                    <p className="text-2xl font-bold text-red-500 relative z-10">-{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.pitAmount + pay.insuranceAmount, 0))}</p>
+                 </div>
+                 <div className="bg-gradient-to-br from-[#111827] to-slate-800 p-5 rounded-lg border border-slate-700 shadow-xl relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
+                    <p className="text-2xl font-bold text-white relative z-10">{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
+                 </div>
+              </div>
+
+              {/* Advanced Payroll Table */}
+              <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
+                 <table className="w-full text-left border-collapse">
+                    <thead>
+                       <tr className="bg-slate-50/80 border-b border-slate-100">
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Mã / Tên Nhân viên</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Lương Cơ bản</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Thưởng / Phụ cấp</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Khấu trừ (Thuế, BH)</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Thực lãnh</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Bảng lương</th>
+                       </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                       {MOCK_PAYROLL.map((pay) => (
+                         <tr key={pay.id} className="hover:bg-blue-50/30 transition-colors group">
+                           <td className="px-6 py-4">
+                              <p className="text-sm font-bold text-slate-800">{pay.employeeName}</p>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">{pay.employeeId}</p>
+                           </td>
+                           <td className="px-6 py-4 text-right font-mono font-bold text-sm text-slate-600">{formatCurrency(pay.baseSalary)}</td>
+                           <td className="px-6 py-4 text-right">
+                              <p className="text-xs font-bold text-emerald-600 font-mono">+{formatCurrency(pay.allowance + pay.bonus)}</p>
+                              {pay.bonus > 0 && <span className="text-[9px] font-bold text-emerald-500 opacity-60">Gồm {formatCurrency(pay.bonus)} KPI/OT</span>}
+                           </td>
+                           <td className="px-6 py-4 text-right">
+                              <p className="text-xs font-bold text-red-500 font-mono">-{formatCurrency(pay.pitAmount + pay.insuranceAmount)}</p>
+                           </td>
+                           <td className="px-6 py-4 text-right">
+                              <p className="text-[15px] font-bold text-[#2563EB] font-mono bg-blue-50 px-3 py-1 rounded-lg inline-block">{formatCurrency(pay.netSalary)}</p>
+                           </td>
+                           <td className="px-6 py-4">
+                              <div className="flex justify-center">
+                                 <span className={cn(
+                                   "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+                                   pay.status === 'paid' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                                 )}>
+                                    {pay.status === 'paid' ? 'Đã thanh toán' : 'Chờ duyệt chi'}
+                                 </span>
+                              </div>
+                           </td>
+                           <td className="px-6 py-4 text-right">
+                              <button className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-slate-200 transition-all flex items-center gap-1.5 ml-auto border border-slate-200">
+                                 <FileText className="w-3.5 h-3.5" /> Chi tiết
+                              </button>
+                           </td>
+                         </tr>
+                       ))}
+                       {MOCK_PAYROLL.length === 0 && (
+                          <tr>
+                            <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                              Không có dữ liệu bảng lương trong kỳ này.
+                            </td>
+                          </tr>
+                       )}
+                    </tbody>
+                 </table>
+                 <div className="bg-slate-50 border-t border-slate-100 p-4 text-xs text-slate-500 font-medium flex justify-between items-center">
+                    <p className="flex items-center gap-1.5">
+                       <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Dữ liệu đã được đồng bộ với module Chấm công & KPI.
+                    </p>
+                    <p>Tổng số bản ghi: <strong>{MOCK_PAYROLL.length}</strong></p>
+                 </div>
+              </div>
+           </div>
+        ) : activeTab === 'rec_candidates' ? (
+           <div className="p-6 bg-slate-50 min-h-[500px]">
+              <div className="flex justify-between items-center mb-6">
+                 <h2 className="text-xl font-bold flex items-center gap-2"><UserPlus className="w-6 h-6 text-indigo-600"/> ATS Pipeline</h2>
+                 <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-indigo-700 transition">Thêm ứng viên</button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                 {(['sourced', 'interview', 'offered', 'hired'] as const).map(status => (
+                    <div 
+                      key={status} 
+                      className="bg-slate-100/50 rounded-lg p-4 border border-slate-200"
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, status)}
+                    >
+                       <div className="flex justify-between items-center mb-4">
+                         <h3 className="font-bold text-slate-700 uppercase tracking-widest text-xs">
+                           {status === 'sourced' ? 'Sourced' : status === 'interview' ? 'Phỏng vấn' : status === 'offered' ? 'Đề nghị' : 'Đã tuyển'}
+                         </h3>
+                         <span className="bg-white px-2 py-0.5 rounded-full text-[10px] font-bold text-slate-500 shadow-sm">
+                           {candidates.filter(c => c.status === status).length}
+                         </span>
+                       </div>
+                       <div className="flex flex-col gap-3 min-h-[150px]">
+                          <AnimatePresence>
+                             {candidates.filter(c => c.status === status).map(candidate => (
+                               <motion.div
+                                 layout
+                                 initial={{ opacity: 0, scale: 0.9 }}
+                                 animate={{ opacity: 1, scale: 1 }}
+                                 exit={{ opacity: 0, scale: 0.9 }}
+                                 key={candidate.id}
+                                 draggable
+                                 onDragStart={(e: any) => handleDragStart(e, candidate.id)}
+                                 className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow relative overflow-hidden"
+                               >
+                                  <div className={cn("absolute top-0 left-0 w-1 h-full", 
+                                     candidate.matchScore >= 90 ? "bg-emerald-500" : 
+                                     candidate.matchScore >= 80 ? "bg-blue-500" : "bg-amber-500"
+                                  )} />
+                                  <div className="pl-2">
+                                     <div className="flex justify-between items-start mb-2">
+                                        <p className="font-bold text-sm text-[#111827]">{candidate.name}</p>
+                                        <span className="text-[10px] font-bold text-slate-400 font-mono">{candidate.id}</span>
+                                     </div>
+                                     <p className="text-xs font-medium text-slate-600 mb-3">{candidate.role}</p>
+                                     <div className="flex justify-between items-center">
+                                        <div className="flex -space-x-2">
+                                           <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[8px] font-bold text-slate-500">HR</div>
+                                           <div className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[8px] font-bold text-indigo-600">AI</div>
+                                        </div>
+                                        <span className={cn(
+                                          "px-2 py-1 rounded-md text-[10px] font-bold",
+                                          candidate.matchScore >= 90 ? "bg-emerald-50 text-emerald-600" : 
+                                          candidate.matchScore >= 80 ? "bg-blue-50 text-blue-600" : "bg-amber-50 text-amber-600"
+                                        )}>
+                                          Match: {candidate.matchScore}%
+                                        </span>
+                                     </div>
+                                  </div>
+                               </motion.div>
+                             ))}
+                          </AnimatePresence>
+                       </div>
+                    </div>
+                 ))}
+              </div>
+           </div>
         ) : (
           <div className="p-16 flex flex-col items-center justify-center text-center">
              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
@@ -885,6 +1481,204 @@ export function HumanResources() {
         )}
       </div>
       )}
+
+      {/* 360 Employee Slide-out Panel */}
+      <AnimatePresence>
+        {selectedEmployee && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setSelectedEmployee(null)}
+              className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
+            />
+            <motion.div 
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 border-l border-slate-200 flex flex-col overflow-y-auto"
+            >
+               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 sticky top-0 z-10">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">{selectedEmployee.fullName}</h2>
+                    <p className="text-xs font-mono font-bold text-slate-400 mt-1 uppercase tracking-widest">{selectedEmployee.id}</p>
+                  </div>
+                  <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500">
+                     <span className="sr-only">Đóng</span>
+                     <ArrowLeft className="w-5 h-5 rotate-180" />
+                  </button>
+               </div>
+               
+               <div className="p-6 space-y-8 flex-1">
+                 {/* Skill Radar */}
+                 <div className="space-y-4">
+                    <h3 className="font-bold tracking-widest uppercase text-xs text-slate-400 flex items-center gap-2">
+                       <BrainCircuit className="w-4 h-4 text-blue-500"/> Skill Matrix (Radar)
+                    </h3>
+                    <div className="h-64 bg-slate-50 rounded-lg border border-slate-100 p-4 relative">
+                       <ResponsiveContainer width="100%" height="100%">
+                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={selectedEmployee.skills || []}>
+                           <PolarGrid stroke="#e2e8f0" />
+                           <PolarAngleAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10, fontWeight: 'bold' }} />
+                           <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                           <Radar name="Kỹ năng" dataKey="level" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.4} />
+                         </RadarChart>
+                       </ResponsiveContainer>
+                    </div>
+                 </div>
+
+                 {/* Timeline */}
+                 <div className="space-y-4">
+                    <h3 className="font-bold tracking-widest uppercase text-xs text-slate-400 flex items-center gap-2">
+                       <Clock className="w-4 h-4 text-emerald-500"/> Timeline Công tác
+                    </h3>
+                    <div className="pl-4 border-l-2 border-slate-100 space-y-6 relative ml-2">
+                       <div className="relative">
+                          <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white shadow-sm" />
+                          <p className="text-xs font-bold text-slate-800">Cập nhật Lương</p>
+                          <p className="text-[10px] text-slate-500 font-medium">Tăng 15% lương cơ bản</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">11/2023</p>
+                       </div>
+                       <div className="relative">
+                          <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-sm" />
+                          <p className="text-xs font-bold text-slate-800">Thăng tiến</p>
+                          <p className="text-[10px] text-slate-500 font-medium">Lên vị trí: {selectedEmployee.position}</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">08/2023</p>
+                       </div>
+                       <div className="relative">
+                          <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-slate-300 border-2 border-white shadow-sm" />
+                          <p className="text-xs font-bold text-slate-800">Gia nhập công ty</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">{selectedEmployee.joinDate}</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* AI Insight */}
+                 <div className="p-5 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50 rounded-lg relative overflow-hidden">
+                    <div className="relative z-10">
+                       <h3 className="font-bold tracking-widest uppercase text-[10px] text-indigo-500 flex items-center gap-1.5 mb-2">
+                          <Sparkles className="w-3 h-3"/> AI Sentiment Insight
+                       </h3>
+                       <p className="text-sm font-medium text-slate-700 leading-relaxed">
+                         {selectedEmployee.recentSentiment === 'critical' ? 'Nhân viên có biểu hiện quá tải công việc, thường làm thêm giờ. Đề xuất: 1-on-1 trong tuần này.' : 'Trạng thái tích cực, kỹ năng phù hợp để tham gia dự án chiến lược Q3.'}
+                       </p>
+                    </div>
+                 </div>
+               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* AI HR Copilot Widget */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+        <AnimatePresence>
+           {isCopilotOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                className="w-[380px] h-[500px] bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
+              >
+                 <div className="p-4 bg-[#111827] text-white flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                       <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <BrainCircuit className="w-5 h-5 text-blue-400" />
+                       </div>
+                       <div>
+                          <h3 className="font-bold text-sm">HR Copilot</h3>
+                          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Online</p>
+                       </div>
+                    </div>
+                    <button onClick={() => setIsCopilotOpen(false)} className="text-slate-400 hover:text-white transition">
+                       <ArrowLeft className="w-5 h-5 rotate-180" />
+                    </button>
+                 </div>
+                 
+                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                    {copilotMessages.map((msg, idx) => (
+                       <div key={idx} className={cn("flex max-w-[85%]", msg.role === 'user' ? "ml-auto justify-end" : "")}>
+                          <div className={cn("p-3 rounded-lg text-sm font-medium leading-relaxed relative", 
+                            msg.role === 'user' ? "bg-blue-600 text-white rounded-tr-sm" : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm"
+                          )}>
+                             {msg.content}
+                          </div>
+                       </div>
+                    ))}
+                 </div>
+
+                 <div className="p-4 bg-white border-t border-slate-100">
+                    <div className="flex items-center bg-slate-100 rounded-full pr-1.5 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 transition-all">
+                       <input 
+                         type="text" 
+                         value={copilotInput}
+                         onChange={(e) => setCopilotInput(e.target.value)}
+                         onKeyDown={(e) => e.key === 'Enter' && handleSendCopilotMessage()}
+                         placeholder="Hỏi AI về nhân sự..."
+                         className="flex-1 bg-transparent px-4 py-3 text-sm focus:outline-none"
+                       />
+                       <button 
+                         onClick={handleSendCopilotMessage}
+                         className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors shadow-sm"
+                       >
+                         <Send className="w-4 h-4" />
+                       </button>
+                    </div>
+                 </div>
+              </motion.div>
+           )}
+        </AnimatePresence>
+
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsCopilotOpen(!isCopilotOpen)}
+          className="w-14 h-14 bg-blue-600 rounded-full shadow-xl text-white flex items-center justify-center relative group"
+        >
+           <div className="absolute inset-0 bg-blue-400 rounded-full animate-ping opacity-20" />
+           {isCopilotOpen ? <ArrowLeft className="w-6 h-6 rotate-180" /> : <BrainCircuit className="w-6 h-6" />}
+        </motion.button>
+      </div>
+      <AnimatePresence>
+        {showATSModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-lg w-full max-w-4xl p-8 shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-[#111827]">Quản lý Tuyển dụng (ATS) - {
+                   activeATSView === 'request' ? 'Đề xuất tuyển dụng' : 
+                   activeATSView === 'candidates' ? 'Hồ sơ ứng viên' : 
+                   activeATSView === 'interview' ? 'Lịch phỏng vấn' : 'Email ứng viên'
+                }</h2>
+                <button onClick={() => setShowATSModal(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400"><X className="w-6 h-6" /></button>
+              </div>
+              <div className="flex gap-4 mb-6">
+                {['request', 'candidates', 'interview', 'email'].map(t => (
+                  <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-4 py-2 text-sm font-bold rounded-lg", activeATSView === t ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600')}>
+                    {t === 'request' ? 'Đề xuất' : t === 'candidates' ? 'Ứng viên' : t === 'interview' ? 'Lịch phỏng vấn' : 'Email'}
+                  </button>
+                ))}
+              </div>
+              <div className="min-h-[400px]">
+                {activeATSView === 'candidates' && (
+                  <div className="grid grid-cols-4 gap-4">
+                    {['sourced', 'interview', 'offered', 'hired'].map(status => (
+                      <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status as any)} className="bg-slate-50 p-4 rounded-lg">
+                        <h3 className="font-bold text-slate-800 capitalize mb-4">{status}</h3>
+                        {candidates.filter(c => c.status === status).map(c => (
+                          <div key={c.id} draggable onDragStart={(e) => handleDragStart(e, c.id)} className="bg-white p-3 rounded-lg border shadow-sm mb-2 cursor-grab">
+                            <p className="font-bold">{c.name}</p>
+                            <p className="text-xs text-slate-500">{c.role} ({c.matchScore}%)</p>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* Add placeholders for other views */}
+                {activeATSView !== 'candidates' && <div className="text-center text-slate-400 mt-20">Nội dung chức năng {activeATSView} đang được xây dựng...</div>}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

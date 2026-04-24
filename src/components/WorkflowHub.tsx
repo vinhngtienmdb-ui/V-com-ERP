@@ -81,7 +81,7 @@ export function WorkflowHub() {
       </div>
 
       {viewMode === 'builder' ? (
-        <div className="h-[600px] w-full border border-[#E5E7EB] rounded-xl bg-white">
+        <div className="h-[600px] w-full border border-[#E5E7EB] rounded-lg bg-white">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -95,9 +95,9 @@ export function WorkflowHub() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-red-50 border border-red-100 p-6 rounded-xl">
+          <div className="bg-red-50 border border-red-100 p-6 rounded-lg">
              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-red-500 rounded-xl shadow-lg shadow-red-500/20">
+                <div className="p-2 bg-red-500 rounded-lg shadow-lg shadow-red-500/20">
                    <ShieldAlert className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-[10px] text-red-600 font-bold uppercase tracking-widest">Điểm nghẽn rủi ro</span>
@@ -105,9 +105,9 @@ export function WorkflowHub() {
              <div className="text-2xl font-extrabold text-red-700">08</div>
              <p className="text-[10px] text-red-500 font-medium mt-1">Cần hành động ngay lập tức</p>
           </div>
-          <div className="bg-blue-50 border border-blue-100 p-6 rounded-xl">
+          <div className="bg-blue-50 border border-blue-100 p-6 rounded-lg">
              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
                    <Boxes className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Task SCM & Vận hành</span>
@@ -115,9 +115,9 @@ export function WorkflowHub() {
              <div className="text-2xl font-extrabold text-blue-700">124</div>
              <p className="text-[10px] text-blue-500 font-medium mt-1">Đang xử lý trong luồng</p>
           </div>
-          <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
+          <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-lg">
              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20">
+                <div className="p-2 bg-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20">
                    <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Workflow hoàn tất</span>
@@ -125,9 +125,9 @@ export function WorkflowHub() {
              <div className="text-2xl font-extrabold text-emerald-700">92%</div>
              <p className="text-[10px] text-emerald-500 font-medium mt-1">Hiệu suất vận hành tháng</p>
           </div>
-          <div className="bg-slate-50 border border-slate-200 p-6 rounded-xl">
+          <div className="bg-slate-50 border border-slate-200 p-6 rounded-lg">
              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-400 rounded-xl shadow-lg shadow-slate-400/20">
+                <div className="p-2 bg-slate-400 rounded-lg shadow-lg shadow-slate-400/20">
                    <Users2 className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nguồn lực sẵn sàng</span>
@@ -140,7 +140,7 @@ export function WorkflowHub() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-lg shadow-slate-200/50 overflow-hidden">
+            <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-lg shadow-slate-200/50 overflow-hidden">
                <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]/50">
                   <h2 className="font-bold text-[#111827] flex items-center gap-2">
                      <Layers className="w-5 h-5 text-blue-600" /> Action Required (Danh sách Task)
@@ -197,7 +197,7 @@ export function WorkflowHub() {
          </div>
 
          <div className="space-y-6">
-            <div className="bg-[#111827] text-white p-8 rounded-xl space-y-6 relative overflow-hidden border border-white/5 shadow-2xl">
+            <div className="bg-[#111827] text-white p-8 rounded-lg space-y-6 relative overflow-hidden border border-white/5 shadow-2xl">
                <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-6">
                      <div className="p-3 bg-emerald-500 rounded-lg shadow-xl shadow-emerald-500/20">
@@ -211,21 +211,21 @@ export function WorkflowHub() {
                            <Zap className="w-3 h-3 fill-current" /> Automation Opportunity
                         </p>
                         <p className="text-xs text-slate-300 leading-relaxed">Phát hiện 124 sản phẩm bị gán sai danh mục (PIM). Hãy bật AI Auto-Categorize để tiết kiệm 4 giờ làm việc mỗi ngày.</p>
-                        <button className="text-[10px] font-bold bg-white text-slate-900 px-4 py-2 rounded-xl mt-2 hover:bg-slate-100 transition-all uppercase tracking-widest">Bật ngay</button>
+                        <button className="text-[10px] font-bold bg-white text-slate-900 px-4 py-2 rounded-lg mt-2 hover:bg-slate-100 transition-all uppercase tracking-widest">Bật ngay</button>
                      </div>
                      <div className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-2">
                         <p className="text-[11px] font-bold text-red-400 uppercase flex items-center gap-1">
                            <AlertCircle className="w-3 h-3" /> Risk Warning
                         </p>
                         <p className="text-xs text-slate-300 leading-relaxed">Tỷ lệ hủy đơn tại khu vực miền Trung tăng 12%. Kiểm tra hiệu suất đối tác vận chuyển GHTK.</p>
-                        <button className="text-[10px] font-bold border border-white/20 text-white px-4 py-2 rounded-xl mt-2 hover:bg-white/5 transition-all uppercase tracking-widest">Kiểm tra chi tiết</button>
+                        <button className="text-[10px] font-bold border border-white/20 text-white px-4 py-2 rounded-lg mt-2 hover:bg-white/5 transition-all uppercase tracking-widest">Kiểm tra chi tiết</button>
                      </div>
                   </div>
                </div>
                <Cpu className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />
             </div>
 
-            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm space-y-6">
+            <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
                <h3 className="font-bold text-[#111827] flex items-center gap-2">
                   <Bell className="w-5 h-5 text-blue-600" /> Hệ thống Log & Trình ký
                </h3>
