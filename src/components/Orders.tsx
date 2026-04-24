@@ -59,60 +59,108 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="space-y-2">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông tin khách hàng</p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
                <User className="w-5 h-5 text-slate-400" />
                <span className="font-bold text-slate-800">{order.customerName}</span>
             </div>
           </div>
           <div className="space-y-2">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phương thức thanh toán</p>
-            <span className="font-bold text-slate-800">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+               <DollarSign className="w-5 h-5 text-slate-400" />
+               <span className="font-bold text-slate-800">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
+            </div>
           </div>
         </div>
 
         <div className="space-y-4 mb-8">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Danh sách sản phẩm</p>
-          <div className="bg-slate-50 rounded-lg p-4">
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
             {order.items && order.items.length > 0 ? (
               order.items.map((item: any, idx: number) => (
-                <div key={idx} className="flex justify-between py-2 border-b last:border-0 border-slate-200">
-                  <span className="font-medium text-slate-700">{item.name}</span>
+                <div key={idx} className="flex justify-between py-3 border-b last:border-0 border-slate-200 items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white rounded-md border border-slate-200 flex items-center justify-center">
+                       <Package className="w-5 h-5 text-slate-400" />
+                    </div>
+                    <span className="font-medium text-slate-700">{item.name}</span>
+                  </div>
                   <span className="font-bold text-slate-900">{formatCurrency(item.price)}</span>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-slate-500 italic">Chưa có thông tin sản phẩm.</p>
+              <p className="text-sm text-slate-500 italic pb-2">Chưa có thông tin sản phẩm.</p>
             )}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lịch sử Tracking</p>
-          <div className="bg-slate-50 rounded-lg p-4 flex items-center gap-4">
-            <Truck className="w-6 h-6 text-blue-600" />
-            <div>
-              <p className="font-bold text-slate-800">{order.carrier || 'Chưa vận chuyển'}</p>
-              <p className="font-mono text-xs text-blue-600">{order.tracking || 'N/A'}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lịch sử Vận chuyển</p>
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                  <Truck className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-800">{order.carrier || 'Chưa vận chuyển'}</p>
+                  <p className="font-mono text-xs text-blue-600">{order.tracking || 'N/A'}</p>
+                </div>
+              </div>
+              
+              <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[7px] before:w-0.5 before:bg-slate-200">
+                <div className="relative z-10 flex items-start gap-4">
+                   <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-50 shrink-0 mt-0.5"></div>
+                   <div>
+                      <p className="text-sm font-bold text-slate-800">Đơn hàng được tạo</p>
+                      <p className="text-xs text-slate-500">{order.date}</p>
+                   </div>
+                </div>
+                {order.carrier && (
+                  <div className="relative z-10 flex items-start gap-4">
+                     <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-50 shrink-0 mt-0.5"></div>
+                     <div>
+                        <p className="text-sm font-bold text-slate-800">Đã bàn giao cho ĐVVC</p>
+                        <p className="text-xs text-slate-500">Chờ cập nhật...</p>
+                     </div>
+                  </div>
+                )}
+              </div>
             </div>
-            {order.paymentMethod === 'cod' && order.status === 'delivered' && (
-               <button className="ml-auto bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-600 shadow-sm flex items-center gap-1.5 focus:ring-2 ring-emerald-200">
-                  <DollarSign className="w-4 h-4" /> Xác nhận thực thu COD
-               </button>
-            )}
-            {order.paymentMethod === 'cod' && order.status === 'processing' && (
-               <button className="ml-auto bg-slate-100 text-slate-400 px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed flex items-center gap-1.5 border border-slate-200">
-                  <Clock className="w-3.5 h-3.5" /> Chờ giao để thu COD
-               </button>
-            )}
           </div>
-          {(order.status === ('returning' as any) || order.status === 'returning') && (
-            <div className="mt-4 p-4 rounded-lg bg-blue-50 border border-blue-100">
-               <button onClick={() => handleDraftRma(order)} className="text-xs font-bold text-blue-700 flex items-center gap-2 mb-2">
-                  <BrainCircuit className="w-4 h-4" /> {isGenerating ? 'Đang tạo...' : 'Tạo phản hồi RMA bằng AI'}
+
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hỗ trợ CSKH (AI)</p>
+            <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
+               <button onClick={() => handleDraftRma(order)} disabled={isGenerating} className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center">
+                  <BrainCircuit className="w-4 h-4" /> {isGenerating ? 'AI Đang phân tích và tạo phản hồi...' : 'Tạo phản hồi RMA bằng AI'}
                </button>
-               {aiResponse && <p className="text-xs text-blue-900 border-t pt-2 mt-2 whitespace-pre-line">{aiResponse}</p>}
+               {aiResponse ? (
+                  <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm text-sm text-slate-700 whitespace-pre-line leading-relaxed h-48 overflow-y-auto custom-scrollbar">
+                     {aiResponse}
+                  </div>
+               ) : (
+                  <div className="bg-white/50 p-3 rounded-lg border border-blue-100 border-dashed text-sm text-slate-500 text-center flex flex-col items-center justify-center h-48">
+                     <BrainCircuit className="w-8 h-8 text-blue-300 mb-2 opacity-50" />
+                     Nhấp để tự động phân tích đơn hàng<br/>và sinh mẫu phản hồi CSKH.
+                  </div>
+               )}
             </div>
-          )}
+            
+            {/* Action buttons based on payment rules */}
+            <div className="space-y-2 mt-4">
+              {order.paymentMethod === 'cod' && order.status === 'delivered' && (
+                 <button className="w-full bg-emerald-500 text-white px-4 py-3 rounded-lg text-sm font-bold hover:bg-emerald-600 shadow-sm flex items-center justify-center gap-2">
+                    <DollarSign className="w-5 h-5" /> Xác nhận thực thu COD
+                 </button>
+              )}
+              {order.paymentMethod === 'cod' && order.status === 'processing' && (
+                 <button className="w-full bg-slate-100 text-slate-400 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-200">
+                    <Clock className="w-5 h-5" /> Chờ giao để thu COD
+                 </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
