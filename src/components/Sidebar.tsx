@@ -32,7 +32,8 @@ import {
   Sparkles,
   Building2,
   Monitor,
-  Zap
+  Zap,
+  Key
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -44,7 +45,16 @@ const navGroups = [
       { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
       { icon: PieChart, label: 'Phân tích dữ liệu', path: '/bi' },
       { icon: Sparkles, label: 'Trung tâm vận hành AI', path: '/ai-ops' },
-      { icon: Activity, label: 'Trung tâm điều hành', path: '/workflow' },
+      { icon: Activity, label: 'Điều hành & Workflow', path: '/workflow' },
+    ]
+  },
+  {
+    title: 'Hành chính, Pháp lý & Ký số',
+    items: [
+      { icon: Briefcase, label: 'Đề xuất & Trình ký', path: '/requests' },
+      { icon: Scale, label: 'Hợp đồng & Pháp chế', path: '/contracts' },
+      { icon: Zap, label: 'Quản lý Công văn', path: '/documents' },
+      { icon: Key, label: 'Trung tâm Ký số', path: '/signature' },
     ]
   },
   {
@@ -89,7 +99,7 @@ const navGroups = [
     items: [
       { icon: Store, label: 'Nhà bán hàng (Seller)', path: '/sellers' },
       { icon: Users, label: 'Khách hàng (CRM)', path: '/customers' },
-      { icon: Headphones, label: 'Chăm sóc khánh hàng (CSKH & Omni)', path: '/cskh' },
+      { icon: Headphones, label: 'Chăm sóc Khách hàng', path: '/cskh' },
       { icon: UserPlus2, label: 'Đội ngũ Kinh doanh', path: '/sales' },
     ]
   },

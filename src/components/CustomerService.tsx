@@ -26,7 +26,19 @@ import {
   Bot,
   Zap,
   CheckCheck,
-  Plus
+  Plus,
+  Settings,
+  MessageCircle,
+  Code2,
+  Plug,
+  ToggleRight,
+  Laptop,
+  Building2,
+  Store,
+  Users,
+  UserPlus,
+  Shield,
+  Headset
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,7 +74,8 @@ const MOCK_CAMPAIGNS = [
 
 // --- COMPONENT ---
 export function CustomerService() {
-  const [activeTab, setActiveTab] = useState<'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls'>('tickets');
+  const [activeTab, setActiveTab] = useState<'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents'>('tickets');
+  const [roleScope, setRoleScope] = useState<'platform' | 'seller'>('platform');
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
   const [aiDrafting, setAiDrafting] = useState(false);
   const [draftedMessage, setDraftedMessage] = useState('');
@@ -137,8 +150,26 @@ export function CustomerService() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Chăm sóc Khách hàng (CSKH)</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Quản lý khiếu nại, phản hồi, và tự động hóa CSKH.</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-semibold text-[#111827]">Chăm sóc Khách hàng</h1>
+            <div className="flex bg-slate-100/80 p-1 rounded-lg border border-slate-200 shadow-inner">
+               <button 
+                 onClick={() => setRoleScope('platform')}
+                 className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'platform' ? "bg-white text-indigo-700 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+               >
+                  <Building2 className="w-3.5 h-3.5" /> Quản trị Sàn
+               </button>
+               <button 
+                 onClick={() => setRoleScope('seller')}
+                 className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'seller' ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+               >
+                  <Store className="w-3.5 h-3.5" /> Quản trị Nhà Bán
+               </button>
+            </div>
+          </div>
+          <p className="text-sm text-[#6B7280] mt-1">
+             {roleScope === 'platform' ? 'Quản lý vận hành hệ thống, giám sát đánh giá cửa hàng và hỗ trợ tranh chấp.' : 'Quản lý khiếu nại, phản hồi, và tự động hóa CSKH cho cửa hàng của bạn.'}
+          </p>
         </div>
         <div className="flex gap-3">
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
@@ -198,36 +229,54 @@ export function CustomerService() {
       {/* Main Content Area */}
       <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
         {/* Navigation Tabs */}
-        <div className="flex bg-slate-50 border-b border-slate-200 p-2 gap-2">
+        <div className="flex bg-slate-50 border-b border-slate-200 p-2 gap-2 overflow-x-auto hidden-scrollbar">
            <button 
              onClick={() => setActiveTab('tickets')}
-             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all", activeTab === 'tickets' ? "bg-white text-blue-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-blue-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
            >
               <Ticket className="w-4 h-4" /> Quản lý Tickets
            </button>
            <button 
              onClick={() => setActiveTab('campaigns')}
-             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all", activeTab === 'campaigns' ? "bg-white text-emerald-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'campaigns' ? "bg-white text-emerald-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
            >
               <Mail className="w-4 h-4" /> Chiến dịch Chăm sóc (Loyalty)
            </button>
            <button 
              onClick={() => setActiveTab('feedback')}
-             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
            >
               <Star className="w-4 h-4" /> Phản hồi & Đánh giá
            </button>
            <button 
              onClick={() => setActiveTab('chat')}
-             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all", activeTab === 'chat' ? "bg-white text-blue-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'chat' ? "bg-white text-blue-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
            >
               <MessageSquare className="w-4 h-4" /> Chat Đa kênh (FB/Zalo)
            </button>
            <button 
              onClick={() => setActiveTab('calls')}
-             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all", activeTab === 'calls' ? "bg-white text-emerald-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'calls' ? "bg-white text-emerald-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
            >
               <PhoneCall className="w-4 h-4" /> Tổng đài OmiCall
+           </button>
+           <button 
+             onClick={() => setActiveTab('livechat')}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'livechat' ? "bg-white text-indigo-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+           >
+              <MessageCircle className="w-4 h-4" /> Livechat Website
+           </button>
+           <button 
+             onClick={() => setActiveTab('agents')}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'agents' ? "bg-white text-rose-600 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+           >
+              <Users className="w-4 h-4" /> Đội ngũ & Extension
+           </button>
+           <button 
+             onClick={() => setActiveTab('config')}
+             className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-800 shadow-sm border border-slate-200" : "text-slate-500 hover:bg-slate-100")}
+           >
+              <Settings className="w-4 h-4" /> Cấu hình Kênh
            </button>
         </div>
 
@@ -465,7 +514,7 @@ export function CustomerService() {
                   </div>
 
                   {/* Messages List */}
-                  <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={scrollRef}>
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" ref={scrollRef}>
                      {messages.map((msg) => (
                        <div key={msg.id} className={cn(
                          "flex items-end gap-3",
@@ -482,31 +531,31 @@ export function CustomerService() {
                             msg.senderId === 'ai' ? "items-start" : "items-end flex flex-col"
                           )}>
                              <div className={cn(
-                               "p-3 rounded-lg text-sm shadow-sm",
+                               "p-3 rounded-xl text-sm shadow-sm leading-relaxed",
                                msg.senderId === 'ai' 
-                                 ? "bg-white text-slate-700 border border-slate-200 rounded-bl-sm" 
+                                 ? "bg-white text-slate-800 border border-slate-200 rounded-bl-sm" 
                                  : "bg-blue-600 text-white rounded-br-sm"
                              )}>
                                 {msg.text}
                              </div>
                              <div className="flex items-center gap-2 px-1">
-                                <span className={cn("text-[9px]", msg.senderId === 'ai' ? "text-slate-400" : "text-blue-300")}>{msg.senderName} • {msg.timestamp}</span>
-                                {msg.senderId === 'user' && <CheckCheck className="w-3 h-3 text-blue-500" />}
+                                <span className={cn("text-[9px] font-medium tracking-wide", msg.senderId === 'ai' ? "text-slate-400" : "text-blue-300")}>{msg.senderName} • {msg.timestamp}</span>
+                                {msg.senderId === 'user' && <CheckCheck className="w-3.5 h-3.5 text-blue-500" />}
                              </div>
                           </div>
                        </div>
                      ))}
                      {isAiProcessing && (
                        <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center animate-pulse">
-                            <Bot className="w-4 h-4" />
+                         <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
+                            <Bot className="w-4 h-4 animate-bounce" />
                          </div>
-                         <div className="bg-white border border-[#F3F4F6] p-3 rounded-lg rounded-bl-sm shadow-sm flex items-center gap-2">
-                            <span className="text-xs text-[#6B7280] font-bold">AI Assistant đang soạn câu trả lời</span>
-                            <div className="flex gap-1">
-                               <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                               <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                               <div className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" />
+                         <div className="bg-white border border-slate-200 p-4 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-3">
+                            <span className="text-xs text-slate-600 font-bold tracking-wide">AI Assistant đang soạn câu trả lời</span>
+                            <div className="flex gap-1.5">
+                               <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                               <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                               <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce" />
                             </div>
                          </div>
                        </div>
@@ -514,9 +563,15 @@ export function CustomerService() {
                   </div>
 
                   {/* Input Area */}
-                  <div className="p-4 bg-white border-t border-[#F3F4F6]">
+                  <div className="p-4 bg-white border-t border-slate-200 flex flex-col gap-3">
+                     <div className="flex gap-2 p-1 overflow-x-auto hidden-scrollbar">
+                        <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin chào</button>
+                        <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin thông tin nhận hàng</button>
+                        <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Gửi mã freeship</button>
+                        <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Thông báo chậm hàng</button>
+                     </div>
                      <div className="flex items-center gap-3">
-                        <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 border border-transparent hover:border-slate-200 transition-all">
+                        <button className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-all flex-shrink-0">
                            <Plus className="w-5 h-5" />
                         </button>
                         <div className="flex-1 relative">
@@ -526,18 +581,21 @@ export function CustomerService() {
                              onChange={(e) => setInputValue(e.target.value)}
                              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                              placeholder="Nhập tin nhắn..." 
-                             className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                             className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium"
                            />
-                           <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiProcessing}>
-                              <Send className="w-5 h-5" />
+                           <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-50 flex items-center justify-center shadow-lg shadow-blue-500/20" onClick={handleSendMessage} disabled={isAiProcessing || !inputValue.trim()}>
+                              <Send className="w-4 h-4 ml-0.5" />
                            </button>
                         </div>
-                        <button className="bg-slate-100 p-3 rounded-lg hover:bg-slate-200 transition-colors">
-                           <Zap className="w-5 h-5 text-orange-500 fill-current" />
+                        <button className="bg-amber-100 hover:bg-amber-200 p-3 rounded-xl transition-colors flex-shrink-0 relative group">
+                           <Zap className="w-5 h-5 text-amber-600 fill-current" />
+                           <div className="absolute bottom-full right-0 mb-2 whitespace-nowrap px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                              Dùng AI trả lời
+                           </div>
                         </button>
                      </div>
-                     <div className="mt-2 text-center">
-                        <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest">Powered by Gemini AI Engine</p>
+                     <div className="text-center mt-1">
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">Được hỗ trợ bởi Gemini AI Engine</p>
                      </div>
                   </div>
                 </div>
@@ -559,7 +617,12 @@ export function CustomerService() {
                    </div>
 
                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest border-b border-[#F3F4F6] pb-2">Đơn hàng gần đây</h4>
+                      <div className="flex justify-between items-center border-b border-[#F3F4F6] pb-2">
+                         <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest">Đơn hàng gần đây</h4>
+                         <button className="text-[10px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-widest flex items-center gap-1">
+                            <Plus className="w-3 h-3" /> Tạo đơn
+                         </button>
+                      </div>
                       <div className="space-y-3">
                          {[
                            { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
@@ -633,14 +696,15 @@ export function CustomerService() {
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center leading-relaxed">Loại Hướng</th>
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center leading-relaxed">Thời lượng</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right leading-relaxed">Thời gian</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center leading-relaxed">File Ghi âm</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right leading-relaxed">Thời gian / Ghi chú</th>
                              </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
                              {[
-                               { time: '14:20 20/04/2026', duration: '02:45', status: 'missed', caller: '0901234567', type: 'inbound', name: 'Nguyễn Văn A' },
-                               { time: '10:15 20/04/2026', duration: '08:12', status: 'completed', caller: '0987654321', type: 'outbound', name: 'Trần Thị B' },
-                               { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Le Van C' }
+                               { time: '14:20 20/04/2026', duration: '02:45', status: 'missed', caller: '0901234567', type: 'inbound', name: 'Nguyễn Văn A', hasAudio: false },
+                               { time: '10:15 20/04/2026', duration: '08:12', status: 'completed', caller: '0987654321', type: 'outbound', name: 'Trần Thị B', hasAudio: true },
+                               { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Le Van C', hasAudio: true }
                              ].map((log, i) => (
                                <tr key={i} className="hover:bg-slate-50 transition-colors">
                                   <td className="px-6 py-4">
@@ -660,13 +724,519 @@ export function CustomerService() {
                                   <td className="px-6 py-4 text-center text-sm font-mono text-slate-600 font-bold">
                                      {log.duration}
                                   </td>
-                                  <td className="px-6 py-4 text-right text-xs text-slate-500 font-medium">
-                                     {log.time}
+                                  <td className="px-6 py-4 text-center">
+                                     {log.hasAudio ? (
+                                        <button className="inline-flex p-1.5 bg-blue-50 text-blue-600 rounded-lg items-center justify-center hover:bg-blue-100 transition-colors tooltip" title="Nghe lại">
+                                           <Headphones className="w-4 h-4" />
+                                        </button>
+                                     ) : (
+                                        <span className="text-slate-300">-</span>
+                                     )}
+                                  </td>
+                                  <td className="px-6 py-4 text-right">
+                                     <div className="text-xs text-slate-500 font-medium mb-1 border-b border-dashed border-slate-200 pb-1 inline-block">
+                                        {log.time}
+                                     </div>
+                                     <div>
+                                        <button className="text-[10px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-widest mt-0.5">Thêm ghi chú</button>
+                                     </div>
                                   </td>
                                </tr>
                              ))}
                           </tbody>
                        </table>
+                    </div>
+                 </div>
+              </div>
+           )}
+           {activeTab === 'livechat' && (
+              <div className="flex h-[600px]">
+                 {/* Livechat Inbox Sidebar */}
+                 <div className="w-1/3 border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
+                    <div className="p-4 border-b border-slate-200 bg-white">
+                       <h3 className="font-bold text-slate-800 flex items-center gap-2 mb-2">
+                          <Laptop className="w-5 h-5 text-indigo-600" /> Web Livechat
+                       </h3>
+                       <div className="flex bg-slate-100 p-1 rounded-lg">
+                          <button className="flex-1 bg-white shadow-sm text-xs font-bold py-1.5 rounded-md text-slate-700 transition-all text-center">Đang chờ (12)</button>
+                          <button className="flex-1 text-xs font-bold py-1.5 rounded-md text-slate-500 hover:text-slate-700 transition-all text-center">Đang xử lý (5)</button>
+                       </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                       <div className="bg-white p-3 rounded-lg border border-indigo-200 shadow-sm relative overflow-hidden cursor-pointer">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500" />
+                          <div className="flex justify-between items-start mb-1">
+                             <p className="text-sm font-bold text-slate-800">Khách vãng lai #889</p>
+                             <span className="text-[10px] text-slate-400">Vừa xong</span>
+                          </div>
+                          <p className="text-xs text-slate-600 truncate">Sản phẩm này có size XL không shop?</p>
+                          <div className="mt-2 flex items-center gap-2">
+                             <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-bold uppercase tracking-wider border border-indigo-100">Đang hoạt động trên web</span>
+                          </div>
+                       </div>
+                       
+                       <div className="bg-white p-3 rounded-lg border border-slate-200 hover:border-slate-300 cursor-pointer transition-all opacity-70">
+                          <div className="flex justify-between items-start mb-1">
+                             <p className="text-sm font-bold text-slate-800">Khách vãng lai #885</p>
+                             <span className="text-[10px] text-slate-400">5p trước</span>
+                          </div>
+                          <p className="text-xs text-slate-600 truncate">Mình muốn đổi hàng thì làm sao?</p>
+                          <div className="mt-2 flex items-center gap-2">
+                             <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-bold uppercase tracking-wider">Đã rời web</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 {/* Livechat Main Area */}
+                 <div className="flex-1 flex flex-col bg-[#F9FAFB]">
+                    <div className="p-4 bg-white border-b border-slate-200 flex justify-between items-center z-10 shadow-sm">
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                             <Laptop className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <h3 className="font-bold text-slate-800 text-sm">Khách vãng lai #889</h3>
+                             <p className="text-[10px] text-emerald-500 font-bold flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Đang xem: Giày thể thao nam siêu nhẹ</p>
+                          </div>
+                       </div>
+                       <div className="flex gap-2">
+                          <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">Lịch sử Duyệt web</button>
+
+                          {roleScope === 'platform' ? (
+                             <button className="px-3 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+                                <Shield className="w-3.5 h-3.5" /> Can thiệp Tranh chấp
+                             </button>
+                          ) : (
+                             <>
+                                <button className="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-all flex items-center gap-1.5">
+                                   <Building2 className="w-3.5 h-3.5" /> Gọi CSKH Sàn
+                                </button>
+                                <button className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-all shadow-sm">Tạo Đơn Hàng</button>
+                             </>
+                          )}
+                       </div>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 relative">
+                       <div className="text-center text-xs text-slate-400 font-medium my-4">— Cuộc trò chuyện bắt đầu lúc 10:24 —</div>
+                       <div className="flex flex-col gap-1 items-start">
+                          <div className="px-4 py-2 bg-white border border-slate-200 rounded-2xl rounded-tl-sm text-sm text-slate-700 max-w-[70%] shadow-sm">
+                             Sản phẩm này có size XL không shop?
+                          </div>
+                          <span className="text-[10px] text-slate-400">10:24</span>
+                       </div>
+                       
+                       <div className="flex flex-col gap-1 items-end">
+                          <div className="px-4 py-2 bg-indigo-600 text-white rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">
+                             Chào bạn, sản phẩm hiện tại vẫn còn size XL nha bạn ơi. Mình mua hôm nay đang có mã giảm giá 10% đấy ạ.
+                          </div>
+                          <span className="text-[10px] text-slate-400">10:25 ✓</span>
+                       </div>
+
+                       {roleScope === 'platform' && (
+                         <div className="my-6">
+                            <div className="flex items-center justify-center gap-4">
+                               <div className="h-px bg-rose-200 flex-1" />
+                               <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
+                                  CSKH Sàn (Admin) đã tham gia
+                               </span>
+                               <div className="h-px bg-rose-200 flex-1" />
+                            </div>
+                            <div className="flex flex-col gap-1 items-end mt-4">
+                               <div className="px-4 py-2 bg-rose-600 text-white rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">
+                                  Chào bạn, mình là Admin từ hệ thống. Bạn đang gặp vấn đề gì với cửa hàng này ạ?
+                               </div>
+                               <span className="text-[10px] text-slate-400">10:28 ✓</span>
+                            </div>
+                         </div>
+                       )}
+                       
+                       <div className="flex flex-col gap-1 items-start">
+                          <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+                             <div className="flex gap-1">
+                                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                             </div>
+                             Khách hàng đang nhập...
+                          </div>
+                       </div>
+                    </div>
+                    
+                    <div className="p-4 bg-white border-t border-slate-200">
+                       <div className="relative">
+                          <input 
+                            type="text" 
+                            placeholder="Nhập tin nhắn (Nhấn Enter để gửi)..." 
+                            className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                          />
+                          <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex flex-col items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all">
+                             <Send className="w-4 h-4 ml-0.5" />
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           )}
+
+           {activeTab === 'agents' && (
+              <div className="p-6 bg-slate-50 min-h-[600px]">
+                 <div className="flex items-center justify-between mb-8">
+                    <div>
+                       <h3 className="font-bold text-slate-800 text-xl flex items-center gap-2">
+                          <Users className="w-6 h-6 text-rose-600" /> Quản lý Đội ngũ CSKH & Extensions
+                       </h3>
+                       <p className="text-sm text-slate-500 mt-1">Phân công ca trực, thiết lập tổng đài viên và định tuyến ticket/cuộc gọi.</p>
+                    </div>
+                    <div className="flex gap-3">
+                       <button className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2">
+                          <Filter className="w-4 h-4" /> Lọc nhân viên
+                       </button>
+                       <button className="bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-rose-700 transition-all shadow-sm shadow-rose-500/30 flex items-center gap-2">
+                          <UserPlus className="w-4 h-4" /> Thêm thành viên
+                       </button>
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div className="xl:col-span-2 space-y-6">
+                       {/* Team Stats */}
+                       <div className="grid grid-cols-3 gap-4">
+                          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                             <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+                                <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+                             </div>
+                             <div>
+                                <p className="text-2xl font-black text-slate-800">12</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đang Online</p>
+                             </div>
+                          </div>
+                          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                             <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center">
+                                <PhoneCall className="w-5 h-5" />
+                             </div>
+                             <div>
+                                <p className="text-2xl font-black text-slate-800">4</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đang nghe máy</p>
+                             </div>
+                          </div>
+                          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                             <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center">
+                                <Ticket className="w-5 h-5" />
+                             </div>
+                             <div>
+                                <p className="text-2xl font-black text-slate-800">45</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ticket đang chờ xử lý</p>
+                             </div>
+                          </div>
+                       </div>
+
+                       {/* Staff List */}
+                       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                          <table className="w-full text-left">
+                             <thead className="bg-slate-50 border-b border-slate-100">
+                                <tr>
+                                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
+                                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+                                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">SLA / Đánh giá</th>
+                                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">EXT (Tổng đài)</th>
+                                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Thao tác</th>
+                                </tr>
+                             </thead>
+                             <tbody className="divide-y divide-slate-100">
+                                <tr className="hover:bg-slate-50">
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-3">
+                                         <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                                            <img src="https://ui-avatars.com/api/?name=Ngoc+Trinh&background=f4f4f5&color=3f3f46" alt="avatar" />
+                                         </div>
+                                         <div>
+                                            <p className="font-bold text-slate-800 text-sm">Nguyễn Ngọc Trinh</p>
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">{roleScope === 'platform' ? 'Hỗ trợ Cửa Hàng (Platform)' : 'CSKH (Seller)'}</p>
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Sẵn sàng
+                                      </span>
+                                   </td>
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-2">
+                                         <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                                         <span className="text-sm font-bold text-slate-800">4.9</span>
+                                         <span className="text-xs text-slate-400">/ 120 SLA: 5p</span>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-700">
+                                         <Headset className="w-3.5 h-3.5 text-slate-400" /> 101
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-right">
+                                      <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                                         <Settings className="w-4 h-4" />
+                                      </button>
+                                   </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50">
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-3">
+                                         <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                                            <img src="https://ui-avatars.com/api/?name=Minh+Tuan&background=f4f4f5&color=3f3f46" alt="avatar" />
+                                         </div>
+                                         <div>
+                                            <p className="font-bold text-slate-800 text-sm">Trần Minh Tuấn</p>
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">{roleScope === 'platform' ? 'Xử lý Khiếu Nại (Platform)' : 'CSKH (Seller)'}</p>
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100">
+                                         <PhoneCall className="w-3 h-3" /> Đang nghe máy
+                                      </span>
+                                   </td>
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-2">
+                                         <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                                         <span className="text-sm font-bold text-slate-800">4.7</span>
+                                         <span className="text-xs text-slate-400">/ 85 SLA: 12p</span>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-700">
+                                         <Headset className="w-3.5 h-3.5 text-slate-400" /> 105
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-right">
+                                      <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                                         <Settings className="w-4 h-4" />
+                                      </button>
+                                   </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50 opacity-60 grayscale">
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-3">
+                                         <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                                            <img src="https://ui-avatars.com/api/?name=Van+A&background=f4f4f5&color=3f3f46" alt="avatar" />
+                                         </div>
+                                         <div>
+                                            <p className="font-bold text-slate-800 text-sm">Lê Văn A</p>
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">{roleScope === 'platform' ? 'Hỗ trợ Cửa Hàng (Platform)' : 'CSKH (Seller)'}</p>
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                                         <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" /> Tạm nghỉ
+                                      </span>
+                                   </td>
+                                   <td className="px-6 py-4">
+                                      <div className="flex items-center gap-2">
+                                         <Star className="w-4 h-4 text-amber-400" />
+                                         <span className="text-sm font-bold text-slate-800">4.5</span>
+                                         <span className="text-xs text-slate-400">/ 50 SLA: 15p</span>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-center">
+                                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-700">
+                                         <Headset className="w-3.5 h-3.5 text-slate-400" /> 102
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-right">
+                                      <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                                         <Settings className="w-4 h-4" />
+                                      </button>
+                                   </td>
+                                </tr>
+                             </tbody>
+                          </table>
+                       </div>
+                    </div>
+
+                    {/* Ext & Routing Config */}
+                    <div className="space-y-6">
+                       <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                          <h4 className="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                             <Shield className="w-4 h-4 text-indigo-600" /> Định tuyến thông minh (Smart Routing)
+                          </h4>
+                          <div className="space-y-4">
+                             <div className="p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                                <div className="flex justify-between items-center mb-2">
+                                   <span className="text-xs font-bold text-slate-700">Quy tắc chia Ticket</span>
+                                   <ToggleRight className="w-6 h-6 text-indigo-600" />
+                                </div>
+                                <select className="w-full bg-white border border-slate-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-indigo-500/20">
+                                   <option>Xoay vòng (Round Robin)</option>
+                                   <option>Chia theo Khối lượng (Load Balance)</option>
+                                   <option>Kỹ năng (Skill-based)</option>
+                                </select>
+                             </div>
+                             
+                             <div className="p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                                <div className="flex justify-between items-center mb-2">
+                                   <span className="text-xs font-bold text-slate-700">Định tuyến Cuộc gọi OmiCall</span>
+                                   <ToggleRight className="w-6 h-6 text-indigo-600" />
+                                </div>
+                                <select className="w-full bg-white border border-slate-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-indigo-500/20">
+                                   <option>Rung tất cả máy (Ring All)</option>
+                                   <option>Theo thứ tự (Linear)</option>
+                                   <option>Thời gian rảnh lâu nhất</option>
+                                </select>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="bg-indigo-600 p-5 rounded-xl text-white shadow-lg shadow-indigo-600/20 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-10 translate-x-10" />
+                          <h4 className="font-bold mb-2 flex items-center gap-2">
+                             <PhoneCall className="w-4 h-4" /> Đồng bộ PBX (OmiCall)
+                          </h4>
+                          <p className="text-xs text-indigo-100 font-medium leading-relaxed mb-4">
+                             Hệ thống đã kết nối OmiCall. Bạn có thể gán Extension (Ext) cho từng nhân viên để nhận popup cuộc gọi ngay trên trình duyệt.
+                          </p>
+                          <button className="w-full py-2 bg-white text-indigo-600 font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+                             Quản lý Ext (SIP)
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           )}
+
+           {activeTab === 'config' && (
+              <div className="p-6 bg-slate-50 min-h-[600px]">
+                 <div className="flex items-center justify-between mb-8">
+                    <div>
+                       <h3 className="font-bold text-slate-800 text-xl flex items-center gap-2">
+                          <Settings className="w-6 h-6 text-slate-600" /> Cấu hình Kênh & Tích hợp (Omni-channel)
+                       </h3>
+                       <p className="text-sm text-slate-500 mt-1">Kết nối và quản lý các kênh giao tiếp với khách hàng tại một nơi.</p>
+                    </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Fanpage Config */}
+                    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col">
+                       <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                <Facebook className="w-6 h-6" />
+                             </div>
+                             <div>
+                                <h4 className="font-bold text-slate-800 text-lg">Facebook Fanpage</h4>
+                                <p className="text-xs text-slate-500">Đồng bộ tin nhắn & bình luận</p>
+                             </div>
+                          </div>
+                          <ToggleRight className="w-8 h-8 text-blue-600 shrink-0 cursor-pointer" />
+                       </div>
+                       
+                       <div className="space-y-4 mb-6 flex-1">
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center">
+                             <div className="flex items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name=VComm+Store&background=random" alt="" className="w-8 h-8 rounded-full" />
+                                <div>
+                                   <p className="text-sm font-bold text-slate-800">VComm Official Store</p>
+                                   <p className="text-[10px] text-emerald-600 font-bold">Đã kết nối</p>
+                                </div>
+                             </div>
+                             <button className="text-xs text-red-600 font-bold hover:underline">Hủy kết nối</button>
+                          </div>
+                       </div>
+                       
+                       <button className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 font-bold text-sm hover:border-blue-500 hover:text-blue-600 transition-all flex justify-center items-center gap-2">
+                          <Plus className="w-4 h-4" /> Thêm Fanpage mới
+                       </button>
+                    </div>
+
+                    {/* Zalo OA Config */}
+                    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col">
+                       <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+                                <MessageSquare className="w-6 h-6" />
+                             </div>
+                             <div>
+                                <h4 className="font-bold text-slate-800 text-lg">Zalo Official Account</h4>
+                                <p className="text-xs text-slate-500">Gửi ZNS & chat với khách hàng</p>
+                             </div>
+                          </div>
+                          <ToggleRight className="w-8 h-8 text-blue-500 shrink-0 cursor-pointer" />
+                       </div>
+                       
+                       <div className="space-y-4 mb-6 flex-1">
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center opacity-70 grayscale">
+                             <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-400">Z</div>
+                                <div>
+                                   <p className="text-sm font-bold text-slate-800">Chưa kết nối OA nào</p>
+                                   <p className="text-[10px] text-slate-500 font-bold">Cần cấu hình API OA</p>
+                                </div>
+                             </div>
+                          </div>
+                          <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 flex items-start gap-2">
+                             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                             <p>Vui lòng tạo Zalo App và cấp quyền truy cập Zalo OA trước khi kết nối vào hệ thống.</p>
+                          </div>
+                       </div>
+                       
+                       <button className="w-full py-2.5 bg-blue-500 text-white rounded-lg font-bold text-sm hover:bg-blue-600 transition-all flex justify-center items-center gap-2 shadow-sm">
+                          <Plug className="w-4 h-4" /> Kết nối Zalo OA
+                       </button>
+                    </div>
+
+                    {/* Web Livechat Widget */}
+                    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col lg:col-span-2">
+                       <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                                <Code2 className="w-6 h-6" />
+                             </div>
+                             <div>
+                                <h4 className="font-bold text-slate-800 text-lg">Mã nhúng Livechat Website</h4>
+                                <p className="text-xs text-slate-500">Chèn widget chat trực tiếp lên website của bạn</p>
+                             </div>
+                          </div>
+                          <ToggleRight className="w-8 h-8 text-indigo-600 shrink-0 cursor-pointer" />
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div>
+                             <h5 className="text-xs font-bold text-slate-700 uppercase mb-3">Tùy chỉnh giao diện</h5>
+                             <div className="space-y-4">
+                                <div>
+                                   <label className="text-xs font-bold text-slate-600 block mb-1.5">Màu chủ đạo (Hex code)</label>
+                                   <div className="flex gap-2">
+                                      <input type="color" value="#4F46E5" readOnly className="w-8 h-8 rounded border-none cursor-pointer" />
+                                      <input type="text" value="#4F46E5" readOnly className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1 font-mono text-sm text-slate-600" />
+                                   </div>
+                                </div>
+                                <div>
+                                   <label className="text-xs font-bold text-slate-600 block mb-1.5">Lời chào mặc định</label>
+                                   <input type="text" value="Chào bạn, VComm có thể giúp gì cho bạn?" readOnly className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" />
+                                </div>
+                             </div>
+                          </div>
+                          
+                          <div>
+                             <h5 className="text-xs font-bold text-slate-700 uppercase mb-3">Copy JavaScript Snippet</h5>
+                             <div className="relative">
+                                <pre className="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto">
+{`<script>
+  window.VCommChatOptions = {
+    appId: "vcomm_live_9a8b7c6d",
+    color: "#4F46E5",
+    greeting: "Chào bạn..."
+  };
+</script>
+<script src="https://cdn.vcomm.io/chat.js" async></script>`}
+                                </pre>
+                                <button className="absolute top-2 right-2 bg-white/10 hover:bg-white/20 text-white rounded p-1.5 transition-all text-[10px] font-bold">Copy Code</button>
+                             </div>
+                             <p className="text-[10px] text-slate-500 mt-2 italic">* Chèn đoạn mã này vào thẻ &lt;head&gt; hoặc trước thẻ đóng &lt;/body&gt; trên website của bạn.</p>
+                          </div>
+                       </div>
                     </div>
                  </div>
               </div>

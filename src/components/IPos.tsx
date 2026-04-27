@@ -33,6 +33,7 @@ import {
   Grid3x3,
   Coffee,
   ShieldCheck,
+  Shield,
   Users,
   Settings2,
   Key,
@@ -47,7 +48,8 @@ import {
   Download,
   Calendar,
   Layers,
-  LayoutDashboard
+  LayoutDashboard,
+  Mic
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -86,7 +88,7 @@ import { useAuth } from '../context/AuthContext';
 import { useStore } from '../context/StoreContext';
 import { sePayService } from '../services/sepayService';
 
-import { posSyncService } from '../services/posSyncService';
+
 import { StoreSelector } from './StoreSelector';
 import { IPosStaff, IPosStore } from '../types/erp';
 
@@ -330,7 +332,7 @@ export function IPosModule() {
       // In a real app we'd use Algolia or Typesense for multi-field search. 
       // For this demo, we fetch a limited set and filter client-side.
       const q = query(
-        collection(db, 'pos_customers'), 
+        collection(db, 'customers'), 
         limit(100)
       );
       const snap = await getDocs(q);
@@ -352,15 +354,21 @@ export function IPosModule() {
 
   // Real-time products
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'pos_products'), (snap) => {
+    if (!activeStore) return;
+    const q = query(
+      collection(db, 'pos_products'),
+      where('companyId', '==', activeStore.companyId)
+    );
+    const unsub = onSnapshot(q, (snap) => {
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setProducts(data);
       if (data.length === 0) seedDemoProducts();
     });
     return () => unsub();
-  }, []);
+  }, [activeStore]);
   
   const seedDemoProducts = async () => {
+    if (!activeStore) return;
     console.log("Seeding demo products...");
     const demoItems = [
       { name: 'Cafe Phin Sữa Đá', price: 35000, category: 'Đồ uống', stock: 100, image: 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=400&q=80' },
@@ -373,6 +381,7 @@ export function IPosModule() {
     for (const item of demoItems) {
       await addDoc(collection(db, 'pos_products'), {
         ...item,
+        companyId: activeStore.companyId,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -603,7 +612,7 @@ export function IPosModule() {
     let discrepancyMsg = null;
     
     if (extOrder.targetPhone) {
-       const q = query(collection(db, 'pos_customers'), where('phone', '==', extOrder.targetPhone));
+       const q = query(collection(db, 'customers'), where('phone', '==', extOrder.targetPhone));
        const snap = await getDocs(q);
        if (!snap.empty) {
           matchedCustomer = { id: snap.docs[0].id, ...snap.docs[0].data() } as any;
@@ -633,7 +642,7 @@ export function IPosModule() {
       // Auto save new external customer to CRM if they don't exist
       if (customer && customer.isNewFromExternal && !customer.id) {
          try {
-           const newCustRef = await addDoc(collection(db, 'pos_customers'), {
+           const newCustRef = await addDoc(collection(db, 'customers'), {
              name: customer.name,
              phone: customer.phone,
              points: 0,
@@ -647,6 +656,9 @@ export function IPosModule() {
 
       const orderData = {
         staffId: user.uid,
+        storeId: activeStore.id,
+        companyId: activeStore.companyId,
+        source: 'ipos',
         customerName: customer?.name || 'Khách lẻ',
         customerId: finalCustomerId,
         items: cart.map(i => ({ productId: i.id, name: i.name, price: i.price, quantity: i.quantity })),
@@ -690,6 +702,8 @@ export function IPosModule() {
            amount: total,
            category: 'Bán lẻ iPOS',
            description: `Đơn hàng iPOS ${customer?.name || 'Khách lẻ'} - TT Bằng ${paymentMethod}`,
+           storeId: activeStore.id,
+           companyId: activeStore.companyId,
            createdAt: serverTimestamp()
          });
       }
@@ -757,7 +771,9 @@ export function IPosModule() {
       notes: handoverNote,
       previousStaffName: selectedStaff?.name || user?.displayName || 'Nhân viên ca trước',
       createdAt: serverTimestamp(),
-      staffId: user?.uid
+      staffId: user?.uid,
+      storeId: activeStore?.id,
+      companyId: activeStore?.companyId
     };
 
     setPendingHandover(handoverData as any);
@@ -807,6 +823,7 @@ export function IPosModule() {
           ...staffData,
           id: `STF-${Date.now()}`,
           assignedStoreId: activeStore.id,
+          companyId: activeStore.companyId,
           status: 'active',
           createdAt: serverTimestamp()
         };
@@ -1363,43 +1380,42 @@ export function IPosModule() {
       )}
 
       {/* Header - Refined with better depth and hierarchy */}
-      <div className="flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200/60 shadow-sm backdrop-blur-sm sticky top-0 z-50">
+      <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
              onClick={() => window.location.href = '/'}
-             className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all border border-slate-100 group"
+             className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-all border border-slate-100 group"
              title="Trở về Trung tâm ERP"
           >
              <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
           </button>
           
           <div className="flex items-center gap-3.5 border-r border-slate-100 pr-5">
-             <div className="w-11 h-11 bg-indigo-600 text-white rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200 relative overflow-hidden group">
-                <Monitor className="w-5 h-5 relative z-10" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-700/50 to-transparent group-hover:scale-110 transition-transform" />
+             <div className="w-11 h-11 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-md relative overflow-hidden group">
+                <Store className="w-5 h-5 relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-700/50 to-transparent group-hover:scale-110 transition-transform" />
                 <div className={cn(
                   "absolute -top-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full shadow-sm z-20",
                   isOffline ? "bg-rose-500 animate-pulse" : "bg-emerald-500"
                 )} />
              </div>
              <div>
-                <h1 className="text-base font-black text-slate-900 leading-none tracking-tight">iPos Terminal</h1>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.1em] mt-1.5 flex items-center gap-2">
-                   <Store className="w-3 h-3" />
-                   {activeStore?.name} <span className="opacity-30">•</span> <span className={isOffline ? "text-rose-500" : "text-emerald-500"}>{isOffline ? 'OFFLINE' : 'LIVE'}</span>
+                <h1 className="text-base font-bold text-slate-900 leading-none tracking-tight">iPOS Terminal</h1>
+                <p className="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
+                   {activeStore?.name} <span className="opacity-30">•</span> <span className={isOffline ? "text-rose-500 font-bold" : "text-emerald-500 font-bold"}>{isOffline ? 'OFFLINE' : 'LIVE'}</span>
                 </p>
              </div>
           </div>
 
           <div className="hidden xl:flex gap-8 pl-3">
-             <div className="space-y-1.5">
-                <p className="text-[9px] uppercase font-bold text-slate-400 tracking-[0.2em] ml-1">Thu ngân vận hành</p>
+             <div className="space-y-1">
+                <p className="text-[10px] text-slate-500 font-medium ml-1">Thu ngân vận hành</p>
                 <div className="flex items-center gap-2.5 group">
-                   <div className="w-6 h-6 bg-indigo-50 rounded-lg flex items-center justify-center text-[10px] font-black text-indigo-600 border border-indigo-100 shadow-sm transition-transform group-hover:scale-110">
+                   <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center text-xs font-bold text-blue-600 border border-blue-100 shadow-sm transition-transform group-hover:scale-105">
                       {(selectedStaff?.name || user?.displayName || user?.email || 'N').charAt(0).toUpperCase()}
                    </div>
                    <select 
-                      className="text-xs font-black text-slate-700 bg-transparent outline-none cursor-pointer hover:text-indigo-600 transition-colors"
+                      className="text-sm font-bold text-slate-700 bg-transparent outline-none cursor-pointer hover:text-blue-600 transition-colors"
                       value={selectedStaff?.id || user?.uid}
                       onChange={(e) => setSelectedStaff({ id: e.target.value, name: e.target.options[e.target.selectedIndex].text })}
                     >
@@ -1410,12 +1426,12 @@ export function IPosModule() {
           </div>
         </div>
 
-        <div className="flex bg-slate-50/80 p-1 rounded-lg mx-4 self-stretch border border-slate-100 shadow-inner hidden xl:flex">
+        <div className="flex bg-slate-50/80 p-1.5 rounded-xl mx-4 self-stretch border border-slate-100 hidden xl:flex">
           <button 
             onClick={() => setActiveTab('dashboard')}
             className={cn(
-              "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5",
-              activeTab === 'dashboard' ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+              "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+              activeTab === 'dashboard' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <LayoutDashboard className="w-4 h-4" /> Tổng quan
@@ -1423,8 +1439,8 @@ export function IPosModule() {
           <button 
             onClick={() => setActiveTab('sales')}
             className={cn(
-              "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5",
-              activeTab === 'sales' ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+              "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+              activeTab === 'sales' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <ShoppingCart className="w-4 h-4" /> Bán hàng
@@ -1432,8 +1448,8 @@ export function IPosModule() {
           <button 
             onClick={() => setActiveTab('tables' as any)}
             className={cn(
-              "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5",
-              activeTab === 'tables' as any ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+              "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+              activeTab === 'tables' as any ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <Grid3x3 className="w-4 h-4" /> Sơ đồ bàn
@@ -1442,8 +1458,8 @@ export function IPosModule() {
             <button 
               onClick={() => setActiveTab('management')}
               className={cn(
-                "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5",
-                activeTab === 'management' ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+                "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+                activeTab === 'management' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
               )}
             >
               <ShieldCheck className="w-4 h-4" /> Quản trị
@@ -1452,20 +1468,20 @@ export function IPosModule() {
           <button 
             onClick={() => setActiveTab('delivery')}
             className={cn(
-              "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5 relative",
-              activeTab === 'delivery' ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+              "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 relative",
+              activeTab === 'delivery' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <Building2 className="w-4 h-4" /> Đối tác Giao hàng
             {incomingExternalOrders.length > 0 && (
-               <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[8px] flex items-center justify-center rounded-full animate-pulse">{incomingExternalOrders.length}</span>
+               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full animate-pulse">{incomingExternalOrders.length}</span>
             )}
           </button>
           <button 
             onClick={() => setActiveTab('lookup')}
             className={cn(
-              "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5",
-              activeTab === 'lookup' ? "bg-white text-indigo-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+              "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+              activeTab === 'lookup' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <Search className="w-4 h-4" /> Tra cứu
@@ -1473,45 +1489,43 @@ export function IPosModule() {
         </div>
 
         <div className="flex gap-3 items-center">
-          <div className="flex gap-1.5 px-2 py-1.5 bg-slate-50 rounded-lg border border-slate-100 shadow-inner mr-2">
+          <div className="flex gap-1.5 px-1.5 py-1.5 bg-slate-50 rounded-xl border border-slate-100 mr-2">
             <button 
               onClick={startListening}
               className={cn(
                 "w-9 h-9 rounded-lg transition-all flex items-center justify-center relative",
-                isListening ? "bg-rose-500 text-white shadow-lg animate-pulse ring-4 ring-rose-100" : "bg-white text-slate-400 hover:text-indigo-600 hover:shadow-md border border-slate-100"
+                isListening ? "bg-rose-500 text-white shadow-md animate-pulse ring-2 ring-rose-100" : "bg-white text-slate-500 hover:text-blue-600 hover:shadow-sm border border-slate-200"
               )}
             >
-              <Monitor className="w-4.5 h-4.5" />
+              <Mic className="w-4 h-4" />
             </button>
             <button 
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-9 h-9 bg-white text-slate-400 rounded-lg hover:text-amber-500 hover:shadow-md transition-all border border-slate-100 flex items-center justify-center"
+              className="w-9 h-9 bg-white text-slate-500 rounded-lg hover:text-amber-500 hover:shadow-sm transition-all border border-slate-200 flex items-center justify-center"
             >
-               {isDarkMode ? <Sparkles className="w-4.5 h-4.5 text-amber-500" /> : <Monitor className="w-4.5 h-4.5" />}
+               {isDarkMode ? <Sparkles className="w-4 h-4 text-amber-500" /> : <Monitor className="w-4 h-4" />}
             </button>
           </div>
 
           <button 
             onClick={() => setActiveTab(activeTab === 'sales' ? 'history' : 'sales')}
             className={cn(
-              "px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5 relative border",
-              activeTab === 'history' ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200" : "bg-white text-slate-500 hover:border-indigo-200 border-slate-200 hover:text-indigo-600 shadow-sm"
+              "px-4 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
+              activeTab === 'history' ? "bg-slate-900 text-white shadow-md" : "bg-white text-slate-600 hover:border-blue-200 border border-slate-200 hover:text-blue-600"
             )}
           >
             {activeTab === 'history' ? <ShoppingCart className="w-4 h-4" /> : <History className="w-4 h-4" />}
-            {activeTab === 'history' ? 'Trở về' : 'Lịch sử'}
+            {activeTab === 'history' ? 'Bán hàng' : 'Lịch sử'}
             {pendingEMenuOrders.length > 0 && activeTab !== 'history' && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-md animate-bounce">
-                {pendingEMenuOrders.length}
-              </span>
+              <span className="ml-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">{pendingEMenuOrders.length}</span>
             )}
           </button>
           
           <button 
             onClick={toggleShift}
-            className="bg-rose-600 text-white px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 active:scale-95 border border-rose-600"
+            className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
           >
-            KẾT CA
+            <Clock className="w-4 h-4" /> Kết Ca
           </button>
         </div>
       </div>
@@ -1525,7 +1539,7 @@ export function IPosModule() {
                     <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Hệ thống iPOS đã sẵn sàng vận hành • {new Date().toLocaleDateString('vi-VN')}</p>
                  </div>
                  <div className="flex gap-3">
-                    <button onClick={() => setActiveTab('sales')} className="flex items-center gap-2.5 px-8 py-4 bg-indigo-600 text-white rounded-lg font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:scale-105 transition-all active:scale-95">
+                    <button onClick={() => setActiveTab('sales')} className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95">
                        <Plus className="w-4 h-4" /> Bán hàng ngay
                     </button>
                  </div>
@@ -1538,27 +1552,27 @@ export function IPosModule() {
                     { label: 'Khách hàng mới', value: '18', icon: Users, trend: '+5', color: 'text-blue-600', bg: 'bg-blue-50' },
                     { label: 'Lượt đánh giá', value: '4.8/5', icon: Sparkles, trend: '98%', color: 'text-amber-600', bg: 'bg-amber-50' }
                  ].map((card, i) => (
-                    <div key={card.label} className="bg-white p-6 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                    <div key={card.label} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
                        <div className="flex justify-between items-start mb-4">
-                          <div className={cn("p-3 rounded-lg", card.bg, card.color)}>
+                          <div className={cn("p-3 rounded-xl", card.bg, card.color)}>
                              <card.icon className="w-6 h-6" />
                           </div>
-                          <span className="text-[10px] font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">{card.trend}</span>
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">{card.trend}</span>
                        </div>
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{card.label}</p>
+                       <p className="text-xs font-semibold text-slate-500 mb-1">{card.label}</p>
                        <p className="text-2xl font-black text-slate-900 tracking-tight leading-none">{card.value}</p>
                     </div>
                  ))}
               </div>
 
               {/* Delivery Channel Live Monitor */}
-              <div className="bg-white rounded-lg border border-slate-100 shadow-sm p-8">
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8">
                  <div className="flex items-center justify-between mb-8">
-                    <h3 className="font-extrabold text-slate-900 flex items-center gap-3">
+                    <h3 className="font-bold text-slate-900 flex items-center gap-3">
                        <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh Giao hàng (Live)
                     </h3>
                     <div className="flex gap-2">
-                       <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                       <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold flex items-center gap-2">
                           <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Connected
                        </span>
                     </div>
@@ -1569,19 +1583,19 @@ export function IPosModule() {
                        { id: 'be', name: 'BeFood', color: 'bg-yellow-400', icon: 'Be', stats: deliveryChannelStatus.be },
                        { id: 'gsm', name: 'Green SM', color: 'bg-emerald-400', icon: 'GSM', stats: deliveryChannelStatus.gsm }
                     ].map((ch) => (
-                       <div key={ch.id} className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-md transition-all">
+                       <div key={ch.id} className="p-6 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-md hover:border-slate-200 transition-all">
                           <div className="flex items-center gap-4">
-                             <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center text-white font-black text-xs", ch.color)}>
+                             <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm", ch.color)}>
                                 {ch.icon}
                              </div>
                              <div>
-                                <p className="text-sm font-black text-slate-900">{ch.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{ch.stats.online ? 'Online' : 'Offline'}</p>
+                                <p className="text-sm font-bold text-slate-900">{ch.name}</p>
+                                <p className="text-xs font-medium text-slate-500">{ch.stats.online ? 'Online' : 'Offline'}</p>
                              </div>
                           </div>
                           <div className="text-right">
-                             <p className="text-lg font-black text-indigo-600 leading-none">{ch.stats.activeDrivers}</p>
-                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tài xế gần đây</p>
+                             <p className="text-lg font-black text-blue-600 leading-none">{ch.stats.activeDrivers}</p>
+                             <p className="text-[10px] font-medium text-slate-500 mt-1">Tài xế gần đây</p>
                           </div>
                        </div>
                     ))}
@@ -1589,10 +1603,10 @@ export function IPosModule() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                 <div className="lg:col-span-2 bg-white rounded-lg border border-slate-100 shadow-sm p-8">
+                 <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8">
                     <div className="flex items-center justify-between mb-8">
-                       <h3 className="font-extrabold text-slate-900 flex items-center gap-3">
-                          <Zap className="w-5 h-5 text-indigo-600" /> Hoạt động Bán hàng (Live)
+                       <h3 className="font-bold text-slate-900 flex items-center gap-3">
+                          <Zap className="w-5 h-5 text-blue-600" /> Hoạt động Bán hàng (Live)
                        </h3>
                     </div>
                     <div className="h-[320px] w-full">
@@ -1615,24 +1629,24 @@ export function IPosModule() {
                  </div>
 
                  <div className="space-y-6">
-                    <div className="bg-indigo-600 rounded-lg p-8 text-white relative overflow-hidden shadow-xl shadow-indigo-200 group">
+                    <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white relative overflow-hidden shadow-lg shadow-blue-600/20 group">
                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
                        <div className="relative z-10 space-y-6">
                           <div className="space-y-2">
-                             <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Trạng thái Cửa hàng</p>
-                             <h4 className="text-xl font-black">{isShiftActive ? 'Đang trong phiên làm việc' : 'Đã đóng ca'}</h4>
+                             <p className="text-xs font-semibold text-blue-200">Trạng thái Cửa hàng</p>
+                             <h4 className="text-xl font-bold">{isShiftActive ? 'Đang hoạt động' : 'Đã đóng ca'}</h4>
                           </div>
                           <div className="flex items-center gap-3">
                              <div className="flex -space-x-2">
                                 {[1, 2, 3].map(i => (
-                                   <div key={i} className="w-8 h-8 rounded-full border-2 border-indigo-600 bg-indigo-400 flex items-center justify-center text-[10px] font-bold">
+                                   <div key={i} className="w-8 h-8 rounded-full border-2 border-blue-600 bg-blue-500 flex items-center justify-center text-[10px] font-bold">
                                       {i}
                                    </div>
                                 ))}
                              </div>
-                             <span className="text-[10px] font-bold text-indigo-100">3 nhân viên đang Online</span>
+                             <span className="text-[10px] font-medium text-blue-100">3 nhân viên đang Online</span>
                           </div>
-                          <button onClick={() => { setActiveTab('management'); setMgmtSubTab('revenue'); }} className="w-full py-3.5 bg-white text-indigo-600 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95">Xem báo cáo chi tiết</button>
+                          <button onClick={() => { setActiveTab('management'); setMgmtSubTab('revenue'); }} className="w-full py-3 bg-white text-blue-700 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Xem báo cáo</button>
                        </div>
                     </div>
 
@@ -1662,24 +1676,24 @@ export function IPosModule() {
             <div className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
               <div className="flex gap-4 shrink-0 transition-all">
                   {/* Product Search & Categories - Refined with Glass effect */}
-                <div className="bg-white rounded-lg border border-slate-200/60 shadow-sm p-3.5 flex-1 flex flex-col items-center gap-4">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 flex-1 flex flex-col items-center gap-4">
                   <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
                     <div className="relative flex-1 w-full">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input 
                         type="text" 
                         placeholder="Tìm món, mã SKU hoặc ID..." 
-                        className="w-full bg-slate-50/80 border border-slate-100 rounded-lg pl-11 pr-4 py-3.5 text-xs font-black uppercase tracking-wider focus:outline-none focus:border-indigo-400 focus:bg-white transition-all shadow-inner placeholder:text-slate-300 placeholder:font-bold"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
                     <button 
                       onClick={() => setIsScannerOpen(true)}
-                      className="h-[52px] bg-slate-900 text-white px-6 rounded-lg flex items-center gap-3 hover:bg-indigo-600 transition-all shadow-lg shadow-slate-200 active:scale-95 group w-full sm:w-auto justify-center shrink-0"
+                      className="h-[52px] bg-slate-900 text-white px-6 rounded-xl flex items-center gap-3 hover:bg-slate-800 transition-all shadow-md active:scale-95 group w-full sm:w-auto justify-center shrink-0"
                     >
                       <ScanLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Quét mã</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Quét mã</span>
                     </button>
                   </div>
                   
@@ -1688,8 +1702,8 @@ export function IPosModule() {
                       <button 
                         key={cat} 
                         className={cn(
-                          "px-6 py-2.5 whitespace-nowrap rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 border",
-                          idx === 0 ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100" : "bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-white border-slate-50 hover:border-indigo-100"
+                          "px-5 py-2.5 whitespace-nowrap rounded-lg text-xs font-bold transition-all active:scale-95 border",
+                          idx === 0 ? "bg-slate-900 text-white border-slate-900 shadow-md" : "bg-slate-50 text-slate-500 hover:text-blue-600 hover:bg-white border-slate-200"
                         )}
                       >
                         {cat}
@@ -1700,7 +1714,7 @@ export function IPosModule() {
               </div>
 
               {/* Product Grid - Refined with better rhythm and card design */}
-              <div className="flex-1 bg-white rounded-lg border border-slate-200/60 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+              <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 gap-y-8">
                   {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).map(product => (
                     <div 
@@ -1712,7 +1726,7 @@ export function IPosModule() {
                          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
                       />
                       
-                      <div className="aspect-[4/4.5] bg-slate-50 rounded-lg border border-slate-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-indigo-200 group-active:scale-95">
+                      <div className="aspect-[4/4.5] bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-blue-200 group-active:scale-95">
                          <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
                          
                          {/* Image or Placeholder */}
@@ -1736,12 +1750,12 @@ export function IPosModule() {
                          </div>
 
                          <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <div className="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center shadow-lg">
+                            <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg">
                                <Plus className="w-5 h-5" />
                             </div>
                             <button 
                               onClick={(e) => { e.stopPropagation(); setSelectedProductLookup(product); setActiveTab('lookup'); }}
-                              className="w-8 h-8 bg-white/90 backdrop-blur-md text-slate-400 hover:text-indigo-600 rounded-lg flex items-center justify-center border border-slate-200 shadow-sm relative z-20"
+                              className="w-8 h-8 bg-white/90 backdrop-blur-md text-slate-400 hover:text-blue-600 rounded-lg flex items-center justify-center border border-slate-200 shadow-sm relative z-20"
                             >
                                <Search className="w-3.5 h-3.5" />
                             </button>
@@ -1775,15 +1789,15 @@ export function IPosModule() {
                         <h4 className="font-bold text-sm text-slate-900">Gợi ý thông minh cho đơn hàng này</h4>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {products.filter(p => !cart.find(ci => ci.id === p.id)).slice(0, 4).map(product => (
-                        <div key={product.id} className="bg-indigo-50/50 border border-dashed border-indigo-200 rounded-lg p-4 flex flex-col gap-3 group hover:bg-white hover:border-solid hover:border-indigo-500 hover:shadow-xl transition-all">
-                          <p className="text-[10px] font-bold text-slate-800 line-clamp-1">{product.name}</p>
+                        <div key={product.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-lg transition-all">
+                          <p className="text-sm font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">{product.name}</p>
                           <div className="flex justify-between items-center">
-                            <p className="text-xs font-bold text-indigo-600">{formatCurrency(product.price)}</p>
+                            <p className="text-[13px] font-bold text-slate-600">{formatCurrency(product.price)}</p>
                             <button 
                               onClick={() => addToCart(product)}
-                              className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-md active:scale-95"
+                              className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm active:scale-95"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -1880,47 +1894,47 @@ export function IPosModule() {
                         onClick={() => setShowCustomerSearch(true)}
                         className="w-full flex items-center gap-4 group transition-all"
                       >
-                        <div className="w-12 h-12 bg-slate-50 text-slate-300 rounded-lg flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all border-2 border-dashed border-slate-200 group-hover:border-indigo-200">
+                        <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-all border border-dashed border-slate-200 group-hover:border-blue-200">
                           <Plus className="w-5 h-5" />
                         </div>
                         <div className="text-left flex-1">
-                          <p className="font-black text-slate-700 text-xs uppercase tracking-widest group-hover:text-indigo-600 transition-colors">Đăng ký thành viên</p>
-                          <p className="text-[10px] text-slate-400 font-bold mt-1 tracking-tight">Tích điểm • Nhận ưu đãi • Lịch sử mua hàng</p>
+                          <p className="font-bold text-slate-700 text-sm group-hover:text-blue-600 transition-colors">Khách hàng mới</p>
+                          <p className="text-xs text-slate-500 mt-1">Tích điểm • Nhận số ĐT</p>
                         </div>
                       </button>
                     )}
                  </div>
 
-                 <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
-                    <div className="p-5 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center shrink-0">
-                      <div className="flex items-center gap-3.5">
-                         <div className="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center shadow-lg shadow-indigo-100">
+                 <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
+                    <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+                      <div className="flex items-center gap-3">
+                         <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-sm">
                             <ShoppingCart className="w-5 h-5" />
                          </div>
                          <div>
-                            <h3 className="font-black text-slate-900 uppercase tracking-[0.2em] text-[10px]">Đơn hàng hiện tại</h3>
-                            <p className="text-[9px] text-indigo-600 font-black uppercase mt-1 tracking-widest">{cart.reduce((a, b) => a + b.quantity, 0)} món</p>
+                            <h3 className="font-bold text-slate-900 text-sm">Đơn hàng hiện tại</h3>
+                            <p className="text-xs text-blue-600 font-bold mt-0.5">{cart.reduce((a, b) => a + b.quantity, 0)} món</p>
                          </div>
                       </div>
                       <div className="flex gap-2">
-                         <button onClick={holdCart} className="w-9 h-9 bg-white border border-slate-200 text-slate-400 rounded-lg hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center">
+                         <button onClick={holdCart} className="w-9 h-9 bg-white border border-slate-200 text-slate-500 rounded-lg hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center">
                             <Save className="w-4 h-4" />
                          </button>
-                         <button onClick={() => { setCart([]); setCustomer(null); setIsReturnMode(false); }} className="w-9 h-9 bg-white border border-slate-200 text-rose-400 rounded-lg hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center">
+                         <button onClick={() => { setCart([]); setCustomer(null); setIsReturnMode(false); }} className="w-9 h-9 bg-white border border-slate-200 text-rose-500 rounded-lg hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center">
                             <Trash2 className="w-4 h-4" />
                          </button>
                       </div>
                     </div>
 
                     {/* Mode Switcher */}
-                    <div className="flex p-1 bg-slate-100 mx-6 mt-4 rounded-lg shrink-0">
+                    <div className="flex p-1 bg-slate-100 mx-5 mt-5 rounded-xl shrink-0 border border-slate-200/50">
                        <button 
                         onClick={() => { setIsReturnMode(false); setReturnReason(''); }}
-                        className={cn("flex-1 py-2.5 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all", !isReturnMode ? "bg-white text-indigo-600 shadow-md" : "text-slate-500 hover:text-slate-700")}
+                        className={cn("flex-1 py-1.5 text-xs font-bold rounded-lg transition-all", !isReturnMode ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200/50 text-sm py-2" : "text-slate-500 hover:text-slate-700")}
                        >Bán hàng</button>
                        <button 
                         onClick={() => setIsReturnMode(true)}
-                        className={cn("flex-1 py-2.5 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all", isReturnMode ? "bg-rose-600 text-white shadow-md" : "text-slate-500 hover:text-slate-700")}
+                        className={cn("flex-1 py-1.5 text-xs font-bold rounded-lg transition-all", isReturnMode ? "bg-rose-500 text-white shadow-sm text-sm py-2" : "text-slate-500 hover:text-slate-700")}
                        >Đổi trả</button>
                     </div>
 
@@ -1940,16 +1954,16 @@ export function IPosModule() {
                        </div>
                     )}
 
-                    <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-slate-50/20">
+                    <div className="flex-1 p-4 space-y-3 overflow-y-auto custom-scrollbar bg-slate-50/20">
                       {cart.map((item) => (
-                        <div key={item.id} className="flex justify-between items-center animate-in slide-in-from-right-4 bg-white p-4 rounded-lg border border-slate-200/50 relative group transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/40 hover:border-indigo-100">
-                          {isReturnMode && <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-2xl" />}
+                        <div key={item.id} className="flex justify-between items-center animate-in slide-in-from-right-4 bg-white p-4 rounded-xl border border-slate-200/50 relative group transition-all duration-300 hover:shadow-lg hover:border-blue-100">
+                          {isReturnMode && <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />}
                           <div className="flex-1 pr-3">
-                            <p className="font-bold text-slate-800 text-[13px] leading-snug mb-1 group-hover:text-indigo-600 transition-colors line-clamp-1">{item.name}</p>
+                            <p className="font-bold text-slate-800 text-[13px] leading-snug mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">{item.name}</p>
                             <div className="flex items-center gap-1.5">
                                <p className="text-[10px] text-slate-400 font-bold tracking-tight">{formatCurrency(item.price)}</p>
                                <span className="text-[8px] text-slate-300">•</span>
-                               <span className="text-[9px] text-indigo-400 font-black uppercase tracking-widest">SKU-{item.id.slice(-4).toUpperCase()}</span>
+                               <span className="text-[9px] text-blue-400 font-black uppercase tracking-widest">SKU-{item.id.slice(-4).toUpperCase()}</span>
                             </div>
                             <div className="flex items-center gap-5 mt-4 bg-slate-50 w-fit p-1 rounded-lg border border-slate-100">
                               <button 
@@ -1961,7 +1975,7 @@ export function IPosModule() {
                               <span className="text-xs font-black w-4 text-center text-slate-700">{item.quantity}</span>
                               <button 
                                 onClick={() => updateQuantity(item.id, 1)}
-                                className="w-8 h-8 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:text-indigo-600 hover:border-indigo-200 transition-all active:scale-90"
+                                className="w-8 h-8 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -1998,45 +2012,41 @@ export function IPosModule() {
                       )}
                     </div>
 
-                    <div className="p-6 bg-white border-t border-slate-100 space-y-6 shadow-[0_-10px_30px_rgba(0,0,0,0.02)] shrink-0">
-                      <div className="space-y-3.5">
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Tạm tính</span>
-                          <span className="text-xs font-bold text-slate-600">{formatCurrency(subtotal)}</span>
+                    <div className="p-6 bg-white border-t border-slate-100 space-y-5 rounded-b-2xl shrink-0">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span className="text-xs font-semibold uppercase tracking-wider">Tạm tính</span>
+                          <span className="text-sm font-bold text-slate-700">{formatCurrency(subtotal)}</span>
                         </div>
                         {discount > 0 && (
                           <div className="flex justify-between items-center text-rose-500 animate-in fade-in slide-in-from-right-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5">
-                               <BadgePercent className="w-3.5 h-3.5" /> Giảm giá (10%)
+                            <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                               <BadgePercent className="w-4 h-4" /> Giảm giá
                             </span>
-                            <span className="text-xs font-black">-{formatCurrency(discount)}</span>
+                            <span className="text-sm font-bold">-{formatCurrency(discount)}</span>
                           </div>
                         )}
                         
-                        <div className="bg-slate-900 rounded-[1.25rem] p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-2xl shadow-indigo-100">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/30 via-transparent to-transparent opacity-50" />
+                        <div className="bg-slate-900 rounded-2xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-md mt-2">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/30 via-transparent to-transparent opacity-50" />
                             <div className="relative z-10">
-                               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/50 mb-1">Cần thanh toán</p>
+                               <p className="text-xs font-semibold text-white/70 mb-1">Cần thanh toán</p>
                                <p className="text-3xl font-black tracking-tight">{isReturnMode ? '-' : ''}{formatCurrency(total)}</p>
                             </div>
-                            <div className="relative z-10 h-10 w-10 bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10 group-hover:bg-indigo-600 transition-colors">
+                            <div className="relative z-10 h-10 w-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10 group-hover:bg-blue-600 transition-colors">
                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3.5">
-                        <button className="h-[64px] bg-slate-50 border border-slate-100 hover:border-indigo-600 hover:bg-indigo-50/50 rounded-[1.25rem] flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
-                           <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100 group-hover:text-indigo-600 group-hover:border-indigo-200 transition-all">
-                              <CreditCard className="w-4.5 h-4.5" />
-                           </div>
-                           <span className="text-[10px] uppercase text-slate-800 font-black tracking-widest">Thao tác Thẻ</span>
+                      <div className="grid grid-cols-2 gap-3 pb-2 border-b border-slate-100">
+                        <button className="h-[60px] bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 rounded-xl flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
+                           <CreditCard className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
+                           <span className="text-xs font-bold text-slate-700">Quẹt Thẻ</span>
                         </button>
-                        <button className="h-[64px] bg-slate-50 border border-slate-100 hover:border-indigo-600 hover:bg-indigo-50/50 rounded-[1.25rem] flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
-                           <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100 group-hover:text-indigo-600 group-hover:border-indigo-200 transition-all">
-                              <QrCode className="w-4.5 h-4.5" />
-                           </div>
-                           <span className="text-[10px] uppercase text-slate-800 font-black tracking-widest">Chuyển QR</span>
+                        <button className="h-[60px] bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 rounded-xl flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
+                           <QrCode className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
+                           <span className="text-xs font-bold text-slate-700">Chuyển QR</span>
                         </button>
                       </div>
 
@@ -2044,7 +2054,7 @@ export function IPosModule() {
                         <button 
                           disabled={cart.length === 0}
                           onClick={handlePrintProforma}
-                          className="w-14 h-14 bg-slate-100 text-slate-400 rounded-lg flex items-center justify-center hover:bg-slate-200 hover:text-slate-700 transition-all active:scale-95 disabled:opacity-50"
+                          className="w-14 h-14 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 hover:text-slate-800 transition-all active:scale-95 disabled:opacity-50 border border-slate-200"
                           title="In tạm tính"
                         >
                           <FileText className="w-6 h-6" />
@@ -2053,10 +2063,10 @@ export function IPosModule() {
                           disabled={cart.length === 0}
                           onClick={() => setShowPaymentModal(true)}
                           className={cn(
-                            "flex-1 h-14 rounded-lg text-xs font-black uppercase tracking-[0.2em] shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden",
+                            "flex-1 h-14 rounded-xl text-sm font-bold uppercase tracking-wider shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden",
                             isReturnMode 
-                              ? "bg-rose-600 text-white shadow-rose-200 hover:bg-rose-700" 
-                              : "bg-indigo-600 text-white shadow-indigo-200 hover:bg-indigo-700"
+                              ? "bg-rose-600 text-white hover:bg-rose-700" 
+                              : "bg-blue-600 text-white hover:bg-blue-700"
                           )}
                         >
                           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -2393,12 +2403,20 @@ export function IPosModule() {
                               <h3 className="font-bold text-slate-800">Danh sách nhân sự ({staffList.length})</h3>
                               <p className="text-xs text-slate-500 font-medium">Quản lý tài khoản truy cập và vai trò của nhân viên tại chi nhánh này.</p>
                            </div>
-                           <button 
-                             onClick={() => { setEditingStaff(null); setIsAddingStaff(true); }}
-                             className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
-                           >
-                              <Plus className="w-4 h-4" /> Thêm nhân sự mới
-                           </button>
+                           <div className="flex items-center gap-3">
+                              <button 
+                                onClick={() => navigate('/ipos-settings')}
+                                className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                              >
+                                 <Shield className="w-4 h-4" /> Cài đặt Phân quyền
+                              </button>
+                              <button 
+                                onClick={() => { setEditingStaff(null); setIsAddingStaff(true); }}
+                                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                              >
+                                 <Plus className="w-4 h-4" /> Thêm nhân sự mới
+                              </button>
+                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">

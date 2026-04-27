@@ -68,9 +68,50 @@ const MOCK_AI_FEE_SUGGESTIONS: AiFeeSuggestion[] = [
 
 const MOCK_ROLES: PermissionRole[] = [
   { id: '1', name: 'Siêu quản trị (Super Admin)', permissions: ['all'] },
-  { id: '2', name: 'Kế toán trưởng', permissions: ['finance.read', 'finance.approve', 'settlement.read'] },
-  { id: '3', name: 'Quản lý Kho', permissions: ['inventory.read', 'inventory.write', 'scm.read'] },
-  { id: '4', name: 'Chăm sóc Khách hàng', permissions: ['wallet.balance.adjust', 'loyalty.points.adjust', 'account.lock'] },
+  { id: '2', name: 'Quản lý (Manager)', permissions: ['dashboard.view', 'pim.view', 'pim.edit', 'orders.view', 'orders.edit', 'orders.approve', 'finance.view', 'hr.view', 'hr.edit'] },
+  { id: '3', name: 'Nhân viên bán hàng (Sales)', permissions: ['dashboard.view', 'orders.view', 'orders.create', 'pim.view', 'customers.view'] },
+  { id: '4', name: 'Kế toán (Accountant)', permissions: ['finance.view', 'finance.create', 'finance.edit', 'finance.approve', 'settlement.view', 'settlement.approve'] },
+  { id: '5', name: 'Chăm sóc Khách hàng', permissions: ['customers.view', 'customers.edit', 'wallet.view', 'wallet.edit', 'loyalty.view'] },
+];
+
+const MODULE_PERMISSIONS = [
+  { 
+    id: 'core', 
+    label: 'Hệ thống cốt lõi', 
+    modules: [
+      { id: 'dashboard', label: 'Dashboard & Báo cáo', actions: ['view'] },
+      { id: 'bi', label: 'Phân tích dữ liệu (BI)', actions: ['view'] },
+      { id: 'settings', label: 'Cấu hình hệ thống', actions: ['view', 'edit'] },
+    ]
+  },
+  {
+    id: 'commerce',
+    label: 'Thưong mại & Bán hàng',
+    modules: [
+      { id: 'pim', label: 'Sản phẩm (PIM)', actions: ['view', 'create', 'edit', 'delete'] },
+      { id: 'orders', label: 'Quản lý Đơn hàng', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
+      { id: 'flash_sale', label: 'Flash Sale & Voucher', actions: ['view', 'create', 'edit', 'delete'] },
+      { id: 'ipos', label: 'Phần mềm iPOS', actions: ['view', 'create', 'edit', 'delete'] },
+    ]
+  },
+  {
+    id: 'finance',
+    label: 'Tài chính & Thanh toán',
+    modules: [
+      { id: 'finance', label: 'Kế toán tổng hợp', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
+      { id: 'settlement', label: 'Đối soát & Công nợ', actions: ['view', 'edit', 'approve'] },
+      { id: 'wallet', label: 'Ví & Thanh toán', actions: ['view', 'edit'] },
+    ]
+  },
+  {
+    id: 'hr',
+    label: 'Nhân sự & Tổ chức',
+    modules: [
+      { id: 'hr', label: 'Quản trị nhân sự (HR)', actions: ['view', 'create', 'edit', 'delete'] },
+      { id: 'org', label: 'Sơ đồ tổ chức', actions: ['view', 'edit'] },
+      { id: 'payroll', label: 'Quản lý lương', actions: ['view', 'edit', 'approve'] },
+    ]
+  }
 ];
 
 const MOCK_WEBHOOKS: WebhookConfig[] = [
@@ -88,6 +129,8 @@ const MOCK_PROVINCES = [
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup'>('general');
+  const [roles, setRoles] = useState<PermissionRole[]>(MOCK_ROLES);
+  const [editingRole, setEditingRole] = useState<PermissionRole | null>(null);
   const [notiTitle, setNotiTitle] = useState('');
   const [notiMessage, setNotiMessage] = useState('');
   const [notiStatus, setNotiStatus] = useState('');
@@ -411,44 +454,187 @@ export function SettingsPage() {
 
            {activeTab === 'rbac' && (
               <div className="animate-in fade-in duration-300 space-y-6">
-                 <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
-                    <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
-                       <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm">
-                          <Lock className="w-4 h-4 text-blue-600" /> Ma trận Phân quyền Roles
-                       </h3>
-                       <button className="flex items-center gap-2 text-xs font-bold text-[#2563EB] hover:underline">
-                          <Plus className="w-3.5 h-3.5" /> Tạo Vai trò mới
-                       </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                       <table className="w-full text-left">
-                          <thead>
-                             <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-                                <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase">Tên Vai trò</th>
-                                <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase">Quyền hạn chính</th>
-                                <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase text-right">Thao tác</th>
-                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#F3F4F6]">
-                             {MOCK_ROLES.map(role => (
-                               <tr key={role.id} className="hover:bg-slate-50">
-                                  <td className="px-6 py-4 text-sm font-bold text-[#111827]">{role.name}</td>
-                                  <td className="px-6 py-4">
-                                     <div className="flex flex-wrap gap-1">
-                                        {role.permissions.map(p => (
-                                          <span key={p} className="px-2 py-0.5 bg-blue-50 text-[#2563EB] text-[9px] font-bold rounded uppercase border border-blue-100">{p}</span>
-                                        ))}
-                                     </div>
-                                  </td>
-                                  <td className="px-6 py-4 text-right">
-                                     <button className="text-xs font-bold text-[#6B7280] hover:text-[#111827] px-3">Sửa</button>
-                                  </td>
+                 {!editingRole ? (
+                   <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+                      <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
+                         <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm">
+                            <Lock className="w-4 h-4 text-blue-600" /> Quản lý Vai trò & Phân quyền
+                         </h3>
+                         <button 
+                           onClick={() => {
+                             const newId = (roles.length + 1).toString();
+                             const newRole: PermissionRole = { id: newId, name: 'Vai trò mới', permissions: [] };
+                             setRoles([...roles, newRole]);
+                             setEditingRole(newRole);
+                           }}
+                           className="flex items-center gap-2 text-xs font-bold text-[#2563EB] hover:underline"
+                         >
+                            <Plus className="w-3.5 h-3.5" /> Tạo Vai trò mới
+                         </button>
+                      </div>
+                      <div className="overflow-x-auto">
+                         <table className="w-full text-left">
+                            <thead>
+                               <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+                                  <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase">Tên Vai trò</th>
+                                  <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase">Số quyền hạn</th>
+                                  <th className="px-6 py-3 text-[10px] font-bold text-[#6B7280] uppercase text-right">Thao tác</th>
                                </tr>
-                             ))}
-                          </tbody>
-                       </table>
-                    </div>
-                 </div>
+                            </thead>
+                            <tbody className="divide-y divide-[#F3F4F6]">
+                               {roles.map(role => (
+                                 <tr key={role.id} className="hover:bg-slate-50 transition-colors group">
+                                    <td className="px-6 py-4">
+                                       <div className="flex flex-col">
+                                          <span className="text-sm font-bold text-[#111827]">{role.name}</span>
+                                          <span className="text-[10px] text-slate-400 font-mono">ID: {role.id}</span>
+                                       </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                       <span className="px-2 py-0.5 bg-blue-50 text-[#2563EB] text-[10px] font-bold rounded-full border border-blue-100">
+                                          {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
+                                       </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                       <button 
+                                         onClick={() => setEditingRole(role)}
+                                         className="text-xs font-bold text-[#2563EB] hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all"
+                                       >
+                                          Thiết lập chi tiết
+                                       </button>
+                                    </td>
+                                 </tr>
+                               ))}
+                            </tbody>
+                         </table>
+                      </div>
+                   </div>
+                 ) : (
+                   <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                      <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-[#E5E7EB] shadow-sm">
+                         <div className="flex items-center gap-4">
+                            <button 
+                              onClick={() => setEditingRole(null)}
+                              className="p-2 hover:bg-slate-100 rounded-lg transition-all"
+                            >
+                               <ArrowRight className="w-5 h-5 rotate-180 text-slate-400" />
+                            </button>
+                            <div>
+                               <div className="flex items-center gap-2">
+                                  <input 
+                                    type="text" 
+                                    value={editingRole.name}
+                                    onChange={(e) => setEditingRole({...editingRole, name: e.target.value})}
+                                    className="text-lg font-bold text-slate-900 border-b border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent"
+                                  />
+                                  <Edit2 className="w-4 h-4 text-slate-300" />
+                               </div>
+                               <p className="text-xs text-slate-500">Thiết lập ma trận quyền cho {editingRole.name}</p>
+                            </div>
+                         </div>
+                         <div className="flex gap-2">
+                            <button 
+                              onClick={() => setEditingRole(null)}
+                              className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                            >
+                               Hủy bỏ
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setRoles(roles.map(r => r.id === editingRole.id ? editingRole : r));
+                                setEditingRole(null);
+                                addNotification({
+                                  title: 'Đã cập nhật phân quyền',
+                                  message: `Vai trò ${editingRole.name} đã được lưu thành công.`,
+                                  type: 'success',
+                                  duration: 3000
+                                });
+                              }}
+                              className="px-6 py-2 bg-[#2563EB] text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                            >
+                               Lưu thay đổi
+                            </button>
+                         </div>
+                      </div>
+
+                      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+                         <div className="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                            <h4 className="font-bold text-slate-800 text-sm">Ma trận Quyền hạn chi tiết</h4>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                               <input 
+                                 type="checkbox" 
+                                 checked={editingRole.permissions.includes('all')}
+                                 onChange={(e) => {
+                                   if (e.target.checked) {
+                                     setEditingRole({...editingRole, permissions: ['all']});
+                                   } else {
+                                     setEditingRole({...editingRole, permissions: []});
+                                   }
+                                 }}
+                                 className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                               />
+                               <span className="text-xs font-bold text-slate-700">Gán Toàn quyền (Super Admin)</span>
+                            </label>
+                         </div>
+                         
+                         <div className="p-6 space-y-8">
+                            {MODULE_PERMISSIONS.map(group => (
+                              <div key={group.id} className="space-y-4">
+                                 <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                                    {group.label}
+                                 </h5>
+                                 <div className="grid grid-cols-1 gap-3">
+                                    {group.modules.map(module => (
+                                      <div key={module.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white hover:shadow-md transition-all group">
+                                         <div className="space-y-1">
+                                            <p className="text-sm font-bold text-slate-800">{module.label}</p>
+                                            <p className="text-[10px] text-slate-400 font-mono uppercase">Module: {module.id}</p>
+                                         </div>
+                                         <div className="flex gap-4">
+                                            {module.actions.map(action => {
+                                              const permissionKey = `${module.id}.${action}`;
+                                              const isChecked = editingRole.permissions.includes('all') || editingRole.permissions.includes(permissionKey);
+                                              const isDisabled = editingRole.permissions.includes('all');
+                                              
+                                              return (
+                                                <label key={action} className={cn(
+                                                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all cursor-pointer select-none",
+                                                  isChecked ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300",
+                                                  isDisabled && "opacity-50 cursor-not-allowed"
+                                                )}>
+                                                   <input 
+                                                     type="checkbox"
+                                                     checked={isChecked}
+                                                     disabled={isDisabled}
+                                                     onChange={(e) => {
+                                                       const newPermissions = e.target.checked 
+                                                         ? [...editingRole.permissions, permissionKey]
+                                                         : editingRole.permissions.filter(p => p !== permissionKey);
+                                                       setEditingRole({...editingRole, permissions: newPermissions});
+                                                     }}
+                                                     className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                                                   />
+                                                   <span className="text-[10px] font-bold uppercase tracking-tight">
+                                                      {action === 'view' ? 'Xem' : 
+                                                       action === 'create' ? 'Tạo' : 
+                                                       action === 'edit' ? 'Sửa' : 
+                                                       action === 'delete' ? 'Xóa' : 
+                                                       action === 'approve' ? 'Duyệt' : action}
+                                                   </span>
+                                                </label>
+                                              );
+                                            })}
+                                         </div>
+                                      </div>
+                                    ))}
+                                 </div>
+                              </div>
+                            ))}
+                         </div>
+                      </div>
+                   </div>
+                 )}
               </div>
            )}
 

@@ -186,7 +186,7 @@ export function FlashSale() {
 
       {isModalOpen && activeTab === 'group_buy' && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl shadow-xl max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center mb-6 shrink-0">
                <div className="flex items-center gap-2 text-rose-600">
                  <Zap className="w-5 h-5 fill-current" />
@@ -377,8 +377,8 @@ export function FlashSale() {
 
       {isModalOpen && activeTab === 'flash_sale' && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl">
-             <div className="flex justify-between items-center mb-6">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+             <div className="flex justify-between items-center mb-6 shrink-0">
                 <div className="flex items-center gap-2 text-orange-600">
                   <Zap className="w-5 h-5 fill-current" />
                   <h2 className="text-lg font-bold text-[#111827]">Tạo Flash Sale</h2>
@@ -454,7 +454,7 @@ export function FlashSale() {
 
       {isModalOpen && activeTab === 'voucher' && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
              <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2 text-emerald-600">
                   <Ticket className="w-5 h-5 fill-current" />

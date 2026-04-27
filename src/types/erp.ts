@@ -236,6 +236,17 @@ export interface Employee {
   skills?: { name: string; level: number }[];
   leaveBalance?: { total: number; used: number; pending: number };
   recentSentiment?: 'positive' | 'neutral' | 'negative' | 'critical';
+  role?: 'Admin' | 'Quản lý' | 'Nhân viên';
+  permissions?: Record<string, { read: boolean; create: boolean; update: boolean; delete: boolean }>;
+  teamId?: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  type: 'CustomerService' | 'Sales' | 'HR' | 'Other';
+  managerId: string;
+  memberIds: string[];
 }
 
 export interface AttendanceRecord {

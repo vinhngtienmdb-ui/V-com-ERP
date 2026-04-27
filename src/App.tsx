@@ -36,6 +36,12 @@ import { OrgStructure } from './components/OrgStructure';
 import { IPosModule } from './components/IPos';
 import { EMenu } from './components/EMenu';
 import { CustomerService } from './components/CustomerService';
+import { RequestHub } from './components/RequestHub';
+import { ContractManager } from './components/ContractManager';
+import { DocumentManager } from './components/DocumentManager';
+import { SignatureHub } from './components/SignatureHub';
+
+import { IPosSettings } from './components/IPosSettings';
 
 import { useAuth } from './context/AuthContext';
 import { StoreProvider } from './context/StoreContext';
@@ -92,6 +98,11 @@ function AppLayout() {
               <Route path="/seller-finance" element={<SellerFinance />} />
               <Route path="/social" element={<SocialCommerce />} />
               <Route path="/workflow" element={<WorkflowHub />} />
+              <Route path="/requests" element={<RequestHub />} />
+              <Route path="/contracts" element={<ContractManager />} />
+              <Route path="/documents" element={<DocumentManager />} />
+              <Route path="/signature" element={<SignatureHub />} />
+              <Route path="/ipos-settings" element={<IPosSettings />} />
               <Route path="/ai-ops" element={<AIOperations />} />
               <Route path="/org" element={<OrgStructure />} />
               <Route path="/analytics" element={<AnalyticsBI />} />

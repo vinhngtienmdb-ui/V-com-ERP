@@ -259,6 +259,45 @@ export function PIM() {
     }
   };
   const [showPnLForProduct, setShowPnLForProduct] = useState<Product | null>(null);
+  const [pnlPrice, setPnlPrice] = useState(0);
+  const [pnlCostPrice, setPnlCostPrice] = useState(0);
+  const [pnlHiddenCosts, setPnlHiddenCosts] = useState(0);
+  const [useOptionalPlatformFees, setUseOptionalPlatformFees] = useState(true);
+  const [pnlOptionalFees, setPnlOptionalFees] = useState({
+    serviceFee: true,
+    adFee: true,
+    affiliateFee: true
+  });
+
+  useEffect(() => {
+    if (showPnLForProduct) {
+      setPnlPrice(showPnLForProduct.price || 0);
+      setPnlCostPrice(showPnLForProduct.costPrice || 0);
+      setPnlHiddenCosts(showPnLForProduct.hiddenCosts || 0);
+    }
+  }, [showPnLForProduct]);
+
+  const saveProductPricing = async () => {
+    if (!showPnLForProduct) return;
+    try {
+      const profit = pnlPrice - pnlCostPrice - pnlHiddenCosts;
+      const margin = pnlPrice > 0 ? (profit / pnlPrice) * 100 : 0;
+      
+      await updateDoc(doc(db, 'products', showPnLForProduct.id), {
+        price: pnlPrice,
+        costPrice: pnlCostPrice,
+        hiddenCosts: pnlHiddenCosts,
+        profit: profit,
+        margin: Number(margin.toFixed(1)),
+        updatedAt: serverTimestamp()
+      });
+      
+      setShowPnLForProduct(null);
+      alert('Đã cập nhật giá và chi phí thành công!');
+    } catch (error) {
+      handleFirestoreError(error, 'update', 'products');
+    }
+  };
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, name: string } | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
@@ -268,6 +307,8 @@ export function PIM() {
     category: 'Điện thoại',
     brand: '',
     price: '',
+    costPrice: '',
+    hiddenCosts: '',
     stock: '',
     sku: '',
     description: '',
@@ -380,16 +421,22 @@ export function PIM() {
       return;
     }
 
+    const price = Number(newProduct.price) || 0;
+    const costPrice = Number(newProduct.costPrice) || (price * 0.7);
+    const hiddenCosts = Number(newProduct.hiddenCosts) || 0;
+    const profit = price - costPrice - hiddenCosts;
+    const margin = price > 0 ? (profit / price) * 100 : 0;
+
     const product: Product = {
       id: `PRD-${Math.floor(Math.random() * 900) + 100}`,
       name: newProduct.name,
       sku: newProduct.sku,
-      price: Number(newProduct.price),
-      costPrice: Number(newProduct.price) * 0.7,
-      hiddenCosts: 50000,
-      margin: 30,
-      profit: Number(newProduct.price) * 0.3,
-      stock: Number(newProduct.stock),
+      price: price,
+      costPrice: costPrice,
+      hiddenCosts: hiddenCosts,
+      margin: Number(margin.toFixed(1)),
+      profit: profit,
+      stock: Number(newProduct.stock) || 0,
       category: newProduct.category,
       brand: newProduct.brand,
       sellerName: 'Hệ thống (Self-managed)',
@@ -398,7 +445,7 @@ export function PIM() {
     };
     setProducts([product, ...products]);
     setIsUploadModalOpen(false);
-    setNewProduct({ name: '', category: 'Điện thoại', brand: '', price: '', stock: '', sku: '', description: '', weight: '', dimensions: '' });
+    setNewProduct({ name: '', category: 'Điện thoại', brand: '', price: '', costPrice: '', hiddenCosts: '', stock: '', sku: '', description: '', weight: '', dimensions: '' });
   };
 
   const categories = Array.from(new Set(products.map(p => p.category)));
@@ -550,6 +597,27 @@ export function PIM() {
                         className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
                         value={newProduct.stock}
                         onChange={e => setNewProduct({...newProduct, stock: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá vốn (VNĐ)</label>
+                      <input 
+                        type="number" placeholder="Mặc định: 70% giá niêm yết" 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.costPrice}
+                        onChange={e => setNewProduct({...newProduct, costPrice: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Chi phí ẩn (VC, Đóng gói... VNĐ)</label>
+                      <input 
+                        type="number" placeholder="Ví dụ: 15.000" 
+                        className="w-full bg-slate-50 border border-[#E5E7EB] rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+                        value={newProduct.hiddenCosts}
+                        onChange={e => setNewProduct({...newProduct, hiddenCosts: e.target.value})}
                       />
                     </div>
                   </div>
@@ -1249,7 +1317,7 @@ export function PIM() {
                           <Package className="w-8 h-8" />
                        </div>
                     )}
-                    <div>
+                    <div className="flex-1">
                        <h4 className="text-lg font-bold text-slate-900">{showPnLForProduct.name}</h4>
                        <div className="flex items-center gap-3 mt-2">
                           <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
@@ -1260,91 +1328,225 @@ export function PIM() {
                           </span>
                        </div>
                     </div>
+                    <button 
+                      onClick={saveProductPricing}
+                      className="px-6 py-2.5 bg-blue-600 text-white text-xs font-black rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 uppercase tracking-widest"
+                    >
+                      Lưu thay đổi
+                    </button>
                  </div>
 
                  {/* Financial Metrics Grid */}
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
-                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông số cơ bản</h5>
+                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <Sparkles className="w-3.5 h-3.5 text-blue-500" /> Cấu hình Giá & Chi phí gốc
+                       </h5>
                        
-                       <div className="bg-slate-50 rounded-lg p-4 space-y-3">
-                          <div className="flex justify-between items-center text-sm">
-                             <span className="text-slate-500 font-medium">Giá bán lẻ (Retail)</span>
-                             <span className="text-slate-900 font-bold">{formatCurrency((showPnLForProduct.price || 0))}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm">
-                             <span className="text-slate-500 font-medium">Giá vốn (COGS)</span>
-                             <span className="text-slate-900 font-bold">{formatCurrency((showPnLForProduct.costPrice || 0))}</span>
-                          </div>
-                          <div className="pt-3 border-t border-slate-200 flex justify-between items-center text-sm">
-                             <span className="text-slate-900 font-bold">Biên lợi nhuận gộp (Gross Margin)</span>
-                             <div className="text-right">
-                                <span className="text-emerald-600 font-black">
-                                   {formatCurrency((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0))}
-                                </span>
-                                <p className="text-[10px] text-emerald-500 font-bold uppercase mt-0.5">
-                                   {(((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0)) / (showPnLForProduct.price || 1) * 100).toFixed(1)}%
-                                </p>
+                       <div className="bg-slate-50 rounded-lg p-5 space-y-5 border border-slate-100">
+                          <div className="space-y-2">
+                             <div className="flex justify-between items-center px-1">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Giá bán lẻ (Retail)</span>
                              </div>
+                             <input 
+                                type="number"
+                                value={pnlPrice}
+                                onChange={(e) => setPnlPrice(Number(e.target.value))}
+                                className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                             />
+                          </div>
+                          <div className="space-y-2">
+                             <div className="flex justify-between items-center px-1">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Giá vốn (COGS)</span>
+                             </div>
+                             <input 
+                                type="number"
+                                value={pnlCostPrice}
+                                onChange={(e) => setPnlCostPrice(Number(e.target.value))}
+                                className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                             />
+                          </div>
+                          <div className="space-y-2">
+                             <div className="flex justify-between items-center px-1">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chi phí ẩn (Hidden Cost)</span>
+                                <Info className="w-3 h-3 text-slate-300" title="Chi phí bao bì, tem nhãn, quà tặng kèm..." />
+                             </div>
+                             <input 
+                                type="number"
+                                value={pnlHiddenCosts}
+                                onChange={(e) => setPnlHiddenCosts(Number(e.target.value))}
+                                className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                             />
                           </div>
                        </div>
                     </div>
 
                     <div className="space-y-4">
-                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Khấu trừ ước tính (Estimated Deductions)</h5>
+                       <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <Zap className="w-3.5 h-3.5 text-amber-500" /> Hệ sinh thái phí sàn
+                       </h5>
                        
-                       <div className="bg-red-50/50 rounded-lg p-4 space-y-3">
-                          <div className="flex justify-between items-center text-sm">
-                             <span className="text-slate-500 font-medium">Phí sàn (Platform Fee ~ 5%)</span>
-                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.05)}</span>
+                       <div className="bg-white rounded-lg p-5 space-y-4 border border-slate-200 shadow-sm">
+                          {/* Mandatory Fees */}
+                          <div className="flex justify-between items-center p-3 bg-red-50/50 rounded-lg border border-red-100">
+                             <div>
+                                <p className="text-[11px] font-black text-slate-700">Phí cố định & Thanh toán</p>
+                                <p className="text-[9px] text-red-500 font-bold uppercase tracking-tight">Bắt buộc theo quy định sàn</p>
+                             </div>
+                             <div className="text-right">
+                                <p className="text-xs font-mono font-bold text-red-600">-{formatCurrency(pnlPrice * 0.07)}</p>
+                                <p className="text-[9px] text-slate-400 font-bold">~ 7% (5% CĐ + 2% TT)</p>
+                             </div>
                           </div>
-                          <div className="flex justify-between items-center text-sm">
-                             <span className="text-slate-500 font-medium">Phí thanh toán (Payment Fee ~ 2%)</span>
-                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.02)}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm">
-                             <span className="text-slate-500 font-medium">Chi phí Marketing dự kiến (~ 8%)</span>
-                             <span className="text-red-500 font-bold">-{formatCurrency((showPnLForProduct.price || 0) * 0.08)}</span>
+
+                          {/* Optional Fees with Toggles */}
+                          <div className="space-y-3">
+                             <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                               <div className="flex items-center gap-3">
+                                 <button 
+                                   onClick={() => setUseOptionalPlatformFees(!useOptionalPlatformFees)}
+                                   className={cn("w-8 h-4 rounded-full relative transition-all", useOptionalPlatformFees ? "bg-emerald-500" : "bg-slate-300")}
+                                 >
+                                    <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", useOptionalPlatformFees ? "left-4.5" : "left-0.5")} />
+                                 </button>
+                                 <p className="text-[11px] font-black text-slate-700 uppercase tracking-widest">Sử dụng chi phí tùy chọn</p>
+                               </div>
+                               <p className="text-xs font-mono font-bold text-slate-700">
+                                 {useOptionalPlatformFees ? `-${formatCurrency(
+                                   (pnlOptionalFees.serviceFee ? pnlPrice * 0.05 : 0) + 
+                                   (pnlOptionalFees.adFee ? pnlPrice * 0.08 : 0) +
+                                   (pnlOptionalFees.affiliateFee ? pnlPrice * 0.05 : 0)
+                                 )}` : "0 VNĐ"}
+                               </p>
+                             </div>
+
+                             {useOptionalPlatformFees && (
+                                <div className="space-y-3">
+                                   <div className={cn(
+                                      "flex justify-between items-center p-3 rounded-lg border transition-all",
+                                      pnlOptionalFees.serviceFee ? "bg-blue-50 border-blue-100" : "bg-slate-50 border-slate-100 grayscale opacity-60"
+                                   )}>
+                                <div className="flex items-center gap-3">
+                                   <button 
+                                     onClick={() => setPnlOptionalFees({...pnlOptionalFees, serviceFee: !pnlOptionalFees.serviceFee})}
+                                     className={cn("w-8 h-4 rounded-full relative transition-all", pnlOptionalFees.serviceFee ? "bg-blue-600" : "bg-slate-300")}
+                                   >
+                                      <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.serviceFee ? "left-4.5" : "left-0.5")} />
+                                   </button>
+                                   <div>
+                                      <p className="text-[11px] font-black text-slate-700">Gói dịch vụ (Freeship Xtra...)</p>
+                                      <p className="text-[9px] text-blue-500 font-bold">Tùy chọn hiển thị</p>
+                                   </div>
+                                </div>
+                                <p className="text-xs font-mono font-bold text-blue-600">
+                                   -{formatCurrency(pnlOptionalFees.serviceFee ? pnlPrice * 0.05 : 0)}
+                                </p>
+                             </div>
+
+                             <div className={cn(
+                                "flex justify-between items-center p-3 rounded-lg border transition-all",
+                                pnlOptionalFees.adFee ? "bg-amber-50 border-amber-100" : "bg-slate-50 border-slate-100 grayscale opacity-60"
+                             )}>
+                                <div className="flex items-center gap-3">
+                                   <button 
+                                     onClick={() => setPnlOptionalFees({...pnlOptionalFees, adFee: !pnlOptionalFees.adFee})}
+                                     className={cn("w-8 h-4 rounded-full relative transition-all", pnlOptionalFees.adFee ? "bg-amber-600" : "bg-slate-300")}
+                                   >
+                                      <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.adFee ? "left-4.5" : "left-0.5")} />
+                                   </button>
+                                   <div>
+                                      <p className="text-[11px] font-black text-slate-700">Quảng cáo & Marketing</p>
+                                      <p className="text-[9px] text-amber-500 font-bold">Dự kiến chi trả</p>
+                                   </div>
+                                </div>
+                                <p className="text-xs font-mono font-bold text-amber-600">
+                                   -{formatCurrency(pnlOptionalFees.adFee ? pnlPrice * 0.08 : 0)}
+                                </p>
+                             </div>
+
+                             <div className={cn(
+                                "flex justify-between items-center p-3 rounded-lg border transition-all",
+                                pnlOptionalFees.affiliateFee ? "bg-purple-50 border-purple-100" : "bg-slate-50 border-slate-100 grayscale opacity-60"
+                             )}>
+                                <div className="flex items-center gap-3">
+                                   <button 
+                                     onClick={() => setPnlOptionalFees({...pnlOptionalFees, affiliateFee: !pnlOptionalFees.affiliateFee})}
+                                     className={cn("w-8 h-4 rounded-full relative transition-all", pnlOptionalFees.affiliateFee ? "bg-purple-600" : "bg-slate-300")}
+                                   >
+                                      <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.affiliateFee ? "left-4.5" : "left-0.5")} />
+                                   </button>
+                                   <div>
+                                      <p className="text-[11px] font-black text-slate-700">Tiếp thị liên kết (Affiliate)</p>
+                                      <p className="text-[9px] text-purple-500 font-bold">5% Giá bán</p>
+                                   </div>
+                                </div>
+                                <p className="text-xs font-mono font-bold text-purple-600">
+                                   -{formatCurrency(pnlOptionalFees.affiliateFee ? pnlPrice * 0.05 : 0)}
+                                </p>
+                             </div>
+                                </div>
+                              )}
                           </div>
                        </div>
                     </div>
                  </div>
 
                  {/* Net Profit Summary */}
-                 <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-lg p-6 text-white relative overflow-hidden flex items-center justify-between">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-10 translate-x-10" />
-                    
-                    <div className="relative z-10">
-                       <h5 className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Lợi nhuận ròng ước tính (Net Profit)</h5>
-                       <div className="flex items-end gap-3">
-                          <span className="text-3xl font-black tracking-tight">
-                             {formatCurrency(
-                                (showPnLForProduct.price || 0) - 
-                                (showPnLForProduct.costPrice || 0) - 
-                                ((showPnLForProduct.price || 0) * 0.15) // Total deductions approx 15%
-                             )}
-                          </span>
-                          <span className="text-sm font-bold text-blue-200 pb-1.5">
-                             / sản phẩm
-                          </span>
-                       </div>
-                    </div>
+                 {(() => {
+                    const mandatoryFee = pnlPrice * 0.07;
+                    const serviceFee = (useOptionalPlatformFees && pnlOptionalFees.serviceFee) ? pnlPrice * 0.05 : 0;
+                    const adFee = (useOptionalPlatformFees && pnlOptionalFees.adFee) ? pnlPrice * 0.08 : 0;
+                    const affiliateFee = (useOptionalPlatformFees && pnlOptionalFees.affiliateFee) ? pnlPrice * 0.05 : 0;
+                    const totalFees = mandatoryFee + serviceFee + adFee + affiliateFee;
+                    const grossProfit = pnlPrice - pnlCostPrice - pnlHiddenCosts;
+                    const netProfit = grossProfit - totalFees;
+                    const netMargin = pnlPrice > 0 ? (netProfit / pnlPrice) * 100 : 0;
 
-                    <div className="relative z-10 text-right">
-                       <div className="text-2xl font-black">
-                          {((((showPnLForProduct.price || 0) - (showPnLForProduct.costPrice || 0) - ((showPnLForProduct.price || 0) * 0.15)) / (showPnLForProduct.price || 1)) * 100).toFixed(1)}%
+                    return (
+                       <div className="bg-gradient-to-br from-indigo-700 via-blue-700 to-blue-800 rounded-2xl p-8 text-white relative overflow-hidden flex items-center justify-between shadow-xl shadow-blue-900/20">
+                          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-20 translate-x-20" />
+                          <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -translate-x-10 translate-y-10" />
+                          
+                          <div className="relative z-10 space-y-2">
+                             <div className="flex items-center gap-2">
+                                <h5 className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em]">Lợi nhuận ròng thực tế (Actual Net Profit)</h5>
+                                <div className="px-2 py-0.5 bg-blue-400/30 rounded-full text-[9px] font-black uppercase">Real-time update</div>
+                             </div>
+                             <div className="flex items-end gap-3">
+                                <span className="text-4xl font-black tracking-tight font-mono">
+                                   {formatCurrency(netProfit)}
+                                </span>
+                                <span className="text-sm font-bold text-blue-200 pb-2">
+                                   / SP bán ra
+                                </span>
+                             </div>
+                             <p className="text-[10px] text-blue-300 font-medium">
+                                Tổng chi phí khấu trừ: {formatCurrency(totalFees + pnlCostPrice + pnlHiddenCosts)}
+                             </p>
+                          </div>
+
+                          <div className="relative z-10 text-right bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
+                             <div className="text-3xl font-black font-mono">
+                                {netMargin.toFixed(1)}%
+                             </div>
+                             <div className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-1">
+                                Net Profit Margin
+                             </div>
+                          </div>
                        </div>
-                       <div className="text-[9px] font-bold text-blue-200 uppercase tracking-widest">
-                          Net Margin
-                       </div>
-                    </div>
-                 </div>
+                    );
+                 })()}
                  
-                 <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
-                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                    <p className="text-xs font-medium text-amber-700 leading-relaxed">
-                       * Đây là ước tính lợi nhuận trên mỗi đơn vị sản phẩm dựa trên các mức phí sàn trung bình. Lợi nhuận thực tế có thể thay đổi tùy thuộc vào các chương trình khuyến mãi và phí vận chuyển.
-                    </p>
+                 <div className="flex items-start gap-3 p-5 bg-slate-50 rounded-xl border border-slate-100">
+                    <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                       <p className="text-xs font-black text-slate-700 uppercase tracking-tight">Cơ chế tính toán ERP 2.0</p>
+                       <p className="text-[11px] text-slate-500 leading-relaxed">
+                          * Hệ thống tự động tính phí sàn theo các hạng mục được bật. <br />
+                          * <b>Chi phí ẩn</b> được cộng trực tiếp vào giá vốn để tính Gross Margin trước khi trừ phí sàn. <br />
+                          * Nhấn <b>Lưu thay đổi</b> để cập nhật dữ liệu giá và chi phí gốc vào hệ thống sản phẩm.
+                       </p>
+                    </div>
                  </div>
               </div>
            </div>

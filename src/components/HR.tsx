@@ -56,7 +56,7 @@ import {
   X
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
-import { Employee, AttendanceRecord, Payroll, KPI } from '../types/erp';
+import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
 import {
   BarChart,
   Bar,
@@ -316,6 +316,7 @@ const HR_MODULE_GROUPS = [
     title: 'Hành chính & Nhân sự',
     items: [
       { id: 'personnel', label: 'Hồ sơ nhân sự', desc: 'Quản lý thông tin & lưu trữ.', icon: Users, color: 'blue' },
+      { id: 'insurance', label: 'Bảo hiểm Xã hội', desc: 'Quản lý đóng BHXH, BHYT, BHTN.', icon: ShieldCheck, color: 'emerald' },
       { id: 'skills', label: 'Skill Matrix', desc: 'Sơ đồ kỹ năng & AI Scan.', icon: BrainCircuit, color: 'emerald' },
       { id: 'attendance', label: 'Chấm công GPS', desc: 'Quản lý chấm công đa nền tảng.', icon: MapPin, color: 'orange' },
       { id: 'attendance_config', label: 'Cài đặt Chấm công', desc: 'Cấu hình GPS, Wifi, Face, QR.', icon: Settings, color: 'orange' },
@@ -327,6 +328,13 @@ const HR_MODULE_GROUPS = [
       { id: 'points_mod', label: 'Điểm cộng trừ', desc: 'V-Point tích lũy, vinh danh.', icon: Zap, color: 'fuchsia' },
       { id: 'suggestions_mod', label: 'Hòm thư góp ý', desc: 'Gửi góp ý, xem phản hồi.', icon: Mail, color: 'blue' },
       { id: 'config_hr', label: 'Thiết lập HR', desc: 'Cấu hình hệ số, quy tắc.', icon: Building2, color: 'slate' }
+    ]
+  },
+  {
+    title: 'Quản trị Đội nhóm & CSKH',
+    items: [
+      { id: 'teams', label: 'Quản lý Đội nhóm', desc: 'Cấu trúc & Phân quyền team.', icon: Users, color: 'blue' },
+      { id: 'cs_staff', label: 'Nhân viên CSKH', desc: 'Quản lý nhân viên CSKH.', icon: HeartHandshake, color: 'rose' },
     ]
   },
   {
@@ -379,10 +387,19 @@ function getColorClasses(color: string) {
   }
 }
 
+const MOCK_TEAMS: Team[] = [
+  { id: 'TEAM-001', name: 'CSKH Nội địa', type: 'CustomerService', managerId: 'EMP-001', memberIds: ['EMP-002'] },
+  { id: 'TEAM-002', name: 'CSKH Quốc tế', type: 'CustomerService', managerId: 'EMP-001', memberIds: [] },
+  { id: 'TEAM-003', name: 'Kinh doanh 1', type: 'Sales', managerId: 'EMP-001', memberIds: [] },
+];
+
 export function HumanResources() {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
+  const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
+  const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
+  
   // New features state
   const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
   const [draggedCandidateId, setDraggedCandidateId] = useState<string | null>(null);
@@ -405,8 +422,9 @@ export function HumanResources() {
 
   const [filterDateAtt, setFilterDateAtt] = useState('');
   const [attendanceView, setAttendanceView] = useState<'week' | 'month'>('month');
+  const [isAdmin, setIsAdmin] = useState(true);
 
-  const filteredEmployees = MOCK_EMPLOYEES.filter(emp => {
+  const filteredEmployees = employees.filter(emp => {
     if (searchEmployee && !emp.fullName.toLowerCase().includes(searchEmployee.toLowerCase()) && !emp.id.toLowerCase().includes(searchEmployee.toLowerCase())) return false;
     if (filterDept !== 'all' && emp.department !== filterDept) return false;
     if (filterPosition !== 'all' && emp.position !== filterPosition) return false;
@@ -453,6 +471,76 @@ export function HumanResources() {
     setCopilotInput('');
   };
 
+  const handleRoleChange = (employeeId: string, newRole: string) => {
+    if (!isAdmin) return;
+    
+    // Auto-assign permissions based on role
+    const newPerms: Record<string, { read: boolean; create: boolean; update: boolean; delete: boolean }> = {};
+    const categories = ['personnel', 'attendance', 'payroll', 'kpi', 'rewards'];
+    
+    categories.forEach(cat => {
+      if (newRole === 'Admin') {
+        newPerms[cat] = { read: true, create: true, update: true, delete: true };
+      } else if (newRole === 'Quản lý') {
+        // Managers can read/create/update but not delete, maybe full for specific things
+        newPerms[cat] = { read: true, create: true, update: true, delete: false };
+      } else {
+        // Employees can only read (or maybe minimal access)
+        newPerms[cat] = { read: true, create: false, update: false, delete: false };
+      }
+    });
+
+    setEmployees(prev => prev.map(emp => emp.id === employeeId ? { ...emp, role: newRole as any, permissions: newPerms } : emp));
+    if (selectedEmployee?.id === employeeId) {
+      setSelectedEmployee(prev => prev ? { ...prev, role: newRole as any, permissions: newPerms } : null);
+    }
+  };
+
+  const handlePermissionChange = (employeeId: string, category: string, perm: 'read' | 'create' | 'update' | 'delete', checked: boolean) => {
+    if (!isAdmin) return;
+    setEmployees(prev => prev.map(emp => {
+      if (emp.id === employeeId) {
+        const currentPerms = emp.permissions || {
+          personnel: { read: false, create: false, update: false, delete: false },
+          attendance: { read: false, create: false, update: false, delete: false },
+          payroll: { read: false, create: false, update: false, delete: false },
+          kpi: { read: false, create: false, update: false, delete: false },
+          rewards: { read: false, create: false, update: false, delete: false }
+        };
+        const updatedPerms = {
+          ...currentPerms,
+          [category]: {
+            ...currentPerms[category],
+            [perm]: checked
+          }
+        };
+        return { ...emp, permissions: updatedPerms };
+      }
+      return emp;
+    }));
+    
+    if (selectedEmployee?.id === employeeId) {
+      setSelectedEmployee(prev => {
+        if (!prev) return null;
+        const currentPerms = prev.permissions || {
+          personnel: { read: false, create: false, update: false, delete: false },
+          attendance: { read: false, create: false, update: false, delete: false },
+          payroll: { read: false, create: false, update: false, delete: false },
+          kpi: { read: false, create: false, update: false, delete: false },
+          rewards: { read: false, create: false, update: false, delete: false }
+        };
+        const updatedPerms = {
+          ...currentPerms,
+          [category]: {
+            ...currentPerms[category],
+            [perm]: checked
+          }
+        };
+        return { ...prev, permissions: updatedPerms };
+      });
+    }
+  };
+
   const toggleAttendanceSetting = (method: string) => {
     setAttendanceSettings(prev => prev.map(s => s.method === method ? { ...s, enabled: !s.enabled } : s));
   };
@@ -468,7 +556,16 @@ export function HumanResources() {
           <h1 className="text-2xl font-semibold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
           <p className="text-sm text-[#6B7280] mt-1">Quản lý hồ sơ nhân sự, Skill Matrix và Onboarding Intelligence.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <div className="flex items-center gap-2 mr-4 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+            <span className="text-xs font-semibold text-slate-500 pl-2">Admin Mode</span>
+            <button 
+              onClick={() => setIsAdmin(!isAdmin)}
+              className={cn("w-10 h-5 rounded-full relative transition-colors", isAdmin ? "bg-indigo-600" : "bg-slate-300")}
+            >
+              <div className={cn("absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform", isAdmin ? "translate-x-5" : "translate-x-0")} />
+            </button>
+          </div>
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
             <LineChart className="w-4 h-4 text-emerald-600" />
             Báo cáo Nhân sự
@@ -718,7 +815,7 @@ export function HumanResources() {
            </button>
         </div>
         
-        {['personnel', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'attendance_config'].includes(activeTab) ? (
+        {['personnel', 'insurance', 'skills', 'attendance', 'leave', 'kpi', 'sentiment', 'attendance_config', 'teams', 'cs_staff'].includes(activeTab) ? (
           <>
              <div className="p-4 bg-white border-b border-[#F3F4F6] flex flex-col gap-4 px-6 relative z-30">
                <div className="flex justify-between items-center">
@@ -1125,6 +1222,14 @@ export function HumanResources() {
                       <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
                     </>
                   )}
+                  {activeTab === 'insurance' && (
+                    <>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Họ tên & Phân nhóm</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Lương đóng BH</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Tỷ lệ (NLĐ - NSDLĐ)</th>
+                      <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái đóng</th>
+                    </>
+                  )}
                   {activeTab === 'skills' && (
                     <>
                       <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân sự</th>
@@ -1210,7 +1315,22 @@ export function HumanResources() {
                     </td>
                   </tr>
                 ))}
-                {activeTab === 'skills' && MOCK_EMPLOYEES.map((emp) => (
+                {activeTab === 'insurance' && employees.map((emp) => (
+                  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5">
+                       <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
+                       <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight">{emp.department}</p>
+                    </td>
+                    <td className="px-6 py-5 text-right font-bold text-sm text-slate-700">10,000,000 ₫</td>
+                    <td className="px-6 py-5 text-center">
+                       <p className="text-xs font-bold text-slate-800">10.5% - 21.5%</p>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                       <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg shrink-0">Đã nộp</span>
+                    </td>
+                  </tr>
+                ))}
+                {activeTab === 'skills' && employees.map((emp) => (
                   <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-5 font-bold text-sm text-[#111827]">{emp.fullName}</td>
                     <td className="px-6 py-5">
@@ -1238,7 +1358,7 @@ export function HumanResources() {
                     </td>
                   </tr>
                 ))}
-                {activeTab === 'leave' && MOCK_EMPLOYEES.map(emp => (
+                {activeTab === 'leave' && employees.map(emp => (
                   <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-5">
                       <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
@@ -1268,7 +1388,7 @@ export function HumanResources() {
                   </tr>
                 ))}
                 {activeTab === 'kpi' && MOCK_KPIs.map(kpi => {
-                  const emp = MOCK_EMPLOYEES.find(e => e.id === kpi.employeeId);
+                  const emp = employees.find(e => e.id === kpi.employeeId);
                   const progress = (kpi.current / kpi.target) * 100;
                   return (
                     <tr key={kpi.id} className="hover:bg-slate-50 transition-colors">
@@ -1300,7 +1420,7 @@ export function HumanResources() {
                     </tr>
                   );
                 })}
-                {activeTab === 'sentiment' && MOCK_EMPLOYEES.map(emp => (
+                {activeTab === 'sentiment' && employees.map(emp => (
                    <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
@@ -1328,8 +1448,30 @@ export function HumanResources() {
                       </td>
                    </tr>
                 ))}
+                {activeTab === 'teams' && (
+                   <div className="p-8">
+                     <div className="grid grid-cols-2 gap-4">
+                       {teams.map(team => (
+                         <div key={team.id} className="border p-4 rounded-lg bg-white shadow-sm">
+                           <p className="font-bold">{team.name}</p>
+                           <p className="text-sm text-slate-500">{team.type}</p>
+                           <p className="text-sm">Thành viên: {team.memberIds.length}</p>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                )}
+                {activeTab === 'cs_staff' && (
+                  employees.filter(e => e.department === 'CSKH' || e.position.includes('CSKH')).map(emp => (
+                    <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                       <td className="p-4">{emp.fullName}</td>
+                       <td className="p-4">{emp.email}</td>
+                       <td className="p-4">{emp.phone}</td>
+                    </tr>
+                  ))
+                )}
                 {activeTab === 'attendance' && filteredAttendance.map(record => {
-                  const emp = MOCK_EMPLOYEES.find(e => e.id === record.employeeId);
+                  const emp = employees.find(e => e.id === record.employeeId);
                   
                   // Calculate hours
                   const [inH, inM] = record.checkIn.split(':').map(Number);
@@ -1363,7 +1505,6 @@ export function HumanResources() {
                                {record.method === 'wifi' && <Wifi className="w-4 h-4" />}
                                {record.method === 'face' && <ScanFace className="w-4 h-4" />}
                                {record.method === 'qr' && <QrCode className="w-4 h-4" />}
-                               {record.method === 'device' && <Fingerprint className="w-4 h-4" />}
                             </div>
                             <div>
                                <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{record.method}</p>
@@ -1392,7 +1533,7 @@ export function HumanResources() {
                          </div>
                       </td>
                     </tr>
-                  );
+                    );
                 })}
               </tbody>
             </table>
@@ -1409,7 +1550,7 @@ export function HumanResources() {
                  <div className="flex gap-3">
                     <button 
                       onClick={() => {
-                        const results = MOCK_EMPLOYEES.map(emp => ({
+                        const results = employees.map(emp => ({
                           employeeId: emp.id,
                           ...autoCalculatePayroll(emp, [], MOCK_KPIs)
                         }));                
@@ -1610,24 +1751,98 @@ export function HumanResources() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 border-l border-slate-200 flex flex-col overflow-y-auto"
             >
-               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 sticky top-0 z-10">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-800">{selectedEmployee.fullName}</h2>
-                    <p className="text-xs font-mono font-bold text-slate-400 mt-1 uppercase tracking-widest">{selectedEmployee.id}</p>
+               <div className="p-8 border-b border-slate-100 flex justify-between items-start bg-gradient-to-br from-slate-50 to-white sticky top-0 z-10">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold shadow-sm border border-blue-200">
+                      {selectedEmployee.fullName.charAt(0)}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-800 tracking-tight leading-tight">{selectedEmployee.fullName}</h2>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs font-mono font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase tracking-widest">{selectedEmployee.id}</span>
+                        <span className="text-sm font-medium text-slate-500">{selectedEmployee.department}</span>
+                      </div>
+                    </div>
                   </div>
-                  <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500">
+                  <button onClick={() => setSelectedEmployee(null)} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-full transition-colors text-slate-500 shadow-sm active:scale-95">
                      <span className="sr-only">Đóng</span>
-                     <ArrowLeft className="w-5 h-5 rotate-180" />
+                     <X className="w-5 h-5" />
                   </button>
                </div>
                
-               <div className="p-6 space-y-8 flex-1">
+               <div className="p-8 space-y-10 flex-1">
+                 {/* Roles - Admin only */}
+                 {isAdmin && (
+                   <div className="space-y-6">
+                     <div className="space-y-4">
+                       <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-400 flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-emerald-500"/> Vai trò & Phân quyền
+                       </h3>
+                       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-bold text-slate-800">Cấp quyền hệ thống</p>
+                           <p className="text-xs text-slate-500 mt-1">Chỉnh sửa vai trò truy cập của nhân viên trên hệ thống ERP.</p>
+                         </div>
+                         <select 
+                           className="bg-white border text-sm font-semibold border-slate-200 text-slate-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all"
+                           value={selectedEmployee.role || 'Nhân viên'}
+                           onChange={(e) => handleRoleChange(selectedEmployee.id, e.target.value)}
+                         >
+                           <option value="Nhân viên">Nhân viên</option>
+                           <option value="Quản lý">Quản lý</option>
+                           <option value="Admin">Admin</option>
+                         </select>
+                       </div>
+                     </div>
+                     
+                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                       <h4 className="text-sm font-bold text-slate-800">Phân quyền chi tiết (Permissions)</h4>
+                       <div className="space-y-3">
+                         {Object.entries({
+                           personnel: 'Thông tin nhân sự',
+                           attendance: 'Chấm công',
+                           payroll: 'Lương & Thưởng',
+                           kpi: 'Đánh giá KPI',
+                           rewards: 'Khen thưởng'
+                         }).map(([catKey, catName]) => {
+                           const employeePerms = selectedEmployee.permissions?.[catKey] || { read: false, create: false, update: false, delete: false };
+                           return (
+                             <div key={catKey} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 last:pb-0">
+                               <span className="text-xs font-semibold text-slate-600 w-32">{catName}</span>
+                               <div className="flex gap-4">
+                                 {['read', 'create', 'update', 'delete'].map(pAction => {
+                                   let label = '';
+                                   if (pAction === 'read') label = 'Xem';
+                                   if (pAction === 'create') label = 'Tạo';
+                                   if (pAction === 'update') label = 'Sửa';
+                                   if (pAction === 'delete') label = 'Xóa';
+                                   return (
+                                     <label key={pAction} className="flex items-center gap-1.5 cursor-pointer">
+                                       <input 
+                                         type="checkbox" 
+                                         className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500/20 transition-all cursor-pointer"
+                                         checked={employeePerms[pAction as keyof typeof employeePerms]}
+                                         onChange={(e) => handlePermissionChange(selectedEmployee.id, catKey, pAction as any, e.target.checked)}
+                                       />
+                                       <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">{label}</span>
+                                     </label>
+                                   );
+                                 })}
+                               </div>
+                             </div>
+                           );
+                         })}
+                       </div>
+                     </div>
+                   </div>
+                 )}
+
                  {/* Skill Radar */}
                  <div className="space-y-4">
-                    <h3 className="font-bold tracking-widest uppercase text-xs text-slate-400 flex items-center gap-2">
+                    <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-400 flex items-center gap-2">
                        <BrainCircuit className="w-4 h-4 text-blue-500"/> Skill Matrix (Radar)
                     </h3>
-                    <div className="h-64 bg-slate-50 rounded-lg border border-slate-100 p-4 relative">
+                    <div className="h-64 bg-slate-50 rounded-xl border border-slate-200 p-4 relative shadow-sm">
                        <ResponsiveContainer width="100%" height="100%">
                          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={selectedEmployee.skills || []}>
                            <PolarGrid stroke="#e2e8f0" />
@@ -1792,31 +2007,66 @@ export function HumanResources() {
                 }</h2>
                 <button onClick={() => setShowATSModal(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400"><X className="w-6 h-6" /></button>
               </div>
-              <div className="flex gap-4 mb-6">
+              <div className="flex gap-4 mb-8 border-b border-slate-100 pb-4">
                 {['request', 'candidates', 'interview', 'email'].map(t => (
-                  <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-4 py-2 text-sm font-bold rounded-lg", activeATSView === t ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600')}>
+                  <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-5 py-2.5 text-sm font-bold rounded-lg transition-all", activeATSView === t ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-indigo-600')}>
                     {t === 'request' ? 'Đề xuất' : t === 'candidates' ? 'Ứng viên' : t === 'interview' ? 'Lịch phỏng vấn' : 'Email'}
                   </button>
                 ))}
               </div>
-              <div className="min-h-[400px]">
+              <div className="min-h-[500px]">
                 {activeATSView === 'candidates' && (
-                  <div className="grid grid-cols-4 gap-4">
-                    {['sourced', 'interview', 'offered', 'hired'].map(status => (
-                      <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status as any)} className="bg-slate-50 p-4 rounded-lg">
-                        <h3 className="font-bold text-slate-800 capitalize mb-4">{status}</h3>
-                        {candidates.filter(c => c.status === status).map(c => (
-                          <div key={c.id} draggable onDragStart={(e) => handleDragStart(e, c.id)} className="bg-white p-3 rounded-lg border shadow-sm mb-2 cursor-grab">
-                            <p className="font-bold">{c.name}</p>
-                            <p className="text-xs text-slate-500">{c.role} ({c.matchScore}%)</p>
-                          </div>
-                        ))}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
+                    {(['sourced', 'interview', 'offered', 'hired'] as const).map(status => (
+                      <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status)} className="bg-slate-50/80 rounded-2xl p-5 border border-slate-200 flex flex-col h-[500px]">
+                        <div className="flex justify-between items-center mb-5">
+                          <h3 className="font-bold text-slate-700 uppercase tracking-widest text-xs">
+                            {status === 'sourced' ? 'Sourced' : status === 'interview' ? 'Phỏng vấn' : status === 'offered' ? 'Đề nghị' : 'Đã tuyển'}
+                          </h3>
+                          <span className="bg-white px-2.5 py-1 rounded-full text-xs font-bold text-slate-500 shadow-sm border border-slate-100">
+                            {candidates.filter(c => c.status === status).length}
+                          </span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2">
+                          <AnimatePresence>
+                            {candidates.filter(c => c.status === status).map(c => (
+                               <motion.div
+                                 layout
+                                 initial={{ opacity: 0, scale: 0.95 }}
+                                 animate={{ opacity: 1, scale: 1 }}
+                                 exit={{ opacity: 0, scale: 0.95 }}
+                                 key={c.id} draggable onDragStart={(e: any) => handleDragStart(e, c.id)} 
+                                 className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-indigo-300 transition-all relative overflow-hidden group"
+                               >
+                                  <div className={cn("absolute top-0 left-0 w-1.5 h-full transition-colors", 
+                                     c.matchScore >= 90 ? "bg-emerald-500" : 
+                                     c.matchScore >= 80 ? "bg-blue-500" : "bg-amber-500"
+                                  )} />
+                                  <div className="pl-3">
+                                      <p className="font-bold text-sm text-slate-800 mb-1 line-clamp-1">{c.name}</p>
+                                      <div className="flex justify-between items-end mt-3">
+                                         <div>
+                                           <span className="text-xs font-semibold text-slate-500 block mb-1">{c.role}</span>
+                                           <span className="text-[10px] font-mono text-slate-400">{c.id}</span>
+                                         </div>
+                                         <div className={cn("px-2 py-1 flex items-center justify-center rounded-lg font-bold text-[10px]", 
+                                            c.matchScore >= 90 ? "bg-emerald-50 text-emerald-700" : 
+                                            c.matchScore >= 80 ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"
+                                         )}>
+                                           Fit {c.matchScore}%
+                                         </div>
+                                      </div>
+                                  </div>
+                               </motion.div>
+                            ))}
+                          </AnimatePresence>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
                 {/* Add placeholders for other views */}
-                {activeATSView !== 'candidates' && <div className="text-center text-slate-400 mt-20">Nội dung chức năng {activeATSView} đang được xây dựng...</div>}
+                {activeATSView !== 'candidates' && <div className="flex items-center justify-center h-full text-slate-400 text-sm mt-20 font-medium">Nội dung chức năng {activeATSView} đang được xây dựng...</div>}
               </div>
             </motion.div>
           </div>
