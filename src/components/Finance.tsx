@@ -1,249 +1,328 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Calculator, 
-  FileText, 
-  BookOpen, 
-  PieChart, 
+  DollarSign, 
   TrendingUp, 
-  Search, 
-  Filter, 
+  TrendingDown, 
+  Wallet, 
+  Banknote, 
+  PieChart, 
   ArrowUpRight, 
-  ArrowDownRight,
-  Printer,
-  Download,
+  Download, 
+  Filter,
+  Search,
+  Plus,
+  BookOpen,
+  FileText,
+  BadgeDollarSign,
+  Receipt,
+  ArrowDownCircle,
+  ArrowUpCircle,
   ShieldCheck,
+  Building2,
   Calendar,
-  MoreVertical,
-  Sparkles
+  History,
+  FileBarChart,
+  Target,
+  Clock,
+  ArrowLeft
 } from 'lucide-react';
+import { db, auth } from '../lib/firebase';
+import { collection, onSnapshot, query, addDoc, serverTimestamp, limit } from 'firebase/firestore';
 import { formatCurrency, cn } from '../lib/utils';
-import { JournalEntry } from '../types/erp';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { FinanceTransaction } from '../types/erp';
+
+const FINANCE_MODULE_GROUPS = [
+  {
+    title: 'Kế toán Tổng hợp',
+    items: [
+      { id: 'journal', label: 'Sổ Nhật ký chung', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'blue' },
+      { id: 'ledger', label: 'Sổ cái Tài khoản', desc: 'Chi tiết biến động từng tài khoản kế toán.', icon: FileText, color: 'indigo' },
+      { id: 'vouchers', label: 'Quản lý Chứng từ', desc: 'Lưu trữ hóa đơn, phiếu thu/chi.', icon: Receipt, color: 'emerald' },
+      { id: 'reconciliation', label: 'Đối soát Ngân hàng', desc: 'Khớp nối dữ liệu bank và sổ sách.', icon: RefreshCw, color: 'orange' },
+    ]
+  },
+  {
+    title: 'Báo cáo & Phân tích',
+    items: [
+      { id: 'reports', label: 'Báo cáo Tài chính', desc: 'Bảng cân đối, kết quả KD, lưu chuyển tiền.', icon: PieChart, color: 'purple' },
+      { id: 'tax', label: 'Báo cáo Thuế/VAT', desc: 'Tờ khai thuế GTGT, TNCN, TNDN.', icon: FileBarChart, color: 'rose' },
+      { id: 'budget', label: 'Ngân sách & KPI', desc: 'Theo dõi thực hiện so với kế hoạch.', icon: Target, color: 'emerald' },
+      { id: 'cashflow', label: 'Dự báo Dòng tiền', desc: 'Phân tích dòng tiền tương lai.', icon: History, color: 'blue' },
+    ]
+  }
+];
+
+function RefreshCw(props: any) {
+  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>;
+}
+
+function getColorClasses(color: string) {
+  switch (color) {
+    case 'blue': return 'bg-blue-50 text-blue-600';
+    case 'orange': return 'bg-orange-50 text-orange-600';
+    case 'indigo': return 'bg-indigo-50 text-indigo-600';
+    case 'purple': return 'bg-purple-50 text-purple-600';
+    case 'emerald': return 'bg-emerald-50 text-emerald-600';
+    case 'rose': return 'bg-rose-50 text-rose-600';
+    default: return 'bg-slate-50 text-slate-600';
+  }
+}
 
 export function Finance() {
-  const [activeTab, setActiveTab] = useState<'journal' | 'ledger' | 'reports'>('journal');
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
+  const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports'>('overview');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'transactions'), orderBy('createdAt', 'desc'), limit(50));
-    const unsub = onSnapshot(q, (snap) => {
-      const data = snap.docs.map(doc => ({ 
-        id: doc.id, 
+    const q = query(collection(db, 'finance_transactions'), limit(50));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map(doc => ({
+        id: doc.id,
         ...doc.data(),
-        date: doc.data().createdAt?.toDate().toLocaleDateString('vi-VN') || '...'
-      }));
-      setTransactions(data);
+        date: doc.data().date?.toDate()?.toLocaleDateString('vi-VN') || doc.data().dateStr || ''
+      })) as FinanceTransaction[];
+      setTransactions(docs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       setLoading(false);
     });
-    return () => unsub();
+
+    return () => unsubscribe();
   }, []);
 
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-
   const addDemoTransactions = async () => {
-    const demo: any[] = [
-      {
-        date: '01/03/2024',
-        description: 'Vốn góp cổ phần',
-        amount: 2000000000,
-        type: 'income',
-        category: 'Vốn',
-        reference: 'PT-01',
-        status: 'completed'
-      },
-      {
-        date: '05/03/2024',
-        description: 'Thanh toán tiền thuê mặt bằng',
-        amount: 150000000,
-        type: 'expense',
-        category: '642 - Chi phí QLDN',
-        reference: 'PC-01',
-        status: 'completed'
-      },
-      {
-         date: '10/03/2024',
-         description: 'Doanh thu bán hàng kỳ 1',
-         amount: 450000000,
-         type: 'income',
-         category: '511 - Doanh thu',
-         reference: 'HD-01',
-         status: 'completed'
-      }
+    if (!auth.currentUser) return;
+    const demos = [
+      { description: 'Thu hộ COD - Đơn hàng VCOM-9901', amount: 1250000, type: 'income', category: 'Sales', dateStr: '12/12/2023' },
+      { description: 'Thanh toán tiền điện văn phòng T12', amount: 4500000, type: 'expense', category: 'Operational', dateStr: '12/12/2023' },
+      { description: 'Nhập hàng kho tổng - NCC MobileWorld', amount: 85000000, type: 'expense', category: 'Inventory', dateStr: '11/12/2023' },
     ];
 
-    const { getAuth } = await import('firebase/auth');
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    if (!currentUser) return alert("Cần đăng nhập!");
-
-    for (const t of demo) {
-      await addDoc(collection(db, 'transactions'), {
-        ...t,
-        staffId: currentUser.uid,
-        createdAt: serverTimestamp()
+    for (const demo of demos) {
+      await addDoc(collection(db, 'finance_transactions'), {
+        ...demo,
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser?.uid || 'system'
       });
     }
   };
 
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+  const netProfit = totalIncome - totalExpense;
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Tài chính & Kế toán</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Hệ thống kế toán chuyên sâu theo Thông tư 99/2025/TT-BTC.</p>
+          <div className="flex items-center gap-2 mb-1">
+             {activeTab !== 'overview' && (
+                <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
+                   <ArrowLeft className="w-4 h-4 text-slate-500" />
+                </button>
+             )}
+             <h1 className="text-2xl font-bold text-[#111827]">Tài chính & Kế toán</h1>
+          </div>
+          <p className="text-sm text-[#6B7280]">Quản lý doanh số, chi phí, dòng tiền và báo cáo thuế theo thời gian thực.</p>
         </div>
         <div className="flex gap-3">
-          <button 
-            onClick={addDemoTransactions}
-            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
-          >
-            <Sparkles className="w-4 h-4" />
-            Thêm Demo
-          </button>
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <Printer className="w-4 h-4" />
-            In Sổ sách
+            <Download className="w-4 h-4 text-slate-500" /> Xuất Excel
           </button>
-          <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2">
-            <Calculator className="w-4 h-4" />
-            Lập Báo cáo Tài chính
+          <button 
+             onClick={addDemoTransactions}
+             className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Bút toán mới
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu Thuần (Net Revenue)</p>
-           <div className="text-2xl font-bold text-[#111827]">{formatCurrency(totalIncome)}</div>
-           <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
-              <TrendingUp className="w-3 h-3" /> +12.5% so với tháng trước
-           </div>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi phí (Total Expense)</p>
-           <div className="text-2xl font-bold text-[#EF4444]">{formatCurrency(totalExpense)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Biên chi phí: {totalIncome ? ((totalExpense/totalIncome)*100).toFixed(1) : 0}%</p>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lợi nhuận ròng (Net Profit)</p>
-           <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(totalIncome - totalExpense)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Lợi nhuận sẵn dụng</p>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Thuế phải nộp (VAT/CIT Est.)</p>
-           <div className="text-2xl font-bold text-[#F59E0B]">{formatCurrency(totalIncome * 0.1)}</div>
-           <p className="text-[10px] text-[#6B7280] mt-1">Tạm tính (10%)</p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
-        <div className="flex border-b border-[#F3F4F6]">
-           {[
-             { id: 'journal', label: 'Bút toán & Nhật ký chung', icon: BookOpen },
-             { id: 'ledger', label: 'Hệ thống Tài khoản & Sổ cái', icon: FileText },
-             { id: 'reports', label: 'Báo cáo Tài chính', icon: PieChart }
-           ].map((tab) => (
-             <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={cn(
-                  "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
-                  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-blue-50/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
-                )}
-             >
-                <tab.icon className="w-4 h-4" /> {tab.label}
-             </button>
-           ))}
-        </div>
-
-        {activeTab === 'journal' && (
-           <div className="p-0 animate-in fade-in duration-300">
-              <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
-                <div className="flex gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
-                    <input 
-                      type="text" 
-                      placeholder="Tìm chứng từ, mã tài khoản..." 
-                      className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
-                    />
-                  </div>
-                  <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
-                     <Calendar className="w-4 h-4" /> Tháng 3/2024
-                  </button>
-                </div>
-                <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
-                   Tải File Excel (XML/XLSX) <Download className="w-3 h-3" />
-                </button>
+      {activeTab === 'overview' && (
+        <div className="space-y-8">
+           {/* Stats Cards */}
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-[#2563EB]">Doanh thu Hệ thống (G.M.V)</span>
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(totalIncome)}</span>
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
+                 </div>
               </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-rose-600">Tổng Chi phí & Quỹ lương</span>
+                    <TrendingDown className="w-4 h-4 text-rose-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(totalExpense)}</span>
+                    <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-teal-600">Lợi nhuận ròng (P&L)</span>
+                    <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className={cn("text-2xl font-black", netProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
+                       {formatCurrency(netProfit)}
+                    </span>
+                    <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
+                 </div>
+              </div>
+              <div className="bg-indigo-600 p-6 rounded-xl border border-indigo-700 shadow-xl hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
+                 <div className="absolute right-0 bottom-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
+                    <Building2 className="w-16 h-16 text-white" />
+                 </div>
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-indigo-200 font-bold uppercase tracking-widest">Dấu vân tay tài chính</span>
+                    <ShieldCheck className="w-4 h-4 text-white" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-xl font-bold text-white">Trust Score: 9.8</span>
+                    <span className="text-[10px] text-white font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
+                 </div>
+              </div>
+           </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest w-48">Thời gian</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nội dung diễn giải</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Thu / Chi (VND)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F3F4F6]">
-                    {transactions.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-[#F9FAFB] group transition-colors">
-                        <td className="px-6 py-4">
-                           <div className="text-xs font-bold text-[#111827]">{tx.date}</div>
-                        </td>
-                        <td className="px-6 py-4 max-w-xs">
-                           <p className="text-xs text-[#4B5563] truncate font-medium">{tx.description}</p>
-                        </td>
-                        <td className="px-6 py-4">
-                           <span className="px-2.5 py-1 bg-slate-100 text-[#6B7280] text-[9px] font-bold uppercase rounded-md tracking-wider">
-                              {tx.category}
-                           </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                           <span className={cn(
-                             "text-xs font-bold",
-                             tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
-                           )}>
-                              {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
-                           </span>
-                        </td>
-                      </tr>
+           {/* Module Grid */}
+           <div className="space-y-6">
+              {FINANCE_MODULE_GROUPS.map((group, gIdx) => (
+                <div key={gIdx} className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 px-1">
+                    <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+                    {group.title}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {group.items.map((mod) => (
+                       <div 
+                         key={mod.id}
+                         onClick={() => setActiveTab(mod.id as any)}
+                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                       >
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                             <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
+                          </div>
+                          <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
+                             <mod.icon className="w-6 h-6" />
+                          </div>
+                          <div className="relative z-10">
+                             <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+                             <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+                          </div>
+                       </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+                </div>
+              ))}
            </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'reports' && (
-           <div className="p-8 space-y-8 animate-in fade-in duration-300">
-              <div className="max-w-4xl mx-auto space-y-6">
-                 {[
-                   { title: 'Bảng Cân đối Kế toán', desc: 'Phản ánh tình hình tài sản, nợ phải trả và vốn chủ sở hữu tại một thời điểm.' },
-                   { title: 'Báo cáo Kết quả Hoạt động Kinh doanh', desc: 'Phản ánh doanh thu, chi phí và lợi nhuận của doanh nghiệp trong kỳ.' },
-                   { title: 'Báo cáo Lưu chuyển Tiền tệ', desc: 'Theo dõi dòng tiền vào và ra từ hoạt động KD, đầu tư và tài chính.' }
-                 ].map((report) => (
-                   <div key={report.title} className="bg-[#F9FAFB] p-6 rounded-lg border border-[#E5E7EB] flex justify-between items-center group cursor-pointer hover:border-[#2563EB] transition-all">
-                      <div className="space-y-1">
-                         <h4 className="text-base font-bold text-[#111827]">{report.title}</h4>
-                         <p className="text-sm text-[#6B7280]">{report.desc}</p>
-                      </div>
-                      <div className="p-3 bg-white rounded-lg shadow-sm group-hover:bg-[#2563EB] group-hover:text-white transition-all">
-                         <ArrowUpRight className="w-5 h-5" />
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
-        )}
-      </div>
+      {activeTab !== 'overview' && (
+        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="flex border-b border-[#F3F4F6]">
+              {[
+                { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
+                { id: 'ledger', label: 'Sổ cái & Chứng từ', icon: FileText },
+                { id: 'reports', label: 'Báo cáo QT', icon: PieChart }
+              ].map((tab) => (
+                <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={cn(
+                    "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+                    activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-blue-50/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+                  )}
+                >
+                  <tab.icon className="w-4 h-4" /> {tab.label}
+                </button>
+              ))}
+          </div>
 
-      <div className="bg-emerald-50 rounded-lg p-6 border border-emerald-100 flex items-start gap-4">
+          <div className="p-0">
+            {activeTab === 'journal' && (
+               <div className="animate-in fade-in duration-300">
+                  <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
+                    <div className="flex gap-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                        <input type="text" placeholder="Tìm kiếm bút toán..." className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-64" />
+                      </div>
+                      <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-slate-400" /> Lọc kỳ
+                      </button>
+                    </div>
+                  </div>
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+                        <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#F3F4F6]">
+                      {transactions.map((tx) => (
+                        <tr key={tx.id} className="hover:bg-[#F9FAFB] transition-colors">
+                          <td className="px-6 py-4">
+                             <div className="flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
+                                <span className="text-sm text-[#111827] font-medium">{tx.date}</span>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-full uppercase">
+                               {tx.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                             <span className={cn(
+                               "text-xs font-bold",
+                               tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
+                             )}>
+                                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                             </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+               </div>
+            )}
+
+            {activeTab === 'reports' && (
+               <div className="p-8 space-y-8 animate-in fade-in duration-300">
+                  <div className="max-w-4xl mx-auto space-y-6">
+                     {[
+                       { title: 'Bảng Cân đối Kế toán', desc: 'Phản ánh tình hình tài sản, nợ phải trả và vốn chủ sở hữu tại một thời điểm.' },
+                       { title: 'Báo cáo Kết quả Hoạt động Kinh doanh', desc: 'Phản ánh doanh thu, chi phí và lợi nhuận của doanh nghiệp trong kỳ.' },
+                       { title: 'Báo cáo Lưu chuyển Tiền tệ', desc: 'Theo dõi dòng tiền vào và ra từ hoạt động KD, đầu tư và tài chính.' }
+                     ].map((report) => (
+                       <div key={report.title} className="bg-[#F9FAFB] p-6 rounded-lg border border-[#E5E7EB] flex justify-between items-center group cursor-pointer hover:border-[#2563EB] transition-all">
+                          <div className="space-y-1">
+                             <h4 className="text-base font-bold text-[#111827]">{report.title}</h4>
+                             <p className="text-sm text-[#6B7280]">{report.desc}</p>
+                          </div>
+                          <div className="p-3 bg-white rounded-lg shadow-sm group-hover:bg-[#2563EB] group-hover:text-white transition-all">
+                             <ArrowUpRight className="w-5 h-5" />
+                          </div>
+                       </div>
+                     ))}
+                  </div>
+               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-emerald-50 rounded-xl p-6 border border-emerald-100 flex items-start gap-4 mt-8">
          <div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg">
             <ShieldCheck className="w-6 h-6" />
          </div>

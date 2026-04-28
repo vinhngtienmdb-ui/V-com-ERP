@@ -385,66 +385,67 @@ export function Orders() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* ... (Header and Stats Cards remain as is) */}
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Vận hành Đơn hàng & Logistics</h1>
+          <h1 className="text-2xl font-bold text-[#111827]">Vận hành Đơn hàng & Logistics</h1>
           <p className="text-sm text-[#6B7280] mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
         </div>
         <div className="flex gap-3">
           <button 
             onClick={addDemoOrders}
-            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
+            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
           >
             <Sparkles className="w-4 h-4" />
-            Thêm Demo
+            Mã giảm giá
           </button>
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <Truck className="w-4 h-4" />
-            Đẩy đơn hàng loạt (GHTK/GHN)
-          </button>
-          <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
-            Tạo đơn thủ công
+          <button className="bg-[#111827] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+            + Tạo đơn mới
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm ring-2 ring-red-100">
-           <div className="flex justify-between items-start mb-2">
-              <span className="text-[10px] text-red-600 font-bold uppercase italic">Cảnh báo chậm trễ</span>
+        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all ring-2 ring-red-100">
+           <div className="flex justify-between items-start mb-4">
+              <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
               <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
            </div>
-           <div className="text-2xl font-black text-red-600">
+           <div className="text-3xl font-black text-red-600">
              {allOrders.filter(o => isDelayed(o.date, o.status)).length}
            </div>
-           <div className="mt-1 text-[10px] text-red-400 font-bold tracking-tight">Đơn {">"}24h chưa xử lý</div>
+           <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <div className="flex justify-between items-start mb-2">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cần đóng gói</span>
+        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+           <div className="flex justify-between items-start mb-4">
+              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Cần đóng gói</span>
               <PackageCheck className="w-4 h-4 text-blue-500" />
            </div>
-           <div className="text-2xl font-bold text-[#111827]">42</div>
-           <div className="mt-1 text-[10px] text-[#6B7280]">12 đơn đóng muộn ({">"}24h)</div>
+           <div className="text-3xl font-black text-[#111827]">42</div>
+           <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">12 đơn đóng muộn ({">"}24h)</div>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <div className="flex justify-between items-start mb-2">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase">Đang vận chuyển</span>
+        <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+           <div className="flex justify-between items-start mb-4">
+              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang vận chuyển</span>
               <Truck className="w-4 h-4 text-purple-500" />
            </div>
-           <div className="text-2xl font-bold text-[#111827]">156</div>
-           <div className="mt-1 text-[10px] text-[#6B7280]">Chủ yếu: GHTK (65%)</div>
+           <div className="text-3xl font-black text-[#111827]">156</div>
+           <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-           <div className="flex justify-between items-start mb-2">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase">Yêu cầu Đổi trả (RMA)</span>
-              <RotateCcw className="w-4 h-4 text-orange-500" />
+        <div className="bg-[#111827] p-6 rounded-xl shadow-xl shadow-slate-200 relative overflow-hidden group border border-slate-800">
+           <div className="relative z-10 flex flex-col justify-between h-full text-white">
+              <div className="flex justify-between items-start mb-4">
+                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
+                 <RotateCcw className="w-4 h-4 text-orange-400" />
+              </div>
+              <div>
+                 <div className="text-3xl font-black tracking-tighter">08</div>
+                 <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
+              </div>
            </div>
-           <div className="text-2xl font-bold text-[#111827]">08</div>
-           <div className="mt-1 text-[10px] text-[#EF4444] font-medium">3 đơn cần xử lý gấp</div>
+           <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
         </div>
+      </div>
         <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
            <div className="flex justify-between items-start mb-2">
               <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng cước phí dự kiến</span>
@@ -453,7 +454,6 @@ export function Orders() {
            <div className="text-2xl font-bold text-[#111827]">{formatCurrency(12450000)}</div>
            <div className="mt-1 text-[10px] text-[#10B981]">Tiết kiệm 8% với Hợp đồng sàn</div>
         </div>
-      </div>
 
       <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
         <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">

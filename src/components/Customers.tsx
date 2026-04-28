@@ -865,43 +865,37 @@ export function Customers() {
       )}
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">CRM & Marketing Đa kênh</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Quản lý khách hàng, Sales Pipeline và tích hợp Omnichannel Chat.</p>
+          <div className="flex items-center gap-2 mb-1">
+             <h1 className="text-2xl font-bold text-[#111827]">Quản trị Khách hàng & CRM</h1>
+          </div>
+          <p className="text-sm text-[#6B7280]">Hệ thống chăm sóc khách hàng đa kênh, quản lý Loyalty & Pipeline.</p>
         </div>
         <div className="flex gap-3 items-center">
           <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 mr-2">
             <button 
               onClick={() => setActiveView('list')}
-              className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+              className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
             >
               <List className="w-4 h-4" /> Danh sách
             </button>
             <button 
               onClick={() => setActiveView('pipeline')}
-              className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+              className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
             >
               <Kanban className="w-4 h-4" /> Pipeline
             </button>
           </div>
           <button 
-            onClick={() => setShowConfigModal(true)}
-            className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
-          >
-            <Settings className="w-4 h-4 text-slate-500" />
-            Cấu hình
-          </button>
-          <button 
             onClick={() => setShowAddModal(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all flex items-center gap-2"
+            className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
           >
-            + Thêm Khách hàng
+            <Users className="w-4 h-4" /> Thêm Khách hàng
           </button>
           <button 
             onClick={() => navigate('/omnichat')}
             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
           >
-            <LifeBuoy className="w-4 h-4" />
-            Vào Chat (Omni)
+            <MessageSquare className="w-4 h-4 text-emerald-500" /> Omni Chat
           </button>
         </div>
       </div>
@@ -909,25 +903,33 @@ export function Customers() {
       {activeView === 'list' ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng khách hàng</p>
-              <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.length}</div>
-              <div className="mt-2 text-[10px] text-[#10B981] font-medium">+5% so với tháng trước</div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.length}</span>
+                <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
+              </div>
             </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active (Hệ thống)</p>
-              <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</div>
-              <div className="mt-2 text-[10px] text-[#6B7280]">Chiếm {dynamicCustomers.length ? ((dynamicCustomers.filter(c => c.status === 'active').length / dynamicCustomers.length) * 100).toFixed(1) : 0}% tổng user</div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</span>
+                <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">High Retention</span>
+              </div>
             </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi tiêu TB (CLV)</p>
-              <div className="text-2xl font-bold text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</div>
-              <div className="mt-2 text-[10px] text-[#2563EB] font-medium">Đồng bộ từ giao dịch</div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
+                <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Synced</span>
+              </div>
             </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Hạng Vàng/Kim Cương</p>
-              <div className="text-2xl font-bold text-[#F59E0B]">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</div>
-              <div className="mt-2 text-[10px] text-[#F59E0B] font-medium">Khách hàng trung thành</div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-amber-600">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</span>
+                <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
+              </div>
             </div>
           </div>
 

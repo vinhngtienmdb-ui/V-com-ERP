@@ -18,7 +18,8 @@ import {
   Cpu,
   RefreshCw,
   Bell,
-  PanelTop
+  PanelTop,
+  FileSignature
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
@@ -57,6 +58,17 @@ export function WorkflowHub() {
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     []
   );
+
+  const handleApprove = (taskId: string) => {
+    // In a real app, this would update Firestore
+    alert(`Đã phê duyệt Task ${taskId} thành công!`);
+  };
+
+  const handleSignRequest = (taskId: string) => {
+    // Link to signature hub with task context
+    alert(`Đang chuyển hướng đến Trung tâm Ký số cho Task ${taskId}...`);
+    navigate('/signature');
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
@@ -180,6 +192,20 @@ export function WorkflowHub() {
                            <p className="text-[11px] text-[#6B7280] flex items-center gap-1">
                               <Clock className="w-3 h-3" /> Hạn chót: {task.deadline}
                            </p>
+                           <div className="flex gap-2 pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button 
+                                onClick={() => handleApprove(task.id)}
+                                className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded flex items-center gap-1 hover:bg-emerald-100 transition-all"
+                              >
+                                 <CheckCircle2 className="w-3 h-3" /> Duyệt nhanh
+                              </button>
+                              <button 
+                                onClick={() => handleSignRequest(task.id)}
+                                className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded flex items-center gap-1 hover:bg-blue-100 transition-all"
+                              >
+                                 <FileSignature className="w-3 h-3" /> Ký số & Duyệt
+                              </button>
+                           </div>
                         </div>
                         <button 
                           onClick={() => navigate(task.link)}

@@ -345,41 +345,104 @@ export function Procurement() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
+          <div className="flex items-center gap-2 mb-1">
+             {activeTab !== 'overview' && (
+                <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
+                   <ArrowLeft className="w-4 h-4 text-slate-500" />
+                </button>
+             )}
+             <h1 className="text-2xl font-bold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
+          </div>
+          <p className="text-sm text-[#6B7280]">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
+        </div>
+        <div className="flex gap-3">
+          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+            <BadgeDollarSign className="w-4 h-4 text-emerald-600" /> Báo cáo chi tiêu
+          </button>
+          <button className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Tạo đề xuất mới
+          </button>
         </div>
       </div>
 
       {activeTab === 'overview' && (
-        <>
-          <div className="space-y-12 bg-transparent mt-4">
-            {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
-              <div key={gIdx} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
-                  <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                   {group.items.map(item => (
-                      <button 
-                         key={item.id}
-                         onClick={() => setActiveTab(item.id)}
-                         className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
-                      >
-                         <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
-                            <item.icon className="w-6 h-6" />
-                         </div>
-                         <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold text-[#111827] mb-1">{item.label}</h3>
-                            <p className="text-xs text-slate-500 leading-relaxed mb-3">{item.desc}</p>
-                         </div>
-                      </button>
-                   ))}
-                </div>
+        <div className="space-y-8">
+           {/* Stats Cards */}
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
+                    <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(1850000000)}</span>
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
+                 </div>
               </div>
-            ))}
-          </div>
-        </>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
+                    <Clock className="w-4 h-4 text-blue-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">12 Phiếu</span>
+                    <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">High Priority</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
+                    <Building2 className="w-4 h-4 text-orange-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">240 NCC</span>
+                    <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
+                    <Star className="w-4 h-4 text-indigo-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">4.85/5</span>
+                    <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Excellent</span>
+                 </div>
+              </div>
+           </div>
+
+           {/* Matrix Grid Layout */}
+           <div className="space-y-6">
+              {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
+                <div key={gIdx} className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 px-1">
+                    <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+                    {group.title}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {group.items.map((mod) => (
+                       <div 
+                         key={mod.id}
+                         onClick={() => setActiveTab(mod.id as any)}
+                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                       >
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                             <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
+                          </div>
+                          <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
+                             <mod.icon className="w-6 h-6" />
+                          </div>
+                          <div className="relative z-10">
+                             <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+                             <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+                          </div>
+                       </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+           </div>
+        </div>
       )}
 
       {activeTab === 'sup_list' && <SupplierManagement onBack={() => setActiveTab('overview')} />}

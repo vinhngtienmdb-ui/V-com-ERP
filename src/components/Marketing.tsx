@@ -61,16 +61,54 @@ const SOCIAL_ACCOUNTS = [
   { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
 ];
 
+const MARKETING_MODULE_GROUPS = [
+  {
+    title: 'Chiến dịch & Tăng trưởng',
+    items: [
+      { id: 'campaigns', label: 'Chiến dịch (Campaigns)', desc: 'Setup voucher, khuyến mãi sàn.', icon: Megaphone, color: 'blue' },
+      { id: 'vouchers', label: 'Mã giảm giá', desc: 'Quản lý kho voucher và điều kiện.', icon: Calendar, color: 'indigo' },
+      { id: 'affiliate', label: 'Affiliate & KOC', desc: 'Mạng lưới đối tác lan tỏa.', icon: Share2, color: 'emerald' },
+    ]
+  },
+  {
+    title: 'Đa kênh & Tự động hóa',
+    items: [
+      { id: 'omnichannel', label: 'Social Sync', desc: 'Đồng bộ Facebook, TikTok, IG.', icon: Facebook, color: 'blue' },
+      { id: 'ads', label: 'Ads Manager', desc: 'Quét tracking và tối ưu ngân sách.', icon: TrendingUp, color: 'purple' },
+      { id: 'automation', label: 'Marketing Auto', desc: 'Kịch bản chăm sóc tự động.', icon: Cpu, color: 'rose' },
+    ]
+  }
+];
+
+function getColorClasses(color: string) {
+  switch (color) {
+    case 'blue': return 'bg-blue-50 text-blue-600';
+    case 'orange': return 'bg-orange-50 text-orange-600';
+    case 'indigo': return 'bg-indigo-50 text-indigo-600';
+    case 'purple': return 'bg-purple-50 text-purple-600';
+    case 'emerald': return 'bg-emerald-50 text-emerald-600';
+    case 'rose': return 'bg-rose-50 text-rose-600';
+    default: return 'bg-slate-50 text-slate-600';
+  }
+}
+
 export function Marketing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'campaigns' | 'omnichannel' | 'ads' | 'vouchers'>('campaigns');
+  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Marketing & Omnichannel</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Kết nối đa kênh (FB, TT, IG), Quản lý chiến dịch & Tự động hóa tiếp thị.</p>
+          <div className="flex items-center gap-2 mb-1">
+             {activeTab !== 'overview' && (
+                <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
+                   <ArrowUpRight className="w-4 h-4 rotate-225" />
+                </button>
+             )}
+             <h1 className="text-2xl font-bold text-[#111827]">Marketing & Omnichannel</h1>
+          </div>
+          <p className="text-sm text-[#6B7280]">Kết nối đa kênh (FB, TT, IG), Quản lý chiến dịch & Tự động hóa tiếp thị.</p>
         </div>
         <div className="flex gap-3">
           <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
@@ -79,39 +117,121 @@ export function Marketing() {
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+            className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
           >
             <Plus className="w-4 h-4" /> Tạo chiến dịch mới
           </button>
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div className="flex border-b border-slate-200 gap-8">
-        {[
-          { id: 'campaigns', label: 'Chiến dịch (Campaigns)', icon: Megaphone },
-          { id: 'vouchers', label: 'Mã giảm giá (Vouchers)', icon: Calendar },
-          { id: 'omnichannel', label: 'Kết nối Đa kênh (Social Sync)', icon: Share2 },
-          { id: 'ads', label: 'Quản lý Ads & Tracking', icon: TrendingUp },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={cn(
-              "pb-4 text-sm font-bold transition-all relative flex items-center gap-2",
-              activeTab === tab.id ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
-            )}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-            {activeTab === tab.id && (
-              <motion.div layoutId="activeTabMarketing" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-            )}
-          </button>
-        ))}
-      </div>
+      {activeTab === 'overview' && (
+        <div className="space-y-8">
+           {/* Stats Cards */}
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GMV từ Marketing</span>
+                    <BarChart2 className="w-4 h-4 text-emerald-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(900000000)}</span>
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
+                    <Smartphone className="w-4 h-4 text-blue-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">1.2M</span>
+                    <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">+15k/day</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
+                    <TrendingUp className="w-4 h-4 text-orange-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(85000000)}</span>
+                    <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
+                    <Megaphone className="w-4 h-4 text-indigo-600" />
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">08</span>
+                    <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Hot Sale</span>
+                 </div>
+              </div>
+           </div>
 
-      <AnimatePresence mode="wait">
+           {/* Matrix Grid Layout */}
+           <div className="space-y-6">
+              {MARKETING_MODULE_GROUPS.map((group, gIdx) => (
+                <div key={gIdx} className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 px-1">
+                    <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+                    {group.title}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {group.items.map((mod) => (
+                       <div 
+                         key={mod.id}
+                         onClick={() => setActiveTab(mod.id as any)}
+                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                       >
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                             <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
+                          </div>
+                          <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
+                             <mod.icon className="w-6 h-6" />
+                          </div>
+                          <div className="relative z-10">
+                             <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+                             <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+                          </div>
+                       </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+           </div>
+        </div>
+      )}
+
+      {/* Tabs Menu */}
+      {activeTab !== 'overview' && (
+        <>
+          <div className="flex border-b border-slate-200 gap-8">
+            {[
+              { id: 'campaigns', label: 'Chiến dịch (Campaigns)', icon: Megaphone },
+              { id: 'vouchers', label: 'Mã giảm giá (Vouchers)', icon: Calendar },
+              { id: 'omnichannel', label: 'Kết nối Đa kênh (Social Sync)', icon: Share2 },
+              { id: 'ads', label: 'Quản lý Ads & Tracking', icon: TrendingUp },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  "pb-4 text-sm font-bold transition-all relative flex items-center gap-2",
+                  activeTab === tab.id ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
+                )}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.div layoutId="activeTabMarketing" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
         {activeTab === 'omnichannel' && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -341,6 +461,8 @@ export function Marketing() {
           </motion.div>
         )}
       </AnimatePresence>
+    </>
+    )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

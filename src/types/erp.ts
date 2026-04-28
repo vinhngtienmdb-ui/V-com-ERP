@@ -149,6 +149,18 @@ export interface B2BInventoryItem {
 }
 
 // --- FINANCE & ACCOUNTING (Circular 99/2025/TT-BTC) ---
+export interface FinanceTransaction {
+  id: string;
+  description: string;
+  amount: number;
+  type: 'income' | 'expense';
+  category: string;
+  date: string;
+  dateStr?: string;
+  createdAt?: any;
+  createdBy?: string;
+}
+
 export interface AccountEntry {
   id: string;
   accountCode: string; // e.g., 111, 112, 131...

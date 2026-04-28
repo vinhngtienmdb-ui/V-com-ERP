@@ -58,6 +58,8 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import {
   BarChart,
   Bar,
@@ -560,7 +562,7 @@ export function HumanResources() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
+          <h1 className="text-2xl font-bold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
           <p className="text-sm text-[#6B7280] mt-1">Quản lý hồ sơ nhân sự, Skill Matrix và Onboarding Intelligence.</p>
         </div>
         <div className="flex gap-3 items-center">
@@ -568,72 +570,68 @@ export function HumanResources() {
             <span className="text-xs font-semibold text-slate-500 pl-2">Admin Mode</span>
             <button 
               onClick={() => setIsAdmin(!isAdmin)}
-              className={cn("w-10 h-5 rounded-full relative transition-colors", isAdmin ? "bg-indigo-600" : "bg-slate-300")}
+              className={cn("w-10 h-5 rounded-full relative transition-colors shadow-inner", isAdmin ? "bg-indigo-600" : "bg-slate-300")}
             >
-              <div className={cn("absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform", isAdmin ? "translate-x-5" : "translate-x-0")} />
+              <div className={cn("absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm", isAdmin ? "translate-x-5" : "translate-x-0")} />
             </button>
           </div>
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
             <LineChart className="w-4 h-4 text-emerald-600" />
-            Báo cáo Nhân sự
-          </button>
-          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <BrainCircuit className="w-4 h-4 text-purple-600" />
-            AI Talent Scan
+            Báo cáo
           </button>
           <button 
             onClick={() => setActiveTab('rec_candidates')}
-            className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+            className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
           >
             <UserPlus className="w-4 h-4" />
-            Tuyển dụng nhân sự
+            + Tuyển dụng
           </button>
         </div>
       </div>
 
       {activeTab === 'overview' && (
-        <>
+        <div className="space-y-8 animate-in fade-in duration-700">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
-               <div className="flex justify-between items-start mb-3">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng nhân sự</span>
-              <Users className="w-4 h-4 text-blue-600" />
-           </div>
-           <div className="text-3xl font-bold text-[#111827]">124</div>
-           <div className="mt-2 flex items-center gap-1.5 text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-lg w-fit">
-              <Building2 className="w-3.5 h-3.5" /> 05 Phòng ban
-           </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
-           <div className="flex justify-between items-start mb-3">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang Onboarding</span>
-              <Rocket className="w-4 h-4 text-emerald-600" />
-           </div>
-           <div className="text-3xl font-bold text-emerald-600">12</div>
-           <p className="text-[10px] text-[#6B7280] mt-2 font-medium">Bổ sung 4 nhân sự Kho Q3</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm transform hover:-translate-y-1 transition-all">
-           <div className="flex justify-between items-start mb-3">
-              <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Quỹ lương tháng</span>
-              <Wallet className="w-4 h-4 text-slate-400" />
-           </div>
-           <div className="text-2xl font-bold text-[#111827] truncate">{formatCurrency(1850000000)}</div>
-           <p className="text-[10px] text-slate-400 mt-2 italic">Tăng 5.2% so với tháng 2</p>
-        </div>
-        <div className="bg-[#111827] p-6 rounded-lg shadow-xl shadow-slate-200 relative overflow-hidden group">
-           <div className="relative z-10 flex flex-col justify-between h-full">
-              <div className="flex justify-between items-start mb-3">
-                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Skill Health</span>
-                 <Target className="w-4 h-4 text-blue-500" />
-              </div>
-              <div>
-                 <div className="text-3xl font-bold text-white tracking-tighter">88.5%</div>
-                 <p className="text-[10px] text-blue-400 font-bold mt-1 uppercase">Top Dept: Marketing</p>
-              </div>
-           </div>
-           <BrainCircuit className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
-        </div>
-      </div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+               <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng nhân sự</span>
+                  <Users className="w-4 h-4 text-blue-600" />
+               </div>
+               <div className="text-3xl font-black text-[#111827]">124</div>
+               <div className="mt-3 flex items-center gap-1.5 text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded w-fit">
+                  <Building2 className="w-3.5 h-3.5" /> 05 Phòng ban
+               </div>
+            </div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+               <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang Onboarding</span>
+                  <Rocket className="w-4 h-4 text-emerald-600" />
+               </div>
+               <div className="text-3xl font-black text-emerald-600">12</div>
+               <p className="text-[10px] text-[#6B7280] mt-3 font-bold uppercase">Bổ sung 4 nhân sự Kho</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+               <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Quỹ lương tháng</span>
+                  <Wallet className="w-4 h-4 text-slate-400" />
+               </div>
+               <div className="text-2xl font-black text-[#111827] truncate">{formatCurrency(1850000000)}</div>
+               <p className="text-[10px] text-slate-400 mt-3 font-bold italic uppercase tracking-tighter">Tăng 5.2% so với T2</p>
+            </div>
+            <div className="bg-[#111827] p-6 rounded-xl shadow-xl shadow-slate-200 relative overflow-hidden group border border-slate-800">
+               <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div className="flex justify-between items-start mb-4">
+                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Skill Health</span>
+                     <Target className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <div>
+                     <div className="text-3xl font-black text-white tracking-tighter">88.5%</div>
+                     <p className="text-[10px] text-blue-400 font-bold mt-1 uppercase">Top: Marketing Dept</p>
+                  </div>
+               </div>
+               <BrainCircuit className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
+            </div>
+          </div>
 
       {/* HR Analytics Dashboard (Upgraded) */}
       <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm mb-6">
@@ -808,7 +806,7 @@ export function HumanResources() {
                 </div>
              </div>
           </div>
-        </>
+        </div>
       )}
 
       {activeTab !== 'overview' && (
@@ -1567,6 +1565,41 @@ export function HumanResources() {
                       className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 active:scale-95 transition-all hover:bg-indigo-700">
                        <Zap className="w-4 h-4" /> Tính lương AI (Batch)
                     </button>
+                    <button 
+                       onClick={async () => {
+                         try {
+                           const totalPayroll = payrollList.reduce((acc, pay) => acc + pay.netSalary, 0);
+                           const totalBonus = payrollList.reduce((acc, pay) => acc + pay.bonus, 0);
+                           
+                           await addDoc(collection(db, 'finance_transactions'), {
+                             type: 'expense',
+                             amount: totalPayroll,
+                             category: 'Chi phí nhân sự',
+                             description: `Quyết toán Quỹ lương & Thưởng Tháng 03/2024 (Tổng PN: ${payrollList.length})`,
+                             date: serverTimestamp(),
+                             source: 'hrm_payroll'
+                           });
+
+                           if (totalBonus > 0) {
+                              await addDoc(collection(db, 'finance_transactions'), {
+                                type: 'expense',
+                                amount: totalBonus,
+                                category: 'Thưởng KPI/OT',
+                                description: `Chi thưởng KPI & OT Tháng 03/2024`,
+                                date: serverTimestamp(),
+                                source: 'hrm_bonus'
+                              });
+                           }
+
+                           alert("Đã kết chuyển dữ liệu lương sang Phân hệ Tài chính thành công!");
+                         } catch (error) {
+                           console.error("Error pushing payroll to finance:", error);
+                           alert("Lỗi kết chuyển dữ liệu.");
+                         }
+                       }}
+                       className="bg-[#2563EB] text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20 active:scale-95 transition-all hover:bg-blue-700 ml-3">
+                        <ArrowRight className="w-4 h-4" /> Kết chuyển sang Finance (P&L)
+                     </button>
                     <button className="bg-[#111827] text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 transition-all hover:bg-slate-800">
                        <BadgeDollarSign className="w-4 h-4 text-emerald-400" /> Xuất phiếu lương đồng loạt
                     </button>

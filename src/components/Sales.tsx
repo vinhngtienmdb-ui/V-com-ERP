@@ -2,192 +2,247 @@ import React, { useState } from 'react';
 import { 
   Users, 
   Target, 
-  Trophy, 
   TrendingUp, 
-  BarChart3, 
+  Award, 
   Search, 
   Filter, 
-  Crown, 
-  Medal, 
   ArrowUpRight, 
-  Star,
-  Settings2,
-  MoreVertical,
-  CheckCircle2,
-  Percent,
-  GitMerge,
-  Gift,
-  Save,
-  ShieldCheck
+  Medal, 
+  Trophy, 
+  Percent, 
+  GitMerge, 
+  Gift, 
+  Save, 
+  ShieldCheck, 
+  ArrowLeft,
+  ChevronLeft
 } from 'lucide-react';
-import { formatCurrency, cn } from '../lib/utils';
-import { SalesRep } from '../types/erp';
+import { cn, formatCurrency } from '../lib/utils';
 
-const MOCK_SALES: SalesRep[] = [
-  { id: 'SAL-001', name: 'Lê Văn Tám', tier: 'lead', target: 5000000000, achieved: 4200000000, commissionRate: 2.5, salesCount: 124 },
-  { id: 'SAL-002', name: 'Trần Thị Thu', tier: 'senior', target: 3000000000, achieved: 3250000000, commissionRate: 1.8, salesCount: 88 },
-  { id: 'SAL-003', name: 'Nguyễn Minh Anh', tier: 'junior', target: 1000000000, achieved: 850000000, commissionRate: 1.2, salesCount: 42 },
+const MOCK_SALES = [
+  { id: 'S-001', name: 'Nguyễn Văn A', tier: 'senior', target: 500000000, achieved: 450000000, commissionRate: 2.5 },
+  { id: 'S-002', name: 'Trần Thị B', tier: 'lead', target: 800000000, achieved: 920000000, commissionRate: 3.5 },
+  { id: 'S-003', name: 'Lê Văn C', tier: 'junior', target: 200000000, achieved: 120000000, commissionRate: 1.5 },
 ];
 
+const SALES_MODULE_GROUPS = [
+  {
+    title: 'Vận hành Kinh doanh',
+    items: [
+      { id: 'dashboard', label: 'Bảng theo dõi KPI', desc: 'Theo dõi tiến độ doanh số và rank.', icon: Target, color: 'blue' },
+      { id: 'reps', label: 'Đội ngũ Sales', desc: 'Quản lý nhân viên và cấp bậc.', icon: Users, color: 'indigo' },
+      { id: 'pipeline', label: 'Cơ hội (Pipeline)', desc: 'Theo dõi các deal đang đàm phán.', icon: TrendingUp, color: 'emerald' },
+      { id: 'commissions', label: 'Tính toán Hoa hồng', desc: 'Tự động tính commission theo data.', icon: Award, color: 'orange' },
+    ]
+  },
+  {
+    title: 'Cấu hình & Gamification',
+    items: [
+      { id: 'settings', label: 'Cấu hình Sales', desc: 'Thiết lập bậc hoa hồng và rules.', icon: GitMerge, color: 'purple' },
+      { id: 'rewards', label: 'Khen thưởng nóng', desc: 'Gamification chốt deal thần tốc.', icon: Trophy, color: 'rose' },
+    ]
+  }
+];
+
+function getColorClasses(color: string) {
+  switch (color) {
+    case 'blue': return 'bg-blue-50 text-blue-600';
+    case 'orange': return 'bg-orange-50 text-orange-600';
+    case 'indigo': return 'bg-indigo-50 text-indigo-600';
+    case 'purple': return 'bg-purple-50 text-purple-600';
+    case 'emerald': return 'bg-emerald-50 text-emerald-600';
+    case 'rose': return 'bg-rose-50 text-rose-600';
+    default: return 'bg-slate-50 text-slate-600';
+  }
+}
+
 export function SalesManagement() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'overview' | 'dashboard' | 'reps' | 'settings' | 'pipeline' | 'commissions' | 'rewards'>('overview');
   const [settingSection, setSettingSection] = useState<'commission' | 'routing' | 'gamification'>('commission');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Quản lý Đội ngũ Kinh doanh</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Cấp bậc, hoa hồng và theo dõi hiệu suất thực tế của đội ngũ Sales sàn.</p>
+          <div className="flex items-center gap-2 mb-1">
+             {activeTab !== 'overview' && (
+                <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
+                   <ArrowLeft className="w-4 h-4 text-slate-500" />
+                </button>
+             )}
+             <h1 className="text-2xl font-bold text-[#111827]">Quản trị Kinh doanh (Sales)</h1>
+          </div>
+          <p className="text-sm text-[#6B7280]">Hệ thống quản lý KPI, tính hoa hồng tự động và thi đua đội ngũ Sales.</p>
         </div>
         <div className="flex gap-3">
-          <button 
-            onClick={() => setActiveTab(activeTab === 'dashboard' ? 'settings' : 'dashboard')}
-            className={cn(
-              "border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
-              activeTab === 'settings' ? "bg-slate-100 text-blue-600 border-blue-200" : "bg-white hover:bg-slate-50"
-            )}
-          >
-            <Settings2 className="w-4 h-4" />
-            {activeTab === 'dashboard' ? 'Cấu hình chính sách' : 'Quay lại Dashboard'}
+          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+            Xuất Báo cáo KPI
           </button>
-          {activeTab === 'dashboard' && (
-            <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
-              Thêm nhân sự mới
-            </button>
-          )}
+          <button className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2">
+            + Tạo Lead mới
+          </button>
         </div>
       </div>
 
-      {activeTab === 'dashboard' ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng doanh số tháng 03</p>
-               <div className="text-2xl font-bold text-[#111827]">{formatCurrency(8300000000)}</div>
-               <p className="text-[10px] text-[#10B981] font-medium mt-1">Hoàn thành 92% kế hoạch</p>
-            </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng hoa hồng chi trả</p>
-               <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(124500000)}</div>
-               <p className="text-[10px] text-[#6B7280] mt-1">Tỷ lệ trung bình: 1.5%</p>
-            </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Người dẫn đầu (Champion)</p>
-               <div className="text-lg font-bold text-[#111827] truncate mt-1">Trần Thị Thu</div>
-               <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#10B981] font-bold">
-                  <Crown className="w-3.5 h-3.5 fill-current" /> 108% Target
-               </div>
-            </div>
-            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active Sales Rep</p>
-               <div className="text-2xl font-bold text-[#111827]">24/25</div>
-               <p className="text-[10px] text-[#6B7280] mt-1">Đang hoạt động tại thực địa</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
-              <div className="flex gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
-                  <input 
-                    type="text" 
-                    placeholder="Tìm nhân viên, cấp bậc..." 
-                    className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
-                  />
-                </div>
-                <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
-                   <Filter className="w-4 h-4" /> Lọc theo Tier
-                </button>
+      {activeTab === 'overview' && (
+        <div className="space-y-8">
+           {/* Stats Cards */}
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng GMV chốt (T3)</p>
+                 <div className="flex items-end justify-between">
+                    <span className="text-2xl font-black text-[#111827]">{formatCurrency(12500000000)}</span>
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+15.8%</span>
+                 </div>
               </div>
-              <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
-                 Real-time Leaderboard <ArrowUpRight className="w-3 h-3" />
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tỉ lệ Hoàn thành KPI</p>
+                 <div className="flex items-end justify-between mt-3">
+                    <span className="text-2xl font-black text-[#111827]">88.5%</span>
+                    <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">On Track</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Deal đang Open</p>
+                 <div className="flex items-end justify-between mt-3">
+                    <span className="text-2xl font-black text-[#111827]">45 Leads</span>
+                    <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">High Value</span>
+                 </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                 <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Hoa hồng tạm tính</p>
+                 <div className="flex items-end justify-between mt-3">
+                    <span className="text-2xl font-black text-amber-600">{formatCurrency(320000000)}</span>
+                    <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">Commission</span>
+                 </div>
+              </div>
+           </div>
+
+           {/* Module Grid */}
+           <div className="space-y-6">
+              {SALES_MODULE_GROUPS.map((group, gIdx) => (
+                <div key={gIdx} className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 px-1">
+                    <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+                    {group.title}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {group.items.map((mod) => (
+                       <div 
+                         key={mod.id}
+                         onClick={() => setActiveTab(mod.id as any)}
+                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                       >
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                             <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
+                          </div>
+                          <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
+                             <mod.icon className="w-6 h-6" />
+                          </div>
+                          <div className="relative z-10">
+                             <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+                             <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+                          </div>
+                       </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+           </div>
+        </div>
+      )}
+
+      {(activeTab === 'dashboard' || activeTab === 'reps') && (
+        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+            <div className="flex gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                <input 
+                  type="text" 
+                  placeholder="Tìm nhân viên, cấp bậc..." 
+                  className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+                />
+              </div>
+              <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
+                 <Filter className="w-4 h-4" /> Lọc theo Tier
               </button>
             </div>
+            <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
+               Real-time Leaderboard <ArrowUpRight className="w-3 h-3" />
+            </button>
+          </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-                    <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên Sales</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cấp bậc & Hoa hồng</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Target Hoàn thành</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng tạm tính</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phân hạng (Rank)</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên Sales</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cấp bậc & Hoa hồng</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Target Hoàn thành</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng tạm tính</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phân hạng (Rank)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F3F4F6]">
+                {MOCK_SALES.map((sale, idx) => (
+                  <tr key={sale.id} className="hover:bg-[#F9FAFB] group transition-colors text-sm">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-[#2563EB] border border-[#E5E7EB] text-xs">
+                            {sale.name.charAt(0)}
+                         </div>
+                         <div>
+                            <p className="font-bold text-[#111827]">{sale.name}</p>
+                            <p className="text-[10px] text-[#6B7280] uppercase tracking-tight">{sale.id}</p>
+                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="space-y-1">
+                         <span className={cn(
+                           "px-2 py-0.5 rounded text-[10px] font-bold border",
+                           sale.tier === 'lead' ? "bg-purple-50 text-purple-700 border-purple-100" :
+                           sale.tier === 'senior' ? "bg-blue-50 text-blue-700 border-blue-100" : "bg-slate-50 text-slate-700 border-slate-100"
+                         )}>
+                            {sale.tier.toUpperCase()}
+                         </span>
+                         <p className="text-[10px] text-[#6B7280] font-medium">Rate: {sale.commissionRate}% Doanh số</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="max-w-[150px] space-y-1.5">
+                         <div className="flex justify-between text-[10px] font-bold">
+                            <span>{((sale.achieved / sale.target) * 100).toFixed(0)}%</span>
+                            <span>{formatCurrency(sale.achieved)} / {formatCurrency(sale.target)}</span>
+                         </div>
+                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className={cn("h-full rounded-full transition-all duration-1000", sale.achieved >= sale.target ? "bg-[#10B981]" : "bg-[#2563EB]")} 
+                              style={{ width: `${Math.min(100, (sale.achieved / sale.target) * 100)}%` }}
+                            />
+                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-[#10B981]">
+                      {formatCurrency((sale.achieved * sale.commissionRate) / 100)}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end">
+                         {idx === 0 && <Medal className="w-5 h-5 text-yellow-500" />}
+                         {idx === 1 && <Medal className="w-5 h-5 text-slate-300" />}
+                         {idx === 2 && <Medal className="w-5 h-5 text-amber-600" />}
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#F3F4F6]">
-                  {MOCK_SALES.map((sale, idx) => (
-                    <tr key={sale.id} className="hover:bg-[#F9FAFB] group transition-colors text-sm">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-[#2563EB] border border-[#E5E7EB] text-xs">
-                              {sale.name.charAt(0)}
-                           </div>
-                           <div>
-                              <p className="font-bold text-[#111827]">{sale.name}</p>
-                              <p className="text-[10px] text-[#6B7280] uppercase">{sale.id}</p>
-                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                           <span className={cn(
-                             "px-2 py-0.5 rounded text-[10px] font-bold border",
-                             sale.tier === 'lead' ? "bg-purple-50 text-purple-700 border-purple-100" :
-                             sale.tier === 'senior' ? "bg-blue-50 text-blue-700 border-blue-100" : "bg-slate-50 text-slate-700 border-slate-100"
-                           )}>
-                              {sale.tier.toUpperCase()}
-                           </span>
-                           <p className="text-[10px] text-[#6B7280] font-medium">Rate: {sale.commissionRate}% Doanh số</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="max-w-[150px] space-y-1.5">
-                           <div className="flex justify-between text-[10px] font-bold">
-                              <span>{((sale.achieved / sale.target) * 100).toFixed(0)}%</span>
-                              <span>{formatCurrency(sale.achieved)} / {formatCurrency(sale.target)}</span>
-                           </div>
-                           <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                              <div 
-                                className={cn("h-full rounded-full transition-all duration-1000", sale.achieved >= sale.target ? "bg-[#10B981]" : "bg-[#2563EB]")} 
-                                style={{ width: `${Math.min(100, (sale.achieved / sale.target) * 100)}%` }}
-                              />
-                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right font-bold text-[#10B981]">
-                        {formatCurrency((sale.achieved * sale.commissionRate) / 100)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end">
-                           {idx === 0 && <Medal className="w-5 h-5 text-yellow-500" />}
-                           {idx === 1 && <Medal className="w-5 h-5 text-slate-300" />}
-                           {idx === 2 && <Medal className="w-5 h-5 text-amber-600" />}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
+        </div>
+      )}
 
-          <div className="bg-slate-900 rounded-lg p-6 text-white border border-slate-800 flex items-center justify-between">
-             <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg">
-                   <Trophy className="w-6 h-6" />
-                </div>
-                <div>
-                   <h4 className="font-bold text-lg italic">Sales Gamification Engine</h4>
-                   <p className="text-slate-400 text-sm">Hệ thống vinh danh Sales có thành tích tốt nhất trong ngày. Tự động tính thưởng nóng "Hổ báo" cho các hợp đồng Seller có GMV trên 100tr.</p>
-                </div>
-             </div>
-             <button className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20">Mở Dashboard Thi đua</button>
-          </div>
-        </>
-      ) : (
+      {activeTab === 'settings' && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 space-y-2 relative">
              <div className="sticky top-8">
@@ -250,114 +305,25 @@ export function SalesManagement() {
                      </div>
                   </>
                 )}
-
-                {settingSection === 'routing' && (
-                  <>
-                     <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-[#F9FAFB]">
-                        <div>
-                           <h3 className="text-lg font-bold text-slate-900">Quy tắc Phân bổ Leads</h3>
-                           <p className="text-xs text-slate-500 mt-1">Tự động điều phối Leads từ Marketing hoặc hệ thống sang cho Sales.</p>
-                        </div>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">
-                           <Save className="w-4 h-4" /> Lưu quy tắc
-                        </button>
-                     </div>
-                     <div className="p-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <label className="flex items-start gap-4 p-5 border border-blue-200 bg-blue-50/50 rounded-xl cursor-pointer">
-                              <input type="radio" name="routing" defaultChecked className="mt-1" />
-                              <div>
-                                 <h4 className="font-bold text-slate-900 text-sm">Round Robin</h4>
-                                 <p className="text-xs text-slate-600 mt-1">Chia đều lần lượt cho các Sales đang có trạng thái Available.</p>
-                              </div>
-                           </label>
-                           <label className="flex items-start gap-4 p-5 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl cursor-pointer transition-all">
-                              <input type="radio" name="routing" className="mt-1" />
-                              <div>
-                                 <h4 className="font-bold text-slate-900 text-sm">Hiệu suất (AI Routing)</h4>
-                                 <p className="text-xs text-slate-500 mt-1">Ưu tiên chia Lead cho Sales có tỷ lệ Conversion Rate cao nhất.</p>
-                              </div>
-                           </label>
-                           <label className="flex items-start gap-4 p-5 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl cursor-pointer transition-all">
-                              <input type="radio" name="routing" className="mt-1" />
-                              <div>
-                                 <h4 className="font-bold text-slate-900 text-sm">Phân theo Khu vực / Ngành</h4>
-                                 <p className="text-xs text-slate-500 mt-1">Gán theo cấu hình ngành hàng (vd: Thời trang -&gt; Team A).</p>
-                              </div>
-                           </label>
-                        </div>
-                        <div className="pt-6 border-t border-slate-100 flex items-center gap-3">
-                           <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                           <span className="text-sm font-medium text-slate-700">Chống spam: Chặn cùng một SĐT nhảy Lead quá 2 lần/ngày.</span>
-                        </div>
-                     </div>
-                  </>
-                )}
-
-                {settingSection === 'gamification' && (
-                  <>
-                     <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-[#F9FAFB]">
-                        <div>
-                           <h3 className="text-lg font-bold text-slate-900">Thi đua & Khen thưởng nóng</h3>
-                           <p className="text-xs text-slate-500 mt-1">Tạo động lực chốt Sale qua hệ thống phần thưởng realtime.</p>
-                        </div>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">
-                           <Save className="w-4 h-4" /> Lưu chương trình
-                        </button>
-                     </div>
-                     <div className="p-6 space-y-6">
-                        <div className="space-y-4">
-                           <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl">
-                              <div>
-                                 <h4 className="font-bold text-slate-900 text-sm">Thưởng Deal "Hổ báo" (Mega Deal)</h4>
-                                 <p className="text-xs text-slate-500 mt-0.5">Tự động bắn thông báo và thưởng khi có hợp đồng vượt ngưỡng.</p>
-                              </div>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" defaultChecked />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                              </label>
-                           </div>
-                           <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-4">
-                              <div className="flex gap-4">
-                                 <div className="flex-1">
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Ngưỡng Hợp đồng (VND)</label>
-                                    <input type="text" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" defaultValue="100,000,000" />
-                                 </div>
-                                 <div className="flex-1">
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Thưởng nóng (VND)</label>
-                                    <input type="text" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" defaultValue="2,000,000" />
-                                 </div>
-                              </div>
-                              <p className="text-[10px] text-slate-500 font-medium italic">Hiệu ứng pháo hoa sẽ xuất hiện trên màn hình của tất cả User khi Mega Deal được ghi nhận.</p>
-                           </div>
-                        </div>
-
-                        <div className="space-y-4 pt-6 border-t border-slate-100">
-                           <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl">
-                              <div>
-                                 <h4 className="font-bold text-slate-900 text-sm">Champion of the Month</h4>
-                                 <p className="text-xs text-slate-500 mt-0.5">Sale có % hoàn thành target cao nhất tháng.</p>
-                              </div>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" defaultChecked />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                              </label>
-                           </div>
-                           <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                              <div className="w-full md:w-1/2">
-                                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Thưởng thêm (VND)</label>
-                                 <input type="text" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" defaultValue="5,000,000" />
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </>
-                )}
              </div>
           </div>
         </div>
       )}
+
+      {activeTab !== 'overview' && (
+         <div className="bg-slate-900 rounded-xl p-6 text-white border border-slate-800 flex items-center justify-between mt-8">
+            <div className="flex items-center gap-4">
+               <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg">
+                  <Trophy className="w-6 h-6" />
+               </div>
+               <div>
+                  <h4 className="font-bold text-lg italic">Sales Gamification Engine</h4>
+                  <p className="text-slate-400 text-sm">Hệ thống vinh danh Sales có thành tích tốt nhất trong ngày. Tự động tính thưởng nóng "Hổ báo" cho các hợp đồng Seller có GMV trên 100tr.</p>
+               </div>
+            </div>
+            <button className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20">Mở Dashboard Thi đua</button>
+         </div>
+      )}
     </div>
   );
 }
-

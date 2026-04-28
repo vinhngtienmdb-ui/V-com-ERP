@@ -30,7 +30,9 @@ import {
   Send,
   BadgeDollarSign,
   RefreshCw,
-  Package
+  Package,
+  X,
+  Check
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
@@ -48,6 +50,49 @@ interface CategoryFee {
   aiSuggestedMallFee?: number; 
   aiReasoning?: string;
 }
+
+interface SystemFee {
+  id: string;
+  name: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  description: string;
+  isActive: boolean;
+  applyTo: {
+    sellerTypes: ('mall' | 'normal')[];
+    categories: string[]; // ['1', '2'] or ['all']
+  };
+}
+
+const MOCK_SYSTEM_FEES: SystemFee[] = [
+  { 
+    id: 'f1', 
+    name: 'Phí cố định theo đơn (Fixed Fee)', 
+    type: 'fixed', 
+    value: 5000, 
+    description: 'Phí xử lý đơn hàng cố định mỗi giao dịch thành công.', 
+    isActive: true, 
+    applyTo: { sellerTypes: ['mall', 'normal'], categories: ['all'] } 
+  },
+  { 
+    id: 'f2', 
+    name: 'Phí Marketing & Quảng cáo', 
+    type: 'percentage', 
+    value: 2, 
+    description: 'Phí hỗ trợ các chương trình truyền thông chung trên Sàn.', 
+    isActive: false, 
+    applyTo: { sellerTypes: ['mall'], categories: ['1', '4'] } 
+  },
+  { 
+    id: 'f3', 
+    name: 'Phí đóng gói hỗ trợ (Fulfill)', 
+    type: 'fixed', 
+    value: 12000, 
+    description: 'Áp dụng cho các ngành hàng cồng kềnh cần đóng gói đặc biệt.', 
+    isActive: true, 
+    applyTo: { sellerTypes: ['normal'], categories: ['3'] } 
+  },
+];
 
 const MOCK_DEPARTMENTS: Department[] = [
   { id: 'D-001', name: 'Vận hành Sàn', manager: 'Lê Hoàng Minh', staffCount: 45 },
@@ -188,6 +233,15 @@ export function SettingsPage() {
     { id: '3', name: 'Gia dụng & Đời sống', sellerFee: 5, mallFee: 8 },
     { id: '4', name: 'Sức khỏe & Sắc đẹp', sellerFee: 10, mallFee: 15 },
   ]);
+  const [systemFees, setSystemFees] = useState<SystemFee[]>(MOCK_SYSTEM_FEES);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [editingFee, setEditingFee] = useState<SystemFee | null>(null);
+  const [newFee, setNewFee] = useState<Partial<SystemFee>>({
+    type: 'percentage',
+    value: 0,
+    isActive: true,
+    applyTo: { sellerTypes: ['normal'], categories: ['all'] }
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [customDomains, setCustomDomains] = useState<string[]>(['erp.vcom.vn']);
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -461,6 +515,84 @@ export function SettingsPage() {
 
            {activeTab === 'fees' && (
               <div className="animate-in fade-in duration-300 space-y-6">
+                 {/* Section 1: Dynamic System Fees */}
+                 <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                       <div>
+                          <h3 className="font-bold text-[#111827] flex items-center gap-2">
+                             <AlertCircle className="w-4 h-4 text-orange-500" /> Quản lý các loại Chi phí Hệ thống hỗ trợ
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-1">Cấu hình linh hoạt các loại phí phát sinh ngoài phí hoa hồng (Fixed hoặc %).</p>
+                       </div>
+                       <button 
+                         onClick={() => { setEditingFee(null); setNewFee({ type: 'percentage', value: 0, isActive: true, applyTo: { sellerTypes: ['normal'], categories: ['all'] } }); setShowFeeModal(true); }}
+                         className="flex items-center gap-2 bg-[#111827] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm"
+                       >
+                          <Plus className="w-4 h-4" /> Thêm loại phí mới
+                       </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                       {systemFees.map((fee) => (
+                          <div key={fee.id} className={cn("p-4 rounded-xl border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-slate-200" : "bg-slate-50 border-slate-100 opacity-60")}>
+                             <div className="flex justify-between items-start mb-3 relative z-10">
+                                <div className="flex items-center gap-2">
+                                   <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600")}>
+                                      {fee.type === 'fixed' ? <BadgeDollarSign className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
+                                   </div>
+                                   <div>
+                                      <h4 className="font-bold text-sm text-slate-900 line-clamp-1">{fee.name}</h4>
+                                      <p className="text-[10px] text-slate-500">{fee.type === 'fixed' ? 'Số tiền cố định' : 'Tỷ lệ % doanh thu'}</p>
+                                   </div>
+                                </div>
+                                <div 
+                                  onClick={() => setSystemFees(systemFees.map(f => f.id === fee.id ? { ...f, isActive: !f.isActive } : f))}
+                                  className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors shrink-0", fee.isActive ? "bg-emerald-500" : "bg-slate-300")}
+                                >
+                                   <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all", fee.isActive ? "right-1" : "left-1")} />
+                                </div>
+                             </div>
+
+                             <div className="mb-4 relative z-10">
+                                <span className={cn("text-2xl font-black", fee.type === 'fixed' ? "text-blue-600" : "text-purple-600")}>
+                                   {fee.type === 'fixed' ? formatCurrency(fee.value) : `${fee.value}%`}
+                                </span>
+                                <div className="mt-2 space-y-1.5">
+                                   <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
+                                      <Users className="w-3 h-3" />
+                                      {fee.applyTo.sellerTypes.map(st => st === 'mall' ? 'Shop Mall' : 'Seller thường').join(', ')}
+                                   </div>
+                                   <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
+                                      <Package className="w-3 h-3" />
+                                      {fee.applyTo.categories.includes('all') ? 'Tất cả ngành hàng' : `Áp dụng ${fee.applyTo.categories.length} nhóm`}
+                                   </div>
+                                </div>
+                             </div>
+
+                             <div className="flex justify-end gap-2 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button 
+                                  onClick={() => { setEditingFee(fee); setNewFee(fee); setShowFeeModal(true); }}
+                                  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                                >
+                                   <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button 
+                                  onClick={() => setSystemFees(systemFees.filter(f => f.id !== fee.id))}
+                                  className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                >
+                                   <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                             </div>
+                             
+                             <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform">
+                                {fee.type === 'fixed' ? <BadgeDollarSign className="w-24 h-24" /> : <Zap className="w-24 h-24" />}
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+
+                 {/* Section 2: Platform Commission (Existing) */}
                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
                      <div className="flex items-center justify-between mb-4">
                        <div>
@@ -1510,6 +1642,189 @@ export function SettingsPage() {
         </div>
       </div>
     )}
+
+      {/* Fee Management Modal */}
+      {showFeeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+              <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50">
+                 <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                       <BadgeDollarSign className="w-6 h-6" />
+                    </div>
+                    <div>
+                       <h3 className="text-lg font-bold text-slate-900">{editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}</h3>
+                       <p className="text-xs text-slate-500">Thiết lập tham số và phạm vi áp dụng phí</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowFeeModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <X className="w-5 h-5 text-slate-400" />
+                 </button>
+              </div>
+
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                 {/* Fee Name */}
+                 <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Tên loại phí</label>
+                    <input 
+                      type="text" 
+                      value={newFee.name || ''}
+                      onChange={(e) => setNewFee({ ...newFee, name: e.target.value })}
+                      placeholder="VD: Phí vận hành kho, Phí thanh toán..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                    />
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Loại phí</label>
+                       <div className="flex bg-slate-100 p-1 rounded-xl">
+                          <button 
+                            onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
+                            className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'percentage' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                          >
+                             Phần trăm (%)
+                          </button>
+                          <button 
+                            onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
+                            className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'fixed' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                          >
+                             Cố định (đ)
+                          </button>
+                       </div>
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Giá trị</label>
+                       <div className="relative">
+                          <input 
+                            type="number" 
+                            value={newFee.value || ''}
+                            onChange={(e) => setNewFee({ ...newFee, value: parseFloat(e.target.value) })}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:border-blue-500 outline-none"
+                          />
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">
+                             {newFee.type === 'percentage' ? '%' : 'đ'}
+                          </span>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Targeting: Seller Type */}
+                 <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
+                    <div className="flex gap-4">
+                       {['mall', 'normal'].map((type) => {
+                          const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
+                          return (
+                            <div 
+                              key={type}
+                              onClick={() => {
+                                const current = newFee.applyTo?.sellerTypes || [];
+                                const next = isSelected ? current.filter(t => t !== type) : [...current, type as any];
+                                setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, sellerTypes: next } });
+                              }}
+                              className={cn(
+                                "flex-1 p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3",
+                                isSelected ? "border-blue-600 bg-blue-50/50" : "border-slate-200 bg-white hover:border-slate-300"
+                              )}
+                            >
+                               <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300")}>
+                                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                               </div>
+                               <span className={cn("text-xs font-bold", isSelected ? "text-blue-700" : "text-slate-600")}>
+                                  {type === 'mall' ? 'Shop Mall' : 'Seller thường'}
+                               </span>
+                            </div>
+                          );
+                       })}
+                    </div>
+                 </div>
+
+                 {/* Targeting: Categories */}
+                 <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                       <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Ngành hàng áp dụng</label>
+                       <button 
+                         onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
+                         className="text-[10px] font-bold text-blue-600 hover:underline"
+                       >
+                          Tất cả ngành
+                       </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                       {categoryFees.map(cat => {
+                          const isAll = newFee.applyTo?.categories.includes('all');
+                          const isSelected = isAll || newFee.applyTo?.categories.includes(cat.id);
+                          return (
+                            <button
+                              key={cat.id}
+                              disabled={isAll && newFee.applyTo?.categories.length === 1}
+                              onClick={() => {
+                                let next: string[];
+                                if (isAll) {
+                                  next = [cat.id];
+                                } else {
+                                  const current = newFee.applyTo?.categories || [];
+                                  next = isSelected ? current.filter(id => id !== cat.id) : [...current, cat.id];
+                                  if (next.length === 0) next = ['all'];
+                                }
+                                setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: next } });
+                              }}
+                              className={cn(
+                                "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
+                                isSelected ? "bg-indigo-600 border-indigo-600 text-white shadow-sm" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                              )}
+                            >
+                               {cat.name}
+                            </button>
+                          );
+                       })}
+                    </div>
+                 </div>
+
+                 {/* Description */}
+                 <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mô tả (Ghi chú)</label>
+                    <textarea 
+                      rows={2}
+                      value={newFee.description || ''}
+                      onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
+                      placeholder="Ghi chú về ý nghĩa loại phí này..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500 outline-none resize-none"
+                    />
+                 </div>
+              </div>
+
+              <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                 <button 
+                   onClick={() => setShowFeeModal(false)}
+                   className="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all"
+                 >
+                    Hủy bỏ
+                 </button>
+                 <button 
+                   onClick={() => {
+                     if (editingFee) {
+                       setSystemFees(systemFees.map(f => f.id === editingFee.id ? { ...newFee as SystemFee, id: f.id } : f));
+                     } else {
+                       setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
+                     }
+                     setShowFeeModal(false);
+                     addNotification({
+                        title: 'Đã cập nhật cấu hình',
+                        message: `Loại phí ${newFee.name} đã được lưu thành công.`,
+                        type: 'success',
+                        duration: 3000
+                     });
+                   }}
+                   className="flex-1 py-3 bg-[#2563EB] text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                 >
+                    {editingFee ? 'Cập nhật' : 'Xác nhận Thêm'}
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </>
   );
 }

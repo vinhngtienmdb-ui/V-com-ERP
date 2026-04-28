@@ -93,6 +93,19 @@ import { StoreSelector } from './StoreSelector';
 import { IPosStaff, IPosStore } from '../types/erp';
 import { useNavigate } from 'react-router-dom';
 
+const BOM_MAP: Record<string, { materialId: string, quantity: number }[]> = {
+  'Cafe Phin Sữa Đá': [
+    { materialId: 'MAT-001', quantity: 0.03 }, // 30g Coffee beans
+    { materialId: 'MAT-002', quantity: 0.02 }, // 20ml Condensed milk
+    { materialId: 'MAT-003', quantity: 0.5 },  // 0.5kg Ice
+  ],
+  'Trà Đào Cam Sả': [
+    { materialId: 'MAT-004', quantity: 1 },    // 1 Tea bag
+    { materialId: 'MAT-005', quantity: 0.05 }, // 50ml Syrup
+    { materialId: 'MAT-006', quantity: 2 },    // 2 Peach slices
+  ],
+};
+
 export function IPosModule() {
   const { user } = useAuth();
   const { activeStore } = useStore();
@@ -697,20 +710,54 @@ export function IPosModule() {
         console.warn("eInvoice creation failed:", err);
       }
 
-      // Create finance transaction
+      // Register transaction in Finance
       if (total > 0) {
-         await addDoc(collection(db, 'transactions'), {
+         await addDoc(collection(db, 'finance_transactions'), {
            type: 'income',
            amount: total,
-           category: 'Bán lẻ iPOS',
-           description: `Đơn hàng iPOS ${customer?.name || 'Khách lẻ'} - TT Bằng ${paymentMethod}`,
+           category: 'iPOS Doanh thu',
+           description: `Đơn hàng iPOS #${orderData.customerName} - ${activeStore.name}`,
            storeId: activeStore.id,
            companyId: activeStore.companyId,
-           createdAt: serverTimestamp()
+           date: serverTimestamp(),
+           source: 'ipos'
          });
       }
 
-      // Update inventory (simplified)
+      // BOM-based Warehouse Reduction
+      for (const item of cart) {
+        const bom = BOM_MAP[item.name];
+        if (bom) {
+          for (const component of bom) {
+            // Find material in branch warehouse
+            const q = query(
+              collection(db, 'warehouse_stock'),
+              where('materialId', '==', component.materialId),
+              where('storeId', '==', activeStore.id)
+            );
+            const stockSnap = await getDocs(q);
+            if (!stockSnap.empty) {
+              const stockDoc = stockSnap.docs[0];
+              const currentQty = stockDoc.data().quantity || 0;
+              await updateDoc(doc(db, 'warehouse_stock', stockDoc.id), {
+                quantity: Math.max(0, currentQty - (component.quantity * item.quantity)),
+                updatedAt: serverTimestamp()
+              });
+            } else {
+              // Create stock entry if missing for this branch
+              await addDoc(collection(db, 'warehouse_stock'), {
+                materialId: component.materialId,
+                storeId: activeStore.id,
+                companyId: activeStore.companyId,
+                quantity: Math.max(0, 100 - (component.quantity * item.quantity)), // Initial demo stock
+                updatedAt: serverTimestamp()
+              });
+            }
+          }
+        }
+      }
+
+      // Update POS product menu stock
       for (const item of cart) {
         const productRef = doc(db, 'pos_products', item.id);
         const currentStock = products.find(p => p.id === item.id)?.stock || 0;

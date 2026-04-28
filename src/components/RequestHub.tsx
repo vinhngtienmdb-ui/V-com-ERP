@@ -98,7 +98,30 @@ export function RequestHub() {
   };
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    setRequests(requests.map(req => req.id === id ? { ...req, status: newStatus } : req));
+    setRequests(requests.map(req => {
+      if (req.id === id) {
+        // Multi-level logic: find current level
+        const config = formConfigs.find(c => c.name === req.subtype);
+        const currentLevel = (req as any).currentLevel || 1;
+        const totalLevels = config?.workflow.length || 1;
+
+        if (newStatus === 'approved' && currentLevel < totalLevels) {
+          return { ...req, currentLevel: currentLevel + 1, status: 'pending' };
+        }
+        return { ...req, status: newStatus, currentLevel: currentLevel };
+      }
+      return req;
+    }));
+  };
+
+  const handleSignRequest = (id: string) => {
+    // Simulate digital signature integration
+    alert(`Đang khởi tạo SignatureHub cho phiếu ${id}...`);
+    // In a real app, this would redirect to /signature or open a signing modal
+    setRequests(requests.map(req => 
+      req.id === id ? { ...req, signatureStatus: 'signed', status: 'approved' } : req
+    ));
+    alert("Ký số thành công! Tài liệu đã được xác thực và lưu trữ (WorkflowHub).");
   };
 
 
@@ -284,15 +307,21 @@ export function RequestHub() {
                                     <div className="flex gap-2 invisible group-hover:visible transition-all">
                                       <button 
                                         onClick={() => handleStatusChange(doc.id, 'approved')}
-                                        className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded hover:bg-emerald-100"
+                                        className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded hover:bg-emerald-100 flex items-center gap-1"
                                       >
-                                        Duyệt
+                                        <CheckCircle2 className="w-3 h-3" /> Duyệt
+                                      </button>
+                                      <button 
+                                        onClick={() => handleSignRequest(doc.id)}
+                                        className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded hover:bg-blue-100 flex items-center gap-1"
+                                      >
+                                        <FileSignature className="w-3 h-3" /> Ký & Duyệt
                                       </button>
                                       <button 
                                         onClick={() => handleStatusChange(doc.id, 'rejected')}
-                                        className="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold rounded hover:bg-rose-100"
+                                        className="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold rounded hover:bg-rose-100 flex items-center gap-1"
                                       >
-                                        Từ chối
+                                        <X className="w-3 h-3" /> Từ chối
                                       </button>
                                     </div>
                                   )}
