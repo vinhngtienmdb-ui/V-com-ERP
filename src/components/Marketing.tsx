@@ -37,8 +37,8 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     spent: 85000000,
     gmvGenerated: 900000000,
     roi: 10.5,
-    startDate: '2024-02-01',
-    endDate: '2024-02-28'
+    startDate: '01/02/2024',
+    endDate: '28/02/2024'
   },
   {
     id: 'CMP-002',
@@ -49,8 +49,8 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     spent: 0,
     gmvGenerated: 0,
     roi: 0,
-    startDate: '2024-03-15',
-    endDate: '2024-03-15'
+    startDate: '15/03/2024',
+    endDate: '15/03/2024'
   }
 ];
 

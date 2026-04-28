@@ -74,7 +74,7 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
     amount: 50000000,
     bankAccount: { bankName: 'Vietcombank', accountNo: '1023456789', accountName: 'NGUYEN VAN A' },
     status: 'pending',
-    requestDate: '2024-03-15 10:30'
+    requestDate: '15/03/2024 10:30'
   },
   {
     id: 'WDR-1002',
@@ -84,7 +84,7 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
     amount: 1500000,
     bankAccount: { bankName: 'Techcombank', accountNo: '190345678901', accountName: 'TRAN MINH TUAN' },
     status: 'approved',
-    requestDate: '2024-03-14 16:45'
+    requestDate: '14/03/2024 16:45'
   }
 ];
 

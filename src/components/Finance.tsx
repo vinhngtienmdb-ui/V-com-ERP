@@ -46,7 +46,7 @@ export function Finance() {
   const addDemoTransactions = async () => {
     const demo: any[] = [
       {
-        date: '2024-03-01',
+        date: '01/03/2024',
         description: 'Vốn góp cổ phần',
         amount: 2000000000,
         type: 'income',
@@ -55,7 +55,7 @@ export function Finance() {
         status: 'completed'
       },
       {
-        date: '2024-03-05',
+        date: '05/03/2024',
         description: 'Thanh toán tiền thuê mặt bằng',
         amount: 150000000,
         type: 'expense',
@@ -64,7 +64,7 @@ export function Finance() {
         status: 'completed'
       },
       {
-         date: '2024-03-10',
+         date: '10/03/2024',
          description: 'Doanh thu bán hàng kỳ 1',
          amount: 450000000,
          type: 'income',

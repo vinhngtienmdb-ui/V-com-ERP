@@ -59,8 +59,8 @@ const MOCK_FLASH_SALES: FlashSaleCampaign[] = [
     spent: 12000000,
     gmvGenerated: 250000000,
     roi: 20.8,
-    startDate: '2024-03-01',
-    endDate: '2024-03-31'
+    startDate: '01/03/2024',
+    endDate: '31/03/2024'
   },
   {
     id: 'GB-001',
@@ -71,8 +71,8 @@ const MOCK_FLASH_SALES: FlashSaleCampaign[] = [
     spent: 45000000,
     gmvGenerated: 1200000000,
     roi: 26.6,
-    startDate: '2024-03-01',
-    endDate: '2024-03-20',
+    startDate: '01/03/2024',
+    endDate: '20/03/2024',
     requiredParticipants: 1000,
     currentParticipants: 842,
     kolName: 'KOC Hằng Túi',

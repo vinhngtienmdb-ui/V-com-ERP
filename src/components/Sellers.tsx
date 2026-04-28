@@ -58,7 +58,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     address: '123 Nguyen Trai, Q1, HCMC',
     representative: 'Nguyen Van A',
     commissionRate: 5,
-    joinDate: '2023-12-01',
+    joinDate: '01/12/2023',
     onboardingStep: 'completed',
     partnerType: 'dealer',
     activeModules: ['ipos', 'pim', 'scm', 'hr']
@@ -73,7 +73,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0309876543',
     identityCard: '079090987654',
     commissionRate: 8,
-    joinDate: '2024-01-15',
+    joinDate: '15/01/2024',
     onboardingStep: 'completed',
     partnerType: 'seller',
     activeModules: ['orders', 'pim', 'marketing', 'flashsale', 'affiliate']
@@ -88,7 +88,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0401122334',
     identityCard: '012345678901',
     commissionRate: 10,
-    joinDate: '2024-03-10',
+    joinDate: '10/03/2024',
     onboardingStep: 'verification',
     partnerType: 'seller',
     activeModules: []
@@ -103,7 +103,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0101112223',
     identityCard: '001111222333',
     commissionRate: 3,
-    joinDate: '2024-02-01',
+    joinDate: '01/02/2024',
     onboardingStep: 'completed',
     partnerType: 'seller',
     activeModules: ['orders', 'marketing']
@@ -118,7 +118,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0202223334',
     identityCard: '020222333444',
     commissionRate: 4,
-    joinDate: '2024-01-20',
+    joinDate: '20/01/2024',
     onboardingStep: 'completed',
     partnerType: 'dealer',
     activeModules: ['ipos', 'scm']
@@ -133,7 +133,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0505556667',
     identityCard: '050555666777',
     commissionRate: 7,
-    joinDate: '2023-11-15',
+    joinDate: '15/11/2023',
     onboardingStep: 'completed',
     partnerType: 'seller',
     activeModules: ['orders', 'marketing', 'affiliate']
@@ -148,7 +148,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0909998887',
     identityCard: '090999888777',
     commissionRate: 12,
-    joinDate: '2024-04-10',
+    joinDate: '10/04/2024',
     onboardingStep: 'verification',
     partnerType: 'dealer',
     activeModules: []
@@ -163,7 +163,7 @@ export const MOCK_SELLERS: PartnerData[] = [
     taxCode: '0315923940',
     identityCard: '001090123999',
     commissionRate: 3,
-    joinDate: '2024-02-15',
+    joinDate: '15/02/2024',
     onboardingStep: 'completed',
     partnerType: 'factory',
     activeModules: ['scm', 'pim', 'marketing']

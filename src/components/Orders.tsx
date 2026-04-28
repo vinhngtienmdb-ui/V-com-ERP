@@ -170,7 +170,7 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
   {
     id: 'ORD-2024-001',
     customerName: 'Nguyễn Văn A',
-    date: '2024-03-15 14:30',
+    date: '15/03/2024 14:30',
     total: 2500000,
     status: 'delivered',
     paymentMethod: 'cod',
@@ -182,7 +182,7 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
   {
     id: 'ORD-2024-002',
     customerName: 'Trần Thị B',
-    date: '2024-03-15 15:00',
+    date: '15/03/2024 15:00',
     total: 1200000,
     status: 'processing',
     paymentMethod: 'cod',
@@ -194,7 +194,7 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
   {
     id: 'ORD-2024-003',
     customerName: 'Lê Văn C',
-    date: '2024-03-15 16:15',
+    date: '15/03/2024 16:15',
     total: 8500000,
     status: 'cancelled',
     paymentMethod: 'e_wallet',
@@ -204,7 +204,7 @@ const MOCK_ORDERS: (Order & { carrier?: string, tracking?: string, shippingCost?
   {
     id: 'ORD-2024-006',
     customerName: 'Vũ Minh Tuấn',
-    date: '2024-03-15 17:30',
+    date: '15/03/2024 17:30',
     total: 4500000,
     status: 'shipped',
     paymentMethod: 'bank_transfer',

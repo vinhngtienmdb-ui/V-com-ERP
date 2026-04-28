@@ -53,7 +53,8 @@ import {
   PlusCircle,
   History,
   Trash2,
-  X
+  X,
+  Edit2
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
@@ -104,7 +105,7 @@ const MOCK_ATTENDANCE: AttendanceRecord[] = [
   {
     id: 'ATT-001',
     employeeId: 'EMP-001',
-    date: '2024-03-20',
+    date: '20/03/2024',
     checkIn: '08:00',
     checkOut: '17:30',
     status: 'on_time',
@@ -116,7 +117,7 @@ const MOCK_ATTENDANCE: AttendanceRecord[] = [
   {
     id: 'ATT-002',
     employeeId: 'EMP-002',
-    date: '2024-03-20',
+    date: '20/03/2024',
     checkIn: '08:15',
     checkOut: '17:00',
     status: 'late',
@@ -128,7 +129,7 @@ const MOCK_ATTENDANCE: AttendanceRecord[] = [
   {
     id: 'ATT-003',
     employeeId: 'EMP-001',
-    date: '2024-03-21',
+    date: '21/03/2024',
     checkIn: '07:55',
     checkOut: '17:15',
     status: 'on_time',
@@ -140,7 +141,7 @@ const MOCK_ATTENDANCE: AttendanceRecord[] = [
   {
     id: 'ATT-004',
     employeeId: 'EMP-002',
-    date: '2024-03-21',
+    date: '21/03/2024',
     checkIn: '08:05',
     checkOut: '18:00',
     status: 'on_time',
@@ -159,10 +160,10 @@ const MOCK_EMPLOYEES: Employee[] = [
     phone: '0901234567',
     department: 'Vận hành Sàn',
     position: 'Quản lý kho',
-    joinDate: '2023-01-15',
+    joinDate: '15/01/2023',
     employeeType: 'full_time',
     status: 'active',
-    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '2024-01-15', expiryDate: '2025-01-14' }],
+    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '15/01/2024', expiryDate: '14/01/2025' }],
     skills: [{ name: 'Logistics', level: 90 }, { name: 'Leadership', level: 75 }],
     leaveBalance: { total: 12, used: 4, pending: 1 },
     recentSentiment: 'positive'
@@ -174,10 +175,10 @@ const MOCK_EMPLOYEES: Employee[] = [
     phone: '0987123456',
     department: 'Marketing',
     position: 'KOL Specialist',
-    joinDate: '2023-06-01',
+    joinDate: '01/06/2023',
     employeeType: 'full_time',
     status: 'active',
-    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '2023-06-01', expiryDate: '2024-05-31' }],
+    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '01/06/2023', expiryDate: '31/05/2024' }],
     skills: [{ name: 'Social Media', level: 95 }, { name: 'Creativity', level: 88 }],
     leaveBalance: { total: 12, used: 11, pending: 0 },
     recentSentiment: 'critical'
@@ -399,6 +400,11 @@ export function HumanResources() {
 
   const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
   const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
+  
+  // Payroll state
+  const [payrollList, setPayrollList] = useState<Payroll[]>(MOCK_PAYROLL);
+  const [editingPayrollId, setEditingPayrollId] = useState<string | null>(null);
+  const [editPayrollForm, setEditPayrollForm] = useState<Partial<Payroll>>({});
   
   // New features state
   const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
@@ -1571,22 +1577,22 @@ export function HumanResources() {
                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
                     <div className="absolute right-0 top-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng lương cơ bản</p>
-                    <p className="text-2xl font-bold text-slate-800 relative z-10">{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.baseSalary, 0))}</p>
+                    <p className="text-2xl font-bold text-slate-800 relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.baseSalary, 0))}</p>
                  </div>
                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
                     <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng Phụ cấp & Thưởng</p>
-                    <p className="text-2xl font-bold text-emerald-600 relative z-10">+{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.allowance + pay.bonus, 0))}</p>
+                    <p className="text-2xl font-bold text-emerald-600 relative z-10">+{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.allowance + pay.bonus, 0))}</p>
                  </div>
                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
                     <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Thuế TNCN & BH</p>
-                    <p className="text-2xl font-bold text-red-500 relative z-10">-{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.pitAmount + pay.insuranceAmount, 0))}</p>
+                    <p className="text-2xl font-bold text-red-500 relative z-10">-{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.pitAmount + pay.insuranceAmount, 0))}</p>
                  </div>
                  <div className="bg-gradient-to-br from-[#111827] to-slate-800 p-5 rounded-lg border border-slate-700 shadow-xl relative overflow-hidden group">
                     <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
-                    <p className="text-2xl font-bold text-white relative z-10">{formatCurrency(MOCK_PAYROLL.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
+                    <p className="text-2xl font-bold text-white relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
                  </div>
               </div>
 
@@ -1605,7 +1611,7 @@ export function HumanResources() {
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                       {MOCK_PAYROLL.map((pay) => (
+                       {payrollList.map((pay) => (
                          <tr key={pay.id} className="hover:bg-blue-50/30 transition-colors group">
                            <td className="px-6 py-4">
                               <p className="text-sm font-bold text-slate-800">{pay.employeeName}</p>
@@ -1633,13 +1639,19 @@ export function HumanResources() {
                               </div>
                            </td>
                            <td className="px-6 py-4 text-right">
-                              <button className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-slate-200 transition-all flex items-center gap-1.5 ml-auto border border-slate-200">
-                                 <FileText className="w-3.5 h-3.5" /> Chi tiết
+                              <button 
+                                onClick={() => {
+                                  setEditingPayrollId(pay.id);
+                                  setEditPayrollForm(pay);
+                                }}
+                                className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold hover:bg-indigo-100 transition-all flex items-center gap-1.5 ml-auto border border-indigo-100"
+                              >
+                                 <Edit2 className="w-3.5 h-3.5" /> Chỉnh sửa
                               </button>
                            </td>
                          </tr>
                        ))}
-                       {MOCK_PAYROLL.length === 0 && (
+                       {payrollList.length === 0 && (
                           <tr>
                             <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
                               Không có dữ liệu bảng lương trong kỳ này.
@@ -1652,9 +1664,141 @@ export function HumanResources() {
                     <p className="flex items-center gap-1.5">
                        <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Dữ liệu đã được đồng bộ với module Chấm công & KPI.
                     </p>
-                    <p>Tổng số bản ghi: <strong>{MOCK_PAYROLL.length}</strong></p>
+                    <p>Tổng số bản ghi: <strong>{payrollList.length}</strong></p>
                  </div>
               </div>
+
+               {/* Edit Payroll Modal */}
+               {editingPayrollId && editPayrollForm && (
+                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                   <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
+                     <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                       <h3 className="text-lg font-bold text-slate-800">Cập nhật Lương ({editPayrollForm.employeeName})</h3>
+                       <button onClick={() => setEditingPayrollId(null)} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors">
+                         <X className="w-5 h-5" />
+                       </button>
+                     </div>
+                     <div className="p-6 overflow-y-auto max-h-[70vh]">
+                       <div className="grid grid-cols-2 gap-6">
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Lương cơ bản</label>
+                           <input type="number" 
+                                  value={editPayrollForm.baseSalary || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, baseSalary: val };
+                                      updated.pitAmount = ((updated.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0)) * 0.05;
+                                      updated.insuranceAmount = (updated.baseSalary || 0) * 0.1;
+                                      updated.netSalary = (updated.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - updated.insuranceAmount;
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Phụ cấp</label>
+                           <input type="number" 
+                                  value={editPayrollForm.allowance || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, allowance: val };
+                                      updated.pitAmount = ((prev.baseSalary || 0) + (updated.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0)) * 0.05;
+                                      updated.netSalary = (prev.baseSalary || 0) + (updated.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Thưởng (OT, KPI...)</label>
+                           <input type="number" 
+                                  value={editPayrollForm.bonus || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, bonus: val };
+                                      updated.pitAmount = ((prev.baseSalary || 0) + (prev.allowance || 0) + (updated.bonus || 0) - (prev.deduction || 0)) * 0.05;
+                                      updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (updated.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Phạt (Đi trễ, vắng...)</label>
+                           <input type="number" 
+                                  value={editPayrollForm.deduction || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, deduction: val };
+                                      updated.pitAmount = ((prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (updated.deduction || 0)) * 0.05;
+                                      updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (updated.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-500" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Thuế TNCN (-)</label>
+                           <input type="number" 
+                                  value={editPayrollForm.pitAmount || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, pitAmount: val };
+                                      updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - (updated.pitAmount || 0) - (prev.insuranceAmount || 0);
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Bảo hiểm xã hội (-)</label>
+                           <input type="number" 
+                                  value={editPayrollForm.insuranceAmount || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setEditPayrollForm(prev => {
+                                      const updated = { ...prev, insuranceAmount: val };
+                                      updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - (prev.pitAmount || 0) - (updated.insuranceAmount || 0);
+                                      return updated;
+                                    });
+                                  }}
+                                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-800 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500" />
+                         </div>
+                       </div>
+                       
+                       <div className="mt-8 p-6 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl shadow-inner border border-slate-700 flex justify-between items-center text-white relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl flex-shrink-0" />
+                          <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl flex-shrink-0" />
+                          <div className="relative z-10">
+                             <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1">Thực lãnh (Net Salary)</p>
+                             <p className="text-sm font-medium text-slate-400">Đã trừ Thuế & BHXH</p>
+                          </div>
+                          <div className="relative z-10">
+                             <p className="text-4xl font-black font-mono tracking-tight">{formatCurrency(editPayrollForm.netSalary || 0)}</p>
+                          </div>
+                       </div>
+                     </div>
+                     <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end rounded-b-xl">
+                       <button onClick={() => setEditingPayrollId(null)} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
+                         Hủy
+                       </button>
+                       <button 
+                         onClick={() => {
+                           setPayrollList(prev => prev.map(p => p.id === editingPayrollId ? editPayrollForm as Payroll : p));
+                           setEditingPayrollId(null);
+                         }}
+                         className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                         <CheckCircle2 className="w-4 h-4" /> Lưu bảng lương
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               )}
            </div>
         ) : activeTab === 'rec_candidates' ? (
            <div className="p-6 bg-slate-50 min-h-[500px]">

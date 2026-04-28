@@ -15,10 +15,10 @@ import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 const MOCK_SIGNATURE_REQUESTS = [
-  { id: 'SIGN-001', docId: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'contract', requestDate: '2024-03-25', status: 'pending', requesters: 'Phòng Nhân sự' },
-  { id: 'SIGN-002', docId: 'REQ-002', title: 'Đề nghị tạm ứng công tác phí', type: 'request', requestDate: '2024-03-24', status: 'signed', requesters: 'Nguyễn Diệu Nhi' },
-  { id: 'SIGN-003', docId: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc', type: 'document', requestDate: '2024-03-20', status: 'signed', requesters: 'Hội đồng quản trị' },
-  { id: 'SIGN-004', docId: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'contract', requestDate: '2024-02-01', status: 'pending', requesters: 'Phòng Pháp chế' }
+  { id: 'SIGN-001', docId: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'contract', requestDate: '25/03/2024', status: 'pending', requesters: 'Phòng Nhân sự' },
+  { id: 'SIGN-002', docId: 'REQ-002', title: 'Đề nghị tạm ứng công tác phí', type: 'request', requestDate: '24/03/2024', status: 'signed', requesters: 'Nguyễn Diệu Nhi' },
+  { id: 'SIGN-003', docId: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc', type: 'document', requestDate: '20/03/2024', status: 'signed', requesters: 'Hội đồng quản trị' },
+  { id: 'SIGN-004', docId: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'contract', requestDate: '01/02/2024', status: 'pending', requesters: 'Phòng Pháp chế' }
 ];
 
 export function SignatureHub() {
@@ -249,9 +249,9 @@ export function SignatureHub() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                  {[
-                   { id: 'CA-001', name: 'Nguyễn Văn A (Giám đốc)', provider: 'SmartCA VNPT', type: 'Cá nhân', expiry: '2025-10-15', status: 'active' },
-                   { id: 'CA-002', name: 'Công ty Cổ phần VComm ERP', provider: 'Viettel CA', type: 'Doanh nghiệp', expiry: '2026-01-20', status: 'active' },
-                   { id: 'CA-003', name: 'Trần B (Kế toán)', provider: 'USB Token', type: 'Cá nhân', expiry: '2024-05-10', status: 'expiring_soon' },
+                   { id: 'CA-001', name: 'Nguyễn Văn A (Giám đốc)', provider: 'SmartCA VNPT', type: 'Cá nhân', expiry: '15/10/2025', status: 'active' },
+                   { id: 'CA-002', name: 'Công ty Cổ phần VComm ERP', provider: 'Viettel CA', type: 'Doanh nghiệp', expiry: '20/01/2026', status: 'active' },
+                   { id: 'CA-003', name: 'Trần B (Kế toán)', provider: 'USB Token', type: 'Cá nhân', expiry: '10/05/2024', status: 'expiring_soon' },
                  ].map(cert => (
                    <div key={cert.id} className="border border-slate-200 rounded-lg p-5 flex items-start gap-4 hover:border-indigo-300 transition-colors bg-white">
                       <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">

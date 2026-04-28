@@ -19,8 +19,8 @@ import { cn } from '../lib/utils';
 import { BrandProtection, DisputeRequest } from '../types/erp';
 
 const MOCK_BRANDS: BrandProtection[] = [
-  { id: 'BRD-001', brandName: 'Samsung Official Store', ownerId: 'SEL-001', registrationDate: '2024-01-10', status: 'verified', documents: ['GPKD.pdf', 'Trademark.pdf'] },
-  { id: 'BRD-002', brandName: 'Louis Vuitton Vietnam', ownerId: 'SEL-099', registrationDate: '2024-03-01', status: 'pending', documents: ['LV_Global_Auth.pdf'] },
+  { id: 'BRD-001', brandName: 'Samsung Official Store', ownerId: 'SEL-001', registrationDate: '10/01/2024', status: 'verified', documents: ['GPKD.pdf', 'Trademark.pdf'] },
+  { id: 'BRD-002', brandName: 'Louis Vuitton Vietnam', ownerId: 'SEL-099', registrationDate: '01/03/2024', status: 'pending', documents: ['LV_Global_Auth.pdf'] },
 ];
 
 const MOCK_DISPUTES: DisputeRequest[] = [

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, ClipboardList, FileSignature, Activity, DollarSign, Zap, Mail, User, Users, Calendar, Send, FileText, ShieldCheck, BarChart2, Settings, Building2, Video, BrainCircuit, MessageSquare, Car, Monitor, ArrowLeft, ArrowRight, FolderOpen, ClipboardCheck, MapPin, Wrench, ArrowRightLeft } from 'lucide-react';
+import { Clock, ClipboardList, FileSignature, Activity, DollarSign, Zap, Mail, User, Users, Calendar as CalendarIcon, Send, FileText, ShieldCheck, BarChart2, Settings, Building2, Video, BrainCircuit, MessageSquare, Car, Monitor, ArrowLeft, ArrowRight, FolderOpen, ClipboardCheck, MapPin, Wrench, ArrowRightLeft, Plus, CheckCircle2, Clock3 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { WorkspaceBooking, MeetingEvent } from '../types/erp';
 
@@ -20,33 +20,35 @@ function getColorClasses(color: string) {
 
 const MODULE_GROUPS = [
   {
-    title: 'Tài liệu & Quy trình',
+    title: 'Lịch & Tiện ích (Mới & Đề xuất)',
     items: [
-      { id: 'doc_list', label: 'Danh sách tài liệu', desc: 'Lưu trữ & chia sẻ.', icon: FolderOpen, color: 'blue' },
-      { id: 'doc_archive', label: 'Lưu trữ hồ sơ', desc: 'Tài liệu số hóa.', icon: FileText, color: 'emerald' },
-      { id: 'doc_config', label: 'Thiết lập tài liệu', desc: 'Phân quyền & danh mục.', icon: Settings, color: 'slate' },
+      { id: 'calendar', label: 'Lịch công tác', desc: 'Lịch tuần ban lãnh đạo', icon: CalendarIcon, color: 'indigo' },
+      { id: 'meeting_rooms', label: 'Đặt phòng họp', desc: 'Lịch trống phòng họp', icon: Building2, color: 'rose' },
+      { id: 'vehicles', label: 'Điều xe công tác', desc: 'Đăng ký xe ô tô cơ quan', icon: Car, color: 'blue' },
     ]
   },
   {
-    title: 'Công việc',
+    title: 'Công việc & Quy trình (Nâng cấp)',
     items: [
-      { id: 'work_project', label: 'Dự án', desc: 'Quản lý tiến độ dự án.', icon: FolderOpen, color: 'blue' },
+      { id: 'work_project', label: 'Quản lý Dự án (Kanban)', desc: 'Tiến độ dự án', icon: FolderOpen, color: 'blue' },
       { id: 'work_mine', label: 'Công việc của tôi', desc: 'Danh sách việc cần làm.', icon: ClipboardCheck, color: 'emerald' },
-      { id: 'work_manage', label: 'Việc tôi quản lý', desc: 'Giám sát tiến độ nhân viên.', icon: ClipboardList, color: 'purple' },
-      { id: 'work_report', label: 'Báo cáo công việc', desc: 'Thống kê khối lượng.', icon: BarChart2, color: 'cyan' },
-      { id: 'work_config', label: 'Thiết lập công việc', desc: 'Cấu hình quy trình, loại việc.', icon: Settings, color: 'slate' },
+      { id: 'work_manage', label: 'Giao việc & Giám sát', desc: 'Giao việc cho cấp dưới.', icon: ClipboardList, color: 'purple' },
+      { id: 'work_report', label: 'Báo cáo hiệu suất', desc: 'Thống kê lượng việc.', icon: BarChart2, color: 'cyan' },
     ]
   },
   {
-    title: 'Tài sản',
+    title: 'Tài liệu & Hồ sơ',
+    items: [
+      { id: 'doc_list', label: 'Tài liệu chuyên môn', desc: 'Kho lưu trữ dùng chung', icon: FolderOpen, color: 'blue' },
+      { id: 'doc_archive', label: 'Kho Lưu trữ Cơ quan', desc: 'Số hóa tài liệu cũ', icon: FileText, color: 'emerald' },
+    ]
+  },
+  {
+    title: 'Tài sản Cơ quan',
     items: [
       { id: 'asset_list', label: 'Danh sách tài sản', desc: 'Quản lý kho tài sản.', icon: Monitor, color: 'blue' },
-      { id: 'asset_assign', label: 'Cấp phát thu hồi', desc: 'Quản lý luân chuyển tài sản.', icon: ArrowRightLeft, color: 'emerald' },
+      { id: 'asset_assign', label: 'Cấp phát & Bàn giao', desc: 'Luân chuyển tài sản.', icon: ArrowRightLeft, color: 'emerald' },
       { id: 'asset_maintenance', label: 'Bảo trì sửa chữa', desc: 'Lịch sử bảo dưỡng.', icon: Wrench, color: 'orange' },
-      { id: 'asset_inventory', label: 'Kiểm kê tài sản', desc: 'Biên bản kiểm kê.', icon: ClipboardCheck, color: 'purple' },
-      { id: 'asset_depreciation', label: 'Khấu hao tài sản', desc: 'Bảng tính khấu hao.', icon: BarChart2, color: 'cyan' },
-      { id: 'asset_location', label: 'Nơi quản lý', desc: 'Phòng ban/Vị trí lưu kho.', icon: MapPin, color: 'indigo' },
-      { id: 'asset_config', label: 'Thiết lập tài sản', desc: 'Cấu hình danh mục.', icon: Settings, color: 'slate' },
     ]
   }
 ];
@@ -62,6 +64,30 @@ export function Workspace() {
 
   return (
     <div className="p-8 space-y-12">
+      <div className="flex justify-between items-center bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
+         <div className="flex items-center gap-4">
+            <button 
+               onClick={() => setActiveModule('overview')}
+               className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all", activeModule === 'overview' ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50")}
+            >
+               Tổng quan
+            </button>
+            <div className="w-px h-6 bg-slate-200"></div>
+            <button 
+               onClick={() => setActiveModule('work_project')}
+               className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all", activeModule === 'work_project' ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50")}
+            >
+               Công việc
+            </button>
+            <button 
+               onClick={() => setActiveModule('calendar')}
+               className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all", activeModule === 'calendar' ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50")}
+            >
+               Lịch & Đặt phòng
+            </button>
+         </div>
+      </div>
+
       {activeModule === 'overview' && (
         <>
           {/* News & Announcements Widget */}
@@ -97,13 +123,7 @@ export function Workspace() {
                    ))}
                 </div>
               </div>
-              <div className="shrink-0 hidden xl:block">
-                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-lg shadow-blue-600/20">
-                    Tất cả tin tức
-                 </button>
-              </div>
             </div>
-            {/* Background design elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] -translate-y-1/2 translate-x-1/4" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/10 blur-[80px] translate-y-1/2 -translate-x-1/4" />
           </div>
@@ -119,7 +139,7 @@ export function Workspace() {
                  {group.items.map(item => (
                     <button 
                        key={item.id} 
-                       onClick={() => setActiveModule(item.id)}
+                       onClick={() => setActiveModule(item.id === 'work_project' ? 'work_project' : item.id === 'calendar' ? 'calendar' : item.id === 'meeting_rooms' ? 'calendar' : 'overview')}
                        className="bg-slate-50 border border-slate-200 rounded-lg p-5 hover:border-blue-300 hover:shadow-md hover:bg-white transition-all text-left flex gap-4 items-start group"
                     >
                        <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
@@ -136,7 +156,176 @@ export function Workspace() {
           ))}
         </div>
       </>
-    )}
-  </div>
-);
+      )}
+
+      {activeModule === 'work_project' && (
+         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center">
+               <div>
+                  <h3 className="text-lg font-bold text-slate-800">Cổng Công Việc (eOffice Tasks)</h3>
+                  <p className="text-sm text-slate-500">Quản lý dự án, giao việc và theo dõi tiến độ công việc hàng ngày.</p>
+               </div>
+               <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Giao việc mới
+               </button>
+            </div>
+            
+            <div className="p-6 overflow-x-auto">
+               <div className="flex gap-6 min-w-max">
+                  {/* Cột: Cần làm */}
+                  <div className="w-80 bg-slate-50/80 rounded-xl border border-slate-200 p-4 shrink-0 flex flex-col max-h-[700px]">
+                     <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-bold text-slate-700">Cần làm (To-Do)</h4>
+                        <span className="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">2</span>
+                     </div>
+                     <div className="space-y-3 overflow-y-auto pr-1">
+                        <div className="bg-white border border-slate-200 rounded-lg p-3 hover:border-blue-400 cursor-pointer shadow-sm">
+                           <div className="flex justify-between mb-2">
+                              <span className="text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded uppercase">Gấp</span>
+                              <span className="text-[10px] text-slate-500 font-bold">18/04/2026</span>
+                           </div>
+                           <h5 className="font-bold text-sm text-slate-800 mb-2">Lập KH Triển khai eOffice</h5>
+                           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
+                              <div className="flex -space-x-2">
+                                 <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">NV</div>
+                                 <div className="w-6 h-6 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-blue-600">GD</div>
+                              </div>
+                              <div className="flex items-center gap-1 text-slate-400 text-xs">
+                                 <MessageSquare className="w-3 h-3" /> 2
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Cột: Đang làm */}
+                  <div className="w-80 bg-blue-50/50 rounded-xl border border-blue-100 p-4 shrink-0 flex flex-col max-h-[700px]">
+                     <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-bold text-blue-800">Đang thực hiện (In Progress)</h4>
+                        <span className="text-xs font-bold bg-blue-200 text-blue-700 px-2 py-0.5 rounded-full">1</span>
+                     </div>
+                     <div className="space-y-3 overflow-y-auto pr-1">
+                        <div className="bg-white border border-blue-200 rounded-lg p-3 hover:shadow-md cursor-pointer shadow-sm">
+                           <div className="flex justify-between mb-2">
+                              <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase">Dự án</span>
+                              <span className="text-[10px] text-slate-500 font-bold">20/04/2026</span>
+                           </div>
+                           <h5 className="font-bold text-sm text-slate-800 mb-2">Báo cáo Quý 1/2026</h5>
+                           <p className="text-xs text-slate-500 mb-3 line-clamp-2">Tổng hợp số liệu doanh thu từ các bộ phận kinh doanh và lập báo cáo.</p>
+                           <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2">
+                              <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
+                           </div>
+                           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
+                              <div className="flex -space-x-2">
+                                 <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-emerald-600">H</div>
+                              </div>
+                              <div className="text-[10px] font-bold text-slate-500">45%</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Cột: Hoàn thành */}
+                  <div className="w-80 bg-emerald-50/50 rounded-xl border border-emerald-100 p-4 shrink-0 flex flex-col max-h-[700px]">
+                     <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-bold text-emerald-800">Hoàn thành (Done)</h4>
+                        <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">1</span>
+                     </div>
+                     <div className="space-y-3 overflow-y-auto pr-1">
+                        <div className="bg-white border border-emerald-200 rounded-lg p-3 opacity-75 hover:opacity-100 cursor-pointer shadow-sm">
+                           <div className="flex items-center gap-2 mb-2">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                              <span className="text-[10px] font-bold text-emerald-600 line-through">Chuẩn bị hồ sơ đấu thầu</span>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      )}
+
+      {activeModule === 'calendar' && (
+         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-lg">
+               <div>
+                  <h3 className="text-lg font-bold text-slate-800">Cổng Tiện ích: Lịch & Đặt phòng</h3>
+                  <p className="text-sm text-slate-500">Xem lịch tuần cơ quan, đặt phòng họp và tài nguyên.</p>
+               </div>
+               <div className="flex gap-2">
+                  <button className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-slate-50">
+                     Hôm nay
+                  </button>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2">
+                     <Plus className="w-4 h-4" /> Đặt lịch mới
+                  </button>
+               </div>
+            </div>
+            
+            <div className="p-0 border-b border-slate-100 flex overflow-x-auto bg-white">
+               {['Thứ 2 (14/04)', 'Thứ 3 (15/04)', 'Thứ 4 (16/04)', 'Thứ 5 (17/04)', 'Thứ 6 (18/04)', 'Thứ 7 (19/04)'].map((day, idx) => (
+                  <div key={idx} className={cn(
+                     "flex-1 min-w-[200px] border-r border-slate-100 p-4",
+                     idx === 2 ? "bg-blue-50/30 ring-1 ring-blue-500/10 inset-0" : ""
+                  )}>
+                     <h4 className="font-bold text-slate-700 mb-4 text-center">{day}</h4>
+                     <div className="space-y-3">
+                        {idx === 1 && (
+                           <div className="bg-white border-l-4 border-l-emerald-500 p-3 rounded shadow-sm border border-slate-200 text-xs text-left">
+                              <p className="font-bold text-slate-800 mb-1">Họp giao ban tuần</p>
+                              <p className="text-emerald-600 font-semibold mb-1">08:30 - 10:00</p>
+                              <div className="flex items-center gap-1 text-slate-500 font-medium">
+                                 <MapPin className="w-3 h-3" /> Phòng họp A (Tầng 3)
+                              </div>
+                           </div>
+                        )}
+                        {idx === 2 && (
+                           <div className="bg-white border-l-4 border-l-blue-500 p-3 rounded shadow-sm border border-slate-200 text-xs text-left">
+                              <p className="font-bold text-slate-800 mb-1">Tiếp khách Đối tác HN</p>
+                              <p className="text-blue-600 font-semibold mb-1">14:00 - 16:30</p>
+                              <div className="flex items-center gap-1 text-slate-500 font-medium mb-1">
+                                 <Building2 className="w-3 h-3" /> Phòng VIP 1
+                              </div>
+                              <div className="flex items-center gap-1 text-slate-500 font-medium">
+                                 <Car className="w-3 h-3" /> Đã đặt xe: 29A-123.45 (Anh Hùng)
+                              </div>
+                           </div>
+                        )}
+                     </div>
+                  </div>
+               ))}
+            </div>
+            
+            <div className="p-6">
+               <h4 className="font-bold text-slate-800 mb-4">Trạng thái Phòng họp Hôm nay</h4>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                     { name: 'Phòng họp A (Lớn)', cap: 20, status: 'Trong giờ họp (đến 10:00)', color: 'rose' },
+                     { name: 'Phòng họp B (Nhỏ)', cap: 8, status: 'Trống', color: 'emerald' },
+                     { name: 'Phòng VIP 1', cap: 12, status: 'Đã đặt (14:00 - 16:30)', color: 'amber' },
+                  ].map((room, idx) => (
+                     <div key={idx} className="border border-slate-200 rounded-lg p-4 bg-white flex items-center justify-between">
+                        <div>
+                           <h5 className="font-bold text-slate-800 mb-1">{room.name}</h5>
+                           <p className="text-xs text-slate-500 font-medium">{room.cap} chỗ ngồi • Máy chiếu, Mic</p>
+                        </div>
+                        <div className="text-right">
+                           <span className={cn(
+                              "text-[10px] font-bold px-2 py-1 rounded uppercase",
+                              room.color === 'emerald' ? "bg-emerald-100 text-emerald-700" :
+                              room.color === 'rose' ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"
+                           )}>
+                              {room.status}
+                           </span>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      )}
+
+    </div>
+  );
 }
+

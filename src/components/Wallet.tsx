@@ -56,14 +56,14 @@ const MOCK_BANK_ACCOUNTS: BankAccount[] = [
 ];
 
 const MOCK_TRANSACTIONS: WalletTransaction[] = [
-  { id: 'TXN-101', userId: 'USR-882', type: 'deposit', amount: 5000000, gateway: 'momo', status: 'success', timestamp: '2024-03-16 14:20' },
-  { id: 'TXN-102', userId: 'SEL-001', type: 'payout', amount: 15400000, gateway: 'internal', status: 'success', timestamp: '2024-03-16 11:00' },
-  { id: 'TXN-103', userId: 'USR-441', type: 'payment', amount: 1200000, gateway: 'zalopay', status: 'pending', timestamp: '2024-03-16 16:45' },
+  { id: 'TXN-101', userId: 'USR-882', type: 'deposit', amount: 5000000, gateway: 'momo', status: 'success', timestamp: '16/03/2024 14:20' },
+  { id: 'TXN-102', userId: 'SEL-001', type: 'payout', amount: 15400000, gateway: 'internal', status: 'success', timestamp: '16/03/2024 11:00' },
+  { id: 'TXN-103', userId: 'USR-441', type: 'payment', amount: 1200000, gateway: 'zalopay', status: 'pending', timestamp: '16/03/2024 16:45' },
 ];
 
 const MOCK_ESCROWS: EscrowAccount[] = [
-  { orderId: 'ORD-9901', amount: 2500000, sellerId: 'SEL-001', buyerId: 'USR-882', releaseStatus: 'locked', autoReleaseAt: '2024-03-20' },
-  { orderId: 'ORD-9902', amount: 890000, sellerId: 'SEL-005', buyerId: 'USR-129', releaseStatus: 'released', autoReleaseAt: '2024-03-14' },
+  { orderId: 'ORD-9901', amount: 2500000, sellerId: 'SEL-001', buyerId: 'USR-882', releaseStatus: 'locked', autoReleaseAt: '20/03/2024' },
+  { orderId: 'ORD-9902', amount: 890000, sellerId: 'SEL-005', buyerId: 'USR-129', releaseStatus: 'released', autoReleaseAt: '14/03/2024' },
 ];
 
 const MOCK_GATEWAYS: PaymentGateway[] = [
@@ -92,7 +92,11 @@ export function WalletHub() {
     if (searchHistory && !txn.id.toLowerCase().includes(searchHistory.toLowerCase()) && !txn.userId.toLowerCase().includes(searchHistory.toLowerCase())) return false;
     if (filterType !== 'all' && txn.type !== filterType) return false;
     if (filterStatus !== 'all' && txn.status !== filterStatus) return false;
-    if (filterDate && !txn.timestamp.startsWith(filterDate)) return false;
+    if (filterDate) {
+      const [y, m, d] = filterDate.split('-');
+      const formattedFilterDate = `${d}/${m}/${y}`;
+      if (!txn.timestamp.startsWith(formattedFilterDate)) return false;
+    }
     return true;
   });
 

@@ -25,8 +25,8 @@ const MOCK_CREDITS: SellerCreditScore[] = [
 ];
 
 const MOCK_PAYOUTS: EarlyPayoutRequest[] = [
-  { id: 'EPR-01', sellerId: 'SEL-001', amount: 45000000, discountFee: 450000, requestDate: '2024-03-17', status: 'pending' },
-  { id: 'EPR-02', sellerId: 'SEL-012', amount: 15400000, discountFee: 154000, requestDate: '2024-03-16', status: 'approved' },
+  { id: 'EPR-01', sellerId: 'SEL-001', amount: 45000000, discountFee: 450000, requestDate: '17/03/2024', status: 'pending' },
+  { id: 'EPR-02', sellerId: 'SEL-012', amount: 15400000, discountFee: 154000, requestDate: '16/03/2024', status: 'approved' },
 ];
 
 export function SellerFinance() {
