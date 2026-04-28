@@ -26,39 +26,63 @@ export function Home() {
   return (
     <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 pb-20 pt-2">
       {/* Hero / Search Section */}
-      <div className="relative overflow-hidden bg-[#0F172A] rounded-2xl p-8 md:p-10 text-white border border-slate-800 shadow-2xl">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-           <LayoutGrid className="w-64 h-64 rotate-12" />
+      <div className="relative overflow-hidden bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white border border-slate-800 shadow-2xl">
+        {/* Animated Background Gradients */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
+        
+        <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
+           <LayoutGrid className="w-80 h-80 rotate-12" />
         </div>
         
-        <div className="relative z-10 max-w-3xl">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-            <span className="text-xs font-semibold text-slate-400">Hệ thống vận hành ổn định. Có <span className="text-white">2 thông báo mới</span></span>
+        <div className="relative z-10 max-w-4xl">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="flex h-2 w-2 relative">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"></span>
+            </div>
+            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-[0.2em]">Hệ thống vận hành tối ưu</span>
+            <div className="w-px h-3 bg-slate-700 mx-2" />
+            <span className="text-[11px] font-medium text-slate-400">Version 2.5.0-Enterprise</span>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-white">
-            Trung tâm Điều hành <span className="text-blue-500">VComm ERP</span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-white leading-tight">
+            Trung tâm Điều hành <br />
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">VComm ERP Intelligence</span>
           </h1>
           
-          <p className="text-slate-400 text-sm font-medium mb-8 max-w-xl leading-relaxed">
-            Hệ thống quản trị doanh nghiệp hợp nhất. Truy cập nhanh tất cả các module vận hành từ một giao diện tập trung.
+          <p className="text-slate-400 text-base font-medium mb-10 max-w-2xl leading-relaxed">
+            Hệ thống quản trị doanh nghiệp hợp nhất. <br className="hidden md:block" />
+            Truy cập nhanh tất cả các module vận hành từ một giao diện AI-First tập trung.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative group flex-1 w-full max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-              <input 
-                type="text"
-                placeholder="Tìm kiếm module hoặc chức năng..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#1E293B]/50 border border-slate-700/50 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all backdrop-blur-md"
-              />
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="relative group flex-1 w-full max-w-xl">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200"></div>
+              <div className="relative">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                <input 
+                  type="text"
+                  placeholder="Tìm kiếm module hoặc chức năng (Shift + /)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-800/80 border border-slate-700/50 rounded-2xl py-4 pl-14 pr-6 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-blue-500/50 transition-all backdrop-blur-xl"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl backdrop-blur-md">
-                <History className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vừa truy cập: Dashboard, PIM, Đơn hàng</span>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 bg-white/5 border border-white/10 p-2 pl-4 rounded-2xl backdrop-blur-md">
+                <div className="flex items-center gap-2">
+                   <History className="w-4 h-4 text-slate-400" />
+                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-2">Vừa mở:</span>
+                </div>
+                <div className="flex gap-2">
+                   {['Dashboard', 'Đơn hàng', 'Sản phẩm'].map(item => (
+                     <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold text-slate-300 transition-colors border border-white/5">
+                       {item}
+                     </button>
+                   ))}
+                </div>
             </div>
           </div>
         </div>
@@ -76,40 +100,160 @@ export function Home() {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {group.items.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className="group relative bg-white border border-slate-200 rounded-2xl p-5 text-left hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden border-b-2 hover:border-b-blue-600 active:translate-y-0"
-                >
-                  <div className="relative z-10">
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
-                      "bg-slate-50 text-slate-600 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200"
-                    )}>
-                      <item.icon className="w-5 h-5" />
-                    </div>
-                    
-                    <h3 className="text-sm font-bold text-slate-900 mb-1 tracking-tight group-hover:text-blue-600 transition-colors">
-                      {item.label}
-                    </h3>
-                    
-                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 italic">
-                      {item.description || 'Module quản lý nghiệp vụ hệ thống.'}
-                    </p>
-                    
-                    <div className="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-blue-600 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
-                      <span>Truy cập</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </div>
-                  </div>
+              {group.items.map((item) => {
+                const colorClasses: Record<string, any> = {
+                  blue: { 
+                    icon: 'text-blue-600 bg-blue-50 group-hover:bg-blue-600 group-hover:shadow-blue-200',
+                    border: 'hover:border-blue-600',
+                    text: 'group-hover:text-blue-600',
+                    action: 'text-blue-600'
+                  },
+                  indigo: { 
+                    icon: 'text-indigo-600 bg-indigo-50 group-hover:bg-indigo-600 group-hover:shadow-indigo-200',
+                    border: 'hover:border-indigo-600',
+                    text: 'group-hover:text-indigo-600',
+                    action: 'text-indigo-600'
+                  },
+                  violet: { 
+                    icon: 'text-violet-600 bg-violet-50 group-hover:bg-violet-600 group-hover:shadow-violet-200',
+                    border: 'hover:border-violet-600',
+                    text: 'group-hover:text-violet-600',
+                    action: 'text-violet-600'
+                  },
+                  cyan: { 
+                    icon: 'text-cyan-600 bg-cyan-50 group-hover:bg-cyan-600 group-hover:shadow-cyan-200',
+                    border: 'hover:border-cyan-600',
+                    text: 'group-hover:text-cyan-600',
+                    action: 'text-cyan-600'
+                  },
+                  emerald: { 
+                    icon: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-600 group-hover:shadow-emerald-200',
+                    border: 'hover:border-emerald-600',
+                    text: 'group-hover:text-emerald-600',
+                    action: 'text-emerald-600'
+                  },
+                  amber: { 
+                    icon: 'text-amber-600 bg-amber-50 group-hover:bg-amber-600 group-hover:shadow-amber-200',
+                    border: 'hover:border-amber-600',
+                    text: 'group-hover:text-amber-600',
+                    action: 'text-amber-600'
+                  },
+                  slate: { 
+                    icon: 'text-slate-600 bg-slate-50 group-hover:bg-slate-600 group-hover:shadow-slate-200',
+                    border: 'hover:border-slate-600',
+                    text: 'group-hover:text-slate-600',
+                    action: 'text-slate-600'
+                  },
+                  orange: { 
+                    icon: 'text-orange-600 bg-orange-50 group-hover:bg-orange-600 group-hover:shadow-orange-200',
+                    border: 'hover:border-orange-600',
+                    text: 'group-hover:text-orange-600',
+                    action: 'text-orange-600'
+                  },
+                  sky: { 
+                    icon: 'text-sky-600 bg-sky-50 group-hover:bg-sky-600 group-hover:shadow-sky-200',
+                    border: 'hover:border-sky-600',
+                    text: 'group-hover:text-sky-600',
+                    action: 'text-sky-600'
+                  },
+                  rose: { 
+                    icon: 'text-rose-600 bg-rose-50 group-hover:bg-rose-600 group-hover:shadow-rose-200',
+                    border: 'hover:border-rose-600',
+                    text: 'group-hover:text-rose-600',
+                    action: 'text-rose-600'
+                  },
+                  pink: { 
+                    icon: 'text-pink-600 bg-pink-50 group-hover:bg-pink-600 group-hover:shadow-pink-200',
+                    border: 'hover:border-pink-600',
+                    text: 'group-hover:text-pink-600',
+                    action: 'text-pink-600'
+                  },
+                  teal: { 
+                    icon: 'text-teal-600 bg-teal-50 group-hover:bg-teal-600 group-hover:shadow-teal-200',
+                    border: 'hover:border-teal-600',
+                    text: 'group-hover:text-teal-600',
+                    action: 'text-teal-600'
+                  },
+                  red: { 
+                    icon: 'text-red-600 bg-red-50 group-hover:bg-red-600 group-hover:shadow-red-200',
+                    border: 'hover:border-red-600',
+                    text: 'group-hover:text-red-600',
+                    action: 'text-red-600'
+                  },
+                  yellow: { 
+                    icon: 'text-yellow-600 bg-yellow-50 group-hover:bg-yellow-600 group-hover:shadow-yellow-200',
+                    border: 'hover:border-yellow-600',
+                    text: 'group-hover:text-yellow-600',
+                    action: 'text-yellow-600'
+                  },
+                  purple: { 
+                    icon: 'text-purple-600 bg-purple-50 group-hover:bg-purple-600 group-hover:shadow-purple-200',
+                    border: 'hover:border-purple-600',
+                    text: 'group-hover:text-purple-600',
+                    action: 'text-purple-600'
+                  },
+                  fuchsia: { 
+                    icon: 'text-fuchsia-600 bg-fuchsia-50 group-hover:bg-fuchsia-600 group-hover:shadow-fuchsia-200',
+                    border: 'hover:border-fuchsia-600',
+                    text: 'group-hover:text-fuchsia-600',
+                    action: 'text-fuchsia-600'
+                  },
+                  lime: { 
+                    icon: 'text-lime-600 bg-lime-50 group-hover:bg-lime-600 group-hover:shadow-lime-200',
+                    border: 'hover:border-lime-600',
+                    text: 'group-hover:text-lime-600',
+                    action: 'text-lime-600'
+                  },
+                  gray: { 
+                    icon: 'text-gray-600 bg-gray-50 group-hover:bg-gray-600 group-hover:shadow-gray-200',
+                    border: 'hover:border-gray-600',
+                    text: 'group-hover:text-gray-600',
+                    action: 'text-gray-600'
+                  },
+                };
+                
+                const classes = colorClasses[item.color || 'blue'] || colorClasses.blue;
 
-                  {/* Decorative background elements */}
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500 pointer-events-none">
-                     <item.icon className="w-32 h-32 -mr-8 -mt-8" />
-                  </div>
-                </button>
-              ))}
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={cn(
+                      "group relative bg-white border border-slate-200 rounded-2xl p-5 text-left hover:shadow-xl transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
+                      "hover:-translate-y-0.5", 
+                      classes.border
+                    )}
+                  >
+                    <div className="relative z-10">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
+                        "group-hover:text-white group-hover:shadow-lg", 
+                        classes.icon
+                      )}>
+                        <item.icon className="w-5 h-5" />
+                      </div>
+                      
+                      <h3 className={cn("text-sm font-bold text-slate-900 mb-1 tracking-tight transition-colors", classes.text)}>
+                        {item.label}
+                      </h3>
+                      
+                      <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 italic">
+                        {item.description || 'Module quản lý nghiệp vụ hệ thống.'}
+                      </p>
+                      
+                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0", classes.action)}>
+                        <span>Truy cập</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </div>
+
+                    {/* Decorative background elements */}
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500 pointer-events-none">
+                       <item.icon className="w-32 h-32 -mr-8 -mt-8" />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
