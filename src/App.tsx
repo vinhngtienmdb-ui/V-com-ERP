@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
+import { Home } from './components/Home';
 import { Orders } from './components/Orders';
 import { PIM } from './components/PIM';
 import { SellerManagement } from './components/Sellers';
@@ -72,7 +73,8 @@ function AppLayout() {
         <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
           <div className="max-w-7xl mx-auto h-full">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/pim" element={<PIM />} />
               <Route path="/sellers" element={<SellerManagement />} />
