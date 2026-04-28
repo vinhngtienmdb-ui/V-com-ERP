@@ -19,11 +19,16 @@ import {
   RefreshCw,
   Bell,
   PanelTop,
-  FileSignature
+  FileSignature,
+  ShieldCheck,
+  X,
+  FileEdit
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const initialNodes = [
   { id: '1', data: { label: 'Đơn hàng mới' }, position: { x: 250, y: 5 } },
@@ -33,18 +38,25 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const MOCK_TASKS: WorkflowTask[] = [
   { id: 'WF-101', module: 'Legal', title: 'Thẩm định tranh chấp hàng giả LV-002', priority: 'critical', status: 'pending', deadline: '2 giờ tới', link: '/compliance' },
+  { id: 'WF-701', module: 'eOffice', title: 'Ký duyệt: Đề nghị tạm ứng công tác phí - REQ-002', priority: 'high', status: 'pending', deadline: 'Hôm nay', link: '/signature' },
+  { id: 'WF-702', module: 'eOffice', title: 'Ký duyệt: Đơn nghỉ phép thường niên - REQ-001', priority: 'medium', status: 'pending', deadline: 'Ngày mai', link: '/signature' },
   { id: 'WF-102', module: 'Finance', title: 'Phê duyệt 12 yêu cầu Early Payout', priority: 'high', status: 'pending', deadline: 'Hôm nay', link: '/seller-finance' },
   { id: 'WF-103', module: 'PIM', title: 'Duyệt 450 sản phẩm Flash Sale mới', priority: 'medium', status: 'in_progress', deadline: 'Ngày mai', link: '/pim' },
   { id: 'WF-104', module: 'Logistic', title: 'Cảnh báo tồn kho an toàn Kho Hà Nội', priority: 'critical', status: 'pending', deadline: 'Ngay lập tức', link: '/scm' },
-  { id: 'WF-105', module: 'Orders', title: 'Xử lý các đơn hàng trạng thái Pending', priority: 'high', status: 'pending', deadline: 'Ngay lập tức', link: '/orders' },
 ];
 
 export function WorkflowHub() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<'all' | 'critical' | 'high'>('all');
   const [viewMode, setViewMode] = useState<'tasks' | 'builder'>('tasks');
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+  const [tasks, setTasks] = useState(MOCK_TASKS);
+  
+  const [signingTaskId, setSigningTaskId] = useState<string | null>(null);
+  const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
+  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
 
   const onNodesChange = useCallback(
     (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -60,14 +72,26 @@ export function WorkflowHub() {
   );
 
   const handleApprove = (taskId: string) => {
-    // In a real app, this would update Firestore
+    setTasks(tasks.filter(t => t.id !== taskId));
     alert(`Đã phê duyệt Task ${taskId} thành công!`);
   };
 
+  const executeSignature = async () => {
+    setIsSigningInProcess(true);
+    // Simulate API call to CA provider
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    if (signingTaskId) {
+      setTasks(tasks.filter(t => t.id !== signingTaskId));
+    }
+    
+    setIsSigningInProcess(false);
+    setSigningTaskId(null);
+    alert("Ký số thành công! Tài liệu đã được gắn dấu thời gian và luồng công việc đã được cập nhật.");
+  };
+
   const handleSignRequest = (taskId: string) => {
-    // Link to signature hub with task context
-    alert(`Đang chuyển hướng đến Trung tâm Ký số cho Task ${taskId}...`);
-    navigate('/signature');
+    setSigningTaskId(taskId);
   };
 
   return (
@@ -173,7 +197,7 @@ export function WorkflowHub() {
                   </div>
                </div>
                <div className="divide-y divide-[#F3F4F6]">
-                  {MOCK_TASKS.filter(t => filter === 'all' || t.priority === filter).map(task => (
+                  {tasks.filter(t => filter === 'all' || t.priority === filter).map(task => (
                      <div key={task.id} className="p-6 flex items-center gap-6 hover:bg-slate-50 transition-all group">
                         <div className={cn(
                           "w-2 h-2 rounded-full",
@@ -276,6 +300,121 @@ export function WorkflowHub() {
             </div>
          </div>
       </div>
+      {/* Digital Signature Modal */}
+      <AnimatePresence>
+        {signingTaskId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+               className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 bg-[#111827] text-white rounded-xl flex items-center justify-center">
+                        <FileSignature className="w-5 h-5" />
+                     </div>
+                     <div>
+                        <h3 className="font-bold text-lg text-slate-900">Xác thực Ký duyệt (Mission Control)</h3>
+                        <p className="text-xs text-slate-500 font-medium">Bảo mật đa lớp cho tác vụ quan trọng</p>
+                     </div>
+                  </div>
+                  <button onClick={() => setSigningTaskId(null)} className="p-2 hover:bg-white rounded-full transition-colors border border-transparent hover:border-slate-200">
+                     <X className="w-5 h-5 text-slate-400" />
+                  </button>
+               </div>
+
+               <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                     <div className="flex justify-between items-center border-b border-slate-200 pb-4">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhiệm vụ hệ thống</span>
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">Workflow ID: {signingTaskId}</span>
+                     </div>
+                     <div className="space-y-3">
+                        <h4 className="text-xl font-black text-slate-900">{tasks.find(r => r.id === signingTaskId)?.title}</h4>
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                           <div>
+                              <p className="text-slate-400 mb-1">Module:</p>
+                              <p className="font-bold text-slate-700">{tasks.find(r => r.id === signingTaskId)?.module}</p>
+                           </div>
+                           <div>
+                              <p className="text-slate-400 mb-1">Mức độ ưu tiên:</p>
+                              <p className={cn(
+                                "font-bold",
+                                tasks.find(r => r.id === signingTaskId)?.priority === 'critical' ? 'text-rose-600' : 'text-amber-600'
+                              )}>
+                                {tasks.find(r => r.id === signingTaskId)?.priority === 'critical' ? 'Khẩn cấp' : 'Ưu tiên cao'}
+                              </p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-4">
+                     <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-blue-600" /> Phương thức ký chuyên dụng
+                     </label>
+                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[
+                           { id: 'smart_ca', label: 'SmartCA (VNPT)', desc: 'Mobile App OTP', color: 'blue' },
+                           { id: 'viettel_ca', label: 'Viettel-CA', desc: 'SIM PKI / Cloud', color: 'rose' },
+                           { id: 'usb_token', label: 'USB Token', desc: 'Thiết bị khóa HSM', color: 'slate' }
+                        ].map((ca) => (
+                           <div 
+                              key={ca.id}
+                              onClick={() => setSignatureMethod(ca.id as any)}
+                              className={cn(
+                                 "p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-2",
+                                 signatureMethod === ca.id ? "bg-blue-50 border-blue-600 ring-2 ring-blue-100" : "bg-white border-slate-100 hover:border-slate-300"
+                              )}
+                           >
+                              <div className="flex justify-between items-center">
+                                 <h5 className="font-bold text-sm text-slate-900">{ca.label}</h5>
+                                 <div className={cn("w-3 h-3 rounded-full border-2", signatureMethod === ca.id ? "bg-blue-600 border-blue-600" : "bg-white border-slate-300")} />
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-medium">{ca.desc}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex items-start gap-4">
+                     <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                        <Zap className="w-4 h-4" />
+                     </div>
+                     <p className="text-[10px] text-indigo-700 leading-relaxed font-medium">Hành động này sẽ được lưu nhật ký hệ thống (Audit Trail) vĩnh viễn và không thể đảo ngược sau khi ký số hoàn tất.</p>
+                  </div>
+               </div>
+
+               <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4 mt-auto">
+                  <button 
+                     onClick={() => setSigningTaskId(null)}
+                     disabled={isSigningInProcess}
+                     className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all disabled:opacity-50"
+                  >
+                     Quay lại
+                  </button>
+                  <button 
+                     onClick={executeSignature}
+                     disabled={isSigningInProcess}
+                     className="flex-[2] py-4 bg-[#111827] text-white rounded-2xl font-black text-sm shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                     {isSigningInProcess ? (
+                        <>
+                           <RefreshCw className="w-5 h-5 animate-spin" /> Kết nối CA...
+                        </>
+                     ) : (
+                        <>
+                           KÝ SỐ VÀ DUYỆT <Zap className="w-5 h-5 text-amber-400" />
+                        </>
+                     )}
+                  </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

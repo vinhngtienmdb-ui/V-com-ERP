@@ -57,35 +57,82 @@ export function SignatureHub() {
     setSigningModalOpen(true);
   };
   
-  const confirmSign = () => {
+  const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
+  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
+
+  const confirmSign = async () => {
+    setIsSigningInProcess(true);
+    // Simulate CA latency
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     if (selectedDoc) {
       setSignatures(signatures.map(s => s.id === selectedDoc.id ? { ...s, status: 'signed' } : s));
       setSigningModalOpen(false);
       setSelectedDoc(null);
     }
+    setIsSigningInProcess(false);
+    alert("Ký số thành công!");
   };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Trung tâm Ký số (e-Signature)</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Quản lý chứng thư số, phân quyền ký và theo dõi toàn bộ tài liệu trình ký.</p>
+          <h1 className="text-2xl font-bold text-[#111827] tracking-tight">Trung tâm Ký số (Digital Signature Hub)</h1>
+          <p className="text-sm text-[#6B7280] mt-1 italic">Hệ thống ký số tập trung, hỗ trợ SmartCA, Viettel-CA và HSM Token.</p>
+        </div>
+        <div className="flex gap-3">
+           <button className="bg-white border border-slate-200 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Làm mới Certs
+           </button>
+           <button className="bg-[#111827] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 flex items-center gap-2 uppercase tracking-widest">
+              <Key className="w-4 h-4 text-emerald-400" />
+              Quản lý chứng thư
+           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
-           <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ tôi ký</h3>
-           <p className="text-3xl font-black text-slate-900 mt-2">{signatures.filter(s => s.status === 'pending').length}</p>
+        <div className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+           <div className="relative z-10">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Chờ tôi ký</h3>
+              <p className="text-4xl font-black text-slate-900">{signatures.filter(s => s.status === 'pending').length}</p>
+              <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-amber-600">
+                 <Clock className="w-3 h-3" /> Cần xử lý gấp
+              </div>
+           </div>
         </div>
-        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
-           <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-blue-500" /> Đã ký (Tháng này)</h3>
-           <p className="text-3xl font-black text-slate-900 mt-2">{signatures.filter(s => s.status === 'signed').length}</p>
+        <div className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+           <div className="relative z-10">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
+              <p className="text-4xl font-black text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
+              <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-blue-600">
+                 <CheckCircle2 className="w-3 h-3" /> Lưu trữ an toàn
+              </div>
+           </div>
         </div>
-        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
-           <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-500" /> Chứng thư số</h3>
-           <p className="text-sm font-bold text-emerald-600 mt-2">Đang hoạt động (SmartCA)</p>
+        <div className="group bg-slate-900 p-6 rounded-2xl shadow-xl shadow-slate-200 relative overflow-hidden lg:col-span-2">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12" />
+           <div className="relative z-10 flex justify-between items-center h-full">
+              <div>
+                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Chứng thư đang hoạt động</h3>
+                 <p className="text-xl font-bold text-white">VNPT SmartCA Certificate</p>
+                 <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                       <ShieldCheck className="w-3 h-3" /> Đang bảo mật (Active)
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                       <Clock className="w-3 h-3" /> Hết hạn: 15/10/2026
+                    </div>
+                 </div>
+              </div>
+              <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+                 <FileSignature className="w-8 h-8 text-white/40" />
+              </div>
+           </div>
         </div>
       </div>
 
@@ -420,22 +467,28 @@ export function SignatureHub() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">Chọn phương thức ký số</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">Chọn phương thức ký số chuyên dụng</label>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 border border-indigo-200 bg-indigo-50/50 rounded-lg cursor-pointer hover:bg-indigo-50 transition-colors">
-                    <input type="radio" name="signMethod" defaultChecked className="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-600" />
-                    <div>
-                      <p className="text-sm font-bold text-slate-800 flex items-center gap-2">Ký số SmartCA <span className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-bold">Khuyên dùng</span></p>
-                      <p className="text-xs text-slate-500 mt-0.5">Xác thực qua ứng dụng di động.</p>
+                  {[
+                    { id: 'smart_ca', label: 'VNPT SmartCA', desc: 'Remote Signing App' },
+                    { id: 'viettel_ca', label: 'Viettel CA', desc: 'Cloud Hub / SIM PKI' },
+                    { id: 'usb_token', label: 'USB Token', desc: 'Thiết bị HSM vật lý' }
+                  ].map((ca) => (
+                    <div 
+                      key={ca.id}
+                      onClick={() => setSignatureMethod(ca.id as any)}
+                      className={cn(
+                        "flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all",
+                        signatureMethod === ca.id ? "border-indigo-600 bg-indigo-50" : "border-slate-200 bg-white hover:bg-slate-50"
+                      )}
+                    >
+                      <div className={cn("w-4 h-4 rounded-full border-2 flex-shrink-0", signatureMethod === ca.id ? "bg-indigo-600 border-indigo-600" : "bg-white border-slate-300")} />
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">{ca.label}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{ca.desc}</p>
+                      </div>
                     </div>
-                  </label>
-                  <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
-                    <input type="radio" name="signMethod" className="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-600" />
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">Ký bằng USB Token</p>
-                      <p className="text-xs text-slate-500 mt-0.5">Yêu cầu cắm USB & có plugin.</p>
-                    </div>
-                  </label>
+                  ))}
                 </div>
               </div>
             </div>
@@ -443,15 +496,18 @@ export function SignatureHub() {
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
               <button 
                 onClick={() => setSigningModalOpen(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                disabled={isSigningInProcess}
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
               >
                 Hủy bỏ
               </button>
               <button 
-                className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+                disabled={isSigningInProcess}
+                className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
                 onClick={confirmSign}
               >
-                <Key className="w-4 h-4" /> Chấp nhận Ký
+                {isSigningInProcess ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
+                {isSigningInProcess ? 'Đang kết nối...' : 'Chấp nhận Ký'}
               </button>
             </div>
           </div>

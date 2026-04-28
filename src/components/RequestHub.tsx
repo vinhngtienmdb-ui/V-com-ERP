@@ -17,10 +17,14 @@ import {
   UserPlus,
   PenTool,
   X,
-  FileEdit
+  FileEdit,
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const INITIAL_REQUESTS = [
   { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -40,6 +44,7 @@ const INITIAL_FORM_CONFIGS = [
 export function RequestHub() {
   const [activeTab, setActiveTab] = useState('all');
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [requests, setRequests] = useState(INITIAL_REQUESTS);
   
   // Settings State
@@ -97,10 +102,13 @@ export function RequestHub() {
     setNewRequest({ subtype: formConfigs[0]?.name || '', title: '', requester: 'Tôi (Người đang đăng nhập)', formData: {} });
   };
 
+  const [signingRequestId, setSigningRequestId] = useState<string | null>(null);
+  const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
+  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
+
   const handleStatusChange = (id: string, newStatus: string) => {
     setRequests(requests.map(req => {
       if (req.id === id) {
-        // Multi-level logic: find current level
         const config = formConfigs.find(c => c.name === req.subtype);
         const currentLevel = (req as any).currentLevel || 1;
         const totalLevels = config?.workflow.length || 1;
@@ -114,14 +122,27 @@ export function RequestHub() {
     }));
   };
 
-  const handleSignRequest = (id: string) => {
-    // Simulate digital signature integration
-    alert(`Đang khởi tạo SignatureHub cho phiếu ${id}...`);
-    // In a real app, this would redirect to /signature or open a signing modal
-    setRequests(requests.map(req => 
-      req.id === id ? { ...req, signatureStatus: 'signed', status: 'approved' } : req
-    ));
-    alert("Ký số thành công! Tài liệu đã được xác thực và lưu trữ (WorkflowHub).");
+  const executeSignature = async () => {
+    setIsSigningInProcess(true);
+    // Simulate API call to CA provider
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    if (signingRequestId) {
+      setRequests(requests.map(req => 
+        req.id === signingRequestId ? { 
+          ...req, 
+          signatureStatus: 'signed', 
+          status: 'approved',
+          signedBy: user?.displayName || 'User',
+          signedAt: new Date().toLocaleString('vi-VN'),
+          caProvider: signatureMethod.toUpperCase().replace('_', ' ')
+        } : req
+      ));
+    }
+    
+    setIsSigningInProcess(false);
+    setSigningRequestId(null);
+    alert("Ký số thành công! Tài liệu đã được gắn dấu thời gian và lưu trữ vào WorkflowHub.");
   };
 
 
@@ -312,7 +333,7 @@ export function RequestHub() {
                                         <CheckCircle2 className="w-3 h-3" /> Duyệt
                                       </button>
                                       <button 
-                                        onClick={() => handleSignRequest(doc.id)}
+                                        onClick={() => setSigningRequestId(doc.id)}
                                         className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded hover:bg-blue-100 flex items-center gap-1"
                                       >
                                         <FileSignature className="w-3 h-3" /> Ký & Duyệt
@@ -740,6 +761,118 @@ export function RequestHub() {
           </div>
         </div>
       )}
+      {/* Digital Signature Modal */}
+      <AnimatePresence>
+        {signingRequestId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+               className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
+                        <FileSignature className="w-5 h-5" />
+                     </div>
+                     <div>
+                        <h3 className="font-bold text-lg text-slate-900">Xác thực Chữ ký số</h3>
+                        <p className="text-xs text-slate-500 font-medium">Bảo mật bởi chuẩn mã hóa AES-256</p>
+                     </div>
+                  </div>
+                  <button onClick={() => setSigningRequestId(null)} className="p-2 hover:bg-white rounded-full transition-colors border border-transparent hover:border-slate-200">
+                     <X className="w-5 h-5 text-slate-400" />
+                  </button>
+               </div>
+
+               <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                  {/* Document Preview */}
+                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                     <div className="flex justify-between items-center border-b border-slate-200 pb-4">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tài liệu phê duyệt</span>
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
+                     </div>
+                     <div className="space-y-3">
+                        <h4 className="text-xl font-black text-slate-900">{requests.find(r => r.id === signingRequestId)?.title}</h4>
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                           <div>
+                              <p className="text-slate-400 mb-1">Loại chứng từ:</p>
+                              <p className="font-bold text-slate-700">{requests.find(r => r.id === signingRequestId)?.subtype}</p>
+                           </div>
+                           <div>
+                              <p className="text-slate-400 mb-1">Người đề xuất:</p>
+                              <p className="font-bold text-slate-700">{requests.find(r => r.id === signingRequestId)?.requester}</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* CA Selection */}
+                  <div className="space-y-4">
+                     <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-blue-600" /> Chọn Nhà cung cấp Chứng thực (CA)
+                     </label>
+                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[
+                           { id: 'smart_ca', label: 'VNPT SmartCA', desc: 'Remote Signing', color: 'blue' },
+                           { id: 'viettel_ca', label: 'Viettel-CA', desc: 'Cloud Token', color: 'rose' },
+                           { id: 'usb_token', label: 'USB Token', desc: 'Ký bằng thiết bị vật lý', color: 'slate' }
+                        ].map((ca) => (
+                           <div 
+                              key={ca.id}
+                              onClick={() => setSignatureMethod(ca.id as any)}
+                              className={cn(
+                                 "p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-2",
+                                 signatureMethod === ca.id ? "bg-blue-50 border-blue-600 ring-2 ring-blue-100" : "bg-white border-slate-100 hover:border-slate-300"
+                              )}
+                           >
+                              <div className="flex justify-between items-center">
+                                 <h5 className="font-bold text-sm text-slate-900">{ca.label}</h5>
+                                 <div className={cn("w-3 h-3 rounded-full border-2", signatureMethod === ca.id ? "bg-blue-600 border-blue-600" : "bg-white border-slate-300")} />
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-medium">{ca.desc}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 flex items-start gap-4">
+                     <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
+                        <Clock className="w-4 h-4" />
+                     </div>
+                     <p className="text-[10px] text-amber-700 leading-relaxed font-medium">Hệ thống sẽ chuyển hướng hoặc gửi thông báo (OTP/Push Notification) về thiết bị đã đăng ký với {signatureMethod.replace('_', ' ').toUpperCase()}. Vui lòng không đóng trang này.</p>
+                  </div>
+               </div>
+
+               <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4 mt-auto">
+                  <button 
+                     onClick={() => setSigningRequestId(null)}
+                     disabled={isSigningInProcess}
+                     className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all disabled:opacity-50"
+                  >
+                     Hủy bỏ
+                  </button>
+                  <button 
+                     onClick={executeSignature}
+                     disabled={isSigningInProcess}
+                     className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                     {isSigningInProcess ? (
+                        <>
+                           <RefreshCw className="w-5 h-5 animate-spin" /> Đang kết nối CA...
+                        </>
+                     ) : (
+                        <>
+                           XÁC NHẬN KÝ SỐ <Zap className="w-5 h-5" />
+                        </>
+                     )}
+                  </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -54,7 +54,11 @@ import {
   History,
   Trash2,
   X,
-  Edit2
+  Edit2,
+  RefreshCcw,
+  Calculator,
+  Trophy,
+  Map as MapIcon
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
@@ -429,9 +433,12 @@ export function HumanResources() {
   const [filterPosition, setFilterPosition] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
+  const [activeAttendanceMethod, setActiveAttendanceMethod] = useState<'kiosk' | 'status'>('status');
+  const [showAttendanceConfig, setShowAttendanceConfig] = useState(false);
+  
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [attendanceView, setAttendanceView] = useState<'calendar' | 'dashboard'>('dashboard');
   const [filterDateAtt, setFilterDateAtt] = useState('');
-  const [attendanceView, setAttendanceView] = useState<'week' | 'month'>('month');
-  const [isAdmin, setIsAdmin] = useState(true);
 
   const filteredEmployees = employees.filter(emp => {
     if (searchEmployee && !emp.fullName.toLowerCase().includes(searchEmployee.toLowerCase()) && !emp.id.toLowerCase().includes(searchEmployee.toLowerCase())) return false;
@@ -1213,7 +1220,7 @@ export function HumanResources() {
                      <Layers className="absolute -bottom-24 -right-12 w-64 h-64 text-white/5 rotate-12" />
                   </div>
                 </div>
-              ) : (
+              ) : (activeTab !== 'attendance' && activeTab !== 'kpi') ? (
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
@@ -1542,8 +1549,468 @@ export function HumanResources() {
                 })}
               </tbody>
             </table>
-          )}
+          ) : null}
           </div>
+
+          {activeTab === 'attendance' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500 p-6 bg-slate-50 min-h-[600px]">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
+                  <div>
+                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <Clock className="w-6 h-6 text-orange-500" /> Quản lý Chấm công & Hiện diện
+                     </h2>
+                     <p className="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-wider">Dữ liệu được đồng bộ từ App GPS, Wifi Hub và Máy chấm công FaceID</p>
+                  </div>
+                  <div className="flex gap-3">
+                     <button 
+                      onClick={() => setShowAttendanceConfig(true)}
+                      className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-200 flex items-center gap-2"
+                     >
+                        <Settings className="w-4 h-4" /> Cấu hình
+                     </button>
+                     <button 
+                      onClick={() => setActiveAttendanceMethod(activeAttendanceMethod === 'kiosk' ? 'status' : 'kiosk')}
+                      className={cn(
+                        "px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all",
+                        activeAttendanceMethod === 'kiosk' ? "bg-orange-600 text-white shadow-lg shadow-orange-100" : "bg-white border border-slate-200 text-slate-700"
+                      )}
+                     >
+                        <ScanFace className="w-4 h-4" /> {activeAttendanceMethod === 'kiosk' ? 'Bảng công' : 'Chế độ Kiosk'}
+                     </button>
+                  </div>
+               </div>
+
+               {activeAttendanceMethod === 'kiosk' ? (
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full min-h-[500px]">
+                    <div className="bg-[#111827] rounded-3xl p-10 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-2xl">
+                       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-50" />
+                       
+                       <div className="space-y-2 relative z-10">
+                          <div className="text-6xl font-black text-white tracking-widest tabular-nums">08:45:22</div>
+                          <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.3em]">Hệ thống đang sẵn sàng</p>
+                       </div>
+
+                       <div className="w-64 h-64 bg-slate-800 rounded-3xl border-4 border-slate-700 relative flex items-center justify-center overflow-hidden group">
+                          <div className="absolute inset-0 bg-blue-500/10 opacity-100" />
+                          <div className="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-[scan_3s_ease-in-out_infinite]" />
+                          <ScanFace className="w-24 h-24 text-blue-400/50 group-hover:text-blue-400 transition-colors" />
+                          
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                             <Cpu className="w-3 h-3" /> AI Face Recognition
+                          </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-4 w-full max-w-md relative z-10">
+                          <button className="py-6 bg-emerald-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-emerald-900/40 active:scale-95">
+                             <CheckCircle2 className="w-6 h-6" /> VÀO CA
+                          </button>
+                          <button className="py-6 bg-rose-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-rose-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-rose-900/40 active:scale-95">
+                             <History className="w-6 h-6" /> HẾT CA
+                          </button>
+                       </div>
+                    </div>
+
+                    <div className="space-y-6">
+                       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-full">
+                          <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
+                             <Activity className="w-4 h-4 text-emerald-500" /> Ghi nhận gần đây
+                          </h3>
+                          <div className="space-y-4">
+                             {[
+                               { name: 'Lê Hoàng Minh', time: '08:00', status: 'In', image: 'M', dept: 'Marketing' },
+                               { name: 'Trần Thu Thủy', time: '08:15', status: 'In', image: 'T', dept: 'CSKH' },
+                               { name: 'Nguyễn Diệu Nhi', time: '08:30', status: 'Late', image: 'N', dept: 'Sales' }
+                             ].map((l, i) => (
+                               <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-white transition-all">
+                                  <div className="flex items-center gap-3">
+                                     <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-600 text-sm shadow-sm border border-white">
+                                        {l.image}
+                                     </div>
+                                     <div>
+                                        <p className="text-xs font-bold text-slate-900 uppercase tracking-tight">{l.name}</p>
+                                        <p className="text-[10px] text-slate-500 font-medium">Verify: FaceID (Match 98%) • {l.dept}</p>
+                                     </div>
+                                  </div>
+                                  <div className="text-right">
+                                     <p className="text-sm font-black text-slate-900">{l.time}</p>
+                                     <p className={cn(
+                                       "text-[9px] font-bold uppercase tracking-tighter",
+                                       l.status === 'In' ? "text-emerald-600" : "text-rose-600"
+                                     )}>{l.status === 'In' ? 'Đã Check-in' : 'Đi muộn'}</p>
+                                  </div>
+                               </div>
+                             ))}
+                          </div>
+                          <button className="w-full mt-6 py-4 text-xs font-bold text-slate-500 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-colors uppercase tracking-widest hover:text-slate-700">Xem tất cả lịch sử</button>
+                       </div>
+                       
+                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-6 rounded-2xl relative overflow-hidden group">
+                          <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-indigo-100 group-hover:scale-110 transition-transform" />
+                          <div className="flex items-start gap-4 relative z-10">
+                             <div className="p-3 bg-white text-indigo-600 rounded-xl shadow-sm border border-indigo-100">
+                                <ShieldCheck className="w-6 h-6" />
+                             </div>
+                             <div>
+                                <h4 className="font-bold text-indigo-900 text-sm">Chế độ bảo mật Cao</h4>
+                                <p className="text-[11px] text-indigo-800/70 mt-1 leading-relaxed font-medium">Hệ thống đang tự động lọc các nỗ lực chấm công giả mạo (Fake GPS/Liveness Spoofing) thông qua thuật toán AI Vision.</p>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+               ) : (
+                 <div className="grid grid-cols-12 gap-6">
+                    <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                       <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                          <div className="flex gap-4">
+                             <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                                <button className="px-4 py-1.5 bg-indigo-600 text-white text-[10px] font-bold rounded-md shadow-sm">Theo ngày</button>
+                                <button className="px-4 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700">Bảng công tháng</button>
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-3 w-full sm:w-auto">
+                             <div className="relative flex-1 sm:flex-none">
+                                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input 
+                                  type="text" 
+                                  placeholder="Tìm nhân viên..." 
+                                  className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48"
+                                />
+                             </div>
+                             <button className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
+                                <Filter className="w-4 h-4 text-slate-400" />
+                             </button>
+                          </div>
+                       </div>
+
+                       <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                             <thead>
+                                <tr className="bg-slate-50/50 border-b border-slate-100 italic">
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhân viên</th>
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Ca làm</th>
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">In/Out</th>
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Verify</th>
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Trạng thái</th>
+                                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Lương ca</th>
+                                </tr>
+                             </thead>
+                             <tbody className="divide-y divide-slate-50">
+                                {filteredAttendance.map((att, i) => {
+                                   const emp = employees.find(e => e.id === att.employeeId);
+                                   return (
+                                     <tr key={i} className="hover:bg-indigo-50/20 transition-colors group">
+                                        <td className="px-6 py-5">
+                                           <div className="flex items-center gap-3">
+                                              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-[10px] uppercase">
+                                                 {emp?.fullName.split(' ').pop()?.charAt(0) || 'U'}
+                                              </div>
+                                              <div>
+                                                 <div className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{emp?.fullName}</div>
+                                                 <div className="text-[9px] text-slate-400 font-mono italic">{att.employeeId}</div>
+                                              </div>
+                                           </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-center">
+                                           <span className="text-[9px] font-bold text-slate-600 px-2 py-0.5 bg-slate-100 rounded uppercase tracking-tighter">Hành chính</span>
+                                        </td>
+                                        <td className="px-6 py-5 text-center">
+                                           <div className="flex flex-col items-center">
+                                              <div className="text-xs font-black text-slate-900 tabular-nums">{att.checkIn} - {att.checkOut || '--:--'}</div>
+                                              <div className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-70">Total: {att.overtimeHours + 8}h</div>
+                                           </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-center">
+                                           <div className="flex flex-col items-center gap-1">
+                                              {att.method === 'face' ? (
+                                                 <div className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded flex items-center gap-1 text-[9px] font-bold">
+                                                    <ScanFace className="w-3 h-3" /> FaceID
+                                                 </div>
+                                              ) : att.method === 'wifi' ? (
+                                                 <div className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded flex items-center gap-1 text-[9px] font-bold">
+                                                    <Wifi className="w-3 h-3" /> Wifi
+                                                 </div>
+                                              ) : (
+                                                 <div className="px-2 py-0.5 bg-orange-50 text-orange-600 rounded flex items-center gap-1 text-[9px] font-bold">
+                                                    <MapPin className="w-3 h-3" /> GPS
+                                                 </div>
+                                              )}
+                                              <span className="text-[9px] text-slate-400 font-medium">{att.deviceInfo}</span>
+                                           </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-center">
+                                           <span className={cn(
+                                             "px-3 py-1 rounded text-[9px] font-black uppercase tracking-tighter shadow-sm",
+                                             att.status === 'on_time' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"
+                                           )}>
+                                              {att.status === 'on_time' ? 'Đúng giờ' : 'Đi muộn'}
+                                           </span>
+                                        </td>
+                                        <td className="px-6 py-5 text-right">
+                                           <span className="text-xs font-black text-slate-900 tabular-nums">{formatCurrency(450000)}</span>
+                                        </td>
+                                     </tr>
+                                   );
+                                })}
+                             </tbody>
+                          </table>
+                       </div>
+                    </div>
+
+                    <div className="col-span-12 lg:col-span-4 space-y-6">
+                       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                          <h3 className="font-bold text-slate-900 text-sm mb-6 flex items-center gap-2 uppercase tracking-widest">
+                             <Target className="w-4 h-4 text-rose-500" /> Phân tích Chuyên cần
+                          </h3>
+                          <div className="space-y-6">
+                             <div className="flex justify-between items-end">
+                                <div>
+                                   <p className="text-4xl font-black text-slate-900 tracking-tighter">94.2%</p>
+                                   <p className="text-[10px] text-slate-500 font-bold uppercase mt-1 tracking-widest">Tỷ lệ Presence Rate</p>
+                                </div>
+                                <div className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                                   <TrendingUp className="w-3 h-3" /> +1.2%
+                                </div>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                {[
+                                   { label: 'Có mặt ngay lúc này', count: 112, color: 'emerald' },
+                                   { label: 'Đã Checkout (Hết ca)', count: 24, color: 'blue' },
+                                   { label: 'Vắng mặt / Đi muộn', count: 8, color: 'rose' }
+                                ].map((s, i) => (
+                                   <div key={i} className="space-y-2">
+                                      <div className="flex justify-between text-[10px] font-bold">
+                                         <span className="text-slate-500 uppercase">{s.label}</span>
+                                         <span className="text-slate-900 font-black">{s.count} người</span>
+                                      </div>
+                                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                         <div 
+                                          className={cn("h-full transition-all duration-1000", s.color === 'emerald' ? 'bg-emerald-500' : s.color === 'rose' ? 'bg-rose-500' : 'bg-blue-500')} 
+                                          style={{ width: `${(s.count / 144) * 100}%` }} 
+                                         />
+                                      </div>
+                                   </div>
+                                ))}
+                             </div>
+                             
+                             <div className="p-5 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-3 relative overflow-hidden">
+                                <Zap className="absolute -right-2 -top-2 w-12 h-12 text-indigo-100 rotate-12" />
+                                <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-[0.2em] flex items-center gap-2 relative z-10">
+                                   <Sparkles className="w-3.5 h-3.5" /> AI Khuyến nghị
+                                </h4>
+                                <p className="text-[11px] text-indigo-800 leading-relaxed font-medium italic relative z-10">Bộ phận "Kho" đang có tỷ lệ đi muộn cao đột biến vào thứ Hai. Cân nhắc điều chỉnh ca làm sớm hơn hoặc hỗ trợ xe đưa đón.</p>
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                          <div className="relative z-10">
+                             <h3 className="font-bold text-slate-900 text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
+                                <QrCode className="w-4 h-4 text-indigo-600" /> Mã QR Động (Anti-Fake)
+                             </h3>
+                             <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center group-hover:bg-white transition-all duration-500 relative cursor-pointer">
+                                <QrCode className="w-24 h-24 text-slate-300 group-hover:text-indigo-600 transition-all duration-500" />
+                                <div className="absolute inset-0 bg-white/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                   <RefreshCcw className="w-8 h-8 text-indigo-600 animate-spin-slow" />
+                                </div>
+                             </div>
+                             <p className="text-[10px] text-slate-400 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-indigo-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
+                          </div>
+                          <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
+                       </div>
+                    </div>
+                 </div>
+               )}
+            </div>
+          )}
+
+          {activeTab === 'kpi' && (
+             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 p-8 bg-white min-h-[600px]">
+                <div className="flex justify-between items-end mb-8 border-b border-slate-100 pb-8">
+                   <div className="space-y-1">
+                      <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                         <Target className="w-8 h-8 text-indigo-600" /> KPI & Performance Analysis
+                      </h2>
+                      <p className="text-sm font-medium text-slate-400 italic">Đánh giá hiệu quả công việc dựa trên dữ liệu thời gian thực và AI Score.</p>
+                   </div>
+                   <div className="flex gap-3">
+                      <div className="bg-slate-100 p-1 rounded-xl flex">
+                         <button className="px-4 py-2 bg-white text-indigo-600 font-bold text-xs rounded-lg shadow-sm">Tháng này</button>
+                         <button className="px-4 py-2 text-slate-500 font-bold text-xs hover:text-slate-700">Quý 1/2024</button>
+                      </div>
+                      <button className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2">
+                         <Calculator className="w-4 h-4" /> Chốt KPI Batch
+                      </button>
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                   <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl space-y-4">
+                      <div className="flex justify-between items-start">
+                         <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Average Completion</p>
+                         <div className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm shadow-md">88%</div>
+                      </div>
+                      <div className="space-y-1">
+                         <div className="text-3xl font-black text-indigo-900 tabular-nums">88.45%</div>
+                         <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600">
+                            <TrendingUp className="w-3 h-3" /> +4.2% vs Last Month
+                         </div>
+                      </div>
+                   </div>
+                   <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl space-y-4">
+                      <div className="flex justify-between items-start">
+                         <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Top Performers</p>
+                         <Trophy className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <div className="space-y-1">
+                         <div className="text-3xl font-black text-emerald-900 tabular-nums">12 KH</div>
+                         <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Đạt trên 120% mục tiêu</p>
+                      </div>
+                   </div>
+                   <div className="bg-rose-50 border border-rose-100 p-6 rounded-2xl space-y-4">
+                      <div className="flex justify-between items-start">
+                         <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Critical Alert</p>
+                         <AlertCircle className="w-6 h-6 text-rose-600" />
+                      </div>
+                      <div className="space-y-1">
+                         <div className="text-3xl font-black text-rose-900 tabular-nums">04 KH</div>
+                         <p className="text-[10px] font-bold text-rose-600 uppercase tracking-tighter">Dưới 60% - Cần 1-on-1</p>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-12 gap-8 mt-4">
+                   <div className="col-span-12 lg:col-span-8 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+                      <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center px-8">
+                         <h3 className="font-black text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
+                         <div className="relative">
+                            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <input 
+                              type="text" 
+                              placeholder="Tìm kiếm KPIs..." 
+                              className="pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-64"
+                            />
+                         </div>
+                      </div>
+                      <div className="overflow-x-auto">
+                         <table className="w-full">
+                            <thead>
+                               <tr className="bg-slate-50/30 border-b border-slate-100 text-left">
+                                  <th className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhân sự & Vị trí</th>
+                                  <th className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chỉ tiêu trọng yếu</th>
+                                  <th className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Tiến độ (%)</th>
+                                  <th className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Phân tích AI</th>
+                               </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                               {MOCK_KPIs.map(kpi => {
+                                  const emp = employees.find(e => e.id === kpi.employeeId);
+                                  const progress = (kpi.current / kpi.target) * 100;
+                                  return (
+                                    <tr key={kpi.id} className="hover:bg-slate-50/80 transition-colors group">
+                                       <td className="px-8 py-5">
+                                          <div className="flex items-center gap-3">
+                                             <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
+                                                {emp?.fullName.split(' ').pop()?.charAt(0)}
+                                             </div>
+                                             <div>
+                                                <p className="text-sm font-black text-slate-900 italic tracking-tight">{emp?.fullName}</p>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{emp?.department}</p>
+                                             </div>
+                                          </div>
+                                       </td>
+                                       <td className="px-8 py-5">
+                                          <p className="text-xs font-bold text-slate-800">{kpi.title}</p>
+                                          <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">Target: {kpi.target} {kpi.unit}</p>
+                                       </td>
+                                       <td className="px-8 py-5 w-48">
+                                          <div className="space-y-1.5">
+                                             <div className="flex justify-between text-[10px] font-black">
+                                                <span className={cn(progress >= 100 ? "text-emerald-600" : progress >= 80 ? "text-blue-600" : "text-rose-600")}>{progress.toFixed(1)}%</span>
+                                                <span className="text-slate-300 font-mono italic">#{kpi.id.slice(-4)}</span>
+                                             </div>
+                                             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                                <div 
+                                                  className={cn("h-full transition-all duration-1000", progress >= 100 ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" : progress >= 80 ? "bg-blue-500" : "bg-rose-500")} 
+                                                  style={{ width: `${Math.min(progress, 100)}%` }} 
+                                                />
+                                             </div>
+                                          </div>
+                                       </td>
+                                       <td className="px-8 py-5 text-right">
+                                          <div className="flex flex-col items-end gap-1">
+                                             <div className={cn(
+                                               "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest",
+                                               progress >= 100 ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
+                                             )}>
+                                                {progress >= 100 ? 'OUTSTANDING' : 'ON TRACK'}
+                                             </div>
+                                             <p className="text-[9px] text-slate-400 italic">Dự báo: 112% (AI)</p>
+                                          </div>
+                                       </td>
+                                    </tr>
+                                  );
+                               })}
+                            </tbody>
+                         </table>
+                      </div>
+                   </div>
+
+                   <div className="col-span-12 lg:col-span-4 space-y-8">
+                      <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                         <div className="absolute top-0 right-0 p-4">
+                            <Trophy className="w-12 h-12 text-white/10 rotate-12" />
+                         </div>
+                         <h3 className="text-lg font-black italic tracking-widest mb-8 border-l-4 border-amber-400 pl-4">PERFORMANCE LEADERBOARD</h3>
+                         <div className="space-y-6">
+                            {[
+                               { name: 'Hoàng Minh', score: 98, rank: 1, color: 'text-amber-400' },
+                               { name: 'Thu Thủy', score: 94, rank: 2, color: 'text-slate-300' },
+                               { name: 'Diệu Nhi', score: 91, rank: 3, color: 'text-orange-400' }
+                            ].map((p, i) => (
+                               <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-3 rounded-2xl transition-all">
+                                  <div className="flex items-center gap-4">
+                                     <span className={cn("text-xl font-black w-6", p.color)}>{p.rank}</span>
+                                     <div>
+                                        <p className="text-sm font-bold tracking-tight">{p.name}</p>
+                                        <div className="h-1 w-12 bg-white/10 rounded-full mt-1.5 overflow-hidden">
+                                           <div className="h-full bg-white/40" style={{ width: `${p.score}%` }} />
+                                        </div>
+                                     </div>
+                                  </div>
+                                  <div className="text-right">
+                                     <p className="text-lg font-black tabular-nums">{p.score}</p>
+                                     <p className="text-[9px] text-slate-500 font-bold uppercase">Points</p>
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                         <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
+                            Xem tất cả bảng xếp hạng
+                         </button>
+                      </div>
+
+                      <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm group">
+                         <div className="flex items-center gap-3 mb-8">
+                            <div className="p-3 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 shadow-sm relative">
+                               <MapIcon className="w-6 h-6" />
+                               <div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-ping" />
+                            </div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
+                         </div>
+                         <div className="aspect-square bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-8 space-y-4 text-center group-hover:bg-white transition-all duration-500">
+                            <Layers className="w-16 h-16 text-slate-300 group-hover:text-indigo-400 transition-all duration-500" />
+                            <div>
+                               <p className="text-xs font-bold text-slate-600">Phân tích Phủ Kỹ năng</p>
+                               <p className="text-[10px] text-slate-400 mt-2 leading-relaxed italic">Bản đồ nhiệt cho phép người quản lý nhìn ra các lỗ hổng kỹ năng trong từng phòng ban để có chiến lược Training phù hợp.</p>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             </div>
+          )}
           </>
         ) : activeTab === 'payroll' ? (
            <div className="p-8 bg-slate-50 min-h-[500px]">

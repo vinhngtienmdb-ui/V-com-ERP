@@ -120,22 +120,30 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
                  <p className="text-[10px] text-slate-400 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-slate-600">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
               </div>
               
-              <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 shadow-sm">
-                <h4 className="font-bold text-xs mb-3 text-blue-800 flex items-center gap-2">
-                  <Filter className="w-3.5 h-3.5" /> Chỉ số RFM
-                </h4>
-                <div className="space-y-2.5">
-                  {[
-                    { label: 'Recency', score: customer.rfmScore?.recency || 0, desc: 'Độ gần đây' },
-                    { label: 'Frequency', score: customer.rfmScore?.frequency || 0, desc: 'Tần suất' },
-                    { label: 'Monetary', score: customer.rfmScore?.monetary || 0, desc: 'Giá trị' },
-                  ].map((item) => (
-                    <div key={item.label} className="flex justify-between items-center text-xs">
-                      <span className="text-blue-600/70 font-medium">{item.label} <span className="text-[10px] text-blue-400 font-normal">({item.desc})</span></span> 
-                      <span className="font-bold text-blue-800 bg-white px-2 py-0.5 rounded shadow-sm border border-blue-50">{item.score}/5</span>
-                    </div>
-                  ))}
+              <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden group">
+                <div className="relative z-10">
+                   <h4 className="font-bold text-xs mb-3 text-blue-800 flex items-center gap-2">
+                     <Filter className="w-3.5 h-3.5" /> Phân giải RFM Score
+                   </h4>
+                   <div className="space-y-2.5">
+                     {[
+                       { label: 'Recency', score: 4.2, desc: 'Độ gần đây' },
+                       { label: 'Frequency', score: 3.8, desc: 'Tần suất' },
+                       { label: 'Monetary', score: 4.5, desc: 'Giá trị' },
+                     ].map((item) => (
+                       <div key={item.label} className="space-y-1">
+                          <div className="flex justify-between items-center text-[10px]">
+                            <span className="text-blue-600 font-bold uppercase tracking-tighter">{item.label}</span> 
+                            <span className="font-black text-blue-900">{item.score}/5</span>
+                          </div>
+                          <div className="h-1 bg-blue-100 rounded-full overflow-hidden">
+                             <div className="h-full bg-blue-600 transition-all duration-1000" style={{ width: `${(item.score / 5) * 100}%` }} />
+                          </div>
+                       </div>
+                     ))}
+                   </div>
                 </div>
+                <Sparkles className="absolute -bottom-4 -right-4 w-16 h-16 text-blue-200/40 group-hover:rotate-12 transition-transform duration-500" />
               </div>
 
               <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 shadow-sm">
@@ -902,7 +910,7 @@ export function Customers() {
 
       {activeView === 'list' ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
               <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
               <div className="flex items-end justify-between">
@@ -931,6 +939,79 @@ export function Customers() {
                 <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
               </div>
             </div>
+          </div>
+
+          {/* CRM Intelligence & RFM Segmentation */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+             <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4">
+                   <Sparkles className="w-5 h-5 text-indigo-200 group-hover:text-indigo-400 transition-colors animate-pulse" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                   <Users className="w-5 h-5 text-indigo-600" /> Phân đoạn Khách hàng (RFM Segmentation)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                   {[
+                     { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
+                     { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
+                     { name: 'Tiềm năng', val: 28, color: 'bg-blue-500', desc: 'Sẵn sàng Upsell' },
+                     { name: 'Mới đăng ký', val: 15, color: 'bg-indigo-500', desc: 'Cần Onboarding' }
+                   ].map((seg, i) => (
+                     <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white hover:shadow-md transition-all cursor-pointer">
+                        <div className="flex justify-between items-start mb-2">
+                           <div className={cn("w-2 h-2 rounded-full", seg.color)} />
+                           <span className="text-xl font-black text-slate-900">{seg.val}%</span>
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 mb-1">{seg.name}</p>
+                        <p className="text-[10px] text-slate-400 leading-tight">{seg.desc}</p>
+                     </div>
+                   ))}
+                </div>
+                
+                <div className="mt-8 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
+                   <div className="flex items-center gap-4">
+                      <div className="p-3 bg-white text-indigo-600 rounded-lg shadow-sm">
+                         <Mail className="w-5 h-5" />
+                      </div>
+                      <div>
+                         <h4 className="text-xs font-bold text-indigo-900">Chiến dịch tự động (Marketing Automation)</h4>
+                         <p className="text-[10px] text-indigo-700/70">Đang có 12 khách hàng thuộc nhóm "Tiềm năng" có thể gửi Voucher.</p>
+                      </div>
+                   </div>
+                   <button className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-md">Kích hoạt Campaign</button>
+                </div>
+             </div>
+
+             <div className="bg-slate-900 p-8 rounded-xl text-white relative overflow-hidden flex flex-col justify-between shadow-2xl">
+                <div className="relative z-10">
+                   <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
+                         <Trophy className="w-6 h-6 text-amber-400" />
+                      </div>
+                      <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
+                   </div>
+                   <div className="space-y-6">
+                      <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                         <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
+                         <div className="text-3xl font-black text-white leading-none">1,245,600 <span className="text-xs font-normal text-slate-400">pts</span></div>
+                      </div>
+                      <div className="flex gap-4">
+                         <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Số dư Ví khách</p>
+                            <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
+                         </div>
+                         <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Hạng Kim Cương</p>
+                            <p className="text-lg font-bold text-sky-400">08 KH</p>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+                <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                   <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
+                </button>
+                <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+             </div>
           </div>
 
           <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">

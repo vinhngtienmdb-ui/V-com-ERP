@@ -49,7 +49,8 @@ import {
   Calendar,
   Layers,
   LayoutDashboard,
-  Mic
+  Mic,
+  DollarSign
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -116,7 +117,7 @@ export function IPosModule() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isShiftActive, setIsShiftActive] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
-  const [activeTab, setActiveTab] = useState<'sales' | 'history' | 'lookup' | 'management' | 'delivery' | 'dashboard' | 'tables'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'sales' | 'history' | 'lookup' | 'management' | 'delivery' | 'dashboard' | 'tables' | 'handover'>('dashboard');
   const [orderHistory, setOrderHistory] = useState<any[]>([]);
   const [incomingExternalOrders, setIncomingExternalOrders] = useState<any[]>([
     {
@@ -185,7 +186,21 @@ export function IPosModule() {
   const [returnReason, setReturnReason] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'loyalty'>('cash');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actualCashInput, setActualCashInput] = useState('');
+  const [handoverNote, setHandoverNote] = useState('');
   const [selectedTableForQr, setSelectedTableForQr] = useState<number | null>(null);
+  const [tables, setTables] = useState<any[]>([
+    { id: 1, name: 'Bàn 01', status: 'available', zone: 'Tầng 1', capacity: 4 },
+    { id: 2, name: 'Bàn 02', status: 'occupied', zone: 'Tầng 1', capacity: 2, currentOrder: { total: 145000, items: 3 } },
+    { id: 3, name: 'Bàn 03', status: 'available', zone: 'Tầng 1', capacity: 4 },
+    { id: 4, name: 'Bàn 04', status: 'reserved', zone: 'Tầng 1', capacity: 6, reservationTime: '18:30' },
+    { id: 5, name: 'Bàn 05', status: 'occupied', zone: 'Tầng 1', capacity: 2, currentOrder: { total: 85000, items: 2 } },
+    { id: 6, name: 'Bàn 06', status: 'cleaning', zone: 'Tầng 1', capacity: 4 },
+    { id: 7, name: 'Bàn 07', status: 'available', zone: 'Tầng 2', capacity: 2 },
+    { id: 8, name: 'Bàn 08', status: 'available', zone: 'Tầng 2', capacity: 2 },
+    { id: 9, name: 'Phòng VIP 1', status: 'occupied', zone: 'VIP', capacity: 10, currentOrder: { total: 1250000, items: 12 } },
+    { id: 10, name: 'Phòng VIP 2', status: 'available', zone: 'VIP', capacity: 10 },
+  ]);
   const [pendingEMenuOrders, setPendingEMenuOrders] = useState<any[]>([]);
   const [activeStoreConfig, setActiveStoreConfig] = useState<IPosStore | null>(null);
   const [revenueData, setRevenueData] = useState<any[]>([]);
@@ -334,8 +349,6 @@ export function IPosModule() {
 
   // State cho Bàn giao ca
   const [pendingHandover, setPendingHandover] = useState<any>(null);
-  const [actualCashInput, setActualCashInput] = useState('6500000');
-  const [handoverNote, setHandoverNote] = useState('');
 
   const searchCustomers = async (val: string) => {
     setCustomerSearchQuery(val);
@@ -1495,10 +1508,10 @@ export function IPosModule() {
             <ShoppingCart className="w-4 h-4" /> Bán hàng
           </button>
           <button 
-            onClick={() => setActiveTab('tables' as any)}
+            onClick={() => setActiveTab('tables')}
             className={cn(
               "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
-              activeTab === 'tables' as any ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              activeTab === 'tables' ? "bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             )}
           >
             <Grid3x3 className="w-4 h-4" /> Sơ đồ bàn
@@ -1571,10 +1584,10 @@ export function IPosModule() {
           </button>
           
           <button 
-            onClick={toggleShift}
+            onClick={() => setActiveTab('handover')}
             className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
           >
-            <Clock className="w-4 h-4" /> Kết Ca
+            <Clock className="w-4 h-4" /> Kết Ca & Bàn Giao
           </button>
         </div>
       </div>
@@ -2128,83 +2141,197 @@ export function IPosModule() {
               </div>
             </>
           ) : activeTab === 'tables' ? (
-            <div className="col-span-12 bg-white rounded-lg border border-slate-200 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-from-left-4">
-               <div className="flex justify-between items-center pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-2 text-indigo-600">
-                     <Grid3x3 className="w-5 h-5" />
-                     <h3 className="font-bold text-lg">Sơ đồ Bàn / Phòng</h3>
+            <div className="col-span-12 bg-white rounded-lg border border-slate-200 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-from-bottom-4">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
+                  <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                        <Grid3x3 className="w-5 h-5" />
+                     </div>
+                     <div>
+                        <h3 className="font-bold text-lg text-slate-900 leading-none">Sơ đồ Bàn / Phòng</h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">Trực quan hóa không gian phục vụ</p>
+                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                     <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-slate-100 border border-slate-200" /> Bàn Trống</span>
-                     <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-600" /> Đang phục vụ</span>
+                  <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+                     <span className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded border border-slate-200"><div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-300" /> Trống ({tables.filter(t => t.status === 'available').length})</span>
+                     <span className="flex items-center gap-2 px-2 py-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-100"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" /> Đang dùng ({tables.filter(t => t.status === 'occupied').length})</span>
+                     <span className="flex items-center gap-2 px-2 py-1 bg-amber-50 text-amber-600 rounded border border-amber-100"><div className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Đã đặt ({tables.filter(t => t.status === 'reserved').length})</span>
+                     <span className="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 rounded border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Đang dọn ({tables.filter(t => t.status === 'cleaning').length})</span>
                   </div>
                </div>
                
-               <div className="flex-1 overflow-y-auto mt-2">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                     {[...Array(15)].map((_, i) => {
-                       const isServing = i === 1 || i === 4; // Mock logic 
-                       return (
-                         <div 
-                           key={i} 
-                           className={cn(
-                             "aspect-square rounded-lg border-2 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg relative group",
-                             isServing ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-slate-50 border-slate-100 text-slate-400 hover:border-indigo-200"
-                           )}
-                           onClick={() => alert('Đã chọn Bàn ' + (i + 1))}
-                         >
-                           <Coffee className={cn("w-6 h-6", isServing ? "text-emerald-500" : "text-slate-300")} />
-                           <span className="font-black text-sm">Bàn {i + 1}</span>
-                           
-                           {/* Quick eMenu Overlay */}
-                           <div className="absolute inset-0 bg-indigo-900/90 rounded-[14px] flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button className="bg-white/20 hover:bg-white text-white hover:text-indigo-900 p-2 rounded-full transition-colors backdrop-blur-sm shadow-xl" onClick={(e) => { e.stopPropagation(); setSelectedTableForQr(i+1); }}>
-                                 <QrCode className="w-5 h-5" />
-                              </button>
+               <div className="flex-1 overflow-y-auto mt-2 pr-2 custom-scrollbar">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                     {tables.map((table) => (
+                        <div 
+                          key={table.id} 
+                          className={cn(
+                            "aspect-square rounded-2xl border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-xl relative group overflow-hidden",
+                            table.status === 'available' ? "bg-white border-slate-100 text-slate-400 hover:border-blue-400" :
+                            table.status === 'occupied' ? "bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm" :
+                            table.status === 'reserved' ? "bg-amber-50 border-amber-200 text-amber-900" :
+                            "bg-blue-50 border-blue-200 text-blue-900"
+                          )}
+                          onClick={() => {
+                            if (table.status === 'available' || table.status === 'cleaning') {
+                              alert(`Mở bàn ${table.name}`);
+                            } else {
+                              alert(`Xem đơn bàn ${table.name}`);
+                            }
+                          }}
+                        >
+                          <div className="flex justify-between items-start mb-auto">
+                             <div className={cn(
+                               "w-8 h-8 rounded-lg flex items-center justify-center",
+                               table.status === 'available' ? "bg-slate-50 text-slate-400" :
+                               table.status === 'occupied' ? "bg-emerald-500 text-white" :
+                               table.status === 'reserved' ? "bg-amber-500 text-white" :
+                               "bg-blue-400 text-white"
+                             )}>
+                                <Coffee className="w-4.5 h-4.5" />
+                             </div>
+                             {table.status === 'occupied' && (
+                                <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded shadow-sm">LIVE</span>
+                             )}
+                          </div>
+                          
+                          <div className="space-y-0.5">
+                             <h4 className="font-black text-sm tracking-tight">{table.name}</h4>
+                             <p className="text-[9px] font-bold text-slate-400 opacity-60 uppercase tracking-widest">{table.zone} • {table.capacity} chỗ</p>
+                          </div>
+
+                          {table.status === 'occupied' && (
+                             <div className="mt-2 pt-2 border-t border-emerald-100 flex justify-between items-center animate-in fade-in slide-in-from-bottom-2">
+                                <p className="text-[10px] font-black">{formatCurrency(table.currentOrder.total)}</p>
+                                <span className="text-[9px] font-medium opacity-60">{table.currentOrder.items} món</span>
+                             </div>
+                          )}
+
+                          {table.status === 'reserved' && (
+                             <div className="mt-2 pt-2 border-t border-amber-100 flex items-center gap-1.5 text-amber-600 font-bold">
+                                <Clock className="w-3 h-3" />
+                                <span className="text-[9px]">{table.reservationTime}</span>
+                             </div>
+                          )}
+                          
+                          {/* Quick Actions Hover */}
+                          <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                             <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 hover:scale-110 transition-transform shadow-lg" onClick={(e) => { e.stopPropagation(); setSelectedTableForQr(table.id); }}>
+                                <QrCode className="w-5 h-5" />
+                             </button>
+                             <p className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-lg">Chọn Bàn</p>
+                          </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+          ) : activeTab === 'handover' ? (
+            <div className="col-span-12 bg-white rounded-lg border border-slate-200 shadow-sm p-10 flex-1 flex flex-col gap-8 animate-in slide-in-from-right-8 duration-500 overflow-y-auto no-scrollbar pb-20">
+               <div className="flex items-center justify-between pb-8 border-b border-slate-100">
+                  <div className="flex items-center gap-5">
+                     <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center shadow-sm">
+                        <Clock className="w-7 h-7" />
+                     </div>
+                     <div>
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Bàn giao & Kết thúc Ca</h2>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Xác nhận doanh thu tiền mặt và kết toán</p>
+                     </div>
+                  </div>
+                  <button onClick={() => setActiveTab('sales')} className="p-3 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-100 transition-all border border-slate-200">
+                     <X className="w-5 h-5" />
+                  </button>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                  <div className="lg:col-span-2 space-y-8">
+                     <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 space-y-6">
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest border-b border-slate-200 pb-4">Tóm tắt hoạt động Ca</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                           <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Doanh thu Ca</p>
+                              <p className="text-xl font-black text-slate-900">{formatCurrency(6850000)}</p>
                            </div>
-                         </div>
-                       );
-                     })}
+                           <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Tiền mặt thực tế</p>
+                              <p className="text-xl font-black text-emerald-600">{formatCurrency(Number(actualCashInput))}</p>
+                           </div>
+                           <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Tiền quẹt thẻ/QR</p>
+                              <p className="text-xl font-black text-blue-600">{formatCurrency(2450000)}</p>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="space-y-4">
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Kiểm tra thực tế</h3>
+                        <div className="space-y-4">
+                           <div>
+                              <label className="text-xs font-black text-slate-500 mb-2 block uppercase">Nhập tiền mặt hiện có trong két</label>
+                              <div className="relative">
+                                 <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                                 <input 
+                                   type="number"
+                                   className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-4 py-4 text-xl font-black text-slate-900 focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm"
+                                   value={actualCashInput}
+                                   onChange={(e) => setActualCashInput(e.target.value)}
+                                   placeholder="0"
+                                 />
+                              </div>
+                           </div>
+                           <div>
+                              <label className="text-xs font-black text-slate-500 mb-2 block uppercase">Ghi chú bàn giao</label>
+                              <textarea 
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-4 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm h-32 resize-none"
+                                value={handoverNote}
+                                onChange={(e) => setHandoverNote(e.target.value)}
+                                placeholder="Ghi chú về tiền thừa, hỏng hóc hoặc sự cố trong ca..."
+                              />
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-6">
+                     <div className="bg-indigo-600 rounded-2xl p-8 text-white space-y-6 shadow-xl shadow-indigo-200">
+                        <div className="flex items-center gap-3">
+                           <ShieldCheck className="w-6 h-6 text-indigo-200" />
+                           <h4 className="font-bold text-lg">Pháp lý & Hệ thống</h4>
+                        </div>
+                        <ul className="space-y-4">
+                           {[
+                              'Dữ liệu đơn hàng đã được đẩy lên Cloud',
+                              'Hợp đồng lao động & Chấm công đã ghi nhận',
+                              'Sẵn sàng xuất hóa đơn VAT điện tử'
+                           ].map((item, i) => (
+                              <li key={i} className="flex gap-3 text-xs font-semibold leading-relaxed">
+                                 <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                                 <span>{item}</span>
+                              </li>
+                           ))}
+                        </ul>
+                        <div className="pt-4 mt-4 border-t border-white/10">
+                           <p className="text-[10px] font-bold text-indigo-400 uppercase mb-2">Nhân viên chốt ca</p>
+                           <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-[10px]">AD</div>
+                              <span className="text-xs font-bold">{user?.displayName || 'Admin'}</span>
+                           </div>
+                        </div>
+                     </div>
+
+                     <button 
+                       onClick={() => {
+                          alert(`Đã chốt ca thành công! Doanh thu ghi nhận: ${formatCurrency(6850000)}. Tiền mặt thực tế: ${formatCurrency(Number(actualCashInput))}`);
+                          setIsShiftActive(false);
+                          setActiveTab('dashboard');
+                       }}
+                       className="w-full py-5 bg-rose-600 text-white rounded-2xl font-black text-sm hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
+                     >
+                        XÁC NHẬN CHỐT CA <ArrowRight className="w-5 h-5" />
+                     </button>
+                     <p className="text-[10px] text-center text-slate-400 font-bold italic leading-relaxed uppercase tracking-tighter">Hành động này sẽ gửi báo cáo kết ca về cho Quản lý và đóng cổng bán hàng của phiên hiện tại.</p>
                   </div>
                </div>
-               
-               {/* QR eMenu Modal */}
-               {selectedTableForQr && (
-                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                   <div className="bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300 relative border border-slate-200">
-                      <button onClick={() => setSelectedTableForQr(null)} className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                         <X className="w-6 h-6 text-slate-400" />
-                      </button>
-                      
-                      <div className="text-center space-y-6">
-                         <div className="space-y-2">
-                            <h3 className="text-2xl font-bold text-slate-900">Quét gọi món (eMenu)</h3>
-                            <p className="text-sm font-medium text-slate-500">Bàn {selectedTableForQr} • {activeStore?.name}</p>
-                         </div>
-                         
-                         <div className="aspect-square bg-slate-50 rounded-[40px] border-4 border-slate-100 flex items-center justify-center p-8 relative overflow-hidden group">
-                            <img 
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(window.location.origin + '/emenu/' + selectedTableForQr)}`} 
-                              alt="QR Code" 
-                              className="w-full h-full object-contain"
-                              referrerPolicy="no-referrer"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                               <div className="w-12 h-12 bg-white rounded-lg shadow-xl flex items-center justify-center border-4 border-slate-50">
-                                  <Store className="w-6 h-6 text-indigo-600" />
-                               </div>
-                            </div>
-                         </div>
-                         
-                         <div className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-lg">
-                            <CheckCircle2 className="w-4 h-4" /> QR Code đã được kích hoạt
-                         </div>
-                         
-                         <p className="text-[10px] text-slate-400 italic font-medium leading-relaxed">Khách hàng quét mã này để truy cập thư đơn trực tuyến và đặt món trực tiếp tại bàn.</p>
-                      </div>
-                   </div>
-                 </div>
-               )}
             </div>
           ) : activeTab === 'management' ? (
             <div className="col-span-12 bg-white rounded-lg border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
@@ -3104,6 +3231,66 @@ export function IPosModule() {
                   </div>
                </motion.div>
             </div>
+         )}
+       </AnimatePresence>
+
+       {/* Table E-Menu QR Modal */}
+       <AnimatePresence>
+         {selectedTableForQr !== null && (
+           <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden relative"
+             >
+                <div className="absolute top-4 right-4 z-10">
+                   <button 
+                     onClick={() => setSelectedTableForQr(null)}
+                     className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition-colors"
+                   >
+                      <X className="w-5 h-5" />
+                   </button>
+                </div>
+
+                <div className="p-8 text-center space-y-6">
+                   <div className="space-y-1 pt-4">
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight">QR E-Menu</h3>
+                      <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">{tables.find(t => t.id === selectedTableForQr)?.name} • {tables.find(t => t.id === selectedTableForQr)?.zone}</p>
+                   </div>
+
+                   <div className="bg-slate-50 p-10 rounded-3xl border-2 border-dashed border-slate-200 relative group">
+                      <div className="aspect-square bg-white rounded-2xl shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                         <QrCode className="w-40 h-40 text-slate-900" />
+                         
+                         {/* Visual overlay for logo branding */}
+                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-12 h-12 bg-white rounded-lg shadow-xl flex items-center justify-center border-4 border-slate-50">
+                               <Store className="w-6 h-6 text-indigo-600" />
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                   
+                   <div className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4" /> QR Code đã được kích hoạt
+                   </div>
+                   
+                   <div className="space-y-4">
+                      <p className="text-[10px] text-slate-400 italic font-medium leading-relaxed uppercase tracking-tighter">Khách hàng quét mã này để truy cập thực đơn trực tuyến và đặt món trực tiếp tại bàn.</p>
+                      <button 
+                        onClick={() => {
+                          alert('Đang tải xuống QR Code...');
+                          setSelectedTableForQr(null);
+                        }}
+                        className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                      >
+                         <Download className="w-4 h-4" /> Tải mã QR
+                      </button>
+                   </div>
+                </div>
+             </motion.div>
+           </div>
          )}
        </AnimatePresence>
      </div>
