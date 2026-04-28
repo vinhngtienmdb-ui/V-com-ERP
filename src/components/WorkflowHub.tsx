@@ -22,7 +22,15 @@ import {
   FileSignature,
   ShieldCheck,
   X,
-  FileEdit
+  FileEdit,
+  PenTool,
+  PlayCircle,
+  LayoutList,
+  Network,
+  ChevronRight,
+  Monitor,
+  Lock,
+  Cpu as CpuIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -95,411 +103,317 @@ export function WorkflowHub() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="header-title">
-          <h1 className="text-2xl font-semibold text-[#111827]">Mission Control (Trung tâm Điều hành)</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Theo dõi toàn bộ workflow hệ thống và xử lý các điểm nghẽn vận hành.</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Mission Control Hub</span>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+          </div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight italic">Operations & <span className="text-blue-600 font-serif">Workflows</span></h1>
+          <p className="text-sm text-slate-500 font-medium mt-1">Điều phối quy trình ký số, phê duyệt đa cấp và tự động hóa chuỗi cung ứng.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button 
              onClick={() => setViewMode(viewMode === 'tasks' ? 'builder' : 'tasks')}
-             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
+             className="bg-white border border-slate-200 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5"
           >
-            {viewMode === 'tasks' ? <PanelTop className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+            {viewMode === 'tasks' ? <PanelTop className="w-4 h-4 text-blue-600" /> : <Activity className="w-4 h-4 text-emerald-600" />}
             {viewMode === 'tasks' ? 'Mở Trình tạo Luồng' : 'Xem danh sách Task'}
           </button>
-          <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
-            <Cpu className="w-4 h-4" />
-            Cấu hình AI Automation
+          <button className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+             <Cpu className="w-4 h-4 text-blue-400" />
+             AI Automation Config
           </button>
         </div>
       </div>
 
-      {viewMode === 'builder' ? (
-        <div className="h-[600px] w-full border border-[#E5E7EB] rounded-lg bg-white">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-          >
-            <Background />
-            <Controls />
-          </ReactFlow>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-red-50 border border-red-100 p-6 rounded-lg">
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-red-500 rounded-lg shadow-lg shadow-red-500/20">
-                   <ShieldAlert className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[10px] text-red-600 font-bold uppercase tracking-widest">Điểm nghẽn rủi ro</span>
-             </div>
-             <div className="text-2xl font-extrabold text-red-700">08</div>
-             <p className="text-[10px] text-red-500 font-medium mt-1">Cần hành động ngay lập tức</p>
-          </div>
-          <div className="bg-blue-50 border border-blue-100 p-6 rounded-lg">
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
-                   <Boxes className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Task SCM & Vận hành</span>
-             </div>
-             <div className="text-2xl font-extrabold text-blue-700">124</div>
-             <p className="text-[10px] text-blue-500 font-medium mt-1">Đang xử lý trong luồng</p>
-          </div>
-          <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-lg">
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20">
-                   <CheckCircle2 className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Workflow hoàn tất</span>
-             </div>
-             <div className="text-2xl font-extrabold text-emerald-700">92%</div>
-             <p className="text-[10px] text-emerald-500 font-medium mt-1">Hiệu suất vận hành tháng</p>
-          </div>
-          <div className="bg-slate-50 border border-slate-200 p-6 rounded-lg">
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-400 rounded-lg shadow-lg shadow-slate-400/20">
-                   <Users2 className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nguồn lực sẵn sàng</span>
-             </div>
-             <div className="text-2xl font-extrabold text-slate-700">42/48</div>
-             <p className="text-[10px] text-slate-400 font-medium mt-1">Nhân sự đang trực tuyến</p>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-lg shadow-slate-200/50 overflow-hidden">
-               <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]/50">
-                  <h2 className="font-bold text-[#111827] flex items-center gap-2">
-                     <Layers className="w-5 h-5 text-blue-600" /> Action Required (Danh sách Task)
-                  </h2>
-                  <div className="flex gap-2">
-                     <button 
-                       onClick={() => setFilter('all')}
-                       className={cn("px-4 py-1.5 rounded-full text-xs font-bold transition-all", filter === 'all' ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100")}
-                     >
-                       Tất cả
-                     </button>
-                     <button 
-                       onClick={() => setFilter('critical')}
-                       className={cn("px-4 py-1.5 rounded-full text-xs font-bold transition-all", filter === 'critical' ? "bg-red-600 text-white" : "text-slate-500 hover:bg-slate-100")}
-                     >
-                       Critical
-                     </button>
-                  </div>
-               </div>
-               <div className="divide-y divide-[#F3F4F6]">
-                  {tasks.filter(t => filter === 'all' || t.priority === filter).map(task => (
-                     <div key={task.id} className="p-6 flex items-center gap-6 hover:bg-slate-50 transition-all group">
-                        <div className={cn(
-                          "w-2 h-2 rounded-full",
-                          task.priority === 'critical' ? "bg-red-600 animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.5)]" : 
-                          task.priority === 'high' ? "bg-orange-500" : "bg-blue-500"
-                        )} />
-                        <div className="flex-1 space-y-1">
-                           <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{task.module} • {task.id}</span>
-                              <span className={cn(
-                                "px-2 py-0.5 rounded text-[9px] font-bold uppercase",
-                                task.status === 'in_progress' ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-500"
-                              )}>{task.status}</span>
-                           </div>
-                           <h4 className="text-sm font-bold text-[#111827] group-hover:text-blue-600 transition-colors">{task.title}</h4>
-                           <p className="text-[11px] text-[#6B7280] flex items-center gap-1">
-                              <Clock className="w-3 h-3" /> Hạn chót: {task.deadline}
-                           </p>
-                           <div className="flex gap-2 pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button 
-                                onClick={() => handleApprove(task.id)}
-                                className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded flex items-center gap-1 hover:bg-emerald-100 transition-all"
-                              >
-                                 <CheckCircle2 className="w-3 h-3" /> Duyệt nhanh
-                              </button>
-                              <button 
-                                onClick={() => handleSignRequest(task.id)}
-                                className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded flex items-center gap-1 hover:bg-blue-100 transition-all"
-                              >
-                                 <FileSignature className="w-3 h-3" /> Ký số & Duyệt
-                              </button>
-                           </div>
-                        </div>
-                        <button 
-                          onClick={() => navigate(task.link)}
-                          className="p-3 bg-white border border-[#E5E7EB] rounded-lg text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-all shadow-sm"
-                        >
-                           <ArrowUpRight className="w-5 h-5" />
-                        </button>
-                     </div>
-                  ))}
-               </div>
-               <div className="p-4 bg-[#F9FAFB] border-t border-[#F3F4F6] text-center">
-                  <button className="text-[11px] font-bold text-slate-500 hover:text-blue-600 uppercase tracking-widest">Xem tất cả 42 task vận hành</button>
-               </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: 'Cần Phê duyệt', value: 18, sub: '8 ưu tiên cao', icon: ShieldAlert, color: 'rose' },
+          { label: 'Đang Vận hành', value: 45, sub: '24 quy trình tự động', icon: Boxes, color: 'blue' },
+          { label: 'Workflow Hoàn tất', value: '92%', sub: '+12 so với tháng trước', icon: CheckCircle2, color: 'emerald' },
+          { label: 'Nhân sự trực tuyến', value: '42/48', sub: 'Trên 6 bộ phận', icon: Users2, color: 'indigo' },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-6 group hover:shadow-blue-500/5 transition-all">
+            <div className={cn(
+               "p-4 rounded-none shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-6 duration-500",
+               stat.color === 'rose' ? "bg-rose-50 text-rose-600 shadow-rose-100" :
+               stat.color === 'blue' ? "bg-blue-50 text-blue-600 shadow-blue-100" :
+               stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600 shadow-emerald-100" :
+               "bg-indigo-50 text-indigo-600 shadow-indigo-100"
+            )}>
+               <stat.icon className="w-6 h-6" />
             </div>
-         </div>
-
-         <div className="space-y-6">
-            <div className="bg-[#111827] text-white p-8 rounded-lg space-y-6 relative overflow-hidden border border-white/5 shadow-2xl">
-               <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                     <div className="p-3 bg-emerald-500 rounded-lg shadow-xl shadow-emerald-500/20">
-                        <RefreshCw className="w-6 h-6 text-white" />
-                     </div>
-                     <h3 className="text-lg font-bold font-serif italic">Optimization Suggerter</h3>
-                  </div>
-                  <div className="space-y-4">
-                     <div className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-2">
-                        <p className="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1">
-                           <Zap className="w-3 h-3 fill-current" /> Automation Opportunity
-                        </p>
-                        <p className="text-xs text-slate-300 leading-relaxed">Phát hiện 124 sản phẩm bị gán sai danh mục (PIM). Hãy bật AI Auto-Categorize để tiết kiệm 4 giờ làm việc mỗi ngày.</p>
-                        <button className="text-[10px] font-bold bg-white text-slate-900 px-4 py-2 rounded-lg mt-2 hover:bg-slate-100 transition-all uppercase tracking-widest">Bật ngay</button>
-                     </div>
-                     <div className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-2">
-                        <p className="text-[11px] font-bold text-red-400 uppercase flex items-center gap-1">
-                           <AlertCircle className="w-3 h-3" /> Risk Warning
-                        </p>
-                        <p className="text-xs text-slate-300 leading-relaxed">Tỷ lệ hủy đơn tại khu vực miền Trung tăng 12%. Kiểm tra hiệu suất đối tác vận chuyển GHTK.</p>
-                        <button className="text-[10px] font-bold border border-white/20 text-white px-4 py-2 rounded-lg mt-2 hover:bg-white/5 transition-all uppercase tracking-widest">Kiểm tra chi tiết</button>
-                     </div>
-                  </div>
-               </div>
-               <Cpu className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />
+            <div>
+              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{stat.label}</p>
+              <div className="text-3xl font-black text-slate-900 tracking-tight">
+                {stat.value}
+              </div>
+              <p className="text-[10px] text-slate-500 font-bold mt-0.5">{stat.sub}</p>
             </div>
-
-            <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
-               <h3 className="font-bold text-[#111827] flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-blue-600" /> Hệ thống Log & Trình ký
-               </h3>
-               <div className="space-y-4">
-                  {[
-                    { type: 'Sign', title: 'Phê duyệt Payout #991', time: '5p trước', user: 'Finance Chief' },
-                    { type: 'Legal', title: 'Shop LV-Fake bị khóa', time: '12p trước', user: 'AI Guardian' },
-                    { type: 'Procure', title: 'Yêu cầu POS-2024 mới', time: '25p trước', user: 'Ops Manager' },
-                  ].map((log, i) => (
-                    <div key={i} className="flex gap-4 group cursor-pointer">
-                       <div className="w-2 h-10 bg-slate-100 rounded-full group-hover:bg-blue-100 overflow-hidden">
-                          <div className={cn("w-full h-1/2", i === 0 ? "bg-blue-600" : "bg-slate-200")} />
-                       </div>
-                       <div>
-                          <p className="text-xs font-bold text-[#111827]">{log.title}</p>
-                          <p className="text-[10px] text-slate-500">{log.user} • {log.time}</p>
-                       </div>
-                    </div>
-                  ))}
-               </div>
-               <button className="w-full py-3 border border-slate-100 text-slate-400 text-[10px] font-bold hover:bg-slate-50 rounded-lg uppercase tracking-widest transition-all">Xem tất cả hđ vận hành</button>
-            </div>
-         </div>
+          </div>
+        ))}
       </div>
-      {/* Digital Signature Modal */}
+
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
+        <div className="flex border-b border-slate-100 bg-slate-50/50 p-2">
+           <button 
+              onClick={() => setViewMode('tasks')}
+              className={cn(
+                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-2xl flex items-center gap-2",
+                viewMode === 'tasks' ? "bg-white text-blue-600 shadow-xl shadow-blue-600/10 border border-blue-100" : "text-slate-500 hover:text-slate-900"
+              )}
+           >
+              <LayoutList className="w-4 h-4" /> Queue Navigator
+           </button>
+           <button 
+              onClick={() => setViewMode('builder')}
+              className={cn(
+                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-2xl flex items-center gap-2",
+                viewMode === 'builder' ? "bg-white text-emerald-600 shadow-xl shadow-emerald-600/10 border border-emerald-100" : "text-slate-500 hover:text-slate-900"
+              )}
+           >
+              <Network className="w-4 h-4" /> Neural Workflow Designer
+           </button>
+        </div>
+
+        <div className="p-8 flex-1 flex flex-col">
+           {viewMode === 'tasks' ? (
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 space-y-6">
+                   <div className="flex justify-between items-center mb-6">
+                      <div className="relative flex-1 max-w-sm">
+                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                         <input 
+                           type="text" 
+                           placeholder="Search process IDs..." 
+                           className="bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm focus:outline-none w-full ring-blue-500/10 focus:ring-4 transition-all"
+                         />
+                      </div>
+                      <div className="flex gap-2">
+                         <button 
+                            onClick={() => setFilter('all')}
+                            className={cn("px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all", filter === 'all' ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100")}
+                         >
+                            Tất cả
+                         </button>
+                         <button 
+                            onClick={() => setFilter('critical')}
+                            className={cn("px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all", filter === 'critical' ? "bg-rose-600 text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100")}
+                         >
+                            Critical
+                         </button>
+                      </div>
+                   </div>
+
+                   <div className="space-y-4">
+                      {tasks.filter(t => filter === 'all' || t.priority === filter).map((task) => (
+                         <div key={task.id} className="p-6 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group flex flex-wrap items-center gap-6 border-b-2">
+                            <div className={cn(
+                               "p-4 rounded-2xl shadow-xl transition-all group-hover:scale-105",
+                               task.priority === 'critical' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : 
+                               task.priority === 'high' ? "bg-orange-50 text-orange-500 shadow-orange-200/30" :
+                               "bg-blue-50 text-blue-500 shadow-blue-200/30"
+                            )}>
+                               {task.status === 'done' ? <CheckCircle2 className="w-7 h-7" /> : 
+                                task.status === 'in_progress' ? <RefreshCw className="w-7 h-7 animate-spin-slow" /> : 
+                                <ShieldAlert className="w-7 h-7" />}
+                            </div>
+                            <div className="flex-1 min-w-[200px]">
+                               <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{task.module} • {task.id}</span>
+                                  {task.priority === 'critical' && <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />}
+                               </div>
+                               <h4 className="text-base font-black text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{task.title}</h4>
+                               <p className="text-[11px] text-slate-500 font-bold flex items-center gap-1.5 mt-2 shadow-inner bg-slate-50 px-3 py-1 rounded-full w-fit">
+                                  <Clock className="w-3.5 h-3.5" /> Hạn chót: {task.deadline}
+                               </p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                               <div className="flex gap-2">
+                                  <button onClick={() => handleApprove(task.id)} className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-all opacity-0 group-hover:opacity-100 border border-emerald-100">
+                                     <CheckCircle2 className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => handleSignRequest(task.id)} className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-all opacity-0 group-hover:opacity-100 border border-blue-100">
+                                     <FileSignature className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => navigate(task.link)} className="p-3 bg-slate-900 text-white rounded-xl shadow-xl shadow-slate-900/20 hover:scale-110 active:scale-95 transition-all">
+                                     <ArrowUpRight className="w-5 h-5" />
+                                  </button>
+                               </div>
+                            </div>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="bg-slate-950 text-white p-10 rounded-[2.5rem] relative overflow-hidden shadow-2xl border border-slate-800 group">
+                      <div className="relative z-10 space-y-6">
+                         <div className="p-4 bg-blue-600 rounded-2xl shadow-2xl shadow-blue-600/40 w-fit group-hover:scale-110 transition-transform">
+                            <Zap className="w-6 h-6" />
+                         </div>
+                         <h3 className="text-2xl font-black italic tracking-tight">AI Process <br/> <span className="text-blue-400">Accelerator</span></h3>
+                         <p className="text-slate-400 text-sm font-medium leading-relaxed">Hệ thống đang tự động lọc 420 task phụ để bạn tập trung vào 8 task quan trọng nhất.</p>
+                         <button className="w-full py-4 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">Audit Automation Log</button>
+                      </div>
+                      <Layers className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
+                   </div>
+
+                   <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+                      <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-8 flex items-center gap-3">
+                         <Users2 className="w-5 h-5 text-indigo-500" /> Team Availability
+                      </h4>
+                      <div className="space-y-6">
+                         {[
+                           { name: 'Phòng Pháp chế', active: 3, total: 4, color: 'blue' },
+                           { name: 'Kế toán Tổng hợp', active: 5, total: 5, color: 'emerald' },
+                           { name: 'Quản lý Kho', active: 12, total: 15, color: 'indigo' },
+                         ].map((dept) => (
+                           <div key={dept.name} className="space-y-2">
+                              <div className="flex justify-between text-[11px] font-black text-slate-700 uppercase tracking-widest">
+                                 <span>{dept.name}</span>
+                                 <span>{dept.active}/{dept.total} On</span>
+                              </div>
+                              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                 <div className={cn("h-full rounded-full transition-all duration-1000", dept.color === 'blue' ? "bg-blue-500" : dept.color === 'emerald' ? "bg-emerald-500" : "bg-indigo-500")} style={{ width: `${(dept.active/dept.total)*100}%` }} />
+                              </div>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+             </div>
+           ) : (
+             <div className="flex-1 bg-slate-50 border border-slate-200 border-dashed rounded-[3rem] relative overflow-hidden flex flex-col p-2">
+                <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#10B981 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="flex-1 min-h-[500px]">
+                   <ReactFlow
+                     nodes={nodes}
+                     edges={edges}
+                     onNodesChange={onNodesChange}
+                     onEdgesChange={onEdgesChange}
+                     onConnect={onConnect}
+                     fitView
+                   >
+                     <Background color="#cbd5e1" gap={20} />
+                     <Controls className="!bg-white !border-slate-200 !shadow-2xl" />
+                   </ReactFlow>
+                </div>
+                <div className="p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 flex justify-between items-center rounded-b-[3rem]">
+                   <div className="flex items-center gap-4">
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">Neural Canvas Active | Beta v2.4</span>
+                   </div>
+                   <div className="flex gap-2">
+                      <button className="px-5 py-2.5 bg-slate-100 text-slate-900 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Save Draft</button>
+                      <button className="px-5 py-2.5 bg-emerald-600 text-white font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all">Publish Flow</button>
+                   </div>
+                </div>
+             </div>
+           )}
+        </div>
+      </div>
+
       <AnimatePresence>
         {signingTaskId && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-3xl">
             <motion.div 
-               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+               initial={{ opacity: 0, scale: 0.9, y: 40 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-               className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+               exit={{ opacity: 0, scale: 0.9, y: 40 }}
+               className="bg-white rounded-[3rem] w-full max-w-2xl overflow-hidden shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/20 relative"
             >
-               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                  <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 bg-[#111827] text-white rounded-xl flex items-center justify-center">
-                        <FileSignature className="w-5 h-5" />
-                     </div>
-                     <div>
-                        <h3 className="font-bold text-lg text-slate-900">Xác thực Ký duyệt (Mission Control)</h3>
-                        <p className="text-xs text-slate-500 font-medium">Bảo mật đa lớp cho tác vụ quan trọng</p>
-                     </div>
-                  </div>
-                  <button onClick={() => setSigningTaskId(null)} className="p-2 hover:bg-white rounded-full transition-colors border border-transparent hover:border-slate-200">
-                     <X className="w-5 h-5 text-slate-400" />
-                  </button>
-               </div>
+               <button 
+                 onClick={() => setSigningTaskId(null)}
+                 className="absolute top-8 right-8 p-3 hover:bg-slate-100 rounded-2xl transition-all z-20 group"
+               >
+                 <X className="w-5 h-5 text-slate-400 group-hover:text-slate-900" />
+               </button>
 
-               <div className="flex-1 overflow-y-auto p-8 space-y-8">
-                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
-                     <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhiệm vụ hệ thống</span>
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">Workflow ID: {signingTaskId}</span>
-                     </div>
-                     <div className="space-y-3">
-                        <h4 className="text-xl font-black text-slate-900">{tasks.find(r => r.id === signingTaskId)?.title}</h4>
-                        <div className="grid grid-cols-2 gap-4 text-xs">
-                           <div>
-                              <p className="text-slate-400 mb-1">Module:</p>
-                              <p className="font-bold text-slate-700">{tasks.find(r => r.id === signingTaskId)?.module}</p>
+               <div className="p-12 space-y-10">
+                  <div className="space-y-4">
+                     <div className="flex items-center gap-5">
+                        <div className="p-5 bg-emerald-600 rounded-[2rem] shadow-2xl shadow-emerald-500/40 relative group overflow-hidden">
+                           <ShieldCheck className="w-10 h-10 text-white relative z-10" />
+                           <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                        </div>
+                        <div>
+                           <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Enterprise Digital Identity</span>
                            </div>
-                           <div>
-                              <p className="text-slate-400 mb-1">Mức độ ưu tiên:</p>
-                              <p className={cn(
-                                "font-bold",
-                                tasks.find(r => r.id === signingTaskId)?.priority === 'critical' ? 'text-rose-600' : 'text-amber-600'
-                              )}>
-                                {tasks.find(r => r.id === signingTaskId)?.priority === 'critical' ? 'Khẩn cấp' : 'Ưu tiên cao'}
-                              </p>
-                           </div>
+                           <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                              Cổng Ký Số <span className="text-slate-400 italic font-medium">VComm CA</span>
+                           </h2>
                         </div>
                      </div>
+                     <p className="text-slate-500 font-medium text-base max-w-lg leading-relaxed">
+                        Hệ thống kết nối trực tiếp với các nhà cung cấp CA chính thức. Tài liệu sẽ được gắn dấu thời gian pháp lý quốc gia.
+                     </p>
                   </div>
 
-                  <div className="space-y-4">
-                     <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4 text-blue-600" /> Phương thức ký chuyên dụng
-                     </label>
-                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {[
-                           { id: 'smart_ca', label: 'SmartCA (VNPT)', desc: 'Mobile App OTP', color: 'blue' },
-                           { id: 'viettel_ca', label: 'Viettel-CA', desc: 'SIM PKI / Cloud', color: 'rose' },
-                           { id: 'usb_token', label: 'USB Token', desc: 'Thiết bị khóa HSM', color: 'slate' }
-                        ].map((ca) => (
-                           <div 
-                              key={ca.id}
-                              onClick={() => setSignatureMethod(ca.id as any)}
-                              className={cn(
-                                 "p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-2",
-                                 signatureMethod === ca.id ? "bg-blue-50 border-blue-600 ring-2 ring-blue-100" : "bg-white border-slate-100 hover:border-slate-300"
-                              )}
-                           >
-                              <div className="flex justify-between items-center">
-                                 <h5 className="font-bold text-sm text-slate-900">{ca.label}</h5>
-                                 <div className={cn("w-3 h-3 rounded-full border-2", signatureMethod === ca.id ? "bg-blue-600 border-blue-600" : "bg-white border-slate-300")} />
-                              </div>
-                              <p className="text-[10px] text-slate-500 font-medium">{ca.desc}</p>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-
-                  <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex items-start gap-4">
-                     <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                        <Zap className="w-4 h-4" />
-                     </div>
-                     <p className="text-[10px] text-indigo-700 leading-relaxed font-medium">Hành động này sẽ được lưu nhật ký hệ thống (Audit Trail) vĩnh viễn và không thể đảo ngược sau khi ký số hoàn tất.</p>
-                  </div>
-               </div>
-
-               <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4 mt-auto">
-                  <button 
-                     onClick={() => setSigningTaskId(null)}
-                     disabled={isSigningInProcess}
-                     className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all disabled:opacity-50"
-                  >
-                     Quay lại
-                  </button>
-                  <button 
-                     onClick={executeSignature}
-                     disabled={isSigningInProcess}
-                     className="flex-[2] py-4 bg-[#111827] text-white rounded-2xl font-black text-sm shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                  >
-                     {isSigningInProcess ? (
-                        <>
-                           <RefreshCw className="w-5 h-5 animate-spin" /> Kết nối CA...
-                        </>
-                     ) : (
-                        <>
-                           KÝ SỐ VÀ DUYỆT <Zap className="w-5 h-5 text-amber-400" />
-                        </>
-                     )}
-                  </button>
-               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      {/* Cloud Signature Modal */}
-      <AnimatePresence>
-        {signingTaskId && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-white/20"
-            >
-              <div className="p-6 bg-[#111827] text-white flex justify-between items-center relative overflow-hidden">
-                <div className="relative z-10">
-                   <h3 className="font-bold text-lg flex items-center gap-2">
-                      <FileSignature className="w-5 h-5 text-blue-400" /> Ký duyệt Điện tử (Digital Sign)
-                   </h3>
-                   <p className="text-xs text-slate-400 mt-1">Xác thực OTP & Chữ ký số từ xa</p>
-                </div>
-                <button onClick={() => setSigningTaskId(null)} className="p-2 hover:bg-white/10 rounded-lg relative z-10">
-                   <X className="w-5 h-5 text-slate-400" />
-                </button>
-                <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
-              </div>
-
-              <div className="p-8 space-y-6">
-                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tài liệu ký</p>
-                    <p className="text-sm font-bold text-slate-900">{tasks.find(t => t.id === signingTaskId)?.title}</p>
-                 </div>
-
-                 <div className="grid grid-cols-1 gap-3">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Chọn Phương thức Ký</p>
-                    {[
-                      { id: 'smart_ca', label: 'VNPT SmartCA (Remote)', icon: RefreshCw },
-                      { id: 'viettel_ca', label: 'Viettel MySign (Remote)', icon: ShieldCheck },
-                      { id: 'usb_token', label: 'USB Token HardKey', icon: Zap }
-                    ].map(method => (
-                      <button
-                        key={method.id}
-                        onClick={() => setSignatureMethod(method.id as any)}
-                        className={cn(
-                          "flex items-center justify-between p-4 rounded-xl border-2 transition-all group",
-                          signatureMethod === method.id 
-                            ? "bg-blue-50 border-blue-600 shadow-lg shadow-blue-500/10" 
-                            : "bg-white border-slate-100 hover:border-slate-200"
-                        )}
-                      >
-                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                              "p-2 rounded-lg transition-colors",
-                              signatureMethod === method.id ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-slate-50 text-slate-400 group-hover:text-blue-500"
-                            )}>
-                               <method.icon className="w-4 h-4" />
-                            </div>
-                            <span className={cn("text-xs font-bold", signatureMethod === method.id ? "text-blue-700" : "text-slate-600 group-hover:text-slate-900")}>
-                               {method.label}
-                            </span>
-                         </div>
-                         {signatureMethod === method.id && (
-                           <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     {[
+                       { id: 'smart_ca', name: 'VNPT-CA Smart', desc: 'BKAV / VNPT Token Cloud', icon: Monitor },
+                       { id: 'viettel_ca', name: 'Viettel-CA App', desc: 'Chữ ký số Viettel Mobile', icon: Lock },
+                       { id: 'usb_token', name: 'FPT USB Token', desc: 'Thiết bị khóa USB vật lý', icon: CpuIcon },
+                     ].map((ca) => (
+                       <button 
+                         key={ca.id}
+                         onClick={() => setSignatureMethod(ca.id as any)}
+                         className={cn(
+                            "p-6 border rounded-[1.5rem] text-left transition-all group relative border-b-4",
+                            signatureMethod === ca.id 
+                               ? "bg-slate-950 text-white border-blue-600 shadow-2xl scale-[1.02]" 
+                               : "bg-slate-50 border-slate-100 text-slate-900 hover:border-emerald-300 hover:bg-white"
                          )}
-                      </button>
-                    ))}
-                 </div>
+                       >
+                          <div className={cn(
+                             "w-10 h-10 rounded-xl mb-4 flex items-center justify-center border transition-colors",
+                             signatureMethod === ca.id ? "bg-blue-600 border-blue-500" : "bg-white border-slate-200"
+                          )}>
+                             <ca.icon className={cn("w-5 h-5", signatureMethod === ca.id ? "text-white" : "text-emerald-600")} />
+                          </div>
+                          <h4 className="font-black text-sm uppercase tracking-tight">{ca.name}</h4>
+                          <p className={cn("text-[10px] font-bold mt-1 uppercase tracking-widest opacity-60", signatureMethod === ca.id ? "text-blue-300" : "text-slate-500")}>{ca.desc}</p>
+                          {signatureMethod === ca.id && <div className="absolute top-6 right-6 w-2 h-2 bg-blue-400 rounded-full animate-ping" />}
+                       </button>
+                     ))}
+                  </div>
 
-                 <div className="space-y-4 pt-4">
-                    <button 
-                      onClick={executeSignature}
-                      disabled={isSigningInProcess}
-                      className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 transition-all delay-75 disabled:opacity-50"
-                    >
-                       {isSigningInProcess ? (
-                         <>
-                           <RefreshCw className="w-5 h-5 animate-spin" />
-                           Đang kết nối Cloud CA...
-                         </>
-                       ) : (
-                         <>
-                           <ShieldCheck className="w-5 h-5 text-emerald-400" /> 
-                           Xác thực & Ký ngay
-                         </>
-                       )}
-                    </button>
-                    <p className="text-[10px] text-center text-slate-400 font-medium">Chữ ký số có giá trị pháp lý tương đương chữ ký tay.</p>
-                 </div>
-              </div>
+                  <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center">
+                           <ShieldCheck className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <div className="text-left">
+                           <p className="text-xs font-black text-slate-900 uppercase">Audit ID: {signingTaskId}</p>
+                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">TLS 1.3 Encryption Active</p>
+                        </div>
+                     </div>
+                     <button 
+                        onClick={executeSignature}
+                        disabled={isSigningInProcess}
+                        className={cn(
+                           "px-10 py-5 font-black rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center gap-3 w-full sm:w-auto justify-center active:translate-y-1",
+                           isSigningInProcess ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-emerald-600 text-white shadow-emerald-600/30 hover:bg-emerald-500"
+                        )}
+                     >
+                        {isSigningInProcess ? (
+                           <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              Processing Identity...
+                           </>
+                        ) : (
+                           <>
+                              Xác thực & Ký số
+                              <ChevronRight className="w-4 h-4" />
+                           </>
+                        )}
+                     </button>
+                  </div>
+               </div>
             </motion.div>
           </div>
         )}
