@@ -94,7 +94,7 @@ export function SignatureHub() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className="group bg-white border border-slate-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-all relative overflow-hidden">
            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
            <div className="relative z-10">
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Chờ tôi ký</h3>
@@ -104,7 +104,7 @@ export function SignatureHub() {
               </div>
            </div>
         </div>
-        <div className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className="group bg-white border border-slate-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-all relative overflow-hidden">
            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
            <div className="relative z-10">
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
@@ -114,7 +114,7 @@ export function SignatureHub() {
               </div>
            </div>
         </div>
-        <div className="group bg-slate-900 p-6 rounded-2xl shadow-xl shadow-slate-200 relative overflow-hidden lg:col-span-2">
+        <div className="group bg-slate-900 p-6 rounded-lg shadow-xl shadow-slate-200 relative overflow-hidden lg:col-span-2">
            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12" />
            <div className="relative z-10 flex justify-between items-center h-full">
               <div>
@@ -129,7 +129,7 @@ export function SignatureHub() {
                     </div>
                  </div>
               </div>
-              <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+              <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                  <FileSignature className="w-8 h-8 text-white/40" />
               </div>
            </div>

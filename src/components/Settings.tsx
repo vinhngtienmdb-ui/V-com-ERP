@@ -467,7 +467,7 @@ export function SettingsPage() {
                              <div 
                                key={mod.id}
                                onClick={() => setActiveTab(mod.id as any)}
-                               className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                               className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                              >
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                    <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -635,7 +635,7 @@ export function SettingsPage() {
                        </div>
                      )}
 
-                     <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+                     <div className="border border-[#E5E7EB] rounded-lg overflow-hidden shadow-sm">
                         <table className="w-full text-sm">
                            <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                               <tr>
@@ -1646,7 +1646,7 @@ export function SettingsPage() {
       {/* Fee Management Modal */}
       {showFeeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+           <div className="bg-white w-full max-w-lg rounded-lg shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
               <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50">
                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">

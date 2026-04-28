@@ -144,7 +144,7 @@ export function Workspace() {
       {activeModule === 'overview' && (
         <div className="space-y-8">
            {/* News / Alert Banner */}
-           <div className="bg-slate-900 rounded-2xl p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10">
+           <div className="bg-slate-900 rounded-lg p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10">
               <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export function Workspace() {
                        <div 
                          key={mod.id}
                          onClick={() => setActiveModule(mod.id as any)}
-                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                         className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                        >
                           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                              <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -221,7 +221,7 @@ export function Workspace() {
                    key={status}
                    onDragOver={handleDragOver}
                    onDrop={(e) => handleDrop(e, status)}
-                   className="bg-slate-50/50 rounded-2xl border border-slate-200 flex flex-col min-h-[600px]"
+                   className="bg-slate-50/50 rounded-lg border border-slate-200 flex flex-col min-h-[600px]"
                  >
                     <div className="p-4 border-b border-slate-200 flex items-center justify-between">
                        <div className="flex items-center gap-2">

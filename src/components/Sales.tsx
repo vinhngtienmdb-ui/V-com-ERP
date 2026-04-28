@@ -124,7 +124,7 @@ export function SalesManagement() {
 
            {/* AI Sales Insights */}
            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
+              <div className="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-xl p-8 text-white relative overflow-hidden shadow-xl">
                  <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-6">
                        <Sparkles className="w-5 h-5 text-indigo-200" />
@@ -169,7 +169,7 @@ export function SalesManagement() {
                  <Zap className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 rotate-12" />
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
                  <div>
                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                        <Clock className="w-4 h-4" /> Hoạt động gần đây
@@ -212,7 +212,7 @@ export function SalesManagement() {
                        <div 
                          key={mod.id}
                          onClick={() => setActiveTab(mod.id as any)}
-                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                         className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                        >
                           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                              <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />

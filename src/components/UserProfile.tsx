@@ -80,12 +80,12 @@ export function UserProfile() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="flex-1 bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden">
           {activeTab === 'profile' && (
             <div className="p-8 space-y-8 animate-in fade-in duration-300">
               <div className="flex flex-col items-center sm:flex-row gap-6">
                 <div className="relative group">
-                  <div className="w-24 h-24 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-2xl font-bold border-2 border-white shadow-md overflow-hidden relative">
+                  <div className="w-24 h-24 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 text-2xl font-bold border-2 border-white shadow-md overflow-hidden relative">
                     {staffInfo?.name?.split(' ').pop()?.charAt(0) || 'U'}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                       <Camera className="w-6 h-6 text-white" />
@@ -216,7 +216,7 @@ export function UserProfile() {
                   <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-blue-500" /> Bảo mật hai lớp (2FA)
                   </h3>
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                  <div className="p-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
                     <div className="space-y-1">
                       <p className="text-sm font-bold text-slate-900">Xác thực Google Authenticator</p>
                       <p className="text-xs text-slate-500">Tăng cường bảo mật bằng cách yêu cầu mã xác thực khi đăng nhập.</p>
@@ -277,21 +277,21 @@ export function UserProfile() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                      <div 
                        onClick={() => setTheme('light')}
-                       className={cn("p-4 rounded-2xl cursor-pointer transition-all", theme === 'light' ? "border-2 border-blue-500 bg-blue-50" : "border border-slate-200 bg-white hover:border-blue-300")}
+                       className={cn("p-4 rounded-lg cursor-pointer transition-all", theme === 'light' ? "border-2 border-blue-500 bg-blue-50" : "border border-slate-200 bg-white hover:border-blue-300")}
                      >
                         <div className="w-full h-12 bg-blue-600 rounded-lg mb-3 shadow-inner shadow-blue-700/20" />
                         <p className={cn("text-xs font-bold text-center uppercase tracking-widest", theme === 'light' ? "text-blue-600" : "text-slate-500")}>Sáng (Mặc định)</p>
                      </div>
                      <div 
                        onClick={() => setTheme('dark')}
-                       className={cn("p-4 rounded-2xl cursor-pointer transition-all", theme === 'dark' ? "border-2 border-slate-700 bg-slate-800" : "border border-slate-200 bg-slate-900 opacity-50 grayscale hover:grayscale-0 hover:border-slate-500")}
+                       className={cn("p-4 rounded-lg cursor-pointer transition-all", theme === 'dark' ? "border-2 border-slate-700 bg-slate-800" : "border border-slate-200 bg-slate-900 opacity-50 grayscale hover:grayscale-0 hover:border-slate-500")}
                      >
                         <div className="w-full h-12 bg-slate-900 border border-slate-700 rounded-lg mb-3" />
                         <p className={cn("text-xs font-bold text-center uppercase tracking-widest", theme === 'dark' ? "text-white" : "text-slate-300")}>Tối (Dark Mode)</p>
                      </div>
                      <div 
                        onClick={() => setTheme('nature')}
-                       className={cn("p-4 rounded-2xl cursor-pointer transition-all", theme === 'nature' ? "border-2 border-emerald-500 bg-emerald-50" : "border border-slate-200 bg-emerald-50 opacity-50 grayscale hover:grayscale-0 hover:border-emerald-500")}
+                       className={cn("p-4 rounded-lg cursor-pointer transition-all", theme === 'nature' ? "border-2 border-emerald-500 bg-emerald-50" : "border border-slate-200 bg-emerald-50 opacity-50 grayscale hover:grayscale-0 hover:border-emerald-500")}
                      >
                         <div className="w-full h-12 bg-emerald-600 rounded-lg mb-3 shadow-inner" />
                         <p className={cn("text-xs font-bold text-center uppercase tracking-widest", theme === 'nature' ? "text-emerald-600" : "text-slate-500")}>Nature (Eco)</p>
@@ -323,7 +323,7 @@ export function UserProfile() {
         </div>
       </div>
 
-      <div className="mt-12 bg-rose-50 border border-rose-100 rounded-2xl p-6 flex items-center justify-between">
+      <div className="mt-12 bg-rose-50 border border-rose-100 rounded-lg p-6 flex items-center justify-between">
          <div className="space-y-1">
             <h4 className="font-bold text-rose-900">Vùng nguy hiểm</h4>
             <p className="text-xs text-rose-700">Yêu cầu vô hiệu hóa tài khoản hoặc xóa dữ liệu cá nhân theo chính sách bảo mật GDPR/CRM.</p>

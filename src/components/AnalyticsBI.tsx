@@ -233,7 +233,7 @@ export function AnalyticsBI() {
                   </div>
                </div>
                
-               <p className="text-slate-400 text-base font-medium leading-relaxed max-w-2xl bg-white/5 p-4 rounded-2xl border border-white/5">
+               <p className="text-slate-400 text-base font-medium leading-relaxed max-w-2xl bg-white/5 p-4 rounded-lg border border-white/5">
                   Phân tích hành vi chuỗi cung ứng và thanh toán đa điểm. Tự động gắn cờ cho các tài khoản có dấu hiệu Sybil Attack hoặc can thiệp tham số Voucher hệ thống.
                </p>
                

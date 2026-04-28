@@ -26,7 +26,7 @@ export function Home() {
   return (
     <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 pb-20 pt-2">
       {/* Hero / Search Section */}
-      <div className="relative overflow-hidden bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white border border-slate-800 shadow-2xl">
+      <div className="relative overflow-hidden bg-slate-900 rounded-lg p-8 md:p-12 text-white border border-slate-800 shadow-2xl">
         {/* Animated Background Gradients */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
@@ -41,9 +41,9 @@ export function Home() {
                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"></span>
             </div>
-            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-[0.2em]">Hệ thống vận hành tối ưu</span>
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-[0.2em]">Hệ thống vận hành tối ưu</span>
             <div className="w-px h-3 bg-slate-700 mx-2" />
-            <span className="text-[11px] font-medium text-slate-400">Version 2.5.0-Enterprise</span>
+            <span className="text-xs font-medium text-slate-400">Version 2.5.0-Enterprise</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-white leading-tight">
@@ -51,14 +51,14 @@ export function Home() {
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">VComm ERP Intelligence</span>
           </h1>
           
-          <p className="text-slate-400 text-base font-medium mb-10 max-w-2xl leading-relaxed">
+          <p className="text-slate-400 text-lg font-medium mb-10 max-w-2xl leading-relaxed">
             Hệ thống quản trị doanh nghiệp hợp nhất. <br className="hidden md:block" />
             Truy cập nhanh tất cả các module vận hành từ một giao diện AI-First tập trung.
           </p>
           
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="relative group flex-1 w-full max-w-xl">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200"></div>
               <div className="relative">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                 <input 
@@ -66,19 +66,19 @@ export function Home() {
                   placeholder="Tìm kiếm module hoặc chức năng (Shift + /)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700/50 rounded-2xl py-4 pl-14 pr-6 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-blue-500/50 transition-all backdrop-blur-xl"
+                  className="w-full bg-slate-800/80 border border-slate-700/50 rounded-xl py-4 pl-14 pr-6 text-base text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-blue-500/50 transition-all backdrop-blur-xl"
                 />
               </div>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-4 bg-white/5 border border-white/10 p-2 pl-4 rounded-2xl backdrop-blur-md">
+            <div className="flex flex-wrap items-center justify-center gap-4 bg-white/5 border border-white/10 p-2 pl-4 rounded-xl backdrop-blur-md">
                 <div className="flex items-center gap-2">
                    <History className="w-4 h-4 text-slate-400" />
-                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-2">Vừa mở:</span>
+                   <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mr-2">Vừa mở:</span>
                 </div>
                 <div className="flex gap-2">
                    {['Dashboard', 'Đơn hàng', 'Sản phẩm'].map(item => (
-                     <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold text-slate-300 transition-colors border border-white/5">
+                     <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md text-xs font-bold text-slate-300 transition-colors border border-white/5">
                        {item}
                      </button>
                    ))}
@@ -93,7 +93,7 @@ export function Home() {
         {filteredGroups.map((group, idx) => (
           <div key={idx} className="space-y-6">
             <div className="flex items-center gap-4">
-              <h2 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">
+              <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">
                 {group.title}
               </h2>
               <div className="flex-1 h-px bg-slate-200" />
@@ -219,29 +219,29 @@ export function Home() {
                     key={item.path}
                     onClick={() => navigate(item.path)}
                     className={cn(
-                      "group relative bg-white border border-slate-200 rounded-2xl p-5 text-left hover:shadow-xl transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
+                      "group relative bg-white border border-slate-200 rounded-xl p-5 text-left hover:shadow-xl transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
                       "hover:-translate-y-0.5", 
                       classes.border
                     )}
                   >
                     <div className="relative z-10">
                       <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
+                        "w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
                         "group-hover:text-white group-hover:shadow-lg", 
                         classes.icon
                       )}>
                         <item.icon className="w-5 h-5" />
                       </div>
                       
-                      <h3 className={cn("text-sm font-bold text-slate-900 mb-1 tracking-tight transition-colors", classes.text)}>
+                      <h3 className={cn("text-base font-bold text-slate-900 mb-1 tracking-tight transition-colors", classes.text)}>
                         {item.label}
                       </h3>
                       
-                      <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 italic">
+                      <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2 italic">
                         {item.description || 'Module quản lý nghiệp vụ hệ thống.'}
                       </p>
                       
-                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0", classes.action)}>
+                      <div className={cn("mt-4 flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0", classes.action)}>
                         <span>Truy cập</span>
                         <ArrowRight className="w-3 h-3" />
                       </div>

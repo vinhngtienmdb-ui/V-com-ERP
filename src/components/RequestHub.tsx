@@ -527,10 +527,10 @@ export function RequestHub() {
               </div>
 
               {formConfigs.length > 0 && selectedConfigForWorkflow && (
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 shadow-sm">
                   <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-6">
                     <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                       <div className="w-12 h-12 bg-indigo-600 text-white rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
                           <Layout className="w-6 h-6" />
                        </div>
                        <div>
@@ -569,13 +569,13 @@ export function RequestHub() {
                       <React.Fragment key={step.id}>
                         <div className="flex items-start gap-6 relative z-10 group">
                           <div className={cn(
-                            "w-12 h-12 rounded-2xl font-black flex items-center justify-center shrink-0 border-4 transition-all shadow-md",
+                            "w-12 h-12 rounded-lg font-black flex items-center justify-center shrink-0 border-4 transition-all shadow-md",
                             idx === 0 ? "bg-emerald-600 border-white text-white shadow-emerald-100" : "bg-white border-slate-100 text-slate-400 group-hover:border-indigo-100 group-hover:text-indigo-600"
                           )}>
                             {idx + 1}
                           </div>
                           
-                          <div className="flex-1 bg-white border border-slate-200 p-5 rounded-2xl shadow-sm group-hover:shadow-md transition-all group-hover:border-indigo-200">
+                          <div className="flex-1 bg-white border border-slate-200 p-5 rounded-lg shadow-sm group-hover:shadow-md transition-all group-hover:border-indigo-200">
                             <div className="flex justify-between items-center mb-4">
                                <div className="flex items-center gap-2">
                                   <h5 className="font-black text-slate-800 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
@@ -930,7 +930,7 @@ export function RequestHub() {
                initial={{ opacity: 0, scale: 0.95, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-               className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+               className="bg-white rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                   <div className="flex items-center gap-3">
@@ -949,7 +949,7 @@ export function RequestHub() {
 
                <div className="flex-1 overflow-y-auto p-8 space-y-8">
                   {/* Document Preview */}
-                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                  <div className="bg-slate-50 rounded-lg p-6 border border-slate-200 space-y-4">
                      <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tài liệu phê duyệt</span>
                         <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
@@ -984,7 +984,7 @@ export function RequestHub() {
                               key={ca.id}
                               onClick={() => setSignatureMethod(ca.id as any)}
                               className={cn(
-                                 "p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-2",
+                                 "p-4 rounded-lg border-2 cursor-pointer transition-all flex flex-col gap-2",
                                  signatureMethod === ca.id ? "bg-blue-50 border-blue-600 ring-2 ring-blue-100" : "bg-white border-slate-100 hover:border-slate-300"
                               )}
                            >
@@ -1010,14 +1010,14 @@ export function RequestHub() {
                   <button 
                      onClick={() => setSigningRequestId(null)}
                      disabled={isSigningInProcess}
-                     className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all disabled:opacity-50"
+                     className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all disabled:opacity-50"
                   >
                      Hủy bỏ
                   </button>
                   <button 
                      onClick={executeSignature}
                      disabled={isSigningInProcess}
-                     className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                     className="flex-[2] py-4 bg-blue-600 text-white rounded-lg font-black text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                   >
                      {isSigningInProcess ? (
                         <>

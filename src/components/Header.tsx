@@ -59,7 +59,7 @@ export function Header() {
             </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
+            <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-slate-900">{language === 'vi' ? 'Thông báo' : 'Notifications'}</h3>

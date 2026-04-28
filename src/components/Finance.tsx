@@ -211,7 +211,7 @@ export function Finance() {
                        <div 
                          key={mod.id}
                          onClick={() => setActiveTab(mod.id as any)}
-                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                         className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                        >
                           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                              <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -259,7 +259,7 @@ export function Finance() {
                <div className="p-8 animate-in fade-in slide-in-from-right-4 duration-500 bg-slate-50 min-h-[600px]">
                   <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
                      <div className="space-y-6">
-                        <div className="bg-white p-8 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
+                        <div className="bg-white p-8 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
                            <div className="p-6 bg-blue-50 text-blue-600 rounded-full group-hover:scale-110 transition-transform">
                               <Upload className="w-10 h-10" />
                            </div>
@@ -285,9 +285,9 @@ export function Finance() {
                            )}
                         </div>
 
-                        <div className="bg-indigo-900 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl">
+                        <div className="bg-indigo-900 rounded-xl p-6 text-white relative overflow-hidden shadow-xl">
                            <div className="flex items-start gap-4">
-                              <div className="p-3 bg-white/10 rounded-2xl">
+                              <div className="p-3 bg-white/10 rounded-lg">
                                  <Sparkles className="w-6 h-6 text-indigo-300" />
                               </div>
                               <div>
@@ -301,7 +301,7 @@ export function Finance() {
 
                      <div className="space-y-6">
                         <div className={cn(
-                          "bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all min-h-[400px]",
+                          "bg-white p-8 rounded-xl border border-slate-200 shadow-sm transition-all min-h-[400px]",
                           !scanResult && "opacity-50 grayscale flex flex-col items-center justify-center text-center"
                         )}>
                            {!scanResult ? (
@@ -339,7 +339,7 @@ export function Finance() {
 
                                 <div className="space-y-4">
                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chi tiết dòng (Line Items)</p>
-                                   <div className="p-4 bg-slate-50 rounded-2xl space-y-3">
+                                   <div className="p-4 bg-slate-50 rounded-lg space-y-3">
                                       <div className="flex justify-between text-xs items-center">
                                          <span className="font-bold text-slate-900">Điện năng tiêu thụ (Mức 3)</span>
                                          <span className="font-black text-slate-900">{formatCurrency(4850000)}</span>
@@ -351,7 +351,7 @@ export function Finance() {
                                    </div>
                                 </div>
 
-                                <div className="bg-blue-600 p-6 rounded-2xl flex justify-between items-center shadow-xl shadow-blue-200">
+                                <div className="bg-blue-600 p-6 rounded-lg flex justify-between items-center shadow-xl shadow-blue-200">
                                    <div>
                                       <p className="text-[10px] font-bold text-blue-100 uppercase mb-1 tracking-widest">Tổng tiền cần thanh toán</p>
                                       <p className="text-2xl font-black text-white">{formatCurrency(5335000)}</p>
@@ -373,7 +373,7 @@ export function Finance() {
                                  setScanResult(true);
                                }, 2500);
                              }}
-                             className="w-full py-5 bg-blue-600 text-white rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3"
+                             className="w-full py-5 bg-blue-600 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3"
                            >
                               <Scan className="w-5 h-5" /> Bắt đầu AI Scan
                            </button>

@@ -104,7 +104,7 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue }: any) => (
-  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
+  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
     <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 group-hover:scale-110 pointer-events-none">
        <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
     </div>
@@ -135,7 +135,7 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
   <button 
     onClick={onClick}
     className={cn(
-      "relative group overflow-hidden p-6 rounded-2xl border transition-all duration-300 hover:shadow-xl text-left",
+      "relative group overflow-hidden p-6 rounded-lg border transition-all duration-300 hover:shadow-xl text-left",
       color === 'bg-blue-600' ? "bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500 hover:shadow-blue-500/30" : 
       color === 'bg-emerald-600' ? "bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-500 hover:shadow-emerald-500/30" : 
       "bg-gradient-to-br from-slate-800 to-slate-950 border-slate-700 hover:shadow-slate-900/30"
@@ -231,7 +231,7 @@ export function Dashboard() {
   return (
     <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
       {/* AI Intelligence Command Center */}
-      <div className="relative md:min-h-[14rem] bg-gradient-to-r from-blue-600 via-indigo-700 to-slate-900 rounded-3xl p-6 md:p-10 text-white overflow-hidden shadow-2xl shadow-blue-500/20 group">
+      <div className="relative md:min-h-[14rem] bg-gradient-to-r from-blue-600 via-indigo-700 to-slate-900 rounded-xl p-6 md:p-10 text-white overflow-hidden shadow-2xl shadow-blue-500/20 group">
          {/* Decorative background glass circles */}
          <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
          <div className="absolute top-20 right-40 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl" />
@@ -243,7 +243,7 @@ export function Dashboard() {
          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 h-full">
             <div className="space-y-4">
                <div className="flex items-center gap-4">
-                  <div className="bg-white/15 p-3 rounded-2xl backdrop-blur-xl border border-white/20 shadow-xl group-hover:rotate-12 transition-transform duration-500">
+                  <div className="bg-white/15 p-3 rounded-lg backdrop-blur-xl border border-white/20 shadow-xl group-hover:rotate-12 transition-transform duration-500">
                      <Sparkles className="w-7 h-7 text-blue-200" />
                   </div>
                   <div>
@@ -272,7 +272,7 @@ export function Dashboard() {
 
             {/* AI Insights Card - Styled to match screenshot */}
             <div className="relative flex-shrink-0 w-full md:w-auto h-full flex items-center md:items-stretch">
-               <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-2xl border border-white/20 backdrop-blur-2xl shadow-2xl w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-blue-500/20 flex flex-col justify-center">
+               <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-lg border border-white/20 backdrop-blur-2xl shadow-2xl w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-blue-500/20 flex flex-col justify-center">
                   <div className="flex items-center justify-between mb-4">
                      <div className="flex items-center gap-2">
                         <div className="p-1 px-2 bg-blue-500/20 rounded border border-blue-500/30">

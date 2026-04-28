@@ -183,7 +183,7 @@ export function Marketing() {
                        <div 
                          key={mod.id}
                          onClick={() => setActiveTab(mod.id as any)}
-                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                         className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                        >
                           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                              <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />

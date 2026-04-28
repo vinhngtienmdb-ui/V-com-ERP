@@ -183,8 +183,8 @@ export function AIOperations() {
            <div className="space-y-4">
               {activeModel === 'review' ? (
                  MOCK_HUMAN_QUEUE.map((item) => (
-                    <div key={item.id} className="p-8 bg-amber-50/30 border border-amber-200 rounded-3xl flex flex-col sm:flex-row items-start gap-8 group">
-                       <div className="p-5 rounded-2xl bg-white shadow-xl shadow-amber-200/50 text-amber-600 border border-amber-100 group-hover:scale-105 transition-transform">
+                    <div key={item.id} className="p-8 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-8 group">
+                       <div className="p-5 rounded-lg bg-white shadow-xl shadow-amber-200/50 text-amber-600 border border-amber-100 group-hover:scale-105 transition-transform">
                           <UserCheck className="w-8 h-8" />
                        </div>
                        <div className="flex-1 space-y-4">
@@ -207,7 +207,7 @@ export function AIOperations() {
                                 <button className="px-6 py-3 bg-slate-900 text-white font-black rounded-xl text-[10px] uppercase tracking-[0.1em] hover:bg-emerald-600 transition-all shadow-xl shadow-slate-900/20 active:translate-y-0.5">Approve Model</button>
                              </div>
                           </div>
-                          <div className="p-4 bg-white/80 rounded-2xl border border-amber-200/50 shadow-inner">
+                          <div className="p-4 bg-white/80 rounded-lg border border-amber-200/50 shadow-inner">
                              <p className="text-sm font-bold text-amber-900/80 leading-relaxed italic">"{item.reason}"</p>
                           </div>
                        </div>
@@ -215,9 +215,9 @@ export function AIOperations() {
                  ))
               ) : (
                 MOCK_AI_LOGS.filter(l => l.type === activeModel || activeModel === 'moderation').map((log) => (
-                  <div key={log.id} className="p-8 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/10 transition-all group flex flex-col sm:flex-row items-start gap-8 border-b-2">
+                  <div key={log.id} className="p-8 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/10 transition-all group flex flex-col sm:flex-row items-start gap-8 border-b-2">
                     <div className={cn(
-                       "p-5 rounded-2xl shadow-xl transition-all group-hover:scale-105",
+                       "p-5 rounded-lg shadow-xl transition-all group-hover:scale-105",
                        log.status === 'flagged' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : "bg-emerald-50 text-emerald-500 shadow-emerald-200/30"
                     )}>
                        {log.status === 'flagged' ? <AlertTriangle className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
@@ -244,7 +244,7 @@ export function AIOperations() {
                              <button className="px-5 py-2.5 bg-blue-600 text-white font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:translate-y-0.5">Telemetry</button>
                           </div>
                        </div>
-                       <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100/50 shadow-inner group-hover:bg-slate-100/50 transition-colors">
+                       <div className="p-5 bg-slate-50 rounded-lg border border-slate-100/50 shadow-inner group-hover:bg-slate-100/50 transition-colors">
                           <p className="text-sm font-bold text-slate-700 leading-relaxed">
                              <span className="text-blue-600 uppercase tracking-widest text-[10px] font-black mr-2">Action Report:</span> {renderResult(log)}
                           </p>
@@ -258,7 +258,7 @@ export function AIOperations() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+         <div className="bg-white p-10 rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40">
             <div className="flex justify-between items-center mb-10">
                <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
                   <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
@@ -266,12 +266,12 @@ export function AIOperations() {
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Monthly Allowance</span>
             </div>
             <div className="grid grid-cols-2 gap-6 mb-10">
-               <div className="p-6 bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden group">
+               <div className="p-6 bg-slate-950 text-white rounded-xl border border-slate-800 shadow-2xl relative overflow-hidden group">
                   <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest mb-2">Cost Real-time</p>
                   <p className="text-3xl font-black tracking-tight tracking-tighter">31,012,500đ</p>
                   <div className="absolute top-0 right-0 w-16 h-16 bg-blue-600/10 rounded-full blur-xl group-hover:bg-blue-600/20 transition-all" />
                </div>
-               <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-500/10 group">
+               <div className="p-6 bg-emerald-50 rounded-xl border border-emerald-100 shadow-xl shadow-emerald-500/10 group">
                   <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
                   <p className="text-3xl font-black text-emerald-700 tracking-tight tracking-tighter">32.4%</p>
                   <TrendingUp className="absolute top-4 right-4 w-10 h-10 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
@@ -298,7 +298,7 @@ export function AIOperations() {
             </div>
          </div>
 
-         <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+         <div className="bg-white p-10 rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40">
             <div className="flex justify-between items-center mb-10">
                <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
                   <LineChart className="w-6 h-6 text-blue-600" /> Multi-Model Arena Performance
@@ -333,12 +333,12 @@ export function AIOperations() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
-         <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-12 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl border border-slate-800 group">
+         <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-12 rounded-xl text-white relative overflow-hidden shadow-2xl border border-slate-800 group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-blue-600/20 transition-all duration-1000" />
             
             <div className="relative z-10 space-y-8">
                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-2xl group-hover:scale-110 transition-transform duration-500">
                      <BarChart4 className="w-10 h-10 text-blue-400" />
                   </div>
                   <h3 className="text-4xl font-black tracking-tight leading-tight italic font-serif">MoE Intelligence <br /> <span className="text-blue-500">Router</span></h3>
@@ -347,14 +347,14 @@ export function AIOperations() {
                   Tự động phân bổ tác vụ cho các cụm mô hình tối ưu nhất. Giảm thiểu chi phí lên tới 40% bằng cách sử dụng Small Model cho các tác vụ cơ bản.
                </p>
                <div className="flex flex-wrap gap-4 pt-4">
-                  <button className="px-8 py-4 bg-blue-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/40 hover:-translate-y-1">Inference Logs</button>
-                  <button className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10 transition-all">Optimization Policy</button>
+                  <button className="px-8 py-4 bg-blue-600 text-white font-black rounded-lg text-xs uppercase tracking-widest hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/40 hover:-translate-y-1">Inference Logs</button>
+                  <button className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white font-black rounded-lg text-xs uppercase tracking-widest hover:bg-white/10 transition-all">Optimization Policy</button>
                </div>
             </div>
             <Layers className="absolute -bottom-16 -right-16 w-80 h-80 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
          </div>
 
-         <div className="bg-white p-12 border border-slate-100 rounded-[2.5rem] shadow-xl shadow-slate-200/40 space-y-10">
+         <div className="bg-white p-12 border border-slate-100 rounded-xl shadow-xl shadow-slate-200/40 space-y-10">
             <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
                <Activity className="w-7 h-7 text-blue-600" /> Model Drift & Health Analytics
             </h3>
@@ -392,7 +392,7 @@ export function AIOperations() {
       </div>
 
       {/* Hardware & Resource Grid */}
-      <div className="mt-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-12 relative overflow-hidden group">
+      <div className="mt-8 bg-white rounded-xl border border-slate-100 shadow-2xl p-12 relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
            <Server className="w-64 h-64 rotate-12" />
         </div>
@@ -400,7 +400,7 @@ export function AIOperations() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 relative z-10">
           <div>
             <h3 className="text-2xl font-black flex items-center gap-4 text-slate-900">
-              <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600 shadow-xl shadow-emerald-500/10">
+              <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600 shadow-xl shadow-emerald-500/10">
                 <Server className="w-7 h-7" />
               </div>
               Hardware Cluster Telemetry
@@ -413,7 +413,7 @@ export function AIOperations() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-           <div className="border border-slate-100 rounded-3xl p-8 bg-slate-50 relative overflow-hidden group/card hover:shadow-2xl transition-all border-b-4">
+           <div className="border border-slate-100 rounded-xl p-8 bg-slate-50 relative overflow-hidden group/card hover:shadow-2xl transition-all border-b-4">
              <div className="flex justify-between items-center mb-8">
                <h4 className="font-black text-slate-800 text-lg uppercase tracking-tight">Node: A100-80GB</h4>
                <span className="text-[9px] bg-emerald-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20">Training Pool</span>
@@ -445,7 +445,7 @@ export function AIOperations() {
              </div>
            </div>
 
-           <div className="border border-blue-100 rounded-3xl p-8 bg-white shadow-2xl shadow-blue-500/10 ring-2 ring-blue-500/5 relative group/card border-b-4">
+           <div className="border border-blue-100 rounded-xl p-8 bg-white shadow-2xl shadow-blue-500/10 ring-2 ring-blue-500/5 relative group/card border-b-4">
              <div className="flex justify-between items-center mb-8">
                <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: L4-24GB</h4>
                <span className="text-[9px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-lg shadow-blue-600/20">Inference Pool</span>
@@ -477,7 +477,7 @@ export function AIOperations() {
              </div>
            </div>
 
-           <div className="border-2 border-slate-100 border-dashed rounded-3xl p-8 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-blue-50/50 hover:border-blue-300 hover:text-blue-600 transition-all cursor-pointer group/add">
+           <div className="border-2 border-slate-100 border-dashed rounded-xl p-8 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-blue-50/50 hover:border-blue-300 hover:text-blue-600 transition-all cursor-pointer group/add">
               <div className="p-5 bg-white rounded-full shadow-xl group-hover/add:scale-110 transition-transform mb-4 border border-slate-100">
                 <Plus className="w-10 h-10 text-slate-300 group-hover/add:text-blue-500" />
               </div>

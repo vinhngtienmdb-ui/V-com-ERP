@@ -550,7 +550,7 @@ export function CustomerService() {
                          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
                             <Bot className="w-4 h-4 animate-bounce" />
                          </div>
-                         <div className="bg-white border border-slate-200 p-4 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-3">
+                         <div className="bg-white border border-slate-200 p-4 rounded-lg rounded-bl-sm shadow-sm flex items-center gap-3">
                             <span className="text-xs text-slate-600 font-bold tracking-wide">AI Assistant đang soạn câu trả lời</span>
                             <div className="flex gap-1.5">
                                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -662,7 +662,7 @@ export function CustomerService() {
                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> SIP Registered • Ext: 101
                     </div>
                     
-                    <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-6 shadow-xl border border-slate-200 flex flex-col items-center">
+                    <div className="bg-white w-full max-w-sm rounded-xl p-6 shadow-xl border border-slate-200 flex flex-col items-center">
                        <div className="w-full bg-slate-100 h-16 rounded-lg flex items-center justify-center mb-8 text-2xl font-mono font-bold text-slate-700 tracing-widest">
                           090 123 4567
                        </div>
@@ -821,14 +821,14 @@ export function CustomerService() {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 relative">
                        <div className="text-center text-xs text-slate-400 font-medium my-4">— Cuộc trò chuyện bắt đầu lúc 10:24 —</div>
                        <div className="flex flex-col gap-1 items-start">
-                          <div className="px-4 py-2 bg-white border border-slate-200 rounded-2xl rounded-tl-sm text-sm text-slate-700 max-w-[70%] shadow-sm">
+                          <div className="px-4 py-2 bg-white border border-slate-200 rounded-lg rounded-tl-sm text-sm text-slate-700 max-w-[70%] shadow-sm">
                              Sản phẩm này có size XL không shop?
                           </div>
                           <span className="text-[10px] text-slate-400">10:24</span>
                        </div>
                        
                        <div className="flex flex-col gap-1 items-end">
-                          <div className="px-4 py-2 bg-indigo-600 text-white rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">
+                          <div className="px-4 py-2 bg-indigo-600 text-white rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
                              Chào bạn, sản phẩm hiện tại vẫn còn size XL nha bạn ơi. Mình mua hôm nay đang có mã giảm giá 10% đấy ạ.
                           </div>
                           <span className="text-[10px] text-slate-400">10:25 ✓</span>
@@ -844,7 +844,7 @@ export function CustomerService() {
                                <div className="h-px bg-rose-200 flex-1" />
                             </div>
                             <div className="flex flex-col gap-1 items-end mt-4">
-                               <div className="px-4 py-2 bg-rose-600 text-white rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">
+                               <div className="px-4 py-2 bg-rose-600 text-white rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
                                   Chào bạn, mình là Admin từ hệ thống. Bạn đang gặp vấn đề gì với cửa hàng này ạ?
                                </div>
                                <span className="text-[10px] text-slate-400">10:28 ✓</span>

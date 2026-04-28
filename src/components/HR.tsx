@@ -1582,7 +1582,7 @@ export function HumanResources() {
 
                {activeAttendanceMethod === 'kiosk' ? (
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full min-h-[500px]">
-                    <div className="bg-[#111827] rounded-3xl p-10 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-2xl">
+                    <div className="bg-[#111827] rounded-xl p-10 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-2xl">
                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-50" />
                        
                        <div className="space-y-2 relative z-10">
@@ -1590,7 +1590,7 @@ export function HumanResources() {
                           <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.3em]">Hệ thống đang sẵn sàng</p>
                        </div>
 
-                       <div className="w-64 h-64 bg-slate-800 rounded-3xl border-4 border-slate-700 relative flex items-center justify-center overflow-hidden group">
+                       <div className="w-64 h-64 bg-slate-800 rounded-xl border-4 border-slate-700 relative flex items-center justify-center overflow-hidden group">
                           <div className="absolute inset-0 bg-blue-500/10 opacity-100" />
                           <div className="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-[scan_3s_ease-in-out_infinite]" />
                           <ScanFace className="w-24 h-24 text-blue-400/50 group-hover:text-blue-400 transition-colors" />
@@ -1601,10 +1601,10 @@ export function HumanResources() {
                        </div>
 
                        <div className="grid grid-cols-2 gap-4 w-full max-w-md relative z-10">
-                          <button className="py-6 bg-emerald-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-emerald-900/40 active:scale-95">
+                          <button className="py-6 bg-emerald-600 text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-emerald-900/40 active:scale-95">
                              <CheckCircle2 className="w-6 h-6" /> VÀO CA
                           </button>
-                          <button className="py-6 bg-rose-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-rose-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-rose-900/40 active:scale-95">
+                          <button className="py-6 bg-rose-600 text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-rose-700 transition-all flex flex-col items-center gap-2 shadow-lg shadow-rose-900/40 active:scale-95">
                              <History className="w-6 h-6" /> HẾT CA
                           </button>
                        </div>
@@ -1644,7 +1644,7 @@ export function HumanResources() {
                           <button className="w-full mt-6 py-4 text-xs font-bold text-slate-500 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-colors uppercase tracking-widest hover:text-slate-700">Xem tất cả lịch sử</button>
                        </div>
                        
-                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-6 rounded-2xl relative overflow-hidden group">
+                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-6 rounded-lg relative overflow-hidden group">
                           <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-indigo-100 group-hover:scale-110 transition-transform" />
                           <div className="flex items-start gap-4 relative z-10">
                              <div className="p-3 bg-white text-indigo-600 rounded-xl shadow-sm border border-indigo-100">
@@ -1660,7 +1660,7 @@ export function HumanResources() {
                  </div>
                ) : (
                  <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div className="col-span-12 lg:col-span-8 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                           <div className="flex gap-4">
                              <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
@@ -1758,7 +1758,7 @@ export function HumanResources() {
                     </div>
 
                     <div className="col-span-12 lg:col-span-4 space-y-6">
-                       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                       <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
                           <h3 className="font-bold text-slate-900 text-sm mb-6 flex items-center gap-2 uppercase tracking-widest">
                              <Target className="w-4 h-4 text-rose-500" /> Phân tích Chuyên cần
                           </h3>
@@ -1794,7 +1794,7 @@ export function HumanResources() {
                                 ))}
                              </div>
                              
-                             <div className="p-5 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-3 relative overflow-hidden">
+                             <div className="p-5 bg-indigo-50 border border-indigo-100 rounded-lg space-y-3 relative overflow-hidden">
                                 <Zap className="absolute -right-2 -top-2 w-12 h-12 text-indigo-100 rotate-12" />
                                 <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-[0.2em] flex items-center gap-2 relative z-10">
                                    <Sparkles className="w-3.5 h-3.5" /> AI Khuyến nghị
@@ -1804,12 +1804,12 @@ export function HumanResources() {
                           </div>
                        </div>
 
-                       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                       <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
                           <div className="relative z-10">
                              <h3 className="font-bold text-slate-900 text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
                                 <QrCode className="w-4 h-4 text-indigo-600" /> Mã QR Động (Anti-Fake)
                              </h3>
-                             <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center group-hover:bg-white transition-all duration-500 relative cursor-pointer">
+                             <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center group-hover:bg-white transition-all duration-500 relative cursor-pointer">
                                 <QrCode className="w-24 h-24 text-slate-300 group-hover:text-indigo-600 transition-all duration-500" />
                                 <div className="absolute inset-0 bg-white/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                    <RefreshCcw className="w-8 h-8 text-indigo-600 animate-spin-slow" />
@@ -1846,7 +1846,7 @@ export function HumanResources() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl space-y-4">
+                   <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-lg space-y-4">
                       <div className="flex justify-between items-start">
                          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Average Completion</p>
                          <div className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm shadow-md">88%</div>
@@ -1858,7 +1858,7 @@ export function HumanResources() {
                          </div>
                       </div>
                    </div>
-                   <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl space-y-4">
+                   <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-lg space-y-4">
                       <div className="flex justify-between items-start">
                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Top Performers</p>
                          <Trophy className="w-6 h-6 text-emerald-600" />
@@ -1868,7 +1868,7 @@ export function HumanResources() {
                          <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Đạt trên 120% mục tiêu</p>
                       </div>
                    </div>
-                   <div className="bg-rose-50 border border-rose-100 p-6 rounded-2xl space-y-4">
+                   <div className="bg-rose-50 border border-rose-100 p-6 rounded-lg space-y-4">
                       <div className="flex justify-between items-start">
                          <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Critical Alert</p>
                          <AlertCircle className="w-6 h-6 text-rose-600" />
@@ -1881,7 +1881,7 @@ export function HumanResources() {
                 </div>
 
                 <div className="grid grid-cols-12 gap-8 mt-4">
-                   <div className="col-span-12 lg:col-span-8 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+                   <div className="col-span-12 lg:col-span-8 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                       <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center px-8">
                          <h3 className="font-black text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
                          <div className="relative">
@@ -1958,7 +1958,7 @@ export function HumanResources() {
                    </div>
 
                    <div className="col-span-12 lg:col-span-4 space-y-8">
-                      <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                      <div className="bg-slate-900 rounded-xl p-8 text-white relative overflow-hidden shadow-2xl">
                          <div className="absolute top-0 right-0 p-4">
                             <Trophy className="w-12 h-12 text-white/10 rotate-12" />
                          </div>
@@ -1969,7 +1969,7 @@ export function HumanResources() {
                                { name: 'Thu Thủy', score: 94, rank: 2, color: 'text-slate-300' },
                                { name: 'Diệu Nhi', score: 91, rank: 3, color: 'text-orange-400' }
                             ].map((p, i) => (
-                               <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-3 rounded-2xl transition-all">
+                               <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-3 rounded-lg transition-all">
                                   <div className="flex items-center gap-4">
                                      <span className={cn("text-xl font-black w-6", p.color)}>{p.rank}</span>
                                      <div>
@@ -1986,12 +1986,12 @@ export function HumanResources() {
                                </div>
                             ))}
                          </div>
-                         <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
+                         <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
                             Xem tất cả bảng xếp hạng
                          </button>
                       </div>
 
-                      <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm group">
+                      <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm group">
                          <div className="flex items-center gap-3 mb-8">
                             <div className="p-3 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 shadow-sm relative">
                                <MapIcon className="w-6 h-6" />
@@ -1999,7 +1999,7 @@ export function HumanResources() {
                             </div>
                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
                          </div>
-                         <div className="aspect-square bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-8 space-y-4 text-center group-hover:bg-white transition-all duration-500">
+                         <div className="aspect-square bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-8 space-y-4 text-center group-hover:bg-white transition-all duration-500">
                             <Layers className="w-16 h-16 text-slate-300 group-hover:text-indigo-400 transition-all duration-500" />
                             <div>
                                <p className="text-xs font-bold text-slate-600">Phân tích Phủ Kỹ năng</p>
@@ -2718,7 +2718,7 @@ export function HumanResources() {
                 {activeATSView === 'candidates' && (
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
                     {(['sourced', 'interview', 'offered', 'hired'] as const).map(status => (
-                      <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status)} className="bg-slate-50/80 rounded-2xl p-5 border border-slate-200 flex flex-col h-[500px]">
+                      <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status)} className="bg-slate-50/80 rounded-lg p-5 border border-slate-200 flex flex-col h-[500px]">
                         <div className="flex justify-between items-center mb-5">
                           <h3 className="font-bold text-slate-700 uppercase tracking-widest text-xs">
                             {status === 'sourced' ? 'Sourced' : status === 'interview' ? 'Phỏng vấn' : status === 'offered' ? 'Đề nghị' : 'Đã tuyển'}

@@ -116,12 +116,12 @@ export function WorkflowHub() {
         <div className="flex flex-wrap gap-3">
           <button 
              onClick={() => setViewMode(viewMode === 'tasks' ? 'builder' : 'tasks')}
-             className="bg-white border border-slate-200 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5"
+             className="bg-white border border-slate-200 px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5"
           >
             {viewMode === 'tasks' ? <PanelTop className="w-4 h-4 text-blue-600" /> : <Activity className="w-4 h-4 text-emerald-600" />}
             {viewMode === 'tasks' ? 'Mở Trình tạo Luồng' : 'Xem danh sách Task'}
           </button>
-          <button className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+          <button className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
              <Cpu className="w-4 h-4 text-blue-400" />
              AI Automation Config
           </button>
@@ -156,12 +156,12 @@ export function WorkflowHub() {
         ))}
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
+      <div className="bg-white rounded-xl border border-slate-100 shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
         <div className="flex border-b border-slate-100 bg-slate-50/50 p-2">
            <button 
               onClick={() => setViewMode('tasks')}
               className={cn(
-                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-2xl flex items-center gap-2",
+                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
                 viewMode === 'tasks' ? "bg-white text-blue-600 shadow-xl shadow-blue-600/10 border border-blue-100" : "text-slate-500 hover:text-slate-900"
               )}
            >
@@ -170,7 +170,7 @@ export function WorkflowHub() {
            <button 
               onClick={() => setViewMode('builder')}
               className={cn(
-                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-2xl flex items-center gap-2",
+                "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
                 viewMode === 'builder' ? "bg-white text-emerald-600 shadow-xl shadow-emerald-600/10 border border-emerald-100" : "text-slate-500 hover:text-slate-900"
               )}
            >
@@ -209,9 +209,9 @@ export function WorkflowHub() {
 
                    <div className="space-y-4">
                       {tasks.filter(t => filter === 'all' || t.priority === filter).map((task) => (
-                         <div key={task.id} className="p-6 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group flex flex-wrap items-center gap-6 border-b-2">
+                         <div key={task.id} className="p-6 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group flex flex-wrap items-center gap-6 border-b-2">
                             <div className={cn(
-                               "p-4 rounded-2xl shadow-xl transition-all group-hover:scale-105",
+                               "p-4 rounded-lg shadow-xl transition-all group-hover:scale-105",
                                task.priority === 'critical' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : 
                                task.priority === 'high' ? "bg-orange-50 text-orange-500 shadow-orange-200/30" :
                                "bg-blue-50 text-blue-500 shadow-blue-200/30"
@@ -249,19 +249,19 @@ export function WorkflowHub() {
                 </div>
 
                 <div className="space-y-8">
-                   <div className="bg-slate-950 text-white p-10 rounded-[2.5rem] relative overflow-hidden shadow-2xl border border-slate-800 group">
+                   <div className="bg-slate-950 text-white p-10 rounded-xl relative overflow-hidden shadow-2xl border border-slate-800 group">
                       <div className="relative z-10 space-y-6">
-                         <div className="p-4 bg-blue-600 rounded-2xl shadow-2xl shadow-blue-600/40 w-fit group-hover:scale-110 transition-transform">
+                         <div className="p-4 bg-blue-600 rounded-lg shadow-2xl shadow-blue-600/40 w-fit group-hover:scale-110 transition-transform">
                             <Zap className="w-6 h-6" />
                          </div>
                          <h3 className="text-2xl font-black italic tracking-tight">AI Process <br/> <span className="text-blue-400">Accelerator</span></h3>
                          <p className="text-slate-400 text-sm font-medium leading-relaxed">Hệ thống đang tự động lọc 420 task phụ để bạn tập trung vào 8 task quan trọng nhất.</p>
-                         <button className="w-full py-4 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">Audit Automation Log</button>
+                         <button className="w-full py-4 bg-white/5 border border-white/10 text-white font-black rounded-lg text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">Audit Automation Log</button>
                       </div>
                       <Layers className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
                    </div>
 
-                   <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+                   <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40">
                       <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-8 flex items-center gap-3">
                          <Users2 className="w-5 h-5 text-indigo-500" /> Team Availability
                       </h4>
@@ -286,7 +286,7 @@ export function WorkflowHub() {
                 </div>
              </div>
            ) : (
-             <div className="flex-1 bg-slate-50 border border-slate-200 border-dashed rounded-[3rem] relative overflow-hidden flex flex-col p-2">
+             <div className="flex-1 bg-slate-50 border border-slate-200 border-dashed rounded-xl relative overflow-hidden flex flex-col p-2">
                 <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#10B981 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                 <div className="flex-1 min-h-[500px]">
                    <ReactFlow
@@ -323,11 +323,11 @@ export function WorkflowHub() {
                initial={{ opacity: 0, scale: 0.9, y: 40 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 40 }}
-               className="bg-white rounded-[3rem] w-full max-w-2xl overflow-hidden shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/20 relative"
+               className="bg-white rounded-xl w-full max-w-2xl overflow-hidden shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/20 relative"
             >
                <button 
                  onClick={() => setSigningTaskId(null)}
-                 className="absolute top-8 right-8 p-3 hover:bg-slate-100 rounded-2xl transition-all z-20 group"
+                 className="absolute top-8 right-8 p-3 hover:bg-slate-100 rounded-lg transition-all z-20 group"
                >
                  <X className="w-5 h-5 text-slate-400 group-hover:text-slate-900" />
                </button>
@@ -335,7 +335,7 @@ export function WorkflowHub() {
                <div className="p-12 space-y-10">
                   <div className="space-y-4">
                      <div className="flex items-center gap-5">
-                        <div className="p-5 bg-emerald-600 rounded-[2rem] shadow-2xl shadow-emerald-500/40 relative group overflow-hidden">
+                        <div className="p-5 bg-emerald-600 rounded-xl shadow-2xl shadow-emerald-500/40 relative group overflow-hidden">
                            <ShieldCheck className="w-10 h-10 text-white relative z-10" />
                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                         </div>
@@ -396,7 +396,7 @@ export function WorkflowHub() {
                         onClick={executeSignature}
                         disabled={isSigningInProcess}
                         className={cn(
-                           "px-10 py-5 font-black rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center gap-3 w-full sm:w-auto justify-center active:translate-y-1",
+                           "px-10 py-5 font-black rounded-lg text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center gap-3 w-full sm:w-auto justify-center active:translate-y-1",
                            isSigningInProcess ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-emerald-600 text-white shadow-emerald-600/30 hover:bg-emerald-500"
                         )}
                      >

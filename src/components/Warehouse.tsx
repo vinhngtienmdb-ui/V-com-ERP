@@ -205,7 +205,7 @@ export function WarehouseModule() {
                        <div 
                          key={mod.id}
                          onClick={() => setActiveTab(mod.id as any)}
-                         className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                         className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                        >
                           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                              <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -486,7 +486,7 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_ff_predict' && (
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
            <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
               <button 
                 onClick={() => setActiveTab('overview')} 
@@ -502,7 +502,7 @@ export function WarehouseModule() {
            
            <div className="p-8 space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 <div className="lg:col-span-2 bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden h-[400px]">
+                 <div className="lg:col-span-2 bg-slate-900 rounded-xl p-8 text-white relative overflow-hidden h-[400px]">
                     <div className="relative z-10">
                        <h3 className="text-xl font-bold mb-2">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
                        <p className="text-slate-400 text-sm mb-8">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
@@ -523,7 +523,7 @@ export function WarehouseModule() {
                  </div>
 
                  <div className="space-y-6">
-                    <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-100/20">
+                    <div className="bg-white border-2 border-indigo-100 rounded-xl p-6 shadow-xl shadow-indigo-100/20">
                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">AI Recommendation</h4>
                        <div className="space-y-4">
                           <div className="flex gap-3">
@@ -550,7 +550,7 @@ export function WarehouseModule() {
                        </button>
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Độ chính xác mô hình</h4>
                        <div className="flex items-center gap-4">
                           <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin flex items-center justify-center">
@@ -569,7 +569,7 @@ export function WarehouseModule() {
       )}
 
       {activeTab === 'wh_ff_heatmap' && (
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+        <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
            <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
               <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-lg">
                  <ArrowLeft className="w-4 h-4" /> Quay lại
@@ -599,7 +599,7 @@ export function WarehouseModule() {
                  </div>
               </div>
 
-              <div className="grid grid-cols-10 gap-3 border border-slate-100 p-8 rounded-3xl bg-slate-50/50">
+              <div className="grid grid-cols-10 gap-3 border border-slate-100 p-8 rounded-xl bg-slate-50/50">
                  {Array.from({ length: 40 }).map((_, i) => (
                     <div 
                       key={i} 

@@ -1614,7 +1614,7 @@ export function IPosModule() {
                     { label: 'Khách hàng mới', value: '18', icon: Users, trend: '+5', color: 'text-blue-600', bg: 'bg-blue-50' },
                     { label: 'Lượt đánh giá', value: '4.8/5', icon: Sparkles, trend: '98%', color: 'text-amber-600', bg: 'bg-amber-50' }
                  ].map((card, i) => (
-                    <div key={card.label} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                    <div key={card.label} className="bg-white p-6 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-all group">
                        <div className="flex justify-between items-start mb-4">
                           <div className={cn("p-3 rounded-xl", card.bg, card.color)}>
                              <card.icon className="w-6 h-6" />
@@ -1628,7 +1628,7 @@ export function IPosModule() {
               </div>
 
               {/* Delivery Channel Live Monitor */}
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8">
+              <div className="bg-white rounded-lg border border-slate-100 shadow-sm p-6 sm:p-8">
                  <div className="flex items-center justify-between mb-8">
                     <h3 className="font-bold text-slate-900 flex items-center gap-3">
                        <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh Giao hàng (Live)
@@ -1665,7 +1665,7 @@ export function IPosModule() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                 <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8">
+                 <div className="lg:col-span-2 bg-white rounded-lg border border-slate-100 shadow-sm p-6 sm:p-8">
                     <div className="flex items-center justify-between mb-8">
                        <h3 className="font-bold text-slate-900 flex items-center gap-3">
                           <Zap className="w-5 h-5 text-blue-600" /> Hoạt động Bán hàng (Live)
@@ -1691,7 +1691,7 @@ export function IPosModule() {
                  </div>
 
                  <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white relative overflow-hidden shadow-lg shadow-blue-600/20 group">
+                    <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-8 text-white relative overflow-hidden shadow-lg shadow-blue-600/20 group">
                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
                        <div className="relative z-10 space-y-6">
                           <div className="space-y-2">
@@ -1776,7 +1776,7 @@ export function IPosModule() {
               </div>
 
               {/* Product Grid - Refined with better rhythm and card design */}
-              <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+              <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 gap-y-8">
                   {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).map(product => (
                     <div 
@@ -1788,7 +1788,7 @@ export function IPosModule() {
                          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
                       />
                       
-                      <div className="aspect-[4/4.5] bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-blue-200 group-active:scale-95">
+                      <div className="aspect-[4/4.5] bg-slate-50 rounded-lg border border-slate-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-blue-200 group-active:scale-95">
                          <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
                          
                          {/* Image or Placeholder */}
@@ -1967,7 +1967,7 @@ export function IPosModule() {
                     )}
                  </div>
 
-                 <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
+                 <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
                     <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
                       <div className="flex items-center gap-3">
                          <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-sm">
@@ -2089,7 +2089,7 @@ export function IPosModule() {
                           </div>
                         )}
                         
-                        <div className="bg-slate-900 rounded-2xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-md mt-2">
+                        <div className="bg-slate-900 rounded-lg p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-md mt-2">
                             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/30 via-transparent to-transparent opacity-50" />
                             <div className="relative z-10">
                                <p className="text-xs font-semibold text-white/70 mb-1">Cần thanh toán</p>
@@ -2166,7 +2166,7 @@ export function IPosModule() {
                         <div 
                           key={table.id} 
                           className={cn(
-                            "aspect-square rounded-2xl border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-xl relative group overflow-hidden",
+                            "aspect-square rounded-lg border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-xl relative group overflow-hidden",
                             table.status === 'available' ? "bg-white border-slate-100 text-slate-400 hover:border-blue-400" :
                             table.status === 'occupied' ? "bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm" :
                             table.status === 'reserved' ? "bg-amber-50 border-amber-200 text-amber-900" :
@@ -2230,7 +2230,7 @@ export function IPosModule() {
             <div className="col-span-12 bg-white rounded-lg border border-slate-200 shadow-sm p-10 flex-1 flex flex-col gap-8 animate-in slide-in-from-right-8 duration-500 overflow-y-auto no-scrollbar pb-20">
                <div className="flex items-center justify-between pb-8 border-b border-slate-100">
                   <div className="flex items-center gap-5">
-                     <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center shadow-sm">
+                     <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center shadow-sm">
                         <Clock className="w-7 h-7" />
                      </div>
                      <div>
@@ -2245,7 +2245,7 @@ export function IPosModule() {
 
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                   <div className="lg:col-span-2 space-y-8">
-                     <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 space-y-6">
+                     <div className="bg-slate-50 rounded-lg p-8 border border-slate-200 space-y-6">
                         <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest border-b border-slate-200 pb-4">Tóm tắt hoạt động Ca</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                            <div className="space-y-1">
@@ -2293,7 +2293,7 @@ export function IPosModule() {
                   </div>
 
                   <div className="space-y-6">
-                     <div className="bg-indigo-600 rounded-2xl p-8 text-white space-y-6 shadow-xl shadow-indigo-200">
+                     <div className="bg-indigo-600 rounded-lg p-8 text-white space-y-6 shadow-xl shadow-indigo-200">
                         <div className="flex items-center gap-3">
                            <ShieldCheck className="w-6 h-6 text-indigo-200" />
                            <h4 className="font-bold text-lg">Pháp lý & Hệ thống</h4>
@@ -2325,7 +2325,7 @@ export function IPosModule() {
                           setIsShiftActive(false);
                           setActiveTab('dashboard');
                        }}
-                       className="w-full py-5 bg-rose-600 text-white rounded-2xl font-black text-sm hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
+                       className="w-full py-5 bg-rose-600 text-white rounded-lg font-black text-sm hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
                      >
                         XÁC NHẬN CHỐT CA <ArrowRight className="w-5 h-5" />
                      </button>
@@ -3242,7 +3242,7 @@ export function IPosModule() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden relative"
+               className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden relative"
              >
                 <div className="absolute top-4 right-4 z-10">
                    <button 
@@ -3259,8 +3259,8 @@ export function IPosModule() {
                       <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">{tables.find(t => t.id === selectedTableForQr)?.name} • {tables.find(t => t.id === selectedTableForQr)?.zone}</p>
                    </div>
 
-                   <div className="bg-slate-50 p-10 rounded-3xl border-2 border-dashed border-slate-200 relative group">
-                      <div className="aspect-square bg-white rounded-2xl shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                   <div className="bg-slate-50 p-10 rounded-xl border-2 border-dashed border-slate-200 relative group">
+                      <div className="aspect-square bg-white rounded-lg shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
                          <QrCode className="w-40 h-40 text-slate-900" />
                          
                          {/* Visual overlay for logo branding */}
