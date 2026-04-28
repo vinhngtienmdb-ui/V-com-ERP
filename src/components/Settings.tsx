@@ -17,6 +17,7 @@ import {
   Sparkles,
   Zap,
   ArrowRight,
+  ChevronLeft,
   Target,
   MapPin,
   Search,
@@ -27,14 +28,16 @@ import {
   Image,
   Bell,
   Send,
-  BadgeDollarSign
+  BadgeDollarSign,
+  RefreshCw,
+  Package
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
 
 interface Department { id: string; name: string; manager: string; staffCount: number; parentId?: string; }
-interface JobTitle { id: string; name: string; department: string; }
+interface JobTitle { id: string; name: string; department: string; description?: string; rank?: string; }
 interface JobRank { id: string; name: string; level: number; }
 interface CategoryFee { 
   id: string; 
@@ -52,8 +55,8 @@ const MOCK_DEPARTMENTS: Department[] = [
   { id: 'D-002', name: 'Marketing', manager: 'Nguyễn Diệu Nhi', staffCount: 22 },
 ];
 const MOCK_JOB_TITLES: JobTitle[] = [
-  { id: 'T-001', name: 'Quản lý kho', department: 'Vận hành Sàn' },
-  { id: 'T-002', name: 'KOL Specialist', department: 'Marketing' },
+  { id: 'T-001', name: 'Quản lý kho', department: 'D-001', description: 'Quản lý vận hành kho bãi, nhân sự kho.', rank: 'R-003' },
+  { id: 'T-002', name: 'KOL Specialist', department: 'D-002', description: 'Tìm kiếm, làm việc và đàm phán với KOL/Influencer trên MXH.', rank: 'R-001' },
 ];
 const MOCK_JOB_RANKS: JobRank[] = [
   { id: 'R-001', name: 'Nhân viên', level: 1 },
@@ -119,6 +122,50 @@ const MOCK_WEBHOOKS: WebhookConfig[] = [
   { id: '2', name: 'GHTK Logistis Status', url: 'https://webhook.ghtk.vn/callback', events: ['delivery.status'], status: 'active' },
 ];
 
+const SETTINGS_MODULE_GROUPS = [
+  {
+    title: 'Vận hành & Kinh doanh',
+    items: [
+      { id: 'general', label: 'Cấu hình chung', icon: Settings, desc: 'Cài đặt cơ bản hệ thống, Payout tự động', color: 'blue' },
+      { id: 'fees', label: 'Phí sàn & Ngành hàng', icon: BadgeDollarSign, desc: 'Setup tỷ lệ hoa hồng theo từng ngành', color: 'emerald' },
+      { id: 'website', label: 'Website & Menu', icon: Globe, desc: 'Quản lý biểu mẫu, tên miền và menu', color: 'indigo' },
+      { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package, desc: 'Phân loại mặt hàng và lưu kho', color: 'orange' },
+    ]
+  },
+  {
+    title: 'Hệ thống & Bảo mật',
+    items: [
+      { id: 'rbac', label: 'Phân quyền (Roles)', icon: Lock, desc: 'Điều hướng truy cập và quản lý Matrix Roles', color: 'purple' },
+      { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cấp API token và bắn sự kiện Server', color: 'rose' },
+      { id: 'popup', label: 'Popup & Thông báo', icon: Bell, desc: 'Thiết lập Push notification trung tâm', color: 'blue' },
+      { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare, desc: 'Cấu hình API gửi tin nhắn Zalo/SMS', color: 'cyan' },
+    ]
+  },
+  {
+    title: 'Cấu trúc & Hạ tầng',
+    items: [
+      { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2, desc: 'Cây phòng ban và chức danh nhân sự', color: 'emerald' },
+      { id: 'stores', label: 'Chuỗi cửa hàng', icon: Store, desc: 'Cấu hình chi nhánh và subdomain', color: 'indigo' },
+      { id: 'address', label: 'Địa chỉ Hành chính', icon: MapPin, desc: 'Danh mục Tỉnh/Thành/Phường/Xã', color: 'slate' },
+    ]
+  }
+];
+
+function getColorClasses(color: string) {
+  switch (color) {
+    case 'blue': return 'bg-blue-50 text-blue-600';
+    case 'orange': return 'bg-orange-50 text-orange-600';
+    case 'indigo': return 'bg-indigo-50 text-indigo-600';
+    case 'purple': return 'bg-purple-50 text-purple-600';
+    case 'emerald': return 'bg-emerald-50 text-emerald-600';
+    case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
+    case 'rose': return 'bg-rose-50 text-rose-600';
+    case 'cyan': return 'bg-cyan-50 text-cyan-600';
+    case 'slate':
+    default: return 'bg-slate-50 text-slate-600';
+  }
+}
+
 const MOCK_PROVINCES = [
   { id: '1', name: 'Hà Nội', code: 'HN', wards: 579, status: 'active' },
   { id: '2', name: 'Hồ Chí Minh', code: 'HCM', wards: 312, status: 'active' },
@@ -128,7 +175,7 @@ const MOCK_PROVINCES = [
 ];
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup'>('general');
+  const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup' | 'inventory'>('overview');
   const [roles, setRoles] = useState<PermissionRole[]>(MOCK_ROLES);
   const [editingRole, setEditingRole] = useState<PermissionRole | null>(null);
   const [notiTitle, setNotiTitle] = useState('');
@@ -145,6 +192,8 @@ export function SettingsPage() {
   const [customDomains, setCustomDomains] = useState<string[]>(['erp.vcom.vn']);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [isScanningAI, setIsScanningAI] = useState(false);
+  const [activeModuleTab, setActiveModuleTab] = useState(MODULE_PERMISSIONS[0].id);
 
   // Popup States
   const [isPopupActive, setIsPopupActive] = useState(false);
@@ -153,6 +202,25 @@ export function SettingsPage() {
   const [popupImage, setPopupImage] = useState('');
   const [popupCtaText, setPopupCtaText] = useState('Xem ngay');
   const [popupCtaLink, setPopupCtaLink] = useState('');
+
+  // Job Title State
+  const [jobTitles, setJobTitles] = useState<JobTitle[]>(MOCK_JOB_TITLES);
+  const [showAddJobTitleModal, setShowAddJobTitleModal] = useState(false);
+  const [editingJobTitle, setEditingJobTitle] = useState<JobTitle | null>(null);
+  const [newJobTitle, setNewJobTitle] = useState<Partial<JobTitle>>({});
+
+  const handleSaveJobTitle = () => {
+    if (!newJobTitle.name || !newJobTitle.department) return;
+    
+    if (editingJobTitle) {
+      setJobTitles(prev => prev.map(t => t.id === editingJobTitle.id ? { ...t, ...newJobTitle } as JobTitle : t));
+    } else {
+      setJobTitles([...jobTitles, { ...newJobTitle, id: `T-${Date.now()}` } as JobTitle]);
+    }
+    setShowAddJobTitleModal(false);
+    setEditingJobTitle(null);
+    setNewJobTitle({});
+  };
 
   const addDomain = () => setCustomDomains([...customDomains, '']);
   const updateDomain = (index: number, value: string) => {
@@ -200,53 +268,171 @@ export function SettingsPage() {
     setShowAddCategory(false);
   };
 
+  const handleAIScanCategories = () => {
+    setIsScanningAI(true);
+    setTimeout(() => {
+      const newItems = [
+        {
+          id: (categoryFees.length + 1).toString(),
+          name: 'Mẹ & Bé',
+          sellerFee: 4,
+          mallFee: 6,
+          aiReasoning: 'Phân tích từ AI: Số lượng tìm kiếm "Bỉm sữa" tăng mạnh. Biên lợi nhuận mảng này khá ổn định.'
+        },
+        {
+          id: (categoryFees.length + 2).toString(),
+          name: 'Thể thao & Dã ngoại',
+          sellerFee: 6,
+          mallFee: 9,
+          aiReasoning: 'Phân tích từ AI: Nhu cầu du lịch và thể thao tăng cao mùa thu/đông. Dữ liệu cross-platform (social & sàn TMĐT) cho thấy tiềm năng.'
+        }
+      ];
+      setCategoryFees(prev => [...prev, ...newItems]);
+      setIsScanningAI(false);
+      alert('AI đã phân tích dữ liệu thị trường và tự động đề xuất thêm 2 ngành hàng tiềm năng!');
+    }, 2000);
+  };
+
   return (
+    <>
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
           <h1 className="text-2xl font-semibold text-[#111827]">Cấu hình & Tích hợp Hệ thống</h1>
           <p className="text-sm text-[#6B7280] mt-1">Phân quyền Ma trận roles, cấu hình Phí sàn và quản lý OpenAPI/Webhook.</p>
         </div>
-        <button 
-          onClick={handleSave}
-          disabled={isSaving}
-          className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
-        >
-          {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-        </button>
+        <div className="flex gap-3 items-center">
+          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 text-emerald-600" />
+            Lịch sử cấu hình
+          </button>
+          <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-purple-600" />
+            AI Config Audit
+          </button>
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-[#2563EB] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
+          >
+            {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+          </button>
+        </div>
       </div>
 
-      <div className="flex gap-8">
-        {/* Nav Sidebar */}
-        <div className="w-64 space-y-1">
-           {[
-             { id: 'general', label: 'Cấu hình chung', icon: Settings },
-             { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
-             { id: 'website', label: 'Cấu hình Website', icon: Globe },
-             { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
-             { id: 'comms', label: 'Tích hợp Kênh (SMS/Zalo)', icon: MessageSquare },
-             { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
-             { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
-             { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
-             { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
-             { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
-           ].map((tab) => (
-             <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group",
-                  activeTab === tab.id ? "bg-white text-[#2563EB] shadow-sm border border-[#E5E7EB]" : "text-[#6B7280] hover:bg-slate-100"
-                )}
-             >
-                <tab.icon className={cn("w-4 h-4", activeTab === tab.id ? "text-[#2563EB]" : "text-[#9CA3AF]")} />
-                <span>{tab.label}</span>
-             </button>
-           ))}
-        </div>
+      <div className="flex flex-col gap-6">
+        {/* Main Grid or Content Area */}
+        {activeTab !== 'overview' && (
+           <div className="flex items-center gap-4 mb-4">
+              <button 
+                onClick={() => setActiveTab('overview')} 
+                className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-[#2563EB] bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200 transition-colors"
+              >
+                 <ChevronLeft className="w-4 h-4" /> Tổng quan Cấu hình
+              </button>
+              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                {[
+                  { id: 'general', label: 'Cấu hình chung', icon: Settings },
+                  { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
+                  { id: 'website', label: 'Cấu hình Website', icon: Globe },
+                  { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
+                  { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare },
+                  { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
+                  { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
+                  { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
+                  { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
+                  { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
+                  { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package },
+                ].filter(t => t.id === activeTab).map(t => (
+                  <React.Fragment key={t.id}>
+                     <t.icon className="w-5 h-5 text-[#2563EB]" /> {t.label}
+                  </React.Fragment>
+                ))}
+              </h2>
+           </div>
+        )}
 
         {/* Content Area */}
         <div className="flex-1 space-y-6">
+           {activeTab === 'overview' && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                 {/* Dashboard Cards similar to HRM */}
+                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                       <div className="flex justify-between items-start mb-3">
+                          <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Vai trò hệ thống</span>
+                          <Lock className="w-4 h-4 text-purple-600" />
+                       </div>
+                       <div className="flex items-end justify-between">
+                          <span className="text-2xl font-bold text-[#111827]">{roles.length} Roles</span>
+                          <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Bảo mật cao</span>
+                       </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                       <div className="flex justify-between items-start mb-3">
+                          <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tên miền trỏ về</span>
+                          <Globe className="w-4 h-4 text-blue-600" />
+                       </div>
+                       <div className="flex items-end justify-between">
+                          <span className="text-2xl font-bold text-[#111827]">{customDomains.length} Domains</span>
+                          <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">Đã xác thực</span>
+                       </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                       <div className="flex justify-between items-start mb-3">
+                          <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Điểm Webhook</span>
+                          <Webhook className="w-4 h-4 text-orange-600" />
+                       </div>
+                       <div className="flex items-end justify-between">
+                          <span className="text-2xl font-bold text-[#111827]">{MOCK_WEBHOOKS.length} Endpoints</span>
+                          <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">100% Uptime</span>
+                       </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all">
+                       <div className="flex justify-between items-start mb-3">
+                          <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Ngành hàng</span>
+                          <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
+                       </div>
+                       <div className="flex items-end justify-between">
+                          <span className="text-2xl font-bold text-[#111827]">{categoryFees.length} Nhóm</span>
+                          <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Tối ưu AI</span>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Grouped Modules grid like HRM */}
+                 <div className="space-y-6">
+                    {SETTINGS_MODULE_GROUPS.map((group, gIdx) => (
+                      <div key={gIdx} className="space-y-4">
+                        <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 px-1">
+                          <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+                          {group.title}
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                          {group.items.map((mod) => (
+                             <div 
+                               key={mod.id}
+                               onClick={() => setActiveTab(mod.id as any)}
+                               className="group bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-lg hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                             >
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                   <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
+                                </div>
+                                <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
+                                   <mod.icon className="w-6 h-6" />
+                                </div>
+                                <div className="relative z-10">
+                                   <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+                                   <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+                                </div>
+                             </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+           )}
            {activeTab === 'general' && (
               <div className="animate-in fade-in duration-300 space-y-6">
                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
@@ -283,12 +469,22 @@ export function SettingsPage() {
                          </h3>
                          <p className="text-xs text-slate-500 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
                        </div>
-                       <button 
-                         onClick={() => setShowAddCategory(true)}
-                         className="flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
-                       >
-                          <Plus className="w-4 h-4" /> Thêm ngành hàng
-                       </button>
+                       <div className="flex gap-2">
+                         <button 
+                           onClick={handleAIScanCategories}
+                           disabled={isScanningAI}
+                           className="flex items-center gap-1.5 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50"
+                         >
+                            <RefreshCw className={cn("w-4 h-4", isScanningAI ? "animate-spin" : "")} /> 
+                            {isScanningAI ? 'AI đang phân tích...' : 'AI đề xuất ngành hàng'}
+                         </button>
+                         <button 
+                           onClick={() => setShowAddCategory(true)}
+                           className="flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
+                         >
+                            <Plus className="w-4 h-4" /> Thêm ngành hàng
+                         </button>
+                       </div>
                      </div>
 
                      {showAddCategory && (
@@ -577,13 +773,28 @@ export function SettingsPage() {
                             </label>
                          </div>
                          
-                         <div className="p-6 space-y-8">
-                            {MODULE_PERMISSIONS.map(group => (
-                              <div key={group.id} className="space-y-4">
-                                 <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                                    {group.label}
-                                 </h5>
+                         <div className="bg-white border-b border-slate-200">
+                            <div className="flex px-4 gap-6">
+                              {MODULE_PERMISSIONS.map(group => (
+                                <button
+                                  key={group.id}
+                                  onClick={() => setActiveModuleTab(group.id)}
+                                  className={cn(
+                                    "py-4 text-sm font-bold transition-all border-b-2",
+                                    activeModuleTab === group.id
+                                      ? "border-blue-600 text-blue-600"
+                                      : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                                  )}
+                                >
+                                  {group.label}
+                                </button>
+                              ))}
+                            </div>
+                         </div>
+                         
+                         <div className="p-6">
+                            {MODULE_PERMISSIONS.filter(group => group.id === activeModuleTab).map(group => (
+                              <div key={group.id} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                  <div className="grid grid-cols-1 gap-3">
                                     {group.modules.map(module => (
                                       <div key={module.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white hover:shadow-md transition-all group">
@@ -591,7 +802,7 @@ export function SettingsPage() {
                                             <p className="text-sm font-bold text-slate-800">{module.label}</p>
                                             <p className="text-[10px] text-slate-400 font-mono uppercase">Module: {module.id}</p>
                                          </div>
-                                         <div className="flex gap-4">
+                                         <div className="flex gap-4 flex-wrap justify-end">
                                             {module.actions.map(action => {
                                               const permissionKey = `${module.id}.${action}`;
                                               const isChecked = editingRole.permissions.includes('all') || editingRole.permissions.includes(permissionKey);
@@ -773,18 +984,60 @@ export function SettingsPage() {
                        </div>
                      ))}
                    </div>
-                   {[{ title: 'Chức danh', data: MOCK_JOB_TITLES },
-                     { title: 'Cấp bậc', data: MOCK_JOB_RANKS }].map(section => (
-                     <div key={section.title} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                       <h4 className="font-bold text-slate-800 mb-4">{section.title}</h4>
-                       {section.data.map((item: any, i) => (
-                         <div key={i} className="bg-white p-3 rounded-lg border border-slate-100 mb-2 flex justify-between items-center">
-                           <span className="text-sm font-medium">{item.name}</span>
+                   <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
+                     <div className="flex justify-between items-center mb-4">
+                       <h4 className="font-bold text-slate-800">Chức danh</h4>
+                       <button 
+                         onClick={() => { setNewJobTitle({}); setEditingJobTitle(null); setShowAddJobTitleModal(true); }}
+                         className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                       >
+                         <Plus className="w-3 h-3 inline" /> Thêm
+                       </button>
+                     </div>
+                     <div className="space-y-2 h-[400px] overflow-y-auto pr-1">
+                       {jobTitles.map((title) => (
+                         <div key={title.id} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
+                           <div className="flex justify-between items-start mb-1">
+                             <div className="font-bold text-sm text-slate-900">{title.name}</div>
+                             <button 
+                               onClick={() => { setEditingJobTitle(title); setNewJobTitle(title); setShowAddJobTitleModal(true); }}
+                               className="text-[10px] text-blue-600 hover:bg-blue-50 px-2 py-1 rounded"
+                             >Sửa</button>
+                           </div>
+                           <div className="text-xs text-slate-500 mb-1 line-clamp-2" title={title.description}>{title.description || 'Chưa có mô tả'}</div>
+                           <div className="flex gap-2 text-[10px]">
+                             <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                               Phòng: {MOCK_DEPARTMENTS.find(d => d.id === title.department)?.name || title.department}
+                             </span>
+                             {title.rank && (
+                               <span className="bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">
+                                 Cấp bậc: {MOCK_JOB_RANKS.find(r => r.id === title.rank)?.name || title.rank}
+                               </span>
+                             )}
+                           </div>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                   <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
+                     <div className="flex justify-between items-center mb-4">
+                       <h4 className="font-bold text-slate-800">Cấp bậc</h4>
+                       <button className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded hover:bg-slate-300 transition">
+                         <Plus className="w-3 h-3 inline" /> Thêm
+                       </button>
+                     </div>
+                     <div className="space-y-2">
+                       {MOCK_JOB_RANKS.map((item) => (
+                         <div key={item.id} className="bg-white p-3 rounded-lg border border-slate-100 flex justify-between items-center shadow-sm">
+                           <div>
+                             <div className="text-sm font-medium">{item.name}</div>
+                             <div className="text-[10px] text-slate-400">Level: {item.level}</div>
+                           </div>
                            <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
                          </div>
                        ))}
                      </div>
-                   ))}
+                   </div>
                  </div>
                </div>
              </div>
@@ -1139,8 +1392,124 @@ export function SettingsPage() {
                  </div>
               </div>
            )}
+
+           {activeTab === 'inventory' && (
+              <div className="animate-in fade-in duration-300 space-y-6">
+                  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+                    <h3 className="font-bold text-[#111827] flex items-center gap-2">
+                        <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
+                    </h3>
+                    <p className="text-sm text-slate-500 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
+                           <div className="flex justify-between items-center mb-4">
+                              <h4 className="font-bold text-slate-800">Danh mục Nhóm Hàng hóa</h4>
+                              <button className="text-xs text-blue-600 font-bold hover:underline">+ Thêm nhóm</button>
+                           </div>
+                           <div className="space-y-2">
+                               {['Nguyên vật liệu (Raw Materials)', 'Thành phẩm (Finished Goods)', 'Bán thành phẩm (WIP)', 'Hàng hóa thương mại (Trading Goods)'].map((type, i) => (
+                                  <div key={i} className="flex justify-between items-center bg-white p-3 border border-slate-100 rounded-lg">
+                                     <span className="text-sm font-medium">{type}</span>
+                                     <button className="text-slate-400 hover:text-slate-600"><Edit2 className="w-4 h-4" /></button>
+                                  </div>
+                               ))}
+                           </div>
+                        </div>
+
+                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
+                           <h4 className="font-bold text-slate-800 mb-4">Phương pháp Quản lý Kho</h4>
+                           <div className="space-y-3">
+                              <label className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-lg cursor-pointer hover:bg-blue-50/50">
+                                  <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" defaultChecked />
+                                  <span className="text-sm font-medium">Bình quân gia quyền (Weighted Average)</span>
+                              </label>
+                              <label className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-lg cursor-pointer hover:bg-blue-50/50">
+                                  <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" />
+                                  <span className="text-sm font-medium">Nhập trước xuất trước (FIFO)</span>
+                              </label>
+                           </div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+           )}
         </div>
       </div>
     </div>
+
+    {showAddJobTitleModal && (
+      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h3 className="font-bold text-slate-800">{editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}</h3>
+            <button 
+              onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
+              className="text-slate-400 hover:text-slate-600 font-bold text-lg leading-none"
+            >
+              &times;
+            </button>
+          </div>
+          <div className="p-4 overflow-y-auto flex-1 space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
+              <input 
+                type="text" 
+                value={newJobTitle.name || ''} 
+                onChange={e => setNewJobTitle({...newJobTitle, name: e.target.value})}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
+                placeholder="VD: Trưởng phòng Marketing"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Phòng ban <span className="text-red-500">*</span></label>
+              <select 
+                value={newJobTitle.department || ''} 
+                onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
+              >
+                <option value="">Chọn phòng ban</option>
+                {MOCK_DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Cấp bậc</label>
+              <select 
+                value={newJobTitle.rank || ''} 
+                onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
+              >
+                <option value="">Chọn cấp bậc</option>
+                {MOCK_JOB_RANKS.map(r => <option key={r.id} value={r.id}>{r.name} (Level {r.level})</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Mô tả công việc</label>
+              <textarea 
+                value={newJobTitle.description || ''} 
+                onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm min-h-[100px]"
+                placeholder="Mô tả ngắn gọn chức năng, nhiệm vụ..."
+              />
+            </div>
+          </div>
+          <div className="p-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
+            <button 
+              onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
+              className="px-4 py-2 border border-slate-200 bg-white text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-100"
+            >
+              Hủy
+            </button>
+            <button 
+              onClick={handleSaveJobTitle}
+              disabled={!newJobTitle.name || !newJobTitle.department}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-50"
+            >
+              Lưu Chức danh
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

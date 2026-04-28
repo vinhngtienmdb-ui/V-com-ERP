@@ -9,12 +9,13 @@ import {
   RefreshCw,
   FileText,
   Lock,
-  UserCheck
+  UserCheck,
+  Building2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const MOCK_SIGNATURE_REQUESTS = [
+const INITIAL_SIGNATURES = [
   { id: 'SIGN-001', docId: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'contract', requestDate: '25/03/2024', status: 'pending', requesters: 'Phòng Nhân sự' },
   { id: 'SIGN-002', docId: 'REQ-002', title: 'Đề nghị tạm ứng công tác phí', type: 'request', requestDate: '24/03/2024', status: 'signed', requesters: 'Nguyễn Diệu Nhi' },
   { id: 'SIGN-003', docId: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc', type: 'document', requestDate: '20/03/2024', status: 'signed', requesters: 'Hội đồng quản trị' },
@@ -24,12 +25,44 @@ const MOCK_SIGNATURE_REQUESTS = [
 export function SignatureHub() {
   const [activeTab, setActiveTab] = useState('pending');
   const navigate = useNavigate();
+  const [signatures, setSignatures] = useState(INITIAL_SIGNATURES);
   const [signingModalOpen, setSigningModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
+
+  // Filters State
+  const [searchSigQuery, setSearchSigQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [requesterFilter, setRequesterFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
+
+  const filteredSignatures = signatures.filter(doc => {
+    const matchesTab = doc.status === activeTab;
+    const matchesSearch = doc.title.toLowerCase().includes(searchSigQuery.toLowerCase()) || doc.docId.toLowerCase().includes(searchSigQuery.toLowerCase()) || doc.id.toLowerCase().includes(searchSigQuery.toLowerCase());
+    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+    const matchesRequester = requesterFilter === 'all' || doc.requesters === requesterFilter;
+    
+    let matchesDate = true;
+    if (dateFilter) {
+      const [year, month, day] = dateFilter.split('-');
+      const formattedDateFilter = `${day}/${month}/${year}`;
+      matchesDate = doc.requestDate === formattedDateFilter;
+    }
+    return matchesTab && matchesSearch && matchesType && matchesRequester && matchesDate;
+  });
+
+  const uniqueRequesters = Array.from(new Set(signatures.map(s => s.requesters)));
 
   const handleSign = (doc: any) => {
     setSelectedDoc(doc);
     setSigningModalOpen(true);
+  };
+  
+  const confirmSign = () => {
+    if (selectedDoc) {
+      setSignatures(signatures.map(s => s.id === selectedDoc.id ? { ...s, status: 'signed' } : s));
+      setSigningModalOpen(false);
+      setSelectedDoc(null);
+    }
   };
 
   return (
@@ -44,11 +77,11 @@ export function SignatureHub() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
            <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ tôi ký</h3>
-           <p className="text-3xl font-black text-slate-900 mt-2">2</p>
+           <p className="text-3xl font-black text-slate-900 mt-2">{signatures.filter(s => s.status === 'pending').length}</p>
         </div>
         <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
            <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-blue-500" /> Đã ký (Tháng này)</h3>
-           <p className="text-3xl font-black text-slate-900 mt-2">45</p>
+           <p className="text-3xl font-black text-slate-900 mt-2">{signatures.filter(s => s.status === 'signed').length}</p>
         </div>
         <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm">
            <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-500" /> Chứng thư số</h3>
@@ -86,16 +119,59 @@ export function SignatureHub() {
         <div className="flex-1 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
           {(activeTab === 'pending' || activeTab === 'signed') && (
             <>
-              <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                 <div className="relative w-64">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="text" 
-                      placeholder="Tìm kiếm tài liệu..."
-                      className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                    />
+              <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50">
+                 <div className="flex flex-wrap items-center gap-3">
+                   <div className="relative w-64">
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input 
+                        type="text" 
+                        placeholder="Tìm kiếm tài liệu..."
+                        value={searchSigQuery}
+                        onChange={(e) => setSearchSigQuery(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
+                      />
+                   </div>
+                   <select
+                     value={typeFilter}
+                     onChange={(e) => setTypeFilter(e.target.value)}
+                     className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-sm font-medium text-slate-600"
+                   >
+                     <option value="all">Tất cả phân loại</option>
+                     <option value="contract">Hợp đồng</option>
+                     <option value="request">Đề xuất E-Form</option>
+                     <option value="document">Văn bản</option>
+                   </select>
+                   <select
+                     value={requesterFilter}
+                     onChange={(e) => setRequesterFilter(e.target.value)}
+                     className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-sm font-medium text-slate-600 max-w-[150px]"
+                   >
+                     <option value="all">Mọi người tạo</option>
+                     {uniqueRequesters.map(req => (
+                       <option key={req} value={req}>{req}</option>
+                     ))}
+                   </select>
+                   <div className="relative flex-1">
+                     <input 
+                       type="date"
+                       value={dateFilter}
+                       onChange={(e) => setDateFilter(e.target.value)}
+                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-sm font-medium text-slate-600 w-full"
+                     />
+                     {dateFilter && (
+                       <button 
+                         onClick={() => setDateFilter('')}
+                         className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-100 rounded-full p-0.5 text-slate-500 hover:text-slate-700"
+                         title="Xóa bộ lọc ngày"
+                       >
+                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                         </svg>
+                       </button>
+                     )}
+                   </div>
                  </div>
-                 <button className="p-2 text-slate-400 hover:text-slate-600 bg-white border border-slate-200 rounded-lg shadow-sm">
+                 <button className="p-2 text-slate-400 hover:text-slate-600 bg-white border border-slate-200 rounded-lg shadow-sm shrink-0">
                     <RefreshCw className="w-4 h-4" />
                  </button>
               </div>
@@ -114,7 +190,7 @@ export function SignatureHub() {
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-[#F3F4F6]">
-                       {MOCK_SIGNATURE_REQUESTS.filter(doc => doc.status === activeTab).map(doc => (
+                       {filteredSignatures.map(doc => (
                          <tr key={doc.id} className="hover:bg-slate-50 transition-colors">
                             <td className="px-6 py-4">
                                <p className="text-sm font-bold text-[#111827]">{doc.id}</p>
@@ -179,7 +255,7 @@ export function SignatureHub() {
                             </td>
                          </tr>
                        ))}
-                       {MOCK_SIGNATURE_REQUESTS.filter(doc => doc.status === activeTab).length === 0 && (
+                       {signatures.filter(doc => doc.status === activeTab).length === 0 && (
                           <tr>
                              <td colSpan={7} className="px-6 py-12 text-center text-slate-500 font-medium">
                                 Không có tài liệu nào trong mục này.
@@ -373,10 +449,7 @@ export function SignatureHub() {
               </button>
               <button 
                 className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
-                onClick={() => {
-                   alert(`Ký số thành công tài liệu: ${selectedDoc.title}`);
-                   setSigningModalOpen(false);
-                }}
+                onClick={confirmSign}
               >
                 <Key className="w-4 h-4" /> Chấp nhận Ký
               </button>

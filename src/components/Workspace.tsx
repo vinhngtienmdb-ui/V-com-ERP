@@ -62,6 +62,27 @@ const INTERNAL_NEWS = [
 export function Workspace() {
   const [activeModule, setActiveModule] = useState<string>('overview');
 
+  // Kanban Tasks State
+  const [tasks, setTasks] = useState([
+    { id: 't1', title: 'Lập KH Triển khai eOffice', date: '18/04/2026', priority: 'Gấp', status: 'todo', progress: 0 },
+    { id: 't2', title: 'Thiết kế Mockup UI', date: '19/04/2026', priority: 'Bình thường', status: 'todo', progress: 0 },
+    { id: 't3', title: 'Báo cáo Quý 1/2026', date: '20/04/2026', priority: 'Dự án', status: 'in_progress', progress: 45, desc: 'Tổng hợp số liệu doanh thu từ các bộ phận kinh doanh và lập báo cáo.' },
+    { id: 't4', title: 'Chuẩn bị hồ sơ đấu thầu', date: '15/04/2026', priority: 'Quan trọng', status: 'done', progress: 100 },
+  ]);
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.setData('taskId', id);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, newStatus: string) => {
+    const id = e.dataTransfer.getData('taskId');
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus, progress: newStatus === 'done' ? 100 : t.progress } : t));
+  };
+
   return (
     <div className="p-8 space-y-12">
       <div className="flex justify-between items-center bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
@@ -165,7 +186,13 @@ export function Workspace() {
                   <h3 className="text-lg font-bold text-slate-800">Cổng Công Việc (eOffice Tasks)</h3>
                   <p className="text-sm text-slate-500">Quản lý dự án, giao việc và theo dõi tiến độ công việc hàng ngày.</p>
                </div>
-               <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2">
+               <button 
+                 onClick={() => {
+                   const newTask = { id: `t${Date.now()}`, title: 'Công việc mới', date: new Date().toLocaleDateString('vi-VN'), priority: 'Bình thường', status: 'todo', progress: 0 };
+                   setTasks([newTask, ...tasks]);
+                 }}
+                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2"
+               >
                   <Plus className="w-4 h-4" /> Giao việc mới
                </button>
             </div>
@@ -173,71 +200,104 @@ export function Workspace() {
             <div className="p-6 overflow-x-auto">
                <div className="flex gap-6 min-w-max">
                   {/* Cột: Cần làm */}
-                  <div className="w-80 bg-slate-50/80 rounded-xl border border-slate-200 p-4 shrink-0 flex flex-col max-h-[700px]">
+                  <div 
+                    className="w-80 bg-slate-50/80 rounded-xl border border-slate-200 p-4 shrink-0 flex flex-col max-h-[700px]"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, 'todo')}
+                  >
                      <div className="flex justify-between items-center mb-4">
                         <h4 className="font-bold text-slate-700">Cần làm (To-Do)</h4>
-                        <span className="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">2</span>
+                        <span className="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">{tasks.filter(t => t.status === 'todo').length}</span>
                      </div>
                      <div className="space-y-3 overflow-y-auto pr-1">
-                        <div className="bg-white border border-slate-200 rounded-lg p-3 hover:border-blue-400 cursor-pointer shadow-sm">
-                           <div className="flex justify-between mb-2">
-                              <span className="text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded uppercase">Gấp</span>
-                              <span className="text-[10px] text-slate-500 font-bold">18/04/2026</span>
-                           </div>
-                           <h5 className="font-bold text-sm text-slate-800 mb-2">Lập KH Triển khai eOffice</h5>
-                           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
-                              <div className="flex -space-x-2">
-                                 <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">NV</div>
-                                 <div className="w-6 h-6 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-blue-600">GD</div>
-                              </div>
-                              <div className="flex items-center gap-1 text-slate-400 text-xs">
-                                 <MessageSquare className="w-3 h-3" /> 2
-                              </div>
-                           </div>
-                        </div>
+                        {tasks.filter(t => t.status === 'todo').map(task => (
+                          <div 
+                            key={task.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            className="bg-white border border-slate-200 rounded-lg p-3 hover:border-blue-400 cursor-grab active:cursor-grabbing shadow-sm transition-all relative group"
+                          >
+                             <div className="flex justify-between mb-2">
+                                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded uppercase", task.priority === 'Gấp' || task.priority === 'Quan trọng' ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-600")}>{task.priority}</span>
+                                <span className="text-[10px] text-slate-500 font-bold">{task.date}</span>
+                             </div>
+                             <h5 className="font-bold text-sm text-slate-800 mb-2">{task.title}</h5>
+                             {task.desc && <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.desc}</p>}
+                             <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
+                                <div className="flex -space-x-2">
+                                   <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">NV</div>
+                                </div>
+                             </div>
+                          </div>
+                        ))}
                      </div>
                   </div>
 
                   {/* Cột: Đang làm */}
-                  <div className="w-80 bg-blue-50/50 rounded-xl border border-blue-100 p-4 shrink-0 flex flex-col max-h-[700px]">
+                  <div 
+                    className="w-80 bg-blue-50/50 rounded-xl border border-blue-100 p-4 shrink-0 flex flex-col max-h-[700px]"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, 'in_progress')}
+                  >
                      <div className="flex justify-between items-center mb-4">
                         <h4 className="font-bold text-blue-800">Đang thực hiện (In Progress)</h4>
-                        <span className="text-xs font-bold bg-blue-200 text-blue-700 px-2 py-0.5 rounded-full">1</span>
+                        <span className="text-xs font-bold bg-blue-200 text-blue-700 px-2 py-0.5 rounded-full">{tasks.filter(t => t.status === 'in_progress').length}</span>
                      </div>
                      <div className="space-y-3 overflow-y-auto pr-1">
-                        <div className="bg-white border border-blue-200 rounded-lg p-3 hover:shadow-md cursor-pointer shadow-sm">
-                           <div className="flex justify-between mb-2">
-                              <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase">Dự án</span>
-                              <span className="text-[10px] text-slate-500 font-bold">20/04/2026</span>
-                           </div>
-                           <h5 className="font-bold text-sm text-slate-800 mb-2">Báo cáo Quý 1/2026</h5>
-                           <p className="text-xs text-slate-500 mb-3 line-clamp-2">Tổng hợp số liệu doanh thu từ các bộ phận kinh doanh và lập báo cáo.</p>
-                           <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2">
-                              <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
-                           </div>
-                           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
-                              <div className="flex -space-x-2">
-                                 <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-emerald-600">H</div>
-                              </div>
-                              <div className="text-[10px] font-bold text-slate-500">45%</div>
-                           </div>
-                        </div>
+                        {tasks.filter(t => t.status === 'in_progress').map(task => (
+                          <div 
+                            key={task.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            className="bg-white border border-blue-200 rounded-lg p-3 hover:border-blue-400 cursor-grab active:cursor-grabbing shadow-sm transition-all"
+                          >
+                             <div className="flex justify-between mb-2">
+                                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded uppercase", task.priority === 'Dự án' ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600")}>{task.priority}</span>
+                                <span className="text-[10px] text-slate-500 font-bold">{task.date}</span>
+                             </div>
+                             <h5 className="font-bold text-sm text-slate-800 mb-2">{task.title}</h5>
+                             {task.desc && <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.desc}</p>}
+                             <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2">
+                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${task.progress || 50}%` }}></div>
+                             </div>
+                             <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
+                                <div className="flex -space-x-2">
+                                   <div className="w-6 h-6 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-blue-600">NV</div>
+                                </div>
+                                <div className="text-[10px] font-bold text-slate-500">{task.progress || 50}%</div>
+                             </div>
+                          </div>
+                        ))}
                      </div>
                   </div>
 
                   {/* Cột: Hoàn thành */}
-                  <div className="w-80 bg-emerald-50/50 rounded-xl border border-emerald-100 p-4 shrink-0 flex flex-col max-h-[700px]">
+                  <div 
+                    className="w-80 bg-emerald-50/50 rounded-xl border border-emerald-100 p-4 shrink-0 flex flex-col max-h-[700px]"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, 'done')}
+                  >
                      <div className="flex justify-between items-center mb-4">
                         <h4 className="font-bold text-emerald-800">Hoàn thành (Done)</h4>
-                        <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">1</span>
+                        <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">{tasks.filter(t => t.status === 'done').length}</span>
                      </div>
                      <div className="space-y-3 overflow-y-auto pr-1">
-                        <div className="bg-white border border-emerald-200 rounded-lg p-3 opacity-75 hover:opacity-100 cursor-pointer shadow-sm">
-                           <div className="flex items-center gap-2 mb-2">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                              <span className="text-[10px] font-bold text-emerald-600 line-through">Chuẩn bị hồ sơ đấu thầu</span>
-                           </div>
-                        </div>
+                        {tasks.filter(t => t.status === 'done').map(task => (
+                          <div 
+                            key={task.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            className="bg-white border border-emerald-200 rounded-lg p-3 cursor-grab hover:shadow-md transition-all opacity-80 hover:opacity-100"
+                          >
+                             <div className="flex items-center gap-2 mb-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                <span className="text-sm font-bold text-emerald-700 line-through">{task.title}</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-[10px] text-slate-500">{task.date}</span>
+                             </div>
+                          </div>
+                        ))}
                      </div>
                   </div>
                </div>

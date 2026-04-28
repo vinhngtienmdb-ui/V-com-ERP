@@ -91,10 +91,12 @@ import { sePayService } from '../services/sepayService';
 
 import { StoreSelector } from './StoreSelector';
 import { IPosStaff, IPosStore } from '../types/erp';
+import { useNavigate } from 'react-router-dom';
 
 export function IPosModule() {
   const { user } = useAuth();
   const { activeStore } = useStore();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
   const [customer, setCustomer] = useState<any | null>(null);

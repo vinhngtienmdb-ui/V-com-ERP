@@ -26,7 +26,9 @@ import {
   Settings,
   Lock,
   Unlock,
-  Wallet
+  Wallet,
+  Kanban,
+  List
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
@@ -705,6 +707,7 @@ const AddCustomerModal = ({ onClose }: { onClose: () => void }) => {
 
 export function Customers() {
   const navigate = useNavigate();
+  const [activeView, setActiveView] = useState<'list' | 'pipeline'>('list');
   const [activeChannel, setActiveChannel] = useState<'all' | 'zalo' | 'facebook' | 'web' | 'hotline'>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [aiQuickModalCustomer, setAiQuickModalCustomer] = useState<Customer | null>(null);
@@ -717,6 +720,59 @@ export function Customers() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [orders, setOrders] = useState<any[]>([]);
+
+  const [aiPipelineInsights, setAiPipelineInsights] = useState<string | null>(null);
+  const [pipelineStages, setPipelineStages] = useState([
+    { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-blue-500', 
+      deals: [
+         { id: 'd1', client: 'Công ty Cổ phần Sữa TH', val: 50000000, pd: 'Giày đồng phục 500 đôi' },
+         { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS' }
+      ] 
+    },
+    { id: 'qualified', name: 'Đã Thẩm Định', count: 0, color: 'bg-indigo-500', 
+      deals: [
+         { id: 'd3', client: 'Kangaroo Việt Nam', val: 80000000, pd: 'Quà tặng Tết' }
+      ] 
+    },
+    { id: 'proposal', name: 'Gửi Báo Giá', count: 0, color: 'bg-amber-500', 
+      deals: [
+         { id: 'd4', client: 'Viettel Telecom', val: 350000000, pd: 'Gói combo đồng phục' },
+         { id: 'd5', client: 'FPT Software', val: 45000000, pd: 'Balo laptop' }
+      ] 
+    },
+    { id: 'negotiation', name: 'Thương Lượng', count: 0, color: 'bg-orange-500', 
+      deals: [
+         { id: 'd6', client: 'Bệnh viện Tâm Anh', val: 210000000, pd: 'Khẩu trang Y tế sỉ' }
+      ] 
+    },
+    { id: 'won', name: 'Chốt - Đoạt HĐ', count: 0, color: 'bg-emerald-500', 
+      deals: [
+         { id: 'd7', client: 'Techcombank', val: 560000000, pd: 'Đồng phục Giao dịch viên' }
+      ] 
+    }
+  ]);
+
+  const handleDragStartPipeline = (e: React.DragEvent, dealId: string, sourceStageId: string) => {
+    e.dataTransfer.setData('dealId', dealId);
+    e.dataTransfer.setData('sourceStageId', sourceStageId);
+  };
+
+  const handleDropPipeline = (e: React.DragEvent, targetStageId: string) => {
+    const dealId = e.dataTransfer.getData('dealId');
+    const sourceStageId = e.dataTransfer.getData('sourceStageId');
+    if (sourceStageId === targetStageId) return;
+
+    setPipelineStages(prev => {
+      const newStages = [...prev];
+      const sIdx = newStages.findIndex(s => s.id === sourceStageId);
+      const tIdx = newStages.findIndex(s => s.id === targetStageId);
+      
+      const dealIdx = newStages[sIdx].deals.findIndex(d => d.id === dealId);
+      const [dealToMove] = newStages[sIdx].deals.splice(dealIdx, 1);
+      newStages[tIdx].deals.push(dealToMove);
+      return newStages;
+    });
+  };
 
   useEffect(() => {
     // Fetch customers
@@ -810,9 +866,23 @@ export function Customers() {
       <div className="flex items-center justify-between">
         <div className="header-title">
           <h1 className="text-2xl font-semibold text-[#111827]">CRM & Marketing Đa kênh</h1>
-          <p className="text-sm text-[#6B7280] mt-1">Quản lý khách hàng, lịch sửa mua hàng và tích hợp Omnichannel Chat.</p>
+          <p className="text-sm text-[#6B7280] mt-1">Quản lý khách hàng, Sales Pipeline và tích hợp Omnichannel Chat.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 mr-2">
+            <button 
+              onClick={() => setActiveView('list')}
+              className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+            >
+              <List className="w-4 h-4" /> Danh sách
+            </button>
+            <button 
+              onClick={() => setActiveView('pipeline')}
+              className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+            >
+              <Kanban className="w-4 h-4" /> Pipeline
+            </button>
+          </div>
           <button 
             onClick={() => setShowConfigModal(true)}
             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
@@ -831,198 +901,283 @@ export function Customers() {
             className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
           >
             <LifeBuoy className="w-4 h-4" />
-            Vào Chat Tổng (Omni)
-          </button>
-          <button className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
-            Chiến dịch Marketing
+            Vào Chat (Omni)
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng khách hàng</p>
-          <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.length}</div>
-          <div className="mt-2 text-[10px] text-[#10B981] font-medium">+5% so với tháng trước</div>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active (Hệ thống)</p>
-          <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</div>
-          <div className="mt-2 text-[10px] text-[#6B7280]">Chiếm {dynamicCustomers.length ? ((dynamicCustomers.filter(c => c.status === 'active').length / dynamicCustomers.length) * 100).toFixed(1) : 0}% tổng user</div>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi tiêu TB (CLV)</p>
-          <div className="text-2xl font-bold text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</div>
-          <div className="mt-2 text-[10px] text-[#2563EB] font-medium">Đồng bộ từ giao dịch</div>
-        </div>
-        <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
-          <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Hạng Vàng/Kim Cương</p>
-          <div className="text-2xl font-bold text-[#F59E0B]">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</div>
-          <div className="mt-2 text-[10px] text-[#F59E0B] font-medium">Khách hàng trung thành</div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
-          <div className="flex gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
-              <input 
-                type="text" 
-                placeholder="Tìm tên, SĐT, Email..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
-              />
+      {activeView === 'list' ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng khách hàng</p>
+              <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.length}</div>
+              <div className="mt-2 text-[10px] text-[#10B981] font-medium">+5% so với tháng trước</div>
             </div>
-            <div className="flex gap-1 bg-white border border-[#E5E7EB] p-1 rounded-lg">
-               <button 
-                 onClick={() => setActiveChannel('all')}
-                 className={cn("p-1.5 rounded-md transition-all", activeChannel === 'all' ? "bg-slate-100 text-[#111827]" : "text-[#9CA3AF]")}
-               >
-                 <Globe className="w-4 h-4" />
-               </button>
-               <button 
-                 onClick={() => setActiveChannel('zalo')}
-                 className={cn("p-1.5 rounded-md transition-all", activeChannel === 'zalo' ? "bg-blue-50 text-blue-600" : "text-[#9CA3AF]")}
-               >
-                 <MessageSquare className="w-4 h-4" />
-               </button>
-               <button 
-                 onClick={() => setActiveChannel('facebook')}
-                 className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-blue-600 text-white" : "text-[#9CA3AF]")}
-               >
-                 <Facebook className="w-4 h-4" />
-               </button>
-               <button 
-                 onClick={() => setActiveChannel('hotline')}
-                 className={cn("p-1.5 rounded-md transition-all", activeChannel === 'hotline' ? "bg-emerald-50 text-emerald-600" : "text-[#9CA3AF]")}
-               >
-                 <PhoneCall className="w-4 h-4" />
-               </button>
+            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Active (Hệ thống)</p>
+              <div className="text-2xl font-bold text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</div>
+              <div className="mt-2 text-[10px] text-[#6B7280]">Chiếm {dynamicCustomers.length ? ((dynamicCustomers.filter(c => c.status === 'active').length / dynamicCustomers.length) * 100).toFixed(1) : 0}% tổng user</div>
+            </div>
+            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Chi tiêu TB (CLV)</p>
+              <div className="text-2xl font-bold text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</div>
+              <div className="mt-2 text-[10px] text-[#2563EB] font-medium">Đồng bộ từ giao dịch</div>
+            </div>
+            <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+              <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Hạng Vàng/Kim Cương</p>
+              <div className="text-2xl font-bold text-[#F59E0B]">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</div>
+              <div className="mt-2 text-[10px] text-[#F59E0B] font-medium">Khách hàng trung thành</div>
             </div>
           </div>
-          <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
-             Xuất tệp CRM <ExternalLink className="w-3 h-3" />
-          </button>
-        </div>
 
-        <div className="overflow-x-auto bg-white border-t border-slate-100">
-          <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
-            <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100 italic">
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[20%]">Khách hàng</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">Liên hệ</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center w-[10%]">Kênh</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[15%]">Chi tiêu</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[15%]">Ví / Loyalty</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center w-[12%]">Trạng thái</th>
-                <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[10%]">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center bg-white">
-                    <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-1" />
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
-                  </td>
-                </tr>
-              ) : filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-indigo-50/30 group transition-all duration-200">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                       <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-[10px] shrink-0 border border-indigo-100 group-hover:scale-110 transition-transform">
-                          {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
-                       </div>
-                       <div className="min-w-0">
-                          <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-slate-800 truncate cursor-pointer hover:text-indigo-600 transition-colors uppercase tracking-tight">{customer.name}</p>
-                          <p className="text-[9px] text-slate-400 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
-                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="space-y-1">
-                       <div className="flex items-center justify-between group/copy text-[11px]">
-                          <span className="text-slate-600 font-bold tracking-tight">{customer.phone}</span>
-                          <CopyButton value={customer.phone} />
-                       </div>
-                       <div className="flex items-center justify-between group/copy text-[10px]">
-                          <span className="text-slate-400 truncate max-w-[120px] italic">{customer.email}</span>
-                          <CopyButton value={customer.email} />
-                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-center">
-                    <div className="flex justify-center flex-wrap gap-1">
-                       {customer.channels && customer.channels.slice(0, 3).map(channel => (
-                         <span key={channel} className="p-1 rounded bg-white border border-slate-100 shadow-sm" title={channel.toUpperCase()}>
-                            {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-blue-500" />}
-                            {channel === 'facebook' && <Facebook className="w-3 h-3 text-blue-700" />}
-                            {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
-                            {channel === 'web' && <Globe className="w-3 h-3 text-slate-400" />}
-                         </span>
-                       ))}
-                       {customer.channels && customer.channels.length > 3 && (
-                         <span className="text-[8px] font-bold text-slate-400 self-center">+{customer.channels.length - 3}</span>
-                       )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <p className="text-sm font-black text-slate-800">{formatCurrency(customer.totalSpent || 0)}</p>
-                    <p className="text-[9px] text-slate-400">Đơn hàng: <span className="font-bold text-slate-600">{customer.orderCount || 0}</span></p>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <p className="text-sm font-bold text-emerald-600">{formatCurrency(customer.walletBalance || 0)}</p>
-                    <p className="text-[9px] font-bold text-amber-600 flex items-center justify-end gap-1"><Trophy className="w-2.5 h-2.5" /> {customer.points || 0} pts</p>
-                  </td>
-                  <td className="px-4 py-4 text-center">
-                    <div className="flex justify-center">
-                       <span className={cn(
-                         "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
-                         customer.status === 'active' ? "bg-emerald-500 text-white" : customer.status === 'locked' ? "bg-red-500 text-white" : "bg-slate-200 text-slate-400"
-                       )}>
-                         {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
-                       </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                       <button 
-                         onClick={(e) => { e.stopPropagation(); setAdjustingCustomer(customer); }}
-                         className="p-1.5 bg-green-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
-                         title="Cộng/Trừ Điểm & Tiền"
-                       >
-                          <Wallet className="w-3.5 h-3.5" />
-                       </button>
-                       <button 
-                         onClick={(e) => handleToggleLock(customer.id!, customer.status, e)}
-                         className={cn("p-1.5 rounded-lg transition-all shadow-sm", customer.status === 'locked' ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white" : "bg-red-50 text-red-600 hover:bg-red-600 hover:text-white")}
-                         title={customer.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
-                       >
-                          {customer.status === 'locked' ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                       </button>
-                       <button 
-                         onClick={() => setAiQuickModalCustomer(customer)}
-                         className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
-                         title="Soạn tin AI nhanh"
-                       >
-                          <Sparkles className="w-3.5 h-3.5" />
-                       </button>
-                       <button 
-                         onClick={() => setSelectedCustomer(customer)}
-                         className="p-1.5 bg-slate-50 text-slate-400 rounded-lg hover:bg-slate-100 hover:text-slate-800 transition-all shadow-sm"
-                       >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+              <div className="flex gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                  <input 
+                    type="text" 
+                    placeholder="Tìm tên, SĐT, Email..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+                  />
+                </div>
+                <div className="flex gap-1 bg-white border border-[#E5E7EB] p-1 rounded-lg">
+                   <button 
+                     onClick={() => setActiveChannel('all')}
+                     className={cn("p-1.5 rounded-md transition-all", activeChannel === 'all' ? "bg-slate-100 text-[#111827]" : "text-[#9CA3AF]")}
+                   >
+                     <Globe className="w-4 h-4" />
+                   </button>
+                   <button 
+                     onClick={() => setActiveChannel('zalo')}
+                     className={cn("p-1.5 rounded-md transition-all", activeChannel === 'zalo' ? "bg-blue-50 text-blue-600" : "text-[#9CA3AF]")}
+                   >
+                     <MessageSquare className="w-4 h-4" />
+                   </button>
+                   <button 
+                     onClick={() => setActiveChannel('facebook')}
+                     className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-blue-600 text-white" : "text-[#9CA3AF]")}
+                   >
+                     <Facebook className="w-4 h-4" />
+                   </button>
+                   <button 
+                     onClick={() => setActiveChannel('hotline')}
+                     className={cn("p-1.5 rounded-md transition-all", activeChannel === 'hotline' ? "bg-emerald-50 text-emerald-600" : "text-[#9CA3AF]")}
+                   >
+                     <PhoneCall className="w-4 h-4" />
+                   </button>
+                </div>
+              </div>
+              <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
+                 Xuất tệp CRM <ExternalLink className="w-3 h-3" />
+              </button>
+            </div>
+
+            <div className="overflow-x-auto bg-white border-t border-slate-100">
+              <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100 italic">
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[20%]">Khách hàng</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">Liên hệ</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center w-[10%]">Kênh</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[15%]">Chi tiêu</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[15%]">Ví / Loyalty</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center w-[12%]">Trạng thái</th>
+                    <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right w-[10%]">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center bg-white">
+                        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-1" />
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
+                      </td>
+                    </tr>
+                  ) : filteredCustomers.map((customer) => (
+                    <tr key={customer.id} className="hover:bg-indigo-50/30 group transition-all duration-200">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-[10px] shrink-0 border border-indigo-100 group-hover:scale-110 transition-transform">
+                              {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
+                           </div>
+                           <div className="min-w-0">
+                              <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-slate-800 truncate cursor-pointer hover:text-indigo-600 transition-colors uppercase tracking-tight">{customer.name}</p>
+                              <p className="text-[9px] text-slate-400 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
+                           </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="space-y-1">
+                           <div className="flex items-center justify-between group/copy text-[11px]">
+                              <span className="text-slate-600 font-bold tracking-tight">{customer.phone}</span>
+                              <CopyButton value={customer.phone} />
+                           </div>
+                           <div className="flex items-center justify-between group/copy text-[10px]">
+                              <span className="text-slate-400 truncate max-w-[120px] italic">{customer.email}</span>
+                              <CopyButton value={customer.email} />
+                           </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="flex justify-center flex-wrap gap-1">
+                           {customer.channels && customer.channels.slice(0, 3).map(channel => (
+                             <span key={channel} className="p-1 rounded bg-white border border-slate-100 shadow-sm" title={channel.toUpperCase()}>
+                                {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-blue-500" />}
+                                {channel === 'facebook' && <Facebook className="w-3 h-3 text-blue-700" />}
+                                {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
+                                {channel === 'web' && <Globe className="w-3 h-3 text-slate-400" />}
+                             </span>
+                           ))}
+                           {customer.channels && customer.channels.length > 3 && (
+                             <span className="text-[8px] font-bold text-slate-400 self-center">+{customer.channels.length - 3}</span>
+                           )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <p className="text-sm font-black text-slate-800">{formatCurrency(customer.totalSpent || 0)}</p>
+                        <p className="text-[9px] text-slate-400">Đơn hàng: <span className="font-bold text-slate-600">{customer.orderCount || 0}</span></p>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <p className="text-sm font-bold text-emerald-600">{formatCurrency(customer.walletBalance || 0)}</p>
+                        <p className="text-[9px] font-bold text-amber-600 flex items-center justify-end gap-1"><Trophy className="w-2.5 h-2.5" /> {customer.points || 0} pts</p>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="flex justify-center">
+                           <span className={cn(
+                             "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
+                             customer.status === 'active' ? "bg-emerald-500 text-white" : customer.status === 'locked' ? "bg-red-500 text-white" : "bg-slate-200 text-slate-400"
+                           )}>
+                             {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
+                           </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                           <button 
+                             onClick={(e) => { e.stopPropagation(); setAdjustingCustomer(customer); }}
+                             className="p-1.5 bg-green-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                             title="Cộng/Trừ Điểm & Tiền"
+                           >
+                              <Wallet className="w-3.5 h-3.5" />
+                           </button>
+                           <button 
+                             onClick={(e) => handleToggleLock(customer.id!, customer.status, e)}
+                             className={cn("p-1.5 rounded-lg transition-all shadow-sm", customer.status === 'locked' ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white" : "bg-red-50 text-red-600 hover:bg-red-600 hover:text-white")}
+                             title={customer.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
+                           >
+                              {customer.status === 'locked' ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                           </button>
+                           <button 
+                             onClick={() => setAiQuickModalCustomer(customer)}
+                             className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                             title="Soạn tin AI nhanh"
+                           >
+                              <Sparkles className="w-3.5 h-3.5" />
+                           </button>
+                           <button 
+                             onClick={() => setSelectedCustomer(customer)}
+                             className="p-1.5 bg-slate-50 text-slate-400 rounded-lg hover:bg-slate-100 hover:text-slate-800 transition-all shadow-sm"
+                           >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                           </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
+           <div className="p-4 border-b border-slate-200 bg-white flex justify-between items-center z-10 relative w-full">
+              <div className="flex items-center gap-3">
+                 <h2 className="font-bold text-slate-800">Sales Pipeline B2B (Mẫu)</h2>
+                 <button 
+                  onClick={() => {
+                    const totalDeals = pipelineStages.reduce((sum, stage) => sum + stage.deals.length, 0);
+                    const wonDeals = pipelineStages.find(s => s.id === 'won')?.deals.length || 0;
+                    const valWon = pipelineStages.find(s => s.id === 'won')?.deals.reduce((acc, d) => acc + d.val, 0) || 0;
+                    
+                    let insights = `• Tổng số Deal đang xử lý: ${totalDeals}.\n`;
+                    insights += `• Tỷ lệ chuyển đổi (Đoạt HĐ): ${Math.round((wonDeals / (totalDeals || 1)) * 100)}% (${wonDeals} deals).\n`;
+                    insights += `• Giá trị HĐ đã chốt: ${formatCurrency(valWon)}.\n`;
+                    if ((pipelineStages.find(s => s.id === 'proposal')?.deals.length || 0) > 1) {
+                       insights += `• Gợi ý: Có khá nhiều Deal ở bước "Gửi Báo Giá", hãy theo dõi sát sao để tăng khả năng chốt sale.`;
+                    }
+                    if ((pipelineStages.find(s => s.id === 'negotiation')?.deals.length || 0) > 0) {
+                       insights += `\n• Sales đang trong giai đoạn "Thương Lượng", tập trung resources hỗ trợ chốt nhanh.`;
+                    }
+                    setAiPipelineInsights(insights);
+                  }}
+                  className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold flex items-center gap-1.5 hover:bg-purple-100 transition-colors shadow-sm cursor-pointer"
+                 >
+                   <Sparkles className="w-3.5 h-3.5" /> Phân tích Pipeline (AI)
+                 </button>
+               </div>
+              <button className="text-xs px-3 py-1.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">+ Thêm Deal mới</button>
+           </div>
+           {aiPipelineInsights && (
+              <div className="m-4 mb-0 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-start gap-3 relative animate-in slide-in-from-top-4">
+                 <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
+                 <div>
+                    <h4 className="font-bold text-purple-900 text-sm mb-1">AI Phân tích Pipeline</h4>
+                    <div className="text-sm text-purple-800 whitespace-pre-line leading-relaxed">{aiPipelineInsights}</div>
+                 </div>
+                 <button onClick={() => setAiPipelineInsights(null)} className="ml-auto text-purple-400 hover:text-purple-600">
+                   <X className="w-4 h-4" />
+                 </button>
+              </div>
+           )}
+           <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal">
+              <div className="flex gap-6 h-full items-start">
+                 {pipelineStages.map(stage => (
+                   <div 
+                     key={stage.id} 
+                     className="w-80 shrink-0 bg-slate-100 rounded-xl flex flex-col max-h-full border border-slate-200 shadow-sm"
+                     onDragOver={(e) => e.preventDefault()}
+                     onDrop={(e) => handleDropPipeline(e, stage.id)}
+                   >
+                      <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-xl shrink-0">
+                         <div className="flex items-center gap-2">
+                            <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
+                            <span className="font-bold text-sm text-slate-800">{stage.name}</span>
+                         </div>
+                         <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">{stage.deals.length}</span>
+                      </div>
+                      <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
+                         {stage.deals.map((deal) => (
+                           <div 
+                             key={deal.id} 
+                             draggable
+                             onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
+                             className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-200 cursor-grab hover:shadow-md transition-all group"
+                           >
+                              <h4 className="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors">{deal.client}</h4>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{deal.pd}</p>
+                              <div className="mt-3 flex items-center justify-between">
+                                 <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>
+                                 <div className="flex -space-x-1.5">
+                                    <div className="w-5 h-5 rounded-full bg-blue-100 text-[8px] font-bold text-blue-700 flex items-center justify-center border border-white">S1</div>
+                                 </div>
+                              </div>
+                           </div>
+                         ))}
+                         <button className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-lg transition-colors border border-dashed border-slate-300">
+                           + Thêm Deal
+                         </button>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </div>
         </div>
-      </div>
+      )}
 
       {adjustingCustomer && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">

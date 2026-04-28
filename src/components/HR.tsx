@@ -405,6 +405,7 @@ export function HumanResources() {
   const [payrollList, setPayrollList] = useState<Payroll[]>(MOCK_PAYROLL);
   const [editingPayrollId, setEditingPayrollId] = useState<string | null>(null);
   const [editPayrollForm, setEditPayrollForm] = useState<Partial<Payroll>>({});
+  const [aiPayrollSuggestion, setAiPayrollSuggestion] = useState<string | null>(null);
   
   // New features state
   const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
@@ -1679,6 +1680,18 @@ export function HumanResources() {
                        </button>
                      </div>
                      <div className="p-6 overflow-y-auto max-h-[70vh]">
+                       {aiPayrollSuggestion && (
+                          <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-start gap-3">
+                             <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
+                             <div>
+                                <h4 className="font-bold text-purple-900 text-sm mb-1">AI Phân tích & Đề xuất lương</h4>
+                                <div className="text-sm text-purple-800 whitespace-pre-line leading-relaxed">{aiPayrollSuggestion}</div>
+                             </div>
+                             <button onClick={() => setAiPayrollSuggestion(null)} className="ml-auto text-purple-400 hover:text-purple-600">
+                               <X className="w-4 h-4" />
+                             </button>
+                          </div>
+                       )}
                        <div className="grid grid-cols-2 gap-6">
                          <div>
                            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Lương cơ bản</label>
@@ -1784,13 +1797,56 @@ export function HumanResources() {
                        </div>
                      </div>
                      <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end rounded-b-xl">
-                       <button onClick={() => setEditingPayrollId(null)} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
+                       <button 
+                         onClick={() => {
+                            const empKpi = MOCK_KPIs.find(k => k.employeeId === editPayrollForm.employeeId);
+                            let suggestBonus = editPayrollForm.bonus || 0;
+                            let suggestDed = editPayrollForm.deduction || 0;
+                            let notes = [];
+
+                            if (empKpi) {
+                              const cp = empKpi.current / empKpi.target;
+                              if (cp >= 1) {
+                                 suggestBonus += 3000000;
+                                 notes.push(`• Vượt KPI (${Math.round(cp*100)}%): Đề xuất cộng thêm hiện tại vào thưởng (VD: 3,000,000 ₫).`);
+                              } else if (cp < 0.8) {
+                                 suggestDed += 1000000;
+                                 notes.push(`• Không đạt KPI (< 80%): Đề xuất áp dụng mức trừ 1,000,000 ₫.`);
+                              } else {
+                                 notes.push(`• Đạt KPI cơ bản (${Math.round(cp*100)}%).`);
+                              }
+                            }
+                            const attends = filteredAttendance.filter(a => a.employeeId === editPayrollForm.employeeId && a.checkIn > '08:30');
+                            if (attends.length > 0) {
+                              suggestDed += attends.length * 200000;
+                              notes.push(`• Vi phạm chấm công (đi trễ > 8:30, ${attends.length} lần): Đề xuất phạt ${formatCurrency(attends.length * 200000)}.`);
+                            }
+
+                            if (notes.length === 0) {
+                               notes.push('• Không có đề xuất thay đổi dựa trên dữ liệu hiện tại.');
+                            }
+                            
+                            setAiPayrollSuggestion(notes.join('\n'));
+                            
+                            setEditPayrollForm(prev => {
+                                const p = { ...prev, bonus: suggestBonus, deduction: suggestDed };
+                                p.pitAmount = ((p.baseSalary || 0) + (p.allowance || 0) + (p.bonus || 0) - (p.deduction || 0)) * 0.05;
+                                p.netSalary = (p.baseSalary || 0) + (p.allowance || 0) + (p.bonus || 0) - (p.deduction || 0) - (p.pitAmount || 0) - (p.insuranceAmount || 0);
+                                return p;
+                            });
+                         }}
+                         className="px-5 py-2.5 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors shadow-sm flex items-center gap-2 mr-auto"
+                       >
+                         <Sparkles className="w-4 h-4" /> Phân tích AI
+                       </button>
+                       <button onClick={() => { setEditingPayrollId(null); setAiPayrollSuggestion(null); }} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
                          Hủy
                        </button>
                        <button 
                          onClick={() => {
                            setPayrollList(prev => prev.map(p => p.id === editingPayrollId ? editPayrollForm as Payroll : p));
                            setEditingPayrollId(null);
+                           setAiPayrollSuggestion(null);
                          }}
                          className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 flex items-center gap-2">
                          <CheckCircle2 className="w-4 h-4" /> Lưu bảng lương
