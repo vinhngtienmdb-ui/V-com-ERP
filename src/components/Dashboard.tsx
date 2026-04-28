@@ -36,7 +36,12 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
-  Banknote
+  Banknote,
+  Sparkles,
+  Zap,
+  Bot,
+  BrainCircuit,
+  Volume2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency, cn } from '../lib/utils';
@@ -225,7 +230,51 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12">
-      {/* Header Dashboard */}
+      {/* AI Intelligence Command Center */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-500/20">
+         <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+            <BrainCircuit className="w-80 h-80 rotate-12" />
+         </div>
+         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-4">
+               <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-md border border-white/20">
+                     <Sparkles className="w-6 h-6 text-blue-300 animate-pulse" />
+                  </div>
+                  <div>
+                     <h2 className="text-2xl font-black tracking-tight">AI Enterprise Command Center</h2>
+                     <p className="text-blue-100/70 text-sm font-medium">Hệ thống của bạn đã được nâng cấp lên AI-First. Mọi module hiện được tích hợp trợ lý Gemini.</p>
+                  </div>
+               </div>
+               
+               <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm cursor-default hover:bg-white/20 transition-colors">
+                     <Zap className="w-4 h-4 text-amber-300" />
+                     <span className="text-xs font-bold">Predictive Sales: ON</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm cursor-default hover:bg-white/20 transition-colors">
+                     <Store className="w-4 h-4 text-emerald-300" />
+                     <span className="text-xs font-bold">Smart Warehouse: Optimized</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm cursor-default hover:bg-white/20 transition-colors">
+                     <Bot className="w-4 h-4 text-blue-300" />
+                     <span className="text-xs font-bold">Omni-Agent: Live</span>
+                  </div>
+               </div>
+            </div>
+
+            <div className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm space-y-4 w-full md:w-80">
+               <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-200">AI Priority Insights</span>
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-ping" />
+               </div>
+               <p className="text-xs font-medium leading-relaxed italic">"Nhu cầu mặt hàng SKU-992 dự kiến tăng 45% trong tuần tới. Đề xuất luân chuyển hàng từ Kho A sang Kho B ngay hôm nay."</p>
+               <button className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/30">
+                  Phê duyệt đề xuất AI
+               </button>
+            </div>
+         </div>
+      </div>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">

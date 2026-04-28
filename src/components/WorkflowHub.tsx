@@ -415,6 +415,95 @@ export function WorkflowHub() {
           </div>
         )}
       </AnimatePresence>
+      {/* Cloud Signature Modal */}
+      <AnimatePresence>
+        {signingTaskId && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-white/20"
+            >
+              <div className="p-6 bg-[#111827] text-white flex justify-between items-center relative overflow-hidden">
+                <div className="relative z-10">
+                   <h3 className="font-bold text-lg flex items-center gap-2">
+                      <FileSignature className="w-5 h-5 text-blue-400" /> Ký duyệt Điện tử (Digital Sign)
+                   </h3>
+                   <p className="text-xs text-slate-400 mt-1">Xác thực OTP & Chữ ký số từ xa</p>
+                </div>
+                <button onClick={() => setSigningTaskId(null)} className="p-2 hover:bg-white/10 rounded-lg relative z-10">
+                   <X className="w-5 h-5 text-slate-400" />
+                </button>
+                <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
+              </div>
+
+              <div className="p-8 space-y-6">
+                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tài liệu ký</p>
+                    <p className="text-sm font-bold text-slate-900">{tasks.find(t => t.id === signingTaskId)?.title}</p>
+                 </div>
+
+                 <div className="grid grid-cols-1 gap-3">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Chọn Phương thức Ký</p>
+                    {[
+                      { id: 'smart_ca', label: 'VNPT SmartCA (Remote)', icon: RefreshCw },
+                      { id: 'viettel_ca', label: 'Viettel MySign (Remote)', icon: ShieldCheck },
+                      { id: 'usb_token', label: 'USB Token HardKey', icon: Zap }
+                    ].map(method => (
+                      <button
+                        key={method.id}
+                        onClick={() => setSignatureMethod(method.id as any)}
+                        className={cn(
+                          "flex items-center justify-between p-4 rounded-xl border-2 transition-all group",
+                          signatureMethod === method.id 
+                            ? "bg-blue-50 border-blue-600 shadow-lg shadow-blue-500/10" 
+                            : "bg-white border-slate-100 hover:border-slate-200"
+                        )}
+                      >
+                         <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "p-2 rounded-lg transition-colors",
+                              signatureMethod === method.id ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-slate-50 text-slate-400 group-hover:text-blue-500"
+                            )}>
+                               <method.icon className="w-4 h-4" />
+                            </div>
+                            <span className={cn("text-xs font-bold", signatureMethod === method.id ? "text-blue-700" : "text-slate-600 group-hover:text-slate-900")}>
+                               {method.label}
+                            </span>
+                         </div>
+                         {signatureMethod === method.id && (
+                           <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                         )}
+                      </button>
+                    ))}
+                 </div>
+
+                 <div className="space-y-4 pt-4">
+                    <button 
+                      onClick={executeSignature}
+                      disabled={isSigningInProcess}
+                      className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 transition-all delay-75 disabled:opacity-50"
+                    >
+                       {isSigningInProcess ? (
+                         <>
+                           <RefreshCw className="w-5 h-5 animate-spin" />
+                           Đang kết nối Cloud CA...
+                         </>
+                       ) : (
+                         <>
+                           <ShieldCheck className="w-5 h-5 text-emerald-400" /> 
+                           Xác thực & Ký ngay
+                         </>
+                       )}
+                    </button>
+                    <p className="text-[10px] text-center text-slate-400 font-medium">Chữ ký số có giá trị pháp lý tương đương chữ ký tay.</p>
+                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -13,7 +13,11 @@ import {
   History,
   CheckCheck,
   X,
-  Plus
+  Plus,
+  Sparkles,
+  Smile,
+  Frown,
+  Meh
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
@@ -33,6 +37,7 @@ export function OmniChat() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const activeThread = MOCK_THREADS.find(t => t.id === activeThreadId);
@@ -79,6 +84,23 @@ export function OmniChat() {
     };
 
     setMessages(prev => [...prev, aiMsg]);
+    setIsAiProcessing(false);
+    
+    // Clear suggestions
+    setSuggestedReplies([]);
+  };
+
+  const generateDraft = async () => {
+    if (isAiProcessing) return;
+    setIsAiProcessing(true);
+    const lastCustomerMsg = [...messages].reverse().find(m => m.senderId === 'user')?.text;
+    if (lastCustomerMsg) {
+      const prompt = `Dựa trên tin nhắn này của khách hàng: "${lastCustomerMsg}", hãy gợi ý 3 câu trả lời ngắn gọn, chuyên nghiệp và thân thiện cho nhân viên CSKH (ngôn ngữ Tiếng Việt).`;
+      const response = await getAiChatResponse(prompt, []);
+      // Split by newline or common separators if AI returns a list
+      const suggestions = response.split('\n').filter(s => s.trim().length > 5).slice(0, 3);
+      setSuggestedReplies(suggestions);
+    }
     setIsAiProcessing(false);
   };
 
@@ -209,11 +231,32 @@ export function OmniChat() {
            )}
         </div>
 
+        {/* AI Suggestions */}
+        {suggestedReplies.length > 0 && (
+          <div className="px-6 py-3 flex gap-2 overflow-x-auto bg-white border-y border-slate-100 no-scrollbar">
+             {suggestedReplies.map((reply, i) => (
+                <button 
+                  key={i}
+                  onClick={() => setInputValue(reply)}
+                  className="whitespace-nowrap px-4 py-2 bg-blue-50 text-blue-600 text-[11px] font-bold rounded-full border border-blue-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                >
+                   {reply}
+                </button>
+             ))}
+             <button onClick={() => setSuggestedReplies([])} className="p-2 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+          </div>
+        )}
+
         {/* Input Area */}
         <div className="p-4 bg-white border-t border-[#F3F4F6]">
            <div className="flex items-center gap-3">
-              <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 border border-transparent hover:border-slate-200 transition-all">
-                 <Plus className="w-5 h-5" />
+              <button 
+                onClick={generateDraft}
+                disabled={isAiProcessing}
+                className="p-3 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm group relative"
+              >
+                 <Sparkles className={cn("w-5 h-5", isAiProcessing && "animate-spin")} />
+                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
               </button>
               <div className="flex-1 relative">
                  <input 

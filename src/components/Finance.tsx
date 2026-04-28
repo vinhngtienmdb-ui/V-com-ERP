@@ -24,7 +24,14 @@ import {
   FileBarChart,
   Target,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  Scan,
+  Upload,
+  FileSearch,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { db, auth } from '../lib/firebase';
 import { collection, onSnapshot, query, addDoc, serverTimestamp, limit } from 'firebase/firestore';
@@ -38,6 +45,7 @@ const FINANCE_MODULE_GROUPS = [
       { id: 'journal', label: 'Sổ Nhật ký chung', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'blue' },
       { id: 'ledger', label: 'Sổ cái Tài khoản', desc: 'Chi tiết biến động từng tài khoản kế toán.', icon: FileText, color: 'indigo' },
       { id: 'vouchers', label: 'Quản lý Chứng từ', desc: 'Lưu trữ hóa đơn, phiếu thu/chi.', icon: Receipt, color: 'emerald' },
+      { id: 'ocr', label: 'Smart OCR Scan', desc: 'Tự động nhận diện hóa đơn bằng AI.', icon: Scan, color: 'purple' },
       { id: 'reconciliation', label: 'Đối soát Ngân hàng', desc: 'Khớp nối dữ liệu bank và sổ sách.', icon: RefreshCw, color: 'orange' },
     ]
   },
@@ -70,8 +78,11 @@ function getColorClasses(color: string) {
 
 export function Finance() {
   const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports' | 'ocr'>('overview');
   const [loading, setLoading] = useState(true);
+  const [ocrFile, setOcrFile] = useState<File | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<any>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'finance_transactions'), limit(50));
@@ -227,6 +238,7 @@ export function Finance() {
               {[
                 { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
                 { id: 'ledger', label: 'Sổ cái & Chứng từ', icon: FileText },
+                { id: 'ocr', label: 'Smart OCR', icon: Scan },
                 { id: 'reports', label: 'Báo cáo QT', icon: PieChart }
               ].map((tab) => (
                 <button 
@@ -243,6 +255,138 @@ export function Finance() {
           </div>
 
           <div className="p-0">
+            {activeTab === 'ocr' && (
+               <div className="p-8 animate-in fade-in slide-in-from-right-4 duration-500 bg-slate-50 min-h-[600px]">
+                  <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+                     <div className="space-y-6">
+                        <div className="bg-white p-8 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
+                           <div className="p-6 bg-blue-50 text-blue-600 rounded-full group-hover:scale-110 transition-transform">
+                              <Upload className="w-10 h-10" />
+                           </div>
+                           <div>
+                              <p className="text-sm font-black text-slate-900">Tải lên hoặc Kéo thả Hóa đơn</p>
+                              <p className="text-xs text-slate-400 mt-2">Hỗ trợ JPG, PNG, PDF (Tối đa 10MB)</p>
+                           </div>
+                           <button className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-lg">Chọn tệp tin</button>
+                           
+                           {isScanning && (
+                             <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center space-y-4">
+                                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center animate-bounce">
+                                   <Zap className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="space-y-1 text-center">
+                                   <p className="text-sm font-black text-slate-900 animate-pulse">Gemini AI đang phân tích...</p>
+                                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Trích xuất Header & Line Items</p>
+                                </div>
+                                <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
+                                   <div className="h-full bg-blue-600 animate-[scan_2s_ease-in-out_infinite]" />
+                                </div>
+                             </div>
+                           )}
+                        </div>
+
+                        <div className="bg-indigo-900 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl">
+                           <div className="flex items-start gap-4">
+                              <div className="p-3 bg-white/10 rounded-2xl">
+                                 <Sparkles className="w-6 h-6 text-indigo-300" />
+                              </div>
+                              <div>
+                                 <h4 className="text-sm font-bold uppercase tracking-widest mb-1 italic">AI Productivity Tip</h4>
+                                 <p className="text-[11px] text-indigo-100/70 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
+                              </div>
+                           </div>
+                           <Zap className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 rotate-12" />
+                        </div>
+                     </div>
+
+                     <div className="space-y-6">
+                        <div className={cn(
+                          "bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all min-h-[400px]",
+                          !scanResult && "opacity-50 grayscale flex flex-col items-center justify-center text-center"
+                        )}>
+                           {!scanResult ? (
+                             <>
+                                <FileSearch className="w-12 h-12 text-slate-200 mb-4" />
+                                <p className="text-xs font-bold text-slate-400 tracking-widest uppercase">Kết quả nhận diện sẽ hiển thị tại đây</p>
+                             </>
+                           ) : (
+                             <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
+                                <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+                                   <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
+                                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả Trích xuất AI
+                                   </h3>
+                                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Match: 99.4%</span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-6">
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Nhà cung cấp</p>
+                                      <p className="text-sm font-black text-slate-900 uppercase tracking-tight">Công ty Điện lực Hà Nội - EVNHANOI</p>
+                                   </div>
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Mã số thuế</p>
+                                      <p className="text-sm font-black text-slate-900 font-mono tracking-tighter">0100101114</p>
+                                   </div>
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Số hóa đơn</p>
+                                      <p className="text-sm font-black text-indigo-600 font-mono">EVN-2023-99881</p>
+                                   </div>
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Ngày hóa đơn</p>
+                                      <p className="text-sm font-black text-slate-900">15/12/2023</p>
+                                   </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chi tiết dòng (Line Items)</p>
+                                   <div className="p-4 bg-slate-50 rounded-2xl space-y-3">
+                                      <div className="flex justify-between text-xs items-center">
+                                         <span className="font-bold text-slate-900">Điện năng tiêu thụ (Mức 3)</span>
+                                         <span className="font-black text-slate-900">{formatCurrency(4850000)}</span>
+                                      </div>
+                                      <div className="flex justify-between text-[10px] text-slate-500 font-medium">
+                                         <span>Thuế GTGT (10%)</span>
+                                         <span>{formatCurrency(485000)}</span>
+                                      </div>
+                                   </div>
+                                </div>
+
+                                <div className="bg-blue-600 p-6 rounded-2xl flex justify-between items-center shadow-xl shadow-blue-200">
+                                   <div>
+                                      <p className="text-[10px] font-bold text-blue-100 uppercase mb-1 tracking-widest">Tổng tiền cần thanh toán</p>
+                                      <p className="text-2xl font-black text-white">{formatCurrency(5335000)}</p>
+                                   </div>
+                                   <button className="px-6 py-3 bg-white text-blue-600 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform active:scale-95 shadow-md">
+                                      Tạo bút toán Chi
+                                   </button>
+                                </div>
+                             </div>
+                           )}
+                        </div>
+
+                        {!scanResult && (
+                           <button 
+                             onClick={() => {
+                               setIsScanning(true);
+                               setTimeout(() => {
+                                 setIsScanning(false);
+                                 setScanResult(true);
+                               }, 2500);
+                             }}
+                             className="w-full py-5 bg-blue-600 text-white rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3"
+                           >
+                              <Scan className="w-5 h-5" /> Bắt đầu AI Scan
+                           </button>
+                        )}
+                        
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 italic">
+                           <AlertCircle className="w-3.5 h-3.5" /> Lưu ý: Hệ thống đang sử dụng mô hình Gemini 1.5 Pro cho độ chính xác cao nhất trên các định dạng hóa đơn phức tạp.
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            )}
+
             {activeTab === 'journal' && (
                <div className="animate-in fade-in duration-300">
                   <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">

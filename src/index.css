@@ -81,3 +81,32 @@ html[data-theme="nature"]::after {
   z-index: 9999;
 }
 
+@layer utilities {
+  @media print {
+    .print\:hidden {
+      display: none !important;
+    }
+    body * {
+      visibility: hidden;
+    }
+    #a4-print-document, #a4-print-document * {
+      visibility: visible;
+    }
+    #a4-print-document {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0mm; /* A4 Modal already has padding */
+      box-shadow: none;
+      border: none;
+    }
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  }
+}
+

@@ -15,7 +15,11 @@ import {
   Save, 
   ShieldCheck, 
   ArrowLeft,
-  ChevronLeft
+  ChevronLeft,
+  Sparkles,
+  Zap,
+  Clock,
+  ArrowRight
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 
@@ -115,6 +119,83 @@ export function SalesManagement() {
                     <span className="text-2xl font-black text-amber-600">{formatCurrency(320000000)}</span>
                     <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">Commission</span>
                  </div>
+              </div>
+           </div>
+
+           {/* AI Sales Insights */}
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
+                 <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-6">
+                       <Sparkles className="w-5 h-5 text-indigo-200" />
+                       <h3 className="text-lg font-bold uppercase tracking-widest italic">AI Sales Intelligence</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                       <div className="space-y-1">
+                          <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">Dự báo doanh thu tháng</p>
+                          <p className="text-2xl font-black">{formatCurrency(15200000000)}</p>
+                          <p className="text-[10px] font-bold text-emerald-300 flex items-center gap-1">
+                             <TrendingUp className="w-3 h-3" /> +21.4% vs T4
+                          </p>
+                       </div>
+                       <div className="space-y-1">
+                          <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">Tỉ lệ chốt deal (Win Rate)</p>
+                          <p className="text-2xl font-black">34.2%</p>
+                          <p className="text-[10px] font-bold text-indigo-200">Trên trung bình ngành</p>
+                       </div>
+                       <div className="space-y-1">
+                          <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">LTV Dự kiến (Next 90d)</p>
+                          <p className="text-2xl font-black">{formatCurrency(4500000000)}</p>
+                          <p className="text-[10px] font-bold text-indigo-200">Từ khách hàng hiện tại</p>
+                       </div>
+                    </div>
+                    
+                    <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
+                       <div className="flex items-center gap-3">
+                          <div className="flex -space-x-2">
+                             {['A', 'B', 'C', 'D'].map((char, i) => (
+                               <div key={i} className="w-8 h-8 rounded-full border-2 border-indigo-600 bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
+                                  {char}
+                               </div>
+                             ))}
+                          </div>
+                          <p className="text-[10px] font-bold text-indigo-100 italic">4 nhân viên đang có dấu hiệu bứt phá doanh số vượt bậc</p>
+                       </div>
+                       <button className="px-4 py-2 bg-white text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-lg ring-4 ring-white/10">
+                          Xem Recommendation
+                       </button>
+                    </div>
+                 </div>
+                 <Zap className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 rotate-12" />
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                 <div>
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                       <Clock className="w-4 h-4" /> Hoạt động gần đây
+                    </h4>
+                    <div className="space-y-4">
+                       {[
+                         { time: '2 phút trước', msg: 'Trần Thị B vừa chốt deal 450tr', type: 'win' },
+                         { time: '15 phút trước', msg: 'Lead mới từ Facebook: VNPT Corp', type: 'lead' },
+                         { time: '1 giờ trước', msg: 'Lê Văn C cập nhật báo cáo KPI', type: 'update' }
+                       ].map((act, i) => (
+                         <div key={i} className="flex gap-3">
+                            <div className={cn(
+                              "w-1 h-8 rounded-full",
+                              act.type === 'win' ? "bg-emerald-500" : act.type === 'lead' ? "bg-blue-500" : "bg-slate-300"
+                            )} />
+                            <div>
+                               <p className="text-xs font-bold text-slate-800">{act.msg}</p>
+                               <p className="text-[10px] text-slate-400">{act.time}</p>
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+                 <button className="w-full mt-6 py-3 border border-slate-200 rounded-xl text-[10px] font-bold text-slate-500 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 uppercase tracking-widest">
+                    Xem tất cả Log <ArrowRight className="w-3 h-3" />
+                 </button>
               </div>
            </div>
 
