@@ -192,6 +192,50 @@ export function IPosModule() {
  const [returnReason, setReturnReason] = useState('');
  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'loyalty'>('cash');
  const [isProcessing, setIsProcessing] = useState(false);
+
+  
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        document.getElementById('barcode-search')?.focus();
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        const payBtn = document.getElementById('pay-button');
+        if (payBtn) payBtn.click();
+      } else if (e.key === 'F9') {
+        e.preventDefault();
+        const completeBtn = document.getElementById('complete-payment-button');
+        if (completeBtn && !completeBtn.hasAttribute('disabled')) {
+           completeBtn.click();
+        }
+      } else if (e.key === 'Escape') {
+        if (document.getElementById('complete-payment-button')) { // meaning modal is open
+           e.preventDefault();
+           setShowPaymentModal(false);
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+
+  // Network Status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
  const [actualCashInput, setActualCashInput] = useState('');
  const [handoverNote, setHandoverNote] = useState('');
  const [selectedTableForQr, setSelectedTableForQr] = useState<number | null>(null);
@@ -939,16 +983,16 @@ export function IPosModule() {
  if (pendingHandover) {
  return (
  <div className="h-full flex items-center justify-center p-8 bg-stone-50/50">
- <div className="max-w-md w-full bg-white rounded-lg border border-stone-200 shadow-sm p-10 space-y-6">
+ <div className="max-w-md w-full bg-white rounded-sm border border-stone-200 shadow-sm p-10 space-y-6">
  <div className="text-center space-y-2">
- <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+ <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-sm flex items-center justify-center mx-auto mb-4">
  <UserCheck className="w-10 h-10" />
  </div>
  <h2 className="text-2xl font-bold text-stone-900">Nhận bàn giao ca</h2>
  <p className="text-sm text-stone-500">Ca trước: <span className="font-bold text-stone-700">{pendingHandover.previousStaffName}</span></p>
  </div>
  
- <div className="bg-stone-50 rounded-lg p-5 space-y-4">
+ <div className="bg-stone-50 rounded-sm p-5 space-y-4">
  <div className="flex justify-between items-center pb-3 border-b border-stone-200 text-sm">
  <span className="font-bold text-stone-500 uppercase">Khai báo ca trước</span>
  <span className="font-bold text-stone-900">{formatCurrency(pendingHandover.actualCash)}</span>
@@ -961,7 +1005,7 @@ export function IPosModule() {
  </div>
  <div className="space-y-2">
  <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Ghi chú bàn giao</span>
- <p className="text-sm text-stone-700 italic bg-white p-3 rounded-lg border border-stone-200">{pendingHandover.notes || 'Không có ghi chú'}</p>
+ <p className="text-sm text-stone-700 italic bg-white p-3 rounded-sm border border-stone-200">{pendingHandover.notes || 'Không có ghi chú'}</p>
  </div>
  </div>
 
@@ -970,7 +1014,7 @@ export function IPosModule() {
  setPendingHandover(null);
  setIsShiftActive(true);
  }}
- className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-[#FAF9F5] font-bold rounded-lg transition-all shadow-sm shadow-indigo-600/20"
+ className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-[#FAF9F5] font-bold rounded-sm transition-all shadow-sm shadow-indigo-600/20"
  >
  Xác nhận nhận ca & Bắt đầu
  </button>
@@ -981,15 +1025,15 @@ export function IPosModule() {
 
  return (
  <div className="h-full flex items-center justify-center p-8 bg-stone-50/50">
- <div className="max-w-md w-full bg-white rounded-lg border border-stone-200 shadow-sm p-10 text-center space-y-6">
- <div className="w-20 h-20 bg-[#F2F0E9] text-orange-700 rounded-lg flex items-center justify-center mx-auto">
+ <div className="max-w-md w-full bg-white rounded-sm border border-stone-200 shadow-sm p-10 text-center space-y-6">
+ <div className="w-20 h-20 bg-[#F2F0E9] text-orange-700 rounded-sm flex items-center justify-center mx-auto">
  <Clock className="w-10 h-10" />
  </div>
  <div className="space-y-2">
  <h2 className="text-2xl font-bold text-stone-900">Mở ca làm việc</h2>
  <p className="text-sm text-stone-500">Vui lòng kiểm tra tiền mặt đầu ca trước khi bắt đầu bán hàng.</p>
  </div>
- <div className="bg-stone-50 rounded-lg p-6 text-left space-y-4">
+ <div className="bg-stone-50 rounded-sm p-6 text-left space-y-4">
  <div className="space-y-1">
  <label className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Tiền mặt đầu ca (VND)</label>
  <input 
@@ -1001,7 +1045,7 @@ export function IPosModule() {
  </div>
  <button 
  onClick={toggleShift}
- className="w-full py-4 bg-stone-900 hover:bg-stone-800 text-[#FAF9F5] font-bold rounded-lg transition-all shadow-sm shadow-stone-900/5"
+ className="w-full py-4 bg-stone-900 hover:bg-stone-800 text-[#FAF9F5] font-bold rounded-sm transition-all shadow-sm shadow-stone-900/5"
  >
  Bắt đầu ca làm việc
  </button>
@@ -1027,7 +1071,7 @@ export function IPosModule() {
  )}
 
  {voiceHint && (
- <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-stone-900/95 text-[#FAF9F5] px-8 py-4 rounded-lg flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
+ <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-stone-900/95 text-[#FAF9F5] px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
  <p className="text-[9px] text-indigo-400 font-black uppercase tracking-[0.3em]">Hệ thống nhận diện</p>
  <p className="text-lg font-bold italic">"{voiceHint}"</p>
  </div>
@@ -1035,10 +1079,10 @@ export function IPosModule() {
  {/* Shift Summary Modal */}
  {showShiftSummary && (
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-stone-900/80 backdrop-blur-md">
- <div className="bg-white rounded-lg p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
+ <div className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
  <div className="flex justify-between items-center border-b border-stone-100 pb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center font-bold">
+ <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center font-bold">
  <Clock className="w-6 h-6" />
  </div>
  <div>
@@ -1046,17 +1090,17 @@ export function IPosModule() {
  <p className="text-xs text-stone-400 font-bold uppercase tracking-widest mt-1">Hà Nội • Terminal #01</p>
  </div>
  </div>
- <button onClick={() => setShowShiftSummary(false)} className="p-2 hover:bg-stone-50 rounded-lg text-stone-300 hover:text-stone-900 transition-colors">
+ <button onClick={() => setShowShiftSummary(false)} className="p-2 hover:bg-stone-50 rounded-sm text-stone-300 hover:text-stone-900 transition-colors">
  <X className="w-6 h-6" />
  </button>
  </div>
 
  <div className="grid grid-cols-2 gap-6">
- <div className="p-5 bg-stone-50 rounded-lg space-y-1">
+ <div className="p-5 bg-stone-50 rounded-sm space-y-1">
  <p className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Tiền mặt đầu ca</p>
  <p className="text-lg font-bold text-stone-900">{formatCurrency(2000000)}</p>
  </div>
- <div className="p-5 bg-indigo-50 rounded-lg space-y-1 border border-indigo-100">
+ <div className="p-5 bg-indigo-50 rounded-sm space-y-1 border border-indigo-100">
  <p className="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Doanh thu trong ca</p>
  <p className="text-lg font-bold text-indigo-700">{formatCurrency(12500000)}</p>
  </div>
@@ -1089,7 +1133,7 @@ export function IPosModule() {
  <div className="flex items-center gap-4">
  <div className="flex-1 space-y-1">
  <label className="text-[10px] uppercase font-bold text-stone-400">Tiền mặt lý thuyết (Hệ thống)</label>
- <div className="text-sm font-bold text-stone-900 px-3 py-2.5 bg-stone-100 rounded-lg">{formatCurrency(6500000)}</div>
+ <div className="text-sm font-bold text-stone-900 px-3 py-2.5 bg-stone-100 rounded-sm">{formatCurrency(6500000)}</div>
  </div>
  <div className="flex-1 space-y-1">
  <label className="text-[10px] uppercase font-bold text-stone-400">Thực đếm trong két</label>
@@ -1097,7 +1141,7 @@ export function IPosModule() {
  type="text" 
  value={actualCashInput}
  onChange={(e) => setActualCashInput(e.target.value)}
- className="w-full text-sm font-bold text-indigo-600 px-3 py-2.5 bg-white border border-stone-200 focus:border-indigo-500 rounded-lg outline-none transition-all shadow-inner"
+ className="w-full text-sm font-bold text-indigo-600 px-3 py-2.5 bg-white border border-stone-200 focus:border-indigo-500 rounded-sm outline-none transition-all shadow-inner"
  />
  </div>
  </div>
@@ -1106,7 +1150,7 @@ export function IPosModule() {
  <textarea 
  value={handoverNote}
  onChange={(e) => setHandoverNote(e.target.value)}
- className="w-full text-xs text-stone-700 px-3 py-2 bg-white border border-stone-200 focus:border-indigo-500 rounded-lg outline-none transition-all resize-none h-16"
+ className="w-full text-xs text-stone-700 px-3 py-2 bg-white border border-stone-200 focus:border-indigo-500 rounded-sm outline-none transition-all resize-none h-16"
  placeholder="VD: Cọc thừa 50k của khách, Lệch 20k do thối nhầm..."
  />
  </div>
@@ -1115,13 +1159,13 @@ export function IPosModule() {
  <div className="pt-6 border-t border-stone-100 flex gap-4">
  <button 
  onClick={() => setShowShiftSummary(false)}
- className="flex-1 py-4 bg-stone-100 text-stone-600 font-bold rounded-lg hover:bg-stone-200 transition-all"
+ className="flex-1 py-4 bg-stone-100 text-stone-600 font-bold rounded-sm hover:bg-stone-200 transition-all"
  >
  Tiếp tục bán
  </button>
  <button 
  onClick={confirmCloseShift}
- className="flex-1 py-4 bg-rose-600 text-[#FAF9F5] font-bold rounded-lg hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition-all"
+ className="flex-1 py-4 bg-rose-600 text-[#FAF9F5] font-bold rounded-sm hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition-all"
  >
  Xác nhận Bàn giao & Đóng ca
  </button>
@@ -1133,11 +1177,11 @@ export function IPosModule() {
  {/* Checkout/Payment Modal */}
  {showPaymentModal && (
  <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/90 backdrop-blur-md">
- <div className="bg-white rounded-lg w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
+ <div className="bg-white rounded-sm w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
  {/* Left side: Order Summary */}
  <div className="w-full md:w-1/3 bg-stone-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-stone-200 overflow-y-auto">
  <div className="flex items-center gap-3 mb-8">
- <div className="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center border border-stone-100">
+ <div className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-stone-100">
  <ShoppingCart className="w-5 h-5 text-indigo-600" />
  </div>
  <h3 className="text-xl font-black text-stone-900 uppercase tracking-tight">Chi tiết đơn</h3>
@@ -1163,7 +1207,7 @@ export function IPosModule() {
  
  {/* Discount Breakdown */}
  {(discount > 0 || loyaltyDiscount > 0) && (
- <div className="space-y-2 py-4 bg-white/50 rounded-lg p-4 border border-stone-100 border-dashed">
+ <div className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-stone-100 border-dashed">
  <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Ưu đãi & Giảm giá</p>
  {discount > 0 && (
  <div className="flex justify-between text-rose-500 text-sm font-bold">
@@ -1208,7 +1252,7 @@ export function IPosModule() {
  </div>
  <button 
  onClick={() => setShowPaymentModal(false)} 
- className="w-12 h-12 bg-stone-50 hover:bg-rose-50 hover:text-rose-500 rounded-lg text-stone-400 transition-all flex items-center justify-center border border-stone-100"
+ className="w-12 h-12 bg-stone-50 hover:bg-rose-50 hover:text-rose-500 rounded-sm text-stone-400 transition-all flex items-center justify-center border border-stone-100"
  >
  <X className="w-6 h-6" />
  </button>
@@ -1218,14 +1262,14 @@ export function IPosModule() {
  <button 
  onClick={() => setPaymentMethod('cash')}
  className={cn(
- "p-6 bg-white border-2 rounded-[1.5rem] flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+ "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
  paymentMethod === 'cash' 
  ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
  : "border-stone-100 hover:border-indigo-200"
  )}
  >
  <div className={cn(
- "w-14 h-14 rounded-lg flex items-center justify-center transition-all",
+ "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
  paymentMethod === 'cash' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
  )}>
  <CreditCard className="w-7 h-7" />
@@ -1240,14 +1284,14 @@ export function IPosModule() {
  <button 
  onClick={() => setPaymentMethod('qr')}
  className={cn(
- "p-6 bg-white border-2 rounded-[1.5rem] flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+ "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
  paymentMethod === 'qr' 
  ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
  : "border-stone-100 hover:border-indigo-200"
  )}
  >
  <div className={cn(
- "w-14 h-14 rounded-lg flex items-center justify-center transition-all",
+ "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
  paymentMethod === 'qr' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
  )}>
  <QrCode className="w-7 h-7" />
@@ -1262,14 +1306,14 @@ export function IPosModule() {
  <button 
  onClick={() => setPaymentMethod('pos')}
  className={cn(
- "p-6 bg-white border-2 rounded-[1.5rem] flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+ "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
  paymentMethod === 'pos' 
  ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
  : "border-stone-100 hover:border-indigo-200"
  )}
  >
  <div className={cn(
- "w-14 h-14 rounded-lg flex items-center justify-center transition-all",
+ "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
  paymentMethod === 'pos' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
  )}>
  <Monitor className="w-7 h-7" />
@@ -1287,7 +1331,7 @@ export function IPosModule() {
  {customer && (customer.points || 0) > 0 && (
  <div 
  className={cn(
- "group p-5 rounded-lg border-2 transition-all cursor-pointer flex items-center justify-between",
+ "group p-5 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
  useLoyaltyPoints 
  ? "bg-emerald-50 border-emerald-500 shadow-sm shadow-emerald-500/5 ring-4 ring-emerald-50" 
  : "bg-white border-stone-100 hover:border-emerald-200"
@@ -1296,7 +1340,7 @@ export function IPosModule() {
  >
  <div className="flex items-center gap-4">
  <div className={cn(
- "w-12 h-12 rounded-lg flex items-center justify-center transition-all",
+ "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
  useLoyaltyPoints ? "bg-emerald-600 text-[#FAF9F5] shadow-sm rotate-12" : "bg-stone-100 text-stone-400 group-hover:bg-emerald-100 group-hover:text-emerald-600"
  )}>
  <Sparkles className="w-6 h-6" />
@@ -1327,9 +1371,9 @@ export function IPosModule() {
  initial={{ opacity: 0, scale: 0.95, y: 10 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.95, y: 10 }}
- className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-indigo-50 rounded-lg border border-indigo-100 shadow-inner"
+ className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-indigo-50 rounded-sm border border-indigo-100 shadow-inner"
  >
- <div className="bg-white p-4 rounded-lg shadow-sm ring-4 ring-white/50">
+ <div className="bg-white p-4 rounded-sm shadow-sm ring-4 ring-white/50">
  <img 
  src={sePayService.createPaymentQR(total, `IPOS_PAY_${Date.now()}`)}
  alt="Payment QR"
@@ -1348,7 +1392,7 @@ export function IPosModule() {
  Auto-Reconciliation Enabled
  </p>
  </div>
- <div className="p-4 bg-white/60 backdrop-blur-md rounded-lg text-xs font-bold text-stone-600 border border-indigo-100/50 leading-relaxed shadow-sm">
+ <div className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-stone-600 border border-indigo-100/50 leading-relaxed shadow-sm">
  Sử dụng bất kỳ ứng dụng Ngân hàng để thanh toán. Hệ thống sẽ <strong>tự động chốt đơn</strong> ngay khi tiền vào tài khoản.
  </div>
  <div className="flex items-center gap-3">
@@ -1363,29 +1407,52 @@ export function IPosModule() {
  </div>
  </div>
  </motion.div>
- ) : (
- <motion.div 
- key="cash-view"
+ ) : paymentMethod === 'pos' ? (
+                        <motion.div 
+                          key="pos-view"
+                          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                          className="flex flex-col items-center justify-center gap-4 p-12 bg-stone-50 rounded-sm border border-stone-200 shadow-inner text-center"
+                        >
+                          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-stone-100 relative">
+                            <Monitor className="w-12 h-12 text-indigo-600" />
+                            <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
+                          </div>
+                          <div className="space-y-4 mt-2">
+                            <h4 className="text-2xl font-black text-stone-900 tracking-tight">Vui lòng quẹt thẻ trên máy SmartPOS</h4>
+                            <p className="text-sm text-stone-500 font-medium max-w-[320px] mx-auto leading-relaxed">
+                              Số tiền <strong className="text-stone-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">{formatCurrency(total)}</strong> đã được đẩy xuống thiết bị. Hệ thống đang chờ tín hiệu phản hồi.
+                            </p>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div 
+                          key="cash-view"
  initial={{ opacity: 0, y: 10 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: 10 }}
- className="bg-stone-50 p-8 rounded-lg border border-stone-200 shadow-inner space-y-6"
+ className="bg-stone-50 p-8 rounded-sm border border-stone-200 shadow-inner space-y-6"
  >
  <div className="flex justify-between items-center">
  <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Xác nhận số tiền</span>
  <div className="flex gap-2">
- {[50000, 100000, 200000, 500000].map(val => (
- <button 
- key={val}
- onClick={() => {
- const input = document.getElementById('cash-input') as HTMLInputElement;
- if(input) input.value = val.toString();
- }}
- className="px-3 py-1 bg-white border border-stone-200 rounded-lg text-[9px] font-bold text-stone-500 hover:border-indigo-500 hover:text-indigo-600 transition-all shadow-sm"
- >
- {val/1000}k
- </button>
- ))}
+ {[100000, 200000, 500000].map(val => (
+                                  <button 
+                                    key={val}
+                                    onClick={() => {
+                                      const input = document.getElementById('cash-input') as HTMLInputElement;
+                                      if(input) {
+                                        input.value = val.toString();
+                                        const event = new Event('input', { bubbles: true });
+                                        input.dispatchEvent(event);
+                                      }
+                                    }}
+                                    className="px-3 md:px-4 py-2 font-black text-stone-600 hover:bg-indigo-50 border-r last:border-r-0 border-stone-100 hover:text-indigo-600 transition-colors"
+                                  >
+                                    {val >= 1000000 ? val/1000000 + 'M' : val/1000 + 'k'}
+                                  </button>
+                                ))}
  </div>
  </div>
  <div className="relative group">
@@ -1394,14 +1461,14 @@ export function IPosModule() {
  id="cash-input"
  type="text" 
  defaultValue={total.toString()}
- className="w-full bg-white border-2 border-stone-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-[1.5rem] py-6 pl-14 pr-8 text-4xl font-black text-stone-900 outline-none transition-all shadow-sm text-right"
+ className="w-full bg-white border-2 border-stone-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-sm py-6 pl-14 pr-8 text-4xl font-black text-stone-900 outline-none transition-all shadow-sm text-right"
  />
  </div>
  <div className="flex justify-between items-center pt-2">
  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest flex items-center gap-2">
  <AlertCircle className="w-3.5 h-3.5" /> Thừa/Thiếu sẽ được tính vào giao dịch
  </p>
- <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-lg shadow-sm border border-indigo-50">
+ <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-sm shadow-sm border border-indigo-50">
  Gợi ý: {formatCurrency(Math.ceil(total/100000)*100000)}
  </span>
  </div>
@@ -1413,15 +1480,14 @@ export function IPosModule() {
  <div className="mt-auto pt-6 flex gap-4">
  <button 
  onClick={() => setShowPaymentModal(false)}
- className="px-10 py-5 bg-white border-2 border-stone-100 text-stone-400 font-black rounded-[1.5rem] hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
+ className="px-10 py-5 bg-white border-2 border-stone-100 text-stone-400 font-black rounded-sm hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
  >
  Quay lại
  </button>
- <button 
- onClick={completeOrder}
+ <button id="complete-payment-button" onClick={completeOrder}
  disabled={isProcessing}
  className={cn(
- "flex-1 py-5 bg-stone-900 text-[#FAF9F5] rounded-[1.5rem] font-black text-lg uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:bg-stone-800 active:scale-[0.98] transition-all flex items-center justify-center gap-4 relative overflow-hidden group",
+ "flex-1 py-5 bg-stone-900 text-[#FAF9F5] rounded-sm font-black text-lg uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:bg-stone-800 active:scale-[0.98] transition-all flex items-center justify-center gap-4 relative overflow-hidden group",
  isProcessing && "opacity-70 cursor-not-allowed"
  )}
  >
@@ -1450,30 +1516,30 @@ export function IPosModule() {
  {/* Scanner Modal */}
  {isScannerOpen && (
  <div className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-stone-900/80 backdrop-blur-md">
- <div className="bg-white rounded-lg p-8 w-full max-w-lg space-y-6">
+ <div className="bg-white rounded-sm p-8 w-full max-w-lg space-y-6">
  <div className="flex justify-between items-center">
  <h2 className="text-xl font-bold">Quét mã sản phẩm</h2>
- <button onClick={() => setIsScannerOpen(false)} className="p-2 hover:bg-stone-100 rounded-lg"><X /></button>
+ <button onClick={() => setIsScannerOpen(false)} className="p-2 hover:bg-stone-100 rounded-sm"><X /></button>
  </div>
- <div id="pos-reader" className="overflow-hidden rounded-lg border border-stone-200 shadow-inner"></div>
+ <div id="pos-reader" className="overflow-hidden rounded-sm border border-stone-200 shadow-inner"></div>
  <p className="text-center text-xs text-stone-500 font-bold uppercase tracking-wider">Đưa mã vạch vào vùng nhận diện</p>
  </div>
  </div>
  )}
 
  {/* Header - Refined with better depth and hierarchy */}
- <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-stone-200 shadow-sm sticky top-0 z-50">
+ <div className="flex justify-between items-center bg-white p-3 rounded-sm border border-stone-200 shadow-sm sticky top-0 z-50">
  <div className="flex items-center gap-4">
  <button 
  onClick={() => window.location.href = '/'}
- className="w-10 h-10 bg-stone-50 rounded-xl flex items-center justify-center text-stone-400 hover:bg-[#F2F0E9] hover:text-orange-700 transition-all border border-stone-100 group"
+ className="w-10 h-10 bg-stone-50 rounded-sm flex items-center justify-center text-stone-400 hover:bg-[#F2F0E9] hover:text-orange-700 transition-all border border-stone-100 group"
  title="Trở về Trung tâm ERP"
  >
  <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
  </button>
  
  <div className="flex items-center gap-3.5 border-r border-stone-100 pr-5">
- <div className="w-11 h-11 bg-stone-900 text-[#FAF9F5] rounded-xl flex items-center justify-center shadow-sm relative overflow-hidden group">
+ <div className="w-11 h-11 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
  <Store className="w-5 h-5 relative z-10" />
  <div className="absolute inset-0 bg-white /50 to-transparent group-hover:scale-110 transition-transform" />
  <div className={cn(
@@ -1484,7 +1550,7 @@ export function IPosModule() {
  <div>
  <h1 className="font-serif tracking-tight text-base font-bold text-stone-900 leading-none tracking-tight">iPOS Terminal</h1>
  <p className="text-[10px] text-stone-500 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
- {activeStore?.name} <span className="opacity-30">•</span> <span className={isOffline ? "text-rose-500 font-bold" : "text-emerald-500 font-bold"}>{isOffline ? 'OFFLINE' : 'LIVE'}</span>
+ {activeStore?.name} <span className="opacity-30">•</span> <span className={isOffline ? "text-rose-500 font-bold" : "text-emerald-500 font-bold"}>{isOffline ? 'OFFLINE (LƯU TẠM)' : 'LIVE SYNC'}</span>
  </p>
  </div>
  </div>
@@ -1493,7 +1559,7 @@ export function IPosModule() {
  <div className="space-y-1">
  <p className="text-[10px] text-stone-500 font-medium ml-1">Thu ngân vận hành</p>
  <div className="flex items-center gap-2.5 group">
- <div className="w-7 h-7 bg-[#F2F0E9] rounded-lg flex items-center justify-center text-xs font-bold text-orange-700 border border-[#EAE7DF] shadow-sm transition-transform group-hover:scale-105">
+ <div className="w-7 h-7 bg-[#F2F0E9] rounded-sm flex items-center justify-center text-xs font-bold text-orange-700 border border-[#EAE7DF] shadow-sm transition-transform group-hover:scale-105">
  {(selectedStaff?.name || user?.displayName || user?.email || 'N').charAt(0).toUpperCase()}
  </div>
  <select 
@@ -1508,11 +1574,11 @@ export function IPosModule() {
  </div>
  </div>
 
- <div className="flex bg-stone-50/80 p-1.5 rounded-xl mx-4 self-stretch border border-stone-100 hidden xl:flex">
+ <div className="flex bg-stone-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-stone-100 hidden xl:flex">
  <button 
  onClick={() => setActiveTab('dashboard')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
  activeTab === 'dashboard' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1521,7 +1587,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab('sales')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
  activeTab === 'sales' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1531,7 +1597,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab('tables')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
  activeTab === 'tables' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1542,7 +1608,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab('management')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
  activeTab === 'management' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1553,7 +1619,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab('delivery')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 relative",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 relative",
  activeTab === 'delivery' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1566,7 +1632,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab('lookup')}
  className={cn(
- "px-5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2",
+ "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
  activeTab === 'lookup' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
@@ -1575,11 +1641,11 @@ export function IPosModule() {
  </div>
 
  <div className="flex gap-3 items-center">
- <div className="flex gap-1.5 px-1.5 py-1.5 bg-stone-50 rounded-xl border border-stone-100 mr-2">
+ <div className="flex gap-1.5 px-1.5 py-1.5 bg-stone-50 rounded-sm border border-stone-100 mr-2">
  <button 
  onClick={startListening}
  className={cn(
- "w-9 h-9 rounded-lg transition-all flex items-center justify-center relative",
+ "w-9 h-9 rounded-sm transition-all flex items-center justify-center relative",
  isListening ? "bg-rose-500 text-[#FAF9F5] shadow-sm animate-pulse ring-2 ring-rose-100" : "bg-white text-stone-500 hover:text-orange-700 hover:shadow-sm border border-stone-200"
  )}
  >
@@ -1587,7 +1653,7 @@ export function IPosModule() {
  </button>
  <button 
  onClick={() => setIsDarkMode(!isDarkMode)}
- className="w-9 h-9 bg-white text-stone-500 rounded-lg hover:text-amber-500 hover:shadow-sm transition-all border border-stone-200 flex items-center justify-center"
+ className="w-9 h-9 bg-white text-stone-500 rounded-sm hover:text-amber-500 hover:shadow-sm transition-all border border-stone-200 flex items-center justify-center"
  >
  {isDarkMode ? <Sparkles className="w-4 h-4 text-amber-500" /> : <Monitor className="w-4 h-4" />}
  </button>
@@ -1596,7 +1662,7 @@ export function IPosModule() {
  <button 
  onClick={() => setActiveTab(activeTab === 'sales' ? 'history' : 'sales')}
  className={cn(
- "px-4 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
+ "px-4 py-2.5 rounded-sm text-sm font-bold transition-all flex items-center gap-2",
  activeTab === 'history' ? "bg-stone-900 text-[#FAF9F5] shadow-sm" : "bg-white text-stone-600 hover:border-orange-200 border border-stone-200 hover:text-orange-700"
  )}
  >
@@ -1609,7 +1675,7 @@ export function IPosModule() {
  
  <button 
  onClick={() => setActiveTab('handover')}
- className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
+ className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-sm text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
  >
  <Clock className="w-4 h-4" /> Kết Ca & Bàn Giao
  </button>
@@ -1625,7 +1691,7 @@ export function IPosModule() {
  <p className="text-sm font-bold text-stone-400 uppercase tracking-[0.2em]">Hệ thống iPOS đã sẵn sàng vận hành • {new Date().toLocaleDateString('vi-VN')}</p>
  </div>
  <div className="flex gap-3">
- <button onClick={() => setActiveTab('sales')} className="flex items-center gap-2 px-6 py-3 bg-stone-900 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95">
+ <button onClick={() => setActiveTab('sales')} className="flex items-center gap-2 px-6 py-3 bg-stone-900 text-[#FAF9F5] rounded-sm font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95">
  <Plus className="w-4 h-4" /> Bán hàng ngay
  </button>
  </div>
@@ -1638,12 +1704,12 @@ export function IPosModule() {
  { label: 'Khách hàng mới', value: '18', icon: Users, trend: '+5', color: 'text-orange-700', bg: 'bg-[#F2F0E9]' },
  { label: 'Lượt đánh giá', value: '4.8/5', icon: Sparkles, trend: '98%', color: 'text-amber-600', bg: 'bg-amber-50' }
  ].map((card, i) => (
- <div key={card.label} className="bg-white p-6 rounded-lg border border-stone-100 shadow-sm hover:shadow-sm transition-all group">
+ <div key={card.label} className="bg-white p-6 rounded-sm border border-stone-100 shadow-sm hover:shadow-sm transition-all group">
  <div className="flex justify-between items-start mb-4">
- <div className={cn("p-3 rounded-xl", card.bg, card.color)}>
+ <div className={cn("p-3 rounded-sm", card.bg, card.color)}>
  <card.icon className="w-6 h-6" />
  </div>
- <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">{card.trend}</span>
+ <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-sm">{card.trend}</span>
  </div>
  <p className="text-xs font-semibold text-stone-500 mb-1">{card.label}</p>
  <p className="text-2xl font-black text-stone-900 tracking-tight leading-none">{card.value}</p>
@@ -1652,13 +1718,13 @@ export function IPosModule() {
  </div>
 
  {/* Delivery Channel Live Monitor */}
- <div className="bg-white rounded-lg border border-stone-100 shadow-sm p-6 sm:p-8">
+ <div className="bg-white rounded-sm border border-stone-100 shadow-sm p-6 sm:p-8">
  <div className="flex items-center justify-between mb-8">
  <h3 className="font-bold text-stone-900 flex items-center gap-3">
  <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh Giao hàng (Live)
  </h3>
  <div className="flex gap-2">
- <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold flex items-center gap-2">
+ <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-sm text-xs font-bold flex items-center gap-2">
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Connected
  </span>
  </div>
@@ -1669,9 +1735,9 @@ export function IPosModule() {
  { id: 'be', name: 'BeFood', color: 'bg-yellow-400', icon: 'Be', stats: deliveryChannelStatus.be },
  { id: 'gsm', name: 'Green SM', color: 'bg-emerald-400', icon: 'GSM', stats: deliveryChannelStatus.gsm }
  ].map((ch) => (
- <div key={ch.id} className="p-6 bg-stone-50 rounded-xl border border-stone-100 flex items-center justify-between group hover:bg-white hover:shadow-sm hover:border-stone-200 transition-all">
+ <div key={ch.id} className="p-6 bg-stone-50 rounded-sm border border-stone-100 flex items-center justify-between group hover:bg-white hover:shadow-sm hover:border-stone-200 transition-all">
  <div className="flex items-center gap-4">
- <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-[#FAF9F5] font-black text-sm shadow-sm", ch.color)}>
+ <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center text-[#FAF9F5] font-black text-sm shadow-sm", ch.color)}>
  {ch.icon}
  </div>
  <div>
@@ -1689,7 +1755,7 @@ export function IPosModule() {
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
- <div className="lg:col-span-2 bg-white rounded-lg border border-stone-100 shadow-sm p-6 sm:p-8">
+ <div className="lg:col-span-2 bg-white rounded-sm border border-stone-100 shadow-sm p-6 sm:p-8">
  <div className="flex items-center justify-between mb-8">
  <h3 className="font-bold text-stone-900 flex items-center gap-3">
  <Zap className="w-5 h-5 text-orange-700" /> Hoạt động Bán hàng (Live)
@@ -1715,7 +1781,7 @@ export function IPosModule() {
  </div>
 
  <div className="space-y-6">
- <div className="bg-white rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-stone-900/5 group">
+ <div className="bg-white rounded-sm p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-stone-900/5 group">
  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
  <div className="relative z-10 space-y-6">
  <div className="space-y-2">
@@ -1732,18 +1798,18 @@ export function IPosModule() {
  </div>
  <span className="text-[10px] font-medium text-blue-100">3 nhân viên đang Online</span>
  </div>
- <button onClick={() => { setActiveTab('management'); setMgmtSubTab('revenue'); }} className="w-full py-3 bg-white text-orange-800 rounded-xl font-bold text-xs hover:bg-stone-50 transition-all active:scale-95 shadow-sm">Xem báo cáo</button>
+ <button onClick={() => { setActiveTab('management'); setMgmtSubTab('revenue'); }} className="w-full py-3 bg-white text-orange-800 rounded-sm font-bold text-xs hover:bg-stone-50 transition-all active:scale-95 shadow-sm">Xem báo cáo</button>
  </div>
  </div>
 
- <div className="bg-white rounded-lg border border-stone-100 shadow-sm p-8 space-y-6">
+ <div className="bg-white rounded-sm border border-stone-100 shadow-sm p-8 space-y-6">
  <h4 className="font-extrabold text-stone-900 text-sm italic">Tips vận hành AI</h4>
  <div className="space-y-4">
  {[
  { t: 'Tăng cường nhân sự vào 18h tối nay', c: 'Dự báo giờ cao điểm' },
  { t: 'Ưu tiên món "Cafe Phin Sữa"', c: 'Đang là xu hướng' }
  ].map((tip, i) => (
- <div key={i} className="flex gap-4 p-4 bg-stone-50 rounded-lg hover:bg-stone-100 transition-all cursor-default">
+ <div key={i} className="flex gap-4 p-4 bg-stone-50 rounded-sm hover:bg-stone-100 transition-all cursor-default">
  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
  <div>
  <p className="text-xs font-black text-stone-800">{tip.t}</p>
@@ -1762,21 +1828,21 @@ export function IPosModule() {
  <div className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
  <div className="flex gap-4 shrink-0 transition-all">
  {/* Product Search & Categories - Refined with Glass effect */}
- <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-3.5 flex-1 flex flex-col items-center gap-4">
+ <div className="bg-white rounded-sm border border-stone-200 shadow-sm p-3.5 flex-1 flex flex-col items-center gap-4">
  <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
  <div className="relative flex-1 w-full">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
  <input 
  type="text" 
- placeholder="Tìm món, mã SKU hoặc ID..." 
- className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-11 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-stone-900 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-stone-400"
+ id="barcode-search" placeholder="Tìm món, mã SKU (F2)..." 
+ className="w-full bg-stone-50 border border-stone-200 rounded-sm pl-11 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-stone-900 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-stone-400"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
  </div>
  <button 
  onClick={() => setIsScannerOpen(true)}
- className="h-[52px] bg-stone-900 text-[#FAF9F5] px-6 rounded-xl flex items-center gap-3 hover:bg-stone-800 transition-all shadow-sm active:scale-95 group w-full sm:w-auto justify-center shrink-0"
+ className="h-[52px] bg-stone-900 text-[#FAF9F5] px-6 rounded-sm flex items-center gap-3 hover:bg-stone-800 transition-all shadow-sm active:scale-95 group w-full sm:w-auto justify-center shrink-0"
  >
  <ScanLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
  <span className="text-xs font-bold uppercase tracking-widest">Quét mã</span>
@@ -1794,7 +1860,7 @@ export function IPosModule() {
  <button 
  key={cat} 
  className={cn(
- "px-5 py-2.5 whitespace-nowrap rounded-lg text-xs font-bold transition-all active:scale-95 border",
+ "px-5 py-2.5 whitespace-nowrap rounded-sm text-xs font-bold transition-all active:scale-95 border",
  idx === 0 ? "bg-stone-900 text-[#FAF9F5] border-stone-900 shadow-sm" : "bg-stone-50 text-stone-500 hover:text-orange-700 hover:bg-white border-stone-200"
  )}
  >
@@ -1806,7 +1872,7 @@ export function IPosModule() {
  </div>
 
  {/* Product Grid - Refined with better rhythm and card design */}
- <div className="flex-1 bg-white rounded-lg border border-stone-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+ <div className="flex-1 bg-white rounded-sm border border-stone-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
  <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 gap-y-8">
  {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).map(product => (
  <div 
@@ -1818,7 +1884,7 @@ export function IPosModule() {
  className="absolute inset-0 z-10 w-full h-full cursor-pointer"
  />
  
- <div className="aspect-[4/4.5] bg-stone-50 rounded-lg border border-stone-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-orange-200 group-active:scale-95">
+ <div className="aspect-[4/4.5] bg-stone-50 rounded-sm border border-stone-100 overflow-hidden relative mb-4 transition-all group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-orange-200 group-active:scale-95">
  <div className="absolute inset-0 bg-white from-white/40 to-transparent pointer-events-none" />
  
  {/* Image or Placeholder */}
@@ -1831,7 +1897,7 @@ export function IPosModule() {
  )}
 
  <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
- <span className="text-[8px] font-black text-indigo-600 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-widest shadow-sm">
+ <span className="text-[8px] font-black text-indigo-600 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-sm border border-indigo-100 uppercase tracking-widest shadow-sm">
  {product.category}
  </span>
  {product.stock <= 10 && (
@@ -1842,12 +1908,12 @@ export function IPosModule() {
  </div>
 
  <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
- <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-xl flex items-center justify-center shadow-sm">
+ <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm">
  <Plus className="w-5 h-5" />
  </div>
  <button 
  onClick={(e) => { e.stopPropagation(); setSelectedProductLookup(product); setActiveTab('lookup'); }}
- className="w-8 h-8 bg-white/90 backdrop-blur-md text-stone-400 hover:text-orange-700 rounded-lg flex items-center justify-center border border-stone-200 shadow-sm relative z-20"
+ className="w-8 h-8 bg-white/90 backdrop-blur-md text-stone-400 hover:text-orange-700 rounded-sm flex items-center justify-center border border-stone-200 shadow-sm relative z-20"
  >
  <Search className="w-3.5 h-3.5" />
  </button>
@@ -1875,7 +1941,7 @@ export function IPosModule() {
  <div className="mt-4 pt-10 border-t border-stone-100 animate-in slide-in- duration-700">
  <div className="flex items-center justify-between mb-8">
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center">
+ <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-sm flex items-center justify-center">
  <BadgePercent className="w-4 h-4" />
  </div>
  <h4 className="font-bold text-sm text-stone-900">Gợi ý thông minh cho đơn hàng này</h4>
@@ -1883,13 +1949,13 @@ export function IPosModule() {
  </div>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
  {products.filter(p => !cart.find(ci => ci.id === p.id)).slice(0, 4).map(product => (
- <div key={product.id} className="bg-stone-50 border border-stone-200 rounded-xl p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-sm transition-all">
+ <div key={product.id} className="bg-stone-50 border border-stone-200 rounded-sm p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-sm transition-all">
  <p className="text-sm font-bold text-stone-800 line-clamp-1 group-hover:text-orange-700 transition-colors">{product.name}</p>
  <div className="flex justify-between items-center">
  <p className="text-[13px] font-bold text-stone-600">{formatCurrency(product.price)}</p>
  <button 
  onClick={() => addToCart(product)}
- className="p-2 bg-stone-900 text-[#FAF9F5] rounded-lg hover:bg-stone-800 transition-all shadow-sm active:scale-95"
+ className="p-2 bg-stone-900 text-[#FAF9F5] rounded-sm hover:bg-stone-800 transition-all shadow-sm active:scale-95"
  >
  <Plus className="w-3.5 h-3.5" />
  </button>
@@ -1911,7 +1977,7 @@ export function IPosModule() {
  <button 
  key={sc.id}
  onClick={() => resumeCart(sc)}
- className="shrink-0 px-4 py-2 bg-amber-50 border border-amber-200/50 rounded-lg flex items-center gap-3 hover:bg-amber-100 transition-all active:scale-95 shadow-sm"
+ className="shrink-0 px-4 py-2 bg-amber-50 border border-amber-200/50 rounded-sm flex items-center gap-3 hover:bg-amber-100 transition-all active:scale-95 shadow-sm"
  >
  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
  <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest">{sc.time}</span>
@@ -1921,11 +1987,11 @@ export function IPosModule() {
  )}
 
  {/* Customer Selection - Modern unified bar */}
- <div className="bg-white rounded-[1.5rem] border border-stone-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-hidden transition-all hover:border-indigo-100 shrink-0">
+ <div className="bg-white rounded-sm border border-stone-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-hidden transition-all hover:border-indigo-100 shrink-0">
  {customer ? (
  <div className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shadow-sm border border-indigo-100 relative group-hover:scale-105 transition-transform">
+ <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-sm flex items-center justify-center shadow-sm border border-indigo-100 relative group-hover:scale-105 transition-transform">
  <User className="w-6 h-6" />
  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" />
  </div>
@@ -1939,7 +2005,7 @@ export function IPosModule() {
  </div>
  <button 
  onClick={() => setCustomer(null)}
- className="w-9 h-9 flex items-center justify-center text-stone-300 hover:text-rose-500 bg-stone-50 hover:bg-rose-50 rounded-lg transition-all border border-stone-100"
+ className="w-9 h-9 flex items-center justify-center text-stone-300 hover:text-rose-500 bg-stone-50 hover:bg-rose-50 rounded-sm transition-all border border-stone-100"
  >
  <X className="w-4.5 h-4.5" />
  </button>
@@ -1954,7 +2020,7 @@ export function IPosModule() {
  placeholder="Tìm theo Số điện thoại (10 chữ số)..." 
  value={customerSearchQuery}
  onChange={(e) => searchCustomers(e.target.value)}
- className="w-full bg-stone-50 border border-stone-100 rounded-lg pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest outline-none focus:border-indigo-400 focus:bg-white transition-all shadow-inner placeholder:text-stone-200"
+ className="w-full bg-stone-50 border border-stone-100 rounded-sm pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest outline-none focus:border-indigo-400 focus:bg-white transition-all shadow-inner placeholder:text-stone-200"
  />
  <button 
  onClick={() => setShowCustomerSearch(false)}
@@ -1964,7 +2030,7 @@ export function IPosModule() {
  </button>
  </div>
  {customerSearchResults.length > 0 && (
- <div className="max-h-[160px] overflow-y-auto border border-stone-100 rounded-lg divide-y divide-stone-50 shadow-sm shadow-stone-200/40 bg-white">
+ <div className="max-h-[160px] overflow-y-auto border border-stone-100 rounded-sm divide-y divide-stone-50 shadow-sm shadow-stone-200/40 bg-white">
  {customerSearchResults.map(c => (
  <button 
  key={c.id} 
@@ -1986,7 +2052,7 @@ export function IPosModule() {
  onClick={() => setShowCustomerSearch(true)}
  className="w-full flex items-center gap-4 group transition-all"
  >
- <div className="w-12 h-12 bg-stone-50 text-stone-400 rounded-xl flex items-center justify-center group-hover:bg-[#F2F0E9] group-hover:text-orange-700 transition-all border border-dashed border-stone-200 group-hover:border-orange-200">
+ <div className="w-12 h-12 bg-stone-50 text-stone-400 rounded-sm flex items-center justify-center group-hover:bg-[#F2F0E9] group-hover:text-orange-700 transition-all border border-dashed border-stone-200 group-hover:border-orange-200">
  <Plus className="w-5 h-5" />
  </div>
  <div className="text-left flex-1">
@@ -1997,10 +2063,10 @@ export function IPosModule() {
  )}
  </div>
 
- <div className="flex-1 bg-white rounded-lg border border-stone-200 shadow-sm flex flex-col overflow-hidden relative">
+ <div className="flex-1 bg-white rounded-sm border border-stone-200 shadow-sm flex flex-col overflow-hidden relative">
  <div className="p-5 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-xl flex items-center justify-center shadow-sm">
+ <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm">
  <ShoppingCart className="w-5 h-5" />
  </div>
  <div>
@@ -2009,24 +2075,24 @@ export function IPosModule() {
  </div>
  </div>
  <div className="flex gap-2">
- <button onClick={holdCart} className="w-9 h-9 bg-white border border-stone-200 text-stone-500 rounded-lg hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center">
+ <button onClick={holdCart} className="w-9 h-9 bg-white border border-stone-200 text-stone-500 rounded-sm hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center">
  <Save className="w-4 h-4" />
  </button>
- <button onClick={() => { setCart([]); setCustomer(null); setIsReturnMode(false); }} className="w-9 h-9 bg-white border border-stone-200 text-rose-500 rounded-lg hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center">
+ <button onClick={() => { setCart([]); setCustomer(null); setIsReturnMode(false); }} className="w-9 h-9 bg-white border border-stone-200 text-rose-500 rounded-sm hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center">
  <Trash2 className="w-4 h-4" />
  </button>
  </div>
  </div>
 
  {/* Mode Switcher */}
- <div className="flex p-1 bg-stone-100 mx-5 mt-5 rounded-xl shrink-0 border border-stone-200/50">
+ <div className="flex p-1 bg-stone-100 mx-5 mt-5 rounded-sm shrink-0 border border-stone-200/50">
  <button 
  onClick={() => { setIsReturnMode(false); setReturnReason(''); }}
- className={cn("flex-1 py-1.5 text-xs font-bold rounded-lg transition-all", !isReturnMode ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200/50 text-sm py-2" : "text-stone-500 hover:text-stone-700")}
+ className={cn("flex-1 py-1.5 text-xs font-bold rounded-sm transition-all", !isReturnMode ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200/50 text-sm py-2" : "text-stone-500 hover:text-stone-700")}
  >Bán hàng</button>
  <button 
  onClick={() => setIsReturnMode(true)}
- className={cn("flex-1 py-1.5 text-xs font-bold rounded-lg transition-all", isReturnMode ? "bg-rose-500 text-[#FAF9F5] shadow-sm text-sm py-2" : "text-stone-500 hover:text-stone-700")}
+ className={cn("flex-1 py-1.5 text-xs font-bold rounded-sm transition-all", isReturnMode ? "bg-rose-500 text-[#FAF9F5] shadow-sm text-sm py-2" : "text-stone-500 hover:text-stone-700")}
  >Đổi trả</button>
  </div>
 
@@ -2035,7 +2101,7 @@ export function IPosModule() {
  <select 
  value={returnReason}
  onChange={(e) => setReturnReason(e.target.value)}
- className="w-full bg-rose-50 border border-rose-100 rounded-lg px-4 py-3 text-xs font-bold text-rose-600 outline-none focus:ring-2 ring-rose-200 transition-all cursor-pointer"
+ className="w-full bg-rose-50 border border-rose-100 rounded-sm px-4 py-3 text-xs font-bold text-rose-600 outline-none focus:ring-2 ring-rose-200 transition-all cursor-pointer"
  >
  <option value="">-- Chọn lý do đổi trả --</option>
  <option value="defective">Sản phẩm lỗi/hỏng</option>
@@ -2048,7 +2114,7 @@ export function IPosModule() {
 
  <div className="flex-1 p-4 space-y-3 overflow-y-auto custom-scrollbar bg-stone-50/20">
  {cart.map((item) => (
- <div key={item.id} className="flex justify-between items-center animate-in slide-in- bg-white p-4 rounded-xl border border-stone-200/50 relative group transition-all duration-300 hover:shadow-sm hover:border-[#EAE7DF]">
+ <div key={item.id} className="flex justify-between items-center animate-in slide-in- bg-white p-4 rounded-sm border border-stone-200/50 relative group transition-all duration-300 hover:shadow-sm hover:border-[#EAE7DF]">
  {isReturnMode && <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />}
  <div className="flex-1 pr-3">
  <p className="font-bold text-stone-800 text-[13px] leading-snug mb-1 group-hover:text-orange-700 transition-colors line-clamp-1">{item.name}</p>
@@ -2057,17 +2123,17 @@ export function IPosModule() {
  <span className="text-[8px] text-stone-300">•</span>
  <span className="text-[9px] text-orange-500 font-black uppercase tracking-widest">SKU-{item.id.slice(-4).toUpperCase()}</span>
  </div>
- <div className="flex items-center gap-5 mt-4 bg-stone-50 w-fit p-1 rounded-lg border border-stone-100">
+ <div className="flex items-center gap-5 mt-4 bg-stone-50 w-fit p-1 rounded-sm border border-stone-100">
  <button 
  onClick={() => updateQuantity(item.id, -1)}
- className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
+ className="w-8 h-8 rounded-sm bg-white border border-stone-200 shadow-sm flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
  >
  <Minus className="w-3.5 h-3.5" />
  </button>
  <span className="text-xs font-black w-4 text-center text-stone-700">{item.quantity}</span>
  <button 
  onClick={() => updateQuantity(item.id, 1)}
- className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm flex items-center justify-center hover:text-orange-700 hover:border-orange-200 transition-all active:scale-90"
+ className="w-8 h-8 rounded-sm bg-white border border-stone-200 shadow-sm flex items-center justify-center hover:text-orange-700 hover:border-orange-200 transition-all active:scale-90"
  >
  <Plus className="w-3.5 h-3.5" />
  </button>
@@ -2085,7 +2151,7 @@ export function IPosModule() {
  <div className="px-1 py-2">
  <textarea 
  placeholder="Ghi chú đơn hàng (VD: Giao sau 5h...)"
- className="w-full bg-stone-50 border border-stone-100 rounded-lg p-4 text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all custom-scrollbar resize-none h-24 shadow-inner"
+ className="w-full bg-stone-50 border border-stone-100 rounded-sm p-4 text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all custom-scrollbar resize-none h-24 shadow-inner"
  value={orderNote}
  onChange={(e) => setOrderNote(e.target.value)}
  />
@@ -2119,24 +2185,24 @@ export function IPosModule() {
  </div>
  )}
  
- <div className="bg-stone-900 rounded-lg p-5 flex justify-between items-center text-[#FAF9F5] relative overflow-hidden group shadow-sm mt-2">
+ <div className="bg-stone-900 rounded-sm p-5 flex justify-between items-center text-[#FAF9F5] relative overflow-hidden group shadow-sm mt-2">
  <div className="absolute inset-0 bg-white /30 via-transparent to-transparent opacity-50" />
  <div className="relative z-10">
  <p className="text-xs font-semibold text-[#FAF9F5]/70 mb-1">Cần thanh toán</p>
  <p className="text-3xl font-black tracking-tight">{isReturnMode ? '-' : ''}{formatCurrency(total)}</p>
  </div>
- <div className="relative z-10 h-10 w-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10 group-hover:bg-stone-900 transition-colors">
+ <div className="relative z-10 h-10 w-10 bg-white/10 backdrop-blur-md rounded-sm flex items-center justify-center border border-white/10 group-hover:bg-stone-900 transition-colors">
  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
  </div>
  </div>
  </div>
 
  <div className="grid grid-cols-2 gap-3 pb-2 border-b border-stone-100">
- <button className="h-[60px] bg-stone-50 border border-stone-200 hover:border-blue-400 hover:bg-[#F2F0E9]/50 rounded-xl flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
+ <button className="h-[60px] bg-stone-50 border border-stone-200 hover:border-blue-400 hover:bg-[#F2F0E9]/50 rounded-sm flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
  <CreditCard className="w-5 h-5 text-stone-400 group-hover:text-orange-700" />
  <span className="text-xs font-bold text-stone-700">Quẹt Thẻ</span>
  </button>
- <button className="h-[60px] bg-stone-50 border border-stone-200 hover:border-blue-400 hover:bg-[#F2F0E9]/50 rounded-xl flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
+ <button className="h-[60px] bg-stone-50 border border-stone-200 hover:border-blue-400 hover:bg-[#F2F0E9]/50 rounded-sm flex items-center justify-center gap-3 transition-all group active:scale-95 shadow-sm">
  <QrCode className="w-5 h-5 text-stone-400 group-hover:text-orange-700" />
  <span className="text-xs font-bold text-stone-700">Chuyển QR</span>
  </button>
@@ -2146,16 +2212,14 @@ export function IPosModule() {
  <button 
  disabled={cart.length === 0}
  onClick={handlePrintProforma}
- className="w-14 h-14 bg-stone-100 text-stone-500 rounded-xl flex items-center justify-center hover:bg-stone-200 hover:text-stone-800 transition-all active:scale-95 disabled:opacity-50 border border-stone-200"
+ className="w-14 h-14 bg-stone-100 text-stone-500 rounded-sm flex items-center justify-center hover:bg-stone-200 hover:text-stone-800 transition-all active:scale-95 disabled:opacity-50 border border-stone-200"
  title="In tạm tính"
  >
  <FileText className="w-6 h-6" />
  </button>
- <button 
- disabled={cart.length === 0}
- onClick={() => setShowPaymentModal(true)}
+ <button id="pay-button" disabled={cart.length === 0} onClick={() => setShowPaymentModal(true)}
  className={cn(
- "flex-1 h-14 rounded-xl text-sm font-bold uppercase tracking-wider shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden",
+ "flex-1 h-14 rounded-sm text-sm font-bold uppercase tracking-wider shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden",
  isReturnMode 
  ? "bg-rose-600 text-[#FAF9F5] hover:bg-rose-700" 
  : "bg-stone-900 text-[#FAF9F5] hover:bg-stone-800"
@@ -2171,10 +2235,10 @@ export function IPosModule() {
  </div>
  </>
  ) : activeTab === 'tables' ? (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-stone-100 gap-4">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+ <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-sm flex items-center justify-center">
  <Grid3x3 className="w-5 h-5" />
  </div>
  <div>
@@ -2196,7 +2260,7 @@ export function IPosModule() {
  <div 
  key={table.id} 
  className={cn(
- "aspect-square rounded-lg border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-sm relative group overflow-hidden",
+ "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-sm relative group overflow-hidden",
  table.status === 'available' ? "bg-white border-stone-100 text-stone-400 hover:border-blue-400" :
  table.status === 'occupied' ? "bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm" :
  table.status === 'reserved' ? "bg-amber-50 border-amber-200 text-amber-900" :
@@ -2212,7 +2276,7 @@ export function IPosModule() {
  >
  <div className="flex justify-between items-start mb-auto">
  <div className={cn(
- "w-8 h-8 rounded-lg flex items-center justify-center",
+ "w-8 h-8 rounded-sm flex items-center justify-center",
  table.status === 'available' ? "bg-stone-50 text-stone-400" :
  table.status === 'occupied' ? "bg-emerald-500 text-[#FAF9F5]" :
  table.status === 'reserved' ? "bg-amber-500 text-[#FAF9F5]" :
@@ -2249,7 +2313,7 @@ export function IPosModule() {
  <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-orange-700 hover:scale-110 transition-transform shadow-sm" onClick={(e) => { e.stopPropagation(); setSelectedTableForQr(table.id); }}>
  <QrCode className="w-5 h-5" />
  </button>
- <p className="text-[10px] font-black text-[#FAF9F5] uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-lg">Chọn Bàn</p>
+ <p className="text-[10px] font-black text-[#FAF9F5] uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-sm">Chọn Bàn</p>
  </div>
  </div>
  ))}
@@ -2257,10 +2321,10 @@ export function IPosModule() {
  </div>
  </div>
  ) : activeTab === 'handover' ? (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 shadow-sm p-10 flex-1 flex flex-col gap-8 animate-in slide-in- duration-500 overflow-y-auto no-scrollbar pb-20">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-10 flex-1 flex flex-col gap-8 animate-in slide-in- duration-500 overflow-y-auto no-scrollbar pb-20">
  <div className="flex items-center justify-between pb-8 border-b border-stone-100">
  <div className="flex items-center gap-5">
- <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center shadow-sm">
+ <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center shadow-sm">
  <Clock className="w-7 h-7" />
  </div>
  <div>
@@ -2268,14 +2332,14 @@ export function IPosModule() {
  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mt-2">Xác nhận doanh thu tiền mặt và kết toán</p>
  </div>
  </div>
- <button onClick={() => setActiveTab('sales')} className="p-3 bg-stone-50 text-stone-500 rounded-xl hover:bg-stone-100 transition-all border border-stone-200">
+ <button onClick={() => setActiveTab('sales')} className="p-3 bg-stone-50 text-stone-500 rounded-sm hover:bg-stone-100 transition-all border border-stone-200">
  <X className="w-5 h-5" />
  </button>
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
  <div className="lg:col-span-2 space-y-8">
- <div className="bg-stone-50 rounded-lg p-8 border border-stone-200 space-y-6">
+ <div className="bg-stone-50 rounded-sm p-8 border border-stone-200 space-y-6">
  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest border-b border-stone-200 pb-4">Tóm tắt hoạt động Ca</h3>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
  <div className="space-y-1">
@@ -2302,7 +2366,7 @@ export function IPosModule() {
  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300" />
  <input 
  type="number"
- className="w-full bg-white border border-stone-200 rounded-xl pl-12 pr-4 py-4 text-xl font-black text-stone-900 focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm"
+ className="w-full bg-white border border-stone-200 rounded-sm pl-12 pr-4 py-4 text-xl font-black text-stone-900 focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm"
  value={actualCashInput}
  onChange={(e) => setActualCashInput(e.target.value)}
  placeholder="0"
@@ -2312,7 +2376,7 @@ export function IPosModule() {
  <div>
  <label className="text-xs font-black text-stone-500 mb-2 block uppercase">Ghi chú bàn giao</label>
  <textarea 
- className="w-full bg-white border border-stone-200 rounded-xl px-4 py-4 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm h-32 resize-none"
+ className="w-full bg-white border border-stone-200 rounded-sm px-4 py-4 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm h-32 resize-none"
  value={handoverNote}
  onChange={(e) => setHandoverNote(e.target.value)}
  placeholder="Ghi chú về tiền thừa, hỏng hóc hoặc sự cố trong ca..."
@@ -2323,7 +2387,7 @@ export function IPosModule() {
  </div>
 
  <div className="space-y-6">
- <div className="bg-indigo-600 rounded-lg p-8 text-[#FAF9F5] space-y-6 shadow-sm shadow-indigo-200">
+ <div className="bg-indigo-600 rounded-sm p-8 text-[#FAF9F5] space-y-6 shadow-sm shadow-indigo-200">
  <div className="flex items-center gap-3">
  <ShieldCheck className="w-6 h-6 text-indigo-200" />
  <h4 className="font-bold text-lg">Pháp lý & Hệ thống</h4>
@@ -2355,7 +2419,7 @@ export function IPosModule() {
  setIsShiftActive(false);
  setActiveTab('dashboard');
  }}
- className="w-full py-5 bg-rose-600 text-[#FAF9F5] rounded-lg font-black text-sm hover:bg-rose-700 transition-all shadow-sm shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
+ className="w-full py-5 bg-rose-600 text-[#FAF9F5] rounded-sm font-black text-sm hover:bg-rose-700 transition-all shadow-sm shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
  >
  XÁC NHẬN CHỐT CA <ArrowRight className="w-5 h-5" />
  </button>
@@ -2364,10 +2428,10 @@ export function IPosModule() {
  </div>
  </div>
  ) : activeTab === 'management' ? (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
  <div className="p-8 border-b border-stone-100 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-stone-50/50 gap-4">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-600 text-[#FAF9F5] rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
+ <div className="w-12 h-12 bg-indigo-600 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm shadow-indigo-200">
  <Settings2 className="w-6 h-6" />
  </div>
  <div>
@@ -2375,11 +2439,11 @@ export function IPosModule() {
  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Thiết lập cửa hàng & nhân sự • {activeStore?.name}</p>
  </div>
  </div>
- <div className="flex bg-white p-1 rounded-lg border border-stone-200 shadow-sm overflow-x-auto no-scrollbar">
+ <div className="flex bg-white p-1 rounded-sm border border-stone-200 shadow-sm overflow-x-auto no-scrollbar">
  <button 
  onClick={() => setMgmtSubTab('revenue')}
  className={cn(
- "px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+ "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
  mgmtSubTab === 'revenue' ? "bg-indigo-600 text-[#FAF9F5]" : "text-stone-500 hover:text-stone-700"
  )}
  >
@@ -2388,7 +2452,7 @@ export function IPosModule() {
  <button 
  onClick={() => setMgmtSubTab('staff')}
  className={cn(
- "px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+ "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
  mgmtSubTab === 'staff' ? "bg-indigo-600 text-[#FAF9F5]" : "text-stone-500 hover:text-stone-700"
  )}
  >
@@ -2397,7 +2461,7 @@ export function IPosModule() {
  <button 
  onClick={() => setMgmtSubTab('store')}
  className={cn(
- "px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+ "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
  mgmtSubTab === 'store' ? "bg-indigo-600 text-[#FAF9F5]" : "text-stone-500 hover:text-stone-700"
  )}
  >
@@ -2406,7 +2470,7 @@ export function IPosModule() {
  <button 
  onClick={() => setMgmtSubTab('channels')}
  className={cn(
- "px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+ "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
  mgmtSubTab === 'channels' ? "bg-indigo-600 text-[#FAF9F5]" : "text-stone-500 hover:text-stone-700"
  )}
  >
@@ -2425,9 +2489,9 @@ export function IPosModule() {
  { label: 'Đơn trung bình', value: formatCurrency(58300), icon: Zap, color: 'text-amber-600', bg: 'bg-amber-50' },
  { label: 'Tỷ lệ khách cũ', value: '32%', icon: Users, color: 'text-orange-700', bg: 'bg-[#F2F0E9]' }
  ].map((stat, idx) => (
- <div key={stat.label} className="bg-white p-6 rounded-lg border border-stone-100 shadow-sm hover:shadow-sm transition-all">
+ <div key={stat.label} className="bg-white p-6 rounded-sm border border-stone-100 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
- <div className={cn("p-2 rounded-lg", stat.bg, stat.color)}>
+ <div className={cn("p-2 rounded-sm", stat.bg, stat.color)}>
  <stat.icon className="w-5 h-5" />
  </div>
  <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">Live</span>
@@ -2439,7 +2503,7 @@ export function IPosModule() {
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
- <div className="bg-white p-8 rounded-lg border border-stone-100 shadow-sm">
+ <div className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm">
  <div className="flex items-center justify-between mb-8">
  <h4 className="font-extrabold text-stone-900 flex items-center gap-2">
  <TrendingUp className="w-5 h-5 text-indigo-600" /> Biểu đồ doanh thu tuần
@@ -2478,7 +2542,7 @@ export function IPosModule() {
  </div>
  </div>
 
- <div className="bg-white p-8 rounded-lg border border-stone-100 shadow-sm">
+ <div className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm">
  <h4 className="font-extrabold text-stone-900 mb-8 flex items-center gap-2">
  <PieChartIcon className="w-5 h-5 text-indigo-600" /> Tỷ lệ sản phẩm bán chạy
  </h4>
@@ -2518,7 +2582,7 @@ export function IPosModule() {
  </div>
  </div>
 
- <div className="bg-stone-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden group">
+ <div className="bg-stone-900 rounded-sm p-8 text-[#FAF9F5] relative overflow-hidden group">
  <div className="absolute inset-0 bg-white /20 to-transparent opacity-50" />
  <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
  <div className="space-y-4 text-center md:text-left">
@@ -2529,7 +2593,7 @@ export function IPosModule() {
  <h3 className="text-2xl font-black tracking-tight leading-tight max-w-md">Doanh thu dự kiến tháng này đạt 185,000,000 VND (Tăng 12%)</h3>
  <p className="text-sm text-indigo-100 opacity-70">Model AI đề xuất nhập thêm 20% nguyên liệu "Cafe Phin" cho ngày Thứ 7 & Thứ 8 để tránh cháy hàng.</p>
  </div>
- <button className="px-8 py-4 bg-white text-indigo-600 font-black text-xs uppercase tracking-widest rounded-lg shadow-sm hover:scale-105 transition-all">Chi tiết dự báo AI</button>
+ <button className="px-8 py-4 bg-white text-indigo-600 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 transition-all">Chi tiết dự báo AI</button>
  </div>
  </div>
  </div>
@@ -2540,7 +2604,7 @@ export function IPosModule() {
  <h4 className="text-xl font-black text-stone-900 tracking-tight">Liên kết Kênh bán hàng (Delivery)</h4>
  <p className="text-sm font-bold text-stone-400 uppercase tracking-widest mt-1">Đồng bộ menu & đơn hàng với các nền tảng giao hàng</p>
  </div>
- <button className="px-6 py-3 bg-indigo-600 text-[#FAF9F5] font-black text-xs uppercase tracking-widest rounded-lg shadow-sm hover:shadow-indigo-100 transition-all">Quét thiết bị POS mới</button>
+ <button className="px-6 py-3 bg-indigo-600 text-[#FAF9F5] font-black text-xs uppercase tracking-widest rounded-sm shadow-sm hover:shadow-indigo-100 transition-all">Quét thiết bị POS mới</button>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -2550,9 +2614,9 @@ export function IPosModule() {
  { name: 'Green SM', status: 'Sẵn sàng', color: 'bg-emerald-400', logo: 'GSM', desc: 'Vận chuyển bằng xe điện Xanh SM.' },
  { name: 'ShopeeFood', status: 'Chưa liên kết', color: 'bg-orange-600', logo: 'Shopee', desc: 'Kích hoạt để nhận đơn từ Shopee.' }
  ].map((platform, idx) => (
- <div key={idx} className="bg-white p-8 rounded-lg border border-stone-100 shadow-sm hover:shadow-sm transition-all group">
+ <div key={idx} className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm hover:shadow-sm transition-all group">
  <div className="flex justify-between items-start mb-6">
- <div className={cn("w-14 h-14 rounded-lg flex items-center justify-center text-[#FAF9F5] font-black text-xs", platform.color)}>
+ <div className={cn("w-14 h-14 rounded-sm flex items-center justify-center text-[#FAF9F5] font-black text-xs", platform.color)}>
  {platform.logo}
  </div>
  <div className="flex flex-col items-end">
@@ -2571,9 +2635,9 @@ export function IPosModule() {
  <h5 className="text-lg font-black text-stone-900 mb-2">{platform.name}</h5>
  <p className="text-xs text-stone-400 font-medium mb-6 leading-relaxed">{platform.desc}</p>
  <div className="pt-6 border-t border-stone-50 flex gap-3">
- <button className="flex-1 py-3 bg-stone-50 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-stone-100 transition-all">Cấu hình</button>
+ <button className="flex-1 py-3 bg-stone-50 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-stone-100 transition-all">Cấu hình</button>
  <button className={cn(
- "flex-1 py-3 font-black text-[10px] uppercase tracking-widest rounded-lg transition-all",
+ "flex-1 py-3 font-black text-[10px] uppercase tracking-widest rounded-sm transition-all",
  platform.status === 'Đã kết nối' ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-indigo-600 text-[#FAF9F5] hover:bg-indigo-700"
  )}>
  {platform.status === 'Đã kết nối' ? 'Ngắt kết nối' : 'Kết nối ngay'}
@@ -2583,7 +2647,7 @@ export function IPosModule() {
  ))}
  </div>
 
- <div className="bg-emerald-900 rounded-lg p-10 text-[#FAF9F5] relative overflow-hidden">
+ <div className="bg-emerald-900 rounded-sm p-10 text-[#FAF9F5] relative overflow-hidden">
  <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
  <div className="space-y-4">
  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-800 rounded-full">
@@ -2597,7 +2661,7 @@ export function IPosModule() {
  Hệ thống sẽ tự động gọi tài xế gần nhất để giao hàng khi bạn chốt đơn tại quầy hoặc từ các kênh online, tối ưu hóa thời gian vận chuyển.
  </p>
  </div>
- <button className="px-10 py-5 bg-white text-emerald-900 font-black text-xs uppercase tracking-widest rounded-lg shadow-sm hover:scale-105 active:scale-95 transition-all">Kích hoạt Smart Shipping</button>
+ <button className="px-10 py-5 bg-white text-emerald-900 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 active:scale-95 transition-all">Kích hoạt Smart Shipping</button>
  </div>
  <Layers className="absolute -bottom-12 -right-12 w-64 h-64 text-[#FAF9F5]/5 rotate-12" />
  </div>
@@ -2612,13 +2676,13 @@ export function IPosModule() {
  <div className="flex items-center gap-3">
  <button 
  onClick={() => navigate('/ipos-settings')}
- className="flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-lg text-xs font-bold hover:bg-stone-50 transition-all shadow-sm active:scale-95"
+ className="flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm text-xs font-bold hover:bg-stone-50 transition-all shadow-sm active:scale-95"
  >
  <Shield className="w-4 h-4" /> Cài đặt Phân quyền
  </button>
  <button 
  onClick={() => { setEditingStaff(null); setIsAddingStaff(true); }}
- className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 active:scale-95"
+ className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-[#FAF9F5] rounded-sm text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 active:scale-95"
  >
  <Plus className="w-4 h-4" /> Thêm nhân sự mới
  </button>
@@ -2627,13 +2691,13 @@ export function IPosModule() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
  {staffList.map(staff => (
- <div key={staff.id} className="group relative bg-white border border-stone-200 rounded-lg p-6 hover:border-indigo-500 hover:shadow-sm hover:shadow-stone-100 transition-all duration-300">
+ <div key={staff.id} className="group relative bg-white border border-stone-200 rounded-sm p-6 hover:border-indigo-500 hover:shadow-sm hover:shadow-stone-100 transition-all duration-300">
  <div className="flex justify-between items-start mb-4">
- <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+ <div className="w-12 h-12 bg-stone-100 rounded-sm flex items-center justify-center text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
  <User className="w-6 h-6" />
  </div>
  <div className={cn(
- "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+ "px-3 py-1 rounded-sm text-[9px] font-black uppercase tracking-widest border",
  staff.role === 'admin' ? "bg-rose-50 text-rose-600 border-rose-100" :
  staff.role === 'manager' ? "bg-amber-50 text-amber-600 border-amber-100" :
  "bg-[#F2F0E9] text-orange-700 border-[#EAE7DF]"
@@ -2651,8 +2715,8 @@ export function IPosModule() {
  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{staff.status === 'active' ? 'Đang hoạt động' : 'Tạm khóa'}</span>
  </div>
  <div className="flex gap-2">
- <button onClick={() => { setEditingStaff(staff); setIsAddingStaff(true); }} className="p-2 hover:bg-indigo-50 text-stone-400 hover:text-indigo-600 transition-colors rounded-lg"><Key className="w-4 h-4" /></button>
- <button onClick={() => handleDeleteStaff(staff.id)} className="p-2 hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-colors rounded-lg"><Trash2 className="w-4 h-4" /></button>
+ <button onClick={() => { setEditingStaff(staff); setIsAddingStaff(true); }} className="p-2 hover:bg-indigo-50 text-stone-400 hover:text-indigo-600 transition-colors rounded-sm"><Key className="w-4 h-4" /></button>
+ <button onClick={() => handleDeleteStaff(staff.id)} className="p-2 hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-colors rounded-sm"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  </div>
@@ -2667,12 +2731,12 @@ export function IPosModule() {
  </div>
  
  <div className="space-y-6">
- <div className="bg-stone-50 p-6 rounded-lg space-y-6">
+ <div className="bg-stone-50 p-6 rounded-sm space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
  <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Ngành nghề</label>
  <select
- className="w-full h-10 px-3 bg-white border border-stone-200 rounded-lg text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
+ className="w-full h-10 px-3 bg-white border border-stone-200 rounded-sm text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
  value={activeStoreConfig?.industry || ''}
  onChange={(e) => handleUpdateStoreField('industry', e.target.value)}
  >
@@ -2685,7 +2749,7 @@ export function IPosModule() {
  <div className="space-y-1.5">
  <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Loại hình chi tiết</label>
  <select
- className="w-full h-10 px-3 bg-white border border-stone-200 rounded-lg text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
+ className="w-full h-10 px-3 bg-white border border-stone-200 rounded-sm text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
  value={activeStoreConfig?.subIndustry || ''}
  onChange={(e) => handleUpdateStoreField('subIndustry', e.target.value)}
  disabled={!activeStoreConfig?.industry}
@@ -2749,7 +2813,7 @@ export function IPosModule() {
  </div>
  </div>
 
- <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-lg flex items-start gap-4">
+ <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-sm flex items-start gap-4">
  <ShieldCheck className="w-6 h-6 text-indigo-600 shrink-0" />
  <div className="space-y-1">
  <p className="text-sm font-bold text-indigo-900">Quyền hạn của bạn</p>
@@ -2762,7 +2826,7 @@ export function IPosModule() {
  </div>
  </div>
  ) : activeTab === 'delivery' ? (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 p-8 flex-1 animate-in slide-in- overflow-y-auto">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 p-8 flex-1 animate-in slide-in- overflow-y-auto">
  <div className="flex justify-between items-center mb-8 border-b border-stone-100 pb-4">
  <div>
  <h2 className="text-2xl font-black text-stone-900 tracking-tight">Đối tác Giao hàng</h2>
@@ -2772,7 +2836,7 @@ export function IPosModule() {
 
  {discrepancyPrompt && (
  <div className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-stone-900/60 backdrop-blur-md">
- <div className="bg-white rounded-lg max-w-lg shadow-sm p-8 space-y-6">
+ <div className="bg-white rounded-sm max-w-lg shadow-sm p-8 space-y-6">
  <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
  <AlertCircle className="w-8 h-8" />
  </div>
@@ -2783,13 +2847,13 @@ export function IPosModule() {
  <div className="flex gap-4 pt-4 border-t border-stone-100">
  <button 
  onClick={() => proceedWithExternalOrder(discrepancyPrompt.order, null)} 
- className="flex-1 py-3 bg-white border border-stone-200 shadow-sm text-stone-600 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-stone-50 transition-all font-semibold"
+ className="flex-1 py-3 bg-white border border-stone-200 shadow-sm text-stone-600 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-stone-50 transition-all font-semibold"
  >
  Tạo KH Mới
  </button>
  <button 
  onClick={() => proceedWithExternalOrder(discrepancyPrompt.order, discrepancyPrompt.matchedCustomer)} 
- className="flex-1 py-3 bg-indigo-600 text-[#FAF9F5] rounded-lg font-bold text-xs uppercase tracking-widest shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all"
+ className="flex-1 py-3 bg-indigo-600 text-[#FAF9F5] rounded-sm font-bold text-xs uppercase tracking-widest shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all"
  >
  Liên kết
  </button>
@@ -2808,7 +2872,7 @@ export function IPosModule() {
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
  {incomingExternalOrders.map(order => (
- <div key={order.id} className="bg-white border border-stone-200 rounded-lg p-6 shadow-sm hover:border-indigo-300 transition-all group flex flex-col relative overflow-hidden">
+ <div key={order.id} className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm hover:border-indigo-300 transition-all group flex flex-col relative overflow-hidden">
  <div className={cn(
  "absolute top-0 left-0 w-full h-1",
  order.platform === 'GrabFood' ? 'bg-emerald-500' :
@@ -2844,7 +2908,7 @@ export function IPosModule() {
 
  <button 
  onClick={() => handleProcessExternalOrder(order)}
- className="w-full py-3 bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-indigo-600 hover:text-[#FAF9F5] transition-all shadow-sm active:scale-95"
+ className="w-full py-3 bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-indigo-600 hover:text-[#FAF9F5] transition-all shadow-sm active:scale-95"
  >
  Nhận & Gọi Tài xế
  </button>
@@ -2854,16 +2918,16 @@ export function IPosModule() {
  )}
  </div>
  ) : activeTab === 'lookup' ? (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 shadow-sm p-10 flex-1 animate-in slide-in-">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-10 flex-1 animate-in slide-in-">
  <button onClick={() => setActiveTab('sales')} className="flex items-center gap-2 text-xs font-bold text-stone-400 hover:text-indigo-600 mb-6 transition-colors">
  <Undo2 className="w-4 h-4" /> Quay lại
  </button>
  
  {selectedProductLookup && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
- <div className="aspect-square bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-center relative overflow-hidden">
+ <div className="aspect-square bg-stone-50 rounded-sm border border-stone-100 flex items-center justify-center relative overflow-hidden">
  <Monitor className="w-24 h-24 text-stone-200" />
- <div className="absolute top-6 left-6 bg-indigo-600 text-[#FAF9F5] px-4 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-sm">In Stock</div>
+ <div className="absolute top-6 left-6 bg-indigo-600 text-[#FAF9F5] px-4 py-1.5 rounded-sm font-bold text-[10px] uppercase tracking-widest shadow-sm">In Stock</div>
  </div>
  <div className="space-y-8">
  <div className="flex justify-between items-start">
@@ -2871,17 +2935,17 @@ export function IPosModule() {
  <h2 className="text-3xl font-bold text-stone-900 mb-1 leading-tight">{selectedProductLookup.name}</h2>
  <p className="text-stone-500 text-xs font-bold uppercase tracking-widest">{selectedProductLookup.id}</p>
  </div>
- <button className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
+ <button className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-[#FAF9F5] rounded-sm text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
  <RefreshCcw className="w-4 h-4" /> Đặt giữ hàng
  </button>
  </div>
  
  <div className="grid grid-cols-2 gap-6">
- <div className="p-5 bg-stone-50 rounded-lg space-y-1">
+ <div className="p-5 bg-stone-50 rounded-sm space-y-1">
  <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Giá bán</p>
  <p className="text-xl font-bold text-stone-900">{formatCurrency(selectedProductLookup.price)}</p>
  </div>
- <div className="p-5 bg-emerald-50 rounded-lg space-y-1 border border-emerald-100">
+ <div className="p-5 bg-emerald-50 rounded-sm space-y-1 border border-emerald-100">
  <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Tồn kho hệ thống</p>
  <p className="text-xl font-bold text-emerald-600">{selectedProductLookup.stock || 0}</p>
  </div>
@@ -2892,7 +2956,7 @@ export function IPosModule() {
  <RefreshCcw className="w-3.5 h-3.5 text-indigo-600" /> Liên chi nhánh
  </h4>
  <div className="space-y-2">
- <div className="flex justify-between items-center p-4 bg-white border border-stone-100 rounded-lg shadow-sm hover:border-indigo-200 transition-all">
+ <div className="flex justify-between items-center p-4 bg-white border border-stone-100 rounded-sm shadow-sm hover:border-indigo-200 transition-all">
  <span className="text-sm font-medium text-stone-700">CN Quận 1 (Chính)</span>
  <span className="font-bold text-xs text-indigo-600">{selectedProductLookup.stock || 0} sp</span>
  </div>
@@ -2901,7 +2965,7 @@ export function IPosModule() {
 
  <button 
  onClick={() => { addToCart(selectedProductLookup); setActiveTab('sales'); }}
- className="w-full py-5 bg-indigo-600 text-[#FAF9F5] rounded-lg font-bold text-sm uppercase tracking-widest shadow-sm shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all"
+ className="w-full py-5 bg-indigo-600 text-[#FAF9F5] rounded-sm font-bold text-sm uppercase tracking-widest shadow-sm shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all"
  >
  Thêm vào đơn hàng
  </button>
@@ -2910,7 +2974,7 @@ export function IPosModule() {
  )}
  </div>
  ) : (
- <div className="col-span-12 bg-white rounded-lg border border-stone-200 shadow-sm p-6 flex-1 overflow-y-auto">
+ <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-6 flex-1 overflow-y-auto">
  <div className="flex items-center justify-between mb-8">
  <h3 className="font-bold text-stone-900 flex items-center gap-2 text-base">
  <History className="w-5 h-5 text-indigo-600" /> Nhật ký đơn hàng
@@ -2934,10 +2998,10 @@ export function IPosModule() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  {pendingEMenuOrders.map(order => (
- <div key={order.id} className="p-5 bg-rose-50/50 rounded-lg border border-rose-100 flex flex-col gap-4 shadow-sm hover:shadow-sm transition-all">
+ <div key={order.id} className="p-5 bg-rose-50/50 rounded-sm border border-rose-100 flex flex-col gap-4 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
+ <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
  <QrCode className="w-5 h-5" />
  </div>
  <div>
@@ -2951,13 +3015,13 @@ export function IPosModule() {
  <div className="flex gap-2 border-t border-rose-100 pt-4">
  <button 
  onClick={() => handleProcessEMenuOrder(order)}
- className="flex-1 py-2.5 bg-rose-600 text-[#FAF9F5] rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-sm shadow-rose-600/20 active:scale-95"
+ className="flex-1 py-2.5 bg-rose-600 text-[#FAF9F5] rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-sm shadow-rose-600/20 active:scale-95"
  >
  Nhận & Xử lý
  </button>
  <button 
  onClick={() => handleDeclineOrder(order.id)}
- className="px-4 py-2.5 bg-white text-rose-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-rose-200 hover:bg-rose-50 transition-all active:scale-95"
+ className="px-4 py-2.5 bg-white text-rose-600 rounded-sm text-[10px] font-black uppercase tracking-widest border border-rose-200 hover:bg-rose-50 transition-all active:scale-95"
  >
  Hủy
  </button>
@@ -2973,11 +3037,11 @@ export function IPosModule() {
  {orderHistory.map(tx => (
  <div 
  key={tx.id} 
- className="flex items-center justify-between p-5 bg-stone-50 rounded-lg border border-stone-100 hover:bg-white hover:shadow-sm hover:border-indigo-200 transition-all cursor-pointer group"
+ className="flex items-center justify-between p-5 bg-stone-50 rounded-sm border border-stone-100 hover:bg-white hover:shadow-sm hover:border-indigo-200 transition-all cursor-pointer group"
  onClick={() => setSelectedTxForDetail(tx)}
  >
  <div className="flex items-center gap-5">
- <div className="w-10 h-10 bg-white rounded-lg shadow-inner flex items-center justify-center font-bold text-xs text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors uppercase">{tx.time}</div>
+ <div className="w-10 h-10 bg-white rounded-sm shadow-inner flex items-center justify-center font-bold text-xs text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors uppercase">{tx.time}</div>
  <div>
  <p className="font-bold text-stone-900 text-base">{tx.id}</p>
  <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">{tx.items} sản phẩm • {tx.status}</p>
@@ -3105,16 +3169,16 @@ export function IPosModule() {
  initial={{ opacity: 0, scale: 0.95, y: 20 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.95, y: 20 }}
- className="bg-white rounded-lg w-full max-w-xl shadow-sm overflow-hidden"
+ className="bg-white rounded-sm w-full max-w-xl shadow-sm overflow-hidden"
  >
  <div className="p-8 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-indigo-600 text-[#FAF9F5] rounded-lg flex items-center justify-center">
+ <div className="w-10 h-10 bg-indigo-600 text-[#FAF9F5] rounded-sm flex items-center justify-center">
  <UserCheck className="w-5 h-5" />
  </div>
  <h3 className="text-xl font-black text-stone-900 tracking-tight">{editingStaff ? 'Cập nhật nhân sự' : 'Thêm nhân sự mới'}</h3>
  </div>
- <button onClick={() => setIsAddingStaff(false)} className="p-2 hover:bg-white rounded-lg transition-all shadow-sm"><X className="w-6 h-6 text-stone-400" /></button>
+ <button onClick={() => setIsAddingStaff(false)} className="p-2 hover:bg-white rounded-sm transition-all shadow-sm"><X className="w-6 h-6 text-stone-400" /></button>
  </div>
  
  <div className="p-8 space-y-6">
@@ -3123,7 +3187,7 @@ export function IPosModule() {
  <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Họ và tên</label>
  <input 
  type="text" 
- className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
+ className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
  placeholder="Nguyễn Văn A"
  value={staffForm.fullName}
  onChange={(e) => setStaffForm({...staffForm, fullName: e.target.value})}
@@ -3133,7 +3197,7 @@ export function IPosModule() {
  <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Số điện thoại</label>
  <input 
  type="text" 
- className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-mono"
+ className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-mono"
  placeholder="09xxx"
  value={staffForm.phone}
  onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})}
@@ -3145,7 +3209,7 @@ export function IPosModule() {
  <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Địa chỉ Email (Để đăng nhập)</label>
  <input 
  type="email" 
- className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
+ className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
  placeholder="staff@example.com"
  value={staffForm.email}
  onChange={(e) => setStaffForm({...staffForm, email: e.target.value})}
@@ -3164,7 +3228,7 @@ export function IPosModule() {
  key={role.id}
  onClick={() => setStaffForm({...staffForm, role: role.id as any})}
  className={cn(
- "p-4 rounded-lg border-2 transition-all text-left flex flex-col gap-2 relative group",
+ "p-4 rounded-sm border-2 transition-all text-left flex flex-col gap-2 relative group",
  staffForm.role === role.id ? "bg-indigo-50 border-indigo-600 shadow-sm shadow-indigo-100" : "bg-white border-stone-100 hover:border-stone-200"
  )}
  >
@@ -3185,13 +3249,13 @@ export function IPosModule() {
  <div className="p-8 bg-stone-50/50 border-t border-stone-100 flex gap-4">
  <button 
  onClick={() => setIsAddingStaff(false)}
- className="flex-1 py-4 bg-white border border-stone-200 text-stone-400 font-bold rounded-lg hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
+ className="flex-1 py-4 bg-white border border-stone-200 text-stone-400 font-bold rounded-sm hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
  >
  Hủy bỏ
  </button>
  <button 
  onClick={() => handleSaveStaff(staffForm)}
- className="flex-[2] py-4 bg-indigo-600 text-[#FAF9F5] rounded-lg font-black text-xs uppercase tracking-[0.2em] shadow-sm shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
+ className="flex-[2] py-4 bg-indigo-600 text-[#FAF9F5] rounded-sm font-black text-xs uppercase tracking-[0.2em] shadow-sm shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
  >
  {editingStaff ? 'Cập nhật thay đổi' : 'Xác nhận thêm mới'}
  </button>
@@ -3213,7 +3277,7 @@ export function IPosModule() {
  >
  <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-lg flex items-center justify-center">
+ <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center">
  <FileText className="w-5 h-5" />
  </div>
  <div>
@@ -3221,13 +3285,13 @@ export function IPosModule() {
  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Mã giao dịch: {selectedTxForDetail.id}</p>
  </div>
  </div>
- <button onClick={() => setSelectedTxForDetail(null)} className="p-2 hover:bg-white rounded-lg transition-all shadow-sm">
+ <button onClick={() => setSelectedTxForDetail(null)} className="p-2 hover:bg-white rounded-sm transition-all shadow-sm">
  <X className="w-6 h-6 text-stone-400" />
  </button>
  </div>
 
  <div className="flex-1 overflow-y-auto p-8">
- <div className="bg-stone-50 rounded-lg p-8 border border-dashed border-stone-200 relative">
+ <div className="bg-stone-50 rounded-sm p-8 border border-dashed border-stone-200 relative">
  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-black text-stone-400 tracking-[0.2em] uppercase">E-Receipt Digital</div>
  
  <div className="text-center mb-8 space-y-2">
@@ -3271,7 +3335,7 @@ export function IPosModule() {
 
  <div className="mt-12 pt-8 border-t border-stone-100 text-center space-y-6">
  <div className="flex justify-center">
- <div className="bg-stone-900 p-2 rounded-lg">
+ <div className="bg-stone-900 p-2 rounded-sm">
  <QrCode className="w-24 h-24 text-[#FAF9F5]" />
  </div>
  </div>
@@ -3281,12 +3345,12 @@ export function IPosModule() {
  </div>
 
  <div className="p-8 border-t border-stone-100 grid grid-cols-2 gap-4 bg-stone-50/50">
- <button className="flex items-center justify-center gap-2 py-4 bg-white border border-stone-200 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-stone-50 transition-all shadow-sm">
+ <button className="flex items-center justify-center gap-2 py-4 bg-white border border-stone-200 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all shadow-sm">
  <Download className="w-4 h-4" /> Lưu ảnh
  </button>
  <button 
  onClick={() => window.print()}
- className="flex items-center justify-center gap-2 py-4 bg-indigo-600 text-[#FAF9F5] font-black text-[10px] uppercase tracking-widest rounded-lg shadow-sm shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
+ className="flex items-center justify-center gap-2 py-4 bg-indigo-600 text-[#FAF9F5] font-black text-[10px] uppercase tracking-widest rounded-sm shadow-sm shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
  >
  <Printer className="w-4 h-4" /> In hóa đơn
  </button>
@@ -3304,7 +3368,7 @@ export function IPosModule() {
  initial={{ opacity: 0, scale: 0.9, y: 20 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.9, y: 20 }}
- className="bg-white rounded-xl w-full max-w-sm shadow-sm overflow-hidden relative"
+ className="bg-white rounded-sm w-full max-w-sm shadow-sm overflow-hidden relative"
  >
  <div className="absolute top-4 right-4 z-10">
  <button 
@@ -3321,20 +3385,20 @@ export function IPosModule() {
  <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">{tables.find(t => t.id === selectedTableForQr)?.name} • {tables.find(t => t.id === selectedTableForQr)?.zone}</p>
  </div>
 
- <div className="bg-stone-50 p-10 rounded-xl border-2 border-dashed border-stone-200 relative group">
- <div className="aspect-square bg-white rounded-lg shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+ <div className="bg-stone-50 p-10 rounded-sm border-2 border-dashed border-stone-200 relative group">
+ <div className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
  <QrCode className="w-40 h-40 text-stone-900" />
  
  {/* Visual overlay for logo branding */}
  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
- <div className="w-12 h-12 bg-white rounded-lg shadow-sm flex items-center justify-center border-4 border-stone-50">
+ <div className="w-12 h-12 bg-white rounded-sm shadow-sm flex items-center justify-center border-4 border-stone-50">
  <Store className="w-6 h-6 text-indigo-600" />
  </div>
  </div>
  </div>
  </div>
  
- <div className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-lg">
+ <div className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-sm">
  <CheckCircle2 className="w-4 h-4" /> QR Code đã được kích hoạt
  </div>
  
@@ -3345,7 +3409,7 @@ export function IPosModule() {
  alert('Đang tải xuống QR Code...');
  setSelectedTableForQr(null);
  }}
- className="w-full py-4 bg-indigo-600 text-[#FAF9F5] rounded-xl font-black text-xs uppercase tracking-widest shadow-sm shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+ className="w-full py-4 bg-indigo-600 text-[#FAF9F5] rounded-sm font-black text-xs uppercase tracking-widest shadow-sm shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
  >
  <Download className="w-4 h-4" /> Tải mã QR
  </button>
