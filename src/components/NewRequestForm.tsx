@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { X, Send, AlertTriangle, UserPlus, Plus, Trash2 } from 'lucide-react';
+import { X, Send, AlertTriangle, UserPlus, Plus, Trash2, Save } from 'lucide-react';
 
 interface NewRequestFormProps {
   onSubmit?: (data: any) => void;
@@ -251,6 +251,13 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               Hủy
             </button>
           )}
+          <button 
+            type="button"
+            onClick={() => alert("Đã lưu bản nháp!")}
+            className="px-6 py-2.5 text-sm font-bold text-stone-700 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors shadow-sm flex items-center gap-2"
+          >
+            <Save className="w-4 h-4" /> Lưu nháp
+          </button>
           <button 
             type="submit"
             className="px-6 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2"
