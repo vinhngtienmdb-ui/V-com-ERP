@@ -31,7 +31,8 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
               { id: 'pending', label: 'Chờ đóng gói/Bàn giao' },
               { id: 'shipping', label: 'Đang giao (COD)' },
               { id: 'completed', label: 'Hoàn thành' },
-              { id: 'issues', label: 'Khiếu nại/Đơn trùng' }
+              { id: 'issues', label: 'Khiếu nại/Đơn trùng' },
+              { id: 'history', label: 'Lịch sử Sửa/Xóa' }
             ].map(t => (
                <button key={t.id} onClick={() => setTab(t.id as any)} className={cn("pb-2 text-sm font-bold border-b-2 transition-colors", tab === t.id ? "border-indigo-600 text-indigo-600" : "border-transparent text-stone-400 hover:text-stone-600")}>
                   {t.label}
@@ -41,42 +42,59 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto">
-         <div className="bg-white border border-stone-200 rounded-sm shadow-sm overflow-hidden">
-             <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 font-bold">
-                    <tr>
-                        <th className="px-4 py-3">Mã KH/Nguồn</th>
-                        <th className="px-4 py-3">Thông tin Đơn</th>
-                        <th className="px-4 py-3">Trạng thái</th>
-                        <th className="px-4 py-3 text-right">Tổng thanh toán</th>
-                        <th className="px-4 py-3 text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {[1,2,3,4,5].map(i => (
-                        <tr key={i} className="border-b last:border-0 border-stone-100 hover:bg-stone-50 transition-colors">
-                            <td className="px-4 py-4">
-                                <p className="font-bold text-stone-900">#ORD-00{i}</p>
-                                <p className="text-xs text-stone-500 mt-0.5">{i%2===0 ? 'Lazada' : 'ShopeeFood'}</p>
-                            </td>
-                            <td className="px-4 py-4">
-                                <p className="font-semibold text-stone-800">Khách hàng {i}</p>
-                                <p className="text-xs text-stone-500 mt-0.5">3 sản phẩm • 091234567{i}</p>
-                            </td>
-                            <td className="px-4 py-4">
-                                <span className={cn("px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
-                                    {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
-                                </span>
-                            </td>
-                            <td className="px-4 py-4 text-right font-black text-indigo-600">{formatCurrency(150000 * i)}</td>
-                            <td className="px-4 py-4 text-center space-x-2">
-                                <button className="p-1.5 bg-stone-100 text-stone-500 rounded hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="In Phiếu Bàn Giao"><FileText className="w-4 h-4" /></button>
-                                <button className="p-1.5 bg-stone-100 text-stone-500 rounded hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="Theo dõi Vận chuyển"><Truck className="w-4 h-4" /></button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+         <div className="bg-white border border-stone-200 rounded-sm shadow-sm overflow-hidden min-h-[400px]">
+             {tab === 'issues' ? (
+                <div className="p-8 text-center text-stone-500">
+                   <AlertCircle className="w-12 h-12 text-rose-200 mx-auto mb-4" />
+                   <h3 className="font-bold text-stone-800 text-lg mb-2">Đơn khiếu nại & Đơn trùng</h3>
+                   <p className="text-sm">Hệ thống có thể phát hiện và cảnh báo các đơn trùng lặp dựa trên SĐT, Địa chỉ, và thời gian đặt hàng.</p>
+                </div>
+             ) : tab === 'history' ? (
+                <div className="p-8 text-center text-stone-500">
+                   <FileText className="w-12 h-12 text-stone-200 mx-auto mb-4" />
+                   <h3 className="font-bold text-stone-800 text-lg mb-2">Lịch sử Chỉnh sửa / Xóa đơn</h3>
+                   <p className="text-sm">Ghi nhận toàn bộ thao tác của nhân viên trên đơn hàng nhằm đối soát và kiểm toán.</p>
+                </div>
+             ) : (
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                   <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 font-bold">
+                       <tr>
+                           <th className="px-4 py-3">Mã KH/Nguồn</th>
+                           <th className="px-4 py-3">Thông tin Đơn</th>
+                           <th className="px-4 py-3">Trạng thái & Đối soát</th>
+                           <th className="px-4 py-3 text-right">Tổng thanh toán</th>
+                           <th className="px-4 py-3 text-center">Thao tác</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       {[1,2,3,4,5].map(i => (
+                           <tr key={i} className="border-b last:border-0 border-stone-100 hover:bg-stone-50 transition-colors">
+                               <td className="px-4 py-4">
+                                   <p className="font-bold text-stone-900">#ORD-00{i}</p>
+                                   <p className="text-xs text-stone-500 mt-0.5">{i%2===0 ? 'Lazada' : 'ShopeeFood'}</p>
+                               </td>
+                               <td className="px-4 py-4">
+                                   <p className="font-semibold text-stone-800">Khách hàng {i}</p>
+                                   <p className="text-[10px] bg-stone-100 px-2 py-0.5 rounded w-fit mt-1">SĐT: 091234567{i}</p>
+                               </td>
+                               <td className="px-4 py-4">
+                                   <div className="flex flex-col gap-1">
+                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
+                                          {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
+                                      </span>
+                                      <span className="text-[10px] font-bold text-stone-400">COD: Đã đối soát</span>
+                                   </div>
+                               </td>
+                               <td className="px-4 py-4 text-right font-black text-indigo-600">{formatCurrency(150000 * i)}</td>
+                               <td className="px-4 py-4 text-center space-x-2">
+                                   <button className="p-1.5 bg-stone-100 text-stone-500 rounded hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
+                                   <button className="p-1.5 bg-stone-100 text-stone-500 rounded hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>
+                               </td>
+                           </tr>
+                       ))}
+                   </tbody>
+               </table>
+             )}
          </div>
       </div>
     </div>

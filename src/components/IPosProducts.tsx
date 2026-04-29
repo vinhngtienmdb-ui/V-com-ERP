@@ -28,8 +28,8 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
          <div className="bg-white border border-stone-200 rounded-sm shadow-sm md:flex min-h-[500px]">
              {/* Sidebar */}
              <div className="w-full md:w-48 xl:w-56 border-r border-stone-200 p-4 space-y-1">
-                 <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Danh mục</p>
-                 {['Tất cả', 'Danh mục 1', 'Danh mục 2', 'Thương hiệu', 'Thuộc tính', 'Lô/HSD', 'Nhà cung cấp'].map((item, i) => (
+                 <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Phân loại & Quản lý</p>
+                 {['Tất cả Sản phẩm', 'Lô Sản phẩm / HSD', 'Thương hiệu', 'Thời gian Lưu kho', 'Tồn kho thấp', 'Danh mục', 'Thuộc tính', 'Nhà cung cấp'].map((item, i) => (
                     <button key={item} className={cn("w-full text-left px-3 py-2 text-xs font-bold rounded-sm transition-colors", i===0 ? "bg-indigo-50 text-indigo-700" : "text-stone-600 hover:bg-stone-50")}>
                         {item}
                     </button>
@@ -46,8 +46,8 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
                             <tr>
                                 <th className="px-4 py-3">SKU</th>
                                 <th className="px-4 py-3">Tên Sản Phẩm</th>
-                                <th className="px-4 py-3">Giá Bán</th>
-                                <th className="px-4 py-3">Danh Mục</th>
+                                <th className="px-4 py-3">Lô/HSD</th>
+                                <th className="px-4 py-3">Thương hiệu</th>
                                 <th className="px-4 py-3 text-right">Tồn Kho</th>
                             </tr>
                         </thead>
@@ -55,10 +55,16 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
                             {[1,2,3,4,5].map(i => (
                                 <tr key={i} className="border-b last:border-0 border-stone-100 hover:bg-stone-50 transition-colors">
                                     <td className="px-4 py-3 font-mono text-stone-500">SP00{i}</td>
-                                    <td className="px-4 py-3 font-semibold text-stone-900">Sản phẩm mẫu {i}</td>
-                                    <td className="px-4 py-3 font-medium text-indigo-600">{formatCurrency(150000 * i)}</td>
-                                    <td className="px-4 py-3">Phân loại A</td>
-                                    <td className="px-4 py-3 text-right font-bold text-emerald-600">{i * 12}</td>
+                                    <td className="px-4 py-3">
+                                       <p className="font-semibold text-stone-900">Sản phẩm mẫu {i}</p>
+                                       <p className="text-[10px] text-stone-500">Giá: {formatCurrency(150000 * i)} • NCC {i}</p>
+                                    </td>
+                                    <td className="px-4 py-3 text-xs text-stone-600">Lô {2026+i} • 12/2027</td>
+                                    <td className="px-4 py-3 font-medium text-stone-600">Brand {i}</td>
+                                    <td className="px-4 py-3 text-right">
+                                       <p className="font-bold text-emerald-600">{i * 12}</p>
+                                       <p className="text-[10px] text-stone-400">Lưu kho: {10 * i} ngày</p>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
