@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { 
+ Users,
+ Coins,
+ Gift,
+ Settings2,
+ List,
  Wallet, 
  ShieldCheck, 
  ArrowUpRight, 
@@ -75,7 +80,7 @@ const MOCK_GATEWAYS: PaymentGateway[] = [
 ];
 
 export function WalletHub() {
- const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking'>('history');
+ const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking' | 'crm_wallet'>('history');
  const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
  const [isSyncing, setIsSyncing] = useState(false);
  const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);
@@ -87,6 +92,7 @@ export function WalletHub() {
  const [filterType, setFilterType] = useState('all');
  const [filterStatus, setFilterStatus] = useState('all');
  const [filterDate, setFilterDate] = useState('');
+ const [crmHistoryTab, setCrmHistoryTab] = useState<'all' | 'cashback' | 'promo' | 'loyalty'>('all');
 
  const filteredTransactions = MOCK_TRANSACTIONS.filter((txn) => {
  if (searchHistory && !txn.id.toLowerCase().includes(searchHistory.toLowerCase()) && !txn.userId.toLowerCase().includes(searchHistory.toLowerCase())) return false;
@@ -335,7 +341,8 @@ export function WalletHub() {
  { id: 'history', label: 'Lịch sử giao dịch', icon: History },
  { id: 'banking', label: 'Tài khoản Ngân hàng', icon: Landmark },
  { id: 'escrow', label: 'Bảo mật Ký quỹ', icon: ShieldCheck },
- { id: 'gateway', label: 'Cổng thanh toán', icon: Smartphone }
+ { id: 'gateway', label: 'Cổng thanh toán', icon: Smartphone },
+ { id: 'crm_wallet', label: 'Tích điểm & Ví CSKH', icon: Users }
  ].map((tab) => (
  <button 
  key={tab.id}
@@ -754,7 +761,204 @@ export function WalletHub() {
  </div>
  </motion.div>
  )}
- </AnimatePresence>
+ 
+ {activeTab === 'crm_wallet' && (
+ <motion.div 
+ initial={{ opacity: 0, y: 10 }}
+ animate={{ opacity: 1, y: 0 }}
+ className="space-y-8"
+ >
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+ {/* Points Earning Config */}
+ <div className="bg-white p-6 rounded-lg border border-purple-100 shadow-sm relative overflow-hidden">
+ <div className="absolute top-0 right-0 p-4 opacity-5">
+ <Gift className="w-24 h-24 rotate-12" />
+ </div>
+ <div className="relative z-10 space-y-4">
+ <div className="flex items-center gap-2 mb-2">
+ <div className="w-10 h-10 bg-purple-50 flex items-center justify-center rounded-lg text-purple-600">
+ <Gift className="w-5 h-5" />
+ </div>
+ <div>
+ <h3 className="font-bold text-stone-900 leading-tight">Tích điểm Loyalty</h3>
+ <p className="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Quy tắc sinh điểm</p>
+ </div>
+ </div>
+ 
+ <div className="bg-stone-50 rounded-lg p-4 space-y-3">
+ <div className="flex justify-between items-center text-sm">
+ <span className="text-stone-600 font-bold">Số tiền chi tiêu (VNĐ)</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-stone-200 rounded block focus:outline-none" defaultValue="10,000" />
+ </div>
+ <div className="flex justify-center">
+ <ArrowDownRight className="w-4 h-4 text-stone-400" />
+ </div>
+ <div className="flex justify-between items-center text-sm">
+ <span className="text-purple-600 font-bold">Điểm Loyalty tương ứng</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-purple-200 rounded block focus:outline-none text-purple-700 bg-purple-50 font-bold" defaultValue="1" />
+ </div>
+ </div>
+ <div className="pt-2">
+ <button onClick={() => alert('Đã cập nhật quy tắc tích điểm')} className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-[11px] uppercase tracking-wider transition-colors">
+ Lưu Cấu Hình
+ </button>
+ </div>
+ </div>
+ </div>
+
+ {/* Points to Promo Conversion */}
+ <div className="bg-white p-6 rounded-lg border border-blue-100 shadow-sm relative overflow-hidden">
+ <div className="absolute top-0 right-0 p-4 opacity-5">
+ <ArrowLeftRight className="w-24 h-24 -rotate-12" />
+ </div>
+ <div className="relative z-10 space-y-4">
+ <div className="flex items-center gap-2 mb-2">
+ <div className="w-10 h-10 bg-blue-50 flex items-center justify-center rounded-lg text-blue-600">
+ <ArrowLeftRight className="w-5 h-5" />
+ </div>
+ <div>
+ <h3 className="font-bold text-stone-900 leading-tight">Hoàn tiền / Đổi điểm</h3>
+ <p className="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Loyalty &rarr; Ví Khuyến Mại</p>
+ </div>
+ </div>
+ 
+ <div className="bg-stone-50 rounded-lg p-4 space-y-3">
+ <div className="flex justify-between items-center text-sm">
+ <span className="text-purple-600 font-bold">Ví Điểm Loyalty</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-purple-200 rounded block focus:outline-none bg-purple-50 text-purple-700" defaultValue="1" />
+ </div>
+ <div className="flex justify-center">
+ <ArrowDownRight className="w-4 h-4 text-stone-400" />
+ </div>
+ <div className="flex justify-between items-center text-sm">
+ <span className="text-blue-600 font-bold">Ví Khuyến Mại (VNĐ)</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-blue-200 rounded block focus:outline-none text-blue-700 bg-blue-50 font-bold" defaultValue="10,000" />
+ </div>
+ <div className="border-t border-stone-200 pt-3 mt-3 flex justify-between items-center text-sm">
+ <span className="text-stone-600 font-bold">Thời hạn hiệu lực (Ngày)</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-stone-200 rounded block focus:outline-none bg-white text-stone-900 font-bold" defaultValue="30" />
+ </div>
+ <p className="text-[10px] text-stone-500 italic text-right mt-1">Hệ thống sẽ dọn dẹp các KM hết hạn tự động.</p>
+ </div>
+ <div className="pt-2">
+ <button onClick={() => alert('Đã cập nhật quy tắc quy đổi')} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] uppercase tracking-wider transition-colors">
+ Lưu Quy Đổi
+ </button>
+ </div>
+ </div>
+ </div>
+
+ {/* View Histories */}
+ <div className="bg-stone-900 p-6 rounded-lg border border-stone-800 flex flex-col justify-between shadow-sm relative overflow-hidden">
+ <div className="absolute top-0 right-0 p-4 opacity-10">
+ <History className="w-32 h-32" />
+ </div>
+ <div className="relative z-10">
+ <h3 className="text-xl font-black text-white italic">Tra cứu Giao dịch</h3>
+ <p className="text-sm text-stone-400 mt-2">Truy xuất lịch sử giao dịch và biến động số dư của từng nền tảng ví riêng biệt.</p>
+ </div>
+ <div className="relative z-10 space-y-2 mt-6">
+ <button onClick={() => alert('Đang mở: Lịch sử nạp rút Ví Cashback hoàn tiền.')} className="w-full bg-stone-800 hover:bg-emerald-900/50 text-emerald-400 border border-emerald-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <span>Lịch Sử Cashback</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+ </button>
+ <button onClick={() => alert('Đang mở: Báo cáo tiêu dùng Ví Khuyến mại voucher.')} className="w-full bg-stone-800 hover:bg-blue-900/50 text-blue-400 border border-blue-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <span>Sổ Phụ Khuyến Mại</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+ </button>
+ <button onClick={() => alert('Đang mở: Lịch sử tích lũy/đổi Ví Điểm Loyalty.')} className="w-full bg-stone-800 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <span>Lịch Sử Điểm Loyalty</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+ </button>
+ </div>
+ </div>
+ </div>
+ 
+ <div className="bg-white border border-stone-200 rounded-lg shadow-sm">
+ <div className="p-6 border-b border-stone-100 flex flex-col gap-4">
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-10 h-10 bg-stone-100 flex items-center justify-center rounded-lg text-stone-600">
+ <List className="w-5 h-5" />
+ </div>
+ <div>
+ <h3 className="font-bold text-lg text-stone-900">Chi tiết Biến động Ví gần đây</h3>
+ <p className="text-xs text-stone-500 font-bold uppercase tracking-widest">Khách hàng & Đối tác (Real-time)</p>
+ </div>
+ </div>
+ <div className="flex gap-2">
+ <input type="text" placeholder="Tìm theo Username, ID..." className="px-4 py-2 border border-stone-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-orange-600" />
+ <button className="px-4 py-2 bg-stone-100 text-stone-700 rounded-lg hover:bg-stone-200 transition-colors flex items-center gap-2 text-sm font-bold">
+ <Filter className="w-4 h-4" /> Lọc
+ </button>
+ </div>
+ </div>
+ 
+ <div className="flex gap-2">
+ {[
+ { id: 'all', label: 'Tất cả Giao Dịch' },
+ { id: 'cashback', label: 'Ví Cashback' },
+ { id: 'promo', label: 'Ví Khuyến Mại' },
+ { id: 'loyalty', label: 'Ví Điểm Loyalty' }
+ ].map(tab => (
+ <button 
+ key={tab.id}
+ onClick={() => setCrmHistoryTab(tab.id as any)}
+ className={cn(
+ "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
+ crmHistoryTab === tab.id 
+ ? "bg-stone-900 text-white shadow-sm" 
+ : "bg-stone-50 text-stone-500 hover:bg-stone-100"
+ )}
+ >
+ {tab.label}
+ </button>
+ ))}
+ </div>
+ </div>
+ <div className="overflow-x-auto">
+ <table className="w-full">
+ <thead>
+ <tr className="bg-stone-50 text-[10px] font-bold text-stone-500 uppercase tracking-widest text-left">
+ <th className="px-6 py-4">Đối tượng</th>
+ <th className="px-6 py-4">Loại Ví</th>
+ <th className="px-6 py-4 min-w-[200px]">Giao dịch / Chuyển đổi</th>
+ <th className="px-6 py-4 text-right">Biến động</th>
+ <th className="px-6 py-4 text-right">Số dư mới</th>
+ <th className="px-6 py-4">Thời gian</th>
+ </tr>
+ </thead>
+ <tbody className="divide-y divide-stone-100">
+ {[
+ { user: 'vinh.ngtienmdb', role: 'Khách hàng', type: 'cashback', typeLabel: 'Cashback', action: 'Hoàn tiền mua sắm đơn ORD-9121', icon: RefreshCcw, amount: '+50,000', curr: 'VNĐ', class: 'text-emerald-600', time: '12 thg 5, 2024 14:02' },
+ { user: 'vinh.ngtienmdb', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Đổi từ Cashback sang Khuyến mại', icon: ArrowLeftRight, amount: '+55,000', curr: 'VNĐ', class: 'text-blue-600', time: '12 thg 5, 2024 14:05' },
+ { user: 'kh_0911', role: 'Khách hàng', type: 'loyalty', typeLabel: 'Loyalty', action: 'Tích điểm đơn hàng tự động', icon: RefreshCcw, amount: '+12', curr: 'Pts', class: 'text-purple-600', time: '11 thg 5, 2024 09:30' },
+ { user: 'kh_0911', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Quy đổi Điểm Loyalty ra Vourcher KM', icon: ArrowLeftRight, amount: '+120,000', curr: 'VNĐ', class: 'text-blue-600', time: '11 thg 5, 2024 10:15' },
+ { user: 'seller_thuyvan', role: 'Seller', type: 'cashback', typeLabel: 'Cashback', action: 'Thanh toán đơn hàng (Trừ Ví KH)', icon: CreditCard, amount: '-150,000', curr: 'VNĐ', class: 'text-stone-600', time: '10 thg 5, 2024 08:20' },
+ { user: 'store_q7', role: 'Cửa hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Khách hàng áp dụng Ví Khuyến Mại', icon: Gift, amount: '-50,000', curr: 'VNĐ', class: 'text-stone-600', time: '09 thg 5, 2024 19:45' },
+ ].filter(row => crmHistoryTab === 'all' || row.type === crmHistoryTab).map((row, i) => (
+ <tr key={i} className="hover:bg-stone-50">
+ <td className="px-6 py-4">
+ <div className="font-bold text-stone-900 text-sm">{row.user}</div>
+ <div className="text-[10px] text-stone-500 uppercase font-bold mt-0.5 tracking-wider">{row.role}</div>
+ </td>
+ <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.type === 'cashback' ? 'bg-emerald-50 text-emerald-700' : row.type === 'promo' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>{row.typeLabel}</span></td>
+ <td className="px-6 py-4 text-sm text-stone-600">
+ <div className="flex items-center gap-2">
+ <row.icon className="w-3.5 h-3.5 text-stone-400" />
+ <span>{row.action}</span>
+ </div>
+ </td>
+ <td className={`px-6 py-4 font-bold text-right ${row.class}`}>{row.amount} {row.curr}</td>
+ <td className="px-6 py-4 font-mono text-sm text-right font-medium text-stone-400">***</td>
+ <td className="px-6 py-4 text-xs font-bold text-stone-400">{row.time}</td>
+ </tr>
+ ))}
+ </tbody>
+ </table>
+ </div>
+ </div>
+ </motion.div>
+ )}
+
+</AnimatePresence>
  </div>
  </div>
  

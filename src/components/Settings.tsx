@@ -1,3 +1,4 @@
+import { Wallet } from 'lucide-react';
 import React, { useState } from 'react';
 import { 
  ShieldCheck, 
@@ -171,7 +172,8 @@ const SETTINGS_MODULE_GROUPS = [
  {
  title: 'Vận hành & Kinh doanh',
  items: [
- { id: 'general', label: 'Cấu hình chung', icon: Settings, desc: 'Cài đặt cơ bản hệ thống, Payout tự động', color: 'blue' },
+ { id: 'wallet_crm', label: 'Quản lý Ví CSKH', icon: Wallet, desc: 'Cấu hình các loại Ví Khuyến Mại & Tích điểm KH', color: 'primary' },
+  { id: 'general', label: 'Cấu hình chung', icon: Settings, desc: 'Cài đặt cơ bản hệ thống, Payout tự động', color: 'blue' },
  { id: 'appearance', label: 'Giao diện & Theme', icon: Sparkles, desc: 'Tùy chỉnh màu sắc, bo góc, Lễ tết', color: 'rose' },
  { id: 'fees', label: 'Phí sàn & Ngành hàng', icon: BadgeDollarSign, desc: 'Setup tỷ lệ hoa hồng theo từng ngành', color: 'emerald' },
  { id: 'website', label: 'Website & Menu', icon: Globe, desc: 'Quản lý biểu mẫu, tên miền và menu', color: 'indigo' },
@@ -224,7 +226,7 @@ import { usePreferences } from '../context/PreferencesContext';
 
 export function SettingsPage() {
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
- const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup' | 'inventory'>('overview');
+ const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup' | 'inventory'>('overview');
  const [roles, setRoles] = useState<PermissionRole[]>(MOCK_ROLES);
  const [editingRole, setEditingRole] = useState<PermissionRole | null>(null);
  const [notiTitle, setNotiTitle] = useState('');
@@ -573,6 +575,83 @@ export function SettingsPage() {
  </div>
  </div>
  )}
+
+  {activeTab === 'wallet_crm' && (
+  <div className="animate-in fade-in duration-300 space-y-6">
+    <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="font-bold text-[#111827] flex items-center gap-2">
+          <Wallet className="w-5 h-5 text-primary-600" /> Cấu hình Ví CSKH & Khuyến mại
+        </h3>
+        <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 transition flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Thêm loại Ví mới
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {[{
+          name: 'Ví Khuyến Mại',
+          desc: 'Ví chứa tiền được tặng từ các chương trình khuyến mại, có thể giới hạn % thanh toán trên mỗi đơn hàng.',
+          usedFor: 'Thanh toán tối đa 50% giá trị đơn hàng',
+          canTransfer: false,
+          color: 'blue'
+        }, {
+          name: 'Ví Hoàn Tiền (Cashback)',
+          desc: 'Số tiền hoàn lại từ việc hủy đơn hoặc chương trình đối soát.',
+          usedFor: 'Thanh toán 100% hoặc Rút về tài khoản Bank',
+          canTransfer: true,
+          color: 'emerald'
+        }, {
+          name: 'Ví Thành Viên (Loyalty)',
+          desc: 'Điểm thăng hạng (Không quy đổi ra tiền thật).',
+          usedFor: 'Giữ hạng & Tận hưởng đặc quyền',
+          canTransfer: false,
+          color: 'purple'
+        }].map(wallet => (
+          <div key={wallet.name} className="border border-stone-200 rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
+            <div>
+              <h4 className="font-bold text-stone-900 flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full bg-${wallet.color}-500`}></span>
+                {wallet.name}
+              </h4>
+              <p className="text-sm text-stone-500 mt-1">{wallet.desc}</p>
+            </div>
+            
+            <div className="flex flex-col gap-2 md:items-end">
+              <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2 py-1 rounded">Quy tắc: {wallet.usedFor}</span>
+              <label className="flex items-center gap-2 text-sm text-stone-700 cursor-pointer">
+                <input type="checkbox" checked={wallet.canTransfer} readOnly className="w-4 h-4 text-primary-600 rounded border-stone-300" />
+                Cho phép KH điều chuyển / Rút
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="pt-6 border-t border-stone-100">
+        <h4 className="font-bold text-[#111827] mb-4">Quy tắc điều chuyển số dư (Transfer Rules)</h4>
+        <div className="p-4 bg-orange-50 border border-orange-100 rounded-lg space-y-3">
+           <div className="flex items-center justify-between text-sm font-medium text-stone-800">
+             <div className="flex items-center gap-3">
+               <span className="w-40">Ví Hoàn Tiền</span>
+               <ArrowRight className="w-4 h-4 text-stone-400" />
+               <span className="w-40">Ví Khuyến Mại</span>
+             </div>
+             <span className="text-right">Tỷ lệ quy đổi: 1 VNĐ = 1.1 Khuyến mại</span>
+           </div>
+           <div className="flex items-center justify-between text-sm font-medium text-stone-800 opacity-60">
+             <div className="flex items-center gap-3">
+               <span className="w-40">Ví Khuyến Mại</span>
+               <ArrowRight className="w-4 h-4 text-stone-400" />
+               <span className="w-40">Ví Hoàn Tiền</span>
+             </div>
+             <span className="text-right text-rose-600 italic">Cấm (Không hỗ trợ)</span>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  )}
 
  {activeTab === 'fees' && (
  <div className="animate-in fade-in duration-300 space-y-6">
@@ -932,12 +1011,7 @@ export function SettingsPage() {
  onClick={() => {
  setRoles(roles.map(r => r.id === editingRole.id ? editingRole : r));
  setEditingRole(null);
- addNotification({
- title: 'Đã cập nhật phân quyền',
- message: `Vai trò ${editingRole.name} đã được lưu thành công.`,
- type: 'success',
- duration: 3000
- });
+ addNotification('Đã cập nhật phân quyền', `Vai trò ${editingRole.name} đã được lưu thành công.`);
  }}
  className="px-6 py-2 bg-[#2563EB] text-[#FAF9F5] text-sm font-bold rounded-lg hover:bg-stone-800 transition-all shadow-sm shadow-stone-900/5"
  >
@@ -1871,12 +1945,7 @@ export function SettingsPage() {
  setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
  }
  setShowFeeModal(false);
- addNotification({
- title: 'Đã cập nhật cấu hình',
- message: `Loại phí ${newFee.name} đã được lưu thành công.`,
- type: 'success',
- duration: 3000
- });
+ addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
  }}
  className="flex-1 py-3 bg-[#2563EB] text-[#FAF9F5] rounded-xl text-sm font-bold hover:bg-stone-800 transition-all shadow-sm shadow-stone-900/5"
  >

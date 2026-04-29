@@ -150,20 +150,35 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <h4 className="font-bold text-xs mb-3 text-emerald-800 flex items-center gap-2">
  <DollarSign className="w-3.5 h-3.5" /> Tài sản & Thưởng
  </h4>
- <div className="space-y-4">
- <div className="bg-white p-3 rounded-lg border border-emerald-100/50">
+ <div className="space-y-2">
+ <div className="bg-white p-3 rounded-lg border border-emerald-100/50 relative overflow-hidden">
  <div className="flex justify-between items-center mb-1.5">
- <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Số dư ví</span>
- <button className="text-[9px] text-[#FAF9F5] bg-emerald-600 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-emerald-700">Nạp</button>
+ <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Ví Hoàn Tiền (Cashback)</span>
+ <button className="text-[9px] text-[#FAF9F5] bg-emerald-600 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-emerald-700 relative z-10">RÚT TIỀN</button>
  </div>
  <span className="text-lg font-bold text-emerald-900 leading-none tracking-tight">{formatCurrency(customer.walletBalance || 0)}</span>
  </div>
- <div className="bg-white p-3 rounded-lg border border-emerald-100/50">
+ 
+ <div className="bg-white p-3 rounded-lg border border-blue-100/50 relative overflow-hidden">
  <div className="flex justify-between items-center mb-1.5">
- <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Điểm Loyalty</span>
- <button className="text-[9px] text-emerald-600 border border-emerald-200 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-emerald-50">Lịch sử</button>
+ <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Ví Khuyến Mại</span>
+ <button className="text-[9px] text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-blue-50 relative z-10">Lịch sử</button>
  </div>
- <span className="text-lg font-bold text-emerald-900 leading-none tracking-tight">{customer.points || 0} <span className="text-xs font-medium text-emerald-600">pts</span></span>
+ <span className="text-lg font-bold text-blue-900 leading-none tracking-tight">{formatCurrency(150000)}</span>
+ </div>
+
+ <div className="bg-white p-3 rounded-lg border border-purple-100/50 relative overflow-hidden">
+ <div className="flex justify-between items-center mb-1.5">
+ <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Ví Điểm Loyalty</span>
+ <button className="text-[9px] text-[#FAF9F5] bg-purple-600 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-purple-700 relative z-10">Shop Đổi Điểm</button>
+ </div>
+ <span className="text-lg font-bold text-purple-900 leading-none tracking-tight">{customer.points || 0} <span className="text-xs font-medium text-purple-600">pts</span></span>
+ </div>
+ 
+ <div className="pt-2">
+   <button onClick={() => alert('Thao tác mở giao diện chuyển đổi Ví Cashback sang Ví Khuyến mại ( tỷ lệ 1.1 )')} className="w-full py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] font-bold uppercase rounded transition-colors flex justify-center items-center gap-1.5">
+     <ShoppingCart className="w-3 h-3" /> ĐỔI HOÀN TIỀN LẤY KHUYẾN MẠI
+   </button>
  </div>
  </div>
  </div>
