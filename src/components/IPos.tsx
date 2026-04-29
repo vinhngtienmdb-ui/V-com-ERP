@@ -179,6 +179,114 @@ const INDUSTRY_SECTORS = {
   ],
 };
 
+const MOCK_TOPPINGS = [
+  { id: 't1', name: 'Trân châu trắng', price: 10000 },
+  { id: 't2', name: 'Trân châu đen', price: 8000 },
+  { id: 't3', name: 'Thạch trái cây', price: 12000 },
+  { id: 't4', name: 'Thêm Shot Espresso', price: 15000 },
+  { id: 't5', name: 'Đổi sữa hạt', price: 10000 },
+];
+
+const CartItemEditingModal = ({ 
+  item, 
+  onClose, 
+  onSave 
+}: { 
+  item: any, 
+  onClose: () => void, 
+  onSave: (updatedItem: any) => void 
+}) => {
+  const [note, setNote] = useState(item.note || '');
+  const [toppings, setToppings] = useState<any[]>(item.toppings || []);
+
+  const handleToggleTopping = (topping: any) => {
+    if (toppings.find(t => t.id === topping.id)) {
+      setToppings(toppings.filter(t => t.id !== topping.id));
+    } else {
+      setToppings([...toppings, topping]);
+    }
+  };
+
+  const handleSave = () => {
+    onSave({ ...item, note, toppings });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+          <div>
+            <h3 className="text-xl font-black text-stone-900 tracking-tight">{item.name}</h3>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-indigo-600 mt-1">Tùy chỉnh món</p>
+          </div>
+          <button onClick={onClose} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          {/* Ghi chú */}
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+              Ghi chú thêm
+            </label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Ví dụ: Ít đá, không đường, ..."
+              className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all resize-none shadow-sm h-24"
+            />
+          </div>
+
+          {/* Toppings */}
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+              Thêm Topping / Phụ phí
+            </label>
+            <div className="space-y-2">
+              {MOCK_TOPPINGS.map(topping => {
+                const isSelected = toppings.some((t: any) => t.id === topping.id);
+                return (
+                  <label 
+                    key={topping.id} 
+                    className={cn(
+                      "w-full flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
+                      isSelected ? "border-indigo-600 bg-indigo-50/50" : "border-stone-200 hover:border-stone-300 hover:bg-stone-50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-5 h-5 rounded border flex items-center justify-center transition-colors",
+                        isSelected ? "bg-indigo-600 border-indigo-600 text-white" : "border-stone-300"
+                      )}>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      </div>
+                      <span className={cn("text-sm font-bold", isSelected ? "text-indigo-900" : "text-stone-700")}>{topping.name}</span>
+                    </div>
+                    <span className={cn("text-xs font-black", isSelected ? "text-indigo-600" : "text-stone-500")}>
+                      +{new Intl.NumberFormat('vi-VN').format(topping.price)}
+                    </span>
+                    <input type="checkbox" className="hidden" checked={isSelected} onChange={() => handleToggleTopping(topping)} />
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm">
+            Hủy
+          </button>
+          <button onClick={handleSave} className="px-6 py-2.5 rounded-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors text-sm flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" /> Lưu tùy chỉnh
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export function IPosModule() {
   const { user } = useAuth();
   const { activeStore } = useStore();
@@ -449,6 +557,8 @@ export function IPosModule() {
   const [invoiceCompanyName, setInvoiceCompanyName] = useState("");
   const [invoiceAddress, setInvoiceAddress] = useState("");
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
+  const [showPromoInputModal, setShowPromoInputModal] = useState(false);
+  const [customPromoInput, setCustomPromoInput] = useState("");
   const [customItem, setCustomItem] = useState({ name: "", price: "" });
   const [editingCartItem, setEditingCartItem] = useState<any>(null);
   const [orderNote, setOrderNote] = useState("");
@@ -932,22 +1042,22 @@ export function IPosModule() {
   };
 
   const addToCart = (product: any) => {
-    const existing = cart.find((i) => i.id === product.id);
+    const existing = cart.find((i) => i.id === product.id && (!i.toppings || i.toppings.length === 0) && !i.note);
     if (existing) {
-      updateQuantity(product.id, 1);
+      updateQuantity(existing.cartItemId, 1);
     } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
+      setCart([...cart, { ...product, quantity: 1, cartItemId: Date.now().toString() + Math.random().toString() }]);
     }
   };
 
-  const removeFromCart = (id: string) => {
-    setCart(cart.filter((i) => i.id !== id));
+  const removeFromCart = (cartItemId: string) => {
+    setCart(cart.filter((i) => (i.cartItemId || i.id) !== cartItemId));
   };
 
-  const updateQuantity = (id: string, delta: number) => {
+  const updateQuantity = (cartItemId: string, delta: number) => {
     setCart(
       cart.map((item) => {
-        if (item.id === id) {
+        if ((item.cartItemId || item.id) === cartItemId) {
           const newQty = Math.max(1, item.quantity + delta);
           return { ...item, quantity: newQty };
         }
@@ -956,9 +1066,17 @@ export function IPosModule() {
     );
   };
 
+  const getItemUnitPrice = (item: any) => {
+    const toppingsPrice = (item.toppings || []).reduce((sum: number, t: any) => sum + t.price, 0);
+    return item.price + toppingsPrice - (item.itemDiscount || 0);
+  };
+
+  const getItemTotalPrice = (item: any) => {
+    return getItemUnitPrice(item) * item.quantity;
+  };
+
   const subtotal = cart.reduce(
-    (acc, item) =>
-      acc + (item.price - (item.itemDiscount || 0)) * item.quantity,
+    (acc, item) => acc + getItemTotalPrice(item),
     0,
   );
   const discount = discountCode === "GIAM10" ? subtotal * 0.1 : 0;
@@ -1073,6 +1191,9 @@ export function IPosModule() {
       name: item.name,
       price: item.price,
       quantity: item.quantity,
+      cartItemId: Date.now().toString() + Math.random().toString(),
+      note: item.note,
+      toppings: item.toppings,
     }));
     setCart(newCart);
     setOrderNote(`Đơn từ Bàn ${order.tableId}`);
@@ -1089,6 +1210,8 @@ export function IPosModule() {
 
   const [discrepancyPrompt, setDiscrepancyPrompt] = useState<any | null>(null);
 
+  const [activeCategory, setActiveCategory] = useState("Tất cả");
+
   const proceedWithExternalOrder = (extOrder: any, matchedCustomer: any) => {
     // Load to cart
     const newCart = extOrder.items.map((item: any) => ({
@@ -1096,6 +1219,7 @@ export function IPosModule() {
       name: item.name,
       price: item.price,
       quantity: item.quantity,
+      cartItemId: Date.now().toString() + Math.random().toString(),
     }));
 
     setCart(newCart);
@@ -1664,11 +1788,15 @@ export function IPosModule() {
             </tr>
           </thead>
           <tbody>
-            {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item, idx) => (
+            {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item: any, idx: number) => (
               <tr key={idx} className="border-b border-dashed border-gray-200">
-                <td className="py-1 pr-1">{item.name} {item.note && <div className="text-[10px] italic">- {item.note}</div>}</td>
+                <td className="py-1 pr-1">
+                  {item.name} 
+                  {item.toppings?.length > 0 && <div className="text-[10px] italic">- Topping: {item.toppings.map((t: any) => t.name).join(', ')}</div>}
+                  {item.note && <div className="text-[10px] italic">- {item.note}</div>}
+                </td>
                 <td className="py-1 text-center font-bold">{item.quantity}</td>
-                {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(item.price * item.quantity)}</td>}
+                {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(getItemTotalPrice(item))}</td>}
               </tr>
             ))}
           </tbody>
@@ -1760,8 +1888,12 @@ export function IPosModule() {
               áp dụng khuyến mãi / thanh toán bằng ví Sàn.
             </p>
 
-            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-indigo-50 shadow-xl ring-1 ring-stone-200 p-2">
-              <QrCode className="w-full h-full text-indigo-600" />
+            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-indigo-50 shadow-xl ring-1 ring-stone-200">
+              <img 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/promo-wallet-fake-url" 
+                alt="Promo QR" 
+                className="w-full h-full object-contain p-2" 
+              />
             </div>
 
             <p className="text-sm font-bold text-orange-600 animate-pulse mb-6">
@@ -1942,6 +2074,153 @@ export function IPosModule() {
         </div>
       )}
 
+      {/* Cart Item Edit/Customize Modal */}
+      {editingCartItem && (
+        <CartItemEditingModal
+          item={editingCartItem}
+          onClose={() => setEditingCartItem(null)}
+          onSave={(updatedItem) => {
+            setCart(cart.map(i => (i.cartItemId || i.id) === (updatedItem.cartItemId || updatedItem.id) ? updatedItem : i));
+            setEditingCartItem(null);
+          }}
+        />
+      )}
+
+      {/* Promo Input Modal */}
+      {showPromoInputModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+              <div>
+                <h3 className="text-xl font-black text-stone-900 tracking-tight">Mức Áp Dụng</h3>
+              </div>
+              <button onClick={() => setShowPromoInputModal(false)} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                  Nhập số tiền khuyến mại
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={customPromoInput}
+                    onChange={(e) => setCustomPromoInput(e.target.value)}
+                    placeholder="0"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
+                    autoFocus
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">đ</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+              <button 
+                onClick={() => setShowPromoInputModal(false)} 
+                className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm"
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={() => {
+                  const val = parseInt(customPromoInput);
+                  const walletBalance = customer?.promoWalletBalance || 150000;
+                  if (!isNaN(val) && val > 0) {
+                    setCustomPromoAmount(Math.min(val, total, walletBalance));
+                    setUsePromoWallet(false); // custom amount overrides maximum 50%
+                    setShowPromoInputModal(false);
+                  }
+                }} 
+                disabled={!customPromoInput || isNaN(parseInt(customPromoInput)) || parseInt(customPromoInput) <= 0}
+                className="px-6 py-2.5 rounded-lg font-bold bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white shadow-sm transition-colors text-sm flex items-center gap-2"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Item Modal */}
+      {showCustomItemModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+              <div>
+                <h3 className="text-xl font-black text-stone-900 tracking-tight">Thêm Món Tuỳ Chọn</h3>
+              </div>
+              <button onClick={() => setShowCustomItemModal(false)} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                  Tên món
+                </label>
+                <input
+                  type="text"
+                  value={customItem.name}
+                  onChange={(e) => setCustomItem({ ...customItem, name: e.target.value })}
+                  placeholder="Ví dụ: Phí ship, món ngoài menu..."
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
+                  autoFocus
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                  Đơn giá
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={customItem.price}
+                    onChange={(e) => setCustomItem({ ...customItem, price: e.target.value })}
+                    placeholder="0"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">đ</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+              <button 
+                onClick={() => setShowCustomItemModal(false)} 
+                className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm"
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={() => {
+                  if (customItem.name && customItem.price) {
+                    addToCart({
+                      id: `custom-${Date.now()}`,
+                      name: customItem.name,
+                      price: parseInt(customItem.price) || 0,
+                      category: "Tùy chọn",
+                      image: ""
+                    });
+                    setCustomItem({ name: "", price: "" });
+                    setShowCustomItemModal(false);
+                  }
+                }} 
+                disabled={!customItem.name || !customItem.price}
+                className="px-6 py-2.5 rounded-lg font-bold bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white shadow-sm transition-colors text-sm flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> Thêm vào đơn
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Checkout/Payment Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/90 backdrop-blur-md">
@@ -1960,19 +2239,29 @@ export function IPosModule() {
               <div className="space-y-5">
                 {cart.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.cartItemId || item.id}
                     className="flex justify-between gap-4 animate-in fade-in slide-in- transition-all"
                   >
                     <div className="flex-1">
                       <p className="text-sm font-bold text-stone-800 line-clamp-1">
                         {item.name}
                       </p>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">
-                        x{item.quantity} • {formatCurrency(item.price)}
+                      {item.toppings?.length > 0 && (
+                        <p className="text-[10px] text-stone-500 italic line-clamp-1">
+                          + {item.toppings.map((t: any) => t.name).join(', ')}
+                        </p>
+                      )}
+                      {item.note && (
+                        <p className="text-[10px] text-stone-500 italic line-clamp-1">
+                          Ghi chú: {item.note}
+                        </p>
+                      )}
+                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-0.5">
+                        x{item.quantity} • {formatCurrency(getItemUnitPrice(item))}
                       </p>
                     </div>
                     <p className="text-sm font-black text-stone-900">
-                      {formatCurrency(item.price * item.quantity)}
+                      {formatCurrency(getItemTotalPrice(item))}
                     </p>
                   </div>
                 ))}
@@ -2290,19 +2579,30 @@ export function IPosModule() {
                     </button>
 
                     {customPromoAmount === 0 ? (
-                      <button
-                        onClick={() => setUsePromoWallet(!usePromoWallet)}
-                        className={cn(
-                          "flex-1 py-3 border-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all",
-                          usePromoWallet
-                            ? "bg-orange-50 border-orange-500 text-indigo-600"
-                            : "bg-white border-stone-200 text-stone-600 hover:border-orange-300",
-                        )}
-                      >
-                        {usePromoWallet
-                          ? "Hủy Mức Tối Đa"
-                          : "Dùng Tối Đa (50%)"}
-                      </button>
+                      <>
+                        <button
+                          onClick={() => setUsePromoWallet(!usePromoWallet)}
+                          className={cn(
+                            "flex-1 py-3 border-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all",
+                            usePromoWallet
+                              ? "bg-orange-50 border-orange-500 text-indigo-600"
+                              : "bg-white border-stone-200 text-stone-600 hover:border-orange-300",
+                          )}
+                        >
+                          {usePromoWallet
+                            ? "Hủy Dùng Tối Đa"
+                            : "Dùng Tối Đa (50%)"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setCustomPromoInput(customPromoAmount ? customPromoAmount.toString() : "");
+                            setShowPromoInputModal(true);
+                          }}
+                          className="flex-1 py-3 border-2 bg-white border-stone-200 text-stone-600 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:border-indigo-300 hover:text-indigo-600 transition-all"
+                        >
+                          Tùy Chọn Mức Áp Dụng
+                        </button>
+                      </>
                     ) : (
                       <button
                         onClick={() => setCustomPromoAmount(0)}
@@ -3527,9 +3827,10 @@ export function IPosModule() {
                     ).map((cat, idx) => (
                       <button
                         key={cat}
+                        onClick={() => setActiveCategory(cat)}
                         className={cn(
                           "px-5 py-2.5 whitespace-nowrap rounded-full text-xs font-bold transition-all active:scale-95 border",
-                          idx === 0
+                          activeCategory === cat
                             ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200"
                             : "bg-stone-50 text-stone-600 hover:text-indigo-600 hover:bg-indigo-50 border-stone-200 hover:border-indigo-200",
                         )}
@@ -3546,7 +3847,8 @@ export function IPosModule() {
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                   {products
                     .filter((p) =>
-                      p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+                      p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                      (activeCategory === "Tất cả" || p.category === activeCategory)
                     )
                     .map((product) => (
                       <div
@@ -3878,7 +4180,7 @@ export function IPosModule() {
                 <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-stone-50/30">
                   {cart.map((item) => (
                     <div
-                      key={item.id}
+                      key={item.cartItemId || item.id}
                       className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-stone-100 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-indigo-100 hover:shadow-md"
                     >
                       {isReturnMode && (
@@ -3892,6 +4194,7 @@ export function IPosModule() {
                         <div className="flex items-center gap-2">
                           <p className="text-[11px] text-stone-500 font-semibold font-bold tracking-tight">
                             {formatCurrency(item.price)}
+                            {item.toppings?.length > 0 && <span className="text-indigo-500 ml-1">(+Topping)</span>}
                             {(item.itemDiscount || 0) > 0 && (
                               <span className="text-rose-500 ml-1">
                                 (-{formatCurrency(item.itemDiscount)})
@@ -3904,9 +4207,14 @@ export function IPosModule() {
                             className="text-[10px] text-stone-400 hover:text-indigo-600 font-black uppercase tracking-widest flex items-center gap-1 transition-colors"
                           >
                             <Edit2 className="w-3 h-3" />
-                            Sửa
+                            Sửa / Note
                           </button>
                         </div>
+                        {item.toppings?.length > 0 && (
+                          <p className="text-[10px] text-stone-500 font-medium italic mt-0.5">
+                            Topping: {item.toppings.map((t: any) => t.name).join(', ')}
+                          </p>
+                        )}
                         {item.note && (
                           <p className="text-[10px] text-indigo-600 font-medium italic mt-0.5">
                             * {item.note}
@@ -3915,7 +4223,7 @@ export function IPosModule() {
 
                         <div className="flex items-center gap-5 mt-4 bg-stone-50 w-fit p-1 rounded-sm border border-stone-100">
                           <button
-                            onClick={() => updateQuantity(item.id, -1)}
+                            onClick={() => updateQuantity(item.cartItemId || item.id, -1)}
                             className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors active:scale-90 flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
                           >
                             <Minus className="w-3.5 h-3.5" />
@@ -3924,7 +4232,7 @@ export function IPosModule() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, 1)}
+                            onClick={() => updateQuantity(item.cartItemId || item.id, 1)}
                             className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors active:scale-90 flex items-center justify-center hover:text-indigo-600 hover:border-indigo-200 transition-all active:scale-90"
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -3933,13 +4241,13 @@ export function IPosModule() {
                       </div>
                       <div className="text-right flex flex-col items-end justify-between self-stretch">
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.cartItemId || item.id)}
                           className="p-2 text-stone-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
                         >
                           <Trash className="w-4 h-4" />
                         </button>
                         <p className="font-black text-indigo-600 text-base tracking-tight leading-none mt-4">
-                          {formatCurrency(item.price * item.quantity)}
+                          {formatCurrency(getItemTotalPrice(item))}
                         </p>
                       </div>
                     </div>
@@ -5305,9 +5613,7 @@ export function IPosModule() {
                 {item.quantity}x {item.name}
               </div>
               <div>
-                {formatCurrency(
-                  (item.price - (item.itemDiscount || 0)) * item.quantity,
-                )}
+                {formatCurrency(getItemTotalPrice(item))}
               </div>
             </div>
           ))}
@@ -5383,9 +5689,7 @@ export function IPosModule() {
                 {item.name} x{item.quantity}
               </span>
               <span>
-                {formatCurrency(
-                  (item.price - (item.itemDiscount || 0)) * item.quantity,
-                )}
+                {formatCurrency(getItemTotalPrice(item))}
               </span>
             </div>
           ))}

@@ -109,7 +109,7 @@ class SePayService {
  // This is often a client-side generation using VietQR standard or SePay helper
  const bankId = '970436'; // Example Bank ID (VCB)
  const accountNo = '123456789';
- return `https://qr.sepay.vn/v1/generate?bank=${bankId}&account=${accountNo}&amount=${amount}&memo=${encodeURIComponent(description)}`;
+ return `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description.replace(/[^a-zA-Z0-9]/g, ''))}&accountName=Khach`;
  }
 
  /**
