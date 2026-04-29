@@ -6,7 +6,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
   const [tab, setTab] = useState<'all' | 'pending' | 'shipping' | 'completed' | 'issues'>('all');
   
   return (
-    <div className="flex-1 bg-stone-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
+    <div className="col-span-12 flex-1 bg-stone-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-stone-200 px-6 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>

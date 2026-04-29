@@ -2511,9 +2511,9 @@ export function IPosModule() {
                           onClick={() => {
                             // Mock recording a customer and scanning their floor wallet promo QR
                             if (!customer) {
-                              setCustomerCode("CUST-TMD-001");
+                              setCustomer({ id: "CUST-TMD-001", name: "Khách lẻ TMĐT" });
                             }
-                            setPromoWalletDiscount(Math.min(total, 500000));
+                            setCustomPromoAmount(Math.min(total, 500000));
                             setUsePromoWallet(true);
                           }}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -2596,7 +2596,7 @@ export function IPosModule() {
                           value={guestCash}
                           onChange={(e) => setGuestCash(e.target.value)}
                           placeholder={total.toString()}
-                          className="w-full bg-white border border-stone-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 rounded-sm py-3 pl-10 pr-4 text-2xl font-bold text-stone-900 outline-none transition-all shadow-sm text-right"
+                          className="w-full bg-white border border-stone-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 rounded-sm py-2 pl-8 pr-3 text-lg font-bold text-stone-900 outline-none transition-all shadow-sm text-right"
                         />
                       </div>
 
@@ -2634,7 +2634,7 @@ export function IPosModule() {
                   onClick={completeOrder}
                   disabled={isProcessing}
                   className={cn(
-                    "flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-md font-bold text-sm uppercase tracking-wide shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group border border-emerald-400/30",
+                    "flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-sm font-semibold text-xs uppercase tracking-wide shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group border border-emerald-400/30",
                     isProcessing && "opacity-70 cursor-not-allowed",
                   )}
                 >
@@ -2662,52 +2662,55 @@ export function IPosModule() {
       
       {/* Payment Success & Printing / E-Invoice Modal */}
       {showPaymentSuccessModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/90 backdrop-blur-md">
-          <div className="bg-white rounded-sm w-full max-w-2xl overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
-            <div className="bg-emerald-50 border-b border-emerald-100 p-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm shadow-emerald-500/20">
-                <CheckCircle2 className="w-8 h-8 text-white" />
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-stone-200/50">
+            <div className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-8 text-center space-y-3 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:2rem_2rem]" />
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-emerald-500/30 mb-2">
+                  <CheckCircle2 className="w-7 h-7 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
+                <p className="text-sm text-stone-500 font-medium">Đơn hàng <strong className="text-emerald-700 font-bold">#{completedOrderData?.orderId}</strong> đã được ghi nhận.</p>
               </div>
-              <h2 className="text-2xl font-black text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
-              <p className="text-emerald-700 font-medium">Đơn hàng <strong className="text-emerald-900">{completedOrderData?.orderId}</strong> đã được ghi nhận vào hệ thống.</p>
             </div>
             
-            <div className="p-8 space-y-8 bg-stone-50">
+            <div className="p-6 space-y-6 bg-stone-50/50">
                 <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-stone-200 hover:border-indigo-300 hover:shadow-sm rounded-sm transition-all group">
-                        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-sm group-hover:scale-110 transition-transform"><Printer className="w-6 h-6" /></div>
+                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-stone-200 hover:border-indigo-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-full group-hover:bg-indigo-100 group-hover:scale-105 transition-all"><Printer className="w-5 h-5" /></div>
                         <span className="font-bold text-stone-700 text-sm">In phiếu tính tiền</span>
                     </button>
-                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-stone-200 hover:border-orange-300 hover:shadow-sm rounded-sm transition-all group">
-                        <div className="p-3 bg-orange-50 text-orange-600 rounded-sm group-hover:scale-110 transition-transform"><ChefHat className="w-6 h-6" /></div>
-                        <span className="font-bold text-stone-700 text-sm">In bill bếp / in chế biến</span>
+                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-stone-200 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                        <div className="p-3 bg-orange-50 text-orange-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all"><ChefHat className="w-5 h-5" /></div>
+                        <span className="font-bold text-stone-700 text-sm">In bill chế biến</span>
                     </button>
                 </div>
 
-                <div className="border border-stone-200 bg-white rounded-sm overflow-hidden">
-                    <div className="p-4 bg-stone-100/50 border-b border-stone-200 flex items-center gap-3">
-                        <Receipt className="w-5 h-5 text-indigo-600" />
-                        <h3 className="font-bold text-stone-900 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
+                <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-sm">
+                    <div className="p-4 bg-stone-50/50 border-b border-stone-100 flex items-center gap-3">
+                        <Receipt className="w-4 h-4 text-indigo-500" />
+                        <h3 className="font-bold text-stone-800 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
                     </div>
-                    <div className="p-6 space-y-4">
+                    <div className="p-5 space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Mã số thuế</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Mã số thuế</label>
                             <input
                                 type="text"
                                 value={invoiceTaxCode}
                                 onChange={(e) => setInvoiceTaxCode(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
                                 placeholder="VD: 0101234567"
                             />
                             </div>
                             <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Tên Khách / Công ty</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Tên Khách / Công ty</label>
                             <input
                                 type="text"
                                 value={invoiceCompanyName}
                                 onChange={(e) => setInvoiceCompanyName(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
                                 placeholder="..."
                             />
                             </div>
@@ -2715,22 +2718,22 @@ export function IPosModule() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                                <label className="text-xs font-bold text-inherit uppercase tracking-widest">Địa chỉ</label>
+                                <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Địa chỉ</label>
                                 <input
                                     type="text"
                                     value={invoiceAddress}
                                     onChange={(e) => setInvoiceAddress(e.target.value)}
-                                    className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                    className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
                                     placeholder="Địa chỉ xuất HD"
                                 />
                             </div>
                             <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Email nhận hóa đơn</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Email nhận hóa đơn</label>
                             <input
                                 type="email"
                                 value={invoiceEmail}
                                 onChange={(e) => setInvoiceEmail(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
                                 placeholder="Email nhận HDĐT"
                             />
                             </div>
@@ -2740,20 +2743,20 @@ export function IPosModule() {
                             alert("Yêu cầu phát hành HĐĐT đã được gửi lên hệ thống!");
                             setShowPaymentSuccessModal(false);
                             setActiveTab("history");
-                        }} className="w-full py-4 bg-indigo-600 text-[#FAF9F5] rounded-sm font-bold shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:bg-indigo-700 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2">
+                        }} className="w-full py-3 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2">
                             Xác nhận xuất HĐĐT
                         </button>
                     </div>
                 </div>
             </div>
             
-            <div className="p-6 border-t border-stone-200 bg-white">
+            <div className="p-4 border-t border-stone-100 bg-stone-50 flex justify-end">
                 <button
                     onClick={() => {
                         setShowPaymentSuccessModal(false);
                         setActiveTab("history");
                     }}
-                    className="w-full py-4 bg-stone-900 text-[#FAF9F5] rounded-sm font-black uppercase tracking-widest shadow-sm hover:bg-stone-800 transition-all"
+                    className="px-6 py-2.5 bg-white border border-stone-200 text-stone-600 font-bold rounded-lg hover:bg-stone-50 hover:text-stone-900 transition-colors text-sm shadow-sm"
                 >
                     Đóng & Tạo đơn mới
                 </button>

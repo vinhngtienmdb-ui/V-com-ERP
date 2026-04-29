@@ -5,7 +5,7 @@ import { formatCurrency } from '../lib/utils';
 
 export function IPosCustomers({ activeStore }: { activeStore: any }) {
   return (
-    <div className="flex-1 bg-stone-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
+    <div className="col-span-12 flex-1 bg-stone-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-stone-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-stone-900 tracking-tight flex items-center gap-2">
