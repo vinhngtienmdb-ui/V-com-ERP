@@ -126,12 +126,12 @@ export function EMenu() {
  </div>
  <div className="flex justify-between text-sm">
  <span className="text-stone-600">Trạng thái</span>
- <span className="text-indigo-600 font-bold flex items-center gap-1"><Timer className="w-3 h-3" /> Chờ chuẩn bị</span>
+ <span className="text-primary-600 font-bold flex items-center gap-1"><Timer className="w-3 h-3" /> Chờ chuẩn bị</span>
  </div>
  </div>
  <button 
  onClick={() => setOrderStatus('browsing')}
- className="w-full py-4 bg-indigo-600 text-[#FAF9F5] rounded-lg font-bold hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-600/20"
+ className="w-full py-4 bg-primary-600 text-[#FAF9F5] rounded-lg font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-600/20"
  >
  Quay lại Menu
  </button>
@@ -145,7 +145,7 @@ export function EMenu() {
  {/* Header */}
  <header className="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-6 border-b border-stone-100 flex items-center justify-between">
  <div className="flex flex-col">
- <h1 className="font-serif tracking-tight text-xs font-black text-indigo-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
+ <h1 className="font-serif tracking-tight text-xs font-black text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
  <div className="flex items-center gap-2">
  <span className="text-xl font-bold text-stone-900 underline decoration-indigo-200 underline-offset-4">Bàn {tableId}</span>
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -166,8 +166,8 @@ export function EMenu() {
  className={cn(
  "px-5 py-2.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap shadow-sm border",
  selectedCategory === cat 
- ? "bg-indigo-600 text-[#FAF9F5] border-indigo-600 scale-105" 
- : "bg-white text-stone-500 border-stone-100 hover:border-indigo-200"
+ ? "bg-primary-600 text-[#FAF9F5] border-primary-600 scale-105" 
+ : "bg-white text-stone-500 border-stone-100 hover:border-primary-200"
  )}
  >
  {cat === 'All' && 'Tất cả'}
@@ -186,7 +186,7 @@ export function EMenu() {
  <input 
  type="text" 
  placeholder="Tìm món ngon..." 
- className="w-full bg-white border border-stone-200 rounded-lg pl-12 pr-4 py-4 text-sm font-medium focus:outline-none focus:border-indigo-500 transition-all shadow-sm"
+ className="w-full bg-white border border-stone-200 rounded-lg pl-12 pr-4 py-4 text-sm font-medium focus:outline-none focus:border-primary-500 transition-all shadow-sm"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
@@ -215,7 +215,7 @@ export function EMenu() {
  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{product.category}</p>
  </div>
  <div className="flex items-center justify-between">
- <span className="font-bold text-indigo-600">{formatCurrency(product.price)}</span>
+ <span className="font-bold text-primary-600">{formatCurrency(product.price)}</span>
  
  <div className="flex items-center gap-3">
  {cartItem && cartItem.quantity > 0 ? (
@@ -231,7 +231,7 @@ export function EMenu() {
  ) : null}
  <button 
  onClick={() => addToCart(product)}
- className="w-8 h-8 rounded-full bg-indigo-600 text-[#FAF9F5] flex items-center justify-center active:scale-90 transition-transform shadow-sm shadow-indigo-600/20"
+ className="w-8 h-8 rounded-full bg-primary-600 text-[#FAF9F5] flex items-center justify-center active:scale-90 transition-transform shadow-sm shadow-indigo-600/20"
  >
  <Plus className="w-4 h-4" />
  </button>
@@ -258,7 +258,7 @@ export function EMenu() {
  <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#FAF9F5] backdrop-blur-md">
  <ShoppingCart className="w-6 h-6" />
  </div>
- <span className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-stone-900 shadow-sm">
+ <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-stone-900 shadow-sm">
  {cartCount}
  </span>
  </div>
@@ -271,7 +271,7 @@ export function EMenu() {
  <button 
  onClick={handleSubmitOrder}
  disabled={orderStatus === 'submitting'}
- className="bg-indigo-600 text-[#FAF9F5] px-8 h-12 rounded-lg font-bold flex items-center gap-2 active:scale-95 transition-all shadow-sm shadow-indigo-600/30 disabled:opacity-50"
+ className="bg-primary-600 text-[#FAF9F5] px-8 h-12 rounded-lg font-bold flex items-center gap-2 active:scale-95 transition-all shadow-sm shadow-indigo-600/30 disabled:opacity-50"
  >
  Đặt món ngay
  <ArrowRight className="w-4 h-4" />

@@ -29,7 +29,7 @@ export function Home() {
  <div className="relative overflow-hidden bg-stone-900 rounded-lg p-8 md:p-12 text-[#FAF9F5] border border-stone-800 shadow-sm">
  {/* Animated Background Gradients */}
  <div className="absolute top-0 right-0 w-96 h-96 bg-stone-900/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
- <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
+ <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
  
  <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
  <LayoutGrid className="w-80 h-80 rotate-12" />
@@ -109,10 +109,10 @@ export function Home() {
  action: 'text-orange-700'
  },
  indigo: { 
- icon: 'text-indigo-600 bg-indigo-50 group-hover:bg-indigo-600 group-hover:shadow-indigo-200',
- border: 'hover:border-indigo-600',
- text: 'group-hover:text-indigo-600',
- action: 'text-indigo-600'
+ icon: 'text-primary-600 bg-primary-50 group-hover:bg-primary-600 group-hover:shadow-indigo-200',
+ border: 'hover:border-primary-600',
+ text: 'group-hover:text-primary-600',
+ action: 'text-primary-600'
  },
  violet: { 
  icon: 'text-violet-600 bg-violet-50 group-hover:bg-violet-600 group-hover:shadow-violet-200',

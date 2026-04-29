@@ -155,7 +155,7 @@ export function CustomerService() {
  <div className="flex bg-stone-100/80 p-1 rounded-lg border border-stone-200 shadow-inner">
  <button 
  onClick={() => setRoleScope('platform')}
- className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'platform' ? "bg-white text-indigo-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
+ className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'platform' ? "bg-white text-primary-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
  >
  <Building2 className="w-3.5 h-3.5" /> Quản trị Sàn
  </button>
@@ -219,10 +219,10 @@ export function CustomerService() {
  <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
  <div className="flex justify-between items-start relative z-10 mb-2">
  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">AI Autofill / Auto-reply</p>
- <Sparkles className="w-4 h-4 text-indigo-400" />
+ <Sparkles className="w-4 h-4 text-primary-400" />
  </div>
  <p className="text-3xl font-bold text-[#FAF9F5] relative z-10">68%</p>
- <div className="mt-2 text-[10px] text-indigo-200 font-medium tracking-wide">Tỷ lệ tự động hóa tin nhắn</div>
+ <div className="mt-2 text-[10px] text-primary-200 font-medium tracking-wide">Tỷ lệ tự động hóa tin nhắn</div>
  </div>
  </div>
 
@@ -262,7 +262,7 @@ export function CustomerService() {
  </button>
  <button 
  onClick={() => setActiveTab('livechat')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'livechat' ? "bg-white text-indigo-600 shadow-sm border border-stone-200" : "text-stone-500 hover:bg-stone-100")}
+ className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'livechat' ? "bg-white text-primary-600 shadow-sm border border-stone-200" : "text-stone-500 hover:bg-stone-100")}
  >
  <MessageCircle className="w-4 h-4" /> Livechat Website
  </button>
@@ -642,12 +642,12 @@ export function CustomerService() {
  </div>
  </div>
 
- <div className="bg-indigo-50 p-4 rounded-lg space-y-2 border border-indigo-100 shadow-sm relative overflow-hidden group">
+ <div className="bg-primary-50 p-4 rounded-lg space-y-2 border border-primary-100 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-16 h-16 bg-white/40 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
- <h4 className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2 relative z-10">
- <Sparkles className="w-3 h-3 text-indigo-500" /> Nhận định AI
+ <h4 className="text-[10px] font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2 relative z-10">
+ <Sparkles className="w-3 h-3 text-primary-500" /> Nhận định AI
  </h4>
- <p className="text-[11px] text-indigo-900 leading-relaxed font-medium relative z-10">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng VIP, có thể chủ động đề nghị freeship đơn sau.</p>
+ <p className="text-[11px] text-primary-900 leading-relaxed font-medium relative z-10">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng VIP, có thể chủ động đề nghị freeship đơn sau.</p>
  </div>
  </div>
  </div>
@@ -755,7 +755,7 @@ export function CustomerService() {
  <div className="w-1/3 border-r border-[#F3F4F6] flex flex-col bg-stone-50/50">
  <div className="p-4 border-b border-stone-200 bg-white">
  <h3 className="font-bold text-stone-800 flex items-center gap-2 mb-2">
- <Laptop className="w-5 h-5 text-indigo-600" /> Web Livechat
+ <Laptop className="w-5 h-5 text-primary-600" /> Web Livechat
  </h3>
  <div className="flex bg-stone-100 p-1 rounded-lg">
  <button className="flex-1 bg-white shadow-sm text-xs font-bold py-1.5 rounded-md text-stone-700 transition-all text-center">Đang chờ (12)</button>
@@ -763,15 +763,15 @@ export function CustomerService() {
  </div>
  </div>
  <div className="flex-1 overflow-y-auto p-3 space-y-2">
- <div className="bg-white p-3 rounded-lg border border-indigo-200 shadow-sm relative overflow-hidden cursor-pointer">
- <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500" />
+ <div className="bg-white p-3 rounded-lg border border-primary-200 shadow-sm relative overflow-hidden cursor-pointer">
+ <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-500" />
  <div className="flex justify-between items-start mb-1">
  <p className="text-sm font-bold text-stone-800">Khách vãng lai #889</p>
  <span className="text-[10px] text-stone-400">Vừa xong</span>
  </div>
  <p className="text-xs text-stone-600 truncate">Sản phẩm này có size XL không shop?</p>
  <div className="mt-2 flex items-center gap-2">
- <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-bold uppercase tracking-wider border border-indigo-100">Đang hoạt động trên web</span>
+ <span className="px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-[9px] font-bold uppercase tracking-wider border border-primary-100">Đang hoạt động trên web</span>
  </div>
  </div>
  
@@ -792,7 +792,7 @@ export function CustomerService() {
  <div className="flex-1 flex flex-col bg-[#F9FAFB]">
  <div className="p-4 bg-white border-b border-stone-200 flex justify-between items-center z-10 shadow-sm">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+ <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
  <Laptop className="w-5 h-5" />
  </div>
  <div>
@@ -812,7 +812,7 @@ export function CustomerService() {
  <button className="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-all flex items-center gap-1.5">
  <Building2 className="w-3.5 h-3.5" /> Gọi CSKH Sàn
  </button>
- <button className="px-3 py-1.5 text-xs font-bold text-[#FAF9F5] bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-all shadow-sm">Tạo Đơn Hàng</button>
+ <button className="px-3 py-1.5 text-xs font-bold text-[#FAF9F5] bg-primary-600 hover:bg-primary-700 rounded-lg transition-all shadow-sm">Tạo Đơn Hàng</button>
  </>
  )}
  </div>
@@ -828,7 +828,7 @@ export function CustomerService() {
  </div>
  
  <div className="flex flex-col gap-1 items-end">
- <div className="px-4 py-2 bg-indigo-600 text-[#FAF9F5] rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
+ <div className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
  Chào bạn, sản phẩm hiện tại vẫn còn size XL nha bạn ơi. Mình mua hôm nay đang có mã giảm giá 10% đấy ạ.
  </div>
  <span className="text-[10px] text-stone-400">10:25 ✓</span>
@@ -869,9 +869,9 @@ export function CustomerService() {
  <input 
  type="text" 
  placeholder="Nhập tin nhắn (Nhấn Enter để gửi)..." 
- className="w-full pl-4 pr-12 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+ className="w-full pl-4 pr-12 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
  />
- <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex flex-col items-center justify-center bg-indigo-600 text-[#FAF9F5] rounded-lg hover:bg-indigo-700 transition-all">
+ <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex flex-col items-center justify-center bg-primary-600 text-[#FAF9F5] rounded-lg hover:bg-primary-700 transition-all">
  <Send className="w-4 h-4 ml-0.5" />
  </button>
  </div>
@@ -922,7 +922,7 @@ export function CustomerService() {
  </div>
  </div>
  <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center">
+ <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center">
  <Ticket className="w-5 h-5" />
  </div>
  <div>
@@ -1059,15 +1059,15 @@ export function CustomerService() {
  <div className="space-y-6">
  <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm">
  <h4 className="font-bold text-stone-800 flex items-center gap-2 mb-4">
- <Shield className="w-4 h-4 text-indigo-600" /> Định tuyến thông minh (Smart Routing)
+ <Shield className="w-4 h-4 text-primary-600" /> Định tuyến thông minh (Smart Routing)
  </h4>
  <div className="space-y-4">
  <div className="p-3 bg-stone-50 border border-stone-100 rounded-lg">
  <div className="flex justify-between items-center mb-2">
  <span className="text-xs font-bold text-stone-700">Quy tắc chia Ticket</span>
- <ToggleRight className="w-6 h-6 text-indigo-600" />
+ <ToggleRight className="w-6 h-6 text-primary-600" />
  </div>
- <select className="w-full bg-white border border-stone-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-indigo-500/20">
+ <select className="w-full bg-white border border-stone-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-primary-500/20">
  <option>Xoay vòng (Round Robin)</option>
  <option>Chia theo Khối lượng (Load Balance)</option>
  <option>Kỹ năng (Skill-based)</option>
@@ -1077,9 +1077,9 @@ export function CustomerService() {
  <div className="p-3 bg-stone-50 border border-stone-100 rounded-lg">
  <div className="flex justify-between items-center mb-2">
  <span className="text-xs font-bold text-stone-700">Định tuyến Cuộc gọi OmiCall</span>
- <ToggleRight className="w-6 h-6 text-indigo-600" />
+ <ToggleRight className="w-6 h-6 text-primary-600" />
  </div>
- <select className="w-full bg-white border border-stone-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-indigo-500/20">
+ <select className="w-full bg-white border border-stone-200 rounded text-xs p-1.5 font-medium focus:ring-2 focus:ring-primary-500/20">
  <option>Rung tất cả máy (Ring All)</option>
  <option>Theo thứ tự (Linear)</option>
  <option>Thời gian rảnh lâu nhất</option>
@@ -1088,15 +1088,15 @@ export function CustomerService() {
  </div>
  </div>
  
- <div className="bg-indigo-600 p-5 rounded-xl text-[#FAF9F5] shadow-sm shadow-indigo-600/20 relative overflow-hidden">
+ <div className="bg-primary-600 p-5 rounded-xl text-[#FAF9F5] shadow-sm shadow-indigo-600/20 relative overflow-hidden">
  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-10 translate-x-10" />
  <h4 className="font-bold mb-2 flex items-center gap-2">
  <PhoneCall className="w-4 h-4" /> Đồng bộ PBX (OmiCall)
  </h4>
- <p className="text-xs text-indigo-100 font-medium leading-relaxed mb-4">
+ <p className="text-xs text-primary-100 font-medium leading-relaxed mb-4">
  Hệ thống đã kết nối OmiCall. Bạn có thể gán Extension (Ext) cho từng nhân viên để nhận popup cuộc gọi ngay trên trình duyệt.
  </p>
- <button className="w-full py-2 bg-white text-indigo-600 font-bold text-sm rounded-lg hover:bg-stone-50 transition-colors shadow-sm">
+ <button className="w-full py-2 bg-white text-primary-600 font-bold text-sm rounded-lg hover:bg-stone-50 transition-colors shadow-sm">
  Quản lý Ext (SIP)
  </button>
  </div>
@@ -1190,7 +1190,7 @@ export function CustomerService() {
  <div className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col lg:col-span-2">
  <div className="flex justify-between items-start mb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+ <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
  <Code2 className="w-6 h-6" />
  </div>
  <div>
@@ -1198,7 +1198,7 @@ export function CustomerService() {
  <p className="text-xs text-stone-500">Chèn widget chat trực tiếp lên website của bạn</p>
  </div>
  </div>
- <ToggleRight className="w-8 h-8 text-indigo-600 shrink-0 cursor-pointer" />
+ <ToggleRight className="w-8 h-8 text-primary-600 shrink-0 cursor-pointer" />
  </div>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1289,7 +1289,7 @@ export function CustomerService() {
  </div>
 
  {/* AI Sentiment analysis */}
- <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-indigo-50 border-indigo-100')}>
+ <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
  <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
  <Sparkles className="w-3 h-3" /> Nhận định AI
  </p>
@@ -1316,7 +1316,7 @@ export function CustomerService() {
  <button 
  onClick={handleSimulateAiReply}
  disabled={aiDrafting}
- className="flex-1 bg-indigo-100 text-indigo-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-indigo-200 transition-all flex items-center justify-center gap-2"
+ className="flex-1 bg-primary-100 text-primary-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-primary-200 transition-all flex items-center justify-center gap-2"
  >
  {aiDrafting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
  Tự động soạn bằng AI

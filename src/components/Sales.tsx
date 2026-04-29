@@ -52,7 +52,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'rose': return 'bg-rose-50 text-rose-600';
@@ -110,7 +110,7 @@ export function SalesManagement() {
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Deal đang Open</p>
  <div className="flex items-end justify-between mt-3">
  <span className="text-2xl font-black text-[#111827]">45 Leads</span>
- <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">High Value</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
@@ -127,26 +127,26 @@ export function SalesManagement() {
  <div className="lg:col-span-2 bg-white rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm">
  <div className="relative z-10">
  <div className="flex items-center gap-2 mb-6">
- <Sparkles className="w-5 h-5 text-indigo-200" />
+ <Sparkles className="w-5 h-5 text-primary-200" />
  <h3 className="text-lg font-bold uppercase tracking-widest italic">AI Sales Intelligence</h3>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
  <div className="space-y-1">
- <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">Dự báo doanh thu tháng</p>
+ <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">Dự báo doanh thu tháng</p>
  <p className="text-2xl font-black">{formatCurrency(15200000000)}</p>
  <p className="text-[10px] font-bold text-emerald-300 flex items-center gap-1">
  <TrendingUp className="w-3 h-3" /> +21.4% vs T4
  </p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">Tỉ lệ chốt deal (Win Rate)</p>
+ <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">Tỉ lệ chốt deal (Win Rate)</p>
  <p className="text-2xl font-black">34.2%</p>
- <p className="text-[10px] font-bold text-indigo-200">Trên trung bình ngành</p>
+ <p className="text-[10px] font-bold text-primary-200">Trên trung bình ngành</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] text-indigo-100 font-bold uppercase opacity-70">LTV Dự kiến (Next 90d)</p>
+ <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">LTV Dự kiến (Next 90d)</p>
  <p className="text-2xl font-black">{formatCurrency(4500000000)}</p>
- <p className="text-[10px] font-bold text-indigo-200">Từ khách hàng hiện tại</p>
+ <p className="text-[10px] font-bold text-primary-200">Từ khách hàng hiện tại</p>
  </div>
  </div>
  
@@ -154,14 +154,14 @@ export function SalesManagement() {
  <div className="flex items-center gap-3">
  <div className="flex -space-x-2">
  {['A', 'B', 'C', 'D'].map((char, i) => (
- <div key={i} className="w-8 h-8 rounded-full border-2 border-indigo-600 bg-stone-200 flex items-center justify-center text-[10px] font-bold text-stone-600">
+ <div key={i} className="w-8 h-8 rounded-full border-2 border-primary-600 bg-stone-200 flex items-center justify-center text-[10px] font-bold text-stone-600">
  {char}
  </div>
  ))}
  </div>
- <p className="text-[10px] font-bold text-indigo-100 italic">4 nhân viên đang có dấu hiệu bứt phá doanh số vượt bậc</p>
+ <p className="text-[10px] font-bold text-primary-100 italic">4 nhân viên đang có dấu hiệu bứt phá doanh số vượt bậc</p>
  </div>
- <button className="px-4 py-2 bg-white text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-sm ring-4 ring-white/10">
+ <button className="px-4 py-2 bg-white text-primary-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-50 transition-all shadow-sm ring-4 ring-white/10">
  Xem Recommendation
  </button>
  </div>

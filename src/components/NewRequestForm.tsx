@@ -88,7 +88,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               type="text" 
               value={requester}
               onChange={(e) => setRequester(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-stone-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-stone-600"
+              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-stone-50 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-stone-600"
             />
           </div>
           
@@ -97,7 +97,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             <select 
               value={requestType}
               onChange={(e) => setRequestType(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
+              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium cursor-pointer"
             >
               <option value="Hanh chinh">Hành chính</option>
               <option value="Tai chinh">Tài chính</option>
@@ -112,7 +112,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               required
               value={requestDate}
               onChange={(e) => setRequestDate(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
             />
           </div>
 
@@ -122,7 +122,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               value={content}
               required
               onChange={(e) => setContent(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium min-h-[100px]"
+              className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
               placeholder="Nhập chi tiết nội dung đề xuất..."
             />
           </div>
@@ -137,7 +137,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 step="0.5"
                 value={leaveDays}
                 onChange={(e) => setLeaveDays(e.target.value)}
-                className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 placeholder="Ví dụ: 1.5"
               />
             </div>
@@ -151,7 +151,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   type="text"
                   value={expenseContent}
                   onChange={(e) => setExpenseContent(e.target.value)}
-                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: Công tác phí, mua sắm thiết bị..."
                 />
               </div>
@@ -162,7 +162,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: 1000000"
                 />
               </div>
@@ -172,7 +172,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           {/* Workflow Enhancements */}
           <div className="col-span-1 md:col-span-2 border-t border-stone-100 pt-6 mt-2">
             <h4 className="text-sm font-bold text-stone-800 mb-4 flex items-center gap-2">
-              <UserPlus className="w-4 h-4 text-indigo-600" />
+              <UserPlus className="w-4 h-4 text-primary-600" />
               Tùy chỉnh luồng xử lý
             </h4>
             
@@ -199,7 +199,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   <button 
                     type="button" 
                     onClick={handleAddReviewer}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                    className="text-xs font-bold text-primary-600 hover:text-primary-800 flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Thêm bước
                   </button>
@@ -213,7 +213,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                       <select 
                         value={reviewer.reviewer}
                         onChange={(e) => handleReviewerChange(index, e.target.value)}
-                        className="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       >
                         <option value="">-- Chọn người phê duyệt --</option>
@@ -253,7 +253,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           )}
           <button 
             type="submit"
-            className="px-6 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2"
+            className="px-6 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2"
           >
             <Send className="w-4 h-4" /> Gửi đề xuất
           </button>

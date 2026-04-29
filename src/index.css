@@ -5,7 +5,182 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, monospace;
   --font-serif: "Newsreader", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --radius-none: var(--app-radius-none, 0px);
+  --radius-sm: var(--app-radius-sm, calc(0.125rem * var(--radius-scale, 1)));
+  --radius-md: var(--app-radius-md, calc(0.375rem * var(--radius-scale, 1)));
+  --radius-lg: var(--app-radius-lg, calc(0.5rem * var(--radius-scale, 1)));
+  --radius-xl: var(--app-radius-xl, calc(0.75rem * var(--radius-scale, 1)));
+  --radius-2xl: var(--app-radius-2xl, calc(1rem * var(--radius-scale, 1)));
+
+  --color-primary-50: var(--app-primary-50);
+  --color-primary-100: var(--app-primary-100);
+  --color-primary-200: var(--app-primary-200);
+  --color-primary-300: var(--app-primary-300);
+  --color-primary-400: var(--app-primary-400);
+  --color-primary-500: var(--app-primary-500);
+  --color-primary-600: var(--app-primary-600);
+  --color-primary-700: var(--app-primary-700);
+  --color-primary-800: var(--app-primary-800);
+  --color-primary-900: var(--app-primary-900);
 }
+
+:root {
+  /* Default Primary: Indigo */
+  --app-primary-50: var(--color-indigo-50);
+  --app-primary-100: var(--color-indigo-100);
+  --app-primary-200: var(--color-indigo-200);
+  --app-primary-300: var(--color-indigo-300);
+  --app-primary-400: var(--color-indigo-400);
+  --app-primary-500: var(--color-indigo-500);
+  --app-primary-600: var(--color-indigo-600);
+  --app-primary-700: var(--color-indigo-700);
+  --app-primary-800: var(--color-indigo-800);
+  --app-primary-900: var(--color-indigo-900);
+
+  --radius-scale: 1;
+}
+
+/* Primary Colors mapping */
+html[data-primary-color="blue"] {
+  --app-primary-50: var(--color-blue-50);
+  --app-primary-100: var(--color-blue-100);
+  --app-primary-200: var(--color-blue-200);
+  --app-primary-300: var(--color-blue-300);
+  --app-primary-400: var(--color-blue-400);
+  --app-primary-500: var(--color-blue-500);
+  --app-primary-600: var(--color-blue-600);
+  --app-primary-700: var(--color-blue-700);
+  --app-primary-800: var(--color-blue-800);
+  --app-primary-900: var(--color-blue-900);
+}
+
+html[data-primary-color="emerald"] {
+  --app-primary-50: var(--color-emerald-50);
+  --app-primary-100: var(--color-emerald-100);
+  --app-primary-200: var(--color-emerald-200);
+  --app-primary-300: var(--color-emerald-300);
+  --app-primary-400: var(--color-emerald-400);
+  --app-primary-500: var(--color-emerald-500);
+  --app-primary-600: var(--color-emerald-600);
+  --app-primary-700: var(--color-emerald-700);
+  --app-primary-800: var(--color-emerald-800);
+  --app-primary-900: var(--color-emerald-900);
+}
+
+html[data-primary-color="rose"] {
+  --app-primary-50: var(--color-rose-50);
+  --app-primary-100: var(--color-rose-100);
+  --app-primary-200: var(--color-rose-200);
+  --app-primary-300: var(--color-rose-300);
+  --app-primary-400: var(--color-rose-400);
+  --app-primary-500: var(--color-rose-500);
+  --app-primary-600: var(--color-rose-600);
+  --app-primary-700: var(--color-rose-700);
+  --app-primary-800: var(--color-rose-800);
+  --app-primary-900: var(--color-rose-900);
+}
+
+html[data-primary-color="amber"] {
+  --app-primary-50: var(--color-amber-50);
+  --app-primary-100: var(--color-amber-100);
+  --app-primary-200: var(--color-amber-200);
+  --app-primary-300: var(--color-amber-300);
+  --app-primary-400: var(--color-amber-400);
+  --app-primary-500: var(--color-amber-500);
+  --app-primary-600: var(--color-amber-600);
+  --app-primary-700: var(--color-amber-700);
+  --app-primary-800: var(--color-amber-800);
+  --app-primary-900: var(--color-amber-900);
+}
+
+html[data-primary-color="slate"] {
+  --app-primary-50: var(--color-slate-50);
+  --app-primary-100: var(--color-slate-100);
+  --app-primary-200: var(--color-slate-200);
+  --app-primary-300: var(--color-slate-300);
+  --app-primary-400: var(--color-slate-400);
+  --app-primary-500: var(--color-slate-500);
+  --app-primary-600: var(--color-slate-600);
+  --app-primary-700: var(--color-slate-700);
+  --app-primary-800: var(--color-slate-800);
+  --app-primary-900: var(--color-slate-900);
+}
+
+/* Border Radius mapping */
+html[data-border-radius="none"] { --radius-scale: 0; }
+html[data-border-radius="sm"] { --radius-scale: 0.5; }
+html[data-border-radius="lg"] { --radius-scale: 1; }
+html[data-border-radius="xl"] { --radius-scale: 1.5; }
+html[data-border-radius="2xl"] { --radius-scale: 2; }
+
+/* Holiday Themes */
+html[data-holiday-theme="tet"] body {
+  background-color: #fff1f2 !important;
+}
+html[data-holiday-theme="tet"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(#ef4444 1px, transparent 1px),
+    radial-gradient(#ef4444 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 9999;
+}
+html[data-holiday-theme="tet"] .bg-stone-50 { background-color: transparent !important; }
+
+html[data-holiday-theme="christmas"] body {
+  background-color: #f0fdf4 !important;
+}
+html[data-holiday-theme="christmas"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(#fff 2px, transparent 2px),
+    radial-gradient(#fff 2px, transparent 2px);
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 9999;
+}
+html[data-holiday-theme="christmas"] .bg-stone-50 { background-color: #0f172a !important; }
+
+html[data-holiday-theme="mid-autumn"] body {
+  background-color: #fffbeb !important;
+}
+html[data-holiday-theme="mid-autumn"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(#d97706 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 9999;
+}
+html[data-holiday-theme="mid-autumn"] .bg-stone-50 { background-color: transparent !important; }
+
+html[data-holiday-theme="halloween"] body {
+  background-color: #fff7ed !important;
+}
+html[data-holiday-theme="halloween"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, #f97316 25%, transparent 25%, transparent 75%, #f97316 75%, #f97316), repeating-linear-gradient(45deg, #f97316 25%, transparent 25%, transparent 75%, #f97316 75%, #f97316);
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+html[data-holiday-theme="halloween"] .bg-stone-50 { background-color: transparent !important; }
 
 body {
   @apply font-sans antialiased text-stone-800 bg-[#FDFCF8];

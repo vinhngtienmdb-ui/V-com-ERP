@@ -254,8 +254,8 @@ export function RequestHub() {
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
- <div className="header-title border-l-4 border-indigo-600 pl-4 py-1">
- <h1 className="text-3xl font-black text-stone-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-indigo-600">E-Form</span></h1>
+ <div className="header-title border-l-4 border-primary-600 pl-4 py-1">
+ <h1 className="text-3xl font-black text-stone-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-primary-600">E-Form</span></h1>
  <p className="text-xs font-bold text-stone-500 mt-2 uppercase tracking-[0.2em]">Hành chính • Tài chính • Nhân sự • Quy trình số</p>
  </div>
  <div className="flex gap-3">
@@ -539,7 +539,7 @@ export function RequestHub() {
  </div>
  </div>
  <p className="text-xs text-stone-500 mb-2">Nhóm: <span className="font-semibold text-stone-700">{item.category}</span></p>
- <p className="text-xs text-stone-500">Luồng duyệt: <span className="font-semibold text-indigo-600">{item.workflow.length} cấp</span></p>
+ <p className="text-xs text-stone-500">Luồng duyệt: <span className="font-semibold text-primary-600">{item.workflow.length} cấp</span></p>
  </div>
  ))}
  <button onClick={() => {
@@ -556,7 +556,7 @@ export function RequestHub() {
  <div className="bg-stone-50 border border-stone-200 rounded-lg p-6 shadow-sm">
  <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-stone-200 pb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-600 text-[#FAF9F5] rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
+ <div className="w-12 h-12 bg-primary-600 text-[#FAF9F5] rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
  <Layout className="w-6 h-6" />
  </div>
  <div>
@@ -564,7 +564,7 @@ export function RequestHub() {
  <select 
  value={selectedConfigForWorkflow}
  onChange={(e) => setSelectedConfigForWorkflow(e.target.value)}
- className="text-lg font-black text-stone-900 bg-transparent focus:outline-none cursor-pointer hover:text-indigo-600 transition-colors"
+ className="text-lg font-black text-stone-900 bg-transparent focus:outline-none cursor-pointer hover:text-primary-600 transition-colors"
  >
  {formConfigs.map(c => (
  <option key={c.id} value={c.id}>{c.name}</option>
@@ -596,12 +596,12 @@ export function RequestHub() {
  <div className="flex items-start gap-6 relative z-10 group">
  <div className={cn(
  "w-12 h-12 rounded-lg font-black flex items-center justify-center shrink-0 border-4 transition-all shadow-sm",
- idx === 0 ? "bg-emerald-600 border-white text-[#FAF9F5] shadow-emerald-100" : "bg-white border-stone-100 text-stone-400 group-hover:border-indigo-100 group-hover:text-indigo-600"
+ idx === 0 ? "bg-emerald-600 border-white text-[#FAF9F5] shadow-emerald-100" : "bg-white border-stone-100 text-stone-400 group-hover:border-primary-100 group-hover:text-primary-600"
  )}>
  {idx + 1}
  </div>
  
- <div className="flex-1 bg-white border border-stone-200 p-5 rounded-lg shadow-sm group-hover:shadow-sm transition-all group-hover:border-indigo-200">
+ <div className="flex-1 bg-white border border-stone-200 p-5 rounded-lg shadow-sm group-hover:shadow-sm transition-all group-hover:border-primary-200">
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
  <h5 className="font-black text-stone-800 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
@@ -631,7 +631,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].ruleType = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-stone-50 font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-inner"
+ className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-stone-50 font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 shadow-inner"
  >
  <option value="system">🏢 Trưởng bộ phận (System-Auto)</option>
  <option value="user_select">👤 Người dùng chọn thủ công</option>
@@ -652,7 +652,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].specificUser = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-indigo-50/50 font-bold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner border-indigo-100"
+ className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-primary-50/50 font-bold text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-inner border-primary-100"
  >
  <option value="">-- Chọn thành viên --</option>
  <option value="Giám đốc Nhân sự">Lê Thị Tuyết (HR Director)</option>
@@ -672,7 +672,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].sla = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-stone-50 font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-inner"
+ className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-stone-50 font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20 shadow-inner"
  >
  <option value="24h">⏱️ Trong vòng 24h</option>
  <option value="48h">⏱️ Trong vòng 48h</option>
@@ -699,7 +699,7 @@ export function RequestHub() {
  <div className="mt-8 pt-6 border-t border-stone-200 flex justify-end">
  <button 
  onClick={() => alert('Đã lưu cấu hình luồng duyệt thành công!')}
- className="px-8 py-3 bg-indigo-600 text-[#FAF9F5] rounded-xl text-sm font-black shadow-sm shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95"
+ className="px-8 py-3 bg-primary-600 text-[#FAF9F5] rounded-xl text-sm font-black shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
  >
  LƯU CẤU HÌNH LUỒNG DUYỆT
  </button>
@@ -920,7 +920,7 @@ export function RequestHub() {
  const newField = { id: `f${Date.now()}`, label: 'Trường mới', type: 'text', required: false };
  setEditingFormConfig({...editingFormConfig, fields: [...(editingFormConfig.fields || []), newField]});
  }}
- className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+ className="text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
  >
  <Plus className="w-3 h-3" /> Thêm trường
  </button>
@@ -948,7 +948,7 @@ export function RequestHub() {
  updated[idx].label = e.target.value;
  setEditingFormConfig({...editingFormConfig, fields: updated});
  }}
- className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+ className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-primary-500 font-medium"
  placeholder="Tên trường (Label)" 
  />
  <select 
@@ -958,7 +958,7 @@ export function RequestHub() {
  updated[idx].type = e.target.value;
  setEditingFormConfig({...editingFormConfig, fields: updated});
  }}
- className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+ className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-primary-500 font-medium"
  >
  <option value="text">Văn bản ngắn</option>
  <option value="textarea">Văn bản dài</option>
@@ -976,7 +976,7 @@ export function RequestHub() {
  updated[idx].options = e.target.value.split(',').map(s => s.trim());
  setEditingFormConfig({...editingFormConfig, fields: updated});
  }}
- className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full mb-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+ className="border border-stone-200 text-xs px-2 py-1.5 rounded bg-white w-full mb-2 focus:outline-none focus:ring-1 focus:ring-primary-500"
  placeholder="Tùy chọn (ngăn cách bằng dấu phẩy)"
  />
  )}
@@ -989,7 +989,7 @@ export function RequestHub() {
  updated[idx].required = e.target.checked;
  setEditingFormConfig({...editingFormConfig, fields: updated});
  }}
- className="rounded border-stone-300 text-indigo-600 focus:ring-indigo-500"
+ className="rounded border-stone-300 text-primary-600 focus:ring-primary-500"
  /> Bắt buộc nhập
  </label>
  </div>
@@ -1018,7 +1018,7 @@ export function RequestHub() {
  }
  setShowConfigModal(false);
  }}
- className="px-6 py-2.5 text-sm font-bold text-[#FAF9F5] bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-600/30">
+ className="px-6 py-2.5 text-sm font-bold text-[#FAF9F5] bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shadow-indigo-600/30">
  Lưu cấu hình
  </button>
  </div>

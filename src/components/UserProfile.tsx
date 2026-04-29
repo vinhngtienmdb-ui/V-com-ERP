@@ -238,7 +238,7 @@ export function UserProfile() {
  <h3 className="text-lg font-bold text-stone-900">Cài đặt thông báo</h3>
  <button 
  onClick={() => addNotification('Thông báo thử nghiệm', 'Đây là thông báo test được tạo lúc ' + new Date().toLocaleTimeString())}
- className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors"
+ className="flex items-center gap-2 px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-100 transition-colors"
  >
  <Bell className="w-3.5 h-3.5" /> Gửi thông báo test
  </button>
@@ -301,7 +301,7 @@ export function UserProfile() {
 
  <div className="pt-8 border-t border-stone-100">
  <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
- <Globe className="w-5 h-5 text-indigo-500" /> Ngôn ngữ hệ thống
+ <Globe className="w-5 h-5 text-primary-500" /> Ngôn ngữ hệ thống
  </h3>
  <div className="grid grid-cols-2 gap-4 max-w-sm">
  <button 

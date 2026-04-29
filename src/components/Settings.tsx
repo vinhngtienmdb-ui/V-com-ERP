@@ -172,6 +172,7 @@ const SETTINGS_MODULE_GROUPS = [
  title: 'Vận hành & Kinh doanh',
  items: [
  { id: 'general', label: 'Cấu hình chung', icon: Settings, desc: 'Cài đặt cơ bản hệ thống, Payout tự động', color: 'blue' },
+ { id: 'appearance', label: 'Giao diện & Theme', icon: Sparkles, desc: 'Tùy chỉnh màu sắc, bo góc, Lễ tết', color: 'rose' },
  { id: 'fees', label: 'Phí sàn & Ngành hàng', icon: BadgeDollarSign, desc: 'Setup tỷ lệ hoa hồng theo từng ngành', color: 'emerald' },
  { id: 'website', label: 'Website & Menu', icon: Globe, desc: 'Quản lý biểu mẫu, tên miền và menu', color: 'indigo' },
  { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package, desc: 'Phân loại mặt hàng và lưu kho', color: 'orange' },
@@ -200,7 +201,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
@@ -219,8 +220,11 @@ const MOCK_PROVINCES = [
  { id: '5', name: 'Cần Thơ', code: 'CT', wards: 83, status: 'active' },
 ];
 
+import { usePreferences } from '../context/PreferencesContext';
+
 export function SettingsPage() {
- const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup' | 'inventory'>('overview');
+ const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
+ const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'stores' | 'fees' | 'popup' | 'inventory'>('overview');
  const [roles, setRoles] = useState<PermissionRole[]>(MOCK_ROLES);
  const [editingRole, setEditingRole] = useState<PermissionRole | null>(null);
  const [notiTitle, setNotiTitle] = useState('');
@@ -449,7 +453,7 @@ export function SettingsPage() {
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-bold text-[#111827]">{categoryFees.length} Nhóm</span>
- <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Tối ưu AI</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Tối ưu AI</span>
  </div>
  </div>
  </div>
@@ -487,6 +491,63 @@ export function SettingsPage() {
  </div>
  </div>
  )}
+ {activeTab === 'appearance' && (
+ <div className="animate-in fade-in duration-300 space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <h3 className="text-lg font-bold text-[#111827] flex items-center gap-2">
+  <Sparkles className="w-5 h-5 text-rose-500" />
+  Giao diện & Theme
+ </h3>
+ 
+ <div className="space-y-4">
+  <h4 className="font-semibold text-stone-800">Màu sắc chủ đạo (Primary Color)</h4>
+  <div className="flex gap-4">
+  {(['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate'] as const).map(color => (
+  <button
+  key={color}
+  onClick={() => setPrimaryColor(color)}
+  className={`w-10 h-10 rounded-full flex items-center justify-center ${primaryColor === color ? 'ring-2 ring-offset-2 ring-stone-800' : ''}`}
+  style={{ backgroundColor: `var(--color-${color}-600)` }}
+  >
+  {primaryColor === color && <Check className="w-5 h-5 text-white" />}
+  </button>
+  ))}
+  </div>
+ </div>
+
+ <div className="space-y-4">
+  <h4 className="font-semibold text-stone-800">Bo góc bảng biểu (Border Radius)</h4>
+  <div className="flex gap-4">
+  <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
+  <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
+  <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
+  <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-xl flex-1 font-medium`}>Cong (xl)</button>
+  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-2xl flex-1 font-medium`}>Rất cong (2xl)</button>
+  </div>
+ </div>
+
+ <div className="space-y-4">
+  <h4 className="font-semibold text-stone-800 flex items-center gap-2">Theme Lễ Tết</h4>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  {(['none', 'tet', 'christmas', 'mid-autumn', 'halloween'] as const).map(theme => (
+  <button
+  key={theme}
+  onClick={() => setHolidayTheme(theme)}
+  className={`p-4 border rounded-xl text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-stone-200 hover:border-stone-300'}`}
+  >
+  <span className="text-2xl">
+  {theme === 'tet' ? '🧧' : theme === 'christmas' ? '🎄' : theme === 'mid-autumn' ? '🌕' : theme === 'halloween' ? '🎃' : '✨'}
+  </span>
+  <span className="font-semibold capitalize">{theme === 'none' ? 'Mặc định' : theme}</span>
+  </button>
+  ))}
+  </div>
+ </div>
+ 
+ </div>
+ </div>
+ )}
+
  {activeTab === 'general' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
@@ -612,7 +673,7 @@ export function SettingsPage() {
  </button>
  <button 
  onClick={() => setShowAddCategory(true)}
- className="flex items-center gap-1.5 text-xs bg-indigo-600 text-[#FAF9F5] px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
+ className="flex items-center gap-1.5 text-xs bg-primary-600 text-[#FAF9F5] px-3 py-1.5 rounded-lg font-bold hover:bg-primary-700 transition-colors shadow-sm"
  >
  <Plus className="w-4 h-4" /> Thêm ngành hàng
  </button>
@@ -625,12 +686,12 @@ export function SettingsPage() {
  <input 
  type="text" 
  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
- className="flex-1 p-2 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
+ className="flex-1 p-2 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
  value={newCategoryName}
  onChange={(e) => setNewCategoryName(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
  />
- <button onClick={handleAddCategory} className="px-5 py-2 bg-indigo-600 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700">Lưu</button>
+ <button onClick={handleAddCategory} className="px-5 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700">Lưu</button>
  <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-stone-200 text-stone-700 rounded-lg text-sm font-bold shadow-sm hover:bg-stone-300">Hủy</button>
  </div>
  )}
@@ -695,7 +756,7 @@ export function SettingsPage() {
  {cf.aiSuggestedSellerFee && (
  <button 
  onClick={() => handleApplyAiSuggestion(cf.id)}
- className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100 hover:bg-indigo-600 hover:text-[#FAF9F5] transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
+ className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
  title={`Gợi ý: ${cf.aiReasoning}`}
  >
  <Sparkles className="w-4 h-4" /> Áp dụng
@@ -1187,18 +1248,18 @@ export function SettingsPage() {
  </button>
  </div>
 
- <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-5 mb-6">
- <h4 className="font-bold text-indigo-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
- <p className="text-sm text-indigo-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
+ <div className="bg-primary-50 border border-primary-100 rounded-lg p-5 mb-6">
+ <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
+ <p className="text-sm text-primary-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
  <div className="grid grid-cols-2 gap-4">
- <div className="bg-white p-3 rounded-lg shadow-sm border border-indigo-50 flex justify-between items-center">
+ <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
  <span className="text-[10px] uppercase font-bold text-stone-400">Chi nhánh Quận 1</span>
  <p className="font-mono text-sm text-stone-900">sg1.v-erp.com</p>
  </div>
  <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
  </div>
- <div className="bg-white p-3 rounded-lg shadow-sm border border-indigo-50 flex justify-between items-center">
+ <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
  <span className="text-[10px] uppercase font-bold text-stone-400">Chi nhánh Cầu Giấy</span>
  <p className="font-mono text-sm text-stone-900">hn1.v-erp.com</p>
@@ -1495,15 +1556,15 @@ export function SettingsPage() {
  <img src={popupImage} alt="Popup Banner Preview" className="w-full h-full object-cover" />
  </div>
  ) : (
- <div className="h-24 bg-indigo-100 flex items-center justify-center">
- <Image className="w-8 h-8 text-indigo-300" />
+ <div className="h-24 bg-primary-100 flex items-center justify-center">
+ <Image className="w-8 h-8 text-primary-300" />
  </div>
  )}
  <div className="p-3 text-center space-y-2">
  <h4 className="font-bold text-sm text-stone-800 break-words">{popupTitle || '...'}</h4>
  <p className="text-[10px] text-stone-500 line-clamp-3 break-words">{popupDesc || '...'}</p>
  {(popupCtaText || popupCtaLink) && (
- <button className="w-full py-1.5 bg-indigo-600 text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-indigo-700 mt-2 truncate px-2">
+ <button className="w-full py-1.5 bg-primary-600 text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-primary-700 mt-2 truncate px-2">
  {popupCtaText || 'Click here'}
  </button>
  )}
@@ -1772,7 +1833,7 @@ export function SettingsPage() {
  }}
  className={cn(
  "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
- isSelected ? "bg-indigo-600 border-indigo-600 text-[#FAF9F5] shadow-sm" : "bg-white border-stone-200 text-stone-500 hover:border-stone-300"
+ isSelected ? "bg-primary-600 border-primary-600 text-[#FAF9F5] shadow-sm" : "bg-white border-stone-200 text-stone-500 hover:border-stone-300"
  )}
  >
  {cat.name}

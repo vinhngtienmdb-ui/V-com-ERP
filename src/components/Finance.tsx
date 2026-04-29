@@ -68,7 +68,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'rose': return 'bg-rose-50 text-rose-600';
@@ -183,12 +183,12 @@ export function Finance() {
  <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
  </div>
  </div>
- <div className="bg-indigo-600 p-6 rounded-xl border border-indigo-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
+ <div className="bg-primary-600 p-6 rounded-xl border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
  <div className="absolute right-0 bottom-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
  <Building2 className="w-16 h-16 text-[#FAF9F5]" />
  </div>
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-indigo-200 font-bold uppercase tracking-widest">Dấu vân tay tài chính</span>
+ <span className="text-[10px] text-primary-200 font-bold uppercase tracking-widest">Dấu vân tay tài chính</span>
  <ShieldCheck className="w-4 h-4 text-[#FAF9F5]" />
  </div>
  <div className="flex items-end justify-between">
@@ -285,14 +285,14 @@ export function Finance() {
  )}
  </div>
 
- <div className="bg-indigo-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
+ <div className="bg-primary-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
  <div className="flex items-start gap-4">
  <div className="p-3 bg-white/10 rounded-lg">
- <Sparkles className="w-6 h-6 text-indigo-300" />
+ <Sparkles className="w-6 h-6 text-primary-300" />
  </div>
  <div>
  <h4 className="text-sm font-bold uppercase tracking-widest mb-1 italic">AI Productivity Tip</h4>
- <p className="text-[11px] text-indigo-100/70 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
+ <p className="text-[11px] text-primary-100/70 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
  </div>
  </div>
  <Zap className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 rotate-12" />
@@ -329,7 +329,7 @@ export function Finance() {
  </div>
  <div className="space-y-1">
  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Số hóa đơn</p>
- <p className="text-sm font-black text-indigo-600 font-mono">EVN-2023-99881</p>
+ <p className="text-sm font-black text-primary-600 font-mono">EVN-2023-99881</p>
  </div>
  <div className="space-y-1">
  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Ngày hóa đơn</p>

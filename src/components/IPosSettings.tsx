@@ -132,7 +132,7 @@ export function IPosSettings() {
  <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+ <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
  <MonitorSmartphone className="w-6 h-6" />
  </div>
  <div>
@@ -144,7 +144,7 @@ export function IPosSettings() {
  <button onClick={() => navigate('/ipos')} className="px-4 py-2 border border-stone-200 text-stone-700 bg-white rounded-lg text-sm font-semibold hover:bg-stone-50 shadow-sm">
  Quay lại iPOS
  </button>
- <button onClick={handleSave} className="px-4 py-2 bg-indigo-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-sm flex items-center gap-2">
+ <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
  <Save className="w-4 h-4" />
  Lưu thay đổi
  </button>
@@ -157,10 +157,10 @@ export function IPosSettings() {
  <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
  <div className="flex items-center justify-between mb-4">
  <h3 className="font-bold text-stone-800 flex items-center gap-2">
- <Users className="w-4 h-4 text-indigo-600" />
+ <Users className="w-4 h-4 text-primary-600" />
  Vai trò (Roles)
  </h3>
- <button className="p-1 text-stone-400 hover:text-indigo-600 hover:bg-indigo-50 rounded">
+ <button className="p-1 text-stone-400 hover:text-primary-600 hover:bg-primary-50 rounded">
  <Plus className="w-4 h-4" />
  </button>
  </div>
@@ -173,17 +173,17 @@ export function IPosSettings() {
  className={cn(
  "w-full text-left px-3 py-3 rounded-lg border transition-all",
  activeRole === role.id 
- ? "bg-indigo-50 border-indigo-200 shadow-sm" 
+ ? "bg-primary-50 border-primary-200 shadow-sm" 
  : "bg-white border-transparent hover:border-stone-200 hover:bg-stone-50"
  )}
  >
  <p className={cn(
  "font-bold text-sm",
- activeRole === role.id ? "text-indigo-700" : "text-stone-700"
+ activeRole === role.id ? "text-primary-700" : "text-stone-700"
  )}>{role.name}</p>
  <p className={cn(
  "text-[11px] mt-1 line-clamp-2",
- activeRole === role.id ? "text-indigo-500/80" : "text-stone-500"
+ activeRole === role.id ? "text-primary-500/80" : "text-stone-500"
  )}>{role.description}</p>
  </button>
  ))}
@@ -216,7 +216,7 @@ export function IPosSettings() {
  mIdx !== IPOS_MODULES.length - 1 ? "border-b border-stone-100" : ""
  )}>
  <h3 className="text-sm font-black text-stone-800 uppercase tracking-wider mb-4 flex items-center gap-2">
- <div className="w-1.5 h-4 bg-indigo-500 rounded-full"></div>
+ <div className="w-1.5 h-4 bg-primary-500 rounded-full"></div>
  {module.name}
  </h3>
  

@@ -253,7 +253,7 @@ export function OmniChat() {
  <button 
  onClick={generateDraft}
  disabled={isAiProcessing}
- className="p-3 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-[#FAF9F5] transition-all shadow-sm group relative"
+ className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-xl hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm group relative"
  >
  <Sparkles className={cn("w-5 h-5", isAiProcessing && "animate-spin")} />
  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-stone-900 text-[#FAF9F5] text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>

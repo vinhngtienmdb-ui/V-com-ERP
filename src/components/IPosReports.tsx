@@ -8,12 +8,12 @@ export function IPosPromotions({ activeStore }: { activeStore: any }) {
       <div className="bg-white border-b border-stone-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-stone-900 tracking-tight flex items-center gap-2">
-            <Gift className="w-5 h-5 text-indigo-600" /> Chương trình Khuyến mại
+            <Gift className="w-5 h-5 text-primary-600" /> Chương trình Khuyến mại
           </h2>
           <p className="text-xs font-bold text-stone-400 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
         </div>
         <div className="flex gap-2">
-           <button className="bg-indigo-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-indigo-700 flex items-center gap-2">
+           <button className="bg-primary-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-primary-700 flex items-center gap-2">
              Tạo Khuyến mại
            </button>
         </div>
@@ -29,8 +29,8 @@ export function IPosPromotions({ activeStore }: { activeStore: any }) {
                    </div>
                    <h3 className="text-sm font-bold text-stone-900 mb-2">Giảm 10% Tối đa 50k - Chào hè {i}</h3>
                    <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded px-3 py-2 w-fit mb-4">
-                       <span className="font-mono font-bold text-indigo-600 text-xs">SUMMER{i}</span>
-                       <button className="text-stone-400 hover:text-indigo-600"><Copy className="w-3.5 h-3.5"/></button>
+                       <span className="font-mono font-bold text-primary-600 text-xs">SUMMER{i}</span>
+                       <button className="text-stone-400 hover:text-primary-600"><Copy className="w-3.5 h-3.5"/></button>
                    </div>
                    <div className="space-y-2 text-[11px] font-medium text-stone-500">
                        <p className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5"/> Hết hạn: 30/06/2026</p>
@@ -51,17 +51,17 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
       <div className="bg-white border-b border-stone-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
          <div>
             <h2 className="text-xl font-black text-stone-900 tracking-tight flex items-center gap-2">
-               <BarChart className="w-5 h-5 text-indigo-600" /> Báo cáo Doanh thu & Vận hành
+               <BarChart className="w-5 h-5 text-primary-600" /> Báo cáo Doanh thu & Vận hành
             </h2>
             <p className="text-xs font-bold text-stone-400 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
          </div>
          <div className="flex gap-2">
-            <select className="bg-stone-100 border border-stone-200 text-stone-600 px-3 py-2 rounded-sm text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-100">
+            <select className="bg-stone-100 border border-stone-200 text-stone-600 px-3 py-2 rounded-sm text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary-100">
                 <option>Hôm nay</option>
                 <option>Tuần này</option>
                 <option>Tháng này</option>
             </select>
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-indigo-700 flex items-center gap-2">
+            <button className="bg-primary-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-primary-700 flex items-center gap-2">
                Xuất Báo Cáo Mở Rộng
             </button>
          </div>

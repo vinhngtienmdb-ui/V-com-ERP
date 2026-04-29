@@ -94,7 +94,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
@@ -183,11 +183,11 @@ export function WarehouseModule() {
  <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Uptime Kho vận</span>
- <Clock className="w-4 h-4 text-indigo-600" />
+ <Clock className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">99.8%</span>
- <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Realtime</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Realtime</span>
  </div>
  </div>
  </div>
@@ -494,7 +494,7 @@ export function WarehouseModule() {
  >
  <ArrowLeft className="w-4 h-4" /> Quay lại
  </button>
- <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100 animate-pulse">
+ <div className="flex items-center gap-2 text-primary-600 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-100 animate-pulse">
  <Sparkles className="w-4 h-4" />
  <span className="text-[10px] font-black uppercase tracking-widest">AI Demand Forecasting Live</span>
  </div>
@@ -511,7 +511,7 @@ export function WarehouseModule() {
  {[45, 65, 35, 85, 55, 95, 75, 45, 65, 80, 70, 90].map((val, i) => (
  <div key={i} className="flex-1 flex flex-col items-center gap-2">
  <div 
- className="w-full bg-indigo-500/30 border-t-2 border-indigo-400 rounded-t-sm transition-all hover:bg-indigo-400"
+ className="w-full bg-primary-500/30 border-t-2 border-primary-400 rounded-t-sm transition-all hover:bg-primary-400"
  style={{ height: `${val}%` }}
  />
  <span className="text-[8px] text-stone-500 font-bold">W{i+1}</span>
@@ -519,11 +519,11 @@ export function WarehouseModule() {
  ))}
  </div>
  </div>
- <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full -mr-32 -mt-32" />
+ <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full -mr-32 -mt-32" />
  </div>
 
  <div className="space-y-6">
- <div className="bg-white border-2 border-indigo-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20">
+ <div className="bg-white border-2 border-primary-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20">
  <h4 className="text-xs font-black text-stone-400 uppercase tracking-widest mb-4">AI Recommendation</h4>
  <div className="space-y-4">
  <div className="flex gap-3">
@@ -545,7 +545,7 @@ export function WarehouseModule() {
  </div>
  </div>
  </div>
- <button className="w-full mt-6 py-3 bg-indigo-600 text-[#FAF9F5] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-indigo-200">
+ <button className="w-full mt-6 py-3 bg-primary-600 text-[#FAF9F5] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-indigo-200">
  Tạo đề xuất mua hàng tự động
  </button>
  </div>

@@ -132,7 +132,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
       <div className="flex-1 p-6 overflow-y-auto no-scrollbar">
          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
              {[{ label: 'Tổng lương thực nhận', val: formatCurrency(stats.totalNetPay), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-               { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+               { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-primary-600', bg: 'bg-primary-50' },
                { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' }].map((stat, idx) => (
                  <div key={idx} className="bg-white border text-center md:text-left border-stone-200 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", stat.bg, stat.color)}>
@@ -181,15 +181,15 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                 <tr 
                                     key={emp.id} 
                                     onClick={() => setSelectedEmployee(emp)}
-                                    className="hover:bg-indigo-50/30 cursor-pointer transition-colors group"
+                                    className="hover:bg-primary-50/30 cursor-pointer transition-colors group"
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors shrink-0">
                                                 <UserCircle2 className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <p className="font-bold text-stone-900 group-hover:text-indigo-700 transition-colors">{emp.name}</p>
+                                                <p className="font-bold text-stone-900 group-hover:text-primary-700 transition-colors">{emp.name}</p>
                                                 <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wider mt-0.5">{emp.role}</p>
                                             </div>
                                         </div>
@@ -214,7 +214,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                         {details.otPay > 0 && <p className="text-[10px] text-orange-600 font-bold uppercase mt-1">+ {formatCurrency(details.otPay)} (OT)</p>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        {emp.allowances > 0 && <p className="text-[10px] text-indigo-600 font-bold uppercase">PC: +{formatCurrency(emp.allowances)}</p>}
+                                        {emp.allowances > 0 && <p className="text-[10px] text-primary-600 font-bold uppercase">PC: +{formatCurrency(emp.allowances)}</p>}
                                         {emp.bonus > 0 && <p className="text-[10px] text-emerald-600 font-bold uppercase mt-0.5">Thưởng: +{formatCurrency(emp.bonus)}</p>}
                                         {emp.allowances === 0 && emp.bonus === 0 && <span className="text-stone-300">-</span>}
                                     </td>
@@ -225,7 +225,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                         {details.deductions === 0 && <span className="text-stone-300">-</span>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <p className="font-black text-indigo-700 text-base">{formatCurrency(details.net)}</p>
+                                        <p className="font-black text-primary-700 text-base">{formatCurrency(details.net)}</p>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={cn(
@@ -261,7 +261,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                   
                   <div className="flex-1 overflow-y-auto p-6 space-y-8">
                       <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border-2 border-indigo-100">
+                          <div className="w-16 h-16 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 border-2 border-primary-100">
                               <UserCircle2 className="w-8 h-8" />
                           </div>
                           <div>
@@ -331,16 +331,16 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                       </div>
 
                       {/* Thực nhận */}
-                      <div className="bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
+                      <div className="bg-gradient-to-r from-primary-900 to-primary-800 rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
                           <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />
-                          <p className="text-[10px] text-indigo-200 font-black uppercase tracking-widest mb-1 relative z-10">
+                          <p className="text-[10px] text-primary-200 font-black uppercase tracking-widest mb-1 relative z-10">
                               3. Lương Thực Nhận (Net Pay)
                           </p>
                           <p className="text-4xl font-black tracking-tight relative z-10">
                               {formatCurrency(calculateDetails(selectedEmployee).net)}
                           </p>
-                          <div className="mt-4 pt-4 border-t border-indigo-700/50 flex items-center justify-between relative z-10">
-                              <span className="text-xs font-bold text-indigo-200 uppercase tracking-widest">
+                          <div className="mt-4 pt-4 border-t border-primary-700/50 flex items-center justify-between relative z-10">
+                              <span className="text-xs font-bold text-primary-200 uppercase tracking-widest">
                                   Trạng thái
                               </span>
                               <span className={cn(

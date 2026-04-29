@@ -157,7 +157,7 @@ export function ContractManager() {
  )}
 
  {selectedContract.status === 'expiring_soon' && (
- <button className="px-4 py-2 bg-indigo-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-sm flex items-center gap-2">
+ <button className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
  <FileSignature className="w-4 h-4" />
  Gia hạn hợp đồng
  </button>
@@ -173,7 +173,7 @@ export function ContractManager() {
  <div className="flex items-center justify-between p-5 border-b border-stone-100 bg-stone-50">
  <div>
  <h3 className="text-base font-bold text-stone-800 flex items-center gap-2">
- <ShieldCheck className="w-5 h-5 text-indigo-600" />
+ <ShieldCheck className="w-5 h-5 text-primary-600" />
  Ký số Hợp đồng
  </h3>
  </div>
@@ -194,15 +194,15 @@ export function ContractManager() {
  <div>
  <label className="block text-sm font-semibold text-stone-700 mb-3">Chọn phương thức ký số</label>
  <div className="space-y-3">
- <label className="flex items-center gap-3 p-3 border border-indigo-200 bg-indigo-50/50 rounded-lg cursor-pointer hover:bg-indigo-50 transition-colors">
- <input type="radio" name="signMethod" defaultChecked className="w-4 h-4 text-indigo-600 border-stone-300 focus:ring-indigo-600" />
+ <label className="flex items-center gap-3 p-3 border border-primary-200 bg-primary-50/50 rounded-lg cursor-pointer hover:bg-primary-50 transition-colors">
+ <input type="radio" name="signMethod" defaultChecked className="w-4 h-4 text-primary-600 border-stone-300 focus:ring-primary-600" />
  <div>
  <p className="text-sm font-bold text-stone-800 flex items-center gap-2">Ký số SmartCA (Viettel, VNPT) <span className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-bold">Khuyên dùng</span></p>
  <p className="text-xs text-stone-500 mt-0.5">Xác thực qua ứng dụng trên điện thoại thông minh.</p>
  </div>
  </label>
  <label className="flex items-center gap-3 p-3 border border-stone-200 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors opacity-70">
- <input type="radio" name="signMethod" className="w-4 h-4 text-indigo-600 border-stone-300 focus:ring-indigo-600" />
+ <input type="radio" name="signMethod" className="w-4 h-4 text-primary-600 border-stone-300 focus:ring-primary-600" />
  <div>
  <p className="text-sm font-bold text-stone-800">Ký bằng USB Token</p>
  <p className="text-xs text-stone-500 mt-0.5">Yêu cầu cắm USB và có phần mềm hỗ trợ (plugin).</p>
@@ -220,7 +220,7 @@ export function ContractManager() {
  Hủy bỏ
  </button>
  <button 
- className="px-5 py-2.5 bg-indigo-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+ className="px-5 py-2.5 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
  onClick={() => {
  alert(`Yêu cầu ký số đã được gửi đến thiết bị SmartCA của bạn!`);
  setSigningModalOpen(false);
@@ -261,7 +261,7 @@ export function ContractManager() {
  className={cn(
  "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
  activeTab === tab.id 
- ? "bg-indigo-50 text-indigo-700 font-bold" 
+ ? "bg-primary-50 text-primary-700 font-bold" 
  : "text-stone-600 hover:bg-stone-50 hover:text-stone-900 font-medium"
  )}
  >
@@ -279,7 +279,7 @@ export function ContractManager() {
  <input 
  type="text" 
  placeholder="Tìm kiếm hợp đồng..."
- className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+ className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
  />
  </div>
  <button className="p-2 text-stone-400 hover:text-stone-600 bg-white border border-stone-200 rounded-lg shadow-sm">

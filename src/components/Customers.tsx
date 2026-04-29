@@ -98,7 +98,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-1 space-y-4">
  <div className="p-6 bg-stone-50 border border-stone-100 rounded-xl text-center">
- <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-3xl font-bold mb-4 mx-auto border-4 border-white shadow-sm">
+ <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-3xl font-bold mb-4 mx-auto border-4 border-white shadow-sm">
  {customer.name.split(' ').pop()?.charAt(0)}
  </div>
  <h3 className="font-bold text-lg text-stone-800">{customer.name}</h3>
@@ -112,10 +112,10 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="p-4 bg-white border border-stone-100 rounded-xl shadow-sm">
  <div className="flex justify-between items-center mb-3">
  <h4 className="font-bold text-[10px] uppercase text-stone-400 tracking-widest">Mục tiêu lên hạng</h4>
- <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
+ <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
  </div>
  <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
- <div className="h-full bg-indigo-600 transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
+ <div className="h-full bg-primary-600 transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
  </div>
  <p className="text-[10px] text-stone-400 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-stone-600">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
  </div>
@@ -189,7 +189,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="flex items-center gap-2">
  <div className="flex -space-x-2">
  {[1,2,3].slice(0, Math.min(customer.downlineCount || 0, 3)).map(i => (
- <div key={i} className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-indigo-600 shadow-sm">U</div>
+ <div key={i} className="w-6 h-6 rounded-full bg-primary-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-primary-600 shadow-sm">U</div>
  ))}
  {(customer.downlineCount || 0) > 3 && (
  <div className="w-6 h-6 rounded-full bg-stone-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-stone-600 shadow-sm">+{((customer.downlineCount || 0) - 3)}</div>
@@ -208,11 +208,11 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="lg:col-span-2 space-y-6">
  <div className="grid grid-cols-2 gap-4">
  <div className="p-5 border border-stone-100 rounded-xl bg-white shadow-sm group">
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-indigo-500 transition-colors">Tổng chi tiêu</p>
+ <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu</p>
  <p className="text-2xl font-black text-stone-900">{formatCurrency(customer.totalSpent)}</p>
  </div>
  <div className="p-5 border border-stone-100 rounded-xl bg-white shadow-sm group">
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-indigo-500 transition-colors">Số đơn hàng</p>
+ <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng</p>
  <div className="flex items-baseline gap-1">
  <span className="text-2xl font-black text-stone-900">{customer.orderCount}</span>
  <span className="text-xs font-bold text-stone-400">đơn</span>
@@ -220,23 +220,23 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  </div>
  
- <div className="bg-indigo-50/50 border border-indigo-100 p-6 rounded-xl relative overflow-hidden">
- <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 -mr-8 -mt-8 rounded-full opacity-50"></div>
+ <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-xl relative overflow-hidden">
+ <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 -mr-8 -mt-8 rounded-full opacity-50"></div>
  <div className="flex justify-between items-center mb-5 relative z-10">
- <h4 className="font-bold text-indigo-900 flex items-center gap-2">
- <Sparkles className="w-5 h-5 text-indigo-600" /> CSKH thông minh (AI Assist)
+ <h4 className="font-bold text-primary-900 flex items-center gap-2">
+ <Sparkles className="w-5 h-5 text-primary-600" /> CSKH thông minh (AI Assist)
  </h4>
  <button 
  onClick={handleGenerateAiMessage}
  disabled={loadingAi}
- className="text-[10px] bg-indigo-600 text-[#FAF9F5] px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center gap-2 shadow-sm shadow-indigo-100"
+ className="text-[10px] bg-primary-600 text-[#FAF9F5] px-3 py-1.5 rounded-lg font-bold hover:bg-primary-700 disabled:opacity-50 transition-all flex items-center gap-2 shadow-sm shadow-indigo-100"
  >
  {loadingAi ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
  QUÉT RFM & SOẠN TIN
  </button>
  </div>
  
- <div className="bg-white p-4 rounded-xl border border-indigo-100/50 shadow-inner relative z-10 mb-4 focus-within:border-indigo-300 transition-colors">
+ <div className="bg-white p-4 rounded-xl border border-primary-100/50 shadow-inner relative z-10 mb-4 focus-within:border-primary-300 transition-colors">
  <input 
  type="text" 
  placeholder="Tiêu đề email tự động..." 
@@ -255,8 +255,8 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  {loadingAi && (
  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-xl backdrop-blur-[1px]">
  <div className="flex flex-col items-center gap-2">
- <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
- <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Đang soạn thảo...</span>
+ <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
+ <span className="text-[10px] font-bold text-primary-600 uppercase tracking-widest">Đang soạn thảo...</span>
  </div>
  </div>
  )}
@@ -265,7 +265,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="flex justify-end gap-3 relative z-10">
  <button 
  disabled={!emailSubject || !emailContent || loadingAi}
- className="bg-indigo-600 text-[#FAF9F5] px-6 py-3 rounded-xl text-xs font-bold shadow-sm shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-3 rounded-xl text-xs font-bold shadow-sm shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all flex items-center gap-2"
  onClick={() => {
  alert('Tin nhắn chăm sóc đã được gửi tới ' + customer.email);
  }}
@@ -278,10 +278,10 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div>
  <div className="flex items-center justify-between mb-4 px-1">
  <h4 className="font-bold flex items-center gap-2 text-stone-800 text-sm">
- <History className="w-4 h-4 text-indigo-600" /> Hành trình khách hàng
+ <History className="w-4 h-4 text-primary-600" /> Hành trình khách hàng
  </h4>
  <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-400">
- STATUS: <span className="text-indigo-600 uppercase tracking-tighter bg-indigo-50 px-1.5 py-0.5 rounded">Tích cực</span>
+ STATUS: <span className="text-primary-600 uppercase tracking-tighter bg-primary-50 px-1.5 py-0.5 rounded">Tích cực</span>
  </div>
  </div>
 
@@ -379,11 +379,11 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  </button>
  </div>
 
- <div className="bg-indigo-50/50 border border-indigo-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
+ <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
  {loadingAi ? (
  <div className="flex flex-col items-center gap-3">
- <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
- <p className="text-xs font-bold text-indigo-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
+ <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+ <p className="text-xs font-bold text-primary-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
  </div>
  ) : aiMessage ? (
  <div className="w-full">
@@ -391,10 +391,10 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  ) : (
  <div className="flex flex-col items-center gap-4">
- <Sparkles className="w-10 h-10 text-indigo-300" />
+ <Sparkles className="w-10 h-10 text-primary-300" />
  <button 
  onClick={handleGenerate}
- className="bg-indigo-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-primary-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
  >
  <Sparkles className="w-4 h-4" /> Soạn tin nhắn cá nhân hóa
  </button>
@@ -414,7 +414,7 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  Sao chép nội dung
  </button>
  <button 
- className="flex-1 py-3 bg-indigo-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100"
+ className="flex-1 py-3 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100"
  onClick={() => {
  alert('Tin nhắn đã được chuyển sang module Omnichannel Chat!');
  onClose();
@@ -737,7 +737,7 @@ export function Customers() {
  { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS' }
  ] 
  },
- { id: 'qualified', name: 'Đã Thẩm Định', count: 0, color: 'bg-indigo-500', 
+ { id: 'qualified', name: 'Đã Thẩm Định', count: 0, color: 'bg-primary-500', 
  deals: [
  { id: 'd3', client: 'Kangaroo Việt Nam', val: 80000000, pd: 'Quà tặng Tết' }
  ] 
@@ -929,7 +929,7 @@ export function Customers() {
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
- <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Synced</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
@@ -945,17 +945,17 @@ export function Customers() {
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-stone-200 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
- <Sparkles className="w-5 h-5 text-indigo-200 group-hover:text-indigo-400 transition-colors animate-pulse" />
+ <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
  <h3 className="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2">
- <Users className="w-5 h-5 text-indigo-600" /> Phân đoạn Khách hàng (RFM Segmentation)
+ <Users className="w-5 h-5 text-primary-600" /> Phân đoạn Khách hàng (RFM Segmentation)
  </h3>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
  {[
  { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
  { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
  { name: 'Tiềm năng', val: 28, color: 'bg-stone-800', desc: 'Sẵn sàng Upsell' },
- { name: 'Mới đăng ký', val: 15, color: 'bg-indigo-500', desc: 'Cần Onboarding' }
+ { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
  ].map((seg, i) => (
  <div key={i} className="p-4 bg-stone-50 rounded-xl border border-stone-100 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
  <div className="flex justify-between items-start mb-2">
@@ -968,17 +968,17 @@ export function Customers() {
  ))}
  </div>
  
- <div className="mt-8 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
+ <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-xl flex items-center justify-between">
  <div className="flex items-center gap-4">
- <div className="p-3 bg-white text-indigo-600 rounded-lg shadow-sm">
+ <div className="p-3 bg-white text-primary-600 rounded-lg shadow-sm">
  <Mail className="w-5 h-5" />
  </div>
  <div>
- <h4 className="text-xs font-bold text-indigo-900">Chiến dịch tự động (Marketing Automation)</h4>
- <p className="text-[10px] text-indigo-700/70">Đang có 12 khách hàng thuộc nhóm "Tiềm năng" có thể gửi Voucher.</p>
+ <h4 className="text-xs font-bold text-primary-900">Chiến dịch tự động (Marketing Automation)</h4>
+ <p className="text-[10px] text-primary-700/70">Đang có 12 khách hàng thuộc nhóm "Tiềm năng" có thể gửi Voucher.</p>
  </div>
  </div>
- <button className="px-5 py-2 bg-indigo-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm">Kích hoạt Campaign</button>
+ <button className="px-5 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-primary-700 transition-all shadow-sm">Kích hoạt Campaign</button>
  </div>
  </div>
 
@@ -1076,19 +1076,19 @@ export function Customers() {
  {loading ? (
  <tr>
  <td colSpan={7} className="px-6 py-12 text-center bg-white">
- <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-1" />
+ <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-1" />
  <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
  </td>
  </tr>
  ) : filteredCustomers.map((customer) => (
- <tr key={customer.id} className="hover:bg-indigo-50/30 group transition-all duration-200">
+ <tr key={customer.id} className="hover:bg-primary-50/30 group transition-all duration-200">
  <td className="px-4 py-4">
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-[10px] shrink-0 border border-indigo-100 group-hover:scale-110 transition-transform">
+ <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px] shrink-0 border border-primary-100 group-hover:scale-110 transition-transform">
  {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
  </div>
  <div className="min-w-0">
- <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-stone-800 truncate cursor-pointer hover:text-indigo-600 transition-colors uppercase tracking-tight">{customer.name}</p>
+ <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-stone-800 truncate cursor-pointer hover:text-primary-600 transition-colors uppercase tracking-tight">{customer.name}</p>
  <p className="text-[9px] text-stone-400 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
  </div>
  </div>
@@ -1156,7 +1156,7 @@ export function Customers() {
  </button>
  <button 
  onClick={() => setAiQuickModalCustomer(customer)}
- className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-[#FAF9F5] transition-all shadow-sm"
+ className="p-1.5 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm"
  title="Soạn tin AI nhanh"
  >
  <Sparkles className="w-3.5 h-3.5" />

@@ -570,7 +570,7 @@ export function Orders() {
  </td>
  <td className="px-6 py-4 text-right">
  <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
- <button className="p-2.5 bg-white border border-stone-200 shadow-sm hover:border-indigo-500 hover:bg-indigo-50 rounded-lg text-stone-400 hover:text-indigo-600 transition-all active:scale-95">
+ <button className="p-2.5 bg-white border border-stone-200 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-stone-400 hover:text-primary-600 transition-all active:scale-95">
  <MoreHorizontal className="w-4 h-4" />
  </button>
  </div>

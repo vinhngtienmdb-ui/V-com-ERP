@@ -141,7 +141,7 @@ export function WorkflowHub() {
  stat.color === 'rose' ? "bg-rose-50 text-rose-600 shadow-rose-100" :
  stat.color === 'blue' ? "bg-[#F2F0E9] text-orange-700 shadow-blue-100" :
  stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600 shadow-emerald-100" :
- "bg-indigo-50 text-indigo-600 shadow-indigo-100"
+ "bg-primary-50 text-primary-600 shadow-indigo-100"
  )}>
  <stat.icon className="w-6 h-6" />
  </div>
@@ -263,7 +263,7 @@ export function WorkflowHub() {
 
  <div className="bg-white p-8 rounded-xl border border-stone-100 shadow-sm shadow-stone-200/40">
  <h4 className="font-black text-stone-900 uppercase tracking-widest text-xs mb-8 flex items-center gap-3">
- <Users2 className="w-5 h-5 text-indigo-500" /> Team Availability
+ <Users2 className="w-5 h-5 text-primary-500" /> Team Availability
  </h4>
  <div className="space-y-6">
  {[
@@ -277,7 +277,7 @@ export function WorkflowHub() {
  <span>{dept.active}/{dept.total} On</span>
  </div>
  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
- <div className={cn("h-full rounded-full transition-all duration-1000", dept.color === 'blue' ? "bg-stone-800" : dept.color === 'emerald' ? "bg-emerald-500" : "bg-indigo-500")} style={{ width: `${(dept.active/dept.total)*100}%` }} />
+ <div className={cn("h-full rounded-full transition-all duration-1000", dept.color === 'blue' ? "bg-stone-800" : dept.color === 'emerald' ? "bg-emerald-500" : "bg-primary-500")} style={{ width: `${(dept.active/dept.total)*100}%` }} />
  </div>
  </div>
  ))}

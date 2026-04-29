@@ -84,7 +84,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'rose': return 'bg-rose-50 text-rose-600';
@@ -161,11 +161,11 @@ export function Marketing() {
  <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
- <Megaphone className="w-4 h-4 text-indigo-600" />
+ <Megaphone className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">08</span>
- <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Hot Sale</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
  </div>
  </div>
  </div>

@@ -234,7 +234,7 @@ export function SellerManagement() {
  <div className="flex gap-3">
  <button 
  onClick={() => setShowConfig(!showConfig)}
- className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2 text-indigo-600"
+ className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2 text-primary-600"
  >
  <Settings2 className="w-4 h-4" />
  {showConfig ? 'Quay lại Quản lý' : 'Cấu hình'}
@@ -572,7 +572,7 @@ export function SellerManagement() {
  onClick={() => setSelectedSeller(seller)}
  >{seller.name}</p>
  {seller.partnerType === 'seller' ? (
- <span className="text-[9px] bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà bán</span>
+ <span className="text-[9px] bg-primary-50 text-primary-600 border border-primary-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà bán</span>
  ) : seller.partnerType === 'dealer' ? (
  <span className="text-[9px] bg-teal-50 text-teal-600 border border-teal-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Đại lý Offline</span>
  ) : (
@@ -626,7 +626,7 @@ export function SellerManagement() {
  <>
  <button 
  onClick={() => setSelectedSeller(seller)}
- className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-all font-bold flex items-center gap-1 text-[10px]"
+ className="p-2 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all font-bold flex items-center gap-1 text-[10px]"
  title="Tích hợp iPOS, App & Phân quyền"
  >
  <Briefcase className="w-3.5 h-3.5" /> Phân quyền
@@ -686,12 +686,12 @@ export function SellerManagement() {
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300">
  <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-bold text-xl">
+ <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold text-xl">
  {selectedSeller.name.charAt(0)}
  </div>
  <div>
  <h2 className="text-xl font-bold text-stone-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</h2>
- <p className="text-xs text-stone-500 font-medium">Đối tác: <span className="font-bold text-indigo-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
+ <p className="text-xs text-stone-500 font-medium">Đối tác: <span className="font-bold text-primary-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
  </div>
  </div>
  <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-100"><X className="w-5 h-5 text-stone-500" /></button>
@@ -701,7 +701,7 @@ export function SellerManagement() {
  <div className="space-y-6">
  <div>
  <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
- <Globe className="w-5 h-5 text-indigo-600" /> Tên miền POS (Domain)
+ <Globe className="w-5 h-5 text-primary-600" /> Tên miền POS (Domain)
  </h3>
  <p className="text-[11px] text-stone-500 mb-4">Cấu hình Subdomain dành riêng cho nhân viên tại các chi nhánh/cửa hàng của Seller này đăng nhập hệ thống iPOS độc lập.</p>
  <div className="space-y-3">
@@ -714,14 +714,14 @@ export function SellerManagement() {
  </div>
  </div>
  </div>
- <button className="mt-4 w-full bg-indigo-50 text-indigo-700 py-2.5 rounded-lg text-sm font-bold border border-indigo-100 hover:bg-indigo-100 transition-colors">
+ <button className="mt-4 w-full bg-primary-50 text-primary-700 py-2.5 rounded-lg text-sm font-bold border border-primary-100 hover:bg-primary-100 transition-colors">
  Cập nhật Domain
  </button>
  </div>
  
  <div className="pt-6 border-t border-stone-100">
  <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
- <Store className="w-5 h-5 text-indigo-600" /> Chi nhánh / Cửa hàng
+ <Store className="w-5 h-5 text-primary-600" /> Chi nhánh / Cửa hàng
  </h3>
  <div className="space-y-3">
  <div className="border border-stone-200 rounded-lg p-3 bg-stone-50 flex justify-between items-center">
@@ -732,14 +732,14 @@ export function SellerManagement() {
  <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">ACTIVE</span>
  </div>
  </div>
- <button className="mt-4 w-full border-2 border-dashed border-stone-200 text-stone-500 py-2.5 rounded-lg text-sm font-bold hover:border-indigo-400 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2">
+ <button className="mt-4 w-full border-2 border-dashed border-stone-200 text-stone-500 py-2.5 rounded-lg text-sm font-bold hover:border-primary-400 hover:text-primary-600 transition-colors flex items-center justify-center gap-2">
  <Plus className="w-4 h-4" /> Thêm Cửa hàng mới
  </button>
  </div>
 
  <div className="pt-6 border-t border-stone-100">
  <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
- <ShieldCheck className="w-5 h-5 text-indigo-600" /> Cấp phép Ứng dụng & Modules
+ <ShieldCheck className="w-5 h-5 text-primary-600" /> Cấp phép Ứng dụng & Modules
  </h3>
  <p className="text-[11px] text-stone-500 mb-4">Chọn các module trên hệ thống ERP mà đối tác này được phép truy cập dựa trên mô hình kinh doanh.</p>
  <div className="grid grid-cols-2 gap-3">
@@ -759,8 +759,8 @@ export function SellerManagement() {
  (selectedSeller.partnerType === 'factory' && mod.reqFactory);
  
  return (
- <label key={mod.id} className={cn("flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-stone-50 transition-all", isActive ? "border-indigo-200 bg-indigo-50/30" : "border-stone-100")}>
- <input type="checkbox" defaultChecked={isActive} className="mt-1 flex-shrink-0 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500" />
+ <label key={mod.id} className={cn("flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-stone-50 transition-all", isActive ? "border-primary-200 bg-primary-50/30" : "border-stone-100")}>
+ <input type="checkbox" defaultChecked={isActive} className="mt-1 flex-shrink-0 text-primary-600 rounded border-stone-300 focus:ring-primary-500" />
  <span className="text-xs font-bold text-stone-700 leading-tight">{mod.label}</span>
  </label>
  );
@@ -773,9 +773,9 @@ export function SellerManagement() {
  <div className="bg-stone-50 rounded-lg p-6 border border-stone-200">
  <div className="flex justify-between items-center mb-6">
  <h3 className="font-bold text-stone-900 flex items-center gap-2">
- <UserCog className="w-5 h-5 text-indigo-600" /> Phân quyền Tài khoản
+ <UserCog className="w-5 h-5 text-primary-600" /> Phân quyền Tài khoản
  </h3>
- <button className="bg-indigo-600 text-[#FAF9F5] p-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+ <button className="bg-primary-600 text-[#FAF9F5] p-2 rounded-lg hover:bg-primary-700 transition-colors shadow-sm">
  <Plus className="w-4 h-4" />
  </button>
  </div>
@@ -794,7 +794,7 @@ export function SellerManagement() {
  </div>
  </div>
  </div>
- <button className="text-stone-400 hover:text-indigo-600 transition-colors"><Key className="w-4 h-4" /></button>
+ <button className="text-stone-400 hover:text-primary-600 transition-colors"><Key className="w-4 h-4" /></button>
  </div>
  </div>
 
@@ -812,7 +812,7 @@ export function SellerManagement() {
  </div>
  </div>
  <div className="flex gap-2">
- <button className="text-stone-400 hover:text-indigo-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
+ <button className="text-stone-400 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
  <button className="text-stone-400 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
@@ -835,7 +835,7 @@ export function SellerManagement() {
  </div>
  </div>
  <div className="flex gap-2">
- <button className="text-stone-400 hover:text-indigo-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
+ <button className="text-stone-400 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
  <button className="text-stone-400 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
@@ -975,7 +975,7 @@ export function SellerManagement() {
  <div className="md:col-span-7 space-y-6">
  <div className="p-6 border border-stone-200 rounded-xl bg-white shadow-sm">
  <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2">
- <Settings2 className="w-5 h-5 text-indigo-600" /> Cấu hình Khởi tạo
+ <Settings2 className="w-5 h-5 text-primary-600" /> Cấu hình Khởi tạo
  </h3>
 
  {approvalType === 'seller' ? (
@@ -1033,14 +1033,14 @@ export function SellerManagement() {
  <input type="text" defaultValue="500,000" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
  </div>
  </div>
- <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-lg">
- <label className="text-[11px] font-bold text-indigo-900 uppercase block mb-2 flex items-center gap-2">
+ <div className="p-3 bg-primary-50/50 border border-primary-100 rounded-lg">
+ <label className="text-[11px] font-bold text-primary-900 uppercase block mb-2 flex items-center gap-2">
  <History className="w-3.5 h-3.5" /> Thời hạn sử dụng iPOS (Ngày hết hạn)
  </label>
  <div className="flex gap-2">
  <input 
  type="date" 
- className="flex-1 border border-indigo-200 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+ className="flex-1 border border-primary-200 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
  defaultValue="2027-04-24"
  />
  <div className="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-[10px] font-bold flex items-center gap-1 border border-red-200">

@@ -41,7 +41,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
@@ -133,7 +133,7 @@ export function Workspace() {
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
- <CalendarIcon className="w-4 h-4 text-indigo-600" /> Lịch tuần
+ <CalendarIcon className="w-4 h-4 text-primary-600" /> Lịch tuần
  </button>
  <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" /> Tạo mới

@@ -296,8 +296,8 @@ export function WalletHub() {
  <div>
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center gap-3">
- <div className="p-2 bg-indigo-50 rounded-lg">
- <Activity className="w-4 h-4 text-indigo-600" />
+ <div className="p-2 bg-primary-50 rounded-lg">
+ <Activity className="w-4 h-4 text-primary-600" />
  </div>
  <p className="text-xs font-black text-stone-800 uppercase tracking-widest">Cashflow Analytics</p>
  </div>
@@ -703,7 +703,7 @@ export function WalletHub() {
  <h4 className="font-bold text-stone-900">{gw.name}</h4>
  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest leading-none mb-1.5">{gw.id}</p>
  <div className="flex items-center gap-1 mt-1 flex-wrap">
- <span className="text-[8px] font-bold bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded uppercase">E-Commerce</span>
+ <span className="text-[8px] font-bold bg-primary-50 text-primary-600 px-1.5 py-0.5 rounded uppercase">E-Commerce</span>
  <span className="text-[8px] font-bold bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded uppercase">iPOS</span>
  </div>
  </div>

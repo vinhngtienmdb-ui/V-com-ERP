@@ -29,7 +29,7 @@ export function LoginPage() {
  <div className="hidden md:flex md:w-1/2 bg-[#0F172A] p-12 flex-col justify-between relative overflow-hidden">
  <div className="absolute top-0 left-0 w-full h-full opacity-20">
  <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-stone-900 rounded-full blur-[120px]" />
- <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-600 rounded-full blur-[120px]" />
+ <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary-600 rounded-full blur-[120px]" />
  </div>
  
  <div className="relative z-10">

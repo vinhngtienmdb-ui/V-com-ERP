@@ -287,7 +287,7 @@ export function Dashboard() {
  <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-stone-900/5 group">
  {/* Decorative background glass circles */}
  <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
- <div className="absolute top-20 right-40 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl" />
+ <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
  
  <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
  <BrainCircuit className="w-64 h-64" />
@@ -515,7 +515,7 @@ export function Dashboard() {
   <div key="mainChart" className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50 hover:bg-stone-100 transition-colors">
   <div>
-  <h3 className="font-bold text-indigo-900 tracking-tight text-lg pointer-events-none">Biểu đồ Tăng trưởng & Xu hướng</h3>
+  <h3 className="font-bold text-primary-900 tracking-tight text-lg pointer-events-none">Biểu đồ Tăng trưởng & Xu hướng</h3>
   </div>
   <div className="flex gap-6 pointer-events-none">
   <div className="flex items-center gap-2">
@@ -574,7 +574,7 @@ export function Dashboard() {
   {config.showCategorySplit && (
   <div key="categorySplit" className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-stone-50 transition-colors px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-  <h3 className="font-bold text-indigo-900 text-sm pointer-events-none">Tỷ trọng Ngành</h3>
+  <h3 className="font-bold text-primary-900 text-sm pointer-events-none">Tỷ trọng Ngành</h3>
   </div>
   <div className="p-4 flex-1 h-full min-h-0">
   <ResponsiveContainer width="100%" height="100%">
@@ -593,7 +593,7 @@ export function Dashboard() {
   {config.showTopSellers && (
   <div key="topSellers" className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-stone-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/90 backdrop-blur-sm rounded-t-xl">
-  <h3 className="font-bold text-indigo-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
+  <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
   <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
   </div>
   <div className="divide-y divide-stone-100 overflow-y-auto flex-1 custom-scrollbar">
@@ -746,7 +746,7 @@ export function Dashboard() {
   {config.showRevenueExpense && (
   <div key="revenueExpense" className="bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between hover:bg-stone-50 transition-colors">
-  <h3 className="font-bold text-indigo-900 text-lg flex items-center gap-2 pointer-events-none">
+  <h3 className="font-bold text-primary-900 text-lg flex items-center gap-2 pointer-events-none">
   <LineChartIcon className="w-5 h-5 text-orange-700" />
   Biểu đồ Thu Chi (Tháng)
   </h3>

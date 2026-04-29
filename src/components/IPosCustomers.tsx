@@ -9,16 +9,16 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
       <div className="bg-white border-b border-stone-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-stone-900 tracking-tight flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600" /> Quản lý Khách hàng
+            <Users className="w-5 h-5 text-primary-600" /> Quản lý Khách hàng
           </h2>
           <p className="text-xs font-bold text-stone-400 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
         </div>
         <div className="flex gap-2">
            <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-              <input type="text" placeholder="Tìm tên, SĐT..." className="pl-9 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 w-64" />
+              <input type="text" placeholder="Tìm tên, SĐT..." className="pl-9 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-100 w-64" />
            </div>
-           <button className="bg-indigo-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-indigo-700 flex items-center gap-2">
+           <button className="bg-primary-600 text-white px-4 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-primary-700 flex items-center gap-2">
              <Plus className="w-3.5 h-3.5" /> Thêm KH
            </button>
            <button className="bg-stone-100 border border-stone-200 text-stone-600 px-3 py-2 rounded-sm text-xs font-bold shadow-sm hover:bg-stone-200 flex items-center gap-2">
@@ -30,7 +30,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
       <div className="flex-1 p-6 overflow-y-auto">
          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
              <div className="bg-white p-5 rounded-sm border border-stone-200 shadow-sm flex items-center gap-4">
-                 <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center"><Users className="w-6 h-6" /></div>
+                 <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center"><Users className="w-6 h-6" /></div>
                  <div>
                     <p className="text-xs font-bold text-stone-400 uppercase tracking-widest">Tổng KH Chi Nhánh</p>
                     <p className="text-2xl font-black text-stone-900">1,248</p>

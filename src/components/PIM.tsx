@@ -1505,7 +1505,7 @@ export function PIM() {
  return (
  <div className="bg-white rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden flex items-center justify-between shadow-sm shadow-blue-900/20">
  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-20 translate-x-20" />
- <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -translate-x-10 translate-y-10" />
+ <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl -translate-x-10 translate-y-10" />
  
  <div className="relative z-10 space-y-2">
  <div className="flex items-center gap-2">

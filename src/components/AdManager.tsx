@@ -349,7 +349,7 @@ export function AdManager() {
  )}
  </div>
 
- <div className="bg-indigo-900 text-[#FAF9F5] p-8 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+ <div className="bg-primary-900 text-[#FAF9F5] p-8 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
  <div className="flex-1 space-y-4">
  <div className="flex items-center gap-3">
  <div className="p-3 bg-stone-800 rounded-lg shadow-sm shadow-stone-900/5">
@@ -359,11 +359,11 @@ export function AdManager() {
  </div>
  <p className="text-stone-400 text-sm leading-relaxed max-w-lg">Thuật toán đấu thầu tự động dựa trên mức độ liên quan (Relevance Score) và Giá thầu. Đảm bảo trải nghiệm người dùng không bị "spam" quảng cáo rác, đồng thời tối ưu hóa ROAS cho những Nhà bán hàng thực lực.</p>
  <div className="flex gap-4 pt-4">
- <button className="px-8 py-3 bg-white text-indigo-900 font-bold rounded-lg text-sm hover:bg-stone-100 transition-all">Phân tích ROAS Sàn</button>
- <button className="px-8 py-3 border border-indigo-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-indigo-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
+ <button className="px-8 py-3 bg-white text-primary-900 font-bold rounded-lg text-sm hover:bg-stone-100 transition-all">Phân tích ROAS Sàn</button>
+ <button className="px-8 py-3 border border-primary-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-primary-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
  </div>
  </div>
- <Megaphone className="absolute -bottom-10 -right-10 w-64 h-64 text-indigo-800/30 -rotate-12" />
+ <Megaphone className="absolute -bottom-10 -right-10 w-64 h-64 text-primary-800/30 -rotate-12" />
  </div>
  </div>
  );

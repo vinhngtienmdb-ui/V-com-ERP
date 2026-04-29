@@ -73,7 +73,7 @@ export function StoreSelector() {
       
       {/* Dynamic Background Effects */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-600/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,transparent_0%,#0F172A_100%)]" />
       </div>
@@ -84,7 +84,7 @@ export function StoreSelector() {
         <div className="w-[40%] bg-[#0B1121]/80 p-12 flex flex-col justify-between relative border-r border-white/5">
           <div className="relative z-10 space-y-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-600 rounded-sm flex items-center justify-center shadow-lg shadow-indigo-600/20 border border-white/10">
+              <div className="w-10 h-10 bg-primary-600 rounded-sm flex items-center justify-center shadow-lg shadow-indigo-600/20 border border-white/10">
                 <Store className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
@@ -123,7 +123,7 @@ export function StoreSelector() {
             {selectedStoreForPin && (
               <div className="bg-white/5 border border-white/10 p-6 rounded-md mt-8 animate-in slide-in-from-left-8 duration-500">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full border-2 border-indigo-500 p-1">
+                  <div className="w-12 h-12 rounded-full border-2 border-primary-500 p-1">
                     <img src={`https://ui-avatars.com/api/?name=${user?.displayName || 'User'}&background=312e81&color=fff`} className="w-full h-full rounded-full" alt="User" />
                   </div>
                   <div>
@@ -172,7 +172,7 @@ export function StoreSelector() {
                   <select
                     value={selectedCompanyId}
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-sm font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all cursor-pointer"
+                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-sm font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all cursor-pointer"
                   >
                     {companies.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -193,18 +193,18 @@ export function StoreSelector() {
                     <button
                       key={store.id}
                       onClick={() => handleStoreClick(store)}
-                      className="text-left bg-white p-6 rounded-md border-2 border-stone-100 hover:border-indigo-600 hover:shadow-xl hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
+                      className="text-left bg-white p-6 rounded-md border-2 border-stone-100 hover:border-primary-600 hover:shadow-xl hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
                     >
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-[60px] -translate-y-full translate-x-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-[60px] -translate-y-full translate-x-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                       
                       <div className="relative z-10">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="w-10 h-10 bg-stone-100 group-hover:bg-indigo-600 text-stone-500 group-hover:text-white rounded-sm flex items-center justify-center transition-colors">
+                          <div className="w-10 h-10 bg-stone-100 group-hover:bg-primary-600 text-stone-500 group-hover:text-white rounded-sm flex items-center justify-center transition-colors">
                             <Store className="w-5 h-5" />
                           </div>
-                          <ChevronRight className="w-5 h-5 text-stone-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="w-5 h-5 text-stone-300 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
                         </div>
-                        <h4 className="text-lg font-black text-stone-900 group-hover:text-indigo-900 transition-colors leading-tight">{store.name}</h4>
+                        <h4 className="text-lg font-black text-stone-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
                         <p className="text-xs text-stone-500 flex items-start gap-1.5 mt-2 line-clamp-2 leading-relaxed">
                           <MapPin className="w-4 h-4 text-stone-400 shrink-0" /> {store.address}
                         </p>
@@ -226,7 +226,7 @@ export function StoreSelector() {
 
               <div className="flex flex-col items-center max-w-sm w-full mx-auto mt-4">
                 <div className="space-y-4 w-full flex flex-col items-center mb-10">
-                  <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-2 shadow-inner ring-4 ring-indigo-50/50">
+                  <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mb-2 shadow-inner ring-4 ring-primary-50/50">
                     <Lock className="w-7 h-7" />
                   </div>
                   <h3 className="text-2xl font-black text-stone-900">Bảo mật trạm POS</h3>
@@ -236,7 +236,7 @@ export function StoreSelector() {
                         key={index}
                         className={cn(
                           "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-black bg-stone-50 border-2 transition-all duration-300",
-                          pin.length > index ? "border-indigo-600 text-indigo-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-stone-200 text-transparent",
+                          pin.length > index ? "border-primary-600 text-primary-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-stone-200 text-transparent",
                           isError && "border-rose-500 text-rose-500 animate-shake"
                         )}
                       >
@@ -252,7 +252,7 @@ export function StoreSelector() {
                     <button
                       key={num}
                       onClick={() => handlePinInput(num)}
-                      className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-indigo-200 hover:text-indigo-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                      className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                     >
                       {num}
                     </button>
@@ -263,7 +263,7 @@ export function StoreSelector() {
                         // Mock Face ID
                         setTimeout(() => setActiveStore(selectedStoreForPin), 800);
                       }}
-                      className="w-12 h-12 bg-stone-100 text-stone-400 rounded-full flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                      className="w-12 h-12 bg-stone-100 text-stone-400 rounded-full flex items-center justify-center hover:bg-primary-50 hover:text-primary-600 transition-colors"
                       title="Sử dụng nhận diện khuôn mặt"
                     >
                       <UserCircle2 className="w-5 h-5" />
@@ -271,7 +271,7 @@ export function StoreSelector() {
                   </div>
                   <button
                     onClick={() => handlePinInput('0')}
-                    className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-indigo-200 hover:text-indigo-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                    className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                   >
                     0
                   </button>

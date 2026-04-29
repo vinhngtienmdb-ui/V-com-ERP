@@ -383,7 +383,7 @@ function getColorClasses(color: string) {
  switch (color) {
  case 'blue': return 'bg-[#F2F0E9] text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
- case 'indigo': return 'bg-indigo-50 text-indigo-600';
+ case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
@@ -577,7 +577,7 @@ export function HumanResources() {
  <span className="text-xs font-semibold text-stone-500 pl-2">Admin Mode</span>
  <button 
  onClick={() => setIsAdmin(!isAdmin)}
- className={cn("w-10 h-5 rounded-full relative transition-colors shadow-inner", isAdmin ? "bg-indigo-600" : "bg-stone-300")}
+ className={cn("w-10 h-5 rounded-full relative transition-colors shadow-inner", isAdmin ? "bg-primary-600" : "bg-stone-300")}
  >
  <div className={cn("absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm", isAdmin ? "translate-x-5" : "translate-x-0")} />
  </button>
@@ -1104,20 +1104,20 @@ export function HumanResources() {
  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400">GIÂY</span>
  </div>
  </div>
- <div className="p-4 bg-indigo-900/5 border border-indigo-100 rounded-lg space-y-3">
- <h5 className="text-[10px] font-bold text-indigo-900 uppercase tracking-widest flex items-center gap-2">
+ <div className="p-4 bg-primary-900/5 border border-primary-100 rounded-lg space-y-3">
+ <h5 className="text-[10px] font-bold text-primary-900 uppercase tracking-widest flex items-center gap-2">
  <Lock className="w-3 h-3" /> Bảo mật & Mã hóa
  </h5>
  <div className="flex justify-between items-center">
  <span className="text-xs font-medium text-stone-700">Thuật toán mã hóa</span>
- <span className="text-xs font-bold text-indigo-600 px-2 py-1 bg-white border border-indigo-100 rounded-lg">{setting.config.encryption}</span>
+ <span className="text-xs font-bold text-primary-600 px-2 py-1 bg-white border border-primary-100 rounded-lg">{setting.config.encryption}</span>
  </div>
  <label className="flex items-center gap-3">
  <input 
  type="checkbox" 
  checked={setting.config.dynamicSalt}
  onChange={(e) => updateSettingConfig('qr', 'dynamicSalt', e.target.checked)}
- className="w-4 h-4 rounded border-stone-300 text-indigo-600" 
+ className="w-4 h-4 rounded border-stone-300 text-primary-600" 
  />
  <span className="text-xs font-medium text-stone-700">Sử dụng Mobile-ID as Dynamic Salt</span>
  </label>
@@ -1199,7 +1199,7 @@ export function HumanResources() {
  ))}
  </div>
 
- <div className="bg-indigo-900 text-[#FAF9F5] p-8 rounded-lg shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
+ <div className="bg-primary-900 text-[#FAF9F5] p-8 rounded-lg shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20">
@@ -1215,7 +1215,7 @@ export function HumanResources() {
  </p>
  </div>
  <div className="relative z-10 w-full md:w-auto">
- <button className="w-full px-8 py-4 bg-white text-indigo-900 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm">Kích hoạt AI Optimizer</button>
+ <button className="w-full px-8 py-4 bg-white text-primary-900 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm">Kích hoạt AI Optimizer</button>
  </div>
  <Layers className="absolute -bottom-24 -right-12 w-64 h-64 text-[#FAF9F5]/5 rotate-12" />
  </div>
@@ -1623,7 +1623,7 @@ export function HumanResources() {
  ].map((l, i) => (
  <div key={i} className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-100 hover:border-orange-200 hover:bg-white transition-all">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-600 text-sm shadow-sm border border-white">
+ <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center font-bold text-primary-600 text-sm shadow-sm border border-white">
  {l.image}
  </div>
  <div>
@@ -1644,15 +1644,15 @@ export function HumanResources() {
  <button className="w-full mt-6 py-4 text-xs font-bold text-stone-500 border border-dashed border-stone-200 rounded-xl hover:bg-stone-50 transition-colors uppercase tracking-widest hover:text-stone-700">Xem tất cả lịch sử</button>
  </div>
  
- <div className="bg-white border border-indigo-100 p-6 rounded-lg relative overflow-hidden group">
- <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-indigo-100 group-hover:scale-110 transition-transform" />
+ <div className="bg-white border border-primary-100 p-6 rounded-lg relative overflow-hidden group">
+ <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-primary-100 group-hover:scale-110 transition-transform" />
  <div className="flex items-start gap-4 relative z-10">
- <div className="p-3 bg-white text-indigo-600 rounded-xl shadow-sm border border-indigo-100">
+ <div className="p-3 bg-white text-primary-600 rounded-xl shadow-sm border border-primary-100">
  <ShieldCheck className="w-6 h-6" />
  </div>
  <div>
- <h4 className="font-bold text-indigo-900 text-sm">Chế độ bảo mật Cao</h4>
- <p className="text-[11px] text-indigo-800/70 mt-1 leading-relaxed font-medium">Hệ thống đang tự động lọc các nỗ lực chấm công giả mạo (Fake GPS/Liveness Spoofing) thông qua thuật toán AI Vision.</p>
+ <h4 className="font-bold text-primary-900 text-sm">Chế độ bảo mật Cao</h4>
+ <p className="text-[11px] text-primary-800/70 mt-1 leading-relaxed font-medium">Hệ thống đang tự động lọc các nỗ lực chấm công giả mạo (Fake GPS/Liveness Spoofing) thông qua thuật toán AI Vision.</p>
  </div>
  </div>
  </div>
@@ -1664,7 +1664,7 @@ export function HumanResources() {
  <div className="p-6 border-b border-stone-100 bg-stone-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex gap-4">
  <div className="flex bg-white rounded-lg p-1 border border-stone-200 shadow-sm">
- <button className="px-4 py-1.5 bg-indigo-600 text-[#FAF9F5] text-[10px] font-bold rounded-md shadow-sm">Theo ngày</button>
+ <button className="px-4 py-1.5 bg-primary-600 text-[#FAF9F5] text-[10px] font-bold rounded-md shadow-sm">Theo ngày</button>
  <button className="px-4 py-1.5 text-[10px] font-bold text-stone-500 hover:text-stone-700">Bảng công tháng</button>
  </div>
  </div>
@@ -1674,7 +1674,7 @@ export function HumanResources() {
  <input 
  type="text" 
  placeholder="Tìm nhân viên..." 
- className="pl-9 pr-4 py-2 bg-white border border-stone-200 rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48"
+ className="pl-9 pr-4 py-2 bg-white border border-stone-200 rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-primary-500 w-full sm:w-48"
  />
  </div>
  <button className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-50">
@@ -1699,14 +1699,14 @@ export function HumanResources() {
  {filteredAttendance.map((att, i) => {
  const emp = employees.find(e => e.id === att.employeeId);
  return (
- <tr key={i} className="hover:bg-indigo-50/20 transition-colors group">
+ <tr key={i} className="hover:bg-primary-50/20 transition-colors group">
  <td className="px-6 py-5">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center font-bold text-stone-600 text-[10px] uppercase">
  {emp?.fullName.split(' ').pop()?.charAt(0) || 'U'}
  </div>
  <div>
- <div className="text-xs font-bold text-stone-900 group-hover:text-indigo-600 transition-colors">{emp?.fullName}</div>
+ <div className="text-xs font-bold text-stone-900 group-hover:text-primary-600 transition-colors">{emp?.fullName}</div>
  <div className="text-[9px] text-stone-400 font-mono italic">{att.employeeId}</div>
  </div>
  </div>
@@ -1794,12 +1794,12 @@ export function HumanResources() {
  ))}
  </div>
  
- <div className="p-5 bg-indigo-50 border border-indigo-100 rounded-lg space-y-3 relative overflow-hidden">
- <Zap className="absolute -right-2 -top-2 w-12 h-12 text-indigo-100 rotate-12" />
- <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-[0.2em] flex items-center gap-2 relative z-10">
+ <div className="p-5 bg-primary-50 border border-primary-100 rounded-lg space-y-3 relative overflow-hidden">
+ <Zap className="absolute -right-2 -top-2 w-12 h-12 text-primary-100 rotate-12" />
+ <h4 className="text-[10px] font-black text-primary-900 uppercase tracking-[0.2em] flex items-center gap-2 relative z-10">
  <Sparkles className="w-3.5 h-3.5" /> AI Khuyến nghị
  </h4>
- <p className="text-[11px] text-indigo-800 leading-relaxed font-medium italic relative z-10">Bộ phận "Kho" đang có tỷ lệ đi muộn cao đột biến vào thứ Hai. Cân nhắc điều chỉnh ca làm sớm hơn hoặc hỗ trợ xe đưa đón.</p>
+ <p className="text-[11px] text-primary-800 leading-relaxed font-medium italic relative z-10">Bộ phận "Kho" đang có tỷ lệ đi muộn cao đột biến vào thứ Hai. Cân nhắc điều chỉnh ca làm sớm hơn hoặc hỗ trợ xe đưa đón.</p>
  </div>
  </div>
  </div>
@@ -1807,17 +1807,17 @@ export function HumanResources() {
  <div className="bg-white p-6 rounded-lg border border-stone-200 shadow-sm relative overflow-hidden group">
  <div className="relative z-10">
  <h3 className="font-bold text-stone-900 text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
- <QrCode className="w-4 h-4 text-indigo-600" /> Mã QR Động (Anti-Fake)
+ <QrCode className="w-4 h-4 text-primary-600" /> Mã QR Động (Anti-Fake)
  </h3>
  <div className="aspect-square bg-stone-50 border-2 border-dashed border-stone-200 rounded-lg flex items-center justify-center group-hover:bg-white transition-all duration-500 relative cursor-pointer">
- <QrCode className="w-24 h-24 text-stone-300 group-hover:text-indigo-600 transition-all duration-500" />
+ <QrCode className="w-24 h-24 text-stone-300 group-hover:text-primary-600 transition-all duration-500" />
  <div className="absolute inset-0 bg-white/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
- <RefreshCcw className="w-8 h-8 text-indigo-600 animate-spin-slow" />
+ <RefreshCcw className="w-8 h-8 text-primary-600 animate-spin-slow" />
  </div>
  </div>
- <p className="text-[10px] text-stone-400 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-indigo-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
+ <p className="text-[10px] text-stone-400 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-primary-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
  </div>
- <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
+ <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
  </div>
  </div>
  </div>
@@ -1830,29 +1830,29 @@ export function HumanResources() {
  <div className="flex justify-between items-end mb-8 border-b border-stone-100 pb-8">
  <div className="space-y-1">
  <h2 className="text-2xl font-black text-stone-900 flex items-center gap-3">
- <Target className="w-8 h-8 text-indigo-600" /> KPI & Performance Analysis
+ <Target className="w-8 h-8 text-primary-600" /> KPI & Performance Analysis
  </h2>
  <p className="text-sm font-medium text-stone-400 italic">Đánh giá hiệu quả công việc dựa trên dữ liệu thời gian thực và AI Score.</p>
  </div>
  <div className="flex gap-3">
  <div className="bg-stone-100 p-1 rounded-xl flex">
- <button className="px-4 py-2 bg-white text-indigo-600 font-bold text-xs rounded-lg shadow-sm">Tháng này</button>
+ <button className="px-4 py-2 bg-white text-primary-600 font-bold text-xs rounded-lg shadow-sm">Tháng này</button>
  <button className="px-4 py-2 text-stone-500 font-bold text-xs hover:text-stone-700">Quý 1/2024</button>
  </div>
- <button className="px-4 py-2 bg-indigo-600 text-[#FAF9F5] rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-2">
+ <button className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-xl text-xs font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-2">
  <Calculator className="w-4 h-4" /> Chốt KPI Batch
  </button>
  </div>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-lg space-y-4">
+ <div className="bg-primary-50 border border-primary-100 p-6 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
- <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Average Completion</p>
- <div className="w-10 h-10 bg-indigo-600 text-[#FAF9F5] rounded-full flex items-center justify-center font-black text-sm shadow-sm">88%</div>
+ <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">Average Completion</p>
+ <div className="w-10 h-10 bg-primary-600 text-[#FAF9F5] rounded-full flex items-center justify-center font-black text-sm shadow-sm">88%</div>
  </div>
  <div className="space-y-1">
- <div className="text-3xl font-black text-indigo-900 tabular-nums">88.45%</div>
+ <div className="text-3xl font-black text-primary-900 tabular-nums">88.45%</div>
  <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600">
  <TrendingUp className="w-3 h-3" /> +4.2% vs Last Month
  </div>
@@ -1889,7 +1889,7 @@ export function HumanResources() {
  <input 
  type="text" 
  placeholder="Tìm kiếm KPIs..." 
- className="pl-10 pr-4 py-2 border border-stone-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-64"
+ className="pl-10 pr-4 py-2 border border-stone-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/20 w-64"
  />
  </div>
  </div>
@@ -2000,7 +2000,7 @@ export function HumanResources() {
  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
  </div>
  <div className="aspect-square bg-stone-50 rounded-lg border-2 border-dashed border-stone-200 flex flex-col items-center justify-center p-8 space-y-4 text-center group-hover:bg-white transition-all duration-500">
- <Layers className="w-16 h-16 text-stone-300 group-hover:text-indigo-400 transition-all duration-500" />
+ <Layers className="w-16 h-16 text-stone-300 group-hover:text-primary-400 transition-all duration-500" />
  <div>
  <p className="text-xs font-bold text-stone-600">Phân tích Phủ Kỹ năng</p>
  <p className="text-[10px] text-stone-400 mt-2 leading-relaxed italic">Bản đồ nhiệt cho phép người quản lý nhìn ra các lỗ hổng kỹ năng trong từng phòng ban để có chiến lược Training phù hợp.</p>
@@ -2029,7 +2029,7 @@ export function HumanResources() {
  console.table(results); 
  alert("Đã tính lương tự động thành công (Kiểm tra console/table)!");
  }}
- className="bg-indigo-600 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all hover:bg-indigo-700">
+ className="bg-primary-600 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all hover:bg-primary-700">
  <Zap className="w-4 h-4" /> Tính lương AI (Batch)
  </button>
  <button 
@@ -2145,7 +2145,7 @@ export function HumanResources() {
  setEditingPayrollId(pay.id);
  setEditPayrollForm(pay);
  }}
- className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold hover:bg-indigo-100 transition-all flex items-center gap-1.5 ml-auto border border-indigo-100"
+ className="px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-[10px] font-bold hover:bg-primary-100 transition-all flex items-center gap-1.5 ml-auto border border-primary-100"
  >
  <Edit2 className="w-3.5 h-3.5" /> Chỉnh sửa
  </button>
@@ -2359,8 +2359,8 @@ export function HumanResources() {
  ) : activeTab === 'rec_candidates' ? (
  <div className="p-6 bg-stone-50 min-h-[500px]">
  <div className="flex justify-between items-center mb-6">
- <h2 className="text-xl font-bold flex items-center gap-2"><UserPlus className="w-6 h-6 text-indigo-600"/> ATS Pipeline</h2>
- <button className="bg-indigo-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700 transition">Thêm ứng viên</button>
+ <h2 className="text-xl font-bold flex items-center gap-2"><UserPlus className="w-6 h-6 text-primary-600"/> ATS Pipeline</h2>
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 transition">Thêm ứng viên</button>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
  {(['sourced', 'interview', 'offered', 'hired'] as const).map(status => (
@@ -2404,7 +2404,7 @@ export function HumanResources() {
  <div className="flex justify-between items-center">
  <div className="flex -space-x-2">
  <div className="w-6 h-6 rounded-full bg-stone-200 border-2 border-white flex items-center justify-center text-[8px] font-bold text-stone-500">HR</div>
- <div className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[8px] font-bold text-indigo-600">AI</div>
+ <div className="w-6 h-6 rounded-full bg-primary-100 border-2 border-white flex items-center justify-center text-[8px] font-bold text-primary-600">AI</div>
  </div>
  <span className={cn(
  "px-2 py-1 rounded-md text-[10px] font-bold",
@@ -2610,9 +2610,9 @@ export function HumanResources() {
  </div>
 
  {/* AI Insight */}
- <div className="p-5 bg-white border border-indigo-100/50 rounded-lg relative overflow-hidden">
+ <div className="p-5 bg-white border border-primary-100/50 rounded-lg relative overflow-hidden">
  <div className="relative z-10">
- <h3 className="font-bold tracking-widest uppercase text-[10px] text-indigo-500 flex items-center gap-1.5 mb-2">
+ <h3 className="font-bold tracking-widest uppercase text-[10px] text-primary-500 flex items-center gap-1.5 mb-2">
  <Sparkles className="w-3 h-3"/> AI Sentiment Insight
  </h3>
  <p className="text-sm font-medium text-stone-700 leading-relaxed">
@@ -2709,7 +2709,7 @@ export function HumanResources() {
  </div>
  <div className="flex gap-4 mb-8 border-b border-stone-100 pb-4">
  {['request', 'candidates', 'interview', 'email'].map(t => (
- <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-5 py-2.5 text-sm font-bold rounded-lg transition-all", activeATSView === t ? 'bg-indigo-600 text-[#FAF9F5] shadow-sm' : 'bg-stone-50 border border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-indigo-600')}>
+ <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-5 py-2.5 text-sm font-bold rounded-lg transition-all", activeATSView === t ? 'bg-primary-600 text-[#FAF9F5] shadow-sm' : 'bg-stone-50 border border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-primary-600')}>
  {t === 'request' ? 'Đề xuất' : t === 'candidates' ? 'Ứng viên' : t === 'interview' ? 'Lịch phỏng vấn' : 'Email'}
  </button>
  ))}
@@ -2736,7 +2736,7 @@ export function HumanResources() {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.95 }}
  key={c.id} draggable onDragStart={(e: any) => handleDragStart(e, c.id)} 
- className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-sm hover:border-indigo-300 transition-all relative overflow-hidden group"
+ className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-sm hover:border-primary-300 transition-all relative overflow-hidden group"
  >
  <div className={cn("absolute top-0 left-0 w-1.5 h-full transition-colors", 
  c.matchScore >= 90 ? "bg-emerald-500" : 

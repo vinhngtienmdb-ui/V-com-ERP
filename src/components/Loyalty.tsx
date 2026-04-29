@@ -211,7 +211,7 @@ export function LoyaltyManagement() {
  { title: 'Chuỗi 7 ngày Đăng nhập', reward: '500 Pts + Voucher 50k', progress: 4, total: 7, icon: Flame, color: 'text-orange-500' },
  { title: 'Đơn hàng đầu tháng (>2tr)', reward: 'X2 Loyalty Points', progress: 1.2, total: 2, icon: Sparkles, color: 'text-orange-600' },
  { title: 'Đánh giá 5 sao kèm ảnh', reward: '200 Pts / lượt', progress: 1, total: 3, icon: Heart, color: 'text-pink-500' },
- { title: 'Mua sắm tại quầy iPOS', reward: '100 Pts Bonus', progress: 0, total: 1, icon: LayoutGrid, color: 'text-indigo-500' },
+ { title: 'Mua sắm tại quầy iPOS', reward: '100 Pts Bonus', progress: 0, total: 1, icon: LayoutGrid, color: 'text-primary-500' },
  ].map((task, i) => (
  <div key={i} className="p-6 bg-white border border-stone-100 rounded-lg space-y-6 hover:shadow-sm transition-all group border-b-4 border-b-stone-100 hover:border-b-blue-500">
  <div className="flex justify-between items-start">
