@@ -118,10 +118,31 @@ export function IPosModule() {
  const { activeStore } = useStore();
  const navigate = useNavigate();
  const [products, setProducts] = useState<any[]>([]);
- const [cart, setCart] = useState<any[]>([]);
- const [customer, setCustomer] = useState<any | null>(null);
+ const [cart, setCart] = useState<any[]>(() => {
+    const saved = localStorage.getItem('ipos_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('ipos_cart', JSON.stringify(cart));
+  }, [cart]);
+ const [customer, setCustomer] = useState<any | null>(() => {
+    const saved = localStorage.getItem('ipos_customer');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('ipos_customer', JSON.stringify(customer));
+  }, [customer]);
  const [searchQuery, setSearchQuery] = useState('');
- const [isShiftActive, setIsShiftActive] = useState(false);
+ const [isShiftActive, setIsShiftActive] = useState(() => {
+    const saved = localStorage.getItem('ipos_shift_active');
+    return saved === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ipos_shift_active', isShiftActive.toString());
+  }, [isShiftActive]);
  const [discountCode, setDiscountCode] = useState('');
  const [activeTab, setActiveTab] = useState<'sales' | 'history' | 'lookup' | 'management' | 'delivery' | 'dashboard' | 'tables' | 'handover'>('dashboard');
  const [orderHistory, setOrderHistory] = useState<any[]>([]);
@@ -184,13 +205,18 @@ export function IPosModule() {
  const [selectedProductLookup, setSelectedProductLookup] = useState<any | null>(null);
  const [showShiftSummary, setShowShiftSummary] = useState(false);
  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showCustomItemModal, setShowCustomItemModal] = useState(false);
+  const [customItem, setCustomItem] = useState({ name: '', price: '' });
+  const [editingCartItem, setEditingCartItem] = useState<any>(null);
  const [orderNote, setOrderNote] = useState('');
  const [isOffline, setIsOffline] = useState(false);
  const [isDarkMode, setIsDarkMode] = useState(false);
  const [isListening, setIsListening] = useState(false);
  const [voiceHint, setVoiceHint] = useState<string | null>(null);
  const [returnReason, setReturnReason] = useState('');
- const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'loyalty'>('cash');
+ const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'virtual_account' | 'loyalty'>('cash');
+  const [usePromoWallet, setUsePromoWallet] = useState(false);
+  const [guestCash, setGuestCash] = useState<string>('');
  const [isProcessing, setIsProcessing] = useState(false);
 
   
@@ -200,6 +226,10 @@ export function IPosModule() {
       if (e.key === 'F2') {
         e.preventDefault();
         document.getElementById('barcode-search')?.focus();
+      } else if (e.key === 'F3') {
+        e.preventDefault();
+        const customBtn = document.getElementById('custom-item-button');
+        if (customBtn) customBtn.click();
       } else if (e.key === 'F8') {
         e.preventDefault();
         const payBtn = document.getElementById('pay-button');
@@ -551,19 +581,26 @@ export function IPosModule() {
  }));
  };
 
- const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+ const subtotal = cart.reduce((acc, item) => acc + (item.price - (item.itemDiscount || 0)) * item.quantity, 0);
  const discount = discountCode === 'GIAM10' ? subtotal * 0.1 : 0;
  
  const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(false);
 
- const calculateLoyaltyDiscount = () => {
- if (!customer || !useLoyaltyPoints) return 0;
- // Allow using up to max available points, 1 point = 1 VND
- return Math.min(subtotal - discount, customer.points || 0);
- };
  
- const loyaltyDiscount = calculateLoyaltyDiscount();
- const total = Math.max(0, subtotal - discount - loyaltyDiscount);
+  const MAX_PROMO_WALLET_PERCENT = 0.5; // Max 50% of subtotal
+  const MOCK_PROMO_WALLET_BALANCE = 150000;
+  
+  const promoWalletDiscount = usePromoWallet 
+    ? Math.min(subtotal * MAX_PROMO_WALLET_PERCENT, customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE) 
+    : 0;
+
+  const calculateLoyaltyDiscount = () => {
+    if (!customer || !useLoyaltyPoints) return 0;
+    return Math.min(subtotal - discount - promoWalletDiscount, customer.points || 0);
+  };
+  const loyaltyDiscount = calculateLoyaltyDiscount();
+
+ const total = Math.max(0, subtotal - discount - promoWalletDiscount - loyaltyDiscount);
 
  const handleCheckout = () => {
  setShowPaymentModal(true);
@@ -979,7 +1016,7 @@ export function IPosModule() {
  return <StoreSelector />;
  }
 
- if (!isShiftActive) {
+ if (!isShiftActive && activeStoreConfig?.config?.requireShiftOpening !== false) {
  if (pendingHandover) {
  return (
  <div className="h-full flex items-center justify-center p-8 bg-stone-50/50">
@@ -1206,7 +1243,7 @@ export function IPosModule() {
  </div>
  
  {/* Discount Breakdown */}
- {(discount > 0 || loyaltyDiscount > 0) && (
+ {(discount > 0 || loyaltyDiscount > 0 || promoWalletDiscount > 0) && (
  <div className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-stone-100 border-dashed">
  <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Ưu đãi & Giảm giá</p>
  {discount > 0 && (
@@ -1219,14 +1256,23 @@ export function IPosModule() {
  </div>
  )}
  {loyaltyDiscount > 0 && (
- <div className="flex justify-between text-emerald-600 text-sm font-bold">
- <div className="flex items-center gap-2">
- <Sparkles className="w-3.5 h-3.5" />
- <span>Điểm Loyalty</span>
- </div>
- <span>-{formatCurrency(loyaltyDiscount)}</span>
- </div>
- )}
+      <div className="flex justify-between text-emerald-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Điểm Loyalty</span>
+        </div>
+        <span>-{formatCurrency(loyaltyDiscount)}</span>
+      </div>
+    )}
+    {promoWalletDiscount > 0 && (
+      <div className="flex justify-between text-orange-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Ví Khuyến Mại</span>
+        </div>
+        <span>-{formatCurrency(promoWalletDiscount)}</span>
+      </div>
+    )}
  <div className="pt-2 border-t border-stone-100 flex justify-between">
  <span className="text-[10px] font-bold text-stone-500">Tiết kiệm được</span>
  <span className="text-xs font-black text-emerald-600">{formatCurrency(discount + loyaltyDiscount)}</span>
@@ -1258,77 +1304,116 @@ export function IPosModule() {
  </button>
  </div>
 
- <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
- <button 
- onClick={() => setPaymentMethod('cash')}
- className={cn(
- "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
- paymentMethod === 'cash' 
- ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
- : "border-stone-100 hover:border-indigo-200"
- )}
- >
- <div className={cn(
- "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
- paymentMethod === 'cash' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
- )}>
- <CreditCard className="w-7 h-7" />
- </div>
- <div className="text-center">
- <span className={cn("block font-black text-[11px] uppercase tracking-wider", paymentMethod === 'cash' ? "text-indigo-600" : "text-stone-500")}>Tiền mặt</span>
- <span className="text-[9px] text-stone-400 font-bold">(Cash/COD)</span>
- </div>
- {paymentMethod === 'cash' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
- </button>
+ 
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+  <button 
+    onClick={() => setPaymentMethod('cash')}
+    className={cn(
+      "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
+      paymentMethod === 'cash' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
+    )}
+  >
+    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'cash' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
+      <CreditCard className="w-6 h-6" />
+    </div>
+    <div className="text-center">
+      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'cash' ? "text-indigo-600" : "text-stone-500")}>Tiền mặt</span>
+      <span className="text-[8px] text-stone-400 font-bold">(Cash/COD)</span>
+    </div>
+    {paymentMethod === 'cash' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
+  </button>
 
- <button 
- onClick={() => setPaymentMethod('qr')}
- className={cn(
- "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
- paymentMethod === 'qr' 
- ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
- : "border-stone-100 hover:border-indigo-200"
- )}
- >
- <div className={cn(
- "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
- paymentMethod === 'qr' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
- )}>
- <QrCode className="w-7 h-7" />
- </div>
- <div className="text-center">
- <span className={cn("block font-black text-[11px] uppercase tracking-wider", paymentMethod === 'qr' ? "text-indigo-600" : "text-stone-500")}>Chuyển QR</span>
- <span className="text-[9px] text-stone-400 font-bold">(VietQR/Bank)</span>
- </div>
- {paymentMethod === 'qr' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
- </button>
+  <button 
+    onClick={() => setPaymentMethod('qr')}
+    className={cn(
+      "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
+      paymentMethod === 'qr' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
+    )}
+  >
+    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'qr' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
+      <QrCode className="w-6 h-6" />
+    </div>
+    <div className="text-center">
+      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'qr' ? "text-indigo-600" : "text-stone-500")}>QR Code</span>
+      <span className="text-[8px] text-stone-400 font-bold">(VietQR/Bank)</span>
+    </div>
+    {paymentMethod === 'qr' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
+  </button>
 
- <button 
- onClick={() => setPaymentMethod('pos')}
- className={cn(
- "p-6 bg-white border-2 rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
- paymentMethod === 'pos' 
- ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" 
- : "border-stone-100 hover:border-indigo-200"
- )}
- >
- <div className={cn(
- "w-14 h-14 rounded-sm flex items-center justify-center transition-all",
- paymentMethod === 'pos' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
- )}>
- <Monitor className="w-7 h-7" />
- </div>
- <div className="text-center">
- <span className={cn("block font-black text-[11px] uppercase tracking-wider", paymentMethod === 'pos' ? "text-indigo-600" : "text-stone-500")}>Thẻ / POS</span>
- <span className="text-[9px] text-stone-400 font-bold">(VISA/Master)</span>
- </div>
- {paymentMethod === 'pos' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
- </button>
- </div>
+  <button 
+    onClick={() => setPaymentMethod('pos')}
+    className={cn(
+      "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
+      paymentMethod === 'pos' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
+    )}
+  >
+    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'pos' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
+      <Monitor className="w-6 h-6" />
+    </div>
+    <div className="text-center">
+      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'pos' ? "text-indigo-600" : "text-stone-500")}>Thẻ / POS</span>
+      <span className="text-[8px] text-stone-400 font-bold">(VISA/Master)</span>
+    </div>
+    {paymentMethod === 'pos' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
+  </button>
+
+  <button 
+    onClick={() => setPaymentMethod('virtual_account')}
+    className={cn(
+      "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
+      paymentMethod === 'virtual_account' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
+    )}
+  >
+    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'virtual_account' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
+      <CreditCard className="w-6 h-6" />
+    </div>
+    <div className="text-center">
+      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'virtual_account' ? "text-indigo-600" : "text-stone-500")}>TK Ảo (VA)</span>
+      <span className="text-[8px] text-stone-400 font-bold">(Tự động)</span>
+    </div>
+    {paymentMethod === 'virtual_account' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
+  </button>
+</div>
+
 
  <div className="mt-2 space-y-6">
  {/* Loyalty Reward Integration */}
- {customer && (customer.points || 0) > 0 && (
+ 
+{/* TMĐT Promo Wallet */}
+<div 
+  className={cn(
+    "group p-4 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
+    usePromoWallet 
+      ? "bg-orange-50 border-orange-500 shadow-sm shadow-orange-500/5 ring-4 ring-orange-50" 
+      : "bg-white border-stone-100 hover:border-orange-200"
+  )} 
+  onClick={() => setUsePromoWallet(!usePromoWallet)}
+>
+  <div className="flex items-center gap-4">
+    <div className={cn(
+      "w-10 h-10 rounded-sm flex items-center justify-center transition-all bg-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]",
+      usePromoWallet ? "bg-gradient-to-br from-orange-500 to-rose-600 text-[#FAF9F5] shadow-sm rotate-12" : "bg-stone-50 text-stone-400 group-hover:bg-orange-100 group-hover:text-orange-600"
+    )}>
+      <ShoppingCart className="w-5 h-5" />
+    </div>
+    <div>
+      <p className="text-sm font-black text-stone-900 uppercase tracking-tight">Ví Khuyến Mại Sàn (Tối đa 50%)</p>
+      <p className="text-[10px] text-stone-500 font-bold mt-0.5">
+        Số dư: <span className="text-orange-600">{formatCurrency(customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE)}</span> 
+        <span className="mx-2 opacity-30">•</span> 
+        Khả dụng: <span className="text-orange-600">{formatCurrency(Math.min(subtotal * MAX_PROMO_WALLET_PERCENT, customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE))}</span>
+      </p>
+    </div>
+  </div>
+  <div className={cn(
+    "w-6 h-6 rounded-sm border-2 flex items-center justify-center transition-colors",
+    usePromoWallet ? "bg-orange-500 border-orange-500 text-white" : "bg-white border-stone-300 group-hover:border-orange-500"
+  )}>
+    {usePromoWallet ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 bg-stone-100 rounded-sm" />}
+  </div>
+</div>
+
+{customer && (customer.points || 0) > 0 && (
  <div 
  className={cn(
  "group p-5 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
@@ -1384,10 +1469,11 @@ export function IPosModule() {
  <div className="text-center sm:text-left space-y-4">
  <div className="space-y-1">
  <h4 className="text-lg font-black text-stone-900 flex items-center gap-2">
- Quét mã VietQR Pro
- <div className="px-2 py-0.5 bg-stone-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm">SePay Active</div>
- </h4>
- <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest flex items-center gap-1.5">
+ Quét mã VietQR Đa Năng
+  <div className="px-2 py-0.5 bg-stone-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm">SePay Active</div>
+</h4>
+<p className="text-[11px] text-stone-500 font-medium pb-2">Hỗ trợ: Momo, ZaloPay, VNPay, và mọi Ngân hàng</p>
+<p className="text-xs text-indigo-600 font-bold uppercase tracking-widest flex items-center gap-1.5">
  <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
  Auto-Reconciliation Enabled
  </p>
@@ -1426,53 +1512,77 @@ export function IPosModule() {
                             </p>
                           </div>
                         </motion.div>
-                      ) : (
-                        <motion.div 
-                          key="cash-view"
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: 10 }}
- className="bg-stone-50 p-8 rounded-sm border border-stone-200 shadow-inner space-y-6"
- >
- <div className="flex justify-between items-center">
- <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Xác nhận số tiền</span>
- <div className="flex gap-2">
- {[100000, 200000, 500000].map(val => (
-                                  <button 
-                                    key={val}
-                                    onClick={() => {
-                                      const input = document.getElementById('cash-input') as HTMLInputElement;
-                                      if(input) {
-                                        input.value = val.toString();
-                                        const event = new Event('input', { bubbles: true });
-                                        input.dispatchEvent(event);
-                                      }
-                                    }}
-                                    className="px-3 md:px-4 py-2 font-black text-stone-600 hover:bg-indigo-50 border-r last:border-r-0 border-stone-100 hover:text-indigo-600 transition-colors"
-                                  >
-                                    {val >= 1000000 ? val/1000000 + 'M' : val/1000 + 'k'}
-                                  </button>
-                                ))}
- </div>
- </div>
- <div className="relative group">
- <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-stone-300 group-focus-within:text-indigo-600 transition-all">đ</span>
- <input 
- id="cash-input"
- type="text" 
- defaultValue={total.toString()}
- className="w-full bg-white border-2 border-stone-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-sm py-6 pl-14 pr-8 text-4xl font-black text-stone-900 outline-none transition-all shadow-sm text-right"
- />
- </div>
- <div className="flex justify-between items-center pt-2">
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest flex items-center gap-2">
- <AlertCircle className="w-3.5 h-3.5" /> Thừa/Thiếu sẽ được tính vào giao dịch
- </p>
- <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-sm shadow-sm border border-indigo-50">
- Gợi ý: {formatCurrency(Math.ceil(total/100000)*100000)}
- </span>
- </div>
- </motion.div>
+                      
+) : paymentMethod === 'virtual_account' ? (
+  <motion.div 
+    key="va-view"
+    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+    className="flex flex-col items-center justify-center gap-4 p-12 bg-stone-50 rounded-sm border border-stone-200 shadow-inner text-center"
+  >
+    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-stone-100 relative">
+      <Building2 className="w-12 h-12 text-indigo-600" />
+      {isProcessing && <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />}
+    </div>
+    <div className="space-y-4 mt-2">
+      <h4 className="text-2xl font-black text-stone-900 tracking-tight">Hệ thống đang chờ chuyển khoản</h4>
+      <p className="text-sm text-stone-500 font-medium max-w-[320px] mx-auto leading-relaxed">
+        Vui lòng khách hàng chuyển <strong className="text-stone-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">{formatCurrency(total)}</strong> vào tài khoản định danh được hiển thị trên ứng dụng của khách.
+      </p>
+    </div>
+  </motion.div>
+
+) : (
+<motion.div 
+  key="cash-view"
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: 10 }}
+  className="bg-stone-50 p-8 rounded-sm border border-stone-200 shadow-inner space-y-6"
+>
+  <div className="flex justify-between items-center">
+    <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Khách Đưa</span>
+    <div className="flex gap-2">
+      {[100000, 200000, 500000].map(val => (
+        <button 
+          key={val}
+          onClick={() => {
+            setGuestCash(val.toString());
+          }}
+          className="px-3 md:px-4 py-2 font-black text-stone-600 hover:bg-indigo-50 border-r last:border-r-0 border-stone-100 hover:text-indigo-600 transition-colors"
+        >
+          {val >= 1000000 ? val/1000000 + 'M' : val/1000 + 'k'}
+        </button>
+      ))}
+    </div>
+  </div>
+  
+  <div className="relative group">
+    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-stone-300 group-focus-within:text-indigo-600 transition-all">đ</span>
+    <input 
+      id="cash-input"
+      type="number" 
+      value={guestCash}
+      onChange={(e) => setGuestCash(e.target.value)}
+      placeholder={total.toString()}
+      className="w-full bg-white border-2 border-stone-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-sm py-6 pl-14 pr-8 text-4xl font-black text-stone-900 outline-none transition-all shadow-sm text-right"
+    />
+  </div>
+  
+  <div className="flex justify-between items-center pt-4 border-t border-stone-200">
+    <span className="text-sm font-bold text-stone-500 uppercase">Tiền thối lại</span>
+    <span className={cn(
+      "text-2xl font-black",
+      (Number(guestCash) - total) >= 0 ? "text-emerald-600" : "text-stone-300"
+    )}>
+      {guestCash && Number(guestCash) >= total 
+        ? formatCurrency(Number(guestCash) - total) 
+        : '--'}
+    </span>
+  </div>
+</motion.div>
+
  )}
  </AnimatePresence>
  </div>
@@ -1830,16 +1940,27 @@ export function IPosModule() {
  {/* Product Search & Categories - Refined with Glass effect */}
  <div className="bg-white rounded-sm border border-stone-200 shadow-sm p-3.5 flex-1 flex flex-col items-center gap-4">
  <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
- <div className="relative flex-1 w-full">
- <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
- <input 
- type="text" 
- id="barcode-search" placeholder="Tìm món, mã SKU (F2)..." 
- className="w-full bg-stone-50 border border-stone-200 rounded-sm pl-11 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-stone-900 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-stone-400"
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- />
- </div>
+ 
+<div className="relative flex-1 w-full">
+  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+  <input 
+    type="text" 
+    id="barcode-search" placeholder="Tìm món, mã SKU (F2)..." 
+    className="w-full bg-stone-50 border border-stone-200 rounded-sm pl-11 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-stone-900 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-stone-400"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+</div>
+<button
+  onClick={() => setShowCustomItemModal(true)}
+  title="Thêm món tùy chọn (F3)"
+  id="custom-item-button"
+  className="h-[52px] px-6 bg-stone-900 text-[#FAF9F5] rounded-sm font-bold text-xs uppercase tracking-wider hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+>
+  <Plus className="w-4 h-4" />
+  Tùy Chọn
+</button>
+
  <button 
  onClick={() => setIsScannerOpen(true)}
  className="h-[52px] bg-stone-900 text-[#FAF9F5] px-6 rounded-sm flex items-center gap-3 hover:bg-stone-800 transition-all shadow-sm active:scale-95 group w-full sm:w-auto justify-center shrink-0"
@@ -2118,11 +2239,27 @@ export function IPosModule() {
  {isReturnMode && <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />}
  <div className="flex-1 pr-3">
  <p className="font-bold text-stone-800 text-[13px] leading-snug mb-1 group-hover:text-orange-700 transition-colors line-clamp-1">{item.name}</p>
- <div className="flex items-center gap-1.5">
- <p className="text-[10px] text-stone-400 font-bold tracking-tight">{formatCurrency(item.price)}</p>
- <span className="text-[8px] text-stone-300">•</span>
- <span className="text-[9px] text-orange-500 font-black uppercase tracking-widest">SKU-{item.id.slice(-4).toUpperCase()}</span>
- </div>
+ 
+<div className="flex items-center gap-2">
+  <p className="text-[10px] text-stone-400 font-bold tracking-tight">
+    {formatCurrency(item.price)}
+    {(item.itemDiscount || 0) > 0 && 
+      <span className="text-rose-500 ml-1">(-{formatCurrency(item.itemDiscount)})</span>
+    }
+  </p>
+  <span className="text-[8px] text-stone-300">•</span>
+  <button 
+    onClick={() => setEditingCartItem(item)}
+    className="text-[9px] text-stone-400 hover:text-indigo-600 font-black uppercase tracking-widest flex items-center gap-1 transition-colors"
+  >
+    <Edit2 className="w-3 h-3" />
+    Sửa
+  </button>
+</div>
+{item.note && (
+  <p className="text-[10px] text-indigo-600 font-medium italic mt-0.5">* {item.note}</p>
+)}
+
  <div className="flex items-center gap-5 mt-4 bg-stone-50 w-fit p-1 rounded-sm border border-stone-100">
  <button 
  onClick={() => updateQuantity(item.id, -1)}
@@ -3075,7 +3212,7 @@ export function IPosModule() {
  {cart.map((item, idx) => (
  <div key={idx} className="flex justify-between mb-1">
  <div className="flex-1 truncate max-w-[50mm]">{item.quantity}x {item.name}</div>
- <div>{formatCurrency(item.price * item.quantity)}</div>
+ <div>{formatCurrency((item.price - (item.itemDiscount || 0)) * item.quantity)}</div>
  </div>
  ))}
  </div>
@@ -3092,11 +3229,23 @@ export function IPosModule() {
  </div>
  )}
  {loyaltyDiscount > 0 && (
- <div className="flex justify-between">
- <span>Trừ điểm</span>
- <span>-{formatCurrency(loyaltyDiscount)}</span>
- </div>
- )}
+      <div className="flex justify-between text-emerald-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Điểm Loyalty</span>
+        </div>
+        <span>-{formatCurrency(loyaltyDiscount)}</span>
+      </div>
+    )}
+    {promoWalletDiscount > 0 && (
+      <div className="flex justify-between text-orange-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Ví Khuyến Mại</span>
+        </div>
+        <span>-{formatCurrency(promoWalletDiscount)}</span>
+      </div>
+    )}
  <div className="flex justify-between font-bold text-sm mt-2 pt-2 border-t border-black">
  <span>PHẢI THANH TOÁN</span>
  <span>{formatCurrency(total)}</span>
@@ -3127,7 +3276,7 @@ export function IPosModule() {
  {cart.map((item, idx) => (
  <div key={idx} className="flex justify-between py-1">
  <span className="flex-1">{item.name} x{item.quantity}</span>
- <span>{formatCurrency(item.price * item.quantity)}</span>
+ <span>{formatCurrency((item.price - (item.itemDiscount || 0)) * item.quantity)}</span>
  </div>
  ))}
  </div>
@@ -3144,11 +3293,23 @@ export function IPosModule() {
  </div>
  )}
  {loyaltyDiscount > 0 && (
- <div className="flex justify-between">
- <span>Điểm Loyalty:</span>
- <span>-{formatCurrency(loyaltyDiscount)}</span>
- </div>
- )}
+      <div className="flex justify-between text-emerald-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Điểm Loyalty</span>
+        </div>
+        <span>-{formatCurrency(loyaltyDiscount)}</span>
+      </div>
+    )}
+    {promoWalletDiscount > 0 && (
+      <div className="flex justify-between text-orange-500 text-sm font-bold">
+        <div className="flex items-center gap-2">
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Ví Khuyến Mại</span>
+        </div>
+        <span>-{formatCurrency(promoWalletDiscount)}</span>
+      </div>
+    )}
  <div className="flex justify-between font-bold text-xs pt-2 border-t border-dashed border-black">
  <span>TỔNG CỘNG:</span>
  <span>{formatCurrency(total)}</span>
