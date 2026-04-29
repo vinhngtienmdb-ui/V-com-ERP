@@ -94,6 +94,20 @@ html[data-theme="nature"]::after {
     #a4-print-document, #a4-print-document * {
       visibility: visible;
     }
+    #pos-print-document, #pos-print-document * {
+      visibility: visible;
+    }
+    #pos-print-document {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 80mm;
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+      border: none;
+      font-family: monospace;
+    }
     #a4-print-document {
       position: absolute;
       left: 0;

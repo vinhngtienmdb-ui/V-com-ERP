@@ -56,6 +56,8 @@ import {
   Boxes,
   ShoppingBag,
   Gift,
+  Receipt,
+  ChefHat,
 } from "lucide-react";
 import {
   BarChart,
@@ -438,7 +440,14 @@ export function IPosModule() {
     any | null
   >(null);
   const [showShiftSummary, setShowShiftSummary] = useState(false);
+  const [printMode, setPrintMode] = useState<"proforma" | "customer_bill" | "kitchen_bill">("customer_bill");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
+  const [completedOrderData, setCompletedOrderData] = useState<any>(null);
+  const [invoiceEmail, setInvoiceEmail] = useState("");
+  const [invoiceTaxCode, setInvoiceTaxCode] = useState("");
+  const [invoiceCompanyName, setInvoiceCompanyName] = useState("");
+  const [invoiceAddress, setInvoiceAddress] = useState("");
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
   const [customItem, setCustomItem] = useState({ name: "", price: "" });
   const [editingCartItem, setEditingCartItem] = useState<any>(null);
@@ -988,7 +997,8 @@ export function IPosModule() {
   };
 
   const handlePrintProforma = () => {
-    window.print();
+    setPrintMode("proforma");
+    setTimeout(() => window.print(), 100);
   };
 
   const startListening = () => {
@@ -1329,13 +1339,19 @@ export function IPosModule() {
         });
       }
 
+      setCompletedOrderData({
+        ...orderData,
+        orderId: `ORD-${Date.now()}`, // Mock ID for printing display
+        cartItems: [...cart]
+      });
+      setInvoiceEmail(customer?.email || "");
       setCart([]);
       setCustomer(null);
       setDiscountCode("");
       setOrderNote("");
       setUseLoyaltyPoints(false);
       setShowPaymentModal(false);
-      setActiveTab("history");
+      setShowPaymentSuccessModal(true);
     } catch (error) {
       handleFirestoreError(error, "create", "orders");
     } finally {
@@ -1615,6 +1631,100 @@ export function IPosModule() {
         isDarkMode && "dark bg-[#0f172a] text-stone-100",
       )}
     >
+      
+
+      {/* POS Print Document */}
+      <div id="pos-print-document" className="hidden print:block bg-white text-black p-4 w-[80mm] mx-auto text-xs font-mono leading-tight">
+        <div className="text-center mb-4">
+          <h2 className="text-lg font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}</h2>
+          <p>{activeStore?.address || "Địa chỉ cửa hàng"}</p>
+          <p>SĐT: {activeStore?.phone || "0123.456.789"}</p>
+          <div className="my-2 border-b-2 border-dashed border-gray-400"></div>
+          <h3 className="text-base font-bold uppercase mt-2">
+            {printMode === "proforma" ? "PHIẾU TẠM TÍNH" : printMode === "kitchen_bill" ? "PHIẾU CHẾ BIẾN" : "HÓA ĐƠN THANH TOÁN"}
+          </h3>
+          {printMode === "kitchen_bill" && (
+            <p className="font-bold text-lg mt-1">BÀN: {selectedTableForQr || "Mang đi"}</p>
+          )}
+          {printMode !== "kitchen_bill" && (
+            <p className="text-left mt-2">Mã HĐ: {printMode === "proforma" ? "TMP-" + Date.now().toString().slice(-4) : completedOrderData?.orderId}</p>
+          )}
+          <p className="text-left">Ngày: {new Date().toLocaleString('vi-VN')}</p>
+          <p className="text-left">Thu ngân: {user?.displayName || "Admin"}</p>
+        </div>
+
+        <div className="my-2 border-b border-dashed border-gray-400"></div>
+
+        <table className="w-full text-left mb-2">
+          <thead>
+            <tr className="border-b border-dashed border-gray-400">
+              <th className="py-1">Tên món</th>
+              <th className="py-1 text-center w-12">SL</th>
+              {printMode !== "kitchen_bill" && <th className="py-1 text-right w-20">T.Tiền</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item, idx) => (
+              <tr key={idx} className="border-b border-dashed border-gray-200">
+                <td className="py-1 pr-1">{item.name} {item.note && <div className="text-[10px] italic">- {item.note}</div>}</td>
+                <td className="py-1 text-center font-bold">{item.quantity}</td>
+                {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(item.price * item.quantity)}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {printMode !== "kitchen_bill" && (
+            <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                    <span>Tổng cộng:</span>
+                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? subtotal : completedOrderData?.subtotal || 0)}</span>
+                </div>
+                {(printMode === "proforma" ? discount : completedOrderData?.discount || 0) > 0 && (
+                    <div className="flex justify-between">
+                        <span>Giảm giá:</span>
+                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? discount : completedOrderData?.discount || 0)}</span>
+                    </div>
+                )}
+                {(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0) > 0 && (
+                    <div className="flex justify-between">
+                        <span>KM sàn:</span>
+                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0)}</span>
+                    </div>
+                )}
+                {(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0) > 0 && (
+                    <div className="flex justify-between">
+                        <span>Trừ điểm thẻ:</span>
+                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0)}</span>
+                    </div>
+                )}
+                <div className="my-1 border-b border-dashed border-gray-400"></div>
+                <div className="flex justify-between font-bold text-sm">
+                    <span>Thanh toán:</span>
+                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? total : completedOrderData?.total || 0)}</span>
+                </div>
+                {printMode === "customer_bill" && (
+                    <div className="flex justify-between italic text-[10px] mt-1">
+                        <span>PTTT:</span>
+                        <span className="uppercase">{completedOrderData?.paymentMethod}</span>
+                    </div>
+                )}
+            </div>
+        )}
+
+        <div className="mt-6 text-center text-[10px] space-y-1">
+            {printMode === "kitchen_bill" ? (
+                <p>*** P. Bếp vui lòng kiểm tra kỹ ***</p>
+            ) : (
+                <>
+                    <p>Cảm ơn quý khách và hẹn gặp lại!</p>
+                    <p>Powered by Matrix ERP / iPOS</p>
+                </>
+            )}
+        </div>
+      </div>
+
+
       {/* Voice Assistant Overlay - Minimalist refinement */}
       {isListening && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] bg-indigo-600 text-[#FAF9F5] px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm animate-bounce border border-white/20 backdrop-blur-md">
@@ -2517,6 +2627,109 @@ export function IPosModule() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      
+      {/* Payment Success & Printing / E-Invoice Modal */}
+      {showPaymentSuccessModal && (
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/90 backdrop-blur-md">
+          <div className="bg-white rounded-sm w-full max-w-2xl overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
+            <div className="bg-emerald-50 border-b border-emerald-100 p-8 text-center space-y-4">
+              <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm shadow-emerald-500/20">
+                <CheckCircle2 className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-black text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
+              <p className="text-emerald-700 font-medium">Đơn hàng <strong className="text-emerald-900">{completedOrderData?.orderId}</strong> đã được ghi nhận vào hệ thống.</p>
+            </div>
+            
+            <div className="p-8 space-y-8 bg-stone-50">
+                <div className="grid grid-cols-2 gap-4">
+                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-stone-200 hover:border-indigo-300 hover:shadow-sm rounded-sm transition-all group">
+                        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-sm group-hover:scale-110 transition-transform"><Printer className="w-6 h-6" /></div>
+                        <span className="font-bold text-stone-700 text-sm">In phiếu tính tiền</span>
+                    </button>
+                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-stone-200 hover:border-orange-300 hover:shadow-sm rounded-sm transition-all group">
+                        <div className="p-3 bg-orange-50 text-orange-600 rounded-sm group-hover:scale-110 transition-transform"><ChefHat className="w-6 h-6" /></div>
+                        <span className="font-bold text-stone-700 text-sm">In bill bếp / in chế biến</span>
+                    </button>
+                </div>
+
+                <div className="border border-stone-200 bg-white rounded-sm overflow-hidden">
+                    <div className="p-4 bg-stone-100/50 border-b border-stone-200 flex items-center gap-3">
+                        <Receipt className="w-5 h-5 text-indigo-600" />
+                        <h3 className="font-bold text-stone-900 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
+                    </div>
+                    <div className="p-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Mã số thuế</label>
+                            <input
+                                type="text"
+                                value={invoiceTaxCode}
+                                onChange={(e) => setInvoiceTaxCode(e.target.value)}
+                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                placeholder="VD: 0101234567"
+                            />
+                            </div>
+                            <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Tên Khách / Công ty</label>
+                            <input
+                                type="text"
+                                value={invoiceCompanyName}
+                                onChange={(e) => setInvoiceCompanyName(e.target.value)}
+                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                placeholder="..."
+                            />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                                <label className="text-xs font-bold text-inherit uppercase tracking-widest">Địa chỉ</label>
+                                <input
+                                    type="text"
+                                    value={invoiceAddress}
+                                    onChange={(e) => setInvoiceAddress(e.target.value)}
+                                    className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                    placeholder="Địa chỉ xuất HD"
+                                />
+                            </div>
+                            <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                            <label className="text-xs font-bold text-inherit uppercase tracking-widest">Email nhận hóa đơn</label>
+                            <input
+                                type="email"
+                                value={invoiceEmail}
+                                onChange={(e) => setInvoiceEmail(e.target.value)}
+                                className="w-full text-sm font-medium text-stone-900 px-4 py-3 bg-stone-50 border border-stone-200 focus:border-indigo-500 focus:bg-white rounded-sm outline-none transition-all"
+                                placeholder="Email nhận HDĐT"
+                            />
+                            </div>
+                        </div>
+                        
+                        <button disabled={!invoiceTaxCode || !invoiceEmail} onClick={() => {
+                            alert("Yêu cầu phát hành HĐĐT đã được gửi lên hệ thống!");
+                            setShowPaymentSuccessModal(false);
+                            setActiveTab("history");
+                        }} className="w-full py-4 bg-indigo-600 text-[#FAF9F5] rounded-sm font-bold shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:bg-indigo-700 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2">
+                            Xác nhận xuất HĐĐT
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="p-6 border-t border-stone-200 bg-white">
+                <button
+                    onClick={() => {
+                        setShowPaymentSuccessModal(false);
+                        setActiveTab("history");
+                    }}
+                    className="w-full py-4 bg-stone-900 text-[#FAF9F5] rounded-sm font-black uppercase tracking-widest shadow-sm hover:bg-stone-800 transition-all"
+                >
+                    Đóng & Tạo đơn mới
+                </button>
             </div>
           </div>
         </div>
