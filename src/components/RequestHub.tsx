@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 
 const INITIAL_REQUESTS = [
  { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -47,7 +48,8 @@ const INITIAL_FORM_CONFIGS = [
 export function RequestHub() {
  const [activeTab, setActiveTab] = useState('all');
  const navigate = useNavigate();
- const { user } = useAuth();
+ const { user, isAdmin, staffInfo } = useAuth();
+ const { addNotification } = useNotifications();
  const [requests, setRequests] = useState(INITIAL_REQUESTS);
  
  // Settings State
@@ -430,7 +432,7 @@ export function RequestHub() {
  <td className="px-6 py-4 text-right">
  <div className="flex flex-col items-end gap-2">
  <p className="text-sm text-stone-600 font-mono">{doc.date}</p>
- {doc.status === 'pending' && (
+ {doc.status === 'pending' && (isAdmin || staffInfo?.role === 'director') && (
  <div className="flex gap-2 invisible group-hover:visible transition-all">
  <button 
  onClick={() => handleStatusChange(doc.id, 'approved')}

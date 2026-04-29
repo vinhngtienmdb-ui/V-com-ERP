@@ -399,6 +399,8 @@ export interface IPosStore {
  address: string;
  managerId: string;
  status: 'active' | 'inactive';
+ industry?: string;
+ subIndustry?: string;
  config?: {
  printReceiptAutomatically: boolean;
  allowReturns: boolean;

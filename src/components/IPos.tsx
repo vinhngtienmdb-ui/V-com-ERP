@@ -107,6 +107,12 @@ const BOM_MAP: Record<string, { materialId: string, quantity: number }[]> = {
  ],
 };
 
+const INDUSTRY_SECTORS = {
+ "Bán buôn, bán lẻ": ["Thời trang", "Điện thoại & Điện máy", "Vật liệu xây dựng", "Nhà thuốc", "Mẹ & Bé", "Sách & Văn phòng phẩm", "Sản xuất", "Tạp hóa & Siêu thị", "Mỹ phẩm", "Nông sản & Thực phẩm", "Xe, máy móc", "Nội thất & Gia dụng", "Hoa & Quà tặng", "Khác"],
+ "Ăn uống, giải trí": ["Nhà hàng", "Quán ăn", "Cafe, trà sữa", "Karaoke, Bida", "Bar, Pub & Club", "Căn tin & Trạm dừng nghỉ"],
+ "Lưu trú, làm đẹp": ["Beauty, Spa, Massage", "Hair Salon & Nail", "Khách sạn, Nhà nghỉ", "Homestay, Villa, Resort", "Fitness & Yoga", "Phòng khám", "Phòng khám thú y"]
+};
+
 export function IPosModule() {
  const { user } = useAuth();
  const { activeStore } = useStore();
@@ -867,6 +873,20 @@ export function IPosModule() {
  }
  };
 
+ const handleUpdateStoreField = async (key: string, value: any) => {
+ if (!activeStore || !activeStoreConfig) return;
+ try {
+ const updatedStore = {
+ ...activeStoreConfig,
+ [key]: value
+ };
+ await updateDoc(doc(db, 'ipos_stores', activeStore.id), updatedStore as any);
+ setActiveStoreConfig(updatedStore as any);
+ } catch (err) {
+ console.error("Error updating store:", err);
+ }
+ };
+
  const handleSaveStaff = async (staffData: Partial<IPosStaff>) => {
  if (!activeStore) return;
  try {
@@ -1507,6 +1527,7 @@ export function IPosModule() {
  >
  <ShoppingCart className="w-4 h-4" /> Bán hàng
  </button>
+ {activeStoreConfig?.industry !== "Bán buôn, bán lẻ" && (
  <button 
  onClick={() => setActiveTab('tables')}
  className={cn(
@@ -1514,8 +1535,9 @@ export function IPosModule() {
  activeTab === 'tables' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
  )}
  >
- <Grid3x3 className="w-4 h-4" /> Sơ đồ bàn
+ <Grid3x3 className="w-4 h-4" /> {activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "Sơ đồ phòng" : "Sơ đồ bàn"}
  </button>
+ )}
  {['admin', 'manager'].includes(userRole) && (
  <button 
  onClick={() => setActiveTab('management')}
@@ -1527,6 +1549,7 @@ export function IPosModule() {
  <ShieldCheck className="w-4 h-4" /> Quản trị
  </button>
  )}
+ {activeStoreConfig?.industry !== "Lưu trú, làm đẹp" && (
  <button 
  onClick={() => setActiveTab('delivery')}
  className={cn(
@@ -1539,6 +1562,7 @@ export function IPosModule() {
  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-[#FAF9F5] text-[9px] font-bold flex items-center justify-center rounded-full animate-pulse">{incomingExternalOrders.length}</span>
  )}
  </button>
+ )}
  <button 
  onClick={() => setActiveTab('lookup')}
  className={cn(
@@ -1760,7 +1784,13 @@ export function IPosModule() {
  </div>
  
  <div className="flex gap-2.5 w-full overflow-x-auto no-scrollbar py-1">
- {['Tất cả', 'Cà phê', 'Trà trái cây', 'Đồ ăn nhẹ', 'Tráng miệng'].map((cat, idx) => (
+ {(
+ activeStoreConfig?.industry === "Bán buôn, bán lẻ" 
+ ? ['Tất cả', 'Quần áo', 'Thiết bị', 'Phụ kiện', 'Mỹ phẩm', 'Khác']
+ : activeStoreConfig?.industry === "Lưu trú, làm đẹp" 
+ ? ['Tất cả', 'Dịch vụ Spa', 'Thuê phòng', 'Phụ thu', 'Liệu trình']
+ : ['Tất cả', 'Cà phê', 'Trà trái cây', 'Đồ ăn nhẹ', 'Tráng miệng']
+ ).map((cat, idx) => (
  <button 
  key={cat} 
  className={cn(
@@ -2148,7 +2178,7 @@ export function IPosModule() {
  <Grid3x3 className="w-5 h-5" />
  </div>
  <div>
- <h3 className="font-bold text-lg text-stone-900 leading-none">Sơ đồ Bàn / Phòng</h3>
+ <h3 className="font-bold text-lg text-stone-900 leading-none">{activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "Sơ đồ Phòng" : "Sơ đồ Bàn / Phòng"}</h3>
  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1.5">Trực quan hóa không gian phục vụ</p>
  </div>
  </div>
@@ -2174,9 +2204,9 @@ export function IPosModule() {
  )}
  onClick={() => {
  if (table.status === 'available' || table.status === 'cleaning') {
- alert(`Mở bàn ${table.name}`);
+ alert(`Mở ${activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "phòng" : "bàn"} ${table.name}`);
  } else {
- alert(`Xem đơn bàn ${table.name}`);
+ alert(`Xem đơn ${activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "phòng" : "bàn"} ${table.name}`);
  }
  }}
  >
@@ -2188,7 +2218,7 @@ export function IPosModule() {
  table.status === 'reserved' ? "bg-amber-500 text-[#FAF9F5]" :
  "bg-blue-400 text-[#FAF9F5]"
  )}>
- <Coffee className="w-4.5 h-4.5" />
+ {activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? <Store className="w-4.5 h-4.5" /> : <Coffee className="w-4.5 h-4.5" />}
  </div>
  {table.status === 'occupied' && (
  <span className="text-[9px] font-black bg-emerald-600 text-[#FAF9F5] px-1.5 py-0.5 rounded shadow-sm">LIVE</span>
@@ -2637,7 +2667,38 @@ export function IPosModule() {
  </div>
  
  <div className="space-y-6">
- <div className="bg-stone-50 p-6 rounded-lg space-y-4">
+ <div className="bg-stone-50 p-6 rounded-lg space-y-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ <div className="space-y-1.5">
+ <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Ngành nghề</label>
+ <select
+ className="w-full h-10 px-3 bg-white border border-stone-200 rounded-lg text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
+ value={activeStoreConfig?.industry || ''}
+ onChange={(e) => handleUpdateStoreField('industry', e.target.value)}
+ >
+ <option value="">Chọn ngành nghề...</option>
+ {Object.keys(INDUSTRY_SECTORS).map((sector) => (
+ <option key={sector} value={sector}>{sector}</option>
+ ))}
+ </select>
+ </div>
+ <div className="space-y-1.5">
+ <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Loại hình chi tiết</label>
+ <select
+ className="w-full h-10 px-3 bg-white border border-stone-200 rounded-lg text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-indigo-500"
+ value={activeStoreConfig?.subIndustry || ''}
+ onChange={(e) => handleUpdateStoreField('subIndustry', e.target.value)}
+ disabled={!activeStoreConfig?.industry}
+ >
+ <option value="">Chọn hình thức...</option>
+ {activeStoreConfig?.industry && (INDUSTRY_SECTORS as any)[activeStoreConfig.industry]?.map((subSector: string) => (
+ <option key={subSector} value={subSector}>{subSector}</option>
+ ))}
+ </select>
+ </div>
+ </div>
+
+ <div className="border-t border-stone-200 pt-6 space-y-4">
  <div className="flex justify-between items-center">
  <div className="space-y-0.5">
  <p className="text-sm font-bold text-stone-900">Mở ca làm việc bắt buộc</p>
@@ -2646,7 +2707,7 @@ export function IPosModule() {
  <button 
  onClick={() => handleUpdateStoreConfig('requireShiftOpening', !activeStoreConfig?.config?.requireShiftOpening)}
  className={cn(
- "w-12 h-6 rounded-full p-1 transition-all",
+ "w-12 h-6 rounded-full p-1 transition-all shrink-0 ml-4",
  activeStoreConfig?.config?.requireShiftOpening ? "bg-indigo-600" : "bg-stone-300"
  )}
  >
@@ -2662,7 +2723,7 @@ export function IPosModule() {
  <button 
  onClick={() => handleUpdateStoreConfig('printReceiptAutomatically', !activeStoreConfig?.config?.printReceiptAutomatically)}
  className={cn(
- "w-12 h-6 rounded-full p-1 transition-all",
+ "w-12 h-6 rounded-full p-1 transition-all shrink-0 ml-4",
  activeStoreConfig?.config?.printReceiptAutomatically ? "bg-indigo-600" : "bg-stone-300"
  )}
  >
@@ -2678,12 +2739,13 @@ export function IPosModule() {
  <button 
  onClick={() => handleUpdateStoreConfig('allowReturns', !activeStoreConfig?.config?.allowReturns)}
  className={cn(
- "w-12 h-6 rounded-full p-1 transition-all",
+ "w-12 h-6 rounded-full p-1 transition-all shrink-0 ml-4",
  activeStoreConfig?.config?.allowReturns ? "bg-indigo-600" : "bg-stone-300"
  )}
  >
  <div className={cn("w-4 h-4 bg-white rounded-full transition-all", activeStoreConfig?.config?.allowReturns && "translate-x-6")} />
  </button>
+ </div>
  </div>
  </div>
 
