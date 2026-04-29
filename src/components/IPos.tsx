@@ -50,7 +50,8 @@ import {
  Layers,
  LayoutDashboard,
  Mic,
- DollarSign
+ DollarSign,
+ Edit2
 } from 'lucide-react';
 import { 
  BarChart, 
