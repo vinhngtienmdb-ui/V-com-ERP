@@ -236,9 +236,9 @@ export function RequestHub() {
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Đề xuất, Phê duyệt & Ký số (E-Form)</h1>
- <p className="text-sm text-[#6B7280] mt-1">Cấu hình linh hoạt các loại đề xuất hành chính, tài chính, nhân sự.</p>
+ <div className="header-title border-l-4 border-indigo-600 pl-4 py-1">
+ <h1 className="text-3xl font-black text-stone-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-indigo-600">E-Form</span></h1>
+ <p className="text-xs font-bold text-stone-500 mt-2 uppercase tracking-[0.2em]">Hành chính • Tài chính • Nhân sự • Quy trình số</p>
  </div>
  <div className="flex gap-3">
  <button 
@@ -262,7 +262,7 @@ export function RequestHub() {
 
  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
  <div className="bg-white border border-stone-200 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-stone-800 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt (Pending)</h3>
+ <h3 className="text-sm font-bold text-stone-800 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
  <p className="text-2xl font-black text-stone-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
  </div>
  <div className="bg-white border border-stone-200 p-6 rounded-lg shadow-sm">

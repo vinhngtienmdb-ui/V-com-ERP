@@ -75,7 +75,7 @@ export function AIOperations() {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 bg-blue-950/50 border border-blue-900 px-2 py-0.5 rounded-none">Neural Network Central</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 bg-blue-950/50 border border-blue-900 px-2 py-0.5 rounded-none">Trung tâm Mạng Nơ-ron</span>
  <div className="w-1.5 h-1.5 bg-stone-800 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
  </div>
  <h1 className="font-serif tracking-tight text-3xl font-black text-stone-900 tracking-tight">AI Operations <span className="text-orange-700">(AIOps)</span></h1>
@@ -107,7 +107,7 @@ export function AIOperations() {
  </div>
  <div>
  <div className="text-3xl font-black tracking-tight">12 Tác nhân</div>
- <p className="text-[10px] text-stone-400 font-bold mt-2 uppercase tracking-widest">Active Neural Nodes</p>
+ <p className="text-[10px] text-stone-400 font-bold mt-2 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
  </div>
  </div>
  <div className="absolute top-0 right-0 w-32 h-32 bg-stone-900/5 rounded-full blur-3xl" />
@@ -192,7 +192,7 @@ export function AIOperations() {
  <div>
  <h4 className="text-lg font-black text-stone-900 flex items-center gap-3">
  {item.id}
- <span className="text-[10px] bg-amber-600 text-[#FAF9F5] px-3 py-1 rounded-full uppercase tracking-[0.1em] font-black shadow-sm shadow-amber-600/20">Pending Human</span>
+ <span className="text-[10px] bg-amber-600 text-[#FAF9F5] px-3 py-1 rounded-full uppercase tracking-[0.1em] font-black shadow-sm shadow-amber-600/20">Chờ người duyệt</span>
  </h4>
  <div className="flex items-center gap-3 mt-1.5">
  <span className="text-[11px] text-stone-500 font-bold flex items-center gap-1.5">
@@ -263,11 +263,11 @@ export function AIOperations() {
  <h3 className="text-xl font-black text-stone-900 flex items-center gap-4">
  <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
  </h3>
- <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Monthly Allowance</span>
+ <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Ngân sách Hàng tháng</span>
  </div>
  <div className="grid grid-cols-2 gap-6 mb-10">
  <div className="p-6 bg-stone-950 text-[#FAF9F5] rounded-xl border border-stone-800 shadow-sm relative overflow-hidden group">
- <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Cost Real-time</p>
+ <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Chi phí Thời gian thực</p>
  <p className="text-3xl font-black tracking-tight tracking-tighter">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-stone-900/10 rounded-full blur-xl group-hover:bg-stone-900/20 transition-all" />
  </div>
@@ -356,7 +356,7 @@ export function AIOperations() {
 
  <div className="bg-white p-12 border border-stone-100 rounded-xl shadow-sm shadow-stone-200/40 space-y-10">
  <h3 className="text-2xl font-black text-stone-900 flex items-center gap-4">
- <Activity className="w-7 h-7 text-orange-700" /> Model Drift & Health Analytics
+ <Activity className="w-7 h-7 text-orange-700" /> Phân tích Độ lệch & Tình trạng Model
  </h3>
  <div className="space-y-8">
  {[

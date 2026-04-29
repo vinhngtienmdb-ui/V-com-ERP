@@ -225,7 +225,7 @@ export function WalletHub() {
 
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Ví Tài chính & Ký quỹ (Digital Vault)</h1>
+ <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Ví Tài chính & Ký quỹ (Kho lưu trữ Số)</h1>
  <p className="text-sm text-[#6B7280] mt-1">Hệ thống thanh toán tập trung, Quản lý dòng tiền và Bảo mật giao dịch Ký quỹ.</p>
  </div>
  <div className="flex gap-3">
@@ -234,7 +234,7 @@ export function WalletHub() {
  Đối soát tự động
  </button>
  <button className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2">
- <Fingerprint className="w-4 h-4 text-orange-500" /> Security Settings
+ <Fingerprint className="w-4 h-4 text-orange-500" /> Cài đặt Bảo mật
  </button>
  </div>
  </div>
@@ -257,7 +257,7 @@ export function WalletHub() {
  <h2 className="text-4xl font-black mt-1 tracking-tight italic">{formatCurrency(24500000000)}</h2>
  </div>
  <div className="text-right">
- <p className="text-[10px] font-bold text-blue-200/60 uppercase">Escrow Hold</p>
+ <p className="text-[10px] font-bold text-blue-200/60 uppercase">Tiền Ký quỹ</p>
  <p className="text-lg font-bold text-[#FAF9F5]">{formatCurrency(8500000000)}</p>
  </div>
  </div>
@@ -291,7 +291,7 @@ export function WalletHub() {
  </div>
  </div>
 
- {/* Cashflow Analytics */}
+ {/* Phân tích Dòng tiền */}
  <div className="lg:col-span-1 bg-white p-6 rounded-lg border border-stone-100 shadow-sm flex flex-col justify-between">
  <div>
  <div className="flex items-center justify-between mb-4">
@@ -572,7 +572,7 @@ export function WalletHub() {
  <span className="text-[10px] font-black uppercase tracking-widest text-orange-500">Security Standard v4.2</span>
  </div>
  <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">Escrow Smart Protocol</h3>
- <p className="text-sm text-stone-400 leading-relaxed">Tiền người mua được chuyển trực tiếp vào Vault của Sàn (Locked). Khi Logistics xác nhận "Giao hàng thành công", hệ thống tự động giải ngân cho Seller sau 7 ngày (Retention Period), đảm bảo an toàn 100%.</p>
+ <p className="text-sm text-stone-400 leading-relaxed">Tiền người mua được chuyển trực tiếp vào Vault của Sàn (Đã khóa). Khi Logistics xác nhận "Giao hàng thành công", hệ thống tự động giải ngân cho Người bán sau 7 ngày (Retention Period), đảm bảo an toàn 100%.</p>
  <div className="flex gap-4 pt-4">
  <div className="text-center">
  <p className="text-[10px] font-bold text-stone-500 uppercase">Retention Time</p>
@@ -607,11 +607,11 @@ export function WalletHub() {
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-stone-50">
- <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Order Reference</th>
- <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Escrow Amount</th>
- <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Participants</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Mã đơn hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Số tiền Ký quỹ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Các bên tham gia</th>
  <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest">Status</th>
- <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">Release Date</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">Ngày giải ngân</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-stone-50">
@@ -622,7 +622,7 @@ export function WalletHub() {
  <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-[10px] font-bold text-stone-400 uppercase">Seller: {escrow.sellerId}</span>
- <span className="text-[10px] font-bold text-stone-400 uppercase">Buyer: {escrow.buyerId}</span>
+ <span className="text-[10px] font-bold text-stone-400 uppercase">Người mua: {escrow.buyerId}</span>
  </div>
  </td>
  <td className="px-6 py-4">
@@ -633,7 +633,7 @@ export function WalletHub() {
  </div>
  ) : (
  <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold uppercase">
- <Unlock className="w-3 h-3" /> Released
+ <Unlock className="w-3 h-3" /> Đã giải ngân
  </div>
  )}
  </div>
@@ -711,7 +711,7 @@ export function WalletHub() {
 
  <div className="mt-4 flex justify-between items-end">
  <div>
- <p className="text-[10px] font-bold text-stone-400 uppercase">Phí giao dịch (Transaction Fee)</p>
+ <p className="text-[10px] font-bold text-stone-400 uppercase">Phí giao dịch (Phí giao dịch)</p>
  <p className="text-xl font-black text-stone-900">{gw.transactionFee}%</p>
  </div>
  <div className={cn(

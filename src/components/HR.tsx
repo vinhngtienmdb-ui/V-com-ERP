@@ -743,7 +743,7 @@ export function HumanResources() {
  {[
  { name: 'Chuẩn bị workspace', progress: 100, status: 'Done' },
  { name: 'Training văn hóa sàn', progress: 45, status: 'In progress' },
- { name: 'Cấp quyền hệ thống ERP', progress: 10, status: 'Pending' }
+ { name: 'Cấp quyền hệ thống ERP', progress: 10, status: 'Chờ xử lý' }
  ].map((m, i) => (
  <div key={i} className="space-y-3">
  <div className="flex justify-between items-center text-sm">

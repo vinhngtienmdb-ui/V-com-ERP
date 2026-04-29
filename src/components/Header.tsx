@@ -29,10 +29,10 @@ export function Header() {
  <header className="h-20 px-4 md:px-10 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-stone-200/50">
  <div className="header-title">
  <h1 className="font-serif tracking-tight text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
- {language === 'vi' ? 'Chào buổi sáng' : 'Good morning'}, {staffInfo?.name || (language === 'vi' ? 'System Admin' : 'Admin')}
+ {'Chào buổi sáng'}, {staffInfo?.name || ('Quản trị hệ thống')}
  </h1>
  <p className="text-[11px] md:text-xs text-stone-500 font-medium mt-1">
- {language === 'vi' ? `Hệ thống vận hành ổn định. Có ${unreadCount} thông báo mới.` : `System running smoothly. You have ${unreadCount} new notifications.`}
+ {`Hệ thống vận hành ổn định. Có ${unreadCount} thông báo mới.`}
  </p>
  </div>
 
@@ -62,16 +62,16 @@ export function Header() {
  <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-sm border border-stone-100 overflow-hidden animate-in fade-in slide-in- duration-300 z-50">
  <div className="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
  <div className="flex items-center gap-2">
- <h3 className="font-bold text-stone-900">{language === 'vi' ? 'Thông báo' : 'Notifications'}</h3>
+ <h3 className="font-bold text-stone-900">{'Thông báo'}</h3>
  {unreadCount > 0 && (
- <span className="bg-[#EAE7DF] text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadCount} {language === 'vi' ? 'mới' : 'new'}</span>
+ <span className="bg-[#EAE7DF] text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadCount} {'mới'}</span>
  )}
  </div>
  <div className="flex items-center gap-2">
- <button onClick={markAllAsRead} className="text-stone-400 hover:text-orange-700 transition-colors" title={language === 'vi' ? 'Đánh dấu tất cả đã đọc' : 'Mark all as read'}>
+ <button onClick={markAllAsRead} className="text-stone-400 hover:text-orange-700 transition-colors" title={'Đánh dấu tất cả đã đọc'}>
  <CheckCheck className="w-4 h-4" />
  </button>
- <button onClick={clearAll} className="text-stone-400 hover:text-red-600 transition-colors" title={language === 'vi' ? 'Xóa tất cả' : 'Clear all'}>
+ <button onClick={clearAll} className="text-stone-400 hover:text-red-600 transition-colors" title={'Xóa tất cả'}>
  <Trash2 className="w-4 h-4" />
  </button>
  </div>
@@ -81,7 +81,7 @@ export function Header() {
  {notifications.length === 0 ? (
  <div className="p-8 text-center text-stone-400">
  <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
- <p className="text-sm">{language === 'vi' ? 'Không có thông báo nào' : 'No notifications'}</p>
+ <p className="text-sm">{'Không có thông báo nào'}</p>
  </div>
  ) : (
  <div className="divide-y divide-stone-50">
@@ -96,7 +96,7 @@ export function Header() {
  <h4 className={`text-sm tracking-tight ${notif.isRead ? 'font-medium text-stone-700' : 'font-bold text-stone-900'}`}>{notif.title}</h4>
  <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{notif.message}</p>
  <span className="text-[10px] text-stone-400 mt-2 block w-full">
- {formatDistanceToNow(new Date(notif.timestamp), { addSuffix: true, locale: language === 'vi' ? vi : enUS })}
+ {formatDistanceToNow(new Date(notif.timestamp), { addSuffix: true, locale: vi })}
  </span>
  </div>
  </div>

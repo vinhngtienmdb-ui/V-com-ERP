@@ -44,6 +44,21 @@ import {
  Volume2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+// @ts-ignore
+import { Responsive as ResponsiveGridLayoutNative, useContainerWidth } from "react-grid-layout";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+
+function ResponsiveGridLayout({ children, ...props }: any) {
+  const { width, containerRef } = useContainerWidth();
+  return (
+    <div ref={containerRef} className="w-full">
+      <ResponsiveGridLayoutNative width={width || 1200} {...props}>
+        {children}
+      </ResponsiveGridLayoutNative>
+    </div>
+  );
+}
 import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, limit } from 'firebase/firestore';
@@ -157,6 +172,44 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
  </button>
 );
 
+
+
+const defaultPerformanceLayout = {
+  lg: [
+    { i: 'sla', x: 0, y: 0, w: 6, h: 4, minW: 3, minH: 3 },
+    { i: 'hourlyOrders', x: 6, y: 0, w: 6, h: 4, minW: 3, minH: 3 }
+  ]
+};
+
+const defaultFinanceLayout = {
+  lg: [
+    { i: 'financeStats', x: 0, y: 0, w: 12, h: 1, minW: 12, minH: 1, static: true },
+    { i: 'revenueExpense', x: 0, y: 1, w: 6, h: 4, minW: 3, minH: 3 },
+    { i: 'cashFlow', x: 6, y: 1, w: 6, h: 4, minW: 3, minH: 3 }
+  ]
+};
+
+const defaultOverviewLayout = {
+  lg: [
+    { i: 'mainChart', x: 0, y: 0, w: 8, h: 4, minW: 4, minH: 3 },
+    { i: 'topSellers', x: 8, y: 0, w: 4, h: 7, minW: 3, minH: 3 },
+    { i: 'community', x: 0, y: 4, w: 4, h: 3, minW: 3, minH: 2 },
+    { i: 'categorySplit', x: 4, y: 4, w: 4, h: 3, minW: 3, minH: 3 }
+  ],
+  md: [
+    { i: 'mainChart', x: 0, y: 0, w: 10, h: 4 },
+    { i: 'topSellers', x: 0, y: 4, w: 5, h: 6 },
+    { i: 'community', x: 5, y: 4, w: 5, h: 3 },
+    { i: 'categorySplit', x: 5, y: 7, w: 5, h: 3 }
+  ],
+  sm: [
+    { i: 'mainChart', x: 0, y: 0, w: 6, h: 4 },
+    { i: 'topSellers', x: 0, y: 4, w: 6, h: 5 },
+    { i: 'community', x: 0, y: 9, w: 6, h: 3 },
+    { i: 'categorySplit', x: 0, y: 12, w: 6, h: 3 }
+  ]
+};
+
 export function Dashboard() {
  const navigate = useNavigate();
  const [activeTab, setActiveTab] = useState<'overview'|'performance'|'finance'>('overview');
@@ -231,7 +284,7 @@ export function Dashboard() {
  return (
  <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
  {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-white rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-stone-900/5 group">
+ <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-stone-900/5 group">
  {/* Decorative background glass circles */}
  <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
  <div className="absolute top-20 right-40 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl" />
@@ -248,19 +301,19 @@ export function Dashboard() {
  </div>
  <div>
  <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Intelligent Hub</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Trung tâm Trí tuệ</span>
  <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" />
  </div>
- <h2 className="text-3xl font-black tracking-tight leading-none">VComm Command Center</h2>
+ <h2 className="text-3xl font-black tracking-tight leading-none">Trung tâm Điều hành VComm</h2>
  <p className="text-blue-100/60 text-xs font-medium mt-2 max-w-md">Kiến trúc AI-First giúp tối ưu hóa 35% hiệu suất vận hành chuỗi cung ứng.</p>
  </div>
  </div>
  
  <div className="flex flex-wrap gap-2 pt-2">
  {[
- { icon: Zap, label: 'Predictive: ON', color: 'text-amber-300' },
- { icon: Store, label: 'Warehouse: OPT', color: 'text-emerald-400' },
- { icon: Bot, label: 'Omni Agent: LIVE', color: 'text-cyan-300' }
+ { icon: Zap, label: 'Dự đoán: BẬT', color: 'text-amber-300' },
+ { icon: Store, label: 'Kho vận: TỐT', color: 'text-emerald-400' },
+ { icon: Bot, label: 'Omni Agent: HOẠT ĐỘNG', color: 'text-cyan-300' }
  ].map((chip) => (
  <div key={chip.label} className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors">
  <chip.icon className={cn("w-3 h-3", chip.color)} />
@@ -275,8 +328,8 @@ export function Dashboard() {
  <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-lg border border-white/20 backdrop-blur-2xl shadow-sm w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-stone-900/5 flex flex-col justify-center">
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center gap-2">
- <div className="p-1 px-2 bg-stone-800/20 rounded border border-stone-900/30">
- <span className="text-[9px] font-black uppercase tracking-widest text-blue-300">AI Priority Insights</span>
+ <div className="p-1 px-2 bg-white/10 rounded border border-white/20">
+ <span className="text-[9px] font-black uppercase tracking-widest text-blue-300">AI Đề xuất Ưu tiên</span>
  </div>
  </div>
  <div className="relative flex h-2 w-2">
@@ -286,11 +339,11 @@ export function Dashboard() {
  </div>
  
  <p className="text-xs font-semibold leading-relaxed mb-5 text-stone-100 italic">
- "SKU-992 demand increase +45% next week. Suggest stock transfer from Warehouse A to B today."
+ "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
  </p>
  
- <button className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 active:bg-stone-800 text-[#FAF9F5] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-stone-900/5 border border-blue-400/30 hover:scale-[1.02] active:scale-95">
- Execute AI Proposal
+ <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
+ Thực thi Đề xuất AI
  </button>
  </div>
  </div>
@@ -299,7 +352,7 @@ export function Dashboard() {
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
  <div>
  <div className="flex items-center gap-3 mb-2">
- <span className="px-3 py-1 bg-[#F2F0E9] text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60 shadow-sm">Live Dashboard</span>
+ <span className="px-3 py-1 bg-[#F2F0E9] text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60 shadow-sm">Bảng điều khiển Trực tiếp</span>
  <span className="text-[11px] text-stone-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
  <span className="relative flex h-2 w-2">
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -334,15 +387,15 @@ export function Dashboard() {
  <div className="flex flex-wrap items-center gap-3">
  <button onClick={() => navigate('/pim')} className="bg-white border border-stone-200 px-4 py-2.5 rounded-xl text-sm font-bold text-stone-700 hover:bg-[#F2F0E9] hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
  <Package className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform" />
- PIM System
+ Hệ thống PIM
  </button>
  <button onClick={() => navigate('/orders')} className="bg-white border border-stone-200 px-4 py-2.5 rounded-xl text-sm font-bold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
  <ListOrdered className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
- Order Center
+ Quản lý Đơn hàng
  </button>
  <button onClick={() => navigate('/sellers')} className="bg-white border border-stone-200 px-4 py-2.5 rounded-xl text-sm font-bold text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-all flex items-center gap-2 shadow-sm group">
  <Users className="w-4 h-4 text-stone-700 group-hover:scale-110 transition-transform" />
- Seller Hub
+ Trung tâm Đối tác
  </button>
  </div>
  )}
@@ -404,7 +457,7 @@ export function Dashboard() {
  {[
  { id: 'showStats', label: 'Chỉ số Kinh doanh (Thẻ Stats)', icon: DollarSign },
  { id: 'showMainChart', label: 'Biểu đồ chính (Tăng trưởng)', icon: LineChartIcon },
- { id: 'showTopSellers', label: 'Bảng xếp hạng (Top Sellers)', icon: Store },
+ { id: 'showTopSellers', label: 'Bảng xếp hạng (Top Nhà bán hàng)', icon: Store },
  { id: 'showQuickNav', label: 'Lối tắt chức năng', icon: ArrowUpRight },
  { id: 'showCategorySplit', label: 'Biểu đồ Tỷ trọng Ngành hàng', icon: PieChartIcon },
  { id: 'showCommunity', label: 'Thông tin Cộng đồng', icon: Users },
@@ -449,295 +502,316 @@ export function Dashboard() {
  </div>
  )}
 
- <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
- <div className="xl:col-span-8 space-y-6">
- {config.showMainChart && (
- <div className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col">
- <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
- <div>
- <h3 className="font-bold text-stone-900 tracking-tight text-lg">Biểu đồ Tăng trưởng & Xu hướng</h3>
- </div>
- <div className="flex gap-6">
- <div className="flex items-center gap-2">
- <div className="w-2.5 h-2.5 bg-stone-900 rounded-sm"></div>
- <span className="text-xs font-bold text-stone-600 uppercase">GMV (Tỷ)</span>
- </div>
- <div className="flex items-center gap-2">
- <div className="w-2.5 h-2.5 bg-stone-200 rounded-sm"></div>
- <span className="text-xs font-bold text-stone-600 uppercase">Traffic</span>
- </div>
- </div>
- </div>
- <div className="p-6 h-[400px]">
- <ResponsiveContainer width="100%" height="100%">
- <AreaChart data={data}>
- <defs>
- <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
- <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
- <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
- </linearGradient>
- </defs>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
- <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} dy={12}/>
- <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value}T`}/>
- <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value / 1000}k`}/>
- <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}/>
- <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
- {/* @ts-ignore */}
- <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
- </AreaChart>
- </ResponsiveContainer>
- </div>
- </div>
- )}
+  <ResponsiveGridLayout
+  className="layout w-full -mx-4 md:mx-0"
+  layouts={defaultOverviewLayout}
+  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+  rowHeight={100}
+  draggableHandle=".drag-handle"
+  margin={[24, 24]}
+ >
+  {config.showMainChart && (
+  <div key="mainChart" className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50 hover:bg-stone-100 transition-colors">
+  <div>
+  <h3 className="font-bold text-indigo-900 tracking-tight text-lg pointer-events-none">Biểu đồ Tăng trưởng & Xu hướng</h3>
+  </div>
+  <div className="flex gap-6 pointer-events-none">
+  <div className="flex items-center gap-2">
+  <div className="w-2.5 h-2.5 bg-stone-900 rounded-sm"></div>
+  <span className="text-xs font-bold text-stone-600 uppercase">GMV (Tỷ)</span>
+  </div>
+  <div className="flex items-center gap-2">
+  <div className="w-2.5 h-2.5 bg-stone-200 rounded-sm"></div>
+  <span className="text-xs font-bold text-stone-600 uppercase">Traffic</span>
+  </div>
+  </div>
+  </div>
+  <div className="p-6 flex-1 h-full min-h-0">
+  <ResponsiveContainer width="100%" height="100%">
+  <AreaChart data={data}>
+  <defs>
+  <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
+  <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
+  </linearGradient>
+  </defs>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} dy={12}/>
+  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value}T`} />
+  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value / 1000}k`} />
+  <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}/>
+  <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
+  {/* @ts-ignore */}
+  <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
+  </AreaChart>
+  </ResponsiveContainer>
+  </div>
+  </div>
+  )}
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- {config.showCommunity && (
- <div className="bg-white to-[#0B1120] rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-stone-900/10 border border-stone-800 flex flex-col justify-between">
- <div className="relative z-10">
- <div className="flex items-center gap-4 mb-6">
- <div className="p-3 bg-white rounded-lg shadow-sm shadow-stone-900/5 shadow-inner border border-blue-400/50">
- <Users className="w-6 h-6 text-[#FAF9F5]" />
- </div>
- <div>
- <h3 className="text-lg font-bold tracking-tight">Cộng đồng Seller</h3>
- </div>
- </div>
- <p className="text-stone-400 text-xs leading-relaxed max-w-sm">Hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.</p>
- </div>
- <div className="mt-6">
- <button className="px-5 py-2 bg-white text-stone-900 font-bold rounded-lg text-xs hover:bg-[#F2F0E9] transition-all shadow-sm">Duyệt Seller mới</button>
- </div>
- <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F5] opacity-[0.02]" />
- </div>
- )}
+  {config.showCommunity && (
+  <div key="community" className="bg-gradient-to-br from-stone-900 to-[#0B1120] rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-stone-900/10 border border-stone-800 flex flex-col justify-between h-full w-full">
+  <div className="drag-handle cursor-move px-8 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
+  <div className="flex items-center gap-4 mb-6 pointer-events-none">
+  <div className="p-3 bg-stone-800 rounded-lg shadow-sm shadow-stone-900/5 shadow-inner border border-stone-700">
+  <Users className="w-6 h-6 text-[#FAF9F5]" />
+  </div>
+  <div>
+  <h3 className="text-lg font-bold tracking-tight">Cộng đồng Seller</h3>
+  </div>
+  </div>
+  <p className="text-stone-400 text-xs leading-relaxed max-w-sm pointer-events-none mb-6">Hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.</p>
+  <div className="relative z-10 w-full mt-auto">
+  <button className="px-5 w-fit py-2 pointer-events-auto bg-white text-stone-900 font-bold rounded-lg text-xs hover:bg-[#F2F0E9] transition-all shadow-sm">Duyệt Seller mới</button>
+  </div>
+  </div>
+  <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F5] opacity-[0.02] pointer-events-none" />
+  </div>
+  )}
 
- {config.showCategorySplit && (
- <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden flex flex-col">
- <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
- <h3 className="font-bold text-stone-900 text-sm">Tỷ trọng Ngành</h3>
- </div>
- <div className="p-4 flex-1 h-[220px]">
- <ResponsiveContainer width="100%" height="100%">
- <PieChart>
- <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value">
- {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
- </Pie>
- <Tooltip />
- <Legend verticalAlign="bottom" height={24} iconType="circle" wrapperStyle={{ fontSize: '11px' }}/>
- </PieChart>
- </ResponsiveContainer>
- </div>
- </div>
- )}
- </div>
- </div>
+  {config.showCategorySplit && (
+  <div key="categorySplit" className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden flex flex-col h-full w-full">
+  <div className="drag-handle cursor-move hover:bg-stone-50 transition-colors px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+  <h3 className="font-bold text-indigo-900 text-sm pointer-events-none">Tỷ trọng Ngành</h3>
+  </div>
+  <div className="p-4 flex-1 h-full min-h-0">
+  <ResponsiveContainer width="100%" height="100%">
+  <PieChart>
+  <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value">
+  {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+  </Pie>
+  <Tooltip />
+  <Legend verticalAlign="bottom" height={24} iconType="circle" wrapperStyle={{ fontSize: '11px' }}/>
+  </PieChart>
+  </ResponsiveContainer>
+  </div>
+  </div>
+  )}
 
- <div className="xl:col-span-4 space-y-6">
- {config.showTopSellers && (
- <div className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow">
- <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/50 rounded-t-xl">
- <h3 className="font-bold text-stone-900 text-sm tracking-tight">Top Sellers</h3>
- <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors">Xem tất cả</button>
- </div>
- <div className="divide-y divide-stone-100">
- {sellerData.map((seller, index) => (
- <div key={seller.name} className="flex items-center justify-between p-4 hover:bg-stone-50 transition-colors group cursor-pointer">
- <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-500 font-bold text-xs flex items-center justify-center border border-stone-200/60 group-hover:bg-[#F2F0E9] group-hover:text-orange-800 transition-all">
- {index + 1}
- </div>
- <div>
- <p className="text-xs font-bold text-stone-900">{seller.name}</p>
- <div className="flex items-center gap-1.5 mt-0.5">
- <span className="text-[10px] text-amber-500 font-bold">★ {seller.rating}</span>
- </div>
- </div>
- </div>
- <div className="text-right">
- <p className="text-xs font-bold text-stone-900">{seller.gmv}</p>
- <p className="text-[10px] text-emerald-600 font-bold mt-0.5">+12%</p>
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
- </div>
- </div>
- </div>
- )}
-
+  {config.showTopSellers && (
+  <div key="topSellers" className="bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div className="drag-handle cursor-move hover:bg-stone-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/90 backdrop-blur-sm rounded-t-xl">
+  <h3 className="font-bold text-indigo-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
+  <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
+  </div>
+  <div className="divide-y divide-stone-100 overflow-y-auto flex-1 custom-scrollbar">
+  {sellerData.map((seller, index) => (
+  <div key={seller.name} className="flex items-center justify-between p-4 hover:bg-stone-50 transition-colors group cursor-pointer pointer-events-auto">
+  <div className="flex items-center gap-3">
+  <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-500 font-bold text-xs flex items-center justify-center border border-stone-200/60 group-hover:bg-[#F2F0E9] group-hover:text-orange-800 transition-all">
+  {index + 1}
+  </div>
+  <div>
+  <p className="text-xs font-bold text-stone-900">{seller.name}</p>
+  <div className="flex items-center gap-1.5 mt-0.5">
+  <span className="text-[10px] text-amber-500 font-bold">★ {seller.rating}</span>
+  </div>
+  </div>
+  </div>
+  <div className="text-right">
+  <p className="text-xs font-bold text-stone-900">{seller.gmv}</p>
+  <p className="text-[10px] text-emerald-600 font-bold mt-0.5">+12%</p>
+  </div>
+  </div>
+  ))}
+  </div>
+  </div>
+  )}
+ </ResponsiveGridLayout>
+  </div>
+  )}
  {activeTab === 'performance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500">
- <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
- {config.showSLA && (
- <div className="bg-stone-900 text-[#FAF9F5] p-6 rounded-xl shadow-sm relative overflow-hidden group">
- <div className="absolute -top-24 -right-24 w-64 h-64 bg-stone-800/20 blur-3xl rounded-full pointer-events-none"></div>
- <div className="flex items-center justify-between mb-8 relative z-10">
- <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2">
- <Activity className="w-5 h-5 text-orange-500" />
- Báo cáo Vận hành
- </h3>
- <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1.5">
- <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
- Live
- </div>
- </div>
  
- <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
- <div className="bg-white/5 border border-white/10 rounded-lg p-4">
- <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Giao đúng hạn</div>
- <div className="text-2xl font-bold flex items-baseline gap-1">
- 98.5<span className="text-sm font-normal text-stone-400">%</span>
- </div>
- <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
- </div>
- <div className="bg-white/5 border border-white/10 rounded-lg p-4">
- <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Lỗi / Sự cố</div>
- <div className="text-2xl font-bold flex items-baseline gap-1">
- 1.2<span className="text-sm font-normal text-stone-400">%</span>
- </div>
- <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
- </div>
- <div className="bg-white/5 border border-white/10 rounded-lg p-4 col-span-2 flex justify-between items-center">
- <div>
- <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Xử lý Đơn (TB)</div>
- <div className="text-2xl font-bold flex items-baseline gap-1">
- 2.4<span className="text-sm font-normal text-stone-400">giờ</span>
- </div>
- <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
- </div>
- <div className="w-24 h-12 opacity-80">
- <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
- <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
- </svg>
- </div>
- </div>
- </div>
+ <ResponsiveGridLayout
+  className="layout w-full -mx-4 md:mx-0"
+  layouts={defaultPerformanceLayout}
+  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+  rowHeight={100}
+  draggableHandle=".drag-handle"
+  margin={[24, 24]}
+ >
+  {config.showSLA && (
+  <div key="sla" className="bg-stone-900 text-[#FAF9F5] rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
+  <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
+  <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2 pointer-events-none">
+  <Activity className="w-5 h-5 text-orange-500" />
+  Báo cáo Vận hành
+  </h3>
+  <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
+  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+  Live
+  </div>
+  </div>
+  
+  <div className="px-6 flex-1 flex flex-col justify-end relative z-10 pb-6 pointer-events-none">
+  <div className="grid grid-cols-2 gap-4 mb-8">
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Giao đúng hạn</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  98.5<span className="text-sm font-normal text-stone-400">%</span>
+  </div>
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
+  </div>
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Lỗi / Sự cố</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  1.2<span className="text-sm font-normal text-stone-400">%</span>
+  </div>
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
+  </div>
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4 col-span-2 flex justify-between items-center">
+  <div>
+  <div className="text-[10px] text-stone-400 uppercase tracking-widest mb-1 font-bold">Xử lý Đơn (TB)</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  2.4<span className="text-sm font-normal text-stone-400">giờ</span>
+  </div>
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
+  </div>
+  <div className="w-24 h-12 opacity-80">
+  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
+  <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+  </div>
+  </div>
+  </div>
+  
+  <div className="space-y-5">
+  {[
+  { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-400', unit: '%' },
+  { label: 'Tỉ lệ Duyệt Tự động', value: 82.5, color: 'bg-emerald-400', unit: '%' },
+  { label: 'Tỷ lệ Hủy/Hoàn trả', value: 2.4, color: 'bg-rose-400', unit: '%' },
+  ].map((item) => (
+  <div key={item.label} className="group">
+  <div className="flex justify-between items-end mb-2">
+  <span className="text-xs font-bold text-stone-300">{item.label}</span>
+  <span className="text-sm font-black text-[#FAF9F5]">{item.value}{item.unit}</span>
+  </div>
+  <div className="h-1.5 w-full bg-stone-800 rounded-full overflow-hidden">
+  <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
+  </div>
+  </div>
+  ))}
+  </div>
+  </div>
+  <div className="absolute -top-24 -right-24 w-64 h-64 bg-stone-800/20 blur-3xl rounded-full pointer-events-none"></div>
+  </div>
+  )}
 
- <div className="space-y-5 relative z-10">
- {[
- { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-400', unit: '%' },
- { label: 'Tỉ lệ Duyệt Tự động', value: 82.5, color: 'bg-emerald-400', unit: '%' },
- { label: 'Tỷ lệ Hủy/Hoàn trả', value: 2.4, color: 'bg-rose-400', unit: '%' },
- ].map((item) => (
- <div key={item.label} className="group">
- <div className="flex justify-between items-end mb-2">
- <span className="text-xs font-bold text-stone-300">{item.label}</span>
- <span className="text-sm font-black text-[#FAF9F5]">{item.value}{item.unit}</span>
- </div>
- <div className="h-1.5 w-full bg-stone-800 rounded-full overflow-hidden">
- <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
-
- {config.showHourlyOrders && (
- <div className="bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col">
- <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between">
- <h3 className="font-bold text-stone-900 text-lg">Đơn hàng theo Giờ</h3>
- </div>
- <div className="p-6 flex-1 min-h-[300px]">
- <ResponsiveContainer width="100%" height="100%">
- <LineChart data={hourlyData}>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
- <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} dy={8} />
- <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} />
- <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }} />
- <Line type="monotone" dataKey="orders" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
- </LineChart>
- </ResponsiveContainer>
- </div>
- </div>
- )}
- </div>
- </div>
- )}
+  {config.showHourlyOrders && (
+  <div key="hourlyOrders" className="bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col overflow-hidden h-full w-full">
+  <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between hover:bg-stone-50 transition-colors">
+  <h3 className="font-bold text-stone-900 text-lg pointer-events-none">Đơn hàng theo Giờ</h3>
+  </div>
+  <div className="p-6 flex-1 min-h-0 h-full">
+  <ResponsiveContainer width="100%" height="100%">
+  <LineChart data={hourlyData}>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+  <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} dy={8} />
+  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} />
+  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }} />
+  <Line type="monotone" dataKey="orders" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+  </LineChart>
+  </ResponsiveContainer>
+  </div>
+  </div>
+  )}
+ </ResponsiveGridLayout>
+  </div>
+  )}
 
  {activeTab === 'finance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500">
- {config.showFinanceStats && (
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <StatCard title="Tổng Doanh thu" value="1,250,000,000" change="12.5" icon={Banknote} trend="up" />
- <StatCard title="Tổng Chi phí" value="980,000,000" change="-5.2" icon={Wallet} trend="down" />
- <StatCard title="Lợi nhuận gộp" value="270,000,000" change="8.4" icon={LineChartIcon} trend="up" />
- </div>
- )}
+ 
+ <ResponsiveGridLayout
+  className="layout w-full -mx-4 md:mx-0"
+  layouts={defaultFinanceLayout}
+  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+  rowHeight={100}
+  draggableHandle=".drag-handle"
+  margin={[24, 24]}
+ >
+  {config.showFinanceStats && (
+  <div key="financeStats" className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full w-full drag-handle cursor-move">
+  <StatCard title="Tổng Doanh thu" value="1,250,000,000" change="12.5" icon={Banknote} trend="up" />
+  <StatCard title="Tổng Chi phí" value="980,000,000" change="-5.2" icon={Wallet} trend="down" />
+  <StatCard title="Lợi nhuận gộp" value="270,000,000" change="8.4" icon={LineChartIcon} trend="up" />
+  </div>
+  )}
 
- <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
- {config.showRevenueExpense && (
- <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col h-full">
- <div className="flex items-center justify-between mb-6">
- <h3 className="font-bold text-stone-900 text-lg flex items-center gap-2">
- <LineChartIcon className="w-5 h-5 text-orange-700" />
- Biểu đồ Thu Chi (Tháng)
- </h3>
- </div>
- <div className="flex-1 min-h-[300px]">
- <ResponsiveContainer width="100%" height="100%">
- <BarChart data={financeData}>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
- <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
- <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
- <Tooltip 
- cursor={{ fill: '#F3F4F6' }}
- contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
- formatter={(value: number) => [`${value} triệu VNĐ`, '']}
- />
- <Legend wrapperStyle={{ paddingTop: '20px' }} />
- <Bar dataKey="revenue" name="Doanh thu" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={40} />
- <Bar dataKey="expense" name="Chi phí" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
- </BarChart>
- </ResponsiveContainer>
- </div>
- </div>
- )}
+  {config.showRevenueExpense && (
+  <div key="revenueExpense" className="bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between hover:bg-stone-50 transition-colors">
+  <h3 className="font-bold text-indigo-900 text-lg flex items-center gap-2 pointer-events-none">
+  <LineChartIcon className="w-5 h-5 text-orange-700" />
+  Biểu đồ Thu Chi (Tháng)
+  </h3>
+  </div>
+  <div className="p-6 flex-1 min-h-0 h-full">
+  <ResponsiveContainer width="100%" height="100%">
+  <BarChart data={financeData}>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+  <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
+  <Tooltip 
+  cursor={{ fill: '#F3F4F6' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+  formatter={(value) => [`${value} triệu VNĐ`, '']}
+  />
+  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+  <Bar dataKey="revenue" name="Doanh thu" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+  <Bar dataKey="expense" name="Chi phí" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+  </BarChart>
+  </ResponsiveContainer>
+  </div>
+  </div>
+  )}
 
- {config.showCashFlow && (
- <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col h-full">
- <div className="flex items-center justify-between mb-6">
- <h3 className="font-bold text-stone-900 text-lg flex items-center gap-2">
- <Wallet className="w-5 h-5 text-emerald-600" />
- Dòng tiền (Tuần)
- </h3>
- </div>
- <div className="flex-1 min-h-[300px]">
- <ResponsiveContainer width="100%" height="100%">
- <AreaChart data={cashFlowData}>
- <defs>
- <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
- <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
- <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
- </linearGradient>
- <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
- <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3}/>
- <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
- </linearGradient>
- </defs>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
- <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
- <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
- <Tooltip 
- cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
- contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
- formatter={(value: number) => [`${value} triệu VNĐ`, '']}
- />
- <Legend wrapperStyle={{ paddingTop: '20px' }} />
- <Area type="monotone" dataKey="in" name="Tiền vào" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorIn)" />
- <Area type="monotone" dataKey="out" name="Tiền ra" stroke="#F59E0B" strokeWidth={3} fillOpacity={1} fill="url(#colorOut)" />
- </AreaChart>
- </ResponsiveContainer>
- </div>
- </div>
- )}
- </div>
- </div>
- )}
- </div>
- </div>
- );
+  {config.showCashFlow && (
+  <div key="cashFlow" className="bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div className="drag-handle cursor-move px-6 py-5 border-b border-stone-100 flex items-center justify-between hover:bg-stone-50 transition-colors">
+  <h3 className="font-bold text-stone-900 text-lg flex items-center gap-2 pointer-events-none">
+  <Wallet className="w-5 h-5 text-emerald-600" />
+  Dòng tiền (Tuần)
+  </h3>
+  </div>
+  <div className="p-6 flex-1 min-h-0 h-full">
+  <ResponsiveContainer width="100%" height="100%">
+  <AreaChart data={cashFlowData}>
+  <defs>
+  <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+  <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+  </linearGradient>
+  <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3}/>
+  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
+  </linearGradient>
+  </defs>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+  <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
+  <Tooltip 
+  cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+  formatter={(value) => [`${value} triệu VNĐ`, '']}
+  />
+  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+  <Area type="monotone" dataKey="in" name="Tiền vào" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorIn)" />
+  <Area type="monotone" dataKey="out" name="Tiền ra" stroke="#F59E0B" strokeWidth={3} fillOpacity={1} fill="url(#colorOut)" />
+  </AreaChart>
+  </ResponsiveContainer>
+  </div>
+  </div>
+  )}
+ </ResponsiveGridLayout>
+  </div>
+  )}
+  </div>
+</div>
+  );
 }

@@ -72,7 +72,7 @@ export function SocialCommerce() {
  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
  <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng bài viết (Post pool)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng bài viết (Kho bài viết)</span>
  <MessageSquare className="w-4 h-4 text-[#2563EB]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">12.5k</div>
@@ -84,11 +84,11 @@ export function SocialCommerce() {
  <Heart className="w-4 h-4 text-red-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">1.2M</div>
- <p className="text-[10px] text-[#6B7280] mt-1">Likes, Comments & Shares</p>
+ <p className="text-[10px] text-[#6B7280] mt-1">Thích, Bình luận & Chia sẻ</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Communities (Nhóm)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cộng đồng (Nhóm)</span>
  <Users className="w-4 h-4 text-[#8B5CF6]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">420</div>
@@ -140,7 +140,7 @@ export function SocialCommerce() {
  <h4 className="text-sm font-bold text-[#111827] flex items-center gap-2">
  {post.authorName}
  <span className="w-1 h-1 bg-stone-300 rounded-full" />
- <button className="text-[10px] text-[#2563EB] font-bold hover:underline italic">Follow</button>
+ <button className="text-[10px] text-[#2563EB] font-bold hover:underline italic">Theo dõi</button>
  </h4>
  <p className="text-[10px] text-[#6B7280]">{post.timestamp}</p>
  </div>
@@ -182,7 +182,7 @@ export function SocialCommerce() {
  <div className="space-y-6">
  <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
- <Flame className="w-5 h-5 text-orange-500" /> Trending Hashtags
+ <Flame className="w-5 h-5 text-orange-500" /> Hashtag thịnh hành
  </h3>
  <div className="space-y-4">
  {[

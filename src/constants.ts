@@ -37,7 +37,7 @@ export const navGroups = [
  title: 'Hệ thống chính',
  items: [
  { icon: Home, label: 'Trang chủ', path: '/', color: 'blue', description: 'Tổng quan và truy cập nhanh tất cả module' },
- { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', color: 'indigo', description: 'Báo cáo và thông số vận hành realtime' },
+ { icon: LayoutDashboard, label: 'Bảng điều khiển', path: '/dashboard', color: 'indigo', description: 'Báo cáo và thông số vận hành realtime' },
  ]
  },
  {
@@ -91,13 +91,13 @@ export const navGroups = [
  { icon: Calculator, label: 'Tài chính - Kế toán', path: '/finance', color: 'emerald', description: 'Báo cáo tài chính và hạch toán kế toán' },
  { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát và quản lý công nợ' },
  { icon: Smartphone, label: 'Ví & Thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch và cổng thanh toán' },
- { icon: Banknote, label: 'Hỗ trợ Tài chính Seller', path: '/seller-finance', color: 'blue', description: 'Gói vay và hỗ trợ vốn cho nhà bán' },
+ { icon: Banknote, label: 'Hỗ trợ Tài chính Nhà bán', path: '/seller-finance', color: 'blue', description: 'Gói vay và hỗ trợ vốn cho nhà bán' },
  ]
  },
  {
  title: 'Đối tác & Khách hàng',
  items: [
- { icon: Store, label: 'Nhà bán hàng (Seller)', path: '/sellers', color: 'cyan', description: 'Hệ thống quản lý đối tác nhà bán hàng' },
+ { icon: Store, label: 'Nhà bán hàng', path: '/sellers', color: 'cyan', description: 'Hệ thống quản lý đối tác nhà bán hàng' },
  { icon: Users, label: 'Khách hàng (CRM)', path: '/customers', color: 'indigo', description: 'Quản lý quan hệ khách hàng đa kênh' },
  { icon: Headphones, label: 'Chăm sóc Khách hàng', path: '/cskh', color: 'blue', description: 'Tổng đài và hỗ trợ sau bán hàng' },
  { icon: UserPlus2, label: 'Đội ngũ Kinh doanh', path: '/sales', color: 'teal', description: 'Quản lý sales và chỉ tiêu doanh số' },

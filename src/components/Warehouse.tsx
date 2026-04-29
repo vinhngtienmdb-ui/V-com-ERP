@@ -87,7 +87,7 @@ const LOGISTICS_FEES: Record<string, any[]> = {
 const MOCK_SHIPMENTS = [
  { id: 'SHIP-001', orderId: 'ORD-5521', partner: 'GHN', status: 'In Transit', driver: 'Nguyễn Văn Nam', eta: '15:30 Today' },
  { id: 'SHIP-002', orderId: 'ORD-5525', partner: 'Viettel Post', status: 'Delivered', driver: 'Trần Văn Tú', eta: 'Success' },
- { id: 'SHIP-003', orderId: 'ORD-5528', partner: 'Ninja Van', status: 'Pending', driver: 'Chưa điều phối', eta: 'Tomorrow' },
+ { id: 'SHIP-003', orderId: 'ORD-5528', partner: 'Ninja Van', status: 'Chờ xử lý', driver: 'Chưa điều phối', eta: 'Ngày mai' },
 ];
 
 function getColorClasses(color: string) {

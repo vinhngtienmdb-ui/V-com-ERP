@@ -190,7 +190,7 @@ export function AffiliateManagement() {
  </p>
  </div>
  ) : (
- <span className="text-xs text-stone-400 italic">Network / Agent</span>
+ <span className="text-xs text-stone-400 italic">Mạng lưới / Đại lý</span>
  )}
  </td>
  <td className="px-6 py-4">
