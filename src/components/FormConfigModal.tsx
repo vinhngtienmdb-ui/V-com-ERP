@@ -163,9 +163,54 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'workflow' && (
-            <div className="text-center py-20 text-stone-400 font-medium">
-              <Settings className="w-12 h-12 mx-auto mb-4 text-stone-300" />
-              <p>Màn hình cấu hình luồng phê duyệt</p>
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-stone-100 max-w-2xl mx-auto space-y-6">
+              <div className="border-b border-stone-200 pb-4 mb-6">
+                <h3 className="text-xl font-bold text-stone-800">Cấu hình luồng phê duyệt</h3>
+                <p className="text-sm text-stone-500 mt-1">Thiết lập quy trình duyệt mặc định định và các quyền đi kèm.</p>
+              </div>
+
+              <div className="space-y-4">
+                <label className="flex items-start gap-4 p-4 border border-stone-200 rounded-xl cursor-pointer hover:bg-stone-50 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    checked={config.allowUrgent || false}
+                    onChange={(e) => setConfig({...config, allowUrgent: e.target.checked})}
+                    className="w-5 h-5 mt-0.5 text-emerald-600 focus:ring-emerald-500 border-stone-300 rounded"
+                  />
+                  <div>
+                    <h4 className="text-sm font-bold text-stone-800">Cấp quyền yêu cầu xử lý khẩn cấp</h4>
+                    <p className="text-xs text-stone-500 mt-1">Cho phép người tạo đề xuất đánh dấu "Khẩn cấp" để bỏ qua SLA mặc định và thông báo ưu tiên tới người duyệt.</p>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-4 p-4 border border-stone-200 rounded-xl cursor-pointer hover:bg-stone-50 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    checked={config.allowCustomReviewers || false}
+                    onChange={(e) => setConfig({...config, allowCustomReviewers: e.target.checked})}
+                    className="w-5 h-5 mt-0.5 text-emerald-600 focus:ring-emerald-500 border-stone-300 rounded"
+                  />
+                  <div>
+                    <h4 className="text-sm font-bold text-stone-800">Cấp quyền người dùng tự gán người xử lý</h4>
+                    <p className="text-xs text-stone-500 mt-1">Cho phép người tạo đề xuất ghi đè luồng duyệt mặc định và chỉ định cụ thể người duyệt cho từng bước riêng biệt.</p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-stone-200">
+                <h4 className="text-sm font-bold text-stone-800 mb-4">Luồng phê duyệt mặc định</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-2 py-1 rounded w-16 text-center">BƯỚC 1</span>
+                    <span className="text-sm font-semibold text-stone-700 flex-1">Quản lý trực tiếp</span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-2 py-1 rounded w-16 text-center">BƯỚC 2</span>
+                    <span className="text-sm font-semibold text-stone-700 flex-1">Ban Giám Đốc</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           )}
 

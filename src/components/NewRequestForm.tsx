@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { X, Send } from 'lucide-react';
+import { X, Send, AlertTriangle, UserPlus, Plus, Trash2 } from 'lucide-react';
 
 interface NewRequestFormProps {
   onSubmit?: (data: any) => void;
@@ -22,6 +22,30 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
   const [expenseContent, setExpenseContent] = useState('');
   const [amount, setAmount] = useState('');
 
+  // New features
+  const [isUrgent, setIsUrgent] = useState(false);
+  const [customReviewers, setCustomReviewers] = useState<{step: number, reviewer: string}[]>([
+    { step: 1, reviewer: 'Quản lý trực tiếp' }
+  ]);
+
+  const handleAddReviewer = () => {
+    setCustomReviewers([...customReviewers, { step: customReviewers.length + 1, reviewer: '' }]);
+  };
+
+  const handleRemoveReviewer = (index: number) => {
+    const newReviewers = [...customReviewers];
+    newReviewers.splice(index, 1);
+    // Reassign steps
+    newReviewers.forEach((r, idx) => r.step = idx + 1);
+    setCustomReviewers(newReviewers);
+  };
+
+  const handleReviewerChange = (index: number, value: string) => {
+    const newReviewers = [...customReviewers];
+    newReviewers[index].reviewer = value;
+    setCustomReviewers(newReviewers);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formData: any = {
@@ -29,6 +53,8 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
       content,
       requester,
       requestDate,
+      isUrgent,
+      customReviewers
     };
     
     if (requestType === 'Hanh chinh') {
@@ -48,7 +74,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
       <div className="px-6 py-4 border-b border-stone-100 flex justify-between items-center bg-stone-50">
         <h3 className="text-lg font-bold text-stone-800">Tạo đề xuất mới</h3>
         {onCancel && (
-          <button onClick={onCancel} className="p-2 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-200 transition-colors">
+          <button type="button" onClick={onCancel} className="p-2 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-200 transition-colors">
             <X className="w-5 h-5" />
           </button>
         )}
@@ -71,7 +97,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             <select 
               value={requestType}
               onChange={(e) => setRequestType(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
             >
               <option value="Hanh chinh">Hành chính</option>
               <option value="Tai chinh">Tài chính</option>
@@ -142,6 +168,76 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               </div>
             </>
           )}
+
+          {/* Workflow Enhancements */}
+          <div className="col-span-1 md:col-span-2 border-t border-stone-100 pt-6 mt-2">
+            <h4 className="text-sm font-bold text-stone-800 mb-4 flex items-center gap-2">
+              <UserPlus className="w-4 h-4 text-indigo-600" />
+              Tùy chỉnh luồng xử lý
+            </h4>
+            
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 p-3 bg-rose-50/50 border border-rose-100 rounded-lg cursor-pointer hover:bg-rose-50 transition-colors">
+                <input 
+                  type="checkbox"
+                  checked={isUrgent}
+                  onChange={(e) => setIsUrgent(e.target.checked)}
+                  className="w-4 h-4 text-rose-600 rounded border-stone-300 focus:ring-rose-500"
+                />
+                <div className="flex gap-2 items-center">
+                  <AlertTriangle className="w-4 h-4 text-rose-500" />
+                  <div>
+                    <p className="text-sm font-bold text-rose-900">Yêu cầu xử lý khẩn cấp</p>
+                    <p className="text-xs text-rose-600/80">Bỏ qua SLA rườm rà, thông báo ưu tiên trực tiếp tới người phê duyệt.</p>
+                  </div>
+                </div>
+              </label>
+
+              <div className="bg-stone-50 rounded-lg border border-stone-200 overflow-hidden">
+                <div className="px-4 py-3 border-b border-stone-200 bg-white flex justify-between items-center">
+                  <p className="text-sm font-bold text-stone-700">Gán người xử lý cụ thể</p>
+                  <button 
+                    type="button" 
+                    onClick={handleAddReviewer}
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" /> Thêm bước
+                  </button>
+                </div>
+                <div className="p-4 space-y-3">
+                  {customReviewers.map((reviewer, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-20 shrink-0 text-xs font-bold text-stone-500 uppercase tracking-widest">
+                        Bước {reviewer.step}
+                      </div>
+                      <select 
+                        value={reviewer.reviewer}
+                        onChange={(e) => handleReviewerChange(index, e.target.value)}
+                        className="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required
+                      >
+                        <option value="">-- Chọn người phê duyệt --</option>
+                        <option value="Quản lý trực tiếp">Quản lý trực tiếp</option>
+                        <option value="Giám đốc Nhân sự">Giám đốc Nhân sự</option>
+                        <option value="Kế toán trưởng">Kế toán trưởng</option>
+                        <option value="Giám đốc Điều hành">Giám đốc Điều hành (CEO)</option>
+                        <option value="Nguyễn Văn A (IT)">Nguyễn Văn A (IT)</option>
+                      </select>
+                      {customReviewers.length > 1 && (
+                        <button 
+                          type="button"
+                          onClick={() => handleRemoveReviewer(index)}
+                          className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
 
