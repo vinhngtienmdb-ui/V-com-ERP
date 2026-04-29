@@ -52,112 +52,112 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { AccessDenied } from './components/AccessDenied';
 
 function AppLayout() {
-  const location = useLocation();
-  const isIPos = location.pathname === '/ipos';
+ const location = useLocation();
+ const isIPos = location.pathname === '/ipos';
 
-  if (isIPos) {
-    return (
-      <div className="h-screen w-screen bg-slate-50 overflow-hidden">
-        <Routes>
-          <Route path="/ipos" element={<IPosModule />} />
-        </Routes>
-      </div>
-    );
-  }
+ if (isIPos) {
+ return (
+ <div className="h-screen w-screen bg-stone-50 overflow-hidden">
+ <Routes>
+ <Route path="/ipos" element={<IPosModule />} />
+ </Routes>
+ </div>
+ );
+ }
 
-  return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          <div className="max-w-7xl mx-auto h-full">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/pim" element={<PIM />} />
-              <Route path="/sellers" element={<SellerManagement />} />
-              <Route path="/marketing" element={<Marketing />} />
-              <Route path="/flash-sale" element={<FlashSale />} />
-              <Route path="/affiliate" element={<AffiliateManagement />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/cskh" element={<CustomerService />} />
-              <Route path="/scm" element={<Procurement />} />
-              <Route path="/warehouse" element={<WarehouseModule />} />
-              <Route path="/finance" element={<Finance />} />
-              <Route path="/settlement" element={<SettlementManagement />} />
-              <Route path="/hr" element={<HumanResources />} />
-              <Route path="/performance" element={<Performance />} />
-              <Route path="/workspace" element={<Workspace />} />
-              <Route path="/bi" element={<AnalyticsBI />} />
-              <Route path="/sales" element={<SalesManagement />} />
-              <Route path="/loyalty" element={<LoyaltyManagement />} />
-              <Route path="/wallet" element={<WalletHub />} />
-              <Route path="/live" element={<LiveCommerce />} />
-              <Route path="/ads" element={<AdManager />} />
-              <Route path="/compliance" element={<Compliance />} />
-              <Route path="/seller-finance" element={<SellerFinance />} />
-              <Route path="/social" element={<SocialCommerce />} />
-              <Route path="/workflow" element={<WorkflowHub />} />
-              <Route path="/requests" element={<RequestHub />} />
-              <Route path="/contracts" element={<ContractManager />} />
-              <Route path="/documents" element={<DocumentManager />} />
-              <Route path="/signature" element={<SignatureHub />} />
-              <Route path="/ipos-settings" element={<IPosSettings />} />
-              <Route path="/ai-ops" element={<AIOperations />} />
-              <Route path="/org" element={<OrgStructure />} />
-              <Route path="/analytics" element={<AnalyticsBI />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="*" element={<Dashboard />} />
-            </Routes>
-            <AIChatBot />
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+ return (
+ <div className="flex h-screen bg-stone-50 overflow-hidden">
+ <Sidebar />
+ <div className="flex-1 flex flex-col min-w-0">
+ <Header />
+ <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+ <div className="max-w-7xl mx-auto h-full">
+ <Routes>
+ <Route path="/" element={<Home />} />
+ <Route path="/dashboard" element={<Dashboard />} />
+ <Route path="/orders" element={<Orders />} />
+ <Route path="/pim" element={<PIM />} />
+ <Route path="/sellers" element={<SellerManagement />} />
+ <Route path="/marketing" element={<Marketing />} />
+ <Route path="/flash-sale" element={<FlashSale />} />
+ <Route path="/affiliate" element={<AffiliateManagement />} />
+ <Route path="/customers" element={<Customers />} />
+ <Route path="/cskh" element={<CustomerService />} />
+ <Route path="/scm" element={<Procurement />} />
+ <Route path="/warehouse" element={<WarehouseModule />} />
+ <Route path="/finance" element={<Finance />} />
+ <Route path="/settlement" element={<SettlementManagement />} />
+ <Route path="/hr" element={<HumanResources />} />
+ <Route path="/performance" element={<Performance />} />
+ <Route path="/workspace" element={<Workspace />} />
+ <Route path="/bi" element={<AnalyticsBI />} />
+ <Route path="/sales" element={<SalesManagement />} />
+ <Route path="/loyalty" element={<LoyaltyManagement />} />
+ <Route path="/wallet" element={<WalletHub />} />
+ <Route path="/live" element={<LiveCommerce />} />
+ <Route path="/ads" element={<AdManager />} />
+ <Route path="/compliance" element={<Compliance />} />
+ <Route path="/seller-finance" element={<SellerFinance />} />
+ <Route path="/social" element={<SocialCommerce />} />
+ <Route path="/workflow" element={<WorkflowHub />} />
+ <Route path="/requests" element={<RequestHub />} />
+ <Route path="/contracts" element={<ContractManager />} />
+ <Route path="/documents" element={<DocumentManager />} />
+ <Route path="/signature" element={<SignatureHub />} />
+ <Route path="/ipos-settings" element={<IPosSettings />} />
+ <Route path="/ai-ops" element={<AIOperations />} />
+ <Route path="/org" element={<OrgStructure />} />
+ <Route path="/analytics" element={<AnalyticsBI />} />
+ <Route path="/settings" element={<SettingsPage />} />
+ <Route path="/profile" element={<UserProfile />} />
+ <Route path="*" element={<Dashboard />} />
+ </Routes>
+ <AIChatBot />
+ </div>
+ </main>
+ </div>
+ </div>
+ );
 }
 
 function AppContent() {
-  const { user, loading, isStaff } = useAuth();
-  
-  // Public E-Menu route bypasses auth
-  const isPublicEMenu = window.location.pathname.startsWith('/emenu/');
+ const { user, loading, isStaff } = useAuth();
+ 
+ // Public E-Menu route bypasses auth
+ const isPublicEMenu = window.location.pathname.startsWith('/emenu/');
 
-  if (isPublicEMenu) {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/emenu/:tableId" element={<EMenu />} />
-        </Routes>
-      </Router>
-    );
-  }
+ if (isPublicEMenu) {
+ return (
+ <Router>
+ <Routes>
+ <Route path="/emenu/:tableId" element={<EMenu />} />
+ </Routes>
+ </Router>
+ );
+ }
 
-  if (loading) return <LoadingScreen />;
-  if (!user) return <LoginPage />;
-  if (!isStaff) return <AccessDenied />;
+ if (loading) return <LoadingScreen />;
+ if (!user) return <LoginPage />;
+ if (!isStaff) return <AccessDenied />;
 
-  return (
-    <Router>
-      <AppLayout />
-    </Router>
-  );
+ return (
+ <Router>
+ <AppLayout />
+ </Router>
+ );
 }
 
 import { PreferencesProvider } from './context/PreferencesContext';
 import { NotificationProvider } from './context/NotificationContext';
 
 export default function App() {
-  return (
-    <PreferencesProvider>
-      <NotificationProvider>
-        <StoreProvider>
-          <AppContent />
-        </StoreProvider>
-      </NotificationProvider>
-    </PreferencesProvider>
-  );
+ return (
+ <PreferencesProvider>
+ <NotificationProvider>
+ <StoreProvider>
+ <AppContent />
+ </StoreProvider>
+ </NotificationProvider>
+ </PreferencesProvider>
+ );
 }
