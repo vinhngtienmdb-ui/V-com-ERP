@@ -51,7 +51,10 @@ import {
  LayoutDashboard,
  Mic,
  DollarSign,
- Edit2
+ Edit2,
+ Boxes,
+ ShoppingBag,
+ Gift
 } from 'lucide-react';
 import { 
  BarChart, 
@@ -140,12 +143,24 @@ export function IPosModule() {
     const saved = localStorage.getItem('ipos_shift_active');
     return saved === 'true';
   });
+ const [shiftData, setShiftData] = useState<any>(() => {
+    const saved = localStorage.getItem('ipos_shift_data');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
     localStorage.setItem('ipos_shift_active', isShiftActive.toString());
   }, [isShiftActive]);
+
+  useEffect(() => {
+    if (shiftData) {
+      localStorage.setItem('ipos_shift_data', JSON.stringify(shiftData));
+    } else {
+      localStorage.removeItem('ipos_shift_data');
+    }
+  }, [shiftData]);
  const [discountCode, setDiscountCode] = useState('');
- const [activeTab, setActiveTab] = useState<'sales' | 'history' | 'lookup' | 'management' | 'delivery' | 'dashboard' | 'tables' | 'handover'>('dashboard');
+ const [activeTab, setActiveTab] = useState<'sales' | 'history' | 'lookup' | 'management' | 'delivery' | 'dashboard' | 'tables' | 'handover' | 'inventory' | 'products' | 'payroll' | 'orders' | 'customers' | 'reports' | 'promotions'>('dashboard');
  const [orderHistory, setOrderHistory] = useState<any[]>([]);
  const [incomingExternalOrders, setIncomingExternalOrders] = useState<any[]>([
  {
@@ -215,8 +230,10 @@ export function IPosModule() {
  const [isListening, setIsListening] = useState(false);
  const [voiceHint, setVoiceHint] = useState<string | null>(null);
  const [returnReason, setReturnReason] = useState('');
- const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'virtual_account' | 'loyalty'>('cash');
+ const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qr' | 'pos' | 'promo_qr' | 'loyalty'>('cash');
   const [usePromoWallet, setUsePromoWallet] = useState(false);
+  const [showCustomerPromoQR, setShowCustomerPromoQR] = useState(false);
+  const [customPromoAmount, setCustomPromoAmount] = useState<number>(0);
   const [guestCash, setGuestCash] = useState<string>('');
  const [isProcessing, setIsProcessing] = useState(false);
 
@@ -268,6 +285,7 @@ export function IPosModule() {
   }, []);
 
  const [actualCashInput, setActualCashInput] = useState('');
+ const [openingCashInput, setOpeningCashInput] = useState('2000000');
  const [handoverNote, setHandoverNote] = useState('');
  const [selectedTableForQr, setSelectedTableForQr] = useState<number | null>(null);
  const [tables, setTables] = useState<any[]>([
@@ -591,9 +609,7 @@ export function IPosModule() {
   const MAX_PROMO_WALLET_PERCENT = 0.5; // Max 50% of subtotal
   const MOCK_PROMO_WALLET_BALANCE = 150000;
   
-  const promoWalletDiscount = usePromoWallet 
-    ? Math.min(subtotal * MAX_PROMO_WALLET_PERCENT, customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE) 
-    : 0;
+  const promoWalletDiscount = customPromoAmount > 0 ? customPromoAmount : (usePromoWallet ? Math.min(subtotal * MAX_PROMO_WALLET_PERCENT, customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE) : 0);
 
   const calculateLoyaltyDiscount = () => {
     if (!customer || !useLoyaltyPoints) return 0;
@@ -789,6 +805,18 @@ export function IPosModule() {
  };
 
  await addDoc(collection(db, 'orders'), orderData);
+    
+    // Update shift data
+    if (shiftData) {
+        setShiftData({
+           ...shiftData,
+           revenue: (shiftData.revenue || 0) + total,
+           ordersCount: (shiftData.ordersCount || 0) + 1,
+           cashRevenue: (shiftData.cashRevenue || 0) + (paymentMethod === 'cash' ? total : 0),
+           qrRevenue: (shiftData.qrRevenue || 0) + (paymentMethod === 'qr' || paymentMethod === 'promo_qr' ? total : 0),
+           posRevenue: (shiftData.posRevenue || 0) + (paymentMethod === 'pos' ? total : 0)
+        });
+    }
 
  // Trigger SePay SoundBox if payment was successful (simulated)
  if (paymentMethod === 'qr' || paymentMethod === 'pos') {
@@ -903,40 +931,65 @@ export function IPosModule() {
  };
 
  const toggleShift = () => {
- if (isShiftActive) {
- // Show handover summary
- setActualCashInput('6500000');
- setHandoverNote('');
- setShowShiftSummary(true);
- } else {
- setIsShiftActive(true);
- }
- };
+    if (isShiftActive) {
+      const expected = (shiftData?.startCash || 0) + (shiftData?.cashRevenue || 0);
+      setActualCashInput(expected.toString());
+      setHandoverNote('');
+      setShowShiftSummary(true);
+    } else {
+      const startCashRaw = parseInt(openingCashInput.replace(/\D/g, '')) || 0;
+      const date = new Date();
+      const hours = date.getHours();
+      const shiftName = hours < 12 ? 'Ca Sáng' : hours < 18 ? 'Ca Chiều' : 'Ca Tối';
+      setShiftData({
+        shiftName,
+        startTime: date.toISOString(),
+        startCash: startCashRaw,
+        revenue: 0,
+        ordersCount: 0,
+        cashRevenue: 0,
+        qrRevenue: 0,
+        posRevenue: 0
+      });
+      setIsShiftActive(true);
+    }
+  };
 
- const confirmCloseShift = async () => {
- const handoverData = {
- expectedCash: 6500000,
- actualCash: parseInt(actualCashInput.replace(/\D/g, '')) || 0,
- discrepancy: (parseInt(actualCashInput.replace(/\D/g, '')) || 0) - 6500000,
- notes: handoverNote,
- previousStaffName: selectedStaff?.name || user?.displayName || 'Nhân viên ca trước',
- createdAt: serverTimestamp(),
- staffId: user?.uid,
- storeId: activeStore?.id,
- companyId: activeStore?.companyId
- };
+  const confirmCloseShift = async () => {
+    const expectedCashRaw = (shiftData?.startCash || 0) + (shiftData?.cashRevenue || 0);
+    const actualCashRaw = parseInt(actualCashInput.replace(/\D/g, '')) || 0;
 
- setPendingHandover(handoverData as any);
- setShowShiftSummary(false);
- setIsShiftActive(false);
- setCart([]);
- 
- try {
- await addDoc(collection(db, 'shifts'), handoverData);
- } catch(err) {
- console.error("Failed to log shift:", err);
- }
- };
+    const handoverData = {
+      shiftName: shiftData?.shiftName || 'Ca Bán Hàng',
+      startTime: shiftData?.startTime || new Date().toISOString(),
+      endTime: new Date().toISOString(),
+      totalRevenue: shiftData?.revenue || 0,
+      totalOrders: shiftData?.ordersCount || 0,
+      startCash: shiftData?.startCash || 0,
+      expectedCash: expectedCashRaw,
+      actualCash: actualCashRaw,
+      discrepancy: actualCashRaw - expectedCashRaw,
+      notes: handoverNote,
+      previousStaffName: selectedStaff?.name || user?.displayName || 'Nhân viên',
+      createdAt: serverTimestamp(),
+      staffId: user?.uid || 'unknown',
+      storeId: activeStore?.id || '',
+      companyId: activeStore?.companyId || '',
+      status: 'closed'
+    };
+
+    setPendingHandover(handoverData as any);
+    setShowShiftSummary(false);
+    setIsShiftActive(false);
+    setShiftData(null);
+    setCart([]);
+    
+    try {
+      await addDoc(collection(db, 'shifts'), handoverData);
+    } catch(err) {
+      console.error("Failed to close shift:", err);
+    }
+  };
 
  const handleUpdateStoreConfig = async (key: string, value: any) => {
  if (!activeStore || !activeStoreConfig) return;
@@ -1115,7 +1168,45 @@ export function IPosModule() {
  </div>
  )}
  {/* Shift Summary Modal */}
- {showShiftSummary && (
+ 
+  {/* Customer Promo QR Modal */}
+  {showCustomerPromoQR && (
+      <div className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-stone-900/90 backdrop-blur-md">
+        <div className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-8 text-center">
+           <h3 className="font-black text-xl text-stone-900 uppercase tracking-tight mb-2">Quét Mã Từ Sàn TMĐT</h3>
+           <p className="text-xs text-stone-500 font-bold mb-6">Khách hàng mở ứng dụng, quét mã này bằng điện thoại để đăng nhập / áp dụng khuyến mãi / thanh toán bằng ví Sàn.</p>
+           
+           <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-indigo-50 shadow-xl ring-1 ring-stone-200 p-2">
+              <QrCode className="w-full h-full text-indigo-600" />
+           </div>
+           
+           <p className="text-sm font-bold text-orange-600 animate-pulse mb-6">Đang chờ khách hàng thao tác trên Ứng dụng Sàn...</p>
+           
+           <div className="grid grid-cols-2 gap-3">
+               <button 
+                  onClick={() => {
+                     // Simulate customer scanning
+                     setCustomPromoAmount(50000); // Tự động giả lập khách chọn 50k từ ví khuyến mại
+                     // In real app, we would set Customer from scanning data here
+                     setShowCustomerPromoQR(false);
+                     setPaymentMethod('promo_qr'); // auto switch to promo qr payment method
+                  }}
+                  className="py-3 bg-indigo-600 text-white font-black text-xs rounded-sm hover:bg-indigo-700 transition-all"
+               >
+                  Giả Lập KH Quét & Đồng Ý
+               </button>
+               <button 
+                 onClick={() => setShowCustomerPromoQR(false)} 
+                 className="py-3 bg-stone-100 text-stone-600 font-black text-xs rounded-sm hover:bg-stone-200 transition-all"
+               >
+                 Hủy Giao Dịch QR
+               </button>
+           </div>
+        </div>
+      </div>
+  )}
+
+{showShiftSummary && (
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-stone-900/80 backdrop-blur-md">
  <div className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
  <div className="flex justify-between items-center border-b border-stone-100 pb-6">
@@ -1133,68 +1224,65 @@ export function IPosModule() {
  </button>
  </div>
 
- <div className="grid grid-cols-2 gap-6">
- <div className="p-5 bg-stone-50 rounded-sm space-y-1">
- <p className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Tiền mặt đầu ca</p>
- <p className="text-lg font-bold text-stone-900">{formatCurrency(2000000)}</p>
- </div>
- <div className="p-5 bg-indigo-50 rounded-sm space-y-1 border border-indigo-100">
- <p className="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Doanh thu trong ca</p>
- <p className="text-lg font-bold text-indigo-700">{formatCurrency(12500000)}</p>
- </div>
- </div>
+ <div className="space-y-4 text-sm font-medium">
+  <div className="flex justify-between border-b border-stone-100 pb-3">
+      <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">Trạng thái ca</span>
+      <span className="font-black text-indigo-600">{shiftData?.shiftName || 'Ca Bán Hàng'}</span>
+  </div>
+  <div className="flex justify-between border-b border-stone-100 pb-3">
+      <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">Thời gian bắt đầu</span>
+      <span className="font-bold text-stone-900">{new Date(shiftData?.startTime || Date.now()).toLocaleTimeString('vi-VN')}</span>
+  </div>
+  <div className="flex justify-between border-b border-stone-100 pb-3">
+      <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">Thời gian kết thúc</span>
+      <span className="font-bold text-stone-900">{new Date().toLocaleTimeString('vi-VN')}</span>
+  </div>
+  <div className="flex justify-between items-center border-b border-stone-100 pb-3 mt-4">
+      <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">Tiền mặt đầu ca</span>
+      <span className="font-black text-stone-900 text-lg">{formatCurrency(shiftData?.startCash || 0)}</span>
+  </div>
+  <div className="flex justify-between items-center border-b border-stone-100 pb-3">
+      <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">Doanh thu / Đơn hàng</span>
+      <span className="font-bold text-stone-900">{formatCurrency(shiftData?.revenue || 0)} / {shiftData?.ordersCount || 0} đơn</span>
+  </div>
+  
+  <div className="bg-stone-50 p-4 rounded-sm space-y-3 border border-stone-200 mt-4">
+      <h4 className="text-[10px] uppercase font-bold text-stone-900 tracking-widest flex items-center gap-2 mb-2">
+         <UserCheck className="w-4 h-4 text-rose-500" /> Khai báo thực thu
+      </h4>
+      <div className="flex items-center justify-between gap-4">
+         <div className="flex-1">
+             <p className="text-xs font-bold text-stone-500 mb-1">Tiền mặt lý thuyết</p>
+             <p className="font-bold text-stone-900">{formatCurrency((shiftData?.startCash || 0) + (shiftData?.cashRevenue || 0))}</p>
+         </div>
+         <div className="flex-1">
+             <p className="text-xs font-bold text-stone-500 mb-1">Thực đếm trong két</p>
+             <input 
+                 type="text" 
+                 value={actualCashInput}
+                 onChange={(e) => setActualCashInput(e.target.value)}
+                 className="w-full text-base font-black text-indigo-600 px-3 py-2 bg-white border border-stone-300 focus:border-indigo-500 rounded-sm outline-none transition-all shadow-inner"
+             />
+         </div>
+      </div>
+      <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+          <span className="text-xs font-bold text-stone-500">Chênh lệch:</span>
+          <span className={cn("font-black", (parseInt(actualCashInput.replace(/\D/g, '')) || 0) - ((shiftData?.startCash || 0) + (shiftData?.cashRevenue || 0)) < 0 ? "text-rose-600" : "text-emerald-600")}>
+              {formatCurrency((parseInt(actualCashInput.replace(/\D/g, '')) || 0) - ((shiftData?.startCash || 0) + (shiftData?.cashRevenue || 0)))}
+          </span>
+      </div>
+      <div>
+         <textarea 
+             value={handoverNote}
+             onChange={(e) => setHandoverNote(e.target.value)}
+             className="w-full text-xs text-stone-700 px-3 py-2 mt-2 bg-white border border-stone-200 focus:border-indigo-500 rounded-sm outline-none transition-all resize-none h-12"
+             placeholder="Ghi chú bàn giao (ví dụ: lệch do thối nhầm)..."
+         />
+      </div>
+  </div>
+</div>
 
- <div className="space-y-4">
- <h4 className="text-[10px] uppercase font-bold text-stone-900 tracking-widest flex items-center gap-2">
- <CreditCard className="w-3.5 h-3.5 text-indigo-500" /> Thống kê thanh toán
- </h4>
- <div className="space-y-3">
- <div className="flex justify-between items-center text-sm">
- <span className="text-stone-500">Tiền mặt (Cash)</span>
- <span className="font-bold text-stone-900">{formatCurrency(4500000)}</span>
- </div>
- <div className="flex justify-between items-center text-sm">
- <span className="text-stone-500">QR / Chuyển khoản</span>
- <span className="font-bold text-stone-900">{formatCurrency(6000000)}</span>
- </div>
- <div className="flex justify-between items-center text-sm">
- <span className="text-stone-500">Thẻ (POS/Visa)</span>
- <span className="font-bold text-stone-900">{formatCurrency(2000000)}</span>
- </div>
- </div>
- </div>
-
- <div className="space-y-3 pt-4 border-t border-stone-100">
- <h4 className="text-[10px] uppercase font-bold text-stone-900 tracking-widest flex items-center gap-2">
- <UserCheck className="w-4 h-4 text-rose-500" /> Khai báo & Bàn giao Két tiền mặt
- </h4>
- <div className="flex items-center gap-4">
- <div className="flex-1 space-y-1">
- <label className="text-[10px] uppercase font-bold text-stone-400">Tiền mặt lý thuyết (Hệ thống)</label>
- <div className="text-sm font-bold text-stone-900 px-3 py-2.5 bg-stone-100 rounded-sm">{formatCurrency(6500000)}</div>
- </div>
- <div className="flex-1 space-y-1">
- <label className="text-[10px] uppercase font-bold text-stone-400">Thực đếm trong két</label>
- <input 
- type="text" 
- value={actualCashInput}
- onChange={(e) => setActualCashInput(e.target.value)}
- className="w-full text-sm font-bold text-indigo-600 px-3 py-2.5 bg-white border border-stone-200 focus:border-indigo-500 rounded-sm outline-none transition-all shadow-inner"
- />
- </div>
- </div>
- <div className="space-y-1">
- <label className="text-[10px] uppercase font-bold text-stone-400">Ghi chú bàn giao</label>
- <textarea 
- value={handoverNote}
- onChange={(e) => setHandoverNote(e.target.value)}
- className="w-full text-xs text-stone-700 px-3 py-2 bg-white border border-stone-200 focus:border-indigo-500 rounded-sm outline-none transition-all resize-none h-16"
- placeholder="VD: Cọc thừa 50k của khách, Lệch 20k do thối nhầm..."
- />
- </div>
- </div>
-
- <div className="pt-6 border-t border-stone-100 flex gap-4">
+<div className="pt-6 border-t border-stone-100 flex gap-4">
  <button 
  onClick={() => setShowShiftSummary(false)}
  className="flex-1 py-4 bg-stone-100 text-stone-600 font-bold rounded-sm hover:bg-stone-200 transition-all"
@@ -1359,20 +1447,20 @@ export function IPosModule() {
   </button>
 
   <button 
-    onClick={() => setPaymentMethod('virtual_account')}
+    onClick={() => setPaymentMethod('promo_qr')}
     className={cn(
       "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
-      paymentMethod === 'virtual_account' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
+      paymentMethod === 'promo_qr' ? "border-indigo-600 ring-4 ring-indigo-50 shadow-sm shadow-indigo-600/10" : "border-stone-100 hover:border-indigo-200"
     )}
   >
-    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'virtual_account' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
-      <CreditCard className="w-6 h-6" />
+    <div className={cn("w-12 h-12 rounded-sm flex items-center justify-center transition-all", paymentMethod === 'promo_qr' ? "bg-indigo-600 text-[#FAF9F5] scale-110 shadow-sm" : "bg-stone-50 text-stone-400 group-hover:bg-indigo-50 group-hover:text-indigo-600")}>
+      <QrCode className="w-6 h-6" />
     </div>
     <div className="text-center">
-      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'virtual_account' ? "text-indigo-600" : "text-stone-500")}>TK Ảo (VA)</span>
-      <span className="text-[8px] text-stone-400 font-bold">(Tự động)</span>
+      <span className={cn("block font-black text-[10px] uppercase tracking-wider", paymentMethod === 'promo_qr' ? "text-indigo-600" : "text-stone-500")}>QR Sàn TMĐT</span>
+      <span className="text-[8px] text-stone-400 font-bold">(Kênh phân phối)</span>
     </div>
-    {paymentMethod === 'virtual_account' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
+    {paymentMethod === 'promo_qr' && <div className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />}
   </button>
 </div>
 
@@ -1380,37 +1468,40 @@ export function IPosModule() {
  <div className="mt-2 space-y-6">
  {/* Loyalty Reward Integration */}
  
-{/* TMĐT Promo Wallet */}
-<div 
-  className={cn(
-    "group p-4 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
-    usePromoWallet 
-      ? "bg-orange-50 border-orange-500 shadow-sm shadow-orange-500/5 ring-4 ring-orange-50" 
-      : "bg-white border-stone-100 hover:border-orange-200"
-  )} 
-  onClick={() => setUsePromoWallet(!usePromoWallet)}
->
-  <div className="flex items-center gap-4">
-    <div className={cn(
-      "w-10 h-10 rounded-sm flex items-center justify-center transition-all bg-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]",
-      usePromoWallet ? "bg-gradient-to-br from-orange-500 to-rose-600 text-[#FAF9F5] shadow-sm rotate-12" : "bg-stone-50 text-stone-400 group-hover:bg-orange-100 group-hover:text-orange-600"
-    )}>
-      <ShoppingCart className="w-5 h-5" />
+{/* TMĐT Promo Wallet - Customer App Sync */}
+<div className="bg-white p-5 rounded-sm border-2 border-stone-100 shadow-sm transition-all hover:border-orange-200">
+  <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+         <ShoppingCart className="w-5 h-5" />
+      </div>
+      <div>
+         <p className="text-sm font-black text-stone-900 uppercase tracking-tight">Ví Khuyến Mại Sàn</p>
+         <p className="text-[10px] text-stone-500 font-bold mt-0.5">Số dư: <span className="text-orange-600">{formatCurrency(customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE)}</span></p>
+      </div>
     </div>
-    <div>
-      <p className="text-sm font-black text-stone-900 uppercase tracking-tight">Ví Khuyến Mại Sàn (Tối đa 50%)</p>
-      <p className="text-[10px] text-stone-500 font-bold mt-0.5">
-        Số dư: <span className="text-orange-600">{formatCurrency(customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE)}</span> 
-        <span className="mx-2 opacity-30">•</span> 
-        Khả dụng: <span className="text-orange-600">{formatCurrency(Math.min(subtotal * MAX_PROMO_WALLET_PERCENT, customer?.promoWalletBalance || MOCK_PROMO_WALLET_BALANCE))}</span>
-      </p>
-    </div>
+    {customPromoAmount > 0 && <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded">Đã Áp Dụng: {formatCurrency(customPromoAmount)}</span>}
+    {(!customPromoAmount && usePromoWallet) && <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded">Đã Áp Dụng: {formatCurrency(promoWalletDiscount)}</span>}
   </div>
-  <div className={cn(
-    "w-6 h-6 rounded-sm border-2 flex items-center justify-center transition-colors",
-    usePromoWallet ? "bg-orange-500 border-orange-500 text-white" : "bg-white border-stone-300 group-hover:border-orange-500"
-  )}>
-    {usePromoWallet ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 bg-stone-100 rounded-sm" />}
+  
+  <div className="flex gap-3">
+     <button 
+        onClick={() => setShowCustomerPromoQR(true)}
+        className="flex-1 py-3 bg-stone-900 text-[#FAF9F5] rounded-sm text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-stone-800 transition-all shadow-sm"
+     >
+        <QrCode className="w-4 h-4" /> Khách Quét QR Áp Mã
+     </button>
+     
+     {customPromoAmount === 0 ? (
+       <button 
+          onClick={() => setUsePromoWallet(!usePromoWallet)}
+          className={cn("flex-1 py-3 border-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all", usePromoWallet ? "bg-orange-50 border-orange-500 text-orange-700" : "bg-white border-stone-200 text-stone-600 hover:border-orange-300")}
+       >
+          {usePromoWallet ? "Hủy Mức Tối Đa" : "Dùng Tối Đa (50%)"}
+       </button>
+     ) : (
+       <button onClick={() => setCustomPromoAmount(0)} className="flex-1 py-3 border-2 border-rose-200 bg-rose-50 text-rose-600 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all">Hủy Áp Dụng Tùy Chọn</button>
+     )}
   </div>
 </div>
 
@@ -1685,7 +1776,7 @@ export function IPosModule() {
  </div>
  </div>
 
- <div className="flex bg-stone-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-stone-100 hidden xl:flex">
+ <div className="flex bg-stone-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-stone-100 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap"><style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
  <button 
  onClick={() => setActiveTab('dashboard')}
  className={cn(
@@ -1748,8 +1839,31 @@ export function IPosModule() {
  )}
  >
  <Search className="w-4 h-4" /> Tra cứu
- </button>
- </div>
+</button>
+
+<button onClick={() => setActiveTab('inventory')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'inventory' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <Boxes className="w-4 h-4" /> Kho
+</button>
+<button onClick={() => setActiveTab('products')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'products' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <Tag className="w-4 h-4" /> Sản phẩm
+</button>
+<button onClick={() => setActiveTab('payroll')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'payroll' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <DollarSign className="w-4 h-4" /> Tính lương
+</button>
+<button onClick={() => setActiveTab('orders')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'orders' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <ShoppingBag className="w-4 h-4" /> Đơn hàng
+</button>
+<button onClick={() => setActiveTab('customers')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'customers' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <Users className="w-4 h-4" /> Khách hàng
+</button>
+<button onClick={() => setActiveTab('reports')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'reports' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <BarChart4 className="w-4 h-4" /> Báo cáo
+</button>
+<button onClick={() => setActiveTab('promotions')} className={cn("px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2", activeTab === 'promotions' ? "bg-white text-orange-700 shadow-sm ring-1 ring-stone-200" : "text-stone-500 hover:text-stone-700 hover:bg-stone-100")}>
+  <Gift className="w-4 h-4" /> Khuyến mại
+</button>
+</div>
+
 
  <div className="flex gap-3 items-center">
  <div className="flex gap-1.5 px-1.5 py-1.5 bg-stone-50 rounded-sm border border-stone-100 mr-2">
@@ -1784,12 +1898,7 @@ export function IPosModule() {
  )}
  </button>
  
- <button 
- onClick={() => setActiveTab('handover')}
- className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-sm text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
- >
- <Clock className="w-4 h-4" /> Kết Ca & Bàn Giao
- </button>
+ <button onClick={toggleShift} className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-sm text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"><Clock className="w-4 h-4" /> Chốt ca</button>
  </div>
  </div>
 
@@ -2458,113 +2567,6 @@ export function IPosModule() {
  </div>
  </div>
  </div>
- ) : activeTab === 'handover' ? (
- <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-10 flex-1 flex flex-col gap-8 animate-in slide-in- duration-500 overflow-y-auto no-scrollbar pb-20">
- <div className="flex items-center justify-between pb-8 border-b border-stone-100">
- <div className="flex items-center gap-5">
- <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center shadow-sm">
- <Clock className="w-7 h-7" />
- </div>
- <div>
- <h2 className="text-2xl font-black text-stone-900 tracking-tight leading-none">Bàn giao & Kết thúc Ca</h2>
- <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mt-2">Xác nhận doanh thu tiền mặt và kết toán</p>
- </div>
- </div>
- <button onClick={() => setActiveTab('sales')} className="p-3 bg-stone-50 text-stone-500 rounded-sm hover:bg-stone-100 transition-all border border-stone-200">
- <X className="w-5 h-5" />
- </button>
- </div>
-
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
- <div className="lg:col-span-2 space-y-8">
- <div className="bg-stone-50 rounded-sm p-8 border border-stone-200 space-y-6">
- <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest border-b border-stone-200 pb-4">Tóm tắt hoạt động Ca</h3>
- <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
- <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase">Doanh thu Ca</p>
- <p className="text-xl font-black text-stone-900">{formatCurrency(6850000)}</p>
- </div>
- <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase">Tiền mặt thực tế</p>
- <p className="text-xl font-black text-emerald-600">{formatCurrency(Number(actualCashInput))}</p>
- </div>
- <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase">Tiền quẹt thẻ/QR</p>
- <p className="text-xl font-black text-orange-700">{formatCurrency(2450000)}</p>
- </div>
- </div>
- </div>
-
- <div className="space-y-4">
- <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest">Kiểm tra thực tế</h3>
- <div className="space-y-4">
- <div>
- <label className="text-xs font-black text-stone-500 mb-2 block uppercase">Nhập tiền mặt hiện có trong két</label>
- <div className="relative">
- <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300" />
- <input 
- type="number"
- className="w-full bg-white border border-stone-200 rounded-sm pl-12 pr-4 py-4 text-xl font-black text-stone-900 focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm"
- value={actualCashInput}
- onChange={(e) => setActualCashInput(e.target.value)}
- placeholder="0"
- />
- </div>
- </div>
- <div>
- <label className="text-xs font-black text-stone-500 mb-2 block uppercase">Ghi chú bàn giao</label>
- <textarea 
- className="w-full bg-white border border-stone-200 rounded-sm px-4 py-4 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all shadow-sm h-32 resize-none"
- value={handoverNote}
- onChange={(e) => setHandoverNote(e.target.value)}
- placeholder="Ghi chú về tiền thừa, hỏng hóc hoặc sự cố trong ca..."
- />
- </div>
- </div>
- </div>
- </div>
-
- <div className="space-y-6">
- <div className="bg-indigo-600 rounded-sm p-8 text-[#FAF9F5] space-y-6 shadow-sm shadow-indigo-200">
- <div className="flex items-center gap-3">
- <ShieldCheck className="w-6 h-6 text-indigo-200" />
- <h4 className="font-bold text-lg">Pháp lý & Hệ thống</h4>
- </div>
- <ul className="space-y-4">
- {[
- 'Dữ liệu đơn hàng đã được đẩy lên Cloud',
- 'Hợp đồng lao động & Chấm công đã ghi nhận',
- 'Sẵn sàng xuất hóa đơn VAT điện tử'
- ].map((item, i) => (
- <li key={i} className="flex gap-3 text-xs font-semibold leading-relaxed">
- <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
- <span>{item}</span>
- </li>
- ))}
- </ul>
- <div className="pt-4 mt-4 border-t border-white/10">
- <p className="text-[10px] font-bold text-indigo-400 uppercase mb-2">Nhân viên chốt ca</p>
- <div className="flex items-center gap-3">
- <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-[10px]">AD</div>
- <span className="text-xs font-bold">{user?.displayName || 'Admin'}</span>
- </div>
- </div>
- </div>
-
- <button 
- onClick={() => {
- alert(`Đã chốt ca thành công! Doanh thu ghi nhận: ${formatCurrency(6850000)}. Tiền mặt thực tế: ${formatCurrency(Number(actualCashInput))}`);
- setIsShiftActive(false);
- setActiveTab('dashboard');
- }}
- className="w-full py-5 bg-rose-600 text-[#FAF9F5] rounded-sm font-black text-sm hover:bg-rose-700 transition-all shadow-sm shadow-rose-200 active:scale-95 flex items-center justify-center gap-3"
- >
- XÁC NHẬN CHỐT CA <ArrowRight className="w-5 h-5" />
- </button>
- <p className="text-[10px] text-center text-stone-400 font-bold italic leading-relaxed uppercase tracking-tighter">Hành động này sẽ gửi báo cáo kết ca về cho Quản lý và đóng cổng bán hàng của phiên hiện tại.</p>
- </div>
- </div>
- </div>
  ) : activeTab === 'management' ? (
  <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
  <div className="p-8 border-b border-stone-100 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-stone-50/50 gap-4">
@@ -3111,7 +3113,23 @@ export function IPosModule() {
  </div>
  )}
  </div>
- ) : (
+ 
+) : activeTab === 'inventory' ? (
+  <IPosInventory activeStore={activeStore} />
+) : activeTab === 'products' ? (
+  <IPosProducts activeStore={activeStore} />
+) : activeTab === 'payroll' ? (
+  <IPosPayroll activeStore={activeStore} />
+) : activeTab === 'orders' ? (
+  <IPosOrders activeStore={activeStore} />
+) : activeTab === 'customers' ? (
+  <IPosCustomers activeStore={activeStore} />
+) : activeTab === 'reports' ? (
+  <IPosReports activeStore={activeStore} />
+) : activeTab === 'promotions' ? (
+  <IPosPromotions activeStore={activeStore} />
+) : (
+
  <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-6 flex-1 overflow-y-auto">
  <div className="flex items-center justify-between mb-8">
  <h3 className="font-bold text-stone-900 flex items-center gap-2 text-base">
