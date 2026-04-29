@@ -2038,6 +2038,32 @@ export function IPosModule() {
                     <span>{formatCurrency(total)}</span>
                   </div>
                 </div>
+
+                <div className="mt-8 bg-white p-5 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center gap-4 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-indigo-50/50 to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="flex items-center gap-2 z-10 w-full justify-center pb-3 border-b border-stone-100">
+                    <QrCode className="w-4 h-4 text-indigo-500" />
+                    <span className="text-xs font-bold text-stone-600 uppercase tracking-widest">Mã thanh toán</span>
+                  </div>
+                  
+                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-stone-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                    <img
+                      src={sePayService.createPaymentQR(
+                        total,
+                        `IPOS_PAY_${Math.floor(Date.now() / 10000)}`,
+                      )}
+                      alt="Payment QR"
+                      className="w-44 h-44 object-contain mix-blend-darken"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  
+                  <div className="z-10 text-center space-y-1">
+                    <p className="text-[10px] text-stone-400 font-medium">Khách hàng có thể quét mã</p>
+                    <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Tự động đối soát</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -2356,16 +2382,17 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-indigo-50 rounded-sm border border-indigo-100 shadow-inner"
+                      className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-indigo-50 rounded-md border border-indigo-100 shadow-inner"
                     >
-                      <div className="bg-white p-4 rounded-sm shadow-sm ring-4 ring-white/50">
+                      <div className="bg-white p-3 rounded-md shadow-sm ring-1 ring-black/5 relative group overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <img
                           src={sePayService.createPaymentQR(
                             total,
                             `IPOS_PAY_${Date.now()}`,
                           )}
                           alt="Payment QR"
-                          className="w-40 h-40"
+                          className="w-40 h-40 relative z-10 object-contain drop-shadow-sm mix-blend-darken"
                           referrerPolicy="no-referrer"
                         />
                       </div>
@@ -2560,7 +2587,7 @@ export function IPosModule() {
                       </div>
 
                       <div className="relative group">
-                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-stone-300 group-focus-within:text-indigo-600 transition-all">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-stone-300 group-focus-within:text-indigo-600 transition-all">
                           đ
                         </span>
                         <input
@@ -2569,7 +2596,7 @@ export function IPosModule() {
                           value={guestCash}
                           onChange={(e) => setGuestCash(e.target.value)}
                           placeholder={total.toString()}
-                          className="w-full bg-white border-2 border-stone-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-sm py-6 pl-14 pr-8 text-4xl font-black text-stone-900 outline-none transition-all shadow-sm text-right"
+                          className="w-full bg-white border border-stone-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 rounded-sm py-3 pl-10 pr-4 text-2xl font-bold text-stone-900 outline-none transition-all shadow-sm text-right"
                         />
                       </div>
 
@@ -2598,7 +2625,7 @@ export function IPosModule() {
               <div className="mt-auto pt-6 flex gap-4">
                 <button
                   onClick={() => setShowPaymentModal(false)}
-                  className="px-10 py-5 bg-white border-2 border-stone-100 text-stone-400 font-black rounded-sm hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
+                  className="px-6 py-3 bg-stone-100 text-stone-500 font-bold rounded-md hover:bg-stone-200 hover:text-stone-700 transition-all text-xs uppercase tracking-widest shadow-sm"
                 >
                   Quay lại
                 </button>
@@ -2607,7 +2634,7 @@ export function IPosModule() {
                   onClick={completeOrder}
                   disabled={isProcessing}
                   className={cn(
-                    "flex-1 py-5 bg-stone-900 text-[#FAF9F5] rounded-sm font-black text-lg uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:bg-stone-800 active:scale-[0.98] transition-all flex items-center justify-center gap-4 relative overflow-hidden group",
+                    "flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-md font-bold text-sm uppercase tracking-wide shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group border border-emerald-400/30",
                     isProcessing && "opacity-70 cursor-not-allowed",
                   )}
                 >
@@ -2618,8 +2645,8 @@ export function IPosModule() {
                     </span>
                   ) : (
                     <>
-                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="relative z-10 flex items-center gap-3">
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="relative z-10 flex items-center gap-3 drop-shadow-md">
                         Hoàn tất thanh toán
                         <CheckCircle2 className="w-6 h-6 animate-pulse" />
                       </span>
