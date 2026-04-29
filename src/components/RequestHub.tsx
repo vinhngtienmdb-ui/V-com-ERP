@@ -29,6 +29,8 @@ import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
+import { TemplateGalleryModal } from './TemplateGalleryModal';
+import { FormConfigModal } from './FormConfigModal';
 
 const INITIAL_REQUESTS = [
  { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -56,6 +58,8 @@ export function RequestHub() {
  const [formConfigs, setFormConfigs] = useState(INITIAL_FORM_CONFIGS);
  const [editingFormConfig, setEditingFormConfig] = useState<any>(null);
  const [showConfigModal, setShowConfigModal] = useState(false);
+ const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+ const [templateAction, setTemplateAction] = useState<'create_config' | 'submit_request'>('submit_request');
  const [selectedConfigForWorkflow, setSelectedConfigForWorkflow] = useState<string>('F01');
 
  // Signature State
@@ -245,7 +249,10 @@ export function RequestHub() {
  Trung tâm Ký số
  </button>
  <button 
- onClick={() => setShowAddModal(true)}
+ onClick={() => {
+   setTemplateAction('submit_request');
+   setShowTemplateGallery(true);
+ }}
  className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo đề xuất
@@ -518,9 +525,8 @@ export function RequestHub() {
  </div>
  ))}
  <button onClick={() => {
- const nextId = `F${(formConfigs.length + 1).toString().padStart(2, '0')}`;
- setEditingFormConfig({ id: nextId, name: 'Loại phiếu mới', category: 'Khác', isActive: true, workflow: [], fields: [] });
- setShowConfigModal(true);
+ setTemplateAction('create_config');
+ setShowTemplateGallery(true);
  }} className="border border-dashed border-stone-300 rounded-lg p-4 flex flex-col items-center justify-center text-stone-500 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
  <Plus className="w-6 h-6 mb-2" />
  <span className="text-sm font-bold">Thêm loại phiếu mới</span>
@@ -775,7 +781,7 @@ export function RequestHub() {
  </div>
  </div>
  )}
- {showConfigModal && editingFormConfig && (
+ {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {false && (
  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-sm">
  <div className="bg-white rounded-xl shadow-sm w-full max-w-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
  <div className="px-6 py-4 border-b border-stone-100 flex justify-between items-center bg-stone-50">
@@ -1202,6 +1208,33 @@ export function RequestHub() {
  </div>
  )}
  </AnimatePresence>
+ {showTemplateGallery && (
+ <TemplateGalleryModal
+   onClose={() => setShowTemplateGallery(false)}
+   onSelectTemplate={(template) => {
+   setShowTemplateGallery(false);
+   if (templateAction === 'create_config') {
+     const nextId = `F${(formConfigs.length + 1).toString().padStart(2, '0')}`;
+     setEditingFormConfig({ id: nextId, name: template.title, category: template.category, isActive: true, workflow: [], fields: [], templateRef: template.id });
+     setShowConfigModal(true);
+   } else {
+     setNewRequest({ subtype: template.title, title: '', requester: 'Tôi (Người đang đăng nhập)', formData: {} });
+     setShowAddModal(true);
+   }
+   }}
+   onCreateNew={() => {
+   setShowTemplateGallery(false);
+   if (templateAction === 'create_config') {
+     const nextId = `F${(formConfigs.length + 1).toString().padStart(2, '0')}`;
+     setEditingFormConfig({ id: nextId, name: 'Loại phiếu mới', category: 'Khác', isActive: true, workflow: [], fields: [] });
+     setShowConfigModal(true);
+   } else {
+     setNewRequest({ subtype: formConfigs[0]?.name || 'Loại phiếu mới', title: '', requester: 'Tôi (Người đang đăng nhập)', formData: {} });
+     setShowAddModal(true);
+   }
+   }}
+ />
+ )}
  </div>
  );
 }
