@@ -198,7 +198,7 @@ export function WarehouseModule() {
  {WAREHOUSE_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
- <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
+ <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
  {group.title}
  </h3>
  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">

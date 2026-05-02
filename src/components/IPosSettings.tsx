@@ -216,7 +216,7 @@ export function IPosSettings() {
  mIdx !== IPOS_MODULES.length - 1 ? "border-b border-slate-200" : ""
  )}>
  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
- <div className="w-1.5 h-4 bg-primary-500 rounded-full"></div>
+ <span className="w-1.5 h-4 bg-primary-500 rounded-full inline-block"></span>
  {module.name}
  </h3>
  

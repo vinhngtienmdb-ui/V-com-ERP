@@ -2701,9 +2701,9 @@ export function IPosModule() {
                         <div className="space-y-1">
                           <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
                             Quét mã VietQR Đa Năng
-                            <div className="px-2 py-0.5 bg-slate-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm">
+                            <span className="px-2 py-0.5 bg-slate-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm inline-block">
                               SePay Active
-                            </div>
+</span>
                           </h4>
                           <p className="text-[11px] text-slate-600 font-medium pb-2">
                             Hỗ trợ: Momo, ZaloPay, VNPay, và mọi Ngân hàng
@@ -3719,7 +3719,7 @@ export function IPosModule() {
 
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
                   <h4 className="font-black text-slate-900 text-base flex items-center gap-2">
-                    <div className="w-2 h-2 bg-rose-500 rounded-full animate-ping" />{" "}
+                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-ping inline-block" />{" "}
                     Tips vận hành AI
                   </h4>
                   <div className="space-y-3">
@@ -5499,7 +5499,7 @@ export function IPosModule() {
               <div className="mb-10 space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
+                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse inline-block" />
                     Đơn E-Menu mới ({pendingEMenuOrders.length})
                   </h4>
                   <span className="text-[10px] font-bold text-slate-500">

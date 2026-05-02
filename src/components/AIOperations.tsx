@@ -401,9 +401,7 @@ export function AIOperations() {
  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 relative z-10">
  <div>
  <h3 className="text-2xl font-black flex items-center gap-4 text-slate-900">
- <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600 shadow-sm shadow-emerald-500/10">
- <Server className="w-7 h-7" />
- </div>
+ <span className="p-3 bg-emerald-50 rounded-lg text-emerald-600 shadow-sm shadow-emerald-500/10 inline-block"><Server className="w-7 h-7" /></span>
  Hardware Cluster Telemetry
  </h3>
  <p className="text-slate-600 font-medium mt-2">Giám sát tải của các cụm GPU NVIDIA dành cho Inference & Fine-tuning.</p>
@@ -440,7 +438,7 @@ export function AIOperations() {
  </div>
  <div className="pt-4 border-t border-slate-300">
  <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest flex items-center gap-2">
- <div className="w-2 h-2 bg-slate-800 rounded-full animate-pulse" /> Fine-tuning NLP v4.0
+ <span className="w-2 h-2 bg-slate-800 rounded-full animate-pulse" /> Fine-tuning NLP v4.0
  </p>
  </div>
  </div>
@@ -472,7 +470,7 @@ export function AIOperations() {
  </div>
  <div className="pt-4 border-t border-slate-200">
  <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest flex items-center gap-2">
- <div className="w-2 h-2 bg-emerald-500 rounded-full" /> Vision Moderation Active
+ <span className="w-2 h-2 bg-emerald-500 rounded-full" /> Vision Moderation Active
  </p>
  </div>
  </div>
