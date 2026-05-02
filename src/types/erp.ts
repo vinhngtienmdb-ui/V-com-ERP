@@ -5,7 +5,7 @@ export interface Product {
  price: number;
  stock: number;
  category: string;
- status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pending_approval';
+ status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pending_approval' | 'hidden';
  image: string;
  sellerName: string;
  brand: string;

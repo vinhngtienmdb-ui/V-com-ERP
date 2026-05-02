@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, Send, AlertTriangle, UserPlus, Plus, Trash2, Save } from 'lucide-react';
@@ -70,34 +71,34 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden w-full max-w-2xl mx-auto">
-      <div className="px-6 py-4 border-b border-stone-100 flex justify-between items-center bg-stone-50">
-        <h3 className="text-lg font-bold text-stone-800">Tạo đề xuất mới</h3>
+    <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden w-full max-w-2xl mx-auto">
+      <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="p-2 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-200 transition-colors">
+          <button type="button" onClick={onCancel} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
       
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="block text-sm font-bold text-stone-700">Người đề xuất</label>
+            <label className="block text-sm font-bold text-slate-800">Người đề xuất</label>
             <input 
               type="text" 
               value={requester}
               onChange={(e) => setRequester(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-stone-50 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-stone-600"
+              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700"
             />
           </div>
           
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-stone-700">Loại đề xuất</label>
+            <label className="block text-sm font-bold text-slate-800">Loại đề xuất</label>
             <select 
               value={requestType}
               onChange={(e) => setRequestType(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium cursor-pointer"
+              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium cursor-pointer"
             >
               <option value="Hanh chinh">Hành chính</option>
               <option value="Tai chinh">Tài chính</option>
@@ -106,23 +107,23 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-stone-700">Ngày đề xuất</label>
+            <label className="block text-sm font-bold text-slate-800">Ngày đề xuất</label>
             <input 
               type="date"
               required
               value={requestDate}
               onChange={(e) => setRequestDate(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
             />
           </div>
 
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="block text-sm font-bold text-stone-700">Nội dung đề xuất</label>
+            <label className="block text-sm font-bold text-slate-800">Nội dung đề xuất</label>
             <textarea 
               value={content}
               required
               onChange={(e) => setContent(e.target.value)}
-              className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
+              className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
               placeholder="Nhập chi tiết nội dung đề xuất..."
             />
           </div>
@@ -130,14 +131,14 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           {/* Optional fields based on type */}
           {requestType === 'Hanh chinh' && (
             <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="block text-sm font-bold text-stone-700">Số ngày nghỉ</label>
+              <label className="block text-sm font-bold text-slate-800">Số ngày nghỉ</label>
               <input 
                 type="number"
                 min="0"
                 step="0.5"
                 value={leaveDays}
                 onChange={(e) => setLeaveDays(e.target.value)}
-                className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 placeholder="Ví dụ: 1.5"
               />
             </div>
@@ -146,23 +147,23 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           {requestType === 'Tai chinh' && (
             <>
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <label className="block text-sm font-bold text-stone-700">Nội dung chi phí</label>
+                <label className="block text-sm font-bold text-slate-800">Nội dung chi phí</label>
                 <input 
                   type="text"
                   value={expenseContent}
                   onChange={(e) => setExpenseContent(e.target.value)}
-                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: Công tác phí, mua sắm thiết bị..."
                 />
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <label className="block text-sm font-bold text-stone-700">Số tiền (VNĐ)</label>
+                <label className="block text-sm font-bold text-slate-800">Số tiền (VNĐ)</label>
                 <input 
                   type="number"
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: 1000000"
                 />
               </div>
@@ -170,8 +171,8 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           )}
 
           {/* Workflow Enhancements */}
-          <div className="col-span-1 md:col-span-2 border-t border-stone-100 pt-6 mt-2">
-            <h4 className="text-sm font-bold text-stone-800 mb-4 flex items-center gap-2">
+          <div className="col-span-1 md:col-span-2 border-t border-slate-200 pt-6 mt-2">
+            <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
               <UserPlus className="w-4 h-4 text-primary-600" />
               Tùy chỉnh luồng xử lý
             </h4>
@@ -182,7 +183,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   type="checkbox"
                   checked={isUrgent}
                   onChange={(e) => setIsUrgent(e.target.checked)}
-                  className="w-4 h-4 text-rose-600 rounded border-stone-300 focus:ring-rose-500"
+                  className="w-4 h-4 text-rose-600 rounded border-slate-400 focus:ring-rose-500"
                 />
                 <div className="flex gap-2 items-center">
                   <AlertTriangle className="w-4 h-4 text-rose-500" />
@@ -193,9 +194,9 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 </div>
               </label>
 
-              <div className="bg-stone-50 rounded-lg border border-stone-200 overflow-hidden">
-                <div className="px-4 py-3 border-b border-stone-200 bg-white flex justify-between items-center">
-                  <p className="text-sm font-bold text-stone-700">Gán người xử lý cụ thể</p>
+              <div className="bg-slate-50 rounded-lg border border-slate-300 overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
+                  <p className="text-sm font-bold text-slate-800">Gán người xử lý cụ thể</p>
                   <button 
                     type="button" 
                     onClick={handleAddReviewer}
@@ -207,13 +208,13 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 <div className="p-4 space-y-3">
                   {customReviewers.map((reviewer, index) => (
                     <div key={index} className="flex items-center gap-3">
-                      <div className="w-20 shrink-0 text-xs font-bold text-stone-500 uppercase tracking-widest">
+                      <div className="w-20 shrink-0 text-xs font-bold text-slate-600 uppercase tracking-widest">
                         Bước {reviewer.step}
                       </div>
                       <select 
                         value={reviewer.reviewer}
                         onChange={(e) => handleReviewerChange(index, e.target.value)}
-                        className="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       >
                         <option value="">-- Chọn người phê duyệt --</option>
@@ -227,7 +228,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                         <button 
                           type="button"
                           onClick={() => handleRemoveReviewer(index)}
-                          className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -239,14 +240,14 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             </div>
           </div>
 
-        </div>
+        </DraggableGrid>
 
-        <div className="pt-6 border-t border-stone-100 flex justify-end gap-3">
+        <div className="pt-6 border-t border-slate-200 flex justify-end gap-3">
           {onCancel && (
             <button 
               type="button" 
               onClick={onCancel}
-              className="px-6 py-2.5 text-sm font-bold text-stone-600 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors shadow-sm"
+              className="px-6 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
             >
               Hủy
             </button>
@@ -254,7 +255,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           <button 
             type="button"
             onClick={() => alert("Đã lưu bản nháp!")}
-            className="px-6 py-2.5 text-sm font-bold text-stone-700 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors shadow-sm flex items-center gap-2"
+            className="px-6 py-2.5 text-sm font-bold text-slate-800 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2"
           >
             <Save className="w-4 h-4" /> Lưu nháp
           </button>

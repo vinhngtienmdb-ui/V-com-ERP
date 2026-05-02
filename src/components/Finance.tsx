@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
  DollarSign, 
@@ -66,13 +67,13 @@ function RefreshCw(props: any) {
 
 function getColorClasses(color: string) {
  switch (color) {
- case 'blue': return 'bg-[#F2F0E9] text-orange-700';
+ case 'blue': return 'bg-slate-100 text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
  case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'rose': return 'bg-rose-50 text-rose-600';
- default: return 'bg-stone-50 text-stone-600';
+ default: return 'bg-slate-50 text-slate-700';
  }
 }
 
@@ -126,8 +127,8 @@ export function Finance() {
  <div className="header-title">
  <div className="flex items-center gap-2 mb-1">
  {activeTab !== 'overview' && (
- <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-stone-100 rounded-md transition-colors mr-1">
- <ArrowLeft className="w-4 h-4 text-stone-500" />
+ <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
+ <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
  <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Tài chính & Kế toán</h1>
@@ -135,12 +136,12 @@ export function Finance() {
  <p className="text-sm text-[#6B7280]">Quản lý doanh số, chi phí, dòng tiền và báo cáo thuế theo thời gian thực.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
- <Download className="w-4 h-4 text-stone-500" /> Xuất Excel
+ <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+ <Download className="w-4 h-4 text-slate-600" /> Xuất Excel
  </button>
  <button 
  onClick={addDemoTransactions}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> Bút toán mới
  </button>
@@ -150,8 +151,8 @@ export function Finance() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-[#2563EB]">Doanh thu Hệ thống (G.M.V)</span>
  <TrendingUp className="w-4 h-4 text-emerald-600" />
@@ -161,7 +162,7 @@ export function Finance() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-rose-600">Tổng Chi phí & Quỹ lương</span>
  <TrendingDown className="w-4 h-4 text-rose-600" />
@@ -171,7 +172,7 @@ export function Finance() {
  <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-teal-600">Lợi nhuận ròng (P&L)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -196,13 +197,13 @@ export function Finance() {
  <span className="text-[10px] text-[#FAF9F5] font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
  </div>
  </div>
- </div>
+ </DraggableGrid>
 
  {/* Module Grid */}
  <div className="space-y-6">
  {FINANCE_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
- <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2 px-1">
+ <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
  <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
  {group.title}
  </h3>
@@ -211,7 +212,7 @@ export function Finance() {
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -233,7 +234,7 @@ export function Finance() {
  )}
 
  {activeTab !== 'overview' && (
- <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
@@ -246,7 +247,7 @@ export function Finance() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-[#F2F0E9]/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -256,30 +257,30 @@ export function Finance() {
 
  <div className="p-0">
  {activeTab === 'ocr' && (
- <div className="p-8 animate-in fade-in slide-in- duration-500 bg-stone-50 min-h-[600px]">
+ <div className="p-8 animate-in fade-in slide-in- duration-500 bg-slate-50 min-h-[600px]">
  <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
  <div className="space-y-6">
- <div className="bg-white p-8 rounded-xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-[#F2F0E9]/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
- <div className="p-6 bg-[#F2F0E9] text-orange-700 rounded-full group-hover:scale-110 transition-transform">
+ <div className="bg-white p-8 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-slate-100/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
+ <div className="p-6 bg-slate-100 text-orange-700 rounded-full group-hover:scale-110 transition-transform">
  <Upload className="w-10 h-10" />
  </div>
  <div>
- <p className="text-sm font-black text-stone-900">Tải lên hoặc Kéo thả Hóa đơn</p>
- <p className="text-xs text-stone-400 mt-2">Hỗ trợ JPG, PNG, PDF (Tối đa 10MB)</p>
+ <p className="text-sm font-black text-slate-900">Tải lên hoặc Kéo thả Hóa đơn</p>
+ <p className="text-xs text-slate-500 mt-2">Hỗ trợ JPG, PNG, PDF (Tối đa 10MB)</p>
  </div>
- <button className="px-6 py-2.5 bg-stone-900 text-[#FAF9F5] rounded-xl text-xs font-bold hover:bg-stone-800 transition-all shadow-sm">Chọn tệp tin</button>
+ <button className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">Chọn tệp tin</button>
  
  {isScanning && (
  <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center space-y-4">
- <div className="w-16 h-16 bg-stone-900 rounded-full flex items-center justify-center animate-bounce">
+ <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center animate-bounce">
  <Zap className="w-8 h-8 text-[#FAF9F5]" />
  </div>
  <div className="space-y-1 text-center">
- <p className="text-sm font-black text-stone-900 animate-pulse">Gemini AI đang phân tích...</p>
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Trích xuất Header & Line Items</p>
+ <p className="text-sm font-black text-slate-900 animate-pulse">Gemini AI đang phân tích...</p>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Trích xuất Header & Line Items</p>
  </div>
- <div className="w-48 h-1 bg-stone-100 rounded-full overflow-hidden">
- <div className="h-full bg-stone-900 animate-[scan_2s_ease-in-out_infinite]" />
+ <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
+ <div className="h-full bg-slate-900 animate-[scan_2s_ease-in-out_infinite]" />
  </div>
  </div>
  )}
@@ -301,18 +302,18 @@ export function Finance() {
 
  <div className="space-y-6">
  <div className={cn(
- "bg-white p-8 rounded-xl border border-stone-200 shadow-sm transition-all min-h-[400px]",
+ "bg-white p-8 rounded-xl border border-slate-300 shadow-sm transition-all min-h-[400px]",
  !scanResult && "opacity-50 grayscale flex flex-col items-center justify-center text-center"
  )}>
  {!scanResult ? (
  <>
- <FileSearch className="w-12 h-12 text-stone-200 mb-4" />
- <p className="text-xs font-bold text-stone-400 tracking-widest uppercase">Kết quả nhận diện sẽ hiển thị tại đây</p>
+ <FileSearch className="w-12 h-12 text-slate-400 mb-4" />
+ <p className="text-xs font-bold text-slate-500 tracking-widest uppercase">Kết quả nhận diện sẽ hiển thị tại đây</p>
  </>
  ) : (
  <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
- <div className="flex justify-between items-center pb-4 border-b border-stone-100">
- <h3 className="font-black text-stone-900 text-sm uppercase tracking-widest flex items-center gap-2">
+ <div className="flex justify-between items-center pb-4 border-b border-slate-200">
+ <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả Trích xuất AI
  </h3>
  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Match: 99.4%</span>
@@ -320,38 +321,38 @@ export function Finance() {
 
  <div className="grid grid-cols-2 gap-6">
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Nhà cung cấp</p>
- <p className="text-sm font-black text-stone-900 uppercase tracking-tight">Công ty Điện lực Hà Nội - EVNHANOI</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Nhà cung cấp</p>
+ <p className="text-sm font-black text-slate-900 uppercase tracking-tight">Công ty Điện lực Hà Nội - EVNHANOI</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Mã số thuế</p>
- <p className="text-sm font-black text-stone-900 font-mono tracking-tighter">0100101114</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Mã số thuế</p>
+ <p className="text-sm font-black text-slate-900 font-mono tracking-tighter">0100101114</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Số hóa đơn</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Số hóa đơn</p>
  <p className="text-sm font-black text-primary-600 font-mono">EVN-2023-99881</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Ngày hóa đơn</p>
- <p className="text-sm font-black text-stone-900">15/12/2023</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Ngày hóa đơn</p>
+ <p className="text-sm font-black text-slate-900">15/12/2023</p>
  </div>
  </div>
 
  <div className="space-y-4">
- <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Chi tiết dòng (Line Items)</p>
- <div className="p-4 bg-stone-50 rounded-lg space-y-3">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chi tiết dòng (Line Items)</p>
+ <div className="p-4 bg-slate-50 rounded-lg space-y-3">
  <div className="flex justify-between text-xs items-center">
- <span className="font-bold text-stone-900">Điện năng tiêu thụ (Mức 3)</span>
- <span className="font-black text-stone-900">{formatCurrency(4850000)}</span>
+ <span className="font-bold text-slate-900">Điện năng tiêu thụ (Mức 3)</span>
+ <span className="font-black text-slate-900">{formatCurrency(4850000)}</span>
  </div>
- <div className="flex justify-between text-[10px] text-stone-500 font-medium">
+ <div className="flex justify-between text-[10px] text-slate-600 font-medium">
  <span>Thuế GTGT (10%)</span>
  <span>{formatCurrency(485000)}</span>
  </div>
  </div>
  </div>
 
- <div className="bg-stone-900 p-6 rounded-lg flex justify-between items-center shadow-sm shadow-blue-200">
+ <div className="bg-slate-900 p-6 rounded-lg flex justify-between items-center shadow-sm shadow-blue-200">
  <div>
  <p className="text-[10px] font-bold text-blue-100 uppercase mb-1 tracking-widest">Tổng tiền cần thanh toán</p>
  <p className="text-2xl font-black text-[#FAF9F5]">{formatCurrency(5335000)}</p>
@@ -373,7 +374,7 @@ export function Finance() {
  setScanResult(true);
  }, 2500);
  }}
- className="w-full py-5 bg-stone-900 text-[#FAF9F5] rounded-xl font-black text-sm uppercase tracking-widest hover:bg-stone-800 transition-all shadow-sm shadow-blue-100 flex items-center justify-center gap-3"
+ className="w-full py-5 bg-slate-900 text-[#FAF9F5] rounded-xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-100 flex items-center justify-center gap-3"
  >
  <Scan className="w-5 h-5" /> Bắt đầu AI Scan
  </button>
@@ -393,10 +394,10 @@ export function Finance() {
  <div className="flex gap-4">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input type="text" placeholder="Tìm kiếm bút toán..." className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-64" />
+ <input type="text" placeholder="Tìm kiếm bút toán..." className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-64" />
  </div>
- <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
- <Filter className="w-4 h-4 text-stone-400" /> Lọc kỳ
+ <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+ <Filter className="w-4 h-4 text-slate-500" /> Lọc kỳ
  </button>
  </div>
  </div>
@@ -422,7 +423,7 @@ export function Finance() {
  <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
  </td>
  <td className="px-6 py-4">
- <span className="px-2.5 py-1 bg-stone-100 text-stone-700 text-[10px] font-bold rounded-full uppercase">
+ <span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-full uppercase">
  {tx.category}
  </span>
  </td>
@@ -449,7 +450,7 @@ export function Finance() {
  { title: 'Báo cáo Kết quả Hoạt động Kinh doanh', desc: 'Phản ánh doanh thu, chi phí và lợi nhuận của doanh nghiệp trong kỳ.' },
  { title: 'Báo cáo Lưu chuyển Tiền tệ', desc: 'Theo dõi dòng tiền vào và ra từ hoạt động KD, đầu tư và tài chính.' }
  ].map((report) => (
- <div key={report.title} className="bg-[#F9FAFB] p-6 rounded-lg border border-[#E5E7EB] flex justify-between items-center group cursor-pointer hover:border-[#2563EB] transition-all">
+ <div key={report.title} className="bg-[#F9FAFB] p-6 rounded-lg border border-slate-300 flex justify-between items-center group cursor-pointer hover:border-[#2563EB] transition-all">
  <div className="space-y-1">
  <h4 className="text-base font-bold text-[#111827]">{report.title}</h4>
  <p className="text-sm text-[#6B7280]">{report.desc}</p>

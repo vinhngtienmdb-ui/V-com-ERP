@@ -5,6 +5,7 @@ export interface StoreNode {
  id: string;
  name: string;
  address: string;
+ phone?: string;
  domain: string;
  companyId: string;
  companyName: string;

@@ -26,9 +26,9 @@ export function Home() {
  return (
  <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 pb-20 pt-2">
  {/* Hero / Search Section */}
- <div className="relative overflow-hidden bg-stone-900 rounded-lg p-8 md:p-12 text-[#FAF9F5] border border-stone-800 shadow-sm">
+ <div className="relative overflow-hidden bg-slate-900 rounded-lg p-8 md:p-12 text-[#FAF9F5] border border-slate-800 shadow-sm">
  {/* Animated Background Gradients */}
- <div className="absolute top-0 right-0 w-96 h-96 bg-stone-900/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
+ <div className="absolute top-0 right-0 w-96 h-96 bg-slate-900/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
  <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
  
  <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
@@ -42,8 +42,8 @@ export function Home() {
  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"></span>
  </div>
  <span className="text-xs font-bold text-emerald-400 uppercase tracking-[0.2em]">Hệ thống vận hành tối ưu</span>
- <div className="w-px h-3 bg-stone-700 mx-2" />
- <span className="text-xs font-medium text-stone-400">Version 2.5.0-Enterprise</span>
+ <div className="w-px h-3 bg-slate-700 mx-2" />
+ <span className="text-xs font-medium text-slate-500">Version 2.5.0-Enterprise</span>
  </div>
 
  <h1 className="font-serif tracking-tight text-4xl md:text-5xl font-black tracking-tight mb-6 text-[#FAF9F5] leading-tight">
@@ -51,7 +51,7 @@ export function Home() {
  <span className="bg-white bg-clip-text text-transparent">VComm ERP Intelligence</span>
  </h1>
  
- <p className="text-stone-400 text-lg font-medium mb-10 max-w-2xl leading-relaxed">
+ <p className="text-slate-500 text-lg font-medium mb-10 max-w-2xl leading-relaxed">
  Hệ thống quản trị doanh nghiệp hợp nhất. <br className="hidden md:block" />
  Truy cập nhanh tất cả các module vận hành từ một giao diện AI-First tập trung.
  </p>
@@ -60,25 +60,25 @@ export function Home() {
  <div className="relative group flex-1 w-full max-w-xl">
  <div className="absolute -inset-1 bg-white rounded-xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200"></div>
  <div className="relative">
- <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-orange-500 transition-colors" />
+ <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-orange-500 transition-colors" />
  <input 
  type="text"
  placeholder="Tìm kiếm module hoặc chức năng (Shift + /)..."
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
- className="w-full bg-stone-800/80 border border-stone-700/50 rounded-xl py-4 pl-14 pr-6 text-base text-[#FAF9F5] placeholder-stone-500 focus:outline-none focus:ring-0 focus:border-stone-900/50 transition-all backdrop-blur-xl"
+ className="w-full bg-slate-800/80 border border-slate-700/50 rounded-xl py-4 pl-14 pr-6 text-base text-[#FAF9F5] placeholder-stone-500 focus:outline-none focus:ring-0 focus:border-slate-900/50 transition-all backdrop-blur-xl"
  />
  </div>
  </div>
  
  <div className="flex flex-wrap items-center justify-center gap-4 bg-white/5 border border-white/10 p-2 pl-4 rounded-xl backdrop-blur-md">
  <div className="flex items-center gap-2">
- <History className="w-4 h-4 text-stone-400" />
- <span className="text-xs font-bold text-stone-500 uppercase tracking-wider mr-2">Vừa mở:</span>
+ <History className="w-4 h-4 text-slate-500" />
+ <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mr-2">Vừa mở:</span>
  </div>
  <div className="flex gap-2">
  {['Dashboard', 'Đơn hàng', 'Sản phẩm'].map(item => (
- <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md text-xs font-bold text-stone-300 transition-colors border border-white/5">
+ <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md text-xs font-bold text-slate-500 transition-colors border border-white/5">
  {item}
  </button>
  ))}
@@ -93,18 +93,18 @@ export function Home() {
  {filteredGroups.map((group, idx) => (
  <div key={idx} className="space-y-6">
  <div className="flex items-center gap-4">
- <h2 className="text-sm font-black text-stone-500 uppercase tracking-[0.2em]">
+ <h2 className="text-sm font-black text-slate-600 uppercase tracking-[0.2em]">
  {group.title}
  </h2>
- <div className="flex-1 h-px bg-stone-200" />
+ <div className="flex-1 h-px bg-slate-200" />
  </div>
  
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
  {group.items.map((item) => {
  const colorClasses: Record<string, any> = {
  blue: { 
- icon: 'text-orange-700 bg-[#F2F0E9] group-hover:bg-stone-900 group-hover:shadow-blue-200',
- border: 'hover:border-stone-900',
+ icon: 'text-orange-700 bg-slate-100 group-hover:bg-slate-900 group-hover:shadow-blue-200',
+ border: 'hover:border-slate-900',
  text: 'group-hover:text-orange-700',
  action: 'text-orange-700'
  },
@@ -139,10 +139,10 @@ export function Home() {
  action: 'text-amber-600'
  },
  slate: { 
- icon: 'text-stone-600 bg-stone-50 group-hover:bg-stone-600 group-hover:shadow-stone-200',
- border: 'hover:border-stone-600',
- text: 'group-hover:text-stone-600',
- action: 'text-stone-600'
+ icon: 'text-slate-700 bg-slate-50 group-hover:bg-slate-600 group-hover:shadow-slate-200',
+ border: 'hover:border-slate-600',
+ text: 'group-hover:text-slate-700',
+ action: 'text-slate-700'
  },
  orange: { 
  icon: 'text-orange-600 bg-orange-50 group-hover:bg-orange-600 group-hover:shadow-orange-200',
@@ -205,10 +205,10 @@ export function Home() {
  action: 'text-lime-600'
  },
  gray: { 
- icon: 'text-stone-600 bg-stone-50 group-hover:bg-stone-600 group-hover:shadow-stone-200',
- border: 'hover:border-stone-600',
- text: 'group-hover:text-stone-600',
- action: 'text-stone-600'
+ icon: 'text-slate-700 bg-slate-50 group-hover:bg-slate-600 group-hover:shadow-slate-200',
+ border: 'hover:border-slate-600',
+ text: 'group-hover:text-slate-700',
+ action: 'text-slate-700'
  },
  };
  
@@ -219,7 +219,7 @@ export function Home() {
  key={item.path}
  onClick={() => navigate(item.path)}
  className={cn(
- "group relative bg-white border border-stone-200 rounded-xl p-5 text-left hover:shadow-sm transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
+ "group relative bg-white border border-slate-300 rounded-xl p-5 text-left hover:shadow-sm transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
  "hover:-translate-y-0.5", 
  classes.border
  )}
@@ -233,11 +233,11 @@ export function Home() {
  <item.icon className="w-5 h-5" />
  </div>
  
- <h3 className={cn("text-base font-bold text-stone-900 mb-1 tracking-tight transition-colors", classes.text)}>
+ <h3 className={cn("text-base font-bold text-slate-900 mb-1 tracking-tight transition-colors", classes.text)}>
  {item.label}
  </h3>
  
- <p className="text-xs text-stone-500 font-medium leading-relaxed line-clamp-2 italic">
+ <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-2 italic">
  {item.description || 'Module quản lý nghiệp vụ hệ thống.'}
  </p>
  
@@ -260,11 +260,11 @@ export function Home() {
 
  {filteredGroups.length === 0 && (
  <div className="py-20 text-center space-y-4">
- <div className="w-20 h-20 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-400">
+ <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500">
  <Search className="w-10 h-10" />
  </div>
- <h3 className="text-xl font-bold text-stone-900">Không tìm thấy module phù hợp</h3>
- <p className="text-stone-500">Thử tìm kiếm với từ khóa khác hoặc duyệt danh mục bên dưới.</p>
+ <h3 className="text-xl font-bold text-slate-900">Không tìm thấy module phù hợp</h3>
+ <p className="text-slate-600">Thử tìm kiếm với từ khóa khác hoặc duyệt danh mục bên dưới.</p>
  <button 
  onClick={() => setSearchQuery('')}
  className="text-orange-700 font-bold hover:underline"
@@ -276,15 +276,15 @@ export function Home() {
  </div>
 
  {/* Footer Support */}
- <footer className="mt-12 pt-12 border-t border-stone-200">
+ <footer className="mt-12 pt-12 border-t border-slate-300">
  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
  <div className="flex items-center gap-6">
- <div className="text-xs font-bold text-stone-400 uppercase tracking-widest">Hỗ trợ kỹ thuật: 1900 8888</div>
- <div className="text-xs font-bold text-stone-400 uppercase tracking-widest">Version: 2.5.0-Enterprise</div>
+ <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Hỗ trợ kỹ thuật: 1900 8888</div>
+ <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Version: 2.5.0-Enterprise</div>
  </div>
  <div className="flex gap-4">
- <button className="text-xs font-bold text-orange-700 hover:bg-[#F2F0E9] px-4 py-2 rounded-lg transition-colors">Hướng dẫn sử dụng</button>
- <button className="text-xs font-bold text-orange-700 hover:bg-[#F2F0E9] px-4 py-2 rounded-lg transition-colors">Báo cáo sự cố</button>
+ <button className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors">Hướng dẫn sử dụng</button>
+ <button className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors">Báo cáo sự cố</button>
  </div>
  </div>
  </footer>

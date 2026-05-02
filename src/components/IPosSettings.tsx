@@ -130,18 +130,18 @@ export function IPosSettings() {
 
  return (
  <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in slide-in- duration-500">
- <div className="flex items-center justify-between bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+ <div className="flex items-center justify-between bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
  <MonitorSmartphone className="w-6 h-6" />
  </div>
  <div>
- <h1 className="font-serif tracking-tight text-xl font-bold text-stone-900">Cài đặt iPOS & Phân quyền</h1>
- <p className="text-sm text-stone-500 mt-1">Thiết lập vai trò nâng cao và giới hạn quyền truy cập từng module iPOS.</p>
+ <h1 className="font-serif tracking-tight text-xl font-bold text-slate-900">Cài đặt iPOS & Phân quyền</h1>
+ <p className="text-sm text-slate-600 mt-1">Thiết lập vai trò nâng cao và giới hạn quyền truy cập từng module iPOS.</p>
  </div>
  </div>
  <div className="flex gap-3">
- <button onClick={() => navigate('/ipos')} className="px-4 py-2 border border-stone-200 text-stone-700 bg-white rounded-lg text-sm font-semibold hover:bg-stone-50 shadow-sm">
+ <button onClick={() => navigate('/ipos')} className="px-4 py-2 border border-slate-300 text-slate-800 bg-white rounded-lg text-sm font-semibold hover:bg-slate-50 shadow-sm">
  Quay lại iPOS
  </button>
  <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
@@ -154,13 +154,13 @@ export function IPosSettings() {
  <div className="flex flex-col lg:flex-row gap-6">
  {/* Roles Sidebar */}
  <div className="w-full lg:w-72 shrink-0 space-y-4">
- <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
+ <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
  <div className="flex items-center justify-between mb-4">
- <h3 className="font-bold text-stone-800 flex items-center gap-2">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Users className="w-4 h-4 text-primary-600" />
  Vai trò (Roles)
  </h3>
- <button className="p-1 text-stone-400 hover:text-primary-600 hover:bg-primary-50 rounded">
+ <button className="p-1 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded">
  <Plus className="w-4 h-4" />
  </button>
  </div>
@@ -174,16 +174,16 @@ export function IPosSettings() {
  "w-full text-left px-3 py-3 rounded-lg border transition-all",
  activeRole === role.id 
  ? "bg-primary-50 border-primary-200 shadow-sm" 
- : "bg-white border-transparent hover:border-stone-200 hover:bg-stone-50"
+ : "bg-white border-transparent hover:border-slate-300 hover:bg-slate-50"
  )}
  >
  <p className={cn(
  "font-bold text-sm",
- activeRole === role.id ? "text-primary-700" : "text-stone-700"
+ activeRole === role.id ? "text-primary-700" : "text-slate-800"
  )}>{role.name}</p>
  <p className={cn(
  "text-[11px] mt-1 line-clamp-2",
- activeRole === role.id ? "text-primary-500/80" : "text-stone-500"
+ activeRole === role.id ? "text-primary-500/80" : "text-slate-600"
  )}>{role.description}</p>
  </button>
  ))}
@@ -192,14 +192,14 @@ export function IPosSettings() {
  </div>
 
  {/* Permissions Content */}
- <div className="flex-1 bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
- <div className="p-6 border-b border-stone-100 bg-stone-50 flex items-center justify-between">
+ <div className="flex-1 bg-white border border-slate-300 rounded-xl shadow-sm overflow-hidden">
+ <div className="p-6 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
  <div>
- <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2">
+ <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
  <Shield className="w-5 h-5 text-emerald-600" />
  Quyền hạn: {currentRole?.name}
  </h2>
- <p className="text-sm text-stone-500 mt-1">Gạt công tắc để cấp hoặc thu hồi quyền truy cập tính năng.</p>
+ <p className="text-sm text-slate-600 mt-1">Gạt công tắc để cấp hoặc thu hồi quyền truy cập tính năng.</p>
  </div>
  {activeRole === 'admin' && (
  <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold border border-amber-100">
@@ -213,9 +213,9 @@ export function IPosSettings() {
  {IPOS_MODULES.map((module, mIdx) => (
  <div key={module.id} className={cn(
  "p-6",
- mIdx !== IPOS_MODULES.length - 1 ? "border-b border-stone-100" : ""
+ mIdx !== IPOS_MODULES.length - 1 ? "border-b border-slate-200" : ""
  )}>
- <h3 className="text-sm font-black text-stone-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+ <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
  <div className="w-1.5 h-4 bg-primary-500 rounded-full"></div>
  {module.name}
  </h3>
@@ -231,7 +231,7 @@ export function IPosSettings() {
  key={feature.id} 
  className={cn(
  "flex items-start gap-3 p-3 rounded-lg border transition-all cursor-pointer",
- isGranted ? "bg-stone-50 border-emerald-200" : "bg-white border-stone-200 hover:border-stone-300",
+ isGranted ? "bg-slate-50 border-emerald-200" : "bg-white border-slate-300 hover:border-slate-400",
  isDisabled && "opacity-75 cursor-not-allowed"
  )}
  >
@@ -245,7 +245,7 @@ export function IPosSettings() {
  />
  <div className={cn(
  "w-5 h-5 rounded flex items-center justify-center transition-colors shadow-sm",
- isGranted ? "bg-emerald-500 text-[#FAF9F5]" : "bg-stone-200 text-transparent"
+ isGranted ? "bg-emerald-500 text-[#FAF9F5]" : "bg-slate-200 text-transparent"
  )}>
  <Check className="w-3.5 h-3.5" />
  </div>
@@ -253,9 +253,9 @@ export function IPosSettings() {
  <div className="flex-1">
  <p className={cn(
  "text-sm font-semibold",
- isGranted ? "text-stone-900" : "text-stone-600"
+ isGranted ? "text-slate-900" : "text-slate-700"
  )}>{feature.name}</p>
- <p className="text-[10px] text-stone-400 mt-0.5">Mã quyền: {permKey}</p>
+ <p className="text-[10px] text-slate-500 mt-0.5">Mã quyền: {permKey}</p>
  </div>
  </label>
  );

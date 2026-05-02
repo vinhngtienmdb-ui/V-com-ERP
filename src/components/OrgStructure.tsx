@@ -133,14 +133,14 @@ export function OrgStructure() {
     return (
       <div className="flex flex-col relative w-full pt-4">
         <div className="flex justify-center items-center relative z-10 w-full">
-          <div className="${level > 0 ? 'mt-4 border-t-2 border-stone-300 w-px h-4 top-0 absolute' : ''}"></div>
+          <div className="${level > 0 ? 'mt-4 border-t-2 border-slate-400 w-px h-4 top-0 absolute' : ''}"></div>
           <div className="bg-white border-2 border-primary-500 rounded-lg p-4 shadow-sm w-64 text-center hover:shadow-md transition-shadow cursor-default flex flex-col items-center">
-             <div className="font-bold text-stone-900 line-clamp-1" title={node.name}>{node.name}</div>
-             <div className="text-xs text-stone-500 mt-1 line-clamp-1" title={node.manager}>Quản lý: {node.manager || 'Chưa cập nhật'}</div>
+             <div className="font-bold text-slate-900 line-clamp-1" title={node.name}>{node.name}</div>
+             <div className="text-xs text-slate-600 mt-1 line-clamp-1" title={node.manager}>Quản lý: {node.manager || 'Chưa cập nhật'}</div>
              {hasChildren && (
                 <button 
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="mt-3 w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center hover:bg-primary-100 text-stone-600 hover:text-primary-600 transition-colors"
+                  className="mt-3 w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center hover:bg-primary-100 text-slate-700 hover:text-primary-600 transition-colors"
                 >
                   {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                 </button>
@@ -157,10 +157,10 @@ export function OrgStructure() {
                className="flex relative justify-center gap-8 mt-6 pt-6"
             >
               {/* Connecting vertical line down from parent */}
-              <div className="absolute top-0 w-px h-6 bg-stone-300 z-0"></div>
+              <div className="absolute top-0 w-px h-6 bg-slate-300 z-0"></div>
               {/* Horizontal connecting line across children */}
               {children.length > 1 && (
-                <div className="absolute top-6 h-px bg-stone-300 pointer-events-none" 
+                <div className="absolute top-6 h-px bg-slate-300 pointer-events-none" 
                      style={{ 
                        left: `calc(140px)`, // approx offset
                        right: `calc(140px)` 
@@ -185,8 +185,8 @@ export function OrgStructure() {
     <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h1 className="font-serif tracking-tight text-2xl font-bold text-stone-900">Cơ cấu Tổ chức</h1>
-          <p className="text-sm text-stone-500">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
+          <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
+          <p className="text-sm text-slate-600">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
         </div>
         {activeTab !== 'org_chart' && (
           <button 
@@ -199,7 +199,7 @@ export function OrgStructure() {
         )}
       </div>
 
-      <div className="flex border-b border-stone-200 gap-6">
+      <div className="flex border-b border-slate-300 gap-6">
         {[
           { id: 'departments', label: 'Danh Sách Phòng Ban', icon: Building2 },
           { id: 'titles', label: 'Danh Sách Chức Danh', icon: Briefcase },
@@ -211,7 +211,7 @@ export function OrgStructure() {
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
               "pb-3 font-bold uppercase tracking-widest text-xs transition-all flex items-center gap-2 relative",
-              activeTab === tab.id ? "text-primary-700" : "text-stone-400 hover:text-stone-600"
+              activeTab === tab.id ? "text-primary-700" : "text-slate-500 hover:text-slate-700"
             )}
           >
             <tab.icon className="w-4 h-4" /> {tab.label}
@@ -222,11 +222,11 @@ export function OrgStructure() {
         ))}
       </div>
 
-      <div className="bg-white rounded-lg border border-stone-200 shadow-sm overflow-hidden min-h-[500px]">
+      <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px]">
         {activeTab === 'departments' && (
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-200 text-xs font-bold text-stone-500 uppercase tracking-widest">
+              <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã PB</th>
                 <th className="px-6 py-4">Tên Phòng Ban</th>
                 <th className="px-6 py-4">Quản Lý</th>
@@ -234,22 +234,22 @@ export function OrgStructure() {
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-slate-100">
               {departments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-stone-500">Chưa có dữ liệu.</td>
+                  <td colSpan={5} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 departments.map(dept => (
-                  <tr key={dept.id} className="hover:bg-stone-50">
-                    <td className="px-6 py-4 font-mono text-sm text-stone-500 font-bold">{dept.id}</td>
-                    <td className="px-6 py-4 font-bold text-stone-900">{dept.name}</td>
-                    <td className="px-6 py-4 text-sm text-stone-600">{dept.manager || 'Chưa có'}</td>
-                    <td className="px-6 py-4 text-sm text-stone-500">
+                  <tr key={dept.id} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{dept.id}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">{dept.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700">{dept.manager || 'Chưa có'}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {departments.find(d => d.id === dept.parentId)?.name || '---'}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 text-stone-400">
+                      <div className="flex justify-end gap-2 text-slate-500">
                         <button onClick={() => handleOpenModal('department', dept)} className="p-1 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete('department', dept.id)} className="p-1 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -264,28 +264,28 @@ export function OrgStructure() {
         {activeTab === 'titles' && (
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-200 text-xs font-bold text-stone-500 uppercase tracking-widest">
+              <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã CD</th>
                 <th className="px-6 py-4">Tên Chức Danh</th>
                 <th className="px-6 py-4">Phòng Ban Cấp Bộ</th>
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-slate-100">
               {jobTitles.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-sm text-stone-500">Chưa có dữ liệu.</td>
+                  <td colSpan={4} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 jobTitles.map(title => (
-                  <tr key={title.id} className="hover:bg-stone-50">
-                    <td className="px-6 py-4 font-mono text-sm text-stone-500 font-bold">{title.id}</td>
-                    <td className="px-6 py-4 font-bold text-stone-900">{title.name}</td>
-                    <td className="px-6 py-4 text-sm text-stone-600">
+                  <tr key={title.id} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{title.id}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">{title.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700">
                       {departments.find(d => d.id === title.departmentId)?.name || '---'}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 text-stone-400">
+                      <div className="flex justify-end gap-2 text-slate-500">
                         <button onClick={() => handleOpenModal('title', title)} className="p-1 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete('title', title.id)} className="p-1 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -300,26 +300,26 @@ export function OrgStructure() {
         {activeTab === 'ranks' && (
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-200 text-xs font-bold text-stone-500 uppercase tracking-widest">
+              <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã CB</th>
                 <th className="px-6 py-4">Tên Cấp Bậc</th>
                 <th className="px-6 py-4">Level</th>
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-slate-100">
               {jobRanks.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-sm text-stone-500">Chưa có dữ liệu.</td>
+                  <td colSpan={4} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 jobRanks.sort((a,b) => a.level - b.level).map(rank => (
-                  <tr key={rank.id} className="hover:bg-stone-50">
-                    <td className="px-6 py-4 font-mono text-sm text-stone-500 font-bold">{rank.id}</td>
-                    <td className="px-6 py-4 font-bold text-stone-900">{rank.name}</td>
-                    <td className="px-6 py-4 text-sm text-stone-600 font-bold">Lvl {rank.level}</td>
+                  <tr key={rank.id} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{rank.id}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">{rank.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700 font-bold">Lvl {rank.level}</td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 text-stone-400">
+                      <div className="flex justify-end gap-2 text-slate-500">
                         <button onClick={() => handleOpenModal('rank', rank)} className="p-1 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete('rank', rank.id)} className="p-1 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -332,9 +332,9 @@ export function OrgStructure() {
         )}
 
         {activeTab === 'org_chart' && (
-          <div className="p-8 overflow-auto min-h-[500px] w-full flex justify-center bg-stone-50/50">
+          <div className="p-8 overflow-auto min-h-[500px] w-full flex justify-center bg-slate-50/50">
              {rootDepartments.length === 0 ? (
-                <div className="text-stone-500 text-sm mt-8">Chưa có sơ đồ tổ chức</div>
+                <div className="text-slate-600 text-sm mt-8">Chưa có sơ đồ tổ chức</div>
              ) : (
                 <div className="inline-flex gap-16 pb-12 w-full justify-center">
                   {rootDepartments.map(root => (
@@ -349,19 +349,19 @@ export function OrgStructure() {
       {/* MODAL CẬP NHẬT */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden border border-stone-200"
+              className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden border border-slate-300"
             >
-              <div className="flex items-center justify-between p-4 border-b border-stone-100 bg-stone-50">
-                <h3 className="font-bold text-stone-900">
+              <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+                <h3 className="font-bold text-slate-900">
                   {editingItem ? 'Cập nhật' : 'Thêm mới'}{' '}
                   {modalType === 'department' ? 'Phòng Ban' : modalType === 'title' ? 'Chức Danh' : 'Cấp Bậc'}
                 </h3>
-                <button onClick={handleCloseModal} className="text-stone-400 hover:text-stone-600">
+                <button onClick={handleCloseModal} className="text-slate-500 hover:text-slate-700">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -369,31 +369,31 @@ export function OrgStructure() {
                 {modalType === 'department' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Tên Phòng Ban</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Phòng Ban</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
                         placeholder="VD: Phòng IT"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Tên Quản Lý</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Quản Lý</label>
                       <input 
                         type="text" 
                         value={formData.manager || ''} 
                         onChange={(e) => setFormData({...formData, manager: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="VD: Nguyễn Văn A"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Trực thuộc phòng ban</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Trực thuộc phòng ban</label>
                       <select 
                         value={formData.parentId || ''} 
                         onChange={(e) => setFormData({...formData, parentId: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                       >
                         <option value="">Không có cữ bộ trực thuộc (Cao nhất)</option>
                         {departments.filter(d => d.id !== editingItem?.id).map(d => (
@@ -407,21 +407,21 @@ export function OrgStructure() {
                 {modalType === 'title' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Tên Chức Danh</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Chức Danh</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
                         placeholder="VD: Trưởng phòng IT"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Thuộc phòng ban</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Thuộc phòng ban</label>
                       <select 
                         value={formData.departmentId || ''} 
                         onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                       >
                         <option value="">-- Chọn phòng ban --</option>
                         {departments.map(d => (
@@ -435,33 +435,33 @@ export function OrgStructure() {
                 {modalType === 'rank' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Tên Cấp Bậc</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Cấp Bậc</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
                         placeholder="VD: Thực tập sinh"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Level (Số nguyên dương)</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Level (Số nguyên dương)</label>
                       <input 
                         type="number" 
                         min="1"
                         value={formData.level || 1} 
                         onChange={(e) => setFormData({...formData, level: parseInt(e.target.value) || 1})}
-                        className="w-full border border-stone-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
                       />
-                      <p className="text-xs text-stone-500 mt-2">Level càng cao thì cấp bậc/vị thế chức vu càng lớn (vd: Giám đốc cấp 5 &gt; Nhân viên cấp 2).</p>
+                      <p className="text-xs text-slate-600 mt-2">Level càng cao thì cấp bậc/vị thế chức vu càng lớn (vd: Giám đốc cấp 5 &gt; Nhân viên cấp 2).</p>
                     </div>
                   </>
                 )}
               </div>
-              <div className="p-4 border-t border-stone-100 bg-stone-50 flex justify-end gap-3">
+              <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
                 <button 
                   onClick={handleCloseModal}
-                  className="px-4 py-2 text-sm font-bold text-stone-600 hover:text-stone-900 transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors"
                 >
                   Hủy bỏ
                 </button>

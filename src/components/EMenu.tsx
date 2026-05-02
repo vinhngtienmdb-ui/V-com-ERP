@@ -106,7 +106,7 @@ export function EMenu() {
 
  if (orderStatus === 'confirmed') {
  return (
- <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-6 text-center">
+ <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
  <motion.div 
  initial={{ scale: 0.8, opacity: 0 }}
  animate={{ scale: 1, opacity: 1 }}
@@ -116,16 +116,16 @@ export function EMenu() {
  <CheckCircle2 className="w-10 h-10" />
  </div>
  <div className="space-y-2">
- <h2 className="text-2xl font-bold text-stone-900">Đặt món thành công!</h2>
- <p className="text-stone-500 text-sm">Đơn hàng của bạn tại <strong>Bàn {tableId}</strong> đã được gửi đến quầy. Nhân viên sẽ phục vụ bạn ngay!</p>
+ <h2 className="text-2xl font-bold text-slate-900">Đặt món thành công!</h2>
+ <p className="text-slate-600 text-sm">Đơn hàng của bạn tại <strong>Bàn {tableId}</strong> đã được gửi đến quầy. Nhân viên sẽ phục vụ bạn ngay!</p>
  </div>
- <div className="p-4 bg-stone-50 rounded-lg text-left space-y-2">
- <div className="flex justify-between text-xs font-bold text-stone-400 uppercase tracking-widest">
+ <div className="p-4 bg-slate-50 rounded-lg text-left space-y-2">
+ <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-widest">
  <span>Mã đơn</span>
  <span>{lastOrderId?.slice(-6).toUpperCase()}</span>
  </div>
  <div className="flex justify-between text-sm">
- <span className="text-stone-600">Trạng thái</span>
+ <span className="text-slate-700">Trạng thái</span>
  <span className="text-primary-600 font-bold flex items-center gap-1"><Timer className="w-3 h-3" /> Chờ chuẩn bị</span>
  </div>
  </div>
@@ -141,17 +141,17 @@ export function EMenu() {
  }
 
  return (
- <div className="min-h-screen bg-stone-50 flex flex-col max-w-md mx-auto relative shadow-sm">
+ <div className="min-h-screen bg-slate-50 flex flex-col max-w-md mx-auto relative shadow-sm">
  {/* Header */}
- <header className="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-6 border-b border-stone-100 flex items-center justify-between">
+ <header className="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-6 border-b border-slate-200 flex items-center justify-between">
  <div className="flex flex-col">
  <h1 className="font-serif tracking-tight text-xs font-black text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
  <div className="flex items-center gap-2">
- <span className="text-xl font-bold text-stone-900 underline decoration-indigo-200 underline-offset-4">Bàn {tableId}</span>
+ <span className="text-xl font-bold text-slate-900 underline decoration-indigo-200 underline-offset-4">Bàn {tableId}</span>
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
  </div>
  </div>
- <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center text-stone-400">
+ <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
  <Info className="w-5 h-5" />
  </div>
  </header>
@@ -167,7 +167,7 @@ export function EMenu() {
  "px-5 py-2.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap shadow-sm border",
  selectedCategory === cat 
  ? "bg-primary-600 text-[#FAF9F5] border-primary-600 scale-105" 
- : "bg-white text-stone-500 border-stone-100 hover:border-primary-200"
+ : "bg-white text-slate-600 border-slate-200 hover:border-primary-200"
  )}
  >
  {cat === 'All' && 'Tất cả'}
@@ -182,11 +182,11 @@ export function EMenu() {
  {/* Main Product List */}
  <main className="flex-1 px-6 py-6 space-y-6 pb-32">
  <div className="relative mb-8">
- <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+ <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
  <input 
  type="text" 
  placeholder="Tìm món ngon..." 
- className="w-full bg-white border border-stone-200 rounded-lg pl-12 pr-4 py-4 text-sm font-medium focus:outline-none focus:border-primary-500 transition-all shadow-sm"
+ className="w-full bg-white border border-slate-300 rounded-lg pl-12 pr-4 py-4 text-sm font-medium focus:outline-none focus:border-primary-500 transition-all shadow-sm"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
@@ -199,9 +199,9 @@ export function EMenu() {
  <motion.div 
  layout
  key={product.id} 
- className="bg-white rounded-lg p-4 flex gap-4 border border-stone-100 shadow-sm hover:shadow-sm transition-shadow relative overflow-hidden"
+ className="bg-white rounded-lg p-4 flex gap-4 border border-slate-200 shadow-sm hover:shadow-sm transition-shadow relative overflow-hidden"
  >
- <div className="w-24 h-24 bg-stone-50 rounded-lg flex-shrink-0 overflow-hidden border border-stone-50">
+ <div className="w-24 h-24 bg-slate-50 rounded-lg flex-shrink-0 overflow-hidden border border-stone-50">
  <img 
  src={`https://picsum.photos/seed/${product.name}/200/200`} 
  alt={product.name} 
@@ -211,8 +211,8 @@ export function EMenu() {
  </div>
  <div className="flex-1 flex flex-col justify-between py-1">
  <div>
- <h3 className="font-bold text-stone-900 leading-tight">{product.name}</h3>
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{product.category}</p>
+ <h3 className="font-bold text-slate-900 leading-tight">{product.name}</h3>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">{product.category}</p>
  </div>
  <div className="flex items-center justify-between">
  <span className="font-bold text-primary-600">{formatCurrency(product.price)}</span>
@@ -222,11 +222,11 @@ export function EMenu() {
  <>
  <button 
  onClick={() => removeFromCart(product.id)}
- className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 active:scale-90 transition-transform"
+ className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 active:scale-90 transition-transform"
  >
  <Minus className="w-4 h-4" />
  </button>
- <span className="font-bold text-sm text-stone-900">{cartItem.quantity}</span>
+ <span className="font-bold text-sm text-slate-900">{cartItem.quantity}</span>
  </>
  ) : null}
  <button 
@@ -251,19 +251,19 @@ export function EMenu() {
  initial={{ y: 100 }}
  animate={{ y: 0 }}
  exit={{ y: 100 }}
- className="fixed bottom-6 left-6 right-6 z-40 bg-stone-900 rounded-[28px] p-4 flex items-center justify-between shadow-sm max-w-md mx-auto"
+ className="fixed bottom-6 left-6 right-6 z-40 bg-slate-900 rounded-[28px] p-4 flex items-center justify-between shadow-sm max-w-md mx-auto"
  >
  <div className="flex items-center gap-4 pl-2">
  <div className="relative">
  <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#FAF9F5] backdrop-blur-md">
  <ShoppingCart className="w-6 h-6" />
  </div>
- <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-stone-900 shadow-sm">
+ <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
  {cartCount}
  </span>
  </div>
  <div className="flex flex-col">
- <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Tổng tiền</span>
+ <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tổng tiền</span>
  <span className="text-lg font-bold text-[#FAF9F5]">{formatCurrency(cartTotal)}</span>
  </div>
  </div>

@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Users, 
@@ -234,13 +235,13 @@ export function SellerManagement() {
  <div className="flex gap-3">
  <button 
  onClick={() => setShowConfig(!showConfig)}
- className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2 text-primary-600"
+ className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2 text-primary-600"
  >
  <Settings2 className="w-4 h-4" />
  {showConfig ? 'Quay lại Quản lý' : 'Cấu hình'}
  </button>
  {!showConfig && (
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm">
+ <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
  Kích hoạt Seller nhanh
  </button>
  )}
@@ -249,7 +250,7 @@ export function SellerManagement() {
 
  {showConfig ? (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
  <Briefcase className="w-4 h-4 text-[#2563EB]" /> Cấu hình Nhà bán hàng
  </h3>
@@ -257,25 +258,25 @@ export function SellerManagement() {
  <div className="space-y-6">
  {/* Section 1: Seller Onboarding & Approval */}
  <div>
- <h4 className="text-sm font-bold text-stone-800 mb-3">Quy trình Đăng ký & Duyệt</h4>
+ <h4 className="text-sm font-bold text-slate-900 mb-3">Quy trình Đăng ký & Duyệt</h4>
  <div className="space-y-3">
- <div className="flex items-center justify-between p-3 border border-stone-200 rounded-lg bg-stone-50">
+ <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg bg-slate-50">
  <div>
- <label className="text-sm font-bold text-stone-700">Duyệt tự động (Auto-Approve)</label>
- <p className="text-xs text-stone-500">Tự động duyệt Seller nộp đủ hồ sơ không cần qua kiểm duyệt tay.</p>
+ <label className="text-sm font-bold text-slate-800">Duyệt tự động (Auto-Approve)</label>
+ <p className="text-xs text-slate-600">Tự động duyệt Seller nộp đủ hồ sơ không cần qua kiểm duyệt tay.</p>
  </div>
  <div 
  onClick={() => setSellerAutoApprove(!sellerAutoApprove)}
- className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAutoApprove ? "bg-emerald-500" : "bg-stone-200")}
+ className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAutoApprove ? "bg-emerald-500" : "bg-slate-200")}
  >
  <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", sellerAutoApprove ? "left-[22px]" : "left-1")} />
  </div>
  </div>
 
  <div className="flex items-center gap-4">
- <div className="flex-1 flex items-center justify-between p-3 border border-stone-200 rounded-lg">
+ <div className="flex-1 flex items-center justify-between p-3 border border-slate-300 rounded-lg">
  <div>
- <label className="text-sm font-bold text-stone-700">Bắt buộc CMND/CCCD/Mã số thuế</label>
+ <label className="text-sm font-bold text-slate-800">Bắt buộc CMND/CCCD/Mã số thuế</label>
  </div>
  <input 
  type="checkbox" 
@@ -284,9 +285,9 @@ export function SellerManagement() {
  className="w-4 h-4 text-orange-700 rounded" 
  />
  </div>
- <div className="flex-1 flex items-center justify-between p-3 border border-stone-200 rounded-lg">
+ <div className="flex-1 flex items-center justify-between p-3 border border-slate-300 rounded-lg">
  <div>
- <label className="text-sm font-bold text-stone-700">Bắt buộc Giấy phép kinh doanh (Đối với DN)</label>
+ <label className="text-sm font-bold text-slate-800">Bắt buộc Giấy phép kinh doanh (Đối với DN)</label>
  </div>
  <input 
  type="checkbox" 
@@ -301,7 +302,7 @@ export function SellerManagement() {
 
  {/* Section 2: Quotas & Limits */}
  <div>
- <h4 className="text-sm font-bold text-stone-800 mb-3">Giới hạn & Định mức mặc định</h4>
+ <h4 className="text-sm font-bold text-slate-900 mb-3">Giới hạn & Định mức mặc định</h4>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Số sản phẩm tối đa (Mới mở shop)</label>
@@ -309,7 +310,7 @@ export function SellerManagement() {
  type="number" 
  value={sellerUploadLimit}
  onChange={(e) => setSellerUploadLimit(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
@@ -317,7 +318,7 @@ export function SellerManagement() {
  <select 
  value={sellerPayoutSchedule}
  onChange={(e) => setSellerPayoutSchedule(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
  >
  <option value="daily">Hàng ngày (Daily)</option>
  <option value="weekly">Hàng tuần (Weekly)</option>
@@ -330,7 +331,7 @@ export function SellerManagement() {
 
  {/* Section 3: Product Moderation */}
  <div>
- <h4 className="text-sm font-bold text-stone-800 mb-3">Kiểm duyệt sản phẩm & Vận hành</h4>
+ <h4 className="text-sm font-bold text-slate-900 mb-3">Kiểm duyệt sản phẩm & Vận hành</h4>
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
@@ -338,7 +339,7 @@ export function SellerManagement() {
  <select 
  value={productModeration}
  onChange={(e) => setProductModeration(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
  >
  <option value="auto">Tự động duyệt (AI Auto-Approve)</option>
  <option value="manual">Duyệt thủ công (Manual review)</option>
@@ -349,7 +350,7 @@ export function SellerManagement() {
  <select 
  value={requiredFulfillment ? "yes" : "no"}
  onChange={(e) => setRequiredFulfillment(e.target.value === "yes")}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
  >
  <option value="no">Không bắt buộc (Nhà bán tự ship)</option>
  <option value="yes">Bắt buộc gửi kho xử lý</option>
@@ -357,15 +358,15 @@ export function SellerManagement() {
  </div>
  </div>
  
- <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border border-stone-200 rounded-lg bg-stone-50 gap-4">
+ <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border border-slate-300 rounded-lg bg-slate-50 gap-4">
  <div>
- <label className="text-sm font-bold text-stone-700">Cho phép Nhà bán bật COD</label>
- <p className="text-xs text-stone-500">Khách hàng được quyền nhận hàng mới thanh toán cho các đơn của Seller.</p>
+ <label className="text-sm font-bold text-slate-800">Cho phép Nhà bán bật COD</label>
+ <p className="text-xs text-slate-600">Khách hàng được quyền nhận hàng mới thanh toán cho các đơn của Seller.</p>
  </div>
  <div className="flex-shrink-0">
  <div 
  onClick={() => setSellerAllowCod(!sellerAllowCod)}
- className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAllowCod ? "bg-emerald-500" : "bg-stone-200")}
+ className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", sellerAllowCod ? "bg-emerald-500" : "bg-slate-200")}
  >
  <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", sellerAllowCod ? "left-[22px]" : "left-1")} />
  </div>
@@ -376,7 +377,7 @@ export function SellerManagement() {
 
  {/* Section 4: Performance & Penalty */}
  <div>
- <h4 className="text-sm font-bold text-stone-800 mb-3">Hiệu suất & Chế tài vi phạm</h4>
+ <h4 className="text-sm font-bold text-slate-900 mb-3">Hiệu suất & Chế tài vi phạm</h4>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Điểm đánh giá tối thiểu (Duy trì Shop)</label>
@@ -385,9 +386,9 @@ export function SellerManagement() {
  type="number" step="0.1"
  value={minRatingActive}
  onChange={(e) => setMinRatingActive(e.target.value)}
- className="w-full p-2 pl-3 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
- <span className="absolute right-3 top-1.5 text-sm text-stone-400">⭐</span>
+ <span className="absolute right-3 top-1.5 text-sm text-slate-500">⭐</span>
  </div>
  </div>
  <div>
@@ -397,9 +398,9 @@ export function SellerManagement() {
  type="number"
  value={maxPenaltyPoints}
  onChange={(e) => setMaxPenaltyPoints(e.target.value)}
- className="w-full p-2 pl-3 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
- <span className="absolute right-3 top-2 text-sm text-stone-400 font-bold text-xs uppercase pt-[2px]">Điểm</span>
+ <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs uppercase pt-[2px]">Điểm</span>
  </div>
  </div>
  </div>
@@ -407,14 +408,14 @@ export function SellerManagement() {
 
  {/* Section 5: Shipping & SLA */}
  <div>
- <h4 className="text-sm font-bold text-stone-800 mb-3">Vận chuyển & Xử lý đơn hàng (SLA)</h4>
+ <h4 className="text-sm font-bold text-slate-900 mb-3">Vận chuyển & Xử lý đơn hàng (SLA)</h4>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Hình thức vận chuyển</label>
  <select 
  value={sellerShippingMode}
  onChange={(e) => setSellerShippingMode(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
  >
  <option value="platform">Sàn lấy và giao hàng (Bưu cục sàn)</option>
  <option value="custom">Nhà bán tự cấu hình đối tác vận chuyển</option>
@@ -428,9 +429,9 @@ export function SellerManagement() {
  type="number"
  value={slaHours}
  onChange={(e) => setSlaHours(e.target.value)}
- className="w-full p-2 pr-10 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
- <span className="absolute right-3 top-2 text-sm text-stone-400 font-bold text-xs uppercase pt-[2px]">Giờ</span>
+ <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs uppercase pt-[2px]">Giờ</span>
  </div>
  </div>
  <div>
@@ -440,9 +441,9 @@ export function SellerManagement() {
  type="number"
  value={autoReturnLimit}
  onChange={(e) => setAutoReturnLimit(e.target.value)}
- className="w-full p-2 pr-12 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pr-12 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
- <span className="absolute right-3 top-2 text-sm text-stone-400 font-bold text-xs pt-[2px]">VNĐ</span>
+ <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs pt-[2px]">VNĐ</span>
  </div>
  </div>
  </div>
@@ -454,7 +455,7 @@ export function SellerManagement() {
  alert('Đã lưu cấu hình Module Nhà bán hàng!');
  setShowConfig(false);
  }}
- className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm active:scale-95"
+ className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
  >
  Lưu cấu hình
  </button>
@@ -464,10 +465,10 @@ export function SellerManagement() {
  </div>
  ) : (
  <>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-3 mb-4">
- <div className="p-2 bg-[#F2F0E9] text-orange-700 rounded-lg">
+ <div className="p-2 bg-slate-100 text-orange-700 rounded-lg">
  <ShieldCheck className="w-5 h-5" />
  </div>
  <span className="text-sm font-semibold text-[#6B7280] uppercase tracking-wider">Đang chờ Onboarding</span>
@@ -478,7 +479,7 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-3 mb-4">
  <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
  <Percent className="w-5 h-5" />
@@ -489,7 +490,7 @@ export function SellerManagement() {
  <p className="mt-4 text-[10px] text-[#6B7280]">Tổng doanh thu phí sàn: {formatCurrency(850000000)}</p>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-3 mb-4">
  <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
  <Star className="w-5 h-5" />
@@ -499,9 +500,9 @@ export function SellerManagement() {
  <div className="text-3xl font-bold text-[#111827]">4.72 <span className="text-sm font-normal text-[#9CA3AF]">/ 5.0</span></div>
  <p className="mt-4 text-[10px] text-[#10B981] font-medium">+0.15 so với tháng trước</p>
  </div>
- </div>
+ </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">
  <div className="relative">
@@ -509,33 +510,33 @@ export function SellerManagement() {
  <input 
  type="text" 
  placeholder="Tìm tên Seller, MST, CCCD..." 
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-80"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-80"
  />
  </div>
- <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
+ <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
  <Filter className="w-4 h-4" /> Bộ lọc đối soát
  </button>
  </div>
- <div className="flex border border-[#E5E7EB] rounded-lg overflow-hidden bg-white">
+ <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
  <button 
  onClick={() => setActiveTab('all')}
- className={cn("px-4 py-2 text-xs font-semibold transition-all", activeTab === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-stone-50")}
+ className={cn("px-4 py-2 text-xs font-semibold transition-all", activeTab === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Tất cả Đối tác</button>
  <button 
  onClick={() => setActiveTab('seller')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'seller' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-stone-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'seller' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Nhà bán (Online)</button>
  <button 
  onClick={() => setActiveTab('dealer')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'dealer' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-stone-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'dealer' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Đại lý (Offline)</button>
  <button 
  onClick={() => setActiveTab('factory')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'factory' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-stone-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'factory' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Nhà máy (M2C)</button>
  <button 
  onClick={() => setActiveTab('pending')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB] transition-all", activeTab === 'pending' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-stone-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'pending' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Đang chờ duyệt</button>
  </div>
  </div>
@@ -562,7 +563,7 @@ export function SellerManagement() {
  <tr key={seller.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-[#E5E7EB]">
+ <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-slate-300">
  {seller.name.charAt(0)}
  </div>
  <div>
@@ -598,7 +599,7 @@ export function SellerManagement() {
  </td>
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#111827]">{formatCurrency(seller.gmv)}</p>
- <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-stone-500">Wallet</span></p>
+ <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-slate-600">Wallet</span></p>
  <p className="text-[10px] text-[#2563EB] font-medium mt-0.5">Hoa hồng: {seller.commissionRate}%</p>
  </td>
  <td className="px-6 py-4">
@@ -618,7 +619,7 @@ export function SellerManagement() {
  setApprovalType(seller.partnerType || 'seller');
  setApprovingSeller(seller);
  }}
- className="flex-1 px-3 py-1.5 bg-[#2563EB] text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-stone-800 shadow-sm"
+ className="flex-1 px-3 py-1.5 bg-[#2563EB] text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm"
  >
  Duyệt hồ sơ
  </button>
@@ -662,12 +663,12 @@ export function SellerManagement() {
  </div>
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-3">
- <div className="p-2 bg-stone-800/20 rounded-lg">
+ <div className="p-2 bg-slate-800/20 rounded-lg">
  <Briefcase className="w-6 h-6 text-orange-500" />
  </div>
  <h3 className="text-xl font-semibold">Cơ chế phê duyệt hồ sơ tự động</h3>
  </div>
- <p className="text-stone-400 text-sm max-w-2xl">
+ <p className="text-slate-500 text-sm max-w-2xl">
  Hệ thống tích hợp API tra cứu từ Tổng cục Thuế và cơ sở dữ liệu quốc gia về dân cư. Tự động từ chối hồ sơ nếu MST hoặc CCCD/CMND không tồn tại hoặc không chính chủ.
  </p>
  <div className="flex gap-4 pt-2">
@@ -682,35 +683,35 @@ export function SellerManagement() {
  </div>
 
  {selectedSeller && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold text-xl">
  {selectedSeller.name.charAt(0)}
  </div>
  <div>
- <h2 className="text-xl font-bold text-stone-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</h2>
- <p className="text-xs text-stone-500 font-medium">Đối tác: <span className="font-bold text-primary-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
+ <h2 className="text-xl font-bold text-slate-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</h2>
+ <p className="text-xs text-slate-600 font-medium">Đối tác: <span className="font-bold text-primary-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
  </div>
  </div>
- <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-100"><X className="w-5 h-5 text-stone-500" /></button>
+ <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
- <div className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar">
+ <DraggableGrid className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar" columns={2} gap={32}>
  {/* Left Col: Domain Setup */}
  <div className="space-y-6">
  <div>
- <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <Globe className="w-5 h-5 text-primary-600" /> Tên miền POS (Domain)
  </h3>
- <p className="text-[11px] text-stone-500 mb-4">Cấu hình Subdomain dành riêng cho nhân viên tại các chi nhánh/cửa hàng của Seller này đăng nhập hệ thống iPOS độc lập.</p>
+ <p className="text-[11px] text-slate-600 mb-4">Cấu hình Subdomain dành riêng cho nhân viên tại các chi nhánh/cửa hàng của Seller này đăng nhập hệ thống iPOS độc lập.</p>
  <div className="space-y-3">
  <div>
- <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">Subdomain chính</label>
- <div className="flex items-center bg-stone-50 border border-stone-200 rounded-lg overflow-hidden">
- <span className="pl-4 pr-1 py-3 text-stone-400"><Globe className="w-4 h-4" /></span>
- <input type="text" className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-stone-900 focus:outline-none" defaultValue={selectedSeller.name.toLowerCase().replace(/\s/g, '')} />
- <span className="px-4 py-3 bg-stone-100 border-l border-stone-200 text-xs font-mono font-medium text-stone-500">.v-erp.com</span>
+ <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Subdomain chính</label>
+ <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg overflow-hidden">
+ <span className="pl-4 pr-1 py-3 text-slate-500"><Globe className="w-4 h-4" /></span>
+ <input type="text" className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-slate-900 focus:outline-none" defaultValue={selectedSeller.name.toLowerCase().replace(/\s/g, '')} />
+ <span className="px-4 py-3 bg-slate-100 border-l border-slate-300 text-xs font-mono font-medium text-slate-600">.v-erp.com</span>
  </div>
  </div>
  </div>
@@ -719,29 +720,29 @@ export function SellerManagement() {
  </button>
  </div>
  
- <div className="pt-6 border-t border-stone-100">
- <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
+ <div className="pt-6 border-t border-slate-200">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <Store className="w-5 h-5 text-primary-600" /> Chi nhánh / Cửa hàng
  </h3>
  <div className="space-y-3">
- <div className="border border-stone-200 rounded-lg p-3 bg-stone-50 flex justify-between items-center">
+ <div className="border border-slate-300 rounded-lg p-3 bg-slate-50 flex justify-between items-center">
  <div>
- <p className="text-sm font-bold text-stone-800">Chi nhánh Mặc định (Trụ sở)</p>
- <p className="text-[10px] text-stone-500">Mã: ST-001</p>
+ <p className="text-sm font-bold text-slate-900">Chi nhánh Mặc định (Trụ sở)</p>
+ <p className="text-[10px] text-slate-600">Mã: ST-001</p>
  </div>
  <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">ACTIVE</span>
  </div>
  </div>
- <button className="mt-4 w-full border-2 border-dashed border-stone-200 text-stone-500 py-2.5 rounded-lg text-sm font-bold hover:border-primary-400 hover:text-primary-600 transition-colors flex items-center justify-center gap-2">
+ <button className="mt-4 w-full border-2 border-dashed border-slate-300 text-slate-600 py-2.5 rounded-lg text-sm font-bold hover:border-primary-400 hover:text-primary-600 transition-colors flex items-center justify-center gap-2">
  <Plus className="w-4 h-4" /> Thêm Cửa hàng mới
  </button>
  </div>
 
- <div className="pt-6 border-t border-stone-100">
- <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
+ <div className="pt-6 border-t border-slate-200">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <ShieldCheck className="w-5 h-5 text-primary-600" /> Cấp phép Ứng dụng & Modules
  </h3>
- <p className="text-[11px] text-stone-500 mb-4">Chọn các module trên hệ thống ERP mà đối tác này được phép truy cập dựa trên mô hình kinh doanh.</p>
+ <p className="text-[11px] text-slate-600 mb-4">Chọn các module trên hệ thống ERP mà đối tác này được phép truy cập dựa trên mô hình kinh doanh.</p>
  <div className="grid grid-cols-2 gap-3">
  {[
  { id: 'dashboard', label: 'Dashboard & Phân tích', reqDealer: true, reqSeller: true, reqFactory: true },
@@ -759,9 +760,9 @@ export function SellerManagement() {
  (selectedSeller.partnerType === 'factory' && mod.reqFactory);
  
  return (
- <label key={mod.id} className={cn("flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-stone-50 transition-all", isActive ? "border-primary-200 bg-primary-50/30" : "border-stone-100")}>
- <input type="checkbox" defaultChecked={isActive} className="mt-1 flex-shrink-0 text-primary-600 rounded border-stone-300 focus:ring-primary-500" />
- <span className="text-xs font-bold text-stone-700 leading-tight">{mod.label}</span>
+ <label key={mod.id} className={cn("flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-slate-50 transition-all", isActive ? "border-primary-200 bg-primary-50/30" : "border-slate-200")}>
+ <input type="checkbox" defaultChecked={isActive} className="mt-1 flex-shrink-0 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
+ <span className="text-xs font-bold text-slate-800 leading-tight">{mod.label}</span>
  </label>
  );
  })}
@@ -770,9 +771,9 @@ export function SellerManagement() {
  </div>
 
  {/* Right Col: RBAC Staff Setup */}
- <div className="bg-stone-50 rounded-lg p-6 border border-stone-200">
+ <div className="bg-slate-50 rounded-lg p-6 border border-slate-300">
  <div className="flex justify-between items-center mb-6">
- <h3 className="font-bold text-stone-900 flex items-center gap-2">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <UserCog className="w-5 h-5 text-primary-600" /> Phân quyền Tài khoản
  </h3>
  <button className="bg-primary-600 text-[#FAF9F5] p-2 rounded-lg hover:bg-primary-700 transition-colors shadow-sm">
@@ -781,191 +782,191 @@ export function SellerManagement() {
  </div>
 
  <div className="space-y-4">
- <div className="bg-white p-4 rounded-lg border border-stone-100 shadow-sm relative overflow-hidden group">
+ <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
  <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500" />
  <div className="flex justify-between items-start">
  <div className="flex gap-3">
  <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 text-xs">AD</div>
  <div>
- <p className="text-sm font-bold text-stone-900">{selectedSeller.name} Admin</p>
- <p className="text-[10px] text-stone-500">admin@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-sm font-bold text-slate-900">{selectedSeller.name} Admin</p>
+ <p className="text-[10px] text-slate-600">admin@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản trị viên (Admin)</span>
  </div>
  </div>
  </div>
- <button className="text-stone-400 hover:text-primary-600 transition-colors"><Key className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-primary-600 transition-colors"><Key className="w-4 h-4" /></button>
  </div>
  </div>
 
- <div className="bg-white p-4 rounded-lg border border-stone-100 shadow-sm relative overflow-hidden group">
- <div className="absolute left-0 top-0 bottom-0 w-1 bg-stone-800" />
+ <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
+ <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-800" />
  <div className="flex justify-between items-start">
  <div className="flex gap-3">
- <div className="w-8 h-8 rounded-full bg-[#F2F0E9] flex items-center justify-center font-bold text-orange-700 text-xs">MG</div>
+ <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-orange-700 text-xs">MG</div>
  <div>
- <p className="text-sm font-bold text-stone-900">Quản lý Cửa hàng 1</p>
- <p className="text-[10px] text-stone-500">manager1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-sm font-bold text-slate-900">Quản lý Cửa hàng 1</p>
+ <p className="text-[10px] text-slate-600">manager1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-[#EAE7DF] text-orange-800 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản lý (Manager)</span>
  </div>
  </div>
  </div>
  <div className="flex gap-2">
- <button className="text-stone-400 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
- <button className="text-stone-400 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  <div className="mt-3 pt-3 border-t border-stone-50">
- <p className="text-[10px] text-stone-500 flex items-center gap-1"><Store className="w-3 h-3" /> Quyền truy cập: <span className="font-bold text-stone-700">Chi nhánh Mặc định (ST-001)</span></p>
+ <p className="text-[10px] text-slate-600 flex items-center gap-1"><Store className="w-3 h-3" /> Quyền truy cập: <span className="font-bold text-slate-800">Chi nhánh Mặc định (ST-001)</span></p>
  </div>
  </div>
 
- <div className="bg-white p-4 rounded-lg border border-stone-100 shadow-sm relative overflow-hidden group">
+ <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
  <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500" />
  <div className="flex justify-between items-start">
  <div className="flex gap-3">
  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center font-bold text-emerald-600 text-xs">ST</div>
  <div>
- <p className="text-sm font-bold text-stone-900">Thu Ngân (Ca 1)</p>
- <p className="text-[10px] text-stone-500">pos1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-sm font-bold text-slate-900">Thu Ngân (Ca 1)</p>
+ <p className="text-[10px] text-slate-600">pos1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Nhân viên POS (Staff)</span>
  </div>
  </div>
  </div>
  <div className="flex gap-2">
- <button className="text-stone-400 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
- <button className="text-stone-400 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-primary-600 transition-colors"><Edit2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  </div>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  </div>
  </div>
  )}
 
  {approvingSeller && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-[#EAE7DF] text-orange-700 rounded-lg flex items-center justify-center font-bold text-xl">
  <UserCheck className="w-6 h-6" />
  </div>
  <div>
- <h2 className="text-xl font-bold text-stone-900 leading-tight">Duyệt hồ sơ Đối tác mới</h2>
- <p className="text-xs text-stone-500 font-medium">Đối tác: <span className="font-bold text-orange-700">{approvingSeller.name}</span> • MST: {approvingSeller.taxCode}</p>
+ <h2 className="text-xl font-bold text-slate-900 leading-tight">Duyệt hồ sơ Đối tác mới</h2>
+ <p className="text-xs text-slate-600 font-medium">Đối tác: <span className="font-bold text-orange-700">{approvingSeller.name}</span> • MST: {approvingSeller.taxCode}</p>
  </div>
  </div>
- <button onClick={() => setApprovingSeller(null)} className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-100"><X className="w-5 h-5 text-stone-500" /></button>
+ <button onClick={() => setApprovingSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
 
  <div className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-12 gap-8 custom-scrollbar">
  {/* Left Column: Information Overview & Selection */}
  <div className="md:col-span-5 space-y-6">
  <div>
- <h3 className="font-bold text-stone-900 mb-3">Loại hình Đối tác</h3>
+ <h3 className="font-bold text-slate-900 mb-3">Loại hình Đối tác</h3>
  <div className="grid grid-cols-3 gap-3">
  <button 
  onClick={() => setApprovalType('seller')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'seller' ? "border-stone-900 bg-[#F2F0E9]/50 shadow-sm" : "border-stone-200 hover:bg-stone-50")}
+ className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'seller' ? "border-slate-900 bg-slate-100/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
- <div className={cn("p-2 rounded-full", approvalType === 'seller' ? "bg-[#EAE7DF] text-orange-700" : "bg-stone-100 text-stone-500")}>
+ <div className={cn("p-2 rounded-full", approvalType === 'seller' ? "bg-[#EAE7DF] text-orange-700" : "bg-slate-100 text-slate-600")}>
  <Store className="w-5 h-5" />
  </div>
  <div>
- <p className="text-sm font-bold text-stone-900">Nhà bán TMĐT</p>
- <p className="text-[10px] text-stone-500 mt-1">Bán hàng Online</p>
+ <p className="text-sm font-bold text-slate-900">Nhà bán TMĐT</p>
+ <p className="text-[10px] text-slate-600 mt-1">Bán hàng Online</p>
  </div>
  </button>
  <button 
  onClick={() => setApprovalType('dealer')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'dealer' ? "border-emerald-500 bg-emerald-50/50 shadow-sm" : "border-stone-200 hover:bg-stone-50")}
+ className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'dealer' ? "border-emerald-500 bg-emerald-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
- <div className={cn("p-2 rounded-full", approvalType === 'dealer' ? "bg-emerald-100 text-emerald-600" : "bg-stone-100 text-stone-500")}>
+ <div className={cn("p-2 rounded-full", approvalType === 'dealer' ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-600")}>
  <Briefcase className="w-5 h-5" />
  </div>
  <div>
- <p className="text-sm font-bold text-stone-900">Cửa hàng iPOS</p>
- <p className="text-[10px] text-stone-500 mt-1">F&B / Retail Offline</p>
+ <p className="text-sm font-bold text-slate-900">Cửa hàng iPOS</p>
+ <p className="text-[10px] text-slate-600 mt-1">F&B / Retail Offline</p>
  </div>
  </button>
  <button 
  onClick={() => setApprovalType('factory')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'factory' ? "border-purple-500 bg-purple-50/50 shadow-sm" : "border-stone-200 hover:bg-stone-50")}
+ className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'factory' ? "border-purple-500 bg-purple-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
- <div className={cn("p-2 rounded-full", approvalType === 'factory' ? "bg-purple-100 text-purple-600" : "bg-stone-100 text-stone-500")}>
+ <div className={cn("p-2 rounded-full", approvalType === 'factory' ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-600")}>
  <Building className="w-5 h-5" />
  </div>
  <div>
- <p className="text-sm font-bold text-stone-900">Nhà máy M2C</p>
- <p className="text-[10px] text-stone-500 mt-1">Bán trực tiếp</p>
+ <p className="text-sm font-bold text-slate-900">Nhà máy M2C</p>
+ <p className="text-[10px] text-slate-600 mt-1">Bán trực tiếp</p>
  </div>
  </button>
  </div>
  </div>
 
- <div className="bg-white rounded-xl border border-stone-200 p-5 space-y-4">
- <h3 className="font-bold text-stone-900 flex items-center gap-2">
+ <div className="bg-white rounded-xl border border-slate-300 p-5 space-y-4">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
  Thông tin Người bán
  </h3>
  <div className="space-y-4">
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Mô hình kinh doanh</label>
- <select className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mô hình kinh doanh</label>
+ <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
  <option>Cá nhân kinh doanh</option>
  <option>Hộ kinh doanh</option>
  <option>Công ty / Doanh nghiệp</option>
  </select>
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Mã số thuế</label>
- <input type="text" defaultValue={approvingSeller.taxCode} className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mã số thuế</label>
+ <input type="text" defaultValue={approvingSeller.taxCode} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Địa chỉ đăng ký Thuế</label>
- <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ đăng ký Thuế</label>
+ <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Địa chỉ Cửa hàng / Kho hàng</label>
- <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ Cửa hàng / Kho hàng</label>
+ <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
  </div>
  </div>
  </div>
 
- <div className="bg-stone-50 rounded-xl border border-stone-200 p-5 space-y-4">
+ <div className="bg-slate-50 rounded-xl border border-slate-300 p-5 space-y-4">
  <div className="flex items-center justify-between">
- <h3 className="font-bold text-stone-900 flex items-center gap-2">
- <ShieldCheck className="w-4 h-4 text-stone-400" /> Hồ sơ năng lực (Upload)
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
+ <ShieldCheck className="w-4 h-4 text-slate-500" /> Hồ sơ năng lực (Upload)
  </h3>
- <label className="cursor-pointer text-xs font-bold text-orange-700 hover:text-orange-800 bg-white border border-orange-200 px-3 py-1.5 rounded-lg hover:bg-[#F2F0E9] transition-all">
+ <label className="cursor-pointer text-xs font-bold text-orange-700 hover:text-orange-800 bg-white border border-orange-200 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
  Tải lên
  <input type="file" className="hidden" multiple />
  </label>
  </div>
  <div className="space-y-3">
- <div className="flex items-center gap-3 bg-white p-3 border border-stone-200 rounded-lg">
+ <div className="flex items-center gap-3 bg-white p-3 border border-slate-300 rounded-lg">
  <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
  <CheckCircle2 className="w-4 h-4" />
  </div>
  <div className="flex-1">
- <p className="text-sm font-bold text-stone-900">Giấy phép ĐKKD.pdf</p>
- <p className="text-[10px] text-stone-500">Đã xác thực OCR thành công</p>
+ <p className="text-sm font-bold text-slate-900">Giấy phép ĐKKD.pdf</p>
+ <p className="text-[10px] text-slate-600">Đã xác thực OCR thành công</p>
  </div>
- <button className="text-stone-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
  </div>
- <div className="flex items-center gap-3 bg-white p-3 border border-stone-200 rounded-lg">
+ <div className="flex items-center gap-3 bg-white p-3 border border-slate-300 rounded-lg">
  <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
  <CheckCircle2 className="w-4 h-4" />
  </div>
  <div className="flex-1">
- <p className="text-sm font-bold text-stone-900">CMND_MatTruoc.jpg</p>
- <p className="text-[10px] text-stone-500">Khớp thông tin người đại diện</p>
+ <p className="text-sm font-bold text-slate-900">CMND_MatTruoc.jpg</p>
+ <p className="text-[10px] text-slate-600">Khớp thông tin người đại diện</p>
  </div>
- <button className="text-stone-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  </div>
@@ -973,44 +974,44 @@ export function SellerManagement() {
 
  {/* Right Column: Configuration & Actions */}
  <div className="md:col-span-7 space-y-6">
- <div className="p-6 border border-stone-200 rounded-xl bg-white shadow-sm">
- <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2">
+ <div className="p-6 border border-slate-300 rounded-xl bg-white shadow-sm">
+ <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
  <Settings2 className="w-5 h-5 text-primary-600" /> Cấu hình Khởi tạo
  </h3>
 
  {approvalType === 'seller' ? (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Mức phí Sàn mặc định (%)</label>
- <input type="number" defaultValue={5} className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mức phí Sàn mặc định (%)</label>
+ <input type="number" defaultValue={5} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Hạn mức hiển thị Sản phẩm (PIM Limit)</label>
- <select className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hạn mức hiển thị Sản phẩm (PIM Limit)</label>
+ <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
  <option>1,000 Sản phẩm (Cơ bản)</option>
  <option>5,000 Sản phẩm (Pro)</option>
  <option>Không giới hạn (Enterprise)</option>
  </select>
  </div>
  <div className="pt-2">
- <label className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-orange-700 border-stone-300 focus:ring-orange-600" />
- <span className="text-sm font-medium text-stone-700">Tự động duyệt SP đẩy lên hệ thống</span>
+ <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="rounded text-orange-700 border-slate-400 focus:ring-orange-600" />
+ <span className="text-sm font-medium text-slate-800">Tự động duyệt SP đẩy lên hệ thống</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer mt-2">
- <input type="checkbox" className="rounded text-orange-700 border-stone-300 focus:ring-orange-600" />
- <span className="text-sm font-medium text-stone-700">Mở quyền tham gia Mega Flash Sale</span>
+ <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer mt-2">
+ <input type="checkbox" className="rounded text-orange-700 border-slate-400 focus:ring-orange-600" />
+ <span className="text-sm font-medium text-slate-800">Mở quyền tham gia Mega Flash Sale</span>
  </label>
  </div>
  </div>
  ) : approvalType === 'dealer' ? (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Thiết lập Phí phần mềm iPOS</label>
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Thiết lập Phí phần mềm iPOS</label>
  <select 
  value={iposFeeStatus}
  onChange={(e) => setIposFeeStatus(e.target.value)}
- className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
  >
  <option value="paid">Có tính phí (Thu phí duy trì)</option>
  <option value="free">Miễn phí (Sử dụng vĩnh viễn)</option>
@@ -1021,16 +1022,16 @@ export function SellerManagement() {
  <div className="space-y-4 animate-in slide-in- duration-300">
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Hình thức thanh toán</label>
- <select className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hình thức thanh toán</label>
+ <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
  <option>Trả trước 6 tháng (Ưu đãi)</option>
  <option>Trả trước 1 năm (Ưu đãi + Tặng 1 tháng)</option>
  <option>Trả phí hàng tháng</option>
  </select>
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Số phí mỗi tháng (VND)</label>
- <input type="text" defaultValue="500,000" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Số phí mỗi tháng (VND)</label>
+ <input type="text" defaultValue="500,000" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
  </div>
  </div>
  <div className="p-3 bg-primary-50/50 border border-primary-100 rounded-lg">
@@ -1052,57 +1053,57 @@ export function SellerManagement() {
  )}
 
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Phí thu bán hàng iPOS dựa trên Đơn hàng (%)</label>
- <input type="number" defaultValue={2} step="0.1" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Phí thu bán hàng iPOS dựa trên Đơn hàng (%)</label>
+ <input type="number" defaultValue={2} step="0.1" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Subdomain Khởi tạo truy cập ERP</label>
- <div className="flex items-center bg-white border border-stone-200 rounded-lg overflow-hidden">
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Subdomain Khởi tạo truy cập ERP</label>
+ <div className="flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden">
  <input type="text" className="flex-1 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" defaultValue={approvingSeller?.name.toLowerCase().replace(/\s/g, '') || ''} />
- <span className="bg-stone-100 text-stone-500 px-3 py-2 text-sm border-l border-stone-200">.v-erp.com</span>
+ <span className="bg-slate-100 text-slate-600 px-3 py-2 text-sm border-l border-slate-300">.v-erp.com</span>
  </div>
  </div>
  <div className="pt-2 grid grid-cols-2 gap-2">
- <label className="flex items-center gap-2 p-2 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-stone-300 focus:ring-emerald-500" />
- <span className="text-[11px] font-medium text-stone-700">iPOS Bán hàng</span>
+ <label className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-slate-400 focus:ring-emerald-500" />
+ <span className="text-[11px] font-medium text-slate-800">iPOS Bán hàng</span>
  </label>
- <label className="flex items-center gap-2 p-2 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-stone-300 focus:ring-emerald-500" />
- <span className="text-[11px] font-medium text-stone-700">E-Menu (QR Code)</span>
+ <label className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-slate-400 focus:ring-emerald-500" />
+ <span className="text-[11px] font-medium text-slate-800">E-Menu (QR Code)</span>
  </label>
- <label className="flex items-center gap-2 p-2 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-stone-300 focus:ring-emerald-500" />
- <span className="text-[11px] font-medium text-stone-700">Quản lý Kho (SCM)</span>
+ <label className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="rounded text-emerald-600 border-slate-400 focus:ring-emerald-500" />
+ <span className="text-[11px] font-medium text-slate-800">Quản lý Kho (SCM)</span>
  </label>
- <label className="flex items-center gap-2 p-2 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" className="rounded text-emerald-600 border-stone-300 focus:ring-emerald-500" />
- <span className="text-[11px] font-medium text-stone-700">KDS (Màn hình bếp)</span>
+ <label className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" className="rounded text-emerald-600 border-slate-400 focus:ring-emerald-500" />
+ <span className="text-[11px] font-medium text-slate-800">KDS (Màn hình bếp)</span>
  </label>
  </div>
  </div>
  ) : (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Mức phí Sàn mặc định (M2C) (%)</label>
- <input type="number" defaultValue={2.5} step="0.1" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mức phí Sàn mặc định (M2C) (%)</label>
+ <input type="number" defaultValue={2.5} step="0.1" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Phân bổ chiết khấu Nhà Máy - Sàn (%)</label>
- <input type="text" defaultValue="80 / 20" className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Phân bổ chiết khấu Nhà Máy - Sàn (%)</label>
+ <input type="text" defaultValue="80 / 20" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-stone-500 uppercase block mb-1">Hạn mức Lưu kho tĩnh (m³)</label>
- <input type="number" defaultValue={1000} className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+ <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hạn mức Lưu kho tĩnh (m³)</label>
+ <input type="number" defaultValue={1000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div className="pt-2">
- <label className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-purple-600 border-stone-300 focus:ring-purple-500" />
- <span className="text-sm font-medium text-stone-700">Xác thực chứng nhận Nguồn gốc (C/O) tự động</span>
+ <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="rounded text-purple-600 border-slate-400 focus:ring-purple-500" />
+ <span className="text-sm font-medium text-slate-800">Xác thực chứng nhận Nguồn gốc (C/O) tự động</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-100 rounded-lg cursor-pointer mt-2">
- <input type="checkbox" defaultChecked className="rounded text-purple-600 border-stone-300 focus:ring-purple-500" />
- <span className="text-sm font-medium text-stone-700">Cổng thanh toán B2B & Công nợ 30 ngày</span>
+ <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer mt-2">
+ <input type="checkbox" defaultChecked className="rounded text-purple-600 border-slate-400 focus:ring-purple-500" />
+ <span className="text-sm font-medium text-slate-800">Cổng thanh toán B2B & Công nợ 30 ngày</span>
  </label>
  </div>
  </div>
@@ -1118,7 +1119,7 @@ export function SellerManagement() {
  </button>
  <button 
  onClick={() => setApprovingSeller(null)}
- className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm hover:-translate-y-0.5", approvalType === 'seller' ? "bg-stone-900 shadow-stone-900/5 hover:bg-stone-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
+ className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm hover:-translate-y-0.5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt
  </button>
@@ -1132,55 +1133,55 @@ export function SellerManagement() {
  {selectedSeller && (
  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-lg w-full max-w-lg overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div>
- <h2 className="text-xl font-bold text-stone-900 border-l-4 border-stone-900 pl-3">Thông tin chi tiết Đối tác</h2>
- <p className="text-xs text-stone-500 mt-1 ml-4 font-mono">ID: {selectedSeller.id}</p>
+ <h2 className="text-xl font-bold text-slate-900 border-l-4 border-slate-900 pl-3">Thông tin chi tiết Đối tác</h2>
+ <p className="text-xs text-slate-600 mt-1 ml-4 font-mono">ID: {selectedSeller.id}</p>
  </div>
- <button onClick={() => setSelectedSeller(null)} className="p-2 hover:bg-stone-200 rounded-lg text-stone-400 hover:text-stone-600 transition-colors">
+ <button onClick={() => setSelectedSeller(null)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 hover:text-slate-700 transition-colors">
  <X className="w-5 h-5" />
  </button>
  </div>
  <div className="p-6 space-y-6">
  <div>
  <div className="flex items-center justify-between mb-2">
- <h3 className="font-bold text-stone-800 text-lg">{selectedSeller.name}</h3>
+ <h3 className="font-bold text-slate-900 text-lg">{selectedSeller.name}</h3>
  <span className={cn(
  "px-3 py-1 text-xs font-bold rounded-lg border",
  selectedSeller.status === 'active' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
  selectedSeller.status === 'suspended' ? "bg-red-50 text-red-600 border-red-100" :
  selectedSeller.status === 'warning' ? "bg-amber-50 text-amber-600 border-amber-100" :
- "bg-stone-50 text-stone-600 border-stone-200"
+ "bg-slate-50 text-slate-700 border-slate-300"
  )}>
  Trạng thái: {selectedSeller.status.toUpperCase()}
  </span>
  </div>
  </div>
  
- <div className="grid grid-cols-2 gap-4">
- <div className="p-4 bg-stone-50 rounded-xl border border-stone-100">
- <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">Mã số thuế</p>
- <p className="text-stone-900 font-mono text-sm">{selectedSeller.taxCode || '---'}</p>
+ <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+ <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Mã số thuế</p>
+ <p className="text-slate-900 font-mono text-sm">{selectedSeller.taxCode || '---'}</p>
  </div>
- <div className="p-4 bg-stone-50 rounded-xl border border-stone-100">
- <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">CCCD người đại diện</p>
- <p className="text-stone-900 font-mono text-sm">{selectedSeller.identityCard || '---'}</p>
+ <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+ <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">CCCD người đại diện</p>
+ <p className="text-slate-900 font-mono text-sm">{selectedSeller.identityCard || '---'}</p>
  </div>
- </div>
+ </DraggableGrid>
 
- <div className="p-4 bg-stone-50 rounded-xl border border-stone-100 space-y-3">
+ <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
  <div>
- <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1 flex items-center gap-2"><UserCheck className="w-3.5 h-3.5"/> Người đại diện</p>
- <p className="text-stone-900 text-sm font-semibold">{selectedSeller.representative || 'Chưa cập nhật'}</p>
+ <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 flex items-center gap-2"><UserCheck className="w-3.5 h-3.5"/> Người đại diện</p>
+ <p className="text-slate-900 text-sm font-semibold">{selectedSeller.representative || 'Chưa cập nhật'}</p>
  </div>
- <div className="pt-2 border-t border-stone-200">
- <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1 flex items-center gap-2"><MapPin className="w-3.5 h-3.5"/> Địa chỉ / Trụ sở</p>
- <p className="text-stone-900 text-sm">{selectedSeller.address || 'Chưa cập nhật'}</p>
+ <div className="pt-2 border-t border-slate-300">
+ <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 flex items-center gap-2"><MapPin className="w-3.5 h-3.5"/> Địa chỉ / Trụ sở</p>
+ <p className="text-slate-900 text-sm">{selectedSeller.address || 'Chưa cập nhật'}</p>
  </div>
  </div>
  </div>
- <div className="p-4 bg-stone-50 border-t border-stone-100 flex justify-end">
- <button onClick={() => setSelectedSeller(null)} className="px-5 py-2.5 bg-stone-800 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-stone-900 transition-all">Đóng</button>
+ <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+ <button onClick={() => setSelectedSeller(null)} className="px-5 py-2.5 bg-slate-800 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-slate-900 transition-all">Đóng</button>
  </div>
  </div>
  </div>
@@ -1189,23 +1190,23 @@ export function SellerManagement() {
  {adjustingSeller && (
  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-lg w-full max-w-md overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div>
- <h2 className="text-lg font-bold text-stone-900">Điều chỉnh ví điện tử</h2>
- <p className="text-xs text-stone-500">Đối tác: {adjustingSeller.name}</p>
+ <h2 className="text-lg font-bold text-slate-900">Điều chỉnh ví điện tử</h2>
+ <p className="text-xs text-slate-600">Đối tác: {adjustingSeller.name}</p>
  </div>
- <button onClick={() => setAdjustingSeller(null)} className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-100"><X className="w-5 h-5 text-stone-500" /></button>
+ <button onClick={() => setAdjustingSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
  <form onSubmit={submitAdjustBalance} className="p-6 space-y-6">
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-stone-700 uppercase">Số dư hiện tại</label>
+ <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>
  </div>
- <div className="text-xl font-bold text-stone-900">{formatCurrency(adjustingSeller.walletBalance || 0)}</div>
+ <div className="text-xl font-bold text-slate-900">{formatCurrency(adjustingSeller.walletBalance || 0)}</div>
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-stone-700 uppercase">Số tiền cộng / trừ</label>
+ <label className="text-xs font-bold text-slate-800 uppercase">Số tiền cộng / trừ</label>
  </div>
  <input 
  type="number" 
@@ -1213,15 +1214,15 @@ export function SellerManagement() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cộng) hoặc -500000 (trừ)"
- className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
- <p className="text-[11px] text-stone-500 mt-2">Dùng số âm để trừ tiền. Viết liền không dấu phẩy.</p>
+ <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ tiền. Viết liền không dấu phẩy.</p>
  </div>
- <div className="flex gap-4 pt-4 border-t border-stone-100">
+ <div className="flex gap-4 pt-4 border-t border-slate-200">
  <button 
  type="button"
  onClick={() => setAdjustingSeller(null)}
- className="flex-1 py-2.5 bg-stone-100 text-stone-700 rounded-xl font-bold text-sm hover:bg-stone-200 transition-all"
+ className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
  >
  Hủy
  </button>

@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  FileText, 
@@ -99,43 +100,43 @@ export function SettlementManagement() {
  <p className="text-sm text-[#6B7280] mt-1">Đối soát dòng tiền Seller, xử lý yêu cầu rút tiền và tự động xuất hóa đơn GTGT.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
+ <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <RefreshCcw className="w-4 h-4" />
  Chạy đối soát tự động
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Receipt className="w-4 h-4" />
  Xuất hóa đơn hàng loạt
  </button>
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
- <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
  <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
  <CheckCircle2 className="w-3 h-3" /> Tài khoản Escrow an toàn
  </div>
  </div>
- <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đang chờ giải ngân (Payout)</p>
  <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(2450000000)}</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Sẽ tự động chuyển sau 3 ngày</p>
  </div>
- <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lệnh rút tiền chờ duyệt</p>
  <div className="text-2xl font-bold text-[#F59E0B]">42</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Ưu tiên: Nhà bán hàng (35)</p>
  </div>
- <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu hoa hồng (Margin)</p>
  <div className="text-2xl font-bold text-[#10B981]">{formatCurrency(845000000)}</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Tháng: 03/2024</p>
  </div>
- </div>
+ </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
@@ -148,7 +149,7 @@ export function SettlementManagement() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-[#F2F0E9]/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -163,10 +164,10 @@ export function SettlementManagement() {
  <input 
  type="text" 
  placeholder="Tìm Seller, Mã lệnh, STK..." 
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
- <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
+ <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
  <Filter className="w-4 h-4" /> Lọc trạng thái
  </button>
  </div>
@@ -237,7 +238,7 @@ export function SettlementManagement() {
  <tr key={wdr.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{wdr.userName}</p>
- <span className="text-[10px] text-[#6B7280] uppercase font-semibold bg-stone-100 px-1.5 py-0.5 rounded">{wdr.userType}</span>
+ <span className="text-[10px] text-[#6B7280] uppercase font-semibold bg-slate-100 px-1.5 py-0.5 rounded">{wdr.userType}</span>
  </td>
  <td className="px-6 py-4">
  <p className="text-xs font-bold text-[#111827]">{wdr.bankAccount.bankName}</p>
@@ -248,8 +249,8 @@ export function SettlementManagement() {
  <td className="px-6 py-4 text-right">
  {wdr.status === 'pending' ? (
  <div className="flex justify-end gap-2">
- <button className="px-3 py-1.5 bg-[#111827] text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-stone-800">Duyệt chi</button>
- <button className="px-3 py-1.5 border border-[#E5E7EB] text-[#6B7280] text-[10px] font-bold rounded-md">Từ chối</button>
+ <button className="px-3 py-1.5 bg-[#111827] text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-slate-800">Duyệt chi</button>
+ <button className="px-3 py-1.5 border border-slate-300 text-[#6B7280] text-[10px] font-bold rounded-md">Từ chối</button>
  </div>
  ) : (
  <div className="flex justify-end">
@@ -271,11 +272,11 @@ export function SettlementManagement() {
  <p className="text-xs font-bold text-[#4B5563]">{cod.period}</p>
  <p className="text-[10px] text-[#6B7280]">Tổng {cod.totalOrders} đơn</p>
  </td>
- <td className="px-6 py-4 text-right font-semibold text-stone-700">
+ <td className="px-6 py-4 text-right font-semibold text-slate-800">
  {formatCurrency(cod.shippingFee)}
  </td>
  <td className="px-6 py-4 text-right">
- <p className="text-sm font-bold text-stone-800">{formatCurrency(cod.expectedCod)}</p>
+ <p className="text-sm font-bold text-slate-900">{formatCurrency(cod.expectedCod)}</p>
  </td>
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(cod.transferredCod)}</p>
@@ -300,27 +301,27 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <div className="bg-stone-900 text-[#FAF9F5] rounded-lg p-8 overflow-hidden relative">
+ <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-8 overflow-hidden relative">
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-3">
- <div className="p-2 bg-stone-800 rounded-lg">
+ <div className="p-2 bg-slate-800 rounded-lg">
  <CreditCard className="w-6 h-6 text-[#FAF9F5]" />
  </div>
  <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
  </div>
- <p className="text-stone-400 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
+ <p className="text-slate-500 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
  <div className="flex gap-4 pt-2">
- <div className="bg-stone-800/50 px-4 py-3 rounded-lg border border-stone-700 flex flex-col">
- <span className="text-[10px] text-stone-500 font-bold uppercase">Hạn mức Payout Ngày</span>
+ <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+ <span className="text-[10px] text-slate-600 font-bold uppercase">Hạn mức Payout Ngày</span>
  <span className="text-base font-bold text-[#FAF9F5] leading-none mt-1">2,000,000,000đ</span>
  </div>
- <div className="bg-stone-800/50 px-4 py-3 rounded-lg border border-stone-700 flex flex-col">
- <span className="text-[10px] text-stone-500 font-bold uppercase">Phí Payout Trung bình</span>
+ <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+ <span className="text-[10px] text-slate-600 font-bold uppercase">Phí Payout Trung bình</span>
  <span className="text-base font-bold text-orange-500 leading-none mt-1">1,200đ / Giao dịch</span>
  </div>
  </div>
  </div>
- <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-stone-800/50 -rotate-12" />
+ <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/50 -rotate-12" />
  </div>
  </div>
  );

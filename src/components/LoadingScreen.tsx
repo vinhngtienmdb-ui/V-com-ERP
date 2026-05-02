@@ -10,7 +10,7 @@ export function LoadingScreen() {
  </div>
  <div className="space-y-2">
  <h2 className="text-xl font-bold text-[#FAF9F5] tracking-tight">Đang tải VComm ERP...</h2>
- <p className="text-stone-500 text-xs font-bold uppercase tracking-widest">Đang thiết lập kết nối an toàn</p>
+ <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">Đang thiết lập kết nối an toàn</p>
  </div>
  </div>
  </div>

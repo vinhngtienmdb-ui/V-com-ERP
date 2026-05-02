@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
  ShoppingBag, 
@@ -49,79 +50,79 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  <div className="flex justify-between items-start mb-6">
  <div>
  <h2 className="text-2xl font-black text-[#111827]">Chi tiết đơn hàng {order.id}</h2>
- <p className="text-sm text-stone-500 font-medium">Đặt ngày: {order.date}</p>
+ <p className="text-sm text-slate-600 font-medium">Đặt ngày: {order.date}</p>
  </div>
- <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full text-stone-500">
+ <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-600">
  <X className="w-6 h-6" />
  </button>
  </div>
 
  <div className="grid grid-cols-2 gap-6 mb-8">
  <div className="space-y-2">
- <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Thông tin khách hàng</p>
- <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-lg border border-stone-100">
- <User className="w-5 h-5 text-stone-400" />
- <span className="font-bold text-stone-800">{order.customerName}</span>
+ <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Thông tin khách hàng</p>
+ <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+ <User className="w-5 h-5 text-slate-500" />
+ <span className="font-bold text-slate-900">{order.customerName}</span>
  </div>
  </div>
  <div className="space-y-2">
- <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Phương thức thanh toán</p>
- <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-lg border border-stone-100">
- <DollarSign className="w-5 h-5 text-stone-400" />
- <span className="font-bold text-stone-800">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
+ <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Phương thức thanh toán</p>
+ <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+ <DollarSign className="w-5 h-5 text-slate-500" />
+ <span className="font-bold text-slate-900">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
  </div>
  </div>
  </div>
 
  <div className="space-y-4 mb-8">
- <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Danh sách sản phẩm</p>
- <div className="bg-stone-50 rounded-lg p-4 border border-stone-100">
+ <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Danh sách sản phẩm</p>
+ <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
  {order.items && order.items.length > 0 ? (
  order.items.map((item: any, idx: number) => (
- <div key={idx} className="flex justify-between py-3 border-b last:border-0 border-stone-200 items-center">
+ <div key={idx} className="flex justify-between py-3 border-b last:border-0 border-slate-300 items-center">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-white rounded-md border border-stone-200 flex items-center justify-center">
- <Package className="w-5 h-5 text-stone-400" />
+ <div className="w-10 h-10 bg-white rounded-md border border-slate-300 flex items-center justify-center">
+ <Package className="w-5 h-5 text-slate-500" />
  </div>
- <span className="font-medium text-stone-700">{item.name}</span>
+ <span className="font-medium text-slate-800">{item.name}</span>
  </div>
- <span className="font-bold text-stone-900">{formatCurrency(item.price)}</span>
+ <span className="font-bold text-slate-900">{formatCurrency(item.price)}</span>
  </div>
  ))
  ) : (
- <p className="text-sm text-stone-500 italic pb-2">Chưa có thông tin sản phẩm.</p>
+ <p className="text-sm text-slate-600 italic pb-2">Chưa có thông tin sản phẩm.</p>
  )}
  </div>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
  <div className="space-y-4">
- <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Lịch sử Vận chuyển</p>
- <div className="bg-stone-50 rounded-lg p-4 border border-stone-100">
+ <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lịch sử Vận chuyển</p>
+ <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
  <div className="flex items-center gap-4 mb-4">
  <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
  <Truck className="w-6 h-6" />
  </div>
  <div>
- <p className="font-bold text-stone-800">{order.carrier || 'Chưa vận chuyển'}</p>
+ <p className="font-bold text-slate-900">{order.carrier || 'Chưa vận chuyển'}</p>
  <p className="font-mono text-xs text-orange-700">{order.tracking || 'N/A'}</p>
  </div>
  </div>
  
- <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[7px] before:w-0.5 before:bg-stone-200">
+ <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[7px] before:w-0.5 before:bg-slate-200">
  <div className="relative z-10 flex items-start gap-4">
- <div className="w-4 h-4 rounded-full bg-stone-800 border-4 border-stone-50 shrink-0 mt-0.5"></div>
+ <div className="w-4 h-4 rounded-full bg-slate-800 border-4 border-stone-50 shrink-0 mt-0.5"></div>
  <div>
- <p className="text-sm font-bold text-stone-800">Đơn hàng được tạo</p>
- <p className="text-xs text-stone-500">{order.date}</p>
+ <p className="text-sm font-bold text-slate-900">Đơn hàng được tạo</p>
+ <p className="text-xs text-slate-600">{order.date}</p>
  </div>
  </div>
  {order.carrier && (
  <div className="relative z-10 flex items-start gap-4">
- <div className="w-4 h-4 rounded-full bg-stone-800 border-4 border-stone-50 shrink-0 mt-0.5"></div>
+ <div className="w-4 h-4 rounded-full bg-slate-800 border-4 border-stone-50 shrink-0 mt-0.5"></div>
  <div>
- <p className="text-sm font-bold text-stone-800">Đã bàn giao cho ĐVVC</p>
- <p className="text-xs text-stone-500">Chờ cập nhật...</p>
+ <p className="text-sm font-bold text-slate-900">Đã bàn giao cho ĐVVC</p>
+ <p className="text-xs text-slate-600">Chờ cập nhật...</p>
  </div>
  </div>
  )}
@@ -130,17 +131,17 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  </div>
 
  <div className="space-y-4">
- <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Hỗ trợ CSKH (AI)</p>
- <div className="p-4 rounded-lg bg-[#F2F0E9] border border-[#EAE7DF]">
- <button onClick={() => handleDraftRma(order)} disabled={isGenerating} className="text-xs font-bold text-[#FAF9F5] bg-stone-900 hover:bg-stone-800 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center">
+ <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Hỗ trợ CSKH (AI)</p>
+ <div className="p-4 rounded-lg bg-slate-100 border border-slate-300">
+ <button onClick={() => handleDraftRma(order)} disabled={isGenerating} className="text-xs font-bold text-[#FAF9F5] bg-slate-900 hover:bg-slate-800 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center">
  <BrainCircuit className="w-4 h-4" /> {isGenerating ? 'AI Đang phân tích và tạo phản hồi...' : 'Tạo phản hồi RMA bằng AI'}
  </button>
  {aiResponse ? (
- <div className="bg-white p-3 rounded-lg border border-[#EAE7DF] shadow-sm text-sm text-stone-700 whitespace-pre-line leading-relaxed h-48 overflow-y-auto custom-scrollbar">
+ <div className="bg-white p-3 rounded-lg border border-slate-300 shadow-sm text-sm text-slate-800 whitespace-pre-line leading-relaxed h-48 overflow-y-auto custom-scrollbar">
  {aiResponse}
  </div>
  ) : (
- <div className="bg-white/50 p-3 rounded-lg border border-[#EAE7DF] border-dashed text-sm text-stone-500 text-center flex flex-col items-center justify-center h-48">
+ <div className="bg-white/50 p-3 rounded-lg border border-slate-300 border-dashed text-sm text-slate-600 text-center flex flex-col items-center justify-center h-48">
  <BrainCircuit className="w-8 h-8 text-blue-300 mb-2 opacity-50" />
  Nhấp để tự động phân tích đơn hàng<br/>và sinh mẫu phản hồi CSKH.
  </div>
@@ -155,7 +156,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  </button>
  )}
  {order.paymentMethod === 'cod' && order.status === 'processing' && (
- <button className="w-full bg-stone-100 text-stone-400 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-stone-200">
+ <button className="w-full bg-slate-100 text-slate-500 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
  <Clock className="w-5 h-5" /> Chờ giao để thu COD
  </button>
  )}
@@ -394,19 +395,19 @@ export function Orders() {
  <div className="flex gap-3">
  <button 
  onClick={addDemoOrders}
- className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-stone-50 transition-all flex items-center gap-2 shadow-sm"
+ className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
  >
  <Sparkles className="w-4 h-4" />
  Mã giảm giá
  </button>
- <button className="bg-[#111827] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-[#111827] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  + Tạo đơn mới
  </button>
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
  <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
@@ -416,7 +417,7 @@ export function Orders() {
  </div>
  <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Cần đóng gói</span>
  <PackageCheck className="w-4 h-4 text-orange-600" />
@@ -424,7 +425,7 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">42</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">12 đơn đóng muộn ({">"}24h)</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang vận chuyển</span>
  <Truck className="w-4 h-4 text-purple-500" />
@@ -432,10 +433,10 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">156</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
  </div>
- <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-stone-200 relative overflow-hidden group border border-stone-800">
+ <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full text-[#FAF9F5]">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
  <RotateCcw className="w-4 h-4 text-orange-400" />
  </div>
  <div>
@@ -445,8 +446,8 @@ export function Orders() {
  </div>
  <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
- </div>
- <div className="bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm">
+ </DraggableGrid>
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng cước phí dự kiến</span>
  <DollarSign className="w-4 h-4 text-emerald-500" />
@@ -455,7 +456,7 @@ export function Orders() {
  <div className="mt-1 text-[10px] text-[#10B981]">Tiết kiệm 8% với Hợp đồng sàn</div>
  </div>
 
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">
  <div className="relative">
@@ -463,7 +464,7 @@ export function Orders() {
  <input 
  type="text" 
  placeholder="Mã đơn, Mã Tracking, SĐT..." 
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
  
@@ -471,7 +472,7 @@ export function Orders() {
  <select 
  value={statusFilter}
  onChange={(e) => setStatusFilter(e.target.value)}
- className="bg-white border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-[#4B5563] appearance-none"
+ className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-[#4B5563] appearance-none"
  >
  <option value="all">Tất cả trạng thái</option>
  {Object.entries(statusLabels).map(([key, label]) => (
@@ -486,19 +487,19 @@ export function Orders() {
  value={dateQuery}
  onChange={(e) => setDateQuery(e.target.value)}
  placeholder="Ngày (YYYY-MM-DD)"
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-48"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-48"
  />
  </div>
  </div>
  
- <div className="flex border border-[#E5E7EB] rounded-lg overflow-hidden bg-white">
+ <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
  <button 
  onClick={() => setActiveStep('all')}
  className={cn("px-4 py-2 text-xs font-semibold", activeStep === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
  >Tất cả</button>
  <button 
  onClick={() => setActiveStep('rma')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-[#E5E7EB]", activeStep === 'rma' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300", activeStep === 'rma' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
  >Phê duyệt Hoàn tiền/Trả hàng</button>
  </div>
  </div>
@@ -520,7 +521,7 @@ export function Orders() {
  <tr 
  key={order.id} 
  className={cn(
- "bg-white hover:bg-stone-50 group hover:shadow-sm transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600",
+ "bg-white hover:bg-slate-50 group hover:shadow-sm transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600",
  isDelayed(order.date, order.status) && "bg-red-50/30 border-l-red-500"
  )}
  onClick={() => setSelectedOrder(order)}
@@ -538,11 +539,11 @@ export function Orders() {
  <td className="px-6 py-4">
  {order.carrier ? (
  <div className="flex items-center gap-3">
- <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-stone-100 shadow-sm min-w-[80px] group-hover:border-orange-200 transition-colors">
- <span className="text-[10px] font-bold text-stone-700 uppercase">{order.carrier}</span>
+ <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm min-w-[80px] group-hover:border-orange-200 transition-colors">
+ <span className="text-[10px] font-bold text-slate-800 uppercase">{order.carrier}</span>
  <span className="text-[10px] font-mono text-[#2563EB] font-bold">{order.tracking}</span>
  </div>
- <button className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-[#F2F0E9] transition-all flex items-center gap-1">
+ <button className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1">
  <MapPin className="w-3 h-3" /> Tra cứu
  </button>
  </div>
@@ -570,7 +571,7 @@ export function Orders() {
  </td>
  <td className="px-6 py-4 text-right">
  <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
- <button className="p-2.5 bg-white border border-stone-200 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-stone-400 hover:text-primary-600 transition-all active:scale-95">
+ <button className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all active:scale-95">
  <MoreHorizontal className="w-4 h-4" />
  </button>
  </div>

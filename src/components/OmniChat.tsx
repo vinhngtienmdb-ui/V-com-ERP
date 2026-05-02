@@ -105,7 +105,7 @@ export function OmniChat() {
  };
 
  return (
- <div className="flex bg-white rounded-lg border border-[#E5E7EB] shadow-sm h-[calc(100vh-180px)] overflow-hidden animate-in fade-in duration-500">
+ <div className="flex bg-white rounded-lg border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden animate-in fade-in duration-500">
  {/* Sidebar - Thread List */}
  <div className="w-[320px] border-r border-[#F3F4F6] flex flex-col">
  <div className="p-4 border-b border-[#F3F4F6]">
@@ -117,7 +117,7 @@ export function OmniChat() {
  <input 
  type="text" 
  placeholder="Tìm khách hàng..." 
- className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all"
+ className="w-full bg-[#F9FAFB] border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all"
  />
  </div>
  </div>
@@ -127,18 +127,18 @@ export function OmniChat() {
  key={thread.id}
  onClick={() => setActiveThreadId(thread.id)}
  className={cn(
- "w-full p-4 flex gap-3 hover:bg-stone-50 transition-all border-b border-[#F3F4F6] text-left relative",
- activeThreadId === thread.id && "bg-[#F2F0E9]/50 after:absolute after:left-0 after:top-0 after:bottom-0 after:w-1 after:bg-stone-900"
+ "w-full p-4 flex gap-3 hover:bg-slate-50 transition-all border-b border-[#F3F4F6] text-left relative",
+ activeThreadId === thread.id && "bg-slate-100/50 after:absolute after:left-0 after:top-0 after:bottom-0 after:w-1 after:bg-slate-900"
  )}
  >
  <div className="relative">
- <div className="w-12 h-12 rounded-full bg-stone-200 border-2 border-white flex items-center justify-center text-stone-500 font-bold overflow-hidden shadow-sm">
+ <div className="w-12 h-12 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-slate-600 font-bold overflow-hidden shadow-sm">
  {thread.userAvatar ? <img src={thread.userAvatar} alt="" /> : thread.userName[0]}
  </div>
  <div className="absolute -bottom-1 -right-1 p-1 bg-white rounded-full shadow-sm">
- {thread.channel === 'zalo' && <div className="w-3.5 h-3.5 bg-stone-800 rounded-full flex items-center justify-center text-[8px] text-[#FAF9F5] font-bold">Z</div>}
+ {thread.channel === 'zalo' && <div className="w-3.5 h-3.5 bg-slate-800 rounded-full flex items-center justify-center text-[8px] text-[#FAF9F5] font-bold">Z</div>}
  {thread.channel === 'facebook' && <Facebook className="w-3.5 h-3.5 text-orange-800" />}
- {thread.channel === 'web' && <Globe className="w-3.5 h-3.5 text-stone-500" />}
+ {thread.channel === 'web' && <Globe className="w-3.5 h-3.5 text-slate-600" />}
  </div>
  </div>
  <div className="flex-1 min-w-0">
@@ -163,7 +163,7 @@ export function OmniChat() {
  {/* Chat Header */}
  <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center z-10">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center font-bold text-xs border border-stone-200">
+ <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs border border-slate-300">
  {activeThread?.userName[0]}
  </div>
  <div>
@@ -175,10 +175,10 @@ export function OmniChat() {
  </div>
  </div>
  <div className="flex items-center gap-2">
- <button className="p-2 hover:bg-stone-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-[#6B7280]" /></button>
- <button className="p-2 hover:bg-stone-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
- <div className="h-6 w-[1px] bg-stone-200 mx-2" />
- <button className="p-2 hover:bg-stone-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
+ <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-[#6B7280]" /></button>
+ <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
+ <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+ <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
  </div>
  </div>
 
@@ -191,7 +191,7 @@ export function OmniChat() {
  )}>
  <div className={cn(
  "w-8 h-8 rounded-full flex items-center justify-center shadow-sm",
- msg.senderId === 'ai' ? "bg-stone-900 text-[#FAF9F5]" : "bg-stone-900 text-[#FAF9F5]"
+ msg.senderId === 'ai' ? "bg-slate-900 text-[#FAF9F5]" : "bg-slate-900 text-[#FAF9F5]"
  )}>
  {msg.senderId === 'ai' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
  </div>
@@ -203,7 +203,7 @@ export function OmniChat() {
  "p-4 rounded-lg text-sm shadow-sm",
  msg.senderId === 'ai' 
  ? "bg-white text-[#111827] border border-[#F3F4F6] rounded-tl-none" 
- : "bg-stone-900 text-[#FAF9F5] rounded-tr-none"
+ : "bg-slate-900 text-[#FAF9F5] rounded-tr-none"
  )}>
  {msg.text}
  </div>
@@ -216,15 +216,15 @@ export function OmniChat() {
  ))}
  {isAiProcessing && (
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-full bg-stone-900 text-[#FAF9F5] flex items-center justify-center animate-pulse">
+ <div className="w-8 h-8 rounded-full bg-slate-900 text-[#FAF9F5] flex items-center justify-center animate-pulse">
  <Bot className="w-4 h-4" />
  </div>
  <div className="bg-white border border-[#F3F4F6] p-3 rounded-lg rounded-tl-none shadow-sm flex items-center gap-2">
  <span className="text-xs text-[#6B7280] font-bold">AI Assistant đang soạn câu trả lời</span>
  <div className="flex gap-1">
- <div className="w-1 h-1 bg-stone-900 rounded-full animate-bounce [animation-delay:-0.3s]" />
- <div className="w-1 h-1 bg-stone-900 rounded-full animate-bounce [animation-delay:-0.15s]" />
- <div className="w-1 h-1 bg-stone-900 rounded-full animate-bounce" />
+ <div className="w-1 h-1 bg-slate-900 rounded-full animate-bounce [animation-delay:-0.3s]" />
+ <div className="w-1 h-1 bg-slate-900 rounded-full animate-bounce [animation-delay:-0.15s]" />
+ <div className="w-1 h-1 bg-slate-900 rounded-full animate-bounce" />
  </div>
  </div>
  </div>
@@ -233,17 +233,17 @@ export function OmniChat() {
 
  {/* AI Suggestions */}
  {suggestedReplies.length > 0 && (
- <div className="px-6 py-3 flex gap-2 overflow-x-auto bg-white border-y border-stone-100 no-scrollbar">
+ <div className="px-6 py-3 flex gap-2 overflow-x-auto bg-white border-y border-slate-200 no-scrollbar">
  {suggestedReplies.map((reply, i) => (
  <button 
  key={i}
  onClick={() => setInputValue(reply)}
- className="whitespace-nowrap px-4 py-2 bg-[#F2F0E9] text-orange-700 text-[11px] font-bold rounded-full border border-[#EAE7DF] hover:bg-stone-900 hover:text-[#FAF9F5] transition-all shadow-sm"
+ className="whitespace-nowrap px-4 py-2 bg-slate-100 text-orange-700 text-[11px] font-bold rounded-full border border-slate-300 hover:bg-slate-900 hover:text-[#FAF9F5] transition-all shadow-sm"
  >
  {reply}
  </button>
  ))}
- <button onClick={() => setSuggestedReplies([])} className="p-2 text-stone-400 hover:text-stone-600"><X className="w-4 h-4" /></button>
+ <button onClick={() => setSuggestedReplies([])} className="p-2 text-slate-500 hover:text-slate-700"><X className="w-4 h-4" /></button>
  </div>
  )}
 
@@ -256,7 +256,7 @@ export function OmniChat() {
  className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-xl hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm group relative"
  >
  <Sparkles className={cn("w-5 h-5", isAiProcessing && "animate-spin")} />
- <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-stone-900 text-[#FAF9F5] text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
+ <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-[#FAF9F5] text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
  </button>
  <div className="flex-1 relative">
  <input 
@@ -265,13 +265,13 @@ export function OmniChat() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
+ className="w-full bg-[#F9FAFB] border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
  />
  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-700 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiProcessing}>
  <Send className="w-5 h-5" />
  </button>
  </div>
- <button className="bg-stone-100 p-3 rounded-lg hover:bg-stone-200 transition-colors">
+ <button className="bg-slate-100 p-3 rounded-lg hover:bg-slate-200 transition-colors">
  <Zap className="w-5 h-5 text-orange-500 fill-current" />
  </button>
  </div>
@@ -284,7 +284,7 @@ export function OmniChat() {
  {/* Right Sidebar - Info */}
  <div className="w-[300px] border-l border-[#F3F4F6] bg-white hidden xl:flex flex-col p-6 space-y-8 overflow-y-auto">
  <div className="text-center space-y-3">
- <div className="w-20 h-20 rounded-full bg-stone-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-2xl font-bold text-stone-400">
+ <div className="w-20 h-20 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-2xl font-bold text-slate-500">
  {activeThread?.userName[0]}
  </div>
  <div>
@@ -293,7 +293,7 @@ export function OmniChat() {
  </div>
  <div className="flex justify-center gap-2">
  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
- <span className="px-3 py-1 bg-[#F2F0E9] text-orange-700 rounded-lg text-[10px] font-bold">VIP Hạng Bạc</span>
+ <span className="px-3 py-1 bg-slate-100 text-orange-700 rounded-lg text-[10px] font-bold">VIP Hạng Bạc</span>
  </div>
  </div>
 
@@ -318,7 +318,7 @@ export function OmniChat() {
  { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
  { id: 'ORD-8840', status: 'delivered', amount: 850000 }
  ].map(order => (
- <div key={order.id} className="p-3 bg-stone-50 rounded-lg border border-stone-100 space-y-1 group hover:border-orange-200 transition-all cursor-pointer">
+ <div key={order.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1 group hover:border-orange-200 transition-all cursor-pointer">
  <div className="flex justify-between items-start">
  <span className="text-xs font-bold text-[#111827] font-mono">{order.id}</span>
  <span className={cn(
@@ -332,7 +332,7 @@ export function OmniChat() {
  </div>
  </div>
 
- <div className="bg-[#F2F0E9] p-4 rounded-lg space-y-2 border border-[#EAE7DF]">
+ <div className="bg-slate-100 p-4 rounded-lg space-y-2 border border-slate-300">
  <h4 className="text-[10px] font-bold text-orange-700 uppercase flex items-center gap-2">
  <Bot className="w-3 h-3" /> AI Summary
  </h4>

@@ -28,13 +28,13 @@ export function LoginPage() {
  {/* Left Pane - Branding & Illustration */}
  <div className="hidden md:flex md:w-1/2 bg-[#0F172A] p-12 flex-col justify-between relative overflow-hidden">
  <div className="absolute top-0 left-0 w-full h-full opacity-20">
- <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-stone-900 rounded-full blur-[120px]" />
+ <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-slate-900 rounded-full blur-[120px]" />
  <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary-600 rounded-full blur-[120px]" />
  </div>
  
  <div className="relative z-10">
  <div className="flex items-center gap-3 mb-12">
- <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-stone-900/5"></div>
+ <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
  <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
  VComm <span className="text-orange-500">ERP</span>
  </h1>
@@ -45,7 +45,7 @@ export function LoginPage() {
  Hệ quản trị doanh nghiệp <br /> 
  <span className="text-orange-500">Sử dụng sức mạnh AI.</span>
  </h2>
- <p className="text-stone-400 text-lg">
+ <p className="text-slate-500 text-lg">
  Giải pháp toàn diện cho Sàn TMĐT Thế hệ mới. Tối ưu vận hành, đột phá doanh thu và nâng tầm trải nghiệm khách hàng.
  </p>
  </div>
@@ -57,14 +57,14 @@ export function LoginPage() {
  <Zap className="w-6 h-6 text-amber-400" />
  </div>
  <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">AIOps Execution</h3>
- <p className="text-stone-500 text-xs">Vận hành thông minh bằng AI, giảm 40% chi phí nhân sự.</p>
+ <p className="text-slate-600 text-xs">Vận hành thông minh bằng AI, giảm 40% chi phí nhân sự.</p>
  </div>
  <div>
  <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
  <ShieldCheck className="w-6 h-6 text-emerald-400" />
  </div>
  <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">Enterprise Security</h3>
- <p className="text-stone-500 text-xs">Bảo mật đa tầng theo tiêu chuẩn quốc tế cho doanh nghiệp.</p>
+ <p className="text-slate-600 text-xs">Bảo mật đa tầng theo tiêu chuẩn quốc tế cho doanh nghiệp.</p>
  </div>
  </div>
  </div>
@@ -85,7 +85,7 @@ export function LoginPage() {
  <div className="space-y-1.5">
  <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Tên đăng nhập</label>
  <div className="relative group">
- <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-[#2563EB] transition-colors">
+ <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2563EB] transition-colors">
  <Rocket className="w-4 h-4" />
  </div>
  <input 
@@ -94,7 +94,7 @@ export function LoginPage() {
  value={username}
  onChange={(e) => setUsername(e.target.value)}
  placeholder="admin"
- className="w-full bg-white border border-[#E5E7EB] rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+ className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
  />
  </div>
  </div>
@@ -102,7 +102,7 @@ export function LoginPage() {
  <div className="space-y-1.5">
  <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Mật khẩu</label>
  <div className="relative group">
- <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-[#2563EB] transition-colors">
+ <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2563EB] transition-colors">
  <LogIn className="w-4 h-4" />
  </div>
  <input 
@@ -111,7 +111,7 @@ export function LoginPage() {
  value={password}
  onChange={(e) => setPassword(e.target.value)}
  placeholder="••••••••"
- className="w-full bg-white border border-[#E5E7EB] rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+ className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
  />
  </div>
  </div>
@@ -129,7 +129,7 @@ export function LoginPage() {
  <button 
  type="submit"
  disabled={isSubmitting}
- className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-stone-900/5 hover:bg-stone-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+ className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
  >
  {isSubmitting ? (
  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

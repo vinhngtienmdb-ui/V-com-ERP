@@ -105,25 +105,25 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
   };
   
   return (
-    <div className="col-span-12 flex-1 bg-stone-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
-      <div className="bg-white border-b border-stone-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
+      <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-stone-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-emerald-600" /> Bảng Lương & Nhân Sự
           </h2>
-          <p className="text-xs font-bold text-stone-400 mt-1 uppercase tracking-widest">{activeStore?.name || 'Tất cả chi nhánh'}</p>
+          <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name || 'Tất cả chi nhánh'}</p>
         </div>
         <div className="flex gap-3">
            <input 
               type="month" 
               value={selectedMonth} 
               onChange={e => setSelectedMonth(e.target.value)} 
-              className="px-4 py-2 bg-stone-100 border border-stone-200 rounded-md text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all cursor-pointer" 
+              className="px-4 py-2 bg-slate-100 border border-slate-300 rounded-md text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all cursor-pointer" 
            />
            <button className="bg-emerald-600 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-emerald-700 flex items-center gap-2 transition-all">
              <CreditCard className="w-4 h-4" /> Thanh toán tự động (SePay)
            </button>
-           <button className="bg-stone-900 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-stone-800 flex items-center gap-2 transition-all">
+           <button className="bg-slate-900 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 flex items-center gap-2 transition-all">
              <Download className="w-4 h-4" /> Xuất Excel
            </button>
         </div>
@@ -134,35 +134,35 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
              {[{ label: 'Tổng lương thực nhận', val: formatCurrency(stats.totalNetPay), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-primary-600', bg: 'bg-primary-50' },
                { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' }].map((stat, idx) => (
-                 <div key={idx} className="bg-white border text-center md:text-left border-stone-200 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
+                 <div key={idx} className="bg-white border text-center md:text-left border-slate-300 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", stat.bg, stat.color)}>
                          <stat.icon className="w-6 h-6" />
                      </div>
                      <div>
-                         <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                         <p className="text-3xl font-black text-stone-900 tracking-tight">{stat.val}</p>
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
+                         <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.val}</p>
                      </div>
                  </div>
              ))}
          </div>
          
-         <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden mb-6">
-             <div className="p-6 border-b border-stone-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-stone-50/50">
+         <div className="bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden mb-6">
+             <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
                 <div>
-                   <h3 className="font-bold text-stone-900 flex items-center gap-2 text-lg">
+                   <h3 className="font-bold text-slate-900 flex items-center gap-2 text-lg">
                       Chi tiết bảng lương tháng {selectedMonth.split('-')[1]}
                    </h3>
-                   <p className="text-xs text-stone-500 mt-1">Hệ thống tự động chấm công, tính OT, phụ cấp, thưởng phạt và thuế TNCN chuẩn mực.</p>
+                   <p className="text-xs text-slate-600 mt-1">Hệ thống tự động chấm công, tính OT, phụ cấp, thưởng phạt và thuế TNCN chuẩn mực.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="bg-white border border-stone-200 text-stone-600 px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-stone-50 transition-colors">Đồng bộ lại chấm công</button>
-                    <button className="bg-stone-900 text-[#FAF9F5] px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-stone-800 transition-colors">Chốt bảng lương</button>
+                    <button className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-50 transition-colors">Đồng bộ lại chấm công</button>
+                    <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 transition-colors">Chốt bảng lương</button>
                 </div>
              </div>
              
              <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-[#F9FAFB] border-b border-stone-200 text-stone-500">
+                    <thead className="bg-[#F9FAFB] border-b border-slate-300 text-slate-600">
                         <tr>
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Nhân viên</th>
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-center">Công chuẩn / Thực tế</th>
@@ -174,7 +174,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-center">Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-stone-100">
+                    <tbody className="divide-y divide-slate-100">
                         {employees.map((emp) => {
                             const details = calculateDetails(emp);
                             return (
@@ -185,19 +185,19 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors shrink-0">
                                                 <UserCircle2 className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <p className="font-bold text-stone-900 group-hover:text-primary-700 transition-colors">{emp.name}</p>
-                                                <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wider mt-0.5">{emp.role}</p>
+                                                <p className="font-bold text-slate-900 group-hover:text-primary-700 transition-colors">{emp.name}</p>
+                                                <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-0.5">{emp.role}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="inline-flex items-baseline gap-1">
-                                            <span className={cn("font-bold text-base", emp.workDays < emp.totalWorkDays ? "text-rose-600" : "text-stone-700")}>{emp.workDays}</span>
-                                            <span className="text-[10px] text-stone-400 font-bold uppercase">/ {emp.totalWorkDays}</span>
+                                            <span className={cn("font-bold text-base", emp.workDays < emp.totalWorkDays ? "text-rose-600" : "text-slate-800")}>{emp.workDays}</span>
+                                            <span className="text-[10px] text-slate-500 font-bold uppercase">/ {emp.totalWorkDays}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center">
@@ -206,23 +206,23 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                                 <Clock className="w-3.5 h-3.5" /> +{emp.otHours}h
                                             </span>
                                         ) : (
-                                            <span className="text-stone-300 font-medium">-</span>
+                                            <span className="text-slate-500 font-medium">-</span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <p className="font-bold text-stone-700">{formatCurrency(details.actualBase)}</p>
+                                        <p className="font-bold text-slate-800">{formatCurrency(details.actualBase)}</p>
                                         {details.otPay > 0 && <p className="text-[10px] text-orange-600 font-bold uppercase mt-1">+ {formatCurrency(details.otPay)} (OT)</p>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {emp.allowances > 0 && <p className="text-[10px] text-primary-600 font-bold uppercase">PC: +{formatCurrency(emp.allowances)}</p>}
                                         {emp.bonus > 0 && <p className="text-[10px] text-emerald-600 font-bold uppercase mt-0.5">Thưởng: +{formatCurrency(emp.bonus)}</p>}
-                                        {emp.allowances === 0 && emp.bonus === 0 && <span className="text-stone-300">-</span>}
+                                        {emp.allowances === 0 && emp.bonus === 0 && <span className="text-slate-500">-</span>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        {emp.insurance > 0 && <p className="text-[10px] text-stone-500 font-bold uppercase">BH: -{formatCurrency(emp.insurance)}</p>}
+                                        {emp.insurance > 0 && <p className="text-[10px] text-slate-600 font-bold uppercase">BH: -{formatCurrency(emp.insurance)}</p>}
                                         {emp.tax > 0 && <p className="text-[10px] text-rose-500 font-bold uppercase mt-0.5">Thuế: -{formatCurrency(emp.tax)}</p>}
                                         {emp.penalty > 0 && <p className="text-[10px] text-amber-600 font-bold uppercase mt-0.5">Phạt: -{formatCurrency(emp.penalty)}</p>}
-                                        {details.deductions === 0 && <span className="text-stone-300">-</span>}
+                                        {details.deductions === 0 && <span className="text-slate-500">-</span>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <p className="font-black text-primary-700 text-base">{formatCurrency(details.net)}</p>
@@ -247,15 +247,15 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
 
       {/* Employee Details Sidebar/Modal (Simulated) */}
       {selectedEmployee && (
-          <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex justify-end animate-in fade-in">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-end animate-in fade-in">
               <div className="w-full md:w-[480px] bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-8">
-                  <div className="p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+                  <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
                       <div>
-                          <h3 className="font-black text-stone-900 text-lg">Phiếu Lương Chi Tiết</h3>
-                          <p className="text-xs text-stone-500 uppercase tracking-widest font-bold mt-1">Kỳ lương: {selectedMonth} • {selectedEmployee.id}</p>
+                          <h3 className="font-black text-slate-900 text-lg">Phiếu Lương Chi Tiết</h3>
+                          <p className="text-xs text-slate-600 uppercase tracking-widest font-bold mt-1">Kỳ lương: {selectedMonth} • {selectedEmployee.id}</p>
                       </div>
-                      <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-stone-200 rounded-full transition-colors">
-                          <CheckCircle2 className="w-5 h-5 text-stone-400 rotate-45" />
+                      <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                          <CheckCircle2 className="w-5 h-5 text-slate-500 rotate-45" />
                       </button>
                   </div>
                   
@@ -265,8 +265,8 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                               <UserCircle2 className="w-8 h-8" />
                           </div>
                           <div>
-                              <p className="font-black text-xl text-stone-900 tracking-tight">{selectedEmployee.name}</p>
-                              <span className="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 uppercase tracking-widest">
+                              <p className="font-black text-xl text-slate-900 tracking-tight">{selectedEmployee.name}</p>
+                              <span className="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 uppercase tracking-widest">
                                   {selectedEmployee.role}
                               </span>
                           </div>
@@ -274,58 +274,58 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
 
                       {/* Thu nhập */}
                       <div className="space-y-4">
-                          <h4 className="font-black text-stone-800 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-stone-100 pb-2">
+                          <h4 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
                               1. Tổng Thu Nhập (Gross)
                           </h4>
                           <div className="space-y-3 px-2">
                               <div className="flex justify-between items-center text-sm">
-                                  <span className="text-stone-500 font-medium">Lương cơ bản ({selectedEmployee.workDays}/{selectedEmployee.totalWorkDays} công)</span>
-                                  <span className="font-bold text-stone-900">{formatCurrency(calculateDetails(selectedEmployee).actualBase)}</span>
+                                  <span className="text-slate-600 font-medium">Lương cơ bản ({selectedEmployee.workDays}/{selectedEmployee.totalWorkDays} công)</span>
+                                  <span className="font-bold text-slate-900">{formatCurrency(calculateDetails(selectedEmployee).actualBase)}</span>
                               </div>
                               {selectedEmployee.otHours > 0 && (
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-stone-500 font-medium">Lương tăng ca (OT {selectedEmployee.otHours}h x 1.5)</span>
-                                    <span className="font-bold text-stone-900">{formatCurrency(calculateDetails(selectedEmployee).otPay)}</span>
+                                    <span className="text-slate-600 font-medium">Lương tăng ca (OT {selectedEmployee.otHours}h x 1.5)</span>
+                                    <span className="font-bold text-slate-900">{formatCurrency(calculateDetails(selectedEmployee).otPay)}</span>
                                 </div>
                               )}
                               <div className="flex justify-between items-center text-sm">
-                                  <span className="text-stone-500 font-medium">Phụ cấp (Ăn ca, Trách nhiệm)</span>
-                                  <span className="font-bold text-stone-900">{formatCurrency(selectedEmployee.allowances)}</span>
+                                  <span className="text-slate-600 font-medium">Phụ cấp (Ăn ca, Trách nhiệm)</span>
+                                  <span className="font-bold text-slate-900">{formatCurrency(selectedEmployee.allowances)}</span>
                               </div>
                               <div className="flex justify-between items-center text-sm">
-                                  <span className="text-stone-500 font-medium">Thưởng KPI & Hoa hồng</span>
+                                  <span className="text-slate-600 font-medium">Thưởng KPI & Hoa hồng</span>
                                   <span className="font-bold text-emerald-600">+{formatCurrency(selectedEmployee.bonus)}</span>
                               </div>
                           </div>
-                          <div className="bg-stone-50 p-3 rounded-lg flex justify-between items-center border border-stone-100">
-                              <span className="font-bold text-stone-700 text-xs uppercase tracking-widest">Tổng thu nhập</span>
-                              <span className="font-black text-stone-900 text-lg">{formatCurrency(calculateDetails(selectedEmployee).gross)}</span>
+                          <div className="bg-slate-50 p-3 rounded-lg flex justify-between items-center border border-slate-200">
+                              <span className="font-bold text-slate-800 text-xs uppercase tracking-widest">Tổng thu nhập</span>
+                              <span className="font-black text-slate-900 text-lg">{formatCurrency(calculateDetails(selectedEmployee).gross)}</span>
                           </div>
                       </div>
 
                       {/* Khấu trừ */}
                       <div className="space-y-4">
-                          <h4 className="font-black text-stone-800 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-stone-100 pb-2">
+                          <h4 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
                               2. Các Khoản Khấu Trừ
                           </h4>
                           <div className="space-y-3 px-2">
                               <div className="flex justify-between items-center text-sm">
-                                  <span className="text-stone-500 font-medium">Khấu trừ BHXH, BHYT (10.5%)</span>
+                                  <span className="text-slate-600 font-medium">Khấu trừ BHXH, BHYT (10.5%)</span>
                                   <span className="font-bold text-rose-600">-{formatCurrency(selectedEmployee.insurance)}</span>
                               </div>
                               <div className="flex justify-between items-center text-sm">
-                                  <span className="text-stone-500 font-medium">Thuế TNCN (Tạm tính)</span>
+                                  <span className="text-slate-600 font-medium">Thuế TNCN (Tạm tính)</span>
                                   <span className="font-bold text-rose-600">-{formatCurrency(selectedEmployee.tax)}</span>
                               </div>
                               {selectedEmployee.penalty > 0 && (
                                   <div className="flex justify-between items-center text-sm">
-                                      <span className="text-stone-500 font-medium">Khấu trừ vi phạm nội quy</span>
+                                      <span className="text-slate-600 font-medium">Khấu trừ vi phạm nội quy</span>
                                       <span className="font-bold text-amber-600">-{formatCurrency(selectedEmployee.penalty)}</span>
                                   </div>
                               )}
                           </div>
-                          <div className="bg-stone-50 p-3 rounded-lg flex justify-between items-center border border-stone-100">
-                              <span className="font-bold text-stone-700 text-xs uppercase tracking-widest">Tổng khấu trừ</span>
+                          <div className="bg-slate-50 p-3 rounded-lg flex justify-between items-center border border-slate-200">
+                              <span className="font-bold text-slate-800 text-xs uppercase tracking-widest">Tổng khấu trừ</span>
                               <span className="font-black text-rose-600 text-lg">-{formatCurrency(calculateDetails(selectedEmployee).deductions)}</span>
                           </div>
                       </div>
@@ -354,11 +354,11 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                       </div>
                   </div>
 
-                  <div className="p-6 border-t border-stone-100 bg-stone-50 flex gap-3">
-                      <button className="flex-1 py-3 bg-white border border-stone-200 text-stone-700 font-bold rounded-lg hover:bg-stone-100 transition-colors text-xs uppercase tracking-widest shadow-sm">
+                  <div className="p-6 border-t border-slate-200 bg-slate-50 flex gap-3">
+                      <button className="flex-1 py-3 bg-white border border-slate-300 text-slate-800 font-bold rounded-lg hover:bg-slate-100 transition-colors text-xs uppercase tracking-widest shadow-sm">
                           In Phiếu
                       </button>
-                      <button className="flex-[2] py-3 bg-stone-900 text-white font-bold rounded-lg hover:bg-stone-800 transition-colors text-xs uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
+                      <button className="flex-[2] py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
                           Gửi Phiếu Lương (Zalo/Email) <ArrowRight className="w-4 h-4" />
                       </button>
                   </div>

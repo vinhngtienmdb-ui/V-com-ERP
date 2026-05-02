@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -139,7 +140,7 @@ function getColorClasses(color: string) {
       return "bg-amber-50 text-amber-600";
     case "slate":
     default:
-      return "bg-stone-50 text-stone-600";
+      return "bg-slate-50 text-slate-700";
   }
 }
 
@@ -212,14 +213,14 @@ const CartItemEditingModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <div>
-            <h3 className="text-xl font-black text-stone-900 tracking-tight">{item.name}</h3>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">{item.name}</h3>
             <p className="text-[10px] uppercase font-bold tracking-widest text-primary-600 mt-1">Tùy chỉnh món</p>
           </div>
-          <button onClick={onClose} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -227,20 +228,20 @@ const CartItemEditingModal = ({
         <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {/* Ghi chú */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+            <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
               Ghi chú thêm
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Ví dụ: Ít đá, không đường, ..."
-              className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all resize-none shadow-sm h-24"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all resize-none shadow-sm h-24"
             />
           </div>
 
           {/* Toppings */}
           <div className="space-y-3">
-            <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+            <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
               Thêm Topping / Phụ phí
             </label>
             <div className="space-y-2">
@@ -251,19 +252,19 @@ const CartItemEditingModal = ({
                     key={topping.id} 
                     className={cn(
                       "w-full flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
-                      isSelected ? "border-primary-600 bg-primary-50/50" : "border-stone-200 hover:border-stone-300 hover:bg-stone-50"
+                      isSelected ? "border-primary-600 bg-primary-50/50" : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "w-5 h-5 rounded border flex items-center justify-center transition-colors",
-                        isSelected ? "bg-primary-600 border-primary-600 text-white" : "border-stone-300"
+                        isSelected ? "bg-primary-600 border-primary-600 text-white" : "border-slate-400"
                       )}>
                         {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
                       </div>
-                      <span className={cn("text-sm font-bold", isSelected ? "text-primary-900" : "text-stone-700")}>{topping.name}</span>
+                      <span className={cn("text-sm font-bold", isSelected ? "text-primary-900" : "text-slate-800")}>{topping.name}</span>
                     </div>
-                    <span className={cn("text-xs font-black", isSelected ? "text-primary-600" : "text-stone-500")}>
+                    <span className={cn("text-xs font-black", isSelected ? "text-primary-600" : "text-slate-600")}>
                       +{new Intl.NumberFormat('vi-VN').format(topping.price)}
                     </span>
                     <input type="checkbox" className="hidden" checked={isSelected} onChange={() => handleToggleTopping(topping)} />
@@ -274,8 +275,8 @@ const CartItemEditingModal = ({
           </div>
         </div>
 
-        <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm">
+        <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm">
             Hủy
           </button>
           <button onClick={handleSave} className="px-6 py-2.5 rounded-lg font-bold bg-primary-600 hover:bg-primary-700 text-white shadow-sm transition-colors text-sm flex items-center gap-2">
@@ -568,7 +569,7 @@ export function IPosModule() {
   const [voiceHint, setVoiceHint] = useState<string | null>(null);
   const [returnReason, setReturnReason] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<
-    "cash" | "qr" | "pos" | "promo_qr" | "loyalty"
+    "cash" | "qr" | "pos" | "promo_qr" | "loyalty" | "virtual_account"
   >("cash");
   const [usePromoWallet, setUsePromoWallet] = useState(false);
   const [showCustomerPromoQR, setShowCustomerPromoQR] = useState(false);
@@ -1642,34 +1643,34 @@ export function IPosModule() {
   ) {
     if (pendingHandover) {
       return (
-        <div className="h-full flex items-center justify-center p-8 bg-stone-50/50">
-          <div className="max-w-md w-full bg-white rounded-sm border border-stone-200 shadow-sm p-10 space-y-6">
+        <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
+          <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 space-y-6">
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center mx-auto mb-4">
                 <UserCheck className="w-10 h-10" />
               </div>
-              <h2 className="text-2xl font-bold text-stone-900">
+              <h2 className="text-2xl font-bold text-slate-900">
                 Nhận bàn giao ca
               </h2>
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-slate-600">
                 Ca trước:{" "}
-                <span className="font-bold text-stone-700">
+                <span className="font-bold text-slate-800">
                   {pendingHandover.previousStaffName}
                 </span>
               </p>
             </div>
 
-            <div className="bg-stone-50 rounded-sm p-5 space-y-4">
-              <div className="flex justify-between items-center pb-3 border-b border-stone-200 text-sm">
-                <span className="font-bold text-stone-500 uppercase">
+            <div className="bg-slate-50 rounded-sm p-5 space-y-4">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
+                <span className="font-bold text-slate-600 uppercase">
                   Khai báo ca trước
                 </span>
-                <span className="font-bold text-stone-900">
+                <span className="font-bold text-slate-900">
                   {formatCurrency(pendingHandover.actualCash)}
                 </span>
               </div>
-              <div className="flex justify-between items-center pb-3 border-b border-stone-200 text-sm">
-                <span className="font-bold text-stone-500 uppercase">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
+                <span className="font-bold text-slate-600 uppercase">
                   Đối soát hệ thống (Lệch)
                 </span>
                 <span
@@ -1688,10 +1689,10 @@ export function IPosModule() {
                 </span>
               </div>
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                   Ghi chú bàn giao
                 </span>
-                <p className="text-sm text-stone-700 italic bg-white p-3 rounded-sm border border-stone-200">
+                <p className="text-sm text-slate-800 italic bg-white p-3 rounded-sm border border-slate-300">
                   {pendingHandover.notes || "Không có ghi chú"}
                 </p>
               </div>
@@ -1712,34 +1713,34 @@ export function IPosModule() {
     }
 
     return (
-      <div className="h-full flex items-center justify-center p-8 bg-stone-50/50">
-        <div className="max-w-md w-full bg-white rounded-sm border border-stone-200 shadow-sm p-10 text-center space-y-6">
-          <div className="w-20 h-20 bg-[#F2F0E9] text-primary-600 rounded-sm flex items-center justify-center mx-auto">
+      <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
+        <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 text-center space-y-6">
+          <div className="w-20 h-20 bg-slate-100 text-primary-600 rounded-sm flex items-center justify-center mx-auto">
             <Clock className="w-10 h-10" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-stone-900">
+            <h2 className="text-2xl font-bold text-slate-900">
               Mở ca làm việc
             </h2>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-slate-600">
               Vui lòng kiểm tra tiền mặt đầu ca trước khi bắt đầu bán hàng.
             </p>
           </div>
-          <div className="bg-stone-50 rounded-sm p-6 text-left space-y-4">
+          <div className="bg-slate-50 rounded-sm p-6 text-left space-y-4">
             <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+              <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                 Tiền mặt đầu ca (VND)
               </label>
               <input
                 type="text"
                 defaultValue="2,000,000"
-                className="w-full bg-transparent border-b-2 border-stone-200 focus:border-stone-900 py-2 text-xl font-bold outline-none"
+                className="w-full bg-transparent border-b-2 border-slate-300 focus:border-slate-900 py-2 text-xl font-bold outline-none"
               />
             </div>
           </div>
           <button
             onClick={toggleShift}
-            className="w-full py-4 bg-stone-900 hover:bg-stone-800 text-[#FAF9F5] font-bold rounded-sm transition-all shadow-sm shadow-stone-900/5"
+            className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] font-bold rounded-sm transition-all shadow-sm shadow-slate-900/5"
           >
             Bắt đầu ca làm việc
           </button>
@@ -1752,7 +1753,7 @@ export function IPosModule() {
     <div
       className={cn(
         "h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
-        isDarkMode && "dark bg-[#0f172a] text-stone-100",
+        isDarkMode && "dark bg-[#0f172a] text-slate-300",
       )}
     >
       
@@ -1867,7 +1868,7 @@ export function IPosModule() {
       )}
 
       {voiceHint && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-stone-900/95 text-[#FAF9F5] px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 text-[#FAF9F5] px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
           <p className="text-[9px] text-primary-400 font-black uppercase tracking-[0.3em]">
             Hệ thống nhận diện
           </p>
@@ -1878,17 +1879,17 @@ export function IPosModule() {
 
       {/* Customer Promo QR Modal */}
       {showCustomerPromoQR && (
-        <div className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-stone-900/90 backdrop-blur-md">
+        <div className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-8 text-center">
-            <h3 className="font-black text-xl text-stone-900 uppercase tracking-tight mb-2">
+            <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight mb-2">
               Quét Mã Từ Sàn TMĐT
             </h3>
-            <p className="text-xs text-stone-500 font-bold mb-6">
+            <p className="text-xs text-slate-600 font-bold mb-6">
               Khách hàng mở ứng dụng, quét mã này bằng điện thoại để đăng nhập /
               áp dụng khuyến mãi / thanh toán bằng ví Sàn.
             </p>
 
-            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-xl ring-1 ring-stone-200">
+            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-xl ring-1 ring-slate-200">
               <img 
                 src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/promo-wallet-fake-url" 
                 alt="Promo QR" 
@@ -1915,7 +1916,7 @@ export function IPosModule() {
               </button>
               <button
                 onClick={() => setShowCustomerPromoQR(false)}
-                className="py-3 bg-stone-100 text-stone-600 font-black text-xs rounded-sm hover:bg-stone-200 transition-all"
+                className="py-3 bg-slate-100 text-slate-700 font-black text-xs rounded-sm hover:bg-slate-200 transition-all"
               >
                 Hủy Giao Dịch QR
               </button>
@@ -1925,86 +1926,86 @@ export function IPosModule() {
       )}
 
       {showShiftSummary && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-stone-900/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
           <div className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
-            <div className="flex justify-between items-center border-b border-stone-100 pb-6">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center font-bold">
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900">
+                  <h2 className="text-xl font-bold text-slate-900">
                     Báo cáo chốt ca
                   </h2>
-                  <p className="text-xs text-stone-400 font-bold uppercase tracking-widest mt-1">
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
                     Hà Nội • Terminal #01
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowShiftSummary(false)}
-                className="p-2 hover:bg-stone-50 rounded-sm text-stone-300 hover:text-stone-900 transition-colors"
+                className="p-2 hover:bg-slate-50 rounded-sm text-slate-500 hover:text-slate-900 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="space-y-4 text-sm font-medium">
-              <div className="flex justify-between border-b border-stone-100 pb-3">
-                <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">
+              <div className="flex justify-between border-b border-slate-200 pb-3">
+                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Trạng thái ca
                 </span>
                 <span className="font-black text-primary-600">
                   {shiftData?.shiftName || "Ca Bán Hàng"}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-stone-100 pb-3">
-                <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">
+              <div className="flex justify-between border-b border-slate-200 pb-3">
+                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Thời gian bắt đầu
                 </span>
-                <span className="font-bold text-stone-900">
+                <span className="font-bold text-slate-900">
                   {new Date(
                     shiftData?.startTime || Date.now(),
                   ).toLocaleTimeString("vi-VN")}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-stone-100 pb-3">
-                <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">
+              <div className="flex justify-between border-b border-slate-200 pb-3">
+                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Thời gian kết thúc
                 </span>
-                <span className="font-bold text-stone-900">
+                <span className="font-bold text-slate-900">
                   {new Date().toLocaleTimeString("vi-VN")}
                 </span>
               </div>
-              <div className="flex justify-between items-center border-b border-stone-100 pb-3 mt-4">
-                <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-3 mt-4">
+                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Tiền mặt đầu ca
                 </span>
-                <span className="font-black text-stone-900 text-lg">
+                <span className="font-black text-slate-900 text-lg">
                   {formatCurrency(shiftData?.startCash || 0)}
                 </span>
               </div>
-              <div className="flex justify-between items-center border-b border-stone-100 pb-3">
-                <span className="text-stone-500 uppercase text-xs font-bold tracking-widest">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Doanh thu / Đơn hàng
                 </span>
-                <span className="font-bold text-stone-900">
+                <span className="font-bold text-slate-900">
                   {formatCurrency(shiftData?.revenue || 0)} /{" "}
                   {shiftData?.ordersCount || 0} đơn
                 </span>
               </div>
 
-              <div className="bg-stone-50 p-4 rounded-sm space-y-3 border border-stone-200 mt-4">
-                <h4 className="text-[10px] uppercase font-bold text-stone-900 tracking-widest flex items-center gap-2 mb-2">
+              <div className="bg-slate-50 p-4 rounded-sm space-y-3 border border-slate-300 mt-4">
+                <h4 className="text-[10px] uppercase font-bold text-slate-900 tracking-widest flex items-center gap-2 mb-2">
                   <UserCheck className="w-4 h-4 text-rose-500" /> Khai báo thực
                   thu
                 </h4>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1">
-                    <p className="text-xs font-bold text-stone-500 mb-1">
+                    <p className="text-xs font-bold text-slate-600 mb-1">
                       Tiền mặt lý thuyết
                     </p>
-                    <p className="font-bold text-stone-900">
+                    <p className="font-bold text-slate-900">
                       {formatCurrency(
                         (shiftData?.startCash || 0) +
                           (shiftData?.cashRevenue || 0),
@@ -2012,19 +2013,19 @@ export function IPosModule() {
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-bold text-stone-500 mb-1">
+                    <p className="text-xs font-bold text-slate-600 mb-1">
                       Thực đếm trong két
                     </p>
                     <input
                       type="text"
                       value={actualCashInput}
                       onChange={(e) => setActualCashInput(e.target.value)}
-                      className="w-full text-base font-black text-primary-600 px-3 py-2 bg-white border border-stone-300 focus:border-primary-500 rounded-sm outline-none transition-all shadow-inner"
+                      className="w-full text-base font-black text-primary-600 px-3 py-2 bg-white border border-slate-400 focus:border-primary-500 rounded-sm outline-none transition-all shadow-inner"
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-stone-200">
-                  <span className="text-xs font-bold text-stone-500">
+                <div className="flex items-center justify-between pt-2 border-t border-slate-300">
+                  <span className="text-xs font-bold text-slate-600">
                     Chênh lệch:
                   </span>
                   <span
@@ -2049,17 +2050,17 @@ export function IPosModule() {
                   <textarea
                     value={handoverNote}
                     onChange={(e) => setHandoverNote(e.target.value)}
-                    className="w-full text-xs text-stone-700 px-3 py-2 mt-2 bg-white border border-stone-200 focus:border-primary-500 rounded-sm outline-none transition-all resize-none h-12"
+                    className="w-full text-xs text-slate-800 px-3 py-2 mt-2 bg-white border border-slate-300 focus:border-primary-500 rounded-sm outline-none transition-all resize-none h-12"
                     placeholder="Ghi chú bàn giao (ví dụ: lệch do thối nhầm)..."
                   />
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-stone-100 flex gap-4">
+            <div className="pt-6 border-t border-slate-200 flex gap-4">
               <button
                 onClick={() => setShowShiftSummary(false)}
-                className="flex-1 py-4 bg-stone-100 text-stone-600 font-bold rounded-sm hover:bg-stone-200 transition-all"
+                className="flex-1 py-4 bg-slate-100 text-slate-700 font-bold rounded-sm hover:bg-slate-200 transition-all"
               >
                 Tiếp tục bán
               </button>
@@ -2088,20 +2089,20 @@ export function IPosModule() {
 
       {/* Promo Input Modal */}
       {showPromoInputModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h3 className="text-xl font-black text-stone-900 tracking-tight">Mức Áp Dụng</h3>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">Mức Áp Dụng</h3>
               </div>
-              <button onClick={() => setShowPromoInputModal(false)} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+              <button onClick={() => setShowPromoInputModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             <div className="p-6 space-y-6">
               <div className="space-y-3">
-                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Nhập số tiền khuyến mại
                 </label>
                 <div className="relative">
@@ -2110,18 +2111,18 @@ export function IPosModule() {
                     value={customPromoInput}
                     onChange={(e) => setCustomPromoInput(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                     autoFocus
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">đ</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đ</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+            <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
               <button 
                 onClick={() => setShowPromoInputModal(false)} 
-                className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm"
+                className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm"
               >
                 Hủy
               </button>
@@ -2147,20 +2148,20 @@ export function IPosModule() {
 
       {/* Custom Item Modal */}
       {showCustomItemModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h3 className="text-xl font-black text-stone-900 tracking-tight">Thêm Món Tuỳ Chọn</h3>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">Thêm Món Tuỳ Chọn</h3>
               </div>
-              <button onClick={() => setShowCustomItemModal(false)} className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+              <button onClick={() => setShowCustomItemModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             <div className="p-6 space-y-6">
               <div className="space-y-3">
-                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Tên món
                 </label>
                 <input
@@ -2168,13 +2169,13 @@ export function IPosModule() {
                   value={customItem.name}
                   onChange={(e) => setCustomItem({ ...customItem, name: e.target.value })}
                   placeholder="Ví dụ: Phí ship, món ngoài menu..."
-                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                   autoFocus
                 />
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-bold text-stone-700 uppercase tracking-widest block">
+                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Đơn giá
                 </label>
                 <div className="relative">
@@ -2183,17 +2184,17 @@ export function IPosModule() {
                     value={customItem.price}
                     onChange={(e) => setCustomItem({ ...customItem, price: e.target.value })}
                     placeholder="0"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">đ</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đ</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+            <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
               <button 
                 onClick={() => setShowCustomItemModal(false)} 
-                className="px-6 py-2.5 rounded-lg font-bold text-stone-600 hover:bg-stone-200 transition-colors text-sm"
+                className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm"
               >
                 Hủy
               </button>
@@ -2223,15 +2224,15 @@ export function IPosModule() {
 
       {/* Checkout/Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/90 backdrop-blur-md">
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white rounded-sm w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
             {/* Left side: Order Summary */}
-            <div className="w-full md:w-1/3 bg-stone-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-stone-200 overflow-y-auto">
+            <div className="w-full md:w-1/3 bg-slate-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-slate-300 overflow-y-auto">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-stone-100">
+                <div className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-slate-200">
                   <ShoppingCart className="w-5 h-5 text-primary-600" />
                 </div>
-                <h3 className="text-xl font-black text-stone-900 uppercase tracking-tight">
+                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">
                   Chi tiết đơn
                 </h3>
               </div>
@@ -2243,32 +2244,32 @@ export function IPosModule() {
                     className="flex justify-between gap-4 animate-in fade-in slide-in- transition-all"
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-stone-800 line-clamp-1">
+                      <p className="text-sm font-bold text-slate-900 line-clamp-1">
                         {item.name}
                       </p>
                       {item.toppings?.length > 0 && (
-                        <p className="text-[10px] text-stone-500 italic line-clamp-1">
+                        <p className="text-[10px] text-slate-600 italic line-clamp-1">
                           + {item.toppings.map((t: any) => t.name).join(', ')}
                         </p>
                       )}
                       {item.note && (
-                        <p className="text-[10px] text-stone-500 italic line-clamp-1">
+                        <p className="text-[10px] text-slate-600 italic line-clamp-1">
                           Ghi chú: {item.note}
                         </p>
                       )}
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-0.5">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
                         x{item.quantity} • {formatCurrency(getItemUnitPrice(item))}
                       </p>
                     </div>
-                    <p className="text-sm font-black text-stone-900">
+                    <p className="text-sm font-black text-slate-900">
                       {formatCurrency(getItemTotalPrice(item))}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-10 pt-10 border-t border-stone-200 space-y-4">
-                <div className="flex justify-between text-stone-500 text-sm font-medium">
+              <div className="mt-10 pt-10 border-t border-slate-300 space-y-4">
+                <div className="flex justify-between text-slate-600 text-sm font-medium">
                   <span>Tạm tính</span>
                   <span>{formatCurrency(subtotal)}</span>
                 </div>
@@ -2277,8 +2278,8 @@ export function IPosModule() {
                 {(discount > 0 ||
                   loyaltyDiscount > 0 ||
                   promoWalletDiscount > 0) && (
-                  <div className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-stone-100 border-dashed">
-                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">
+                  <div className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-slate-200 border-dashed">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
                       Ưu đãi & Giảm giá
                     </p>
                     {discount > 0 && (
@@ -2308,8 +2309,8 @@ export function IPosModule() {
                         <span>-{formatCurrency(promoWalletDiscount)}</span>
                       </div>
                     )}
-                    <div className="pt-2 border-t border-stone-100 flex justify-between">
-                      <span className="text-[10px] font-bold text-stone-500">
+                    <div className="pt-2 border-t border-slate-200 flex justify-between">
+                      <span className="text-[10px] font-bold text-slate-600">
                         Tiết kiệm được
                       </span>
                       <span className="text-xs font-black text-emerald-600">
@@ -2321,22 +2322,22 @@ export function IPosModule() {
 
                 <div className="flex justify-between text-primary-600 font-black text-2xl pt-6 border-t-2 border-primary-50">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                       Cần thanh toán
                     </span>
                     <span>{formatCurrency(total)}</span>
                   </div>
                 </div>
 
-                <div className="mt-8 bg-white p-5 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center gap-4 relative overflow-hidden group">
+                <div className="mt-8 bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex flex-col items-center gap-4 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary-50/50 to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  <div className="flex items-center gap-2 z-10 w-full justify-center pb-3 border-b border-stone-100">
+                  <div className="flex items-center gap-2 z-10 w-full justify-center pb-3 border-b border-slate-200">
                     <QrCode className="w-4 h-4 text-primary-500" />
-                    <span className="text-xs font-bold text-stone-600 uppercase tracking-widest">Mã thanh toán</span>
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Mã thanh toán</span>
                   </div>
                   
-                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-stone-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-slate-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
                     <img
                       src={sePayService.createPaymentQR(
                         total,
@@ -2349,7 +2350,7 @@ export function IPosModule() {
                   </div>
                   
                   <div className="z-10 text-center space-y-1">
-                    <p className="text-[10px] text-stone-400 font-medium">Khách hàng có thể quét mã</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Khách hàng có thể quét mã</p>
                     <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wider">Tự động đối soát</p>
                   </div>
                 </div>
@@ -2360,16 +2361,16 @@ export function IPosModule() {
             <div className="flex-1 p-6 sm:p-10 flex flex-col gap-8 bg-white overflow-y-auto">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-2xl font-black text-stone-900 tracking-tight">
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">
                     Chọn phương thức
                   </h3>
-                  <p className="text-xs text-stone-400 font-bold mt-1">
+                  <p className="text-xs text-slate-500 font-bold mt-1">
                     Đảm bảo thanh toán an toàn & bảo mật
                   </p>
                 </div>
                 <button
                   onClick={() => setShowPaymentModal(false)}
-                  className="w-12 h-12 bg-stone-50 hover:bg-rose-50 hover:text-rose-500 rounded-sm text-stone-400 transition-all flex items-center justify-center border border-stone-100"
+                  className="w-12 h-12 bg-slate-50 hover:bg-rose-50 hover:text-rose-500 rounded-sm text-slate-500 transition-all flex items-center justify-center border border-slate-200"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -2382,7 +2383,7 @@ export function IPosModule() {
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
                     paymentMethod === "cash"
                       ? "border-primary-600 ring-4 ring-primary-50 shadow-sm shadow-indigo-600/10"
-                      : "border-stone-100 hover:border-primary-200",
+                      : "border-slate-200 hover:border-primary-200",
                   )}
                 >
                   <div
@@ -2390,7 +2391,7 @@ export function IPosModule() {
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "cash"
                         ? "bg-primary-600 text-[#FAF9F5] scale-110 shadow-sm"
-                        : "bg-stone-50 text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600",
+                        : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
                     <CreditCard className="w-6 h-6" />
@@ -2401,12 +2402,12 @@ export function IPosModule() {
                         "block font-black text-[10px] uppercase tracking-wider",
                         paymentMethod === "cash"
                           ? "text-primary-600"
-                          : "text-stone-500",
+                          : "text-slate-600",
                       )}
                     >
                       Tiền mặt
                     </span>
-                    <span className="text-[8px] text-stone-400 font-bold">
+                    <span className="text-[8px] text-slate-500 font-bold">
                       (Cash/COD)
                     </span>
                   </div>
@@ -2421,7 +2422,7 @@ export function IPosModule() {
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
                     paymentMethod === "qr"
                       ? "border-primary-600 ring-4 ring-primary-50 shadow-sm shadow-indigo-600/10"
-                      : "border-stone-100 hover:border-primary-200",
+                      : "border-slate-200 hover:border-primary-200",
                   )}
                 >
                   <div
@@ -2429,7 +2430,7 @@ export function IPosModule() {
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "qr"
                         ? "bg-primary-600 text-[#FAF9F5] scale-110 shadow-sm"
-                        : "bg-stone-50 text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600",
+                        : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
                     <QrCode className="w-6 h-6" />
@@ -2440,12 +2441,12 @@ export function IPosModule() {
                         "block font-black text-[10px] uppercase tracking-wider",
                         paymentMethod === "qr"
                           ? "text-primary-600"
-                          : "text-stone-500",
+                          : "text-slate-600",
                       )}
                     >
                       QR Code
                     </span>
-                    <span className="text-[8px] text-stone-400 font-bold">
+                    <span className="text-[8px] text-slate-500 font-bold">
                       (VietQR/Bank)
                     </span>
                   </div>
@@ -2460,7 +2461,7 @@ export function IPosModule() {
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
                     paymentMethod === "pos"
                       ? "border-primary-600 ring-4 ring-primary-50 shadow-sm shadow-indigo-600/10"
-                      : "border-stone-100 hover:border-primary-200",
+                      : "border-slate-200 hover:border-primary-200",
                   )}
                 >
                   <div
@@ -2468,7 +2469,7 @@ export function IPosModule() {
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "pos"
                         ? "bg-primary-600 text-[#FAF9F5] scale-110 shadow-sm"
-                        : "bg-stone-50 text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600",
+                        : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
                     <Monitor className="w-6 h-6" />
@@ -2479,12 +2480,12 @@ export function IPosModule() {
                         "block font-black text-[10px] uppercase tracking-wider",
                         paymentMethod === "pos"
                           ? "text-primary-600"
-                          : "text-stone-500",
+                          : "text-slate-600",
                       )}
                     >
                       Thẻ / POS
                     </span>
-                    <span className="text-[8px] text-stone-400 font-bold">
+                    <span className="text-[8px] text-slate-500 font-bold">
                       (VISA/Master)
                     </span>
                   </div>
@@ -2499,7 +2500,7 @@ export function IPosModule() {
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
                     paymentMethod === "promo_qr"
                       ? "border-primary-600 ring-4 ring-primary-50 shadow-sm shadow-indigo-600/10"
-                      : "border-stone-100 hover:border-primary-200",
+                      : "border-slate-200 hover:border-primary-200",
                   )}
                 >
                   <div
@@ -2507,7 +2508,7 @@ export function IPosModule() {
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "promo_qr"
                         ? "bg-primary-600 text-[#FAF9F5] scale-110 shadow-sm"
-                        : "bg-stone-50 text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600",
+                        : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
                     <QrCode className="w-6 h-6" />
@@ -2518,12 +2519,12 @@ export function IPosModule() {
                         "block font-black text-[10px] uppercase tracking-wider",
                         paymentMethod === "promo_qr"
                           ? "text-primary-600"
-                          : "text-stone-500",
+                          : "text-slate-600",
                       )}
                     >
                       QR Sàn TMĐT
                     </span>
-                    <span className="text-[8px] text-stone-400 font-bold">
+                    <span className="text-[8px] text-slate-500 font-bold">
                       (Kênh phân phối)
                     </span>
                   </div>
@@ -2537,17 +2538,17 @@ export function IPosModule() {
                 {/* Loyalty Reward Integration */}
 
                 {/* TMĐT Promo Wallet - Customer App Sync */}
-                <div className="bg-white p-5 rounded-sm border-2 border-stone-100 shadow-sm transition-all hover:border-primary-200">
+                <div className="bg-white p-5 rounded-sm border-2 border-slate-200 shadow-sm transition-all hover:border-primary-200">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
                         <ShoppingCart className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-stone-900 uppercase tracking-tight">
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
                           Ví Khuyến Mại Sàn
                         </p>
-                        <p className="text-[10px] text-stone-500 font-bold mt-0.5">
+                        <p className="text-[10px] text-slate-600 font-bold mt-0.5">
                           Số dư:{" "}
                           <span className="text-orange-600">
                             {formatCurrency(
@@ -2573,7 +2574,7 @@ export function IPosModule() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowCustomerPromoQR(true)}
-                      className="flex-1 py-3 bg-stone-900 text-[#FAF9F5] rounded-sm text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-stone-800 transition-all shadow-sm"
+                      className="flex-1 py-3 bg-slate-900 text-[#FAF9F5] rounded-sm text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-sm"
                     >
                       <QrCode className="w-4 h-4" /> Khách Quét QR Áp Mã
                     </button>
@@ -2586,7 +2587,7 @@ export function IPosModule() {
                             "flex-1 py-3 border-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all",
                             usePromoWallet
                               ? "bg-orange-50 border-orange-500 text-primary-600"
-                              : "bg-white border-stone-200 text-stone-600 hover:border-orange-300",
+                              : "bg-white border-slate-300 text-slate-700 hover:border-orange-300",
                           )}
                         >
                           {usePromoWallet
@@ -2595,10 +2596,10 @@ export function IPosModule() {
                         </button>
                         <button
                           onClick={() => {
-                            setCustomPromoInput(customPromoAmount ? customPromoAmount.toString() : "");
+                            setCustomPromoInput("");
                             setShowPromoInputModal(true);
                           }}
-                          className="flex-1 py-3 border-2 bg-white border-stone-200 text-stone-600 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:border-primary-300 hover:text-primary-600 transition-all"
+                          className="flex-1 py-3 border-2 bg-white border-slate-300 text-slate-700 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:border-primary-300 hover:text-primary-600 transition-all"
                         >
                           Tùy Chọn Mức Áp Dụng
                         </button>
@@ -2620,7 +2621,7 @@ export function IPosModule() {
                       "group p-5 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
                       useLoyaltyPoints
                         ? "bg-emerald-50 border-emerald-500 shadow-sm shadow-emerald-500/5 ring-4 ring-emerald-50"
-                        : "bg-white border-stone-100 hover:border-emerald-200",
+                        : "bg-white border-slate-200 hover:border-emerald-200",
                     )}
                     onClick={() => setUseLoyaltyPoints(!useLoyaltyPoints)}
                   >
@@ -2630,16 +2631,16 @@ export function IPosModule() {
                           "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                           useLoyaltyPoints
                             ? "bg-emerald-600 text-[#FAF9F5] shadow-sm rotate-12"
-                            : "bg-stone-100 text-stone-400 group-hover:bg-emerald-100 group-hover:text-emerald-600",
+                            : "bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600",
                         )}
                       >
                         <Sparkles className="w-6 h-6" />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-stone-900 uppercase tracking-tight">
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
                           Thanh toán bằng Điểm Loyalty
                         </p>
-                        <p className="text-[10px] text-stone-500 font-bold mt-0.5">
+                        <p className="text-[10px] text-slate-600 font-bold mt-0.5">
                           Sẵn có:{" "}
                           <span className="text-emerald-600">
                             {(customer.points || 0).toLocaleString()} điểm
@@ -2662,13 +2663,13 @@ export function IPosModule() {
                         "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
                         useLoyaltyPoints
                           ? "bg-emerald-600 border-emerald-600 text-[#FAF9F5]"
-                          : "bg-white border-stone-200 group-hover:border-emerald-500",
+                          : "bg-white border-slate-300 group-hover:border-emerald-500",
                       )}
                     >
                       {useLoyaltyPoints ? (
                         <CheckCircle2 className="w-4 h-4" />
                       ) : (
-                        <div className="w-2 h-2 bg-stone-100 rounded-full" />
+                        <div className="w-2 h-2 bg-slate-100 rounded-full" />
                       )}
                     </div>
                   </div>
@@ -2698,13 +2699,13 @@ export function IPosModule() {
                       </div>
                       <div className="text-center sm:text-left space-y-4">
                         <div className="space-y-1">
-                          <h4 className="text-lg font-black text-stone-900 flex items-center gap-2">
+                          <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
                             Quét mã VietQR Đa Năng
-                            <div className="px-2 py-0.5 bg-stone-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm">
+                            <div className="px-2 py-0.5 bg-slate-900 text-[#FAF9F5] text-[8px] font-black uppercase rounded shadow-sm">
                               SePay Active
                             </div>
                           </h4>
-                          <p className="text-[11px] text-stone-500 font-medium pb-2">
+                          <p className="text-[11px] text-slate-600 font-medium pb-2">
                             Hỗ trợ: Momo, ZaloPay, VNPay, và mọi Ngân hàng
                           </p>
                           <p className="text-xs text-primary-600 font-bold uppercase tracking-widest flex items-center gap-1.5">
@@ -2712,7 +2713,7 @@ export function IPosModule() {
                             Auto-Reconciliation Enabled
                           </p>
                         </div>
-                        <div className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-stone-600 border border-primary-100/50 leading-relaxed shadow-sm">
+                        <div className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-slate-700 border border-primary-100/50 leading-relaxed shadow-sm">
                           Sử dụng bất kỳ ứng dụng Ngân hàng để thanh toán. Hệ
                           thống sẽ <strong>tự động chốt đơn</strong> ngay khi
                           tiền vào tài khoản.
@@ -2722,13 +2723,13 @@ export function IPosModule() {
                             {[1, 2, 3].map((i) => (
                               <div
                                 key={i}
-                                className="w-6 h-6 rounded-full border-2 border-white bg-stone-200 flex items-center justify-center"
+                                className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center"
                               >
-                                <Building2 className="w-3 h-3 text-stone-400" />
+                                <Building2 className="w-3 h-3 text-slate-500" />
                               </div>
                             ))}
                           </div>
-                          <span className="text-[9px] font-black text-stone-400 uppercase tracking-widest">
+                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
                             Linked with 30+ Banks
                           </span>
                         </div>
@@ -2740,19 +2741,19 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col items-center justify-center gap-4 p-12 bg-stone-50 rounded-sm border border-stone-200 shadow-inner text-center"
+                      className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-stone-100 relative">
+                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
                         <Monitor className="w-12 h-12 text-primary-600" />
                         <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
                       </div>
                       <div className="space-y-4 mt-2">
-                        <h4 className="text-2xl font-black text-stone-900 tracking-tight">
+                        <h4 className="text-2xl font-black text-slate-900 tracking-tight">
                           Vui lòng quẹt thẻ trên máy SmartPOS
                         </h4>
-                        <p className="text-sm text-stone-500 font-medium max-w-[320px] mx-auto leading-relaxed">
+                        <p className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
                           Số tiền{" "}
-                          <strong className="text-stone-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
+                          <strong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
                             {formatCurrency(total)}
                           </strong>{" "}
                           đã được đẩy xuống thiết bị. Hệ thống đang chờ tín hiệu
@@ -2766,21 +2767,21 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col items-center justify-center gap-4 p-12 bg-stone-50 rounded-sm border border-stone-200 shadow-inner text-center"
+                      className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-stone-100 relative">
+                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
                         <Building2 className="w-12 h-12 text-primary-600" />
                         {isProcessing && (
                           <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
                         )}
                       </div>
                       <div className="space-y-4 mt-2">
-                        <h4 className="text-2xl font-black text-stone-900 tracking-tight">
+                        <h4 className="text-2xl font-black text-slate-900 tracking-tight">
                           Hệ thống đang chờ chuyển khoản
                         </h4>
-                        <p className="text-sm text-stone-500 font-medium max-w-[320px] mx-auto leading-relaxed">
+                        <p className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
                           Vui lòng khách hàng chuyển{" "}
-                          <strong className="text-stone-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
+                          <strong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
                             {formatCurrency(total)}
                           </strong>{" "}
                           vào tài khoản định danh được hiển thị trên ứng dụng
@@ -2800,7 +2801,7 @@ export function IPosModule() {
                         TMĐT Integration
                       </div>
                       <div className="w-48 h-48 bg-white rounded-xl shadow-lg border border-orange-100 flex items-center justify-center relative overflow-hidden group border-dashed">
-                        <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none" />
+                        <div className="absolute inset-0 bg-slate-900/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none" />
                         <div className="text-center p-4">
                           <QrCode className="w-16 h-16 text-orange-400 mx-auto mb-3" />
                           <p className="font-bold text-orange-800 text-xs text-center leading-relaxed">
@@ -2863,10 +2864,10 @@ export function IPosModule() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="bg-stone-50 p-8 rounded-sm border border-stone-200 shadow-inner space-y-6"
+                      className="bg-slate-50 p-8 rounded-sm border border-slate-300 shadow-inner space-y-6"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
                           Khách Đưa
                         </span>
                         <div className="flex gap-2">
@@ -2876,7 +2877,7 @@ export function IPosModule() {
                               onClick={() => {
                                 setGuestCash(val.toString());
                               }}
-                              className="px-3 md:px-4 py-2 font-black text-stone-600 hover:bg-primary-50 border-r last:border-r-0 border-stone-100 hover:text-primary-600 transition-colors"
+                              className="px-3 md:px-4 py-2 font-black text-slate-700 hover:bg-primary-50 border-r last:border-r-0 border-slate-200 hover:text-primary-600 transition-colors"
                             >
                               {val >= 1000000
                                 ? val / 1000000 + "M"
@@ -2887,7 +2888,7 @@ export function IPosModule() {
                       </div>
 
                       <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-stone-300 group-focus-within:text-primary-600 transition-all">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-500 group-focus-within:text-primary-600 transition-all">
                           đ
                         </span>
                         <input
@@ -2896,12 +2897,12 @@ export function IPosModule() {
                           value={guestCash}
                           onChange={(e) => setGuestCash(e.target.value)}
                           placeholder={total.toString()}
-                          className="w-full bg-white border border-stone-200 focus:border-primary-600 focus:ring-2 focus:ring-primary-50 rounded-sm py-2 pl-8 pr-3 text-lg font-bold text-stone-900 outline-none transition-all shadow-sm text-right"
+                          className="w-full bg-white border border-slate-300 focus:border-primary-600 focus:ring-2 focus:ring-primary-50 rounded-sm py-2 pl-8 pr-3 text-lg font-bold text-slate-900 outline-none transition-all shadow-sm text-right"
                         />
                       </div>
 
-                      <div className="flex justify-between items-center pt-4 border-t border-stone-200">
-                        <span className="text-sm font-bold text-stone-500 uppercase">
+                      <div className="flex justify-between items-center pt-4 border-t border-slate-300">
+                        <span className="text-sm font-bold text-slate-600 uppercase">
                           Tiền thối lại
                         </span>
                         <span
@@ -2909,7 +2910,7 @@ export function IPosModule() {
                             "text-2xl font-black",
                             Number(guestCash) - total >= 0
                               ? "text-emerald-600"
-                              : "text-stone-300",
+                              : "text-slate-500",
                           )}
                         >
                           {guestCash && Number(guestCash) >= total
@@ -2925,7 +2926,7 @@ export function IPosModule() {
               <div className="mt-auto pt-6 flex gap-4">
                 <button
                   onClick={() => setShowPaymentModal(false)}
-                  className="px-6 py-3 bg-stone-100 text-stone-500 font-bold rounded-md hover:bg-stone-200 hover:text-stone-700 transition-all text-xs uppercase tracking-widest shadow-sm"
+                  className="px-6 py-3 bg-slate-100 text-slate-600 font-bold rounded-md hover:bg-slate-200 hover:text-slate-800 transition-all text-xs uppercase tracking-widest shadow-sm"
                 >
                   Quay lại
                 </button>
@@ -2962,8 +2963,8 @@ export function IPosModule() {
       
       {/* Payment Success & Printing / E-Invoice Modal */}
       {showPaymentSuccessModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-stone-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-stone-200/50">
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-slate-300/50">
             <div className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-8 text-center space-y-3 relative overflow-hidden">
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:2rem_2rem]" />
               <div className="relative z-10">
@@ -2971,46 +2972,46 @@ export function IPosModule() {
                   <CheckCircle2 className="w-7 h-7 text-white" />
                 </div>
                 <h2 className="text-xl font-bold text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
-                <p className="text-sm text-stone-500 font-medium">Đơn hàng <strong className="text-emerald-700 font-bold">#{completedOrderData?.orderId}</strong> đã được ghi nhận.</p>
+                <p className="text-sm text-slate-600 font-medium">Đơn hàng <strong className="text-emerald-700 font-bold">#{completedOrderData?.orderId}</strong> đã được ghi nhận.</p>
               </div>
             </div>
             
-            <div className="p-6 space-y-6 bg-stone-50/50">
+            <div className="p-6 space-y-6 bg-slate-50/50">
                 <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-stone-200 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
                         <div className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100 group-hover:scale-105 transition-all"><Printer className="w-5 h-5" /></div>
-                        <span className="font-bold text-stone-700 text-sm">In phiếu tính tiền</span>
+                        <span className="font-bold text-slate-800 text-sm">In phiếu tính tiền</span>
                     </button>
-                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-stone-200 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
                         <div className="p-3 bg-orange-50 text-orange-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all"><ChefHat className="w-5 h-5" /></div>
-                        <span className="font-bold text-stone-700 text-sm">In bill chế biến</span>
+                        <span className="font-bold text-slate-800 text-sm">In bill chế biến</span>
                     </button>
                 </div>
 
-                <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-sm">
-                    <div className="p-4 bg-stone-50/50 border-b border-stone-100 flex items-center gap-3">
+                <div className="border border-slate-300 bg-white rounded-xl overflow-hidden shadow-sm">
+                    <div className="p-4 bg-slate-50/50 border-b border-slate-200 flex items-center gap-3">
                         <Receipt className="w-4 h-4 text-primary-500" />
-                        <h3 className="font-bold text-stone-800 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
+                        <h3 className="font-bold text-slate-900 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
                     </div>
                     <div className="p-5 space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Mã số thuế</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Mã số thuế</label>
                             <input
                                 type="text"
                                 value={invoiceTaxCode}
                                 onChange={(e) => setInvoiceTaxCode(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
+                                className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="VD: 0101234567"
                             />
                             </div>
                             <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Tên Khách / Công ty</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Tên Khách / Công ty</label>
                             <input
                                 type="text"
                                 value={invoiceCompanyName}
                                 onChange={(e) => setInvoiceCompanyName(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
+                                className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="..."
                             />
                             </div>
@@ -3018,22 +3019,22 @@ export function IPosModule() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                                <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Địa chỉ</label>
+                                <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Địa chỉ</label>
                                 <input
                                     type="text"
                                     value={invoiceAddress}
                                     onChange={(e) => setInvoiceAddress(e.target.value)}
-                                    className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
+                                    className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                     placeholder="Địa chỉ xuất HD"
                                 />
                             </div>
                             <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-stone-500">Email nhận hóa đơn</label>
+                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Email nhận hóa đơn</label>
                             <input
                                 type="email"
                                 value={invoiceEmail}
                                 onChange={(e) => setInvoiceEmail(e.target.value)}
-                                className="w-full text-sm font-medium text-stone-900 px-3 py-2 bg-stone-50 border border-stone-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-stone-400"
+                                className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="Email nhận HDĐT"
                             />
                             </div>
@@ -3050,13 +3051,13 @@ export function IPosModule() {
                 </div>
             </div>
             
-            <div className="p-4 border-t border-stone-100 bg-stone-50 flex justify-end">
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
                 <button
                     onClick={() => {
                         setShowPaymentSuccessModal(false);
                         setActiveTab("history");
                     }}
-                    className="px-6 py-2.5 bg-white border border-stone-200 text-stone-600 font-bold rounded-lg hover:bg-stone-50 hover:text-stone-900 transition-colors text-sm shadow-sm"
+                    className="px-6 py-2.5 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm shadow-sm"
                 >
                     Đóng & Tạo đơn mới
                 </button>
@@ -3067,22 +3068,22 @@ export function IPosModule() {
 
       {/* Scanner Modal */}
       {isScannerOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-stone-900/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
           <div className="bg-white rounded-sm p-8 w-full max-w-lg space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">Quét mã sản phẩm</h2>
               <button
                 onClick={() => setIsScannerOpen(false)}
-                className="p-2 hover:bg-stone-100 rounded-sm"
+                className="p-2 hover:bg-slate-100 rounded-sm"
               >
                 <X />
               </button>
             </div>
             <div
               id="pos-reader"
-              className="overflow-hidden rounded-sm border border-stone-200 shadow-inner"
+              className="overflow-hidden rounded-sm border border-slate-300 shadow-inner"
             ></div>
-            <p className="text-center text-xs text-stone-500 font-bold uppercase tracking-wider">
+            <p className="text-center text-xs text-slate-600 font-bold uppercase tracking-wider">
               Đưa mã vạch vào vùng nhận diện
             </p>
           </div>
@@ -3090,18 +3091,18 @@ export function IPosModule() {
       )}
 
       {/* Header - Refined with better depth and hierarchy */}
-      <div className="flex justify-between items-center bg-white p-3 rounded-sm border border-stone-200 shadow-sm sticky top-0 z-50">
+      <div className="flex justify-between items-center bg-white p-3 rounded-sm border border-slate-300 shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button
             onClick={() => (window.location.href = "/")}
-            className="w-10 h-10 bg-stone-50 rounded-sm flex items-center justify-center text-stone-400 hover:bg-[#F2F0E9] hover:text-primary-600 transition-all border border-stone-100 group"
+            className="w-10 h-10 bg-slate-50 rounded-sm flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-primary-600 transition-all border border-slate-200 group"
             title="Trở về Trung tâm ERP"
           >
             <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
           </button>
 
-          <div className="flex items-center gap-3.5 border-r border-stone-100 pr-5">
-            <div className="w-11 h-11 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
+          <div className="flex items-center gap-3.5 border-r border-slate-200 pr-5">
+            <div className="w-11 h-11 bg-slate-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
               <Store className="w-5 h-5 relative z-10" />
               <div className="absolute inset-0 bg-white /50 to-transparent group-hover:scale-110 transition-transform" />
               <div
@@ -3116,10 +3117,10 @@ export function IPosModule() {
               className="cursor-pointer hover:opacity-80 transition-opacity"
               title="Về trang tổng quan"
             >
-              <h1 className="font-serif tracking-tight text-base font-bold text-stone-900 leading-none tracking-tight">
+              <h1 className="font-serif tracking-tight text-base font-bold text-slate-900 leading-none tracking-tight">
                 iPOS Terminal
               </h1>
-              <p className="text-[10px] text-stone-500 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
+              <p className="text-[10px] text-slate-600 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
                 {activeStore?.name} <span className="opacity-30">•</span>{" "}
                 <span
                   className={
@@ -3136,11 +3137,11 @@ export function IPosModule() {
 
           <div className="hidden xl:flex gap-8 pl-3">
             <div className="space-y-1">
-              <p className="text-[10px] text-stone-500 font-medium ml-1">
+              <p className="text-[10px] text-slate-600 font-medium ml-1">
                 Thu ngân vận hành
               </p>
               <div className="flex items-center gap-2.5 group">
-                <div className="w-7 h-7 bg-[#F2F0E9] rounded-sm flex items-center justify-center text-xs font-bold text-primary-600 border border-[#EAE7DF] shadow-sm transition-transform group-hover:scale-105">
+                <div className="w-7 h-7 bg-slate-100 rounded-sm flex items-center justify-center text-xs font-bold text-primary-600 border border-slate-300 shadow-sm transition-transform group-hover:scale-105">
                   {(
                     selectedStaff?.name ||
                     user?.displayName ||
@@ -3151,7 +3152,7 @@ export function IPosModule() {
                     .toUpperCase()}
                 </div>
                 <select
-                  className="text-sm font-bold text-stone-700 bg-transparent outline-none cursor-pointer hover:text-primary-600 transition-colors"
+                  className="text-sm font-bold text-slate-800 bg-transparent outline-none cursor-pointer hover:text-primary-600 transition-colors"
                   value={selectedStaff?.id || user?.uid}
                   onChange={(e) =>
                     setSelectedStaff({
@@ -3170,16 +3171,11 @@ export function IPosModule() {
         </div>
 
         {activeTab !== "dashboard" && (
-          <div className="flex bg-stone-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-stone-100 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap">
+          <div className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap">
             <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "dashboard"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
-              )}
+              className="px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100"
             >
               <LayoutDashboard className="w-4 h-4" /> Tổng quan
             </button>
@@ -3188,8 +3184,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "sales"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <ShoppingCart className="w-4 h-4" /> Bán hàng
@@ -3200,8 +3196,8 @@ export function IPosModule() {
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                   activeTab === "tables"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                    : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
                 <Grid3x3 className="w-4 h-4" />{" "}
@@ -3216,8 +3212,8 @@ export function IPosModule() {
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                   activeTab === "management"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                    : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
                 <ShieldCheck className="w-4 h-4" /> Quản trị
@@ -3229,8 +3225,8 @@ export function IPosModule() {
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 relative",
                   activeTab === "delivery"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                    : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
                 <Building2 className="w-4 h-4" /> Đối tác Giao hàng
@@ -3246,8 +3242,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "lookup"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <Search className="w-4 h-4" /> Tra cứu
@@ -3258,8 +3254,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "inventory"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <Boxes className="w-4 h-4" /> Kho
@@ -3269,8 +3265,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "products"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <Tag className="w-4 h-4" /> Sản phẩm
@@ -3280,8 +3276,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "payroll"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <DollarSign className="w-4 h-4" /> Tính lương
@@ -3291,8 +3287,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "orders"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <ShoppingBag className="w-4 h-4" /> Đơn hàng
@@ -3302,8 +3298,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "customers"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <Users className="w-4 h-4" /> Khách hàng
@@ -3313,8 +3309,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "reports"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <BarChart4 className="w-4 h-4" /> Báo cáo
@@ -3324,8 +3320,8 @@ export function IPosModule() {
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
                 activeTab === "promotions"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100",
+                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
               <Gift className="w-4 h-4" /> Khuyến mại
@@ -3334,21 +3330,21 @@ export function IPosModule() {
         )}
 
         <div className="flex gap-3 items-center">
-          <div className="flex gap-1.5 px-1.5 py-1.5 bg-stone-50 rounded-sm border border-stone-100 mr-2">
+          <div className="flex gap-1.5 px-1.5 py-1.5 bg-slate-50 rounded-sm border border-slate-200 mr-2">
             <button
               onClick={startListening}
               className={cn(
                 "w-9 h-9 rounded-sm transition-all flex items-center justify-center relative",
                 isListening
                   ? "bg-rose-500 text-[#FAF9F5] shadow-sm animate-pulse ring-2 ring-rose-100"
-                  : "bg-white text-stone-500 hover:text-primary-600 hover:shadow-sm border border-stone-200",
+                  : "bg-white text-slate-600 hover:text-primary-600 hover:shadow-sm border border-slate-300",
               )}
             >
               <Mic className="w-4 h-4" />
             </button>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-9 h-9 bg-white text-stone-500 rounded-sm hover:text-amber-500 hover:shadow-sm transition-all border border-stone-200 flex items-center justify-center"
+              className="w-9 h-9 bg-white text-slate-600 rounded-sm hover:text-amber-500 hover:shadow-sm transition-all border border-slate-300 flex items-center justify-center"
             >
               {isDarkMode ? (
                 <Sparkles className="w-4 h-4 text-amber-500" />
@@ -3365,8 +3361,8 @@ export function IPosModule() {
             className={cn(
               "px-4 py-2.5 rounded-sm text-sm font-bold transition-all flex items-center gap-2",
               activeTab === "history"
-                ? "bg-stone-900 text-[#FAF9F5] shadow-sm"
-                : "bg-white text-stone-600 hover:border-primary-200 border border-stone-200 hover:text-primary-600",
+                ? "bg-slate-900 text-[#FAF9F5] shadow-sm"
+                : "bg-white text-slate-700 hover:border-primary-200 border border-slate-300 hover:text-primary-600",
             )}
           >
             {activeTab === "history" ? (
@@ -3396,10 +3392,10 @@ export function IPosModule() {
           <div className="col-span-12 space-y-8 animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar pb-20 scrollbar-hide">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-1">
-                <h2 className="text-3xl font-black text-stone-900 tracking-tight">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">
                   Chào buổi sáng, {user?.displayName || "Admin"}!
                 </h2>
-                <p className="text-sm font-bold text-stone-400 uppercase tracking-[0.2em]">
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em]">
                   Hệ thống iPOS đã sẵn sàng vận hành •{" "}
                   {new Date().toLocaleDateString("vi-VN")}
                 </p>
@@ -3407,7 +3403,7 @@ export function IPosModule() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setActiveTab("sales")}
-                  className="flex items-center gap-2 px-6 py-3 bg-stone-900 text-[#FAF9F5] rounded-sm font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95"
+                  className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-[#FAF9F5] rounded-sm font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95"
                 >
                   <Plus className="w-4 h-4" /> Bán hàng ngay
                 </button>
@@ -3451,7 +3447,7 @@ export function IPosModule() {
               ].map((card, i) => (
                 <div
                   key={card.label}
-                  className="bg-white p-6 rounded-xl border border-stone-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 group"
+                  className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 group"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div
@@ -3468,10 +3464,10 @@ export function IPosModule() {
                       {card.trend}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-stone-500 mb-1">
+                  <p className="text-sm font-semibold text-slate-600 mb-1">
                     {card.label}
                   </p>
-                  <p className="text-3xl font-black text-stone-900 tracking-tight leading-none group-hover:text-primary-600 transition-colors">
+                  <p className="text-3xl font-black text-slate-900 tracking-tight leading-none group-hover:text-primary-600 transition-colors">
                     {card.value}
                   </p>
                 </div>
@@ -3486,11 +3482,11 @@ export function IPosModule() {
               ).map((group, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8"
+                  className="bg-white rounded-lg border border-slate-300 shadow-sm p-6 sm:p-8"
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-1.5 h-6 bg-stone-900 rounded-full" />
-                    <h2 className="text-xl font-bold text-stone-900">
+                    <div className="w-1.5 h-6 bg-slate-900 rounded-full" />
+                    <h2 className="text-xl font-bold text-slate-900">
                       {group.title}
                     </h2>
                   </div>
@@ -3498,8 +3494,8 @@ export function IPosModule() {
                     {group.items.map((item) => (
                       <button
                         key={item.id}
-                        onClick={() => setActiveTab(item.id)}
-                        className="bg-stone-50 border border-stone-200 rounded-lg p-5 hover:border-primary-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
+                        onClick={() => setActiveTab(item.id as any)}
+                        className="bg-slate-50 border border-slate-300 rounded-lg p-5 hover:border-primary-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
                       >
                         <div
                           className={cn(
@@ -3510,10 +3506,10 @@ export function IPosModule() {
                           <item.icon className="w-6 h-6" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-stone-900 mb-1">
+                          <h3 className="text-sm font-bold text-slate-900 mb-1">
                             {item.label}
                           </h3>
-                          <p className="text-xs text-stone-500 leading-relaxed">
+                          <p className="text-xs text-slate-600 leading-relaxed">
                             {item.desc}
                           </p>
                         </div>
@@ -3525,9 +3521,9 @@ export function IPosModule() {
             </div>
 
             {/* Delivery Channel Live Monitor */}
-            <div className="bg-white rounded-xl border border-stone-100 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="font-bold text-stone-900 flex items-center gap-3 text-lg">
+                <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
                   <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh
                   Giao hàng (Live)
                 </h3>
@@ -3550,7 +3546,7 @@ export function IPosModule() {
                   {
                     id: "be",
                     name: "BeFood",
-                    color: "bg-yellow-400 text-stone-800",
+                    color: "bg-yellow-400 text-slate-900",
                     icon: "Be",
                     stats: deliveryChannelStatus.be,
                   },
@@ -3564,7 +3560,7 @@ export function IPosModule() {
                 ].map((ch) => (
                   <div
                     key={ch.id}
-                    className="p-6 bg-stone-50 rounded-xl border border-stone-100 flex items-center justify-between group hover:bg-white hover:shadow-md hover:border-primary-100 transition-all duration-300"
+                    className="p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between group hover:bg-white hover:shadow-md hover:border-primary-100 transition-all duration-300"
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -3576,10 +3572,10 @@ export function IPosModule() {
                         {ch.icon}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-stone-900 group-hover:text-primary-600 transition-colors">
+                        <p className="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
                           {ch.name}
                         </p>
-                        <p className="text-xs font-semibold mt-0.5 text-stone-500">
+                        <p className="text-xs font-semibold mt-0.5 text-slate-600">
                           {ch.stats.online ? (
                             <span className="text-emerald-600">Trực tuyến</span>
                           ) : (
@@ -3589,10 +3585,10 @@ export function IPosModule() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-black text-stone-900 leading-none group-hover:text-orange-600 transition-colors">
+                      <p className="text-2xl font-black text-slate-900 leading-none group-hover:text-orange-600 transition-colors">
                         {ch.stats.activeDrivers}
                       </p>
-                      <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1.5">
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">
                         Tài xế gần đây
                       </p>
                     </div>
@@ -3601,10 +3597,10 @@ export function IPosModule() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 bg-white rounded-xl border border-stone-100 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+            <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
+              <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="font-bold text-stone-900 flex items-center gap-3 text-lg">
+                  <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
                     <Zap className="w-5 h-5 text-orange-600" /> Hoạt động Bán
                     hàng (Live)
                   </h3>
@@ -3682,7 +3678,7 @@ export function IPosModule() {
               </div>
 
               <div className="space-y-6 flex flex-col">
-                <div className="bg-gradient-to-br from-primary-900 to-stone-900 rounded-xl p-8 text-white relative overflow-hidden shadow-lg group">
+                <div className="bg-gradient-to-br from-primary-900 to-slate-900 rounded-xl p-8 text-white relative overflow-hidden shadow-lg group">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full translate-y-16 -translate-x-16 blur-xl" />
                   <div className="relative z-10 space-y-6">
@@ -3699,7 +3695,7 @@ export function IPosModule() {
                         {[1, 2, 3].map((i) => (
                           <div
                             key={i}
-                            className="w-10 h-10 rounded-full border-2 border-primary-900 bg-stone-800 flex items-center justify-center text-xs font-bold shadow-sm"
+                            className="w-10 h-10 rounded-full border-2 border-primary-900 bg-slate-800 flex items-center justify-center text-xs font-bold shadow-sm"
                           >
                             {i}
                           </div>
@@ -3714,15 +3710,15 @@ export function IPosModule() {
                         setActiveTab("management");
                         setMgmtSubTab("revenue");
                       }}
-                      className="w-full py-3 bg-white text-primary-900 rounded-lg font-bold text-sm hover:bg-stone-50 transition-all active:scale-95 shadow-md"
+                      className="w-full py-3 bg-white text-primary-900 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-md"
                     >
                       Xem báo cáo CA
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-stone-100 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
-                  <h4 className="font-black text-stone-900 text-base flex items-center gap-2">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
+                  <h4 className="font-black text-slate-900 text-base flex items-center gap-2">
                     <div className="w-2 h-2 bg-rose-500 rounded-full animate-ping" />{" "}
                     Tips vận hành AI
                   </h4>
@@ -3739,14 +3735,14 @@ export function IPosModule() {
                     ].map((tip, i) => (
                       <div
                         key={i}
-                        className="flex gap-4 p-4 bg-stone-50 rounded-lg hover:bg-primary-50/50 hover:border-primary-100 border border-transparent transition-all cursor-default group/tip"
+                        className="flex gap-4 p-4 bg-slate-50 rounded-lg hover:bg-primary-50/50 hover:border-primary-100 border border-transparent transition-all cursor-default group/tip"
                       >
                         <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full mt-1.5 shrink-0 shadow-sm shadow-emerald-200" />
                         <div>
-                          <p className="text-sm font-bold text-stone-800 group-hover/tip:text-primary-700 transition-colors">
+                          <p className="text-sm font-bold text-slate-900 group-hover/tip:text-primary-700 transition-colors">
                             {tip.t}
                           </p>
-                          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mt-1">
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">
                             {tip.c}
                           </p>
                         </div>
@@ -3755,7 +3751,7 @@ export function IPosModule() {
                   </div>
                 </div>
               </div>
-            </div>
+            </DraggableGrid>
           </div>
         ) : activeTab === "sales" ? (
           <>
@@ -3763,17 +3759,17 @@ export function IPosModule() {
             <div className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
               <div className="flex gap-4 shrink-0 transition-all">
                 {/* Product Search & Categories - Refined with Glass effect */}
-                <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-4 flex-1 flex flex-col items-center gap-4">
+                <div className="bg-white rounded-xl border border-slate-300 shadow-sm p-4 flex-1 flex flex-col items-center gap-4">
                   <div className="flex flex-col sm:flex-row gap-3 items-center w-full">
                     <div className="relative flex-1 w-full group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="w-5 h-5 text-stone-400 group-focus-within:text-primary-600 transition-colors" />
+                        <Search className="w-5 h-5 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
                       </div>
                       <input
                         type="text"
                         id="barcode-search"
                         placeholder="Tìm món, mã SKU (F2)..."
-                        className="w-full bg-stone-50 hover:bg-stone-100/50 border border-stone-200 rounded-lg pl-12 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-50 transition-all placeholder:text-stone-400"
+                        className="w-full bg-slate-50 hover:bg-slate-100/50 border border-slate-300 rounded-lg pl-12 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-50 transition-all placeholder:text-slate-500"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
@@ -3782,7 +3778,7 @@ export function IPosModule() {
                       onClick={() => setShowCustomItemModal(true)}
                       title="Thêm món tùy chọn (F3)"
                       id="custom-item-button"
-                      className="h-[52px] px-6 bg-white border border-stone-200 text-stone-700 hover:text-primary-700 hover:border-primary-200 hover:bg-primary-50 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 whitespace-nowrap active:scale-95"
+                      className="h-[52px] px-6 bg-white border border-slate-300 text-slate-800 hover:text-primary-700 hover:border-primary-200 hover:bg-primary-50 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 whitespace-nowrap active:scale-95"
                     >
                       <Plus className="w-4 h-4" />
                       Tùy Chọn
@@ -3832,7 +3828,7 @@ export function IPosModule() {
                           "px-5 py-2.5 whitespace-nowrap rounded-full text-xs font-bold transition-all active:scale-95 border",
                           activeCategory === cat
                             ? "bg-primary-600 text-white border-primary-600 shadow-md shadow-indigo-200"
-                            : "bg-stone-50 text-stone-600 hover:text-primary-600 hover:bg-primary-50 border-stone-200 hover:border-primary-200",
+                            : "bg-slate-50 text-slate-700 hover:text-primary-600 hover:bg-primary-50 border-slate-300 hover:border-primary-200",
                         )}
                       >
                         {cat}
@@ -3843,7 +3839,7 @@ export function IPosModule() {
               </div>
 
               {/* Product Grid - Refined with better rhythm and card design */}
-              <div className="flex-1 bg-white rounded-sm border border-stone-200 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                   {products
                     .filter((p) =>
@@ -3853,15 +3849,15 @@ export function IPosModule() {
                     .map((product) => (
                       <div
                         key={product.id}
-                        className="group relative flex flex-col transition-all duration-300 bg-white rounded-xl border border-stone-100 hover:border-primary-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden"
+                        className="group relative flex flex-col transition-all duration-300 bg-white rounded-xl border border-slate-200 hover:border-primary-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden"
                       >
                         <button
                           onClick={() => addToCart(product)}
                           className="absolute inset-0 z-10 w-full h-full cursor-pointer"
                         />
 
-                        <div className="aspect-[4/3.5] bg-stone-50/50 relative overflow-hidden transition-all border-b border-stone-100">
-                          <div className="absolute inset-0 bg-white from-white/40 to-transparent pointer-events-none" />
+                        <div className="aspect-[4/3.5] bg-slate-50/50 relative overflow-hidden transition-all border-b border-slate-200">
+                          <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent pointer-events-none" />
 
                           {/* Image or Placeholder */}
                           {product.image ? (
@@ -3878,7 +3874,7 @@ export function IPosModule() {
                           )}
 
                           <div className="absolute top-3 left-3 flex gap-2">
-                            <span className="text-[10px] font-bold text-stone-600 bg-white/95 backdrop-blur px-2.5 py-1 rounded shadow-sm">
+                            <span className="text-[10px] font-bold text-slate-700 bg-white/95 backdrop-blur px-2.5 py-1 rounded shadow-sm">
                               {product.category}
                             </span>
                           </div>
@@ -3901,7 +3897,7 @@ export function IPosModule() {
                                 setSelectedProductLookup(product);
                                 setActiveTab("lookup");
                               }}
-                              className="w-8 h-8 bg-white/95 backdrop-blur text-stone-600 hover:text-primary-600 rounded-full flex items-center justify-center shadow-md"
+                              className="w-8 h-8 bg-white/95 backdrop-blur text-slate-700 hover:text-primary-600 rounded-full flex items-center justify-center shadow-md"
                             >
                               <Search className="w-3.5 h-3.5" />
                             </button>
@@ -3909,7 +3905,7 @@ export function IPosModule() {
                         </div>
 
                         <div className="p-4 flex flex-col gap-1.5">
-                          <h3 className="font-semibold text-stone-800 text-sm leading-tight group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[40px]">
+                          <h3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[40px]">
                             {product.name}
                           </h3>
                           <div className="flex justify-between items-end mt-1">
@@ -3934,13 +3930,13 @@ export function IPosModule() {
 
                 {/* AI Suggestions Section (Upsell) */}
                 {cart.length > 0 && (
-                  <div className="mt-4 pt-10 border-t border-stone-100 animate-in slide-in- duration-700">
+                  <div className="mt-4 pt-10 border-t border-slate-200 animate-in slide-in- duration-700">
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
                           <BadgePercent className="w-4 h-4" />
                         </div>
-                        <h4 className="font-bold text-sm text-stone-900">
+                        <h4 className="font-bold text-sm text-slate-900">
                           Gợi ý thông minh cho đơn hàng này
                         </h4>
                       </div>
@@ -3952,18 +3948,18 @@ export function IPosModule() {
                         .map((product) => (
                           <div
                             key={product.id}
-                            className="bg-stone-50 border border-stone-200 rounded-sm p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-sm transition-all"
+                            className="bg-slate-50 border border-slate-300 rounded-sm p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-sm transition-all"
                           >
-                            <p className="text-sm font-bold text-stone-800 line-clamp-1 group-hover:text-primary-600 transition-colors">
+                            <p className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-primary-600 transition-colors">
                               {product.name}
                             </p>
                             <div className="flex justify-between items-center">
-                              <p className="text-[13px] font-bold text-stone-600">
+                              <p className="text-[13px] font-bold text-slate-700">
                                 {formatCurrency(product.price)}
                               </p>
                               <button
                                 onClick={() => addToCart(product)}
-                                className="p-2 bg-stone-900 text-[#FAF9F5] rounded-sm hover:bg-stone-800 transition-all shadow-sm active:scale-95"
+                                className="p-2 bg-slate-900 text-[#FAF9F5] rounded-sm hover:bg-slate-800 transition-all shadow-sm active:scale-95"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -3997,7 +3993,7 @@ export function IPosModule() {
               )}
 
               {/* Customer Selection - Modern unified bar */}
-              <div className="bg-white rounded-xl border border-stone-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-md shrink-0">
+              <div className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-md shrink-0">
                 {customer ? (
                   <div className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
                     <div className="flex items-center gap-4">
@@ -4007,16 +4003,16 @@ export function IPosModule() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-bold text-stone-900 text-sm tracking-tight">
+                          <p className="font-bold text-slate-900 text-sm tracking-tight">
                             {customer.name}
                           </p>
                           <span className="text-[10px] bg-primary-100 text-primary-700 font-bold px-2 py-0.5 rounded-full tracking-wide">
                             {customer.tier || "Thành viên"}
                           </span>
                         </div>
-                        <p className="text-[11px] text-stone-500 font-medium mt-0.5">
+                        <p className="text-[11px] text-slate-600 font-medium mt-0.5">
                           {customer.phone}{" "}
-                          <span className="mx-1.5 text-stone-300">|</span>{" "}
+                          <span className="mx-1.5 text-slate-500">|</span>{" "}
                           <span className="text-orange-600 font-bold">
                             {customer.points || 0}
                           </span>{" "}
@@ -4026,7 +4022,7 @@ export function IPosModule() {
                     </div>
                     <button
                       onClick={() => setCustomer(null)}
-                      className="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-rose-600 bg-stone-50 hover:bg-rose-50 rounded-full transition-all border border-stone-200"
+                      className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-full transition-all border border-slate-300"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -4035,7 +4031,7 @@ export function IPosModule() {
                   <div className="space-y-4 relative z-50 animate-in fade-in zoom-in-95 duration-200">
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="w-4 h-4 text-stone-400 group-focus-within:text-primary-600 transition-colors" />
+                        <Search className="w-4 h-4 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
                       </div>
                       <input
                         autoFocus
@@ -4043,17 +4039,17 @@ export function IPosModule() {
                         placeholder="SĐT khách hàng (10 số)..."
                         value={customerSearchQuery}
                         onChange={(e) => searchCustomers(e.target.value)}
-                        className="w-full bg-stone-50 border border-stone-200 rounded-lg pl-10 pr-10 py-3 text-sm font-medium outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-50 focus:bg-white transition-all placeholder:text-stone-400"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-10 pr-10 py-3 text-sm font-medium outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-50 focus:bg-white transition-all placeholder:text-slate-500"
                       />
                       <button
                         onClick={() => setShowCustomerSearch(false)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                     {customerSearchResults.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-stone-200 rounded-lg divide-y divide-stone-100 shadow-xl bg-white">
+                      <div className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-slate-300 rounded-lg divide-y divide-slate-100 shadow-xl bg-white">
                         {customerSearchResults.map((c) => (
                           <button
                             key={c.id}
@@ -4061,17 +4057,17 @@ export function IPosModule() {
                               setCustomer(c);
                               setShowCustomerSearch(false);
                             }}
-                            className="w-full text-left p-4 hover:bg-stone-50 transition-all flex justify-between items-center group/item"
+                            className="w-full text-left p-4 hover:bg-slate-50 transition-all flex justify-between items-center group/item"
                           >
                             <div>
-                              <p className="text-sm font-semibold text-stone-800 group-hover/item:text-primary-600 transition-colors">
+                              <p className="text-sm font-semibold text-slate-900 group-hover/item:text-primary-600 transition-colors">
                                 {c.name}
                               </p>
-                              <p className="text-xs text-stone-500 mt-0.5">
+                              <p className="text-xs text-slate-600 mt-0.5">
                                 {c.phone}
                               </p>
                             </div>
-                            <ArrowRight className="w-4 h-4 text-stone-300 group-hover/item:text-primary-600 group-hover/item:translate-x-1 transition-all" />
+                            <ArrowRight className="w-4 h-4 text-slate-500 group-hover/item:text-primary-600 group-hover/item:translate-x-1 transition-all" />
                           </button>
                         ))}
                       </div>
@@ -4082,14 +4078,14 @@ export function IPosModule() {
                     onClick={() => setShowCustomerSearch(true)}
                     className="w-full flex items-center gap-4 group transition-all"
                   >
-                    <div className="w-12 h-12 bg-stone-50 text-stone-400 rounded-full flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-all border border-dashed border-stone-300 group-hover:border-primary-300">
+                    <div className="w-12 h-12 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-all border border-dashed border-slate-400 group-hover:border-primary-300">
                       <Plus className="w-5 h-5" />
                     </div>
                     <div className="text-left flex-1">
-                      <p className="font-semibold text-stone-700 text-sm group-hover:text-primary-700 transition-colors">
+                      <p className="font-semibold text-slate-800 text-sm group-hover:text-primary-700 transition-colors">
                         Nhập thông tin khách hàng
                       </p>
-                      <p className="text-xs text-stone-500 mt-0.5">
+                      <p className="text-xs text-slate-600 mt-0.5">
                         Tích điểm mua hàng / Ưu đãi thành viên
                       </p>
                     </div>
@@ -4097,14 +4093,14 @@ export function IPosModule() {
                 )}
               </div>
 
-              <div className="flex-1 bg-white rounded-sm border border-stone-200 shadow-sm flex flex-col overflow-hidden relative">
-                <div className="p-5 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
+              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm flex flex-col overflow-hidden relative">
+                <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center shrink-0">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm">
+                    <div className="w-10 h-10 bg-slate-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm">
                       <ShoppingCart className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-stone-900 text-sm">
+                      <h3 className="font-bold text-slate-900 text-sm">
                         Đơn hàng hiện tại
                       </h3>
                       <p className="text-xs text-primary-600 font-bold mt-0.5">
@@ -4115,7 +4111,7 @@ export function IPosModule() {
                   <div className="flex gap-2">
                     <button
                       onClick={holdCart}
-                      className="w-9 h-9 bg-white border border-stone-200 text-stone-500 rounded-sm hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center"
+                      className="w-9 h-9 bg-white border border-slate-300 text-slate-600 rounded-sm hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center"
                     >
                       <Save className="w-4 h-4" />
                     </button>
@@ -4125,7 +4121,7 @@ export function IPosModule() {
                         setCustomer(null);
                         setIsReturnMode(false);
                       }}
-                      className="w-9 h-9 bg-white border border-stone-200 text-rose-500 rounded-sm hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center"
+                      className="w-9 h-9 bg-white border border-slate-300 text-rose-500 rounded-sm hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -4133,7 +4129,7 @@ export function IPosModule() {
                 </div>
 
                 {/* Mode Switcher */}
-                <div className="flex p-1 bg-stone-100 mx-5 mt-5 rounded-sm shrink-0 border border-stone-200/50">
+                <div className="flex p-1 bg-slate-100 mx-5 mt-5 rounded-sm shrink-0 border border-slate-300/50">
                   <button
                     onClick={() => {
                       setIsReturnMode(false);
@@ -4142,8 +4138,8 @@ export function IPosModule() {
                     className={cn(
                       "flex-1 py-1.5 text-xs font-bold rounded-sm transition-all",
                       !isReturnMode
-                        ? "bg-white text-primary-700 shadow-sm ring-1 ring-stone-200/50 text-sm py-2"
-                        : "text-stone-500 hover:text-stone-700",
+                        ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200/50 text-sm py-2"
+                        : "text-slate-600 hover:text-slate-800",
                     )}
                   >
                     Bán hàng
@@ -4154,7 +4150,7 @@ export function IPosModule() {
                       "flex-1 py-1.5 text-xs font-bold rounded-sm transition-all",
                       isReturnMode
                         ? "bg-rose-500 text-[#FAF9F5] shadow-sm text-sm py-2"
-                        : "text-stone-500 hover:text-stone-700",
+                        : "text-slate-600 hover:text-slate-800",
                     )}
                   >
                     Đổi trả
@@ -4177,22 +4173,22 @@ export function IPosModule() {
                   </div>
                 )}
 
-                <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-stone-50/30">
+                <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-slate-50/30">
                   {cart.map((item) => (
                     <div
                       key={item.cartItemId || item.id}
-                      className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-stone-100 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-primary-100 hover:shadow-md"
+                      className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-slate-200 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-primary-100 hover:shadow-md"
                     >
                       {isReturnMode && (
                         <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />
                       )}
                       <div className="flex-1 pr-3">
-                        <p className="font-bold text-stone-800 text-sm leading-snug mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
+                        <p className="font-bold text-slate-900 text-sm leading-snug mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
                           {item.name}
                         </p>
 
                         <div className="flex items-center gap-2">
-                          <p className="text-[11px] text-stone-500 font-semibold font-bold tracking-tight">
+                          <p className="text-[11px] text-slate-600 font-semibold font-bold tracking-tight">
                             {formatCurrency(item.price)}
                             {item.toppings?.length > 0 && <span className="text-primary-500 ml-1">(+Topping)</span>}
                             {(item.itemDiscount || 0) > 0 && (
@@ -4201,17 +4197,17 @@ export function IPosModule() {
                               </span>
                             )}
                           </p>
-                          <span className="text-[8px] text-stone-300">•</span>
+                          <span className="text-[8px] text-slate-500">•</span>
                           <button
                             onClick={() => setEditingCartItem(item)}
-                            className="text-[10px] text-stone-400 hover:text-primary-600 font-black uppercase tracking-widest flex items-center gap-1 transition-colors"
+                            className="text-[10px] text-slate-500 hover:text-primary-600 font-black uppercase tracking-widest flex items-center gap-1 transition-colors"
                           >
                             <Edit2 className="w-3 h-3" />
                             Sửa / Note
                           </button>
                         </div>
                         {item.toppings?.length > 0 && (
-                          <p className="text-[10px] text-stone-500 font-medium italic mt-0.5">
+                          <p className="text-[10px] text-slate-600 font-medium italic mt-0.5">
                             Topping: {item.toppings.map((t: any) => t.name).join(', ')}
                           </p>
                         )}
@@ -4221,19 +4217,19 @@ export function IPosModule() {
                           </p>
                         )}
 
-                        <div className="flex items-center gap-5 mt-4 bg-stone-50 w-fit p-1 rounded-sm border border-stone-100">
+                        <div className="flex items-center gap-5 mt-4 bg-slate-50 w-fit p-1 rounded-sm border border-slate-200">
                           <button
                             onClick={() => updateQuantity(item.cartItemId || item.id, -1)}
-                            className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
+                            className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
-                          <span className="text-sm font-bold w-6 text-center text-stone-800">
+                          <span className="text-sm font-bold w-6 text-center text-slate-900">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item.cartItemId || item.id, 1)}
-                            className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-primary-600 hover:border-primary-200 transition-all active:scale-90"
+                            className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-primary-600 hover:border-primary-200 transition-all active:scale-90"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -4242,7 +4238,7 @@ export function IPosModule() {
                       <div className="text-right flex flex-col items-end justify-between self-stretch">
                         <button
                           onClick={() => removeFromCart(item.cartItemId || item.id)}
-                          className="p-2 text-stone-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
+                          className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
                         >
                           <Trash className="w-4 h-4" />
                         </button>
@@ -4256,7 +4252,7 @@ export function IPosModule() {
                     <div className="py-2">
                       <textarea
                         placeholder="Ghi chú đơn hàng (VD: Giao sau 5h...)"
-                        className="w-full bg-white border border-stone-200 rounded-xl p-4 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all custom-scrollbar resize-none h-24 shadow-sm"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-4 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all custom-scrollbar resize-none h-24 shadow-sm"
                         value={orderNote}
                         onChange={(e) => setOrderNote(e.target.value)}
                       />
@@ -4264,14 +4260,14 @@ export function IPosModule() {
                   )}
                   {cart.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center space-y-5 py-12">
-                      <div className="w-24 h-24 bg-stone-100 rounded-full flex items-center justify-center text-stone-300 border-4 border-white shadow-inner">
+                      <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 border-4 border-white shadow-inner">
                         <ShoppingCart className="w-12 h-12" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-stone-800 uppercase tracking-widest">
+                        <p className="text-sm font-bold text-slate-900 uppercase tracking-widest">
                           Giỏ hàng trống
                         </p>
-                        <p className="text-xs text-stone-400 mt-2 max-w-[200px] mx-auto">
+                        <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto">
                           Mời thêm sản phẩm từ danh sách bên trái hoặc quét mã
                           vạch
                         </p>
@@ -4280,14 +4276,14 @@ export function IPosModule() {
                   )}
                 </div>
 
-                <div className="p-6 bg-white border-t border-stone-100 space-y-5 rounded-b-xl shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] relative z-20">
+                <div className="p-6 bg-white border-t border-slate-200 space-y-5 rounded-b-xl shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] relative z-20">
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center text-stone-500">
+                    <div className="flex justify-between items-center text-slate-600">
                       <span className="text-sm font-medium">
                         Tạm tính ({cart.reduce((a, b) => a + b.quantity, 0)}{" "}
                         món)
                       </span>
-                      <span className="text-base font-semibold text-stone-800">
+                      <span className="text-base font-semibold text-slate-900">
                         {formatCurrency(subtotal)}
                       </span>
                     </div>
@@ -4305,7 +4301,7 @@ export function IPosModule() {
                     <div
                       className={cn(
                         "rounded-xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-lg mt-4",
-                        isReturnMode ? "bg-rose-600" : "bg-stone-900",
+                        isReturnMode ? "bg-rose-600" : "bg-slate-900",
                       )}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
@@ -4321,16 +4317,16 @@ export function IPosModule() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pb-3 border-b border-stone-100">
-                    <button className="h-[64px] bg-white border border-stone-200 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
-                      <CreditCard className="w-5 h-5 text-stone-400 group-hover:text-primary-600" />
-                      <span className="text-sm font-bold text-stone-700 group-hover:text-primary-700">
+                  <div className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-200">
+                    <button className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
+                      <CreditCard className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
+                      <span className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
                         Quẹt Thẻ
                       </span>
                     </button>
-                    <button className="h-[64px] bg-white border border-stone-200 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
-                      <QrCode className="w-5 h-5 text-stone-400 group-hover:text-primary-600" />
-                      <span className="text-sm font-bold text-stone-700 group-hover:text-primary-700">
+                    <button className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
+                      <QrCode className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
+                      <span className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
                         Mã QR
                       </span>
                     </button>
@@ -4340,7 +4336,7 @@ export function IPosModule() {
                     <button
                       disabled={cart.length === 0}
                       onClick={handlePrintProforma}
-                      className="w-16 h-16 bg-stone-50 border border-stone-200 text-stone-500 rounded-xl flex items-center justify-center hover:bg-stone-100 hover:text-stone-800 transition-colors disabled:opacity-50"
+                      className="w-16 h-16 bg-slate-50 border border-slate-300 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
                       title="In tạm tính"
                     >
                       <FileText className="w-6 h-6" />
@@ -4356,7 +4352,7 @@ export function IPosModule() {
                           : "bg-primary-600 text-white hover:bg-primary-700",
                       )}
                     >
-                      <div className="absolute inset-0 bg-white from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       {isReturnMode ? (
                         <ArrowRight className="w-5 h-5 -rotate-180" />
                       ) : (
@@ -4370,26 +4366,26 @@ export function IPosModule() {
             </div>
           </>
         ) : activeTab === "tables" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-stone-100 gap-4">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-200 gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
                   <Grid3x3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-stone-900 leading-none">
+                  <h3 className="font-bold text-lg text-slate-900 leading-none">
                     {activeStoreConfig?.industry === "Lưu trú, làm đẹp"
                       ? "Sơ đồ Phòng"
                       : "Sơ đồ Bàn / Phòng"}
                   </h3>
-                  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1.5">
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1.5">
                     Trực quan hóa không gian phục vụ
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
-                <span className="flex items-center gap-2 px-2 py-1 bg-stone-50 rounded border border-stone-200">
-                  <div className="w-2.5 h-2.5 rounded-full bg-white border border-stone-300" />{" "}
+                <span className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded border border-slate-300">
+                  <div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400" />{" "}
                   Trống ({tables.filter((t) => t.status === "available").length}
                   )
                 </span>
@@ -4402,7 +4398,7 @@ export function IPosModule() {
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Đã
                   đặt ({tables.filter((t) => t.status === "reserved").length})
                 </span>
-                <span className="flex items-center gap-2 px-2 py-1 bg-[#F2F0E9] text-primary-600 rounded border border-[#EAE7DF]">
+                <span className="flex items-center gap-2 px-2 py-1 bg-slate-100 text-primary-600 rounded border border-slate-300">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Đang
                   dọn ({tables.filter((t) => t.status === "cleaning").length})
                 </span>
@@ -4417,12 +4413,12 @@ export function IPosModule() {
                     className={cn(
                       "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-sm relative group overflow-hidden",
                       table.status === "available"
-                        ? "bg-white border-stone-100 text-stone-400 hover:border-blue-400"
+                        ? "bg-white border-slate-200 text-slate-500 hover:border-blue-400"
                         : table.status === "occupied"
                           ? "bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm"
                           : table.status === "reserved"
                             ? "bg-amber-50 border-amber-200 text-amber-900"
-                            : "bg-[#F2F0E9] border-primary-200 text-blue-900",
+                            : "bg-slate-100 border-primary-200 text-blue-900",
                     )}
                     onClick={() => {
                       if (
@@ -4444,7 +4440,7 @@ export function IPosModule() {
                         className={cn(
                           "w-8 h-8 rounded-sm flex items-center justify-center",
                           table.status === "available"
-                            ? "bg-stone-50 text-stone-400"
+                            ? "bg-slate-50 text-slate-500"
                             : table.status === "occupied"
                               ? "bg-emerald-500 text-[#FAF9F5]"
                               : table.status === "reserved"
@@ -4469,7 +4465,7 @@ export function IPosModule() {
                       <h4 className="font-black text-sm tracking-tight">
                         {table.name}
                       </h4>
-                      <p className="text-[9px] font-bold text-stone-400 opacity-60 uppercase tracking-widest">
+                      <p className="text-[9px] font-bold text-slate-500 opacity-60 uppercase tracking-widest">
                         {table.zone} • {table.capacity} chỗ
                       </p>
                     </div>
@@ -4495,7 +4491,7 @@ export function IPosModule() {
                     )}
 
                     {/* Quick Actions Hover */}
-                    <div className="absolute inset-0 bg-stone-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                       <button
                         className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600 hover:scale-110 transition-transform shadow-sm"
                         onClick={(e) => {
@@ -4515,29 +4511,29 @@ export function IPosModule() {
             </div>
           </div>
         ) : activeTab === "management" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
-            <div className="p-8 border-b border-stone-100 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-stone-50/50 gap-4">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
+            <div className="p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary-600 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm shadow-indigo-200">
                   <Settings2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-stone-900 tracking-tight">
+                  <h2 className="text-xl font-black text-slate-900 tracking-tight">
                     Hệ thống Quản trị & Phân quyền
                   </h2>
-                  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
                     Thiết lập cửa hàng & nhân sự • {activeStore?.name}
                   </p>
                 </div>
               </div>
-              <div className="flex bg-white p-1 rounded-sm border border-stone-200 shadow-sm overflow-x-auto no-scrollbar">
+              <div className="flex bg-white p-1 rounded-sm border border-slate-300 shadow-sm overflow-x-auto no-scrollbar">
                 <button
                   onClick={() => setMgmtSubTab("revenue")}
                   className={cn(
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
                     mgmtSubTab === "revenue"
                       ? "bg-primary-600 text-[#FAF9F5]"
-                      : "text-stone-500 hover:text-stone-700",
+                      : "text-slate-600 hover:text-slate-800",
                   )}
                 >
                   Báo cáo Doanh thu
@@ -4548,7 +4544,7 @@ export function IPosModule() {
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
                     mgmtSubTab === "staff"
                       ? "bg-primary-600 text-[#FAF9F5]"
-                      : "text-stone-500 hover:text-stone-700",
+                      : "text-slate-600 hover:text-slate-800",
                   )}
                 >
                   Nhân viên
@@ -4559,7 +4555,7 @@ export function IPosModule() {
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
                     mgmtSubTab === "store"
                       ? "bg-primary-600 text-[#FAF9F5]"
-                      : "text-stone-500 hover:text-stone-700",
+                      : "text-slate-600 hover:text-slate-800",
                   )}
                 >
                   Cửa hàng
@@ -4570,7 +4566,7 @@ export function IPosModule() {
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
                     mgmtSubTab === "channels"
                       ? "bg-primary-600 text-[#FAF9F5]"
-                      : "text-stone-500 hover:text-stone-700",
+                      : "text-slate-600 hover:text-slate-800",
                   )}
                 >
                   Kênh bán hàng
@@ -4609,12 +4605,12 @@ export function IPosModule() {
                         value: "32%",
                         icon: Users,
                         color: "text-primary-600",
-                        bg: "bg-[#F2F0E9]",
+                        bg: "bg-slate-100",
                       },
                     ].map((stat, idx) => (
                       <div
                         key={stat.label}
-                        className="bg-white p-6 rounded-sm border border-stone-100 shadow-sm hover:shadow-sm transition-all"
+                        className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all"
                       >
                         <div className="flex justify-between items-start mb-4">
                           <div
@@ -4626,24 +4622,24 @@ export function IPosModule() {
                           >
                             <stat.icon className="w-5 h-5" />
                           </div>
-                          <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">
+                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
                             Live
                           </span>
                         </div>
-                        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
                           {stat.label}
                         </p>
-                        <p className="text-xl font-black text-stone-900 tracking-tight">
+                        <p className="text-xl font-black text-slate-900 tracking-tight">
                           {stat.value}
                         </p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm">
+                  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
+                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
                       <div className="flex items-center justify-between mb-8">
-                        <h4 className="font-extrabold text-stone-900 flex items-center gap-2">
+                        <h4 className="font-extrabold text-slate-900 flex items-center gap-2">
                           <TrendingUp className="w-5 h-5 text-primary-600" />{" "}
                           Biểu đồ doanh thu tuần
                         </h4>
@@ -4722,8 +4718,8 @@ export function IPosModule() {
                       </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm">
-                      <h4 className="font-extrabold text-stone-900 mb-8 flex items-center gap-2">
+                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
+                      <h4 className="font-extrabold text-slate-900 mb-8 flex items-center gap-2">
                         <PieChartIcon className="w-5 h-5 text-primary-600" /> Tỷ
                         lệ sản phẩm bán chạy
                       </h4>
@@ -4776,11 +4772,11 @@ export function IPosModule() {
                                     ][i % 4],
                                   }}
                                 />
-                                <span className="text-xs font-bold text-stone-600">
+                                <span className="text-xs font-bold text-slate-700">
                                   {p.name}
                                 </span>
                               </div>
-                              <span className="text-xs font-black text-stone-900">
+                              <span className="text-xs font-black text-slate-900">
                                 {p.value}%
                               </span>
                             </div>
@@ -4788,9 +4784,9 @@ export function IPosModule() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </DraggableGrid>
 
-                  <div className="bg-stone-900 rounded-sm p-8 text-[#FAF9F5] relative overflow-hidden group">
+                  <div className="bg-slate-900 rounded-sm p-8 text-[#FAF9F5] relative overflow-hidden group">
                     <div className="absolute inset-0 bg-white /20 to-transparent opacity-50" />
                     <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                       <div className="space-y-4 text-center md:text-left">
@@ -4819,10 +4815,10 @@ export function IPosModule() {
                 <div className="space-y-8 animate-in fade-in slide-in- duration-500">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h4 className="text-xl font-black text-stone-900 tracking-tight">
+                      <h4 className="text-xl font-black text-slate-900 tracking-tight">
                         Liên kết Kênh bán hàng (Delivery)
                       </h4>
-                      <p className="text-sm font-bold text-stone-400 uppercase tracking-widest mt-1">
+                      <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
                         Đồng bộ menu & đơn hàng với các nền tảng giao hàng
                       </p>
                     </div>
@@ -4864,7 +4860,7 @@ export function IPosModule() {
                     ].map((platform, idx) => (
                       <div
                         key={idx}
-                        className="bg-white p-8 rounded-sm border border-stone-100 shadow-sm hover:shadow-sm transition-all group"
+                        className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all group"
                       >
                         <div className="flex justify-between items-start mb-6">
                           <div
@@ -4881,7 +4877,7 @@ export function IPosModule() {
                                 "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
                                 platform.status === "Đã kết nối"
                                   ? "bg-emerald-50 text-emerald-600"
-                                  : "bg-stone-50 text-stone-400",
+                                  : "bg-slate-50 text-slate-500",
                               )}
                             >
                               {platform.status}
@@ -4892,23 +4888,23 @@ export function IPosModule() {
                                   "w-2 h-2 rounded-full",
                                   platform.status === "Đã kết nối"
                                     ? "bg-emerald-500 animate-pulse"
-                                    : "bg-stone-200",
+                                    : "bg-slate-200",
                                 )}
                               />
-                              <span className="text-[10px] font-bold text-stone-400">
+                              <span className="text-[10px] font-bold text-slate-500">
                                 API: Up
                               </span>
                             </div>
                           </div>
                         </div>
-                        <h5 className="text-lg font-black text-stone-900 mb-2">
+                        <h5 className="text-lg font-black text-slate-900 mb-2">
                           {platform.name}
                         </h5>
-                        <p className="text-xs text-stone-400 font-medium mb-6 leading-relaxed">
+                        <p className="text-xs text-slate-500 font-medium mb-6 leading-relaxed">
                           {platform.desc}
                         </p>
                         <div className="pt-6 border-t border-stone-50 flex gap-3">
-                          <button className="flex-1 py-3 bg-stone-50 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-stone-100 transition-all">
+                          <button className="flex-1 py-3 bg-slate-50 text-slate-700 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-100 transition-all">
                             Cấu hình
                           </button>
                           <button
@@ -4958,10 +4954,10 @@ export function IPosModule() {
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                      <h3 className="font-bold text-stone-800">
+                      <h3 className="font-bold text-slate-900">
                         Danh sách nhân sự ({staffList.length})
                       </h3>
-                      <p className="text-xs text-stone-500 font-medium">
+                      <p className="text-xs text-slate-600 font-medium">
                         Quản lý tài khoản truy cập và vai trò của nhân viên tại
                         chi nhánh này.
                       </p>
@@ -4969,7 +4965,7 @@ export function IPosModule() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => navigate("/ipos-settings")}
-                        className="flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm text-xs font-bold hover:bg-stone-50 transition-all shadow-sm active:scale-95"
+                        className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-300 text-slate-800 rounded-sm text-xs font-bold hover:bg-slate-50 transition-all shadow-sm active:scale-95"
                       >
                         <Shield className="w-4 h-4" /> Cài đặt Phân quyền
                       </button>
@@ -4989,10 +4985,10 @@ export function IPosModule() {
                     {staffList.map((staff) => (
                       <div
                         key={staff.id}
-                        className="group relative bg-white border border-stone-200 rounded-sm p-6 hover:border-primary-500 hover:shadow-sm hover:shadow-stone-100 transition-all duration-300"
+                        className="group relative bg-white border border-slate-300 rounded-sm p-6 hover:border-primary-500 hover:shadow-sm hover:shadow-slate-100 transition-all duration-300"
                       >
                         <div className="flex justify-between items-start mb-4">
-                          <div className="w-12 h-12 bg-stone-100 rounded-sm flex items-center justify-center text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                          <div className="w-12 h-12 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
                             <User className="w-6 h-6" />
                           </div>
                           <div
@@ -5002,19 +4998,19 @@ export function IPosModule() {
                                 ? "bg-rose-50 text-rose-600 border-rose-100"
                                 : staff.role === "manager"
                                   ? "bg-amber-50 text-amber-600 border-amber-100"
-                                  : "bg-[#F2F0E9] text-primary-600 border-[#EAE7DF]",
+                                  : "bg-slate-100 text-primary-600 border-slate-300",
                             )}
                           >
                             {staff.role}
                           </div>
                         </div>
-                        <h4 className="font-bold text-stone-900 group-hover:text-primary-600 transition-colors">
+                        <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
                           {staff.fullName}
                         </h4>
-                        <p className="text-xs text-stone-500 font-medium mb-1">
+                        <p className="text-xs text-slate-600 font-medium mb-1">
                           {staff.email}
                         </p>
-                        <p className="text-[10px] text-stone-300 font-mono font-bold">
+                        <p className="text-[10px] text-slate-500 font-mono font-bold">
                           {staff.id}
                         </p>
 
@@ -5025,10 +5021,10 @@ export function IPosModule() {
                                 "w-2 h-2 rounded-full",
                                 staff.status === "active"
                                   ? "bg-emerald-500"
-                                  : "bg-stone-300",
+                                  : "bg-slate-300",
                               )}
                             />
-                            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                               {staff.status === "active"
                                 ? "Đang hoạt động"
                                 : "Tạm khóa"}
@@ -5040,13 +5036,13 @@ export function IPosModule() {
                                 setEditingStaff(staff);
                                 setIsAddingStaff(true);
                               }}
-                              className="p-2 hover:bg-primary-50 text-stone-400 hover:text-primary-600 transition-colors rounded-sm"
+                              className="p-2 hover:bg-primary-50 text-slate-500 hover:text-primary-600 transition-colors rounded-sm"
                             >
                               <Key className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteStaff(staff.id)}
-                              className="p-2 hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-colors rounded-sm"
+                              className="p-2 hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors rounded-sm"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -5059,10 +5055,10 @@ export function IPosModule() {
               ) : (
                 <div className="space-y-8 max-w-2xl">
                   <div className="space-y-2">
-                    <h3 className="font-bold text-stone-800">
+                    <h3 className="font-bold text-slate-900">
                       Cấu hình Chi nhánh
                     </h3>
-                    <p className="text-xs text-stone-500 font-medium">
+                    <p className="text-xs text-slate-600 font-medium">
                       Thiết lập các quy tắc vận hành cho chi nhánh{" "}
                       <span className="font-bold text-primary-600">
                         {activeStore?.name}
@@ -5072,14 +5068,14 @@ export function IPosModule() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="bg-stone-50 p-6 rounded-sm space-y-6">
+                    <div className="bg-slate-50 p-6 rounded-sm space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                          <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                             Ngành nghề
                           </label>
                           <select
-                            className="w-full h-10 px-3 bg-white border border-stone-200 rounded-sm text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-primary-500"
+                            className="w-full h-10 px-3 bg-white border border-slate-300 rounded-sm text-sm font-medium text-slate-800 outline-none focus:ring-1 focus:ring-primary-500"
                             value={activeStoreConfig?.industry || ""}
                             onChange={(e) =>
                               handleUpdateStoreField("industry", e.target.value)
@@ -5094,11 +5090,11 @@ export function IPosModule() {
                           </select>
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                          <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                             Loại hình chi tiết
                           </label>
                           <select
-                            className="w-full h-10 px-3 bg-white border border-stone-200 rounded-sm text-sm font-medium text-stone-700 outline-none focus:ring-1 focus:ring-primary-500"
+                            className="w-full h-10 px-3 bg-white border border-slate-300 rounded-sm text-sm font-medium text-slate-800 outline-none focus:ring-1 focus:ring-primary-500"
                             value={activeStoreConfig?.subIndustry || ""}
                             onChange={(e) =>
                               handleUpdateStoreField(
@@ -5121,13 +5117,13 @@ export function IPosModule() {
                         </div>
                       </div>
 
-                      <div className="border-t border-stone-200 pt-6 space-y-4">
+                      <div className="border-t border-slate-300 pt-6 space-y-4">
                         <div className="flex justify-between items-center">
                           <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-stone-900">
+                            <p className="text-sm font-bold text-slate-900">
                               Mở ca làm việc bắt buộc
                             </p>
-                            <p className="text-xs text-stone-500">
+                            <p className="text-xs text-slate-600">
                               Yêu cầu nhân viên khai báo két tiền trước khi bắt
                               đầu bán hàng.
                             </p>
@@ -5143,7 +5139,7 @@ export function IPosModule() {
                               "w-12 h-6 rounded-full p-1 transition-all shrink-0 ml-4",
                               activeStoreConfig?.config?.requireShiftOpening
                                 ? "bg-primary-600"
-                                : "bg-stone-300",
+                                : "bg-slate-300",
                             )}
                           >
                             <div
@@ -5158,10 +5154,10 @@ export function IPosModule() {
 
                         <div className="flex justify-between items-center">
                           <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-stone-900">
+                            <p className="text-sm font-bold text-slate-900">
                               Tự động in hóa đơn
                             </p>
-                            <p className="text-xs text-stone-500">
+                            <p className="text-xs text-slate-600">
                               In phiếu thu ngay sau khi hoàn tất thanh toán.
                             </p>
                           </div>
@@ -5178,7 +5174,7 @@ export function IPosModule() {
                               activeStoreConfig?.config
                                 ?.printReceiptAutomatically
                                 ? "bg-primary-600"
-                                : "bg-stone-300",
+                                : "bg-slate-300",
                             )}
                           >
                             <div
@@ -5194,10 +5190,10 @@ export function IPosModule() {
 
                         <div className="flex justify-between items-center">
                           <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-stone-900">
+                            <p className="text-sm font-bold text-slate-900">
                               Cho phép trả hàng
                             </p>
-                            <p className="text-xs text-stone-500">
+                            <p className="text-xs text-slate-600">
                               Kích hoạt tính năng hoàn tiền cho các hóa đơn đã
                               thanh toán.
                             </p>
@@ -5213,7 +5209,7 @@ export function IPosModule() {
                               "w-12 h-6 rounded-full p-1 transition-all shrink-0 ml-4",
                               activeStoreConfig?.config?.allowReturns
                                 ? "bg-primary-600"
-                                : "bg-stone-300",
+                                : "bg-slate-300",
                             )}
                           >
                             <div
@@ -5250,38 +5246,38 @@ export function IPosModule() {
             </div>
           </div>
         ) : activeTab === "delivery" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-stone-200 p-8 flex-1 animate-in slide-in- overflow-y-auto">
-            <div className="flex justify-between items-center mb-8 border-b border-stone-100 pb-4">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 p-8 flex-1 animate-in slide-in- overflow-y-auto">
+            <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
               <div>
-                <h2 className="text-2xl font-black text-stone-900 tracking-tight">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
                   Đối tác Giao hàng
                 </h2>
-                <p className="text-xs text-stone-400 font-bold uppercase tracking-widest mt-1">
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
                   Đơn đặt hàng từ ứng dụng ngoài
                 </p>
               </div>
             </div>
 
             {discrepancyPrompt && (
-              <div className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-stone-900/60 backdrop-blur-md">
+              <div className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
                 <div className="bg-white rounded-sm max-w-lg shadow-sm p-8 space-y-6">
                   <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
                     <AlertCircle className="w-8 h-8" />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-lg font-black text-stone-900 mb-2">
+                    <h3 className="text-lg font-black text-slate-900 mb-2">
                       Phát hiện Sai lệch Thông tin
                     </h3>
-                    <p className="text-sm text-stone-600 leading-relaxed">
+                    <p className="text-sm text-slate-700 leading-relaxed">
                       {discrepancyPrompt.message}
                     </p>
                   </div>
-                  <div className="flex gap-4 pt-4 border-t border-stone-100">
+                  <div className="flex gap-4 pt-4 border-t border-slate-200">
                     <button
                       onClick={() =>
                         proceedWithExternalOrder(discrepancyPrompt.order, null)
                       }
-                      className="flex-1 py-3 bg-white border border-stone-200 shadow-sm text-stone-600 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-stone-50 transition-all font-semibold"
+                      className="flex-1 py-3 bg-white border border-slate-300 shadow-sm text-slate-700 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all font-semibold"
                     >
                       Tạo KH Mới
                     </button>
@@ -5303,10 +5299,10 @@ export function IPosModule() {
 
             {incomingExternalOrders.length === 0 ? (
               <div className="py-20 text-center space-y-4">
-                <div className="w-16 h-16 bg-stone-50 text-stone-300 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-stone-200">
+                <div className="w-16 h-16 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-slate-300">
                   <Building2 className="w-8 h-8" />
                 </div>
-                <p className="text-sm font-bold text-stone-400">
+                <p className="text-sm font-bold text-slate-500">
                   Không có đơn hàng mới nào
                 </p>
               </div>
@@ -5315,7 +5311,7 @@ export function IPosModule() {
                 {incomingExternalOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm hover:border-primary-300 transition-all group flex flex-col relative overflow-hidden"
+                    className="bg-white border border-slate-300 rounded-sm p-6 shadow-sm hover:border-primary-300 transition-all group flex flex-col relative overflow-hidden"
                   >
                     <div
                       className={cn(
@@ -5328,7 +5324,7 @@ export function IPosModule() {
                               ? "bg-emerald-400"
                               : order.platform === "ShopeeFood"
                                 ? "bg-orange-500"
-                                : "bg-stone-400",
+                                : "bg-slate-400",
                       )}
                     />
                     <div className="flex justify-between items-start mb-4">
@@ -5344,15 +5340,15 @@ export function IPosModule() {
                                   ? "bg-emerald-50 text-emerald-600"
                                   : order.platform === "ShopeeFood"
                                     ? "bg-orange-50 text-primary-600"
-                                    : "bg-stone-50 text-stone-700",
+                                    : "bg-slate-50 text-slate-800",
                           )}
                         >
                           {order.platform}
                         </span>
-                        <h3 className="font-bold text-stone-900 mt-2">
+                        <h3 className="font-bold text-slate-900 mt-2">
                           {order.customerName}
                         </h3>
-                        <p className="text-[10px] text-stone-500 font-mono font-bold mt-0.5">
+                        <p className="text-[10px] text-slate-600 font-mono font-bold mt-0.5">
                           {order.targetPhone}
                         </p>
                       </div>
@@ -5360,7 +5356,7 @@ export function IPosModule() {
                         <p className="text-sm font-black text-primary-600">
                           {formatCurrency(order.total)}
                         </p>
-                        <p className="text-[10px] text-stone-400 font-bold mt-1">
+                        <p className="text-[10px] text-slate-500 font-bold mt-1">
                           {order.items.length} món
                         </p>
                       </div>
@@ -5370,7 +5366,7 @@ export function IPosModule() {
                       {order.items.map((item: any, idx: number) => (
                         <div
                           key={idx}
-                          className="flex justify-between text-xs text-stone-600"
+                          className="flex justify-between text-xs text-slate-700"
                         >
                           <span>
                             {item.quantity}x {item.name}
@@ -5391,18 +5387,18 @@ export function IPosModule() {
             )}
           </div>
         ) : activeTab === "lookup" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-10 flex-1 animate-in slide-in-">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-10 flex-1 animate-in slide-in-">
             <button
               onClick={() => setActiveTab("sales")}
-              className="flex items-center gap-2 text-xs font-bold text-stone-400 hover:text-primary-600 mb-6 transition-colors"
+              className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary-600 mb-6 transition-colors"
             >
               <Undo2 className="w-4 h-4" /> Quay lại
             </button>
 
             {selectedProductLookup && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="aspect-square bg-stone-50 rounded-sm border border-stone-100 flex items-center justify-center relative overflow-hidden">
-                  <Monitor className="w-24 h-24 text-stone-200" />
+              <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-12" columns={2} gap={48}>
+                <div className="aspect-square bg-slate-50 rounded-sm border border-slate-200 flex items-center justify-center relative overflow-hidden">
+                  <Monitor className="w-24 h-24 text-slate-400" />
                   <div className="absolute top-6 left-6 bg-primary-600 text-[#FAF9F5] px-4 py-1.5 rounded-sm font-bold text-[10px] uppercase tracking-widest shadow-sm">
                     In Stock
                   </div>
@@ -5410,10 +5406,10 @@ export function IPosModule() {
                 <div className="space-y-8">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="text-3xl font-bold text-stone-900 mb-1 leading-tight">
+                      <h2 className="text-3xl font-bold text-slate-900 mb-1 leading-tight">
                         {selectedProductLookup.name}
                       </h2>
-                      <p className="text-stone-500 text-xs font-bold uppercase tracking-widest">
+                      <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">
                         {selectedProductLookup.id}
                       </p>
                     </div>
@@ -5422,12 +5418,12 @@ export function IPosModule() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="p-5 bg-stone-50 rounded-sm space-y-1">
-                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider">
+                  <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
+                    <div className="p-5 bg-slate-50 rounded-sm space-y-1">
+                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
                         Giá bán
                       </p>
-                      <p className="text-xl font-bold text-stone-900">
+                      <p className="text-xl font-bold text-slate-900">
                         {formatCurrency(selectedProductLookup.price)}
                       </p>
                     </div>
@@ -5439,16 +5435,16 @@ export function IPosModule() {
                         {selectedProductLookup.stock || 0}
                       </p>
                     </div>
-                  </div>
+                  </DraggableGrid>
 
                   <div className="space-y-3">
-                    <h4 className="font-bold text-[10px] uppercase tracking-widest text-stone-900 flex items-center gap-2">
+                    <h4 className="font-bold text-[10px] uppercase tracking-widest text-slate-900 flex items-center gap-2">
                       <RefreshCcw className="w-3.5 h-3.5 text-primary-600" />{" "}
                       Liên chi nhánh
                     </h4>
                     <div className="space-y-2">
-                      <div className="flex justify-between items-center p-4 bg-white border border-stone-100 rounded-sm shadow-sm hover:border-primary-200 transition-all">
-                        <span className="text-sm font-medium text-stone-700">
+                      <div className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-sm shadow-sm hover:border-primary-200 transition-all">
+                        <span className="text-sm font-medium text-slate-800">
                           CN Quận 1 (Chính)
                         </span>
                         <span className="font-bold text-xs text-primary-600">
@@ -5468,7 +5464,7 @@ export function IPosModule() {
                     Thêm vào đơn hàng
                   </button>
                 </div>
-              </div>
+              </DraggableGrid>
             )}
           </div>
         ) : activeTab === "inventory" ? (
@@ -5486,13 +5482,13 @@ export function IPosModule() {
         ) : activeTab === "promotions" ? (
           <IPosPromotions activeStore={activeStore} />
         ) : (
-          <div className="col-span-12 bg-white rounded-sm border border-stone-200 shadow-sm p-6 flex-1 overflow-y-auto">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="font-bold text-stone-900 flex items-center gap-2 text-base">
+              <h3 className="font-bold text-slate-900 flex items-center gap-2 text-base">
                 <History className="w-5 h-5 text-primary-600" /> Nhật ký đơn hàng
               </h3>
               <div className="flex gap-2">
-                <div className="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                <div className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                   Hôm nay
                 </div>
               </div>
@@ -5506,7 +5502,7 @@ export function IPosModule() {
                     <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
                     Đơn E-Menu mới ({pendingEMenuOrders.length})
                   </h4>
-                  <span className="text-[10px] font-bold text-stone-400">
+                  <span className="text-[10px] font-bold text-slate-500">
                     Yêu cầu từ khách tại bàn
                   </span>
                 </div>
@@ -5522,16 +5518,16 @@ export function IPosModule() {
                             <QrCode className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="font-black text-stone-900">
+                            <p className="font-black text-slate-900">
                               BÀN {order.tableId}
                             </p>
-                            <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">
+                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
                               {order.items?.length || 0} món •{" "}
                               {formatCurrency(order.total)}
                             </p>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold text-stone-400">
+                        <span className="text-[10px] font-bold text-slate-500">
                           {order.time || "Vừa xong"}
                         </span>
                       </div>
@@ -5553,7 +5549,7 @@ export function IPosModule() {
                     </div>
                   ))}
                 </div>
-                <div className="w-full h-px bg-stone-100" />
+                <div className="w-full h-px bg-slate-100" />
               </div>
             )}
 
@@ -5561,32 +5557,32 @@ export function IPosModule() {
               {orderHistory.map((tx) => (
                 <div
                   key={tx.id}
-                  className="flex items-center justify-between p-5 bg-stone-50 rounded-sm border border-stone-100 hover:bg-white hover:shadow-sm hover:border-primary-200 transition-all cursor-pointer group"
+                  className="flex items-center justify-between p-5 bg-slate-50 rounded-sm border border-slate-200 hover:bg-white hover:shadow-sm hover:border-primary-200 transition-all cursor-pointer group"
                   onClick={() => setSelectedTxForDetail(tx)}
                 >
                   <div className="flex items-center gap-5">
-                    <div className="w-10 h-10 bg-white rounded-sm shadow-inner flex items-center justify-center font-bold text-xs text-stone-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors uppercase">
+                    <div className="w-10 h-10 bg-white rounded-sm shadow-inner flex items-center justify-center font-bold text-xs text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors uppercase">
                       {tx.time}
                     </div>
                     <div>
-                      <p className="font-bold text-stone-900 text-base">
+                      <p className="font-bold text-slate-900 text-base">
                         {tx.id}
                       </p>
-                      <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">
+                      <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
                         {tx.items} sản phẩm • {tx.status}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="font-bold text-stone-900 text-lg">
+                      <p className="font-bold text-slate-900 text-lg">
                         {formatCurrency(tx.total)}
                       </p>
                       <button className="text-[9px] font-bold text-primary-600 uppercase tracking-widest hover:underline flex items-center gap-1 justify-end">
                         <Printer className="w-3 h-3" /> In biên lai
                       </button>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-stone-300 group-hover:text-primary-500 transition-colors" />
+                    <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-500 transition-colors" />
                   </div>
                 </div>
               ))}
@@ -5739,19 +5735,19 @@ export function IPosModule() {
       {/* Staff Management MODAL */}
       <AnimatePresence>
         {isAddingStaff && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-stone-900/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-sm w-full max-w-xl shadow-sm overflow-hidden"
             >
-              <div className="p-8 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+              <div className="p-8 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-primary-600 text-[#FAF9F5] rounded-sm flex items-center justify-center">
                     <UserCheck className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-black text-stone-900 tracking-tight">
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">
                     {editingStaff ? "Cập nhật nhân sự" : "Thêm nhân sự mới"}
                   </h3>
                 </div>
@@ -5759,19 +5755,19 @@ export function IPosModule() {
                   onClick={() => setIsAddingStaff(false)}
                   className="p-2 hover:bg-white rounded-sm transition-all shadow-sm"
                 >
-                  <X className="w-6 h-6 text-stone-400" />
+                  <X className="w-6 h-6 text-slate-500" />
                 </button>
               </div>
 
               <div className="p-8 space-y-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                       Họ và tên
                     </label>
                     <input
                       type="text"
-                      className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
                       placeholder="Nguyễn Văn A"
                       value={staffForm.fullName}
                       onChange={(e) =>
@@ -5780,12 +5776,12 @@ export function IPosModule() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                       Số điện thoại
                     </label>
                     <input
                       type="text"
-                      className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none font-mono"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none font-mono"
                       placeholder="09xxx"
                       value={staffForm.phone}
                       onChange={(e) =>
@@ -5796,12 +5792,12 @@ export function IPosModule() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                     Địa chỉ Email (Để đăng nhập)
                   </label>
                   <input
                     type="email"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
                     placeholder="staff@example.com"
                     value={staffForm.email}
                     onChange={(e) =>
@@ -5811,7 +5807,7 @@ export function IPosModule() {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                     Vai trò & Phân quyền
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -5844,7 +5840,7 @@ export function IPosModule() {
                           "p-4 rounded-sm border-2 transition-all text-left flex flex-col gap-2 relative group",
                           staffForm.role === role.id
                             ? "bg-primary-50 border-primary-600 shadow-sm shadow-indigo-100"
-                            : "bg-white border-stone-100 hover:border-stone-200",
+                            : "bg-white border-slate-200 hover:border-slate-300",
                         )}
                       >
                         {staffForm.role === role.id && (
@@ -5857,7 +5853,7 @@ export function IPosModule() {
                             "w-6 h-6 mb-1",
                             staffForm.role === role.id
                               ? "text-primary-600"
-                              : "text-stone-300",
+                              : "text-slate-500",
                           )}
                         />
                         <p
@@ -5865,12 +5861,12 @@ export function IPosModule() {
                             "text-xs font-black",
                             staffForm.role === role.id
                               ? "text-primary-600"
-                              : "text-stone-600",
+                              : "text-slate-700",
                           )}
                         >
                           {role.name}
                         </p>
-                        <p className="text-[9px] font-medium text-stone-400">
+                        <p className="text-[9px] font-medium text-slate-500">
                           {role.desc}
                         </p>
                       </button>
@@ -5879,10 +5875,10 @@ export function IPosModule() {
                 </div>
               </div>
 
-              <div className="p-8 bg-stone-50/50 border-t border-stone-100 flex gap-4">
+              <div className="p-8 bg-slate-50/50 border-t border-slate-200 flex gap-4">
                 <button
                   onClick={() => setIsAddingStaff(false)}
-                  className="flex-1 py-4 bg-white border border-stone-200 text-stone-400 font-bold rounded-sm hover:bg-stone-50 transition-all text-xs uppercase tracking-widest"
+                  className="flex-1 py-4 bg-white border border-slate-300 text-slate-500 font-bold rounded-sm hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                 >
                   Hủy bỏ
                 </button>
@@ -5901,23 +5897,23 @@ export function IPosModule() {
       {/* Receipt Detail Modal */}
       <AnimatePresence>
         {selectedTxForDetail && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-end p-0 bg-stone-900/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[200] flex items-center justify-end p-0 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               className="bg-white h-full w-full max-w-md shadow-sm flex flex-col"
             >
-              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+              <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-stone-900 text-[#FAF9F5] rounded-sm flex items-center justify-center">
+                  <div className="w-10 h-10 bg-slate-900 text-[#FAF9F5] rounded-sm flex items-center justify-center">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-stone-900 tracking-tight">
+                    <h3 className="text-lg font-black text-slate-900 tracking-tight">
                       Chi tiết Hóa đơn
                     </h3>
-                    <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                       Mã giao dịch: {selectedTxForDetail.id}
                     </p>
                   </div>
@@ -5926,65 +5922,65 @@ export function IPosModule() {
                   onClick={() => setSelectedTxForDetail(null)}
                   className="p-2 hover:bg-white rounded-sm transition-all shadow-sm"
                 >
-                  <X className="w-6 h-6 text-stone-400" />
+                  <X className="w-6 h-6 text-slate-500" />
                 </button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-8">
-                <div className="bg-stone-50 rounded-sm p-8 border border-dashed border-stone-200 relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-black text-stone-400 tracking-[0.2em] uppercase">
+                <div className="bg-slate-50 rounded-sm p-8 border border-dashed border-slate-300 relative">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">
                     E-Receipt Digital
                   </div>
 
                   <div className="text-center mb-8 space-y-2">
-                    <p className="text-xs font-black text-stone-900 uppercase tracking-widest">
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-widest">
                       {activeStore?.name}
                     </p>
-                    <p className="text-[10px] text-stone-500 font-medium">
+                    <p className="text-[10px] text-slate-600 font-medium">
                       {activeStore?.address}
                     </p>
-                    <p className="text-[10px] text-stone-500 font-medium">
+                    <p className="text-[10px] text-slate-600 font-medium">
                       SĐT: 1900 1234
                     </p>
                   </div>
 
                   <div className="space-y-4 mb-8">
-                    <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                    <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                       <span>Mô tả</span>
                       <span>Thành tiền</span>
                     </div>
-                    <div className="h-px bg-stone-200 w-full" />
+                    <div className="h-px bg-slate-200 w-full" />
                     {/* Mocking items for history detail since history list doesn't have partial items in this mock state */}
                     {[1, 2].map((_, i) => (
                       <div key={i} className="flex justify-between items-start">
                         <div>
-                          <p className="text-xs font-black text-stone-900">
+                          <p className="text-xs font-black text-slate-900">
                             Sản phẩm mẫu {i + 1}
                           </p>
-                          <p className="text-[10px] text-stone-400 font-medium">
+                          <p className="text-[10px] text-slate-500 font-medium">
                             1 x {formatCurrency(selectedTxForDetail.total / 2)}
                           </p>
                         </div>
-                        <span className="text-xs font-black text-stone-900">
+                        <span className="text-xs font-black text-slate-900">
                           {formatCurrency(selectedTxForDetail.total / 2)}
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="space-y-2 border-t border-dashed border-stone-200 pt-6">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                  <div className="space-y-2 border-t border-dashed border-slate-300 pt-6">
+                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                       <span>Tổng tiền</span>
                       <span>{formatCurrency(selectedTxForDetail.total)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                       <span>Thuế (VAT 8%)</span>
                       <span>
                         {formatCurrency(selectedTxForDetail.total * 0.08)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center pt-4">
-                      <span className="text-sm font-black text-stone-900 uppercase tracking-widest">
+                      <span className="text-sm font-black text-slate-900 uppercase tracking-widest">
                         Tổng cộng
                       </span>
                       <span className="text-xl font-black text-primary-600">
@@ -5993,13 +5989,13 @@ export function IPosModule() {
                     </div>
                   </div>
 
-                  <div className="mt-12 pt-8 border-t border-stone-100 text-center space-y-6">
+                  <div className="mt-12 pt-8 border-t border-slate-200 text-center space-y-6">
                     <div className="flex justify-center">
-                      <div className="bg-stone-900 p-2 rounded-sm">
+                      <div className="bg-slate-900 p-2 rounded-sm">
                         <QrCode className="w-24 h-24 text-[#FAF9F5]" />
                       </div>
                     </div>
-                    <p className="text-[10px] text-stone-400 font-medium italic">
+                    <p className="text-[10px] text-slate-500 font-medium italic">
                       Vui lòng giữ lại hóa đơn để được hỗ trợ bảo hành & đổi trả
                       trong vòng 7 ngày.
                     </p>
@@ -6007,8 +6003,8 @@ export function IPosModule() {
                 </div>
               </div>
 
-              <div className="p-8 border-t border-stone-100 grid grid-cols-2 gap-4 bg-stone-50/50">
-                <button className="flex items-center justify-center gap-2 py-4 bg-white border border-stone-200 text-stone-600 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all shadow-sm">
+              <div className="p-8 border-t border-slate-200 grid grid-cols-2 gap-4 bg-slate-50/50">
+                <button className="flex items-center justify-center gap-2 py-4 bg-white border border-slate-300 text-slate-700 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-50 transition-all shadow-sm">
                   <Download className="w-4 h-4" /> Lưu ảnh
                 </button>
                 <button
@@ -6026,7 +6022,7 @@ export function IPosModule() {
       {/* Table E-Menu QR Modal */}
       <AnimatePresence>
         {selectedTableForQr !== null && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-stone-900/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -6036,7 +6032,7 @@ export function IPosModule() {
               <div className="absolute top-4 right-4 z-10">
                 <button
                   onClick={() => setSelectedTableForQr(null)}
-                  className="w-10 h-10 bg-stone-100 hover:bg-stone-200 text-stone-500 rounded-full flex items-center justify-center transition-colors"
+                  className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -6044,7 +6040,7 @@ export function IPosModule() {
 
               <div className="p-8 text-center space-y-6">
                 <div className="space-y-1 pt-4">
-                  <h3 className="text-xl font-black text-stone-900 tracking-tight">
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">
                     QR E-Menu
                   </h3>
                   <p className="text-xs font-bold text-primary-600 uppercase tracking-widest">
@@ -6053,9 +6049,9 @@ export function IPosModule() {
                   </p>
                 </div>
 
-                <div className="bg-stone-50 p-10 rounded-sm border-2 border-dashed border-stone-200 relative group">
+                <div className="bg-slate-50 p-10 rounded-sm border-2 border-dashed border-slate-300 relative group">
                   <div className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                    <QrCode className="w-40 h-40 text-stone-900" />
+                    <QrCode className="w-40 h-40 text-slate-900" />
 
                     {/* Visual overlay for logo branding */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -6071,7 +6067,7 @@ export function IPosModule() {
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-[10px] text-stone-400 italic font-medium leading-relaxed uppercase tracking-tighter">
+                  <p className="text-[10px] text-slate-500 italic font-medium leading-relaxed uppercase tracking-tighter">
                     Khách hàng quét mã này để truy cập thực đơn trực tuyến và
                     đặt món trực tiếp tại bàn.
                   </p>

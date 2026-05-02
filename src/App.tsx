@@ -57,7 +57,7 @@ function AppLayout() {
 
  if (isIPos) {
  return (
- <div className="h-screen w-screen bg-stone-50 overflow-hidden">
+ <div className="h-screen w-screen bg-slate-50 overflow-hidden">
  <Routes>
  <Route path="/ipos" element={<IPosModule />} />
  </Routes>
@@ -66,7 +66,7 @@ function AppLayout() {
  }
 
  return (
- <div className="flex h-screen bg-stone-50 overflow-hidden">
+ <div className="flex h-screen bg-slate-50 overflow-hidden">
  <Sidebar />
  <div className="flex-1 flex flex-col min-w-0">
  <Header />

@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Megaphone, 
@@ -55,10 +56,10 @@ const MOCK_CAMPAIGNS: Campaign[] = [
 ];
 
 const SOCIAL_ACCOUNTS = [
- { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-stone-900', icon: Facebook },
+ { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-slate-900', icon: Facebook },
  { id: 'tt', platform: 'TikTok', name: '@vcomm_shop_vn', status: 'connected', followers: '850k', color: 'bg-stone-950', icon: Music2 },
  { id: 'ig', platform: 'Instagram', name: 'vcomm.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Instagram },
- { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-stone-800', icon: Twitter },
+ { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
 ];
 
 const MARKETING_MODULE_GROUPS = [
@@ -82,13 +83,13 @@ const MARKETING_MODULE_GROUPS = [
 
 function getColorClasses(color: string) {
  switch (color) {
- case 'blue': return 'bg-[#F2F0E9] text-orange-700';
+ case 'blue': return 'bg-slate-100 text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
  case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
  case 'rose': return 'bg-rose-50 text-rose-600';
- default: return 'bg-stone-50 text-stone-600';
+ default: return 'bg-slate-50 text-slate-700';
  }
 }
 
@@ -102,7 +103,7 @@ export function Marketing() {
  <div className="header-title">
  <div className="flex items-center gap-2 mb-1">
  {activeTab !== 'overview' && (
- <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-stone-100 rounded-md transition-colors mr-1">
+ <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
  <ArrowUpRight className="w-4 h-4 rotate-225" />
  </button>
  )}
@@ -111,13 +112,13 @@ export function Marketing() {
  <p className="text-sm text-[#6B7280]">Kết nối đa kênh (FB, TT, IG), Quản lý chiến dịch & Tự động hóa tiếp thị.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
+ <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <Cpu className="w-4 h-4 text-purple-500" />
  AI Content Maker
  </button>
  <button 
  onClick={() => setIsModalOpen(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> Tạo chiến dịch mới
  </button>
@@ -127,8 +128,8 @@ export function Marketing() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GMV từ Marketing</span>
  <BarChart2 className="w-4 h-4 text-emerald-600" />
@@ -138,17 +139,17 @@ export function Marketing() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
  <Smartphone className="w-4 h-4 text-orange-700" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">1.2M</span>
- <span className="text-[10px] text-orange-700 font-bold bg-[#F2F0E9] px-2 py-0.5 rounded">+15k/day</span>
+ <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
  <TrendingUp className="w-4 h-4 text-orange-600" />
@@ -158,7 +159,7 @@ export function Marketing() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
  <Megaphone className="w-4 h-4 text-primary-600" />
@@ -168,13 +169,13 @@ export function Marketing() {
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
  </div>
  </div>
- </div>
+ </DraggableGrid>
 
  {/* Matrix Grid Layout */}
  <div className="space-y-6">
  {MARKETING_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
- <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2 px-1">
+ <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
  <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
  {group.title}
  </h3>
@@ -183,7 +184,7 @@ export function Marketing() {
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -207,7 +208,7 @@ export function Marketing() {
  {/* Tabs Menu */}
  {activeTab !== 'overview' && (
  <>
- <div className="flex border-b border-stone-200 gap-8">
+ <div className="flex border-b border-slate-300 gap-8">
  {[
  { id: 'campaigns', label: 'Chiến dịch (Campaigns)', icon: Megaphone },
  { id: 'vouchers', label: 'Mã giảm giá (Vouchers)', icon: Calendar },
@@ -219,13 +220,13 @@ export function Marketing() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "pb-4 text-sm font-bold transition-all relative flex items-center gap-2",
- activeTab === tab.id ? "text-orange-700" : "text-stone-400 hover:text-stone-600"
+ activeTab === tab.id ? "text-orange-700" : "text-slate-500 hover:text-slate-700"
  )}
  >
  <tab.icon className="w-4 h-4" />
  {tab.label}
  {activeTab === tab.id && (
- <motion.div layoutId="activeTabMarketing" className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+ <motion.div layoutId="activeTabMarketing" className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900" />
  )}
  </button>
  ))}
@@ -240,15 +241,15 @@ export function Marketing() {
  className="space-y-6"
  >
  {/* Social Accounts Area */}
- <div className="bg-white rounded-lg border border-stone-200 shadow-sm overflow-hidden">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div>
- <h2 className="text-base font-bold text-stone-800 flex items-center gap-2">
+ <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
  <Link2 className="w-5 h-5 text-orange-600" /> Trạng thái Kết nối Tài khoản Social
  </h2>
- <p className="text-xs text-stone-500 mt-0.5">Tự động đồng bộ nội dung & Trò chuyện tập trung từ các nền tảng.</p>
+ <p className="text-xs text-slate-600 mt-0.5">Tự động đồng bộ nội dung & Trò chuyện tập trung từ các nền tảng.</p>
  </div>
- <button className="text-xs font-bold bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg hover:bg-stone-800 transition-all flex items-center gap-2">
+ <button className="text-xs font-bold bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg hover:bg-slate-800 transition-all flex items-center gap-2">
  <Plus className="w-3.5 h-3.5" /> Thêm Tài khoản
  </button>
  </div>
@@ -256,68 +257,68 @@ export function Marketing() {
  <div className="p-6">
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
  {SOCIAL_ACCOUNTS.map(acc => (
- <div key={acc.id} className="p-4 rounded-lg border border-stone-100 bg-white hover:border-orange-200 transition-all shadow-sm relative group">
+ <div key={acc.id} className="p-4 rounded-lg border border-slate-200 bg-white hover:border-orange-200 transition-all shadow-sm relative group">
  <div className="flex items-center gap-4 mb-4">
  <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center shadow-sm", acc.color)}>
  <acc.icon className="w-6 h-6 text-[#FAF9F5]" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="font-bold text-stone-900 truncate text-sm">{acc.name}</p>
- <p className="text-[10px] text-stone-500 uppercase tracking-widest">{acc.platform}</p>
+ <p className="font-bold text-slate-900 truncate text-sm">{acc.name}</p>
+ <p className="text-[10px] text-slate-600 uppercase tracking-widest">{acc.platform}</p>
  </div>
  </div>
  
  <div className="flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
  <div className="flex flex-col">
- <span className="text-[10px] font-bold text-stone-400 uppercase">Followers</span>
- <span className="text-sm font-bold text-stone-900">{acc.followers}</span>
+ <span className="text-[10px] font-bold text-slate-500 uppercase">Followers</span>
+ <span className="text-sm font-bold text-slate-900">{acc.followers}</span>
  </div>
  <div className={cn(
  "flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full",
- acc.status === 'connected' ? "bg-emerald-50 text-emerald-600" : "bg-stone-50 text-stone-400"
+ acc.status === 'connected' ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-500"
  )}>
- <div className={cn("w-1.5 h-1.5 rounded-full", acc.status === 'connected' ? "bg-emerald-500" : "bg-stone-300")} />
+ <div className={cn("w-1.5 h-1.5 rounded-full", acc.status === 'connected' ? "bg-emerald-500" : "bg-slate-300")} />
  {acc.status === 'connected' ? 'LIVE' : 'LINK'}
  </div>
  </div>
 
- <button className="absolute top-4 right-4 p-1.5 hover:bg-stone-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
- <Settings2 className="w-4 h-4 text-stone-400" />
+ <button className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+ <Settings2 className="w-4 h-4 text-slate-500" />
  </button>
  </div>
  ))}
  </div>
  </div>
 
- <div className="p-6 bg-[#F2F0E9]/30 border-t border-stone-100 grid grid-cols-1 md:grid-cols-3 gap-8">
+ <DraggableGrid className="p-6 bg-slate-100/30 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-8" columns={3} gap={32}>
  <div className="flex gap-4">
- <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-[#EAE7DF] flex items-center justify-center text-orange-700">
+ <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-300 flex items-center justify-center text-orange-700">
  <MessageSquare className="w-5 h-5" />
  </div>
  <div>
- <h4 className="text-sm font-bold text-stone-800">Omni Chat (Inbox tập trung)</h4>
- <p className="text-xs text-stone-500 mt-1">Trả lời bình luận, tin nhắn từ FB/IG/TT tại một nơi duy nhất.</p>
+ <h4 className="text-sm font-bold text-slate-900">Omni Chat (Inbox tập trung)</h4>
+ <p className="text-xs text-slate-600 mt-1">Trả lời bình luận, tin nhắn từ FB/IG/TT tại một nơi duy nhất.</p>
  </div>
  </div>
  <div className="flex gap-4">
- <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-[#EAE7DF] flex items-center justify-center text-orange-700">
+ <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-300 flex items-center justify-center text-orange-700">
  <Repeat className="w-5 h-5" />
  </div>
  <div>
- <h4 className="text-sm font-bold text-stone-800">Auto Content Sync</h4>
- <p className="text-xs text-stone-500 mt-1">Hẹn giờ đăng bài đồng thời lên tất cả các nền tảng đã kết nối.</p>
+ <h4 className="text-sm font-bold text-slate-900">Auto Content Sync</h4>
+ <p className="text-xs text-slate-600 mt-1">Hẹn giờ đăng bài đồng thời lên tất cả các nền tảng đã kết nối.</p>
  </div>
  </div>
  <div className="flex gap-4">
- <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-[#EAE7DF] flex items-center justify-center text-orange-700">
+ <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-300 flex items-center justify-center text-orange-700">
  <Smartphone className="w-5 h-5" />
  </div>
  <div>
- <h4 className="text-sm font-bold text-stone-800">Shoppable Video</h4>
- <p className="text-xs text-stone-500 mt-1">Gắn tag sản phẩm vào video TikTok/Instagram Reels tự động.</p>
+ <h4 className="text-sm font-bold text-slate-900">Shoppable Video</h4>
+ <p className="text-xs text-slate-600 mt-1">Gắn tag sản phẩm vào video TikTok/Instagram Reels tự động.</p>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  </div>
  </motion.div>
  )}
@@ -329,16 +330,16 @@ export function Marketing() {
  exit={{ opacity: 0, y: -20 }}
  className="space-y-6"
  >
- <div className="bg-white rounded-lg border border-stone-200 overflow-hidden shadow-sm">
- <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50">
- <h3 className="font-bold text-stone-800 text-sm">Danh sách mã giảm giá</h3>
+ <div className="bg-white rounded-lg border border-slate-300 overflow-hidden shadow-sm">
+ <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <h3 className="font-bold text-slate-900 text-sm">Danh sách mã giảm giá</h3>
  <button className="text-xs font-bold text-orange-700 hover:text-orange-800 flex items-center gap-1">
  <Plus className="w-3 h-3" /> Tạo mã giảm giá
  </button>
  </div>
  <table className="w-full text-left text-sm">
  <thead>
- <tr className="bg-stone-50 text-stone-500 uppercase text-[10px] font-bold">
+ <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
  <th className="px-6 py-3">Tên chiến dịch</th>
  <th className="px-6 py-3">Loại mã</th>
  <th className="px-6 py-3">Mức giảm</th>
@@ -346,23 +347,23 @@ export function Marketing() {
  <th className="px-6 py-3 text-right">Thao tác</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-stone-100">
- <tr className="hover:bg-stone-50">
- <td className="px-6 py-4 font-bold text-stone-900">Flash Sale 15/3</td>
+ <tbody className="divide-y divide-slate-100">
+ <tr className="hover:bg-slate-50">
+ <td className="px-6 py-4 font-bold text-slate-900">Flash Sale 15/3</td>
  <td className="px-6 py-4">Giảm %</td>
  <td className="px-6 py-4">10%</td>
- <td className="px-6 py-4 text-xs text-stone-600">Điện tử, Thời trang</td>
+ <td className="px-6 py-4 text-xs text-slate-700">Điện tử, Thời trang</td>
  <td className="px-6 py-4 text-right">
- <button className="text-xs font-bold text-stone-500 hover:text-orange-700">Sửa</button>
+ <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sửa</button>
  </td>
  </tr>
- <tr className="hover:bg-stone-50">
- <td className="px-6 py-4 font-bold text-stone-900">Đơn hàng đầu tiên</td>
+ <tr className="hover:bg-slate-50">
+ <td className="px-6 py-4 font-bold text-slate-900">Đơn hàng đầu tiên</td>
  <td className="px-6 py-4">Miễn phí vận chuyển</td>
  <td className="px-6 py-4">Tối đa 30k</td>
- <td className="px-6 py-4 text-xs text-stone-600">Tất cả sản phẩm</td>
+ <td className="px-6 py-4 text-xs text-slate-700">Tất cả sản phẩm</td>
  <td className="px-6 py-4 text-right">
- <button className="text-xs font-bold text-stone-500 hover:text-orange-700">Sửa</button>
+ <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sửa</button>
  </td>
  </tr>
  </tbody>
@@ -378,7 +379,7 @@ export function Marketing() {
  exit={{ opacity: 0, y: -20 }}
  className="space-y-6"
  >
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">
  <div className="relative">
@@ -386,10 +387,10 @@ export function Marketing() {
  <input 
  type="text" 
  placeholder="Tìm chiến dịch Marketing, Voucher..." 
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
- <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
+ <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
  <Filter className="w-4 h-4" /> Lọc theo loại
  </button>
  </div>
@@ -414,7 +415,7 @@ export function Marketing() {
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
- <div className="p-3 rounded-lg bg-[#F2F0E9] text-orange-700">
+ <div className="p-3 rounded-lg bg-slate-100 text-orange-700">
  <Megaphone className="w-5 h-5" />
  </div>
  <div>
@@ -446,7 +447,7 @@ export function Marketing() {
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :
- campaign.status === 'upcoming' ? "bg-[#F2F0E9] text-orange-700" : "bg-stone-100 text-stone-400"
+ campaign.status === 'upcoming' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-500"
  )}>
  {campaign.status === 'active' ? 'ĐANG CHẠY' : 
  campaign.status === 'upcoming' ? 'SẮP DIỄN RA' : 'ĐÃ KẾT THÚC'}
@@ -472,20 +473,20 @@ export function Marketing() {
  <Megaphone className="w-5 h-5 fill-current" />
  <h2 className="text-lg font-bold text-[#111827]">Tạo chiến dịch Marketing</h2>
  </div>
- <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-stone-100 rounded-lg text-stone-400">
+ <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
  <X className="w-5 h-5" />
  </button>
  </div>
  
  <form className="space-y-4">
  <div>
- <label className="block text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Tên chiến dịch</label>
- <input type="text" className="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none" required />
+ <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
+ <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none" required />
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Kênh mục tiêu</label>
- <select className="w-full border border-stone-300 rounded-lg p-2.5 text-sm bg-white outline-none">
+ <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kênh mục tiêu</label>
+ <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white outline-none">
  <option value="fb">Facebook Fanpage</option>
  <option value="tt">TikTok Shop</option>
  <option value="ig">Instagram</option>
@@ -493,21 +494,21 @@ export function Marketing() {
  </select>
  </div>
  <div>
- <label className="block text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Ngân sách (VNĐ)</label>
- <input type="number" className="w-full border border-stone-300 rounded-lg p-2.5 text-sm outline-none" placeholder="0" required />
+ <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngân sách (VNĐ)</label>
+ <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" placeholder="0" required />
  </div>
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Ngày bắt đầu</label>
- <input type="date" className="w-full border border-stone-300 rounded-lg p-2.5 text-sm outline-none" required />
+ <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngày bắt đầu</label>
+ <input type="date" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" required />
  </div>
  <div>
- <label className="block text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Ngày kết thúc</label>
- <input type="date" className="w-full border border-stone-300 rounded-lg p-2.5 text-sm outline-none" required />
+ <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngày kết thúc</label>
+ <input type="date" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" required />
  </div>
  </div>
- <button className="w-full bg-[#2563EB] text-[#FAF9F5] py-3 rounded-lg font-bold mt-6 hover:bg-stone-800 shadow-sm shadow-stone-900/5 transition-all">
+ <button className="w-full bg-[#2563EB] text-[#FAF9F5] py-3 rounded-lg font-bold mt-6 hover:bg-slate-800 shadow-sm shadow-slate-900/5 transition-all">
  Khởi tạo chiến dịch Đa kênh
  </button>
  </form>

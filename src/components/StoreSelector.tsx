@@ -94,7 +94,7 @@ export function StoreSelector() {
               <h1 className="text-4xl font-bold text-white leading-tight">
                 {selectedStoreForPin ? "Xác thực truy cập" : "Nền tảng bán hàng điểm mua"}
               </h1>
-              <p className="text-stone-400 text-sm leading-relaxed max-w-sm">
+              <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
                 {selectedStoreForPin 
                   ? "Vui lòng nhập mã PIN cá nhân (4 số) của bạn để truy cập phiên làm việc trên máy POS này."
                   : "Hệ thống POS đa kênh thông minh. Chọn cửa hàng và chi nhánh của bạn để bắt đầu phiên làm việc."}
@@ -107,14 +107,14 @@ export function StoreSelector() {
                   <div className="p-3 bg-white/10 rounded-sm"><Zap className="w-6 h-6 text-amber-400" /></div>
                   <div>
                     <h4 className="text-white font-bold text-sm">Đồng bộ toàn thời gian</h4>
-                    <p className="text-xs text-stone-400 mt-1">Đơn hàng, Tồn kho & Doanh thu</p>
+                    <p className="text-xs text-slate-500 mt-1">Đơn hàng, Tồn kho & Doanh thu</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 bg-white/5 p-4 rounded-md border border-white/5">
                   <div className="p-3 bg-white/10 rounded-sm"><ShieldCheck className="w-6 h-6 text-emerald-400" /></div>
                   <div>
                     <h4 className="text-white font-bold text-sm">Bảo mật giao dịch tuyệt đối</h4>
-                    <p className="text-xs text-stone-400 mt-1">Tiêu chuẩn mã hóa cấp doanh nghiệp</p>
+                    <p className="text-xs text-slate-500 mt-1">Tiêu chuẩn mã hóa cấp doanh nghiệp</p>
                   </div>
                 </div>
               </div>
@@ -127,21 +127,21 @@ export function StoreSelector() {
                     <img src={`https://ui-avatars.com/api/?name=${user?.displayName || 'User'}&background=312e81&color=fff`} className="w-full h-full rounded-full" alt="User" />
                   </div>
                   <div>
-                    <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Ca làm việc hiện tại</p>
+                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Ca làm việc hiện tại</p>
                     <p className="text-white font-bold text-lg">{user?.displayName || 'Nhân viên Bán hàng'}</p>
                   </div>
                 </div>
                 <div className="space-y-2 pt-4 border-t border-white/10">
                   <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Chi nhánh</span>
+                    <span className="text-slate-500">Chi nhánh</span>
                     <span className="text-white font-semibold flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{selectedStoreForPin.name}</span>
                   </div>
                   <div className="flex justify-between text-sm mt-1">
-                    <span className="text-stone-400">Địa chỉ</span>
+                    <span className="text-slate-500">Địa chỉ</span>
                     <span className="text-white font-semibold truncate max-w-[150px]">{selectedStoreForPin.address}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Vị trí trạm</span>
+                    <span className="text-slate-500">Vị trí trạm</span>
                     <span className="text-emerald-400 font-semibold">POS-01 (Quầy chính)</span>
                   </div>
                 </div>
@@ -151,7 +151,7 @@ export function StoreSelector() {
           
           <button 
             onClick={handleGoBack}
-            className="relative z-10 w-fit text-[11px] font-bold text-stone-500 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-[0.15em] bg-white/5 hover:bg-white/10 px-5 py-3 rounded-sm backdrop-blur-sm"
+            className="relative z-10 w-fit text-[11px] font-bold text-slate-600 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-[0.15em] bg-white/5 hover:bg-white/10 px-5 py-3 rounded-sm backdrop-blur-sm"
           >
             <Home className="w-4 h-4" /> Về trang quản trị ERP
           </button>
@@ -163,16 +163,16 @@ export function StoreSelector() {
             <div className="flex flex-col h-full animate-in fade-in duration-500">
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                  <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
                     <MapPin className="w-4 h-4" /> Chọn Chi Nhánh
                   </h3>
-                  <p className="text-stone-500 text-sm">Hiển thị các chi nhánh bạn có quyền truy cập</p>
+                  <p className="text-slate-600 text-sm">Hiển thị các chi nhánh bạn có quyền truy cập</p>
                 </div>
                 <div className="w-64">
                   <select
                     value={selectedCompanyId}
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-sm font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all cursor-pointer"
+                    className="w-full appearance-none bg-slate-50 border border-slate-300 rounded-sm px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all cursor-pointer"
                   >
                     {companies.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -183,30 +183,30 @@ export function StoreSelector() {
 
               <div className="grid grid-cols-2 gap-4 auto-rows-max overflow-y-auto custom-scrollbar pr-2 pb-4">
                 {filteredStores.length === 0 ? (
-                  <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-stone-200 rounded-md bg-stone-50">
-                    <div className="w-16 h-16 bg-stone-200 text-stone-400 rounded-md flex items-center justify-center mb-4"><MapPin className="w-8 h-8" /></div>
-                    <p className="text-stone-500 font-medium">Không tìm thấy chi nhánh nào hệ thống.</p>
-                    <p className="text-xs text-stone-400 mt-2">Vui lòng liên hệ Quản trị viên để được cấp quyền.</p>
+                  <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-300 rounded-md bg-slate-50">
+                    <div className="w-16 h-16 bg-slate-200 text-slate-700 rounded-md flex items-center justify-center mb-4"><MapPin className="w-8 h-8" /></div>
+                    <p className="text-slate-600 font-medium">Không tìm thấy chi nhánh nào hệ thống.</p>
+                    <p className="text-xs text-slate-500 mt-2">Vui lòng liên hệ Quản trị viên để được cấp quyền.</p>
                   </div>
                 ) : (
                   filteredStores.map((store) => (
                     <button
                       key={store.id}
                       onClick={() => handleStoreClick(store)}
-                      className="text-left bg-white p-6 rounded-md border-2 border-stone-100 hover:border-primary-600 hover:shadow-xl hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
+                      className="text-left bg-white p-6 rounded-md border-2 border-slate-200 hover:border-primary-600 hover:shadow-xl hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
                     >
                       <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-[60px] -translate-y-full translate-x-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                       
                       <div className="relative z-10">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="w-10 h-10 bg-stone-100 group-hover:bg-primary-600 text-stone-500 group-hover:text-white rounded-sm flex items-center justify-center transition-colors">
+                          <div className="w-10 h-10 bg-slate-100 group-hover:bg-primary-600 text-slate-600 group-hover:text-white rounded-sm flex items-center justify-center transition-colors">
                             <Store className="w-5 h-5" />
                           </div>
-                          <ChevronRight className="w-5 h-5 text-stone-300 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
                         </div>
-                        <h4 className="text-lg font-black text-stone-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
-                        <p className="text-xs text-stone-500 flex items-start gap-1.5 mt-2 line-clamp-2 leading-relaxed">
-                          <MapPin className="w-4 h-4 text-stone-400 shrink-0" /> {store.address}
+                        <h4 className="text-lg font-black text-slate-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
+                        <p className="text-xs text-slate-600 flex items-start gap-1.5 mt-2 line-clamp-2 leading-relaxed">
+                          <MapPin className="w-4 h-4 text-slate-500 shrink-0" /> {store.address}
                         </p>
                       </div>
                     </button>
@@ -219,7 +219,7 @@ export function StoreSelector() {
               
               <button 
                 onClick={() => setSelectedStoreForPin(null)}
-                className="absolute top-8 left-8 text-xs font-bold text-stone-500 hover:text-stone-900 flex items-center gap-2 px-4 py-2 bg-stone-100 rounded-full transition-all hover:pr-5 group"
+                className="absolute top-8 left-8 text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-full transition-all hover:pr-5 group"
               >
                 <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" /> Đổi chi nhánh
               </button>
@@ -229,14 +229,14 @@ export function StoreSelector() {
                   <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mb-2 shadow-inner ring-4 ring-primary-50/50">
                     <Lock className="w-7 h-7" />
                   </div>
-                  <h3 className="text-2xl font-black text-stone-900">Bảo mật trạm POS</h3>
+                  <h3 className="text-2xl font-black text-slate-900">Bảo mật trạm POS</h3>
                   <div className="flex gap-4">
                     {[0, 1, 2, 3].map((index) => (
                       <div 
                         key={index}
                         className={cn(
-                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-black bg-stone-50 border-2 transition-all duration-300",
-                          pin.length > index ? "border-primary-600 text-primary-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-stone-200 text-transparent",
+                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-black bg-slate-50 border-2 transition-all duration-300",
+                          pin.length > index ? "border-primary-600 text-primary-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-slate-300 text-transparent",
                           isError && "border-rose-500 text-rose-500 animate-shake"
                         )}
                       >
@@ -252,7 +252,7 @@ export function StoreSelector() {
                     <button
                       key={num}
                       onClick={() => handlePinInput(num)}
-                      className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                      className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                     >
                       {num}
                     </button>
@@ -263,7 +263,7 @@ export function StoreSelector() {
                         // Mock Face ID
                         setTimeout(() => setActiveStore(selectedStoreForPin), 800);
                       }}
-                      className="w-12 h-12 bg-stone-100 text-stone-400 rounded-full flex items-center justify-center hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                      className="w-12 h-12 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-primary-50 hover:text-primary-600 transition-colors"
                       title="Sử dụng nhận diện khuôn mặt"
                     >
                       <UserCircle2 className="w-5 h-5" />
@@ -271,35 +271,35 @@ export function StoreSelector() {
                   </div>
                   <button
                     onClick={() => handlePinInput('0')}
-                    className="h-16 rounded-md bg-white border border-stone-200 text-2xl font-black text-stone-700 hover:bg-stone-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                    className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                   >
                     0
                   </button>
                   <button
                     onClick={handleDeletePin}
-                    className="h-16 rounded-md bg-stone-100 border border-stone-100 text-stone-500 text-[10px] uppercase tracking-widest font-bold hover:bg-stone-200 hover:text-stone-800 active:scale-95 transition-all flex items-center justify-center"
+                    className="h-16 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] uppercase tracking-widest font-bold hover:bg-slate-200 hover:text-slate-900 active:scale-95 transition-all flex items-center justify-center"
                   >
                     Xóa
                   </button>
                 </div>
                 
-                <div className="w-full flex items-center gap-4 py-4 mb-4 border-t border-b border-stone-100">
+                <div className="w-full flex items-center gap-4 py-4 mb-4 border-t border-b border-slate-200">
                   <div className="flex-1 text-center">
-                    <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Hoặc sử dụng</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Hoặc sử dụng</span>
                   </div>
                   <button 
                     onClick={() => {
                       setTimeout(() => setActiveStore(selectedStoreForPin), 500);
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white rounded-sm text-xs font-bold hover:bg-stone-800 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-sm text-xs font-bold hover:bg-slate-800 transition-colors"
                   >
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     Quẹt thẻ Nhân viên
                   </button>
                 </div>
 
-                <p className="text-[10px] text-stone-400 font-medium text-center tracking-wide">
-                  Dùng mã PIN <span className="text-stone-600 font-bold bg-stone-100 px-1.5 py-0.5 rounded">1234</span> cho thử nghiệm
+                <p className="text-[10px] text-slate-500 font-medium text-center tracking-wide">
+                  Dùng mã PIN <span className="text-slate-700 font-bold bg-slate-100 px-1.5 py-0.5 rounded">1234</span> cho thử nghiệm
                 </p>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -46,7 +47,7 @@ const CopyButton = ({ value }: { value: string }) => {
  return (
  <button 
  onClick={handleCopy}
- className="p-1 hover:bg-stone-100 rounded-md transition-colors text-stone-400 hover:text-orange-700"
+ className="p-1 hover:bg-slate-100 rounded-md transition-colors text-slate-500 hover:text-orange-700"
  title="Copy"
  >
  {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -84,43 +85,43 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  return (
  <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
  <div className="bg-white rounded-xl w-full max-w-4xl shadow-sm max-h-[95vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 shrink-0">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50 shrink-0">
  <div className="flex items-center gap-3">
  <h2 className="text-xl font-bold text-[#111827]">Hồ sơ Khách hàng</h2>
  <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full uppercase flex items-center gap-1 border border-amber-200">
  <Trophy className="w-3 h-3" /> Hạng Vàng
  </span>
  </div>
- <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors"><X className="w-6 h-6 text-stone-400" /></button>
+ <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors"><X className="w-6 h-6 text-slate-500" /></button>
  </div>
  
  <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-1 space-y-4">
- <div className="p-6 bg-stone-50 border border-stone-100 rounded-xl text-center">
+ <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
  <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-3xl font-bold mb-4 mx-auto border-4 border-white shadow-sm">
  {customer.name.split(' ').pop()?.charAt(0)}
  </div>
- <h3 className="font-bold text-lg text-stone-800">{customer.name}</h3>
- <p className="text-sm text-stone-400 mb-4 font-mono">{customer.id}</p>
+ <h3 className="font-bold text-lg text-slate-900">{customer.name}</h3>
+ <p className="text-sm text-slate-500 mb-4 font-mono">{customer.id}</p>
  <div className="space-y-2.5 text-sm">
- <div className="flex items-center gap-2 text-stone-600 bg-white p-2 rounded-lg border border-stone-100"><Mail className="w-4 h-4 text-stone-400" /> <span className="truncate">{customer.email}</span></div>
- <div className="flex items-center gap-2 text-stone-600 bg-white p-2 rounded-lg border border-stone-100"><Smartphone className="w-4 h-4 text-stone-400" /> {customer.phone}</div>
+ <div className="flex items-center gap-2 text-slate-700 bg-white p-2 rounded-lg border border-slate-200"><Mail className="w-4 h-4 text-slate-500" /> <span className="truncate">{customer.email}</span></div>
+ <div className="flex items-center gap-2 text-slate-700 bg-white p-2 rounded-lg border border-slate-200"><Smartphone className="w-4 h-4 text-slate-500" /> {customer.phone}</div>
  </div>
  </div>
 
- <div className="p-4 bg-white border border-stone-100 rounded-xl shadow-sm">
+ <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
  <div className="flex justify-between items-center mb-3">
- <h4 className="font-bold text-[10px] uppercase text-stone-400 tracking-widest">Mục tiêu lên hạng</h4>
+ <h4 className="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Mục tiêu lên hạng</h4>
  <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
  </div>
- <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
+ <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
  <div className="h-full bg-primary-600 transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
  </div>
- <p className="text-[10px] text-stone-400 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-stone-600">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
+ <p className="text-[10px] text-slate-500 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-slate-700">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
  </div>
  
- <div className="p-4 bg-[#F2F0E9]/50 rounded-xl border border-[#EAE7DF] shadow-sm relative overflow-hidden group">
+ <div className="p-4 bg-slate-100/50 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="relative z-10">
  <h4 className="font-bold text-xs mb-3 text-blue-800 flex items-center gap-2">
  <Filter className="w-3.5 h-3.5" /> Phân giải RFM Score
@@ -137,7 +138,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <span className="font-black text-blue-900">{item.score}/5</span>
  </div>
  <div className="h-1 bg-[#EAE7DF] rounded-full overflow-hidden">
- <div className="h-full bg-stone-900 transition-all duration-1000" style={{ width: `${(item.score / 5) * 100}%` }} />
+ <div className="h-full bg-slate-900 transition-all duration-1000" style={{ width: `${(item.score / 5) * 100}%` }} />
  </div>
  </div>
  ))}
@@ -176,7 +177,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  
  <div className="pt-2">
-   <button onClick={() => alert('Thao tác mở giao diện chuyển đổi Ví Cashback sang Ví Khuyến mại ( tỷ lệ 1.1 )')} className="w-full py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] font-bold uppercase rounded transition-colors flex justify-center items-center gap-1.5">
+   <button onClick={() => alert('Thao tác mở giao diện chuyển đổi Ví Cashback sang Ví Khuyến mại ( tỷ lệ 1.1 )')} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-bold uppercase rounded transition-colors flex justify-center items-center gap-1.5">
      <ShoppingCart className="w-3 h-3" /> ĐỔI HOÀN TIỀN LẤY KHUYẾN MẠI
    </button>
  </div>
@@ -207,7 +208,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <div key={i} className="w-6 h-6 rounded-full bg-primary-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-primary-600 shadow-sm">U</div>
  ))}
  {(customer.downlineCount || 0) > 3 && (
- <div className="w-6 h-6 rounded-full bg-stone-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-stone-600 shadow-sm">+{((customer.downlineCount || 0) - 3)}</div>
+ <div className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white flex justify-center items-center text-[8px] font-bold text-slate-700 shadow-sm">+{((customer.downlineCount || 0) - 3)}</div>
  )}
  {(customer.downlineCount || 0) === 0 && (
  <span className="text-xs text-purple-400 italic">Chưa có F1</span>
@@ -221,19 +222,19 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  
  <div className="lg:col-span-2 space-y-6">
- <div className="grid grid-cols-2 gap-4">
- <div className="p-5 border border-stone-100 rounded-xl bg-white shadow-sm group">
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu</p>
- <p className="text-2xl font-black text-stone-900">{formatCurrency(customer.totalSpent)}</p>
+ <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="p-5 border border-slate-200 rounded-xl bg-white shadow-sm group">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu</p>
+ <p className="text-2xl font-black text-slate-900">{formatCurrency(customer.totalSpent)}</p>
  </div>
- <div className="p-5 border border-stone-100 rounded-xl bg-white shadow-sm group">
- <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng</p>
+ <div className="p-5 border border-slate-200 rounded-xl bg-white shadow-sm group">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng</p>
  <div className="flex items-baseline gap-1">
- <span className="text-2xl font-black text-stone-900">{customer.orderCount}</span>
- <span className="text-xs font-bold text-stone-400">đơn</span>
+ <span className="text-2xl font-black text-slate-900">{customer.orderCount}</span>
+ <span className="text-xs font-bold text-slate-500">đơn</span>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  
  <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-xl relative overflow-hidden">
  <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 -mr-8 -mt-8 rounded-full opacity-50"></div>
@@ -255,13 +256,13 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <input 
  type="text" 
  placeholder="Tiêu đề email tự động..." 
- className="w-full border-b border-stone-100 pb-2 mb-2 text-sm focus:outline-none font-bold text-stone-800 placeholder:font-normal placeholder:italic bg-transparent"
+ className="w-full border-b border-slate-200 pb-2 mb-2 text-sm focus:outline-none font-bold text-slate-900 placeholder:font-normal placeholder:italic bg-transparent"
  value={emailSubject}
  readOnly={loadingAi}
  onChange={(e) => setEmailSubject(e.target.value)}
  />
  <textarea 
- className="w-full h-32 text-sm resize-none focus:outline-none text-stone-700 placeholder:italic bg-transparent scrollbar-hide"
+ className="w-full h-32 text-sm resize-none focus:outline-none text-slate-800 placeholder:italic bg-transparent scrollbar-hide"
  placeholder={loadingAi ? "AI đang phân tích & soạn thảo thảo phù hợp với phân khúc khách hàng..." : "Soạn thảo nội dung hoặc dùng AI soạn nhanh tích hợp dữ liệu CRM..."}
  value={emailContent}
  readOnly={loadingAi}
@@ -292,10 +293,10 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
 
  <div>
  <div className="flex items-center justify-between mb-4 px-1">
- <h4 className="font-bold flex items-center gap-2 text-stone-800 text-sm">
+ <h4 className="font-bold flex items-center gap-2 text-slate-900 text-sm">
  <History className="w-4 h-4 text-primary-600" /> Hành trình khách hàng
  </h4>
- <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-400">
+ <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
  STATUS: <span className="text-primary-600 uppercase tracking-tighter bg-primary-50 px-1.5 py-0.5 rounded">Tích cực</span>
  </div>
  </div>
@@ -316,29 +317,29 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  case 'purchase': return 'text-orange-700 bg-[#EAE7DF] border-orange-200';
  case 'consultation': return 'text-purple-600 bg-purple-100 border-purple-200';
  case 'rma': return 'text-red-600 bg-red-100 border-red-200';
- default: return 'text-stone-600 bg-stone-100 border-stone-200';
+ default: return 'text-slate-700 bg-slate-100 border-slate-300';
  }
  };
 
  return (
  <div key={item.id} className="flex gap-4 relative group">
  {idx < customer.activities!.length - 1 && (
- <div className="absolute left-[13px] top-7 w-[1px] h-full bg-stone-200 group-hover:bg-blue-300 transition-colors"></div>
+ <div className="absolute left-[13px] top-7 w-[1px] h-full bg-slate-200 group-hover:bg-blue-300 transition-colors"></div>
  )}
  <div className={cn("w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10 border shadow-sm transition-transform group-hover:scale-110", getColor())}>
  {getIcon()}
  </div>
- <div className="flex-1 bg-white p-3 rounded-lg border border-transparent group-hover:border-[#EAE7DF] group-hover:shadow-sm transition-all">
+ <div className="flex-1 bg-white p-3 rounded-lg border border-transparent group-hover:border-slate-300 group-hover:shadow-sm transition-all">
  <div className="flex items-center justify-between mb-1">
  <p className="text-xs font-bold text-[#111827]">{item.title}</p>
- <span className="text-[10px] text-stone-400 font-mono tracking-tighter">{item.date}</span>
+ <span className="text-[10px] text-slate-500 font-mono tracking-tighter">{item.date}</span>
  </div>
- <p className="text-[11px] text-stone-500 leading-normal">{item.description}</p>
+ <p className="text-[11px] text-slate-600 leading-normal">{item.description}</p>
  <div className="mt-2 flex items-center justify-between">
  {item.status && (
  <span className={cn(
  "text-[9px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded-full",
- item.status === 'Hoàn thành' ? "text-emerald-600 bg-emerald-50" : "text-stone-400 bg-stone-50"
+ item.status === 'Hoàn thành' ? "text-emerald-600 bg-emerald-50" : "text-slate-500 bg-slate-50"
  )}>
  {item.status}
  </span>
@@ -352,9 +353,9 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  );
  })
  ) : (
- <div className="text-center py-12 bg-white rounded-lg border border-dashed border-stone-200">
- <History className="w-8 h-8 text-stone-200 mx-auto mb-2" />
- <p className="text-xs text-stone-400 italic">Chưa có dữ liệu hoạt động cho khách hàng này.</p>
+ <div className="text-center py-12 bg-white rounded-lg border border-dashed border-slate-300">
+ <History className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+ <p className="text-xs text-slate-500 italic">Chưa có dữ liệu hoạt động cho khách hàng này.</p>
  </div>
  )}
  </div>
@@ -387,9 +388,9 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  <div className="flex justify-between items-start mb-6">
  <div>
  <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
- <p className="text-xs text-stone-500 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
+ <p className="text-xs text-slate-600 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
  </div>
- <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full text-stone-400">
+ <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
  <X className="w-6 h-6" />
  </button>
  </div>
@@ -402,7 +403,7 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  ) : aiMessage ? (
  <div className="w-full">
- <p className="text-sm text-stone-700 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
+ <p className="text-sm text-slate-800 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
  </div>
  ) : (
  <div className="flex flex-col items-center gap-4">
@@ -424,7 +425,7 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
  navigator.clipboard.writeText(aiMessage);
  alert('Đã copy tin nhắn!');
  }}
- className="flex-1 py-3 bg-white border border-stone-200 rounded-lg text-sm font-bold text-stone-600 hover:bg-stone-50 transition-all"
+ className="flex-1 py-3 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
  >
  Sao chép nội dung
  </button>
@@ -449,22 +450,22 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-xl w-full max-w-3xl shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div className="flex items-center gap-3">
  <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
  <Settings className="w-5 h-5" />
  </div>
  <div>
- <h2 className="text-xl font-bold text-stone-800">Cấu hình Khách hàng (CRM)</h2>
- <p className="text-xs text-stone-500">Quản lý hạng thẻ, phân nhóm và cấu hình thu thập dữ liệu</p>
+ <h2 className="text-xl font-bold text-slate-900">Cấu hình Khách hàng (CRM)</h2>
+ <p className="text-xs text-slate-600">Quản lý hạng thẻ, phân nhóm và cấu hình thu thập dữ liệu</p>
  </div>
  </div>
- <button onClick={onClose} className="p-2 hover:bg-stone-200 rounded-lg transition-all text-stone-500">
+ <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
  <X className="w-6 h-6" />
  </button>
  </div>
  
- <div className="flex border-b border-stone-200">
+ <div className="flex border-b border-slate-300">
  {[
  { id: 'tier', label: 'Hạng thành viên' },
  { id: 'points', label: 'Tích điểm' },
@@ -476,7 +477,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-4 text-sm font-bold border-b-2 transition-all",
- activeTab === tab.id ? "border-stone-900 text-orange-700" : "border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300"
+ activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
  )}
  >
  {tab.label}
@@ -484,44 +485,44 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  ))}
  </div>
 
- <div className="p-8 min-h-[300px] bg-stone-50 max-h-[60vh] overflow-y-auto">
+ <div className="p-8 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
  {activeTab === 'tier' && (
  <div className="space-y-6">
  <div className="flex justify-between items-center">
- <h3 className="font-bold text-stone-800">Danh sách Hạng thành viên</h3>
- <button className="px-4 py-2 bg-stone-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-stone-800 transition-all">
+ <h3 className="font-bold text-slate-900">Danh sách Hạng thành viên</h3>
+ <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
  + Thêm hạng thành viên
  </button>
  </div>
  <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm flex justify-between items-center">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
  <div>
- <h4 className="font-bold text-stone-800 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-stone-400" /> Hạng Bạc (Mặc định)
+ <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+ <Trophy className="w-4 h-4 text-slate-500" /> Hạng Bạc (Mặc định)
  </h4>
- <p className="text-xs text-stone-500 mt-1">Chi tiêu từ: 0đ</p>
+ <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 0đ</p>
  </div>
  <div className="flex gap-2">
  <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
  </div>
  </div>
- <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm flex justify-between items-center">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
  <div>
- <h4 className="font-bold text-stone-800 text-sm flex items-center gap-2">
+ <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
  <Trophy className="w-4 h-4 text-yellow-500" /> Hạng Vàng
  </h4>
- <p className="text-xs text-stone-500 mt-1">Chi tiêu từ: 10,000,000đ</p>
+ <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 10,000,000đ</p>
  </div>
  <div className="flex gap-2">
  <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
  </div>
  </div>
- <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm flex justify-between items-center">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
  <div>
- <h4 className="font-bold text-stone-800 text-sm flex items-center gap-2">
+ <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
  <Trophy className="w-4 h-4 text-sky-400" /> Hạng Kim Cương
  </h4>
- <p className="text-xs text-stone-500 mt-1">Chi tiêu từ: 50,000,000đ</p>
+ <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 50,000,000đ</p>
  </div>
  <div className="flex gap-2">
  <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
@@ -533,67 +534,67 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
 
  {activeTab === 'points' && (
  <div className="space-y-6">
- <h3 className="font-bold text-stone-800">Cấu hình Tích điểm & Tiêu điểm</h3>
- <div className="grid grid-cols-2 gap-6">
- <div className="space-y-4 bg-white p-5 rounded-lg border border-stone-200">
- <h4 className="font-bold text-sm text-stone-700 mb-2 border-b border-stone-100 pb-2">Tỉ lệ tích điểm</h4>
+ <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
+ <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
+ <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
  <div>
- <label className="text-xs font-bold text-stone-500">Giới hạn thời gian (Tháng)</label>
- <input type="number" defaultValue={12} className="w-full mt-1 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+ <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
+ <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-500">Chi tiêu (VNĐ) = Bằng</label>
+ <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
  <div className="flex items-center gap-2 mt-1">
- <input type="number" defaultValue={100000} className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- <span className="text-sm font-bold text-stone-600">=</span>
- <input type="number" defaultValue={10} className="w-24 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-stone-400" />
- <span className="text-xs text-stone-500">Điểm</span>
+ <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+ <span className="text-sm font-bold text-slate-700">=</span>
+ <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-slate-500" />
+ <span className="text-xs text-slate-600">Điểm</span>
  </div>
  </div>
  </div>
- <div className="space-y-4 bg-white p-5 rounded-lg border border-stone-200">
- <h4 className="font-bold text-sm text-stone-700 mb-2 border-b border-stone-100 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
+ <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
+ <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
  <div>
- <label className="text-xs font-bold text-stone-500">1 Điểm tương đương (VNĐ)</label>
- <input type="number" defaultValue={100} className="w-full mt-1 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+ <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
+ <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-500">Tối đa sử dụng / Đơn hàng (%)</label>
- <input type="number" defaultValue={50} className="w-full mt-1 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+ <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
+ <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
  </div>
  </div>
- </div>
+ </DraggableGrid>
  <div className="flex justify-end">
- <button onClick={onClose} className="px-6 py-2.5 bg-stone-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-stone-800">Lưu cấu hình</button>
+ <button onClick={onClose} className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800">Lưu cấu hình</button>
  </div>
  </div>
  )}
 
  {activeTab === 'tags' && (
  <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-stone-200 shadow-sm">
+ <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div>
- <h3 className="font-bold text-stone-800">Thẻ phân loại ưu tiên (VIP, Fraud...)</h3>
- <p className="text-xs text-stone-500 mt-1">Cấu hình các tag màu để làm nổi bật khách hàng trong hệ thống.</p>
+ <h3 className="font-bold text-slate-900">Thẻ phân loại ưu tiên (VIP, Fraud...)</h3>
+ <p className="text-xs text-slate-600 mt-1">Cấu hình các tag màu để làm nổi bật khách hàng trong hệ thống.</p>
  </div>
- <button className="px-4 py-2 bg-stone-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-stone-800 transition-all">
+ <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
  + Thêm thẻ
  </button>
  </div>
  <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-stone-200 flex justify-between items-center">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
  <div className="flex items-center gap-3">
  <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">#FRAUD / SPAM</span>
- <p className="text-xs text-stone-500">Khách hàng có lịch sử bom hàng, lừa đảo.</p>
+ <p className="text-xs text-slate-600">Khách hàng có lịch sử bom hàng, lừa đảo.</p>
  </div>
- <button className="text-xs text-stone-400 hover:text-red-500 font-medium">Xóa</button>
+ <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
  </div>
- <div className="bg-white p-4 rounded-lg border border-stone-200 flex justify-between items-center">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
  <div className="flex items-center gap-3">
  <span className="px-3 py-1 bg-[#EAE7DF] text-orange-800 rounded-full text-xs font-bold border border-orange-200">#KOL / INFLUENCER</span>
- <p className="text-xs text-stone-500">Người có ảnh hưởng, cần chăm sóc đặc biệt.</p>
+ <p className="text-xs text-slate-600">Người có ảnh hưởng, cần chăm sóc đặc biệt.</p>
  </div>
- <button className="text-xs text-stone-400 hover:text-red-500 font-medium">Xóa</button>
+ <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
  </div>
  </div>
  </div>
@@ -601,17 +602,17 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  
  {activeTab === 'sources' && (
  <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-stone-200 shadow-sm">
+ <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div>
- <h3 className="font-bold text-stone-800">Cấu hình Nguồn Tracking</h3>
- <p className="text-xs text-stone-500 mt-1">Đồng bộ dữ liệu khách hàng từ các nền tảng tự động.</p>
+ <h3 className="font-bold text-slate-900">Cấu hình Nguồn Tracking</h3>
+ <p className="text-xs text-slate-600 mt-1">Đồng bộ dữ liệu khách hàng từ các nền tảng tự động.</p>
  </div>
- <button className="px-4 py-2 bg-stone-100 text-stone-700 rounded-lg text-xs font-bold hover:bg-stone-200 transition-all">
+ <button className="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">
  + Kết nối Nguồn mới
  </button>
  </div>
  
- <div className="grid grid-cols-2 gap-4">
+ <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
  <div className="p-4 rounded-lg border border-emerald-500 bg-emerald-50 relative overflow-hidden group">
  <h4 className="font-bold text-emerald-900">Landing Page Nệm Foam</h4>
  <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
@@ -620,15 +621,15 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  <button className="text-emerald-700 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
  </div>
  </div>
- <div className="p-4 rounded-lg border border-stone-200 bg-white relative overflow-hidden group">
- <h4 className="font-bold text-stone-800">Chiến dịch Mùa Hè - Zalo Ads</h4>
- <p className="text-xs text-stone-500 mt-1">Tạm dừng (Mất kết nối API)</p>
+ <div className="p-4 rounded-lg border border-slate-300 bg-white relative overflow-hidden group">
+ <h4 className="font-bold text-slate-900">Chiến dịch Mùa Hè - Zalo Ads</h4>
+ <p className="text-xs text-slate-600 mt-1">Tạm dừng (Mất kết nối API)</p>
  <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2 py-1 rounded">0 Leads</span>
+ <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">0 Leads</span>
  <button className="text-orange-700 text-[10px] font-bold uppercase hover:underline">Kết nối lại</button>
  </div>
  </div>
- <div className="p-4 rounded-lg border border-stone-900 bg-[#F2F0E9] relative overflow-hidden group">
+ <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
  <h4 className="font-bold text-blue-900">Facebook Shop</h4>
  <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
  <div className="mt-3 flex items-center justify-between">
@@ -636,7 +637,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  </div>
  )}
  </div>
@@ -676,48 +677,48 @@ const AddCustomerModal = ({ onClose }: { onClose: () => void }) => {
  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
- <h2 className="text-xl font-bold text-stone-800">Thêm Khách hàng mới</h2>
- <button onClick={onClose} className="p-2 hover:bg-stone-200 rounded-lg transition-all text-stone-500">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <h2 className="text-xl font-bold text-slate-900">Thêm Khách hàng mới</h2>
+ <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
  <X className="w-5 h-5" />
  </button>
  </div>
  <form onSubmit={handleSubmit} className="p-6 space-y-4">
  <div>
- <label className="text-xs font-bold text-stone-500 mb-1 block">Họ và tên *</label>
+ <label className="text-xs font-bold text-slate-600 mb-1 block">Họ và tên *</label>
  <input 
  required
  type="text" 
  value={formData.name}
  onChange={e => setFormData({...formData, name: e.target.value})}
- className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
  placeholder="Nguyễn Văn A"
  />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-500 mb-1 block">Số điện thoại *</label>
+ <label className="text-xs font-bold text-slate-600 mb-1 block">Số điện thoại *</label>
  <input 
  required
  type="text" 
  value={formData.phone}
  onChange={e => setFormData({...formData, phone: e.target.value})}
- className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
  placeholder="0901234567"
  />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-500 mb-1 block">Email</label>
+ <label className="text-xs font-bold text-slate-600 mb-1 block">Email</label>
  <input 
  type="email" 
  value={formData.email}
  onChange={e => setFormData({...formData, email: e.target.value})}
- className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
  placeholder="email@example.com"
  />
  </div>
  <div className="pt-4 flex justify-end gap-3">
- <button type="button" onClick={onClose} className="px-4 py-2 bg-stone-100 text-stone-700 font-bold text-sm rounded-lg hover:bg-stone-200">Hủy</button>
- <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-stone-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-stone-800 disabled:opacity-50 flex items-center gap-2">
+ <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-800 font-bold text-sm rounded-lg hover:bg-slate-200">Hủy</button>
+ <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2">
  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
  Lưu Khách hàng
  </button>
@@ -746,7 +747,7 @@ export function Customers() {
 
  const [aiPipelineInsights, setAiPipelineInsights] = useState<string | null>(null);
  const [pipelineStages, setPipelineStages] = useState([
- { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-stone-800', 
+ { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-slate-800', 
  deals: [
  { id: 'd1', client: 'Công ty Cổ phần Sữa TH', val: 50000000, pd: 'Giày đồng phục 500 đôi' },
  { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS' }
@@ -894,29 +895,29 @@ export function Customers() {
  <p className="text-sm text-[#6B7280]">Hệ thống chăm sóc khách hàng đa kênh, quản lý Loyalty & Pipeline.</p>
  </div>
  <div className="flex gap-3 items-center">
- <div className="flex bg-stone-100 p-1 rounded-lg border border-stone-200 mr-2">
+ <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-300 mr-2">
  <button 
  onClick={() => setActiveView('list')}
- className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-orange-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
+ className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
  <List className="w-4 h-4" /> Danh sách
  </button>
  <button 
  onClick={() => setActiveView('pipeline')}
- className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-orange-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
+ className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
  <Kanban className="w-4 h-4" /> Pipeline
  </button>
  </div>
  <button 
  onClick={() => setShowAddModal(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Users className="w-4 h-4" /> Thêm Khách hàng
  </button>
  <button 
  onClick={() => navigate('/omnichat')}
- className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2"
+ className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
  >
  <MessageSquare className="w-4 h-4 text-emerald-500" /> Omni Chat
  </button>
@@ -925,60 +926,60 @@ export function Customers() {
 
  {activeView === 'list' ? (
  <>
- <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.length}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</span>
- <span className="text-[10px] text-orange-700 font-bold bg-[#F2F0E9] px-2 py-0.5 rounded">High Retention</span>
+ <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-amber-600">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</span>
  <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
- </div>
+ </DraggableGrid>
 
  {/* CRM Intelligence & RFM Segmentation */}
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-stone-200 shadow-sm relative overflow-hidden group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
- <h3 className="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2">
+ <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
  <Users className="w-5 h-5 text-primary-600" /> Phân đoạn Khách hàng (RFM Segmentation)
  </h3>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
  {[
  { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
  { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
- { name: 'Tiềm năng', val: 28, color: 'bg-stone-800', desc: 'Sẵn sàng Upsell' },
+ { name: 'Tiềm năng', val: 28, color: 'bg-slate-800', desc: 'Sẵn sàng Upsell' },
  { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
  ].map((seg, i) => (
- <div key={i} className="p-4 bg-stone-50 rounded-xl border border-stone-100 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+ <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
  <div className="flex justify-between items-start mb-2">
  <div className={cn("w-2 h-2 rounded-full", seg.color)} />
- <span className="text-xl font-black text-stone-900">{seg.val}%</span>
+ <span className="text-xl font-black text-slate-900">{seg.val}%</span>
  </div>
- <p className="text-xs font-bold text-stone-800 mb-1">{seg.name}</p>
- <p className="text-[10px] text-stone-400 leading-tight">{seg.desc}</p>
+ <p className="text-xs font-bold text-slate-900 mb-1">{seg.name}</p>
+ <p className="text-[10px] text-slate-500 leading-tight">{seg.desc}</p>
  </div>
  ))}
  </div>
@@ -997,7 +998,7 @@ export function Customers() {
  </div>
  </div>
 
- <div className="bg-stone-900 p-8 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
+ <div className="bg-slate-900 p-8 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
  <div className="relative z-10">
  <div className="flex items-center gap-3 mb-6">
  <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -1007,29 +1008,29 @@ export function Customers() {
  </div>
  <div className="space-y-6">
  <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
- <div className="flex justify-between items-center text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
- <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-stone-400">pts</span></div>
+ <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
+ <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
  </div>
  <div className="flex gap-4">
  <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
- <p className="text-[10px] font-bold text-stone-400 uppercase mb-1">Số dư Ví khách</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Số dư Ví khách</p>
  <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
  </div>
  <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
- <p className="text-[10px] font-bold text-stone-400 uppercase mb-1">Hạng Kim Cương</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Hạng Kim Cương</p>
  <p className="text-lg font-bold text-sky-400">08 KH</p>
  </div>
  </div>
  </div>
  </div>
- <button className="relative z-10 w-full mt-8 py-4 bg-white text-stone-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-stone-50 transition-all flex items-center justify-center gap-2">
+ <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
  <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
  </button>
  <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
  </div>
- </div>
+ </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">
  <div className="relative">
@@ -1039,25 +1040,25 @@ export function Customers() {
  placeholder="Tìm tên, SĐT, Email..." 
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
- className="bg-white border border-[#E5E7EB] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
- <div className="flex gap-1 bg-white border border-[#E5E7EB] p-1 rounded-lg">
+ <div className="flex gap-1 bg-white border border-slate-300 p-1 rounded-lg">
  <button 
  onClick={() => setActiveChannel('all')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'all' ? "bg-stone-100 text-[#111827]" : "text-[#9CA3AF]")}
+ className={cn("p-1.5 rounded-md transition-all", activeChannel === 'all' ? "bg-slate-100 text-[#111827]" : "text-[#9CA3AF]")}
  >
  <Globe className="w-4 h-4" />
  </button>
  <button 
  onClick={() => setActiveChannel('zalo')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'zalo' ? "bg-[#F2F0E9] text-orange-700" : "text-[#9CA3AF]")}
+ className={cn("p-1.5 rounded-md transition-all", activeChannel === 'zalo' ? "bg-slate-100 text-orange-700" : "text-[#9CA3AF]")}
  >
  <MessageSquare className="w-4 h-4" />
  </button>
  <button 
  onClick={() => setActiveChannel('facebook')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-stone-900 text-[#FAF9F5]" : "text-[#9CA3AF]")}
+ className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-slate-900 text-[#FAF9F5]" : "text-[#9CA3AF]")}
  >
  <Facebook className="w-4 h-4" />
  </button>
@@ -1074,25 +1075,25 @@ export function Customers() {
  </button>
  </div>
 
- <div className="overflow-x-auto bg-white border-t border-stone-100">
+ <div className="overflow-x-auto bg-white border-t border-slate-200">
  <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
  <thead>
- <tr className="bg-stone-50/50 border-b border-stone-100 italic">
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest w-[20%]">Khách hàng</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest w-[18%]">Liên hệ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-center w-[10%]">Kênh</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right w-[15%]">Chi tiêu</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right w-[15%]">Ví / Loyalty</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-center w-[12%]">Trạng thái</th>
- <th className="px-4 py-4 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right w-[10%]">Action</th>
+ <tr className="bg-slate-50/50 border-b border-slate-200 italic">
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-[20%]">Khách hàng</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-[18%]">Liên hệ</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center w-[10%]">Kênh</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[15%]">Chi tiêu</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[15%]">Ví / Loyalty</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center w-[12%]">Trạng thái</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[10%]">Action</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-stone-50">
+ <tbody className="divide-y divide-slate-50">
  {loading ? (
  <tr>
  <td colSpan={7} className="px-6 py-12 text-center bg-white">
  <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-1" />
- <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
+ <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
  </td>
  </tr>
  ) : filteredCustomers.map((customer) => (
@@ -1103,19 +1104,19 @@ export function Customers() {
  {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
  </div>
  <div className="min-w-0">
- <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-stone-800 truncate cursor-pointer hover:text-primary-600 transition-colors uppercase tracking-tight">{customer.name}</p>
- <p className="text-[9px] text-stone-400 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
+ <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-slate-900 truncate cursor-pointer hover:text-primary-600 transition-colors uppercase tracking-tight">{customer.name}</p>
+ <p className="text-[9px] text-slate-500 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
  </div>
  </div>
  </td>
  <td className="px-4 py-4">
  <div className="space-y-1">
  <div className="flex items-center justify-between group/copy text-[11px]">
- <span className="text-stone-600 font-bold tracking-tight">{customer.phone}</span>
+ <span className="text-slate-700 font-bold tracking-tight">{customer.phone}</span>
  <CopyButton value={customer.phone} />
  </div>
  <div className="flex items-center justify-between group/copy text-[10px]">
- <span className="text-stone-400 truncate max-w-[120px] italic">{customer.email}</span>
+ <span className="text-slate-500 truncate max-w-[120px] italic">{customer.email}</span>
  <CopyButton value={customer.email} />
  </div>
  </div>
@@ -1123,21 +1124,21 @@ export function Customers() {
  <td className="px-4 py-4 text-center">
  <div className="flex justify-center flex-wrap gap-1">
  {customer.channels && customer.channels.slice(0, 3).map(channel => (
- <span key={channel} className="p-1 rounded bg-white border border-stone-100 shadow-sm" title={channel.toUpperCase()}>
+ <span key={channel} className="p-1 rounded bg-white border border-slate-200 shadow-sm" title={channel.toUpperCase()}>
  {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-orange-600" />}
  {channel === 'facebook' && <Facebook className="w-3 h-3 text-orange-800" />}
  {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
- {channel === 'web' && <Globe className="w-3 h-3 text-stone-400" />}
+ {channel === 'web' && <Globe className="w-3 h-3 text-slate-500" />}
  </span>
  ))}
  {customer.channels && customer.channels.length > 3 && (
- <span className="text-[8px] font-bold text-stone-400 self-center">+{customer.channels.length - 3}</span>
+ <span className="text-[8px] font-bold text-slate-500 self-center">+{customer.channels.length - 3}</span>
  )}
  </div>
  </td>
  <td className="px-4 py-4 text-right">
- <p className="text-sm font-black text-stone-800">{formatCurrency(customer.totalSpent || 0)}</p>
- <p className="text-[9px] text-stone-400">Đơn hàng: <span className="font-bold text-stone-600">{customer.orderCount || 0}</span></p>
+ <p className="text-sm font-black text-slate-900">{formatCurrency(customer.totalSpent || 0)}</p>
+ <p className="text-[9px] text-slate-500">Đơn hàng: <span className="font-bold text-slate-700">{customer.orderCount || 0}</span></p>
  </td>
  <td className="px-4 py-4 text-right">
  <p className="text-sm font-bold text-emerald-600">{formatCurrency(customer.walletBalance || 0)}</p>
@@ -1147,7 +1148,7 @@ export function Customers() {
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
- customer.status === 'active' ? "bg-emerald-500 text-[#FAF9F5]" : customer.status === 'locked' ? "bg-red-500 text-[#FAF9F5]" : "bg-stone-200 text-stone-400"
+ customer.status === 'active' ? "bg-emerald-500 text-[#FAF9F5]" : customer.status === 'locked' ? "bg-red-500 text-[#FAF9F5]" : "bg-slate-100 text-slate-700"
  )}>
  {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
  </span>
@@ -1178,7 +1179,7 @@ export function Customers() {
  </button>
  <button 
  onClick={() => setSelectedCustomer(customer)}
- className="p-1.5 bg-stone-50 text-stone-400 rounded-lg hover:bg-stone-100 hover:text-stone-800 transition-all shadow-sm"
+ className="p-1.5 bg-slate-50 text-slate-500 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm"
  >
  <ExternalLink className="w-3.5 h-3.5" />
  </button>
@@ -1192,10 +1193,10 @@ export function Customers() {
  </div>
  </>
  ) : (
- <div className="h-[calc(100vh-200px)] bg-stone-50 border border-stone-200 rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
- <div className="p-4 border-b border-stone-200 bg-white flex justify-between items-center z-10 relative w-full">
+ <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
+ <div className="p-4 border-b border-slate-300 bg-white flex justify-between items-center z-10 relative w-full">
  <div className="flex items-center gap-3">
- <h2 className="font-bold text-stone-800">Sales Pipeline B2B (Mẫu)</h2>
+ <h2 className="font-bold text-slate-900">Sales Pipeline B2B (Mẫu)</h2>
  <button 
  onClick={() => {
  const totalDeals = pipelineStages.reduce((sum, stage) => sum + stage.deals.length, 0);
@@ -1218,7 +1219,7 @@ export function Customers() {
  <Sparkles className="w-3.5 h-3.5" /> Phân tích Pipeline (AI)
  </button>
  </div>
- <button className="text-xs px-3 py-1.5 bg-stone-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-stone-800 shadow-sm">+ Thêm Deal mới</button>
+ <button className="text-xs px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 shadow-sm">+ Thêm Deal mới</button>
  </div>
  {aiPipelineInsights && (
  <div className="m-4 mb-0 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-start gap-3 relative animate-in slide-in-">
@@ -1237,16 +1238,16 @@ export function Customers() {
  {pipelineStages.map(stage => (
  <div 
  key={stage.id} 
- className="w-80 shrink-0 bg-stone-100 rounded-xl flex flex-col max-h-full border border-stone-200 shadow-sm"
+ className="w-80 shrink-0 bg-slate-100 rounded-xl flex flex-col max-h-full border border-slate-300 shadow-sm"
  onDragOver={(e) => e.preventDefault()}
  onDrop={(e) => handleDropPipeline(e, stage.id)}
  >
- <div className="p-3 border-b border-stone-200 flex justify-between items-center bg-white rounded-t-xl shrink-0">
+ <div className="p-3 border-b border-slate-300 flex justify-between items-center bg-white rounded-t-xl shrink-0">
  <div className="flex items-center gap-2">
  <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
- <span className="font-bold text-sm text-stone-800">{stage.name}</span>
+ <span className="font-bold text-sm text-slate-900">{stage.name}</span>
  </div>
- <span className="bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-0.5 rounded-full">{stage.deals.length}</span>
+ <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{stage.deals.length}</span>
  </div>
  <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
  {stage.deals.map((deal) => (
@@ -1254,10 +1255,10 @@ export function Customers() {
  key={deal.id} 
  draggable
  onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
- className="bg-white p-3.5 rounded-lg shadow-sm border border-stone-200 cursor-grab hover:shadow-sm transition-all group"
+ className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-300 cursor-grab hover:shadow-sm transition-all group"
  >
- <h4 className="font-bold text-sm text-stone-900 group-hover:text-orange-700 transition-colors">{deal.client}</h4>
- <p className="text-xs text-stone-500 mt-1 line-clamp-2">{deal.pd}</p>
+ <h4 className="font-bold text-sm text-slate-900 group-hover:text-orange-700 transition-colors">{deal.client}</h4>
+ <p className="text-xs text-slate-600 mt-1 line-clamp-2">{deal.pd}</p>
  <div className="mt-3 flex items-center justify-between">
  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>
  <div className="flex -space-x-1.5">
@@ -1266,7 +1267,7 @@ export function Customers() {
  </div>
  </div>
  ))}
- <button className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-stone-400 hover:text-stone-600 hover:bg-stone-200/50 rounded-lg transition-colors border border-dashed border-stone-300">
+ <button className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 rounded-lg transition-colors border border-dashed border-slate-400">
  + Thêm Deal
  </button>
  </div>
@@ -1280,20 +1281,20 @@ export function Customers() {
  {adjustingCustomer && (
  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-lg w-full max-w-md overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div>
- <h2 className="text-lg font-bold text-stone-900">Điều chỉnh Điểm / Ví</h2>
- <p className="text-xs text-stone-500">Khách hàng: {adjustingCustomer.name}</p>
+ <h2 className="text-lg font-bold text-slate-900">Điều chỉnh Điểm / Ví</h2>
+ <p className="text-xs text-slate-600">Khách hàng: {adjustingCustomer.name}</p>
  </div>
- <button onClick={() => setAdjustingCustomer(null)} className="p-2 bg-white border border-stone-200 rounded-lg hover:bg-stone-100"><X className="w-5 h-5 text-stone-500" /></button>
+ <button onClick={() => setAdjustingCustomer(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
  <form onSubmit={submitAdjust} className="p-6 space-y-6">
  <div>
- <label className="text-xs font-bold text-stone-700 uppercase mb-2 block">Loại điều chỉnh</label>
+ <label className="text-xs font-bold text-slate-800 uppercase mb-2 block">Loại điều chỉnh</label>
  <select 
  value={adjustType}
  onChange={(e) => setAdjustType(e.target.value as any)}
- className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
  >
  <option value="wallet">Ví Điện Tử (VNĐ)</option>
  <option value="points">Điểm Thưởng (Points)</option>
@@ -1301,15 +1302,15 @@ export function Customers() {
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-stone-700 uppercase">Số dư hiện tại</label>
+ <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>
  </div>
- <div className="text-xl font-bold text-stone-900">
+ <div className="text-xl font-bold text-slate-900">
  {adjustType === 'wallet' ? formatCurrency(adjustingCustomer.walletBalance || 0) : (adjustingCustomer.points || 0) + ' pts'}
  </div>
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-stone-700 uppercase">Số tiền/điểm cộng hoặc trừ</label>
+ <label className="text-xs font-bold text-slate-800 uppercase">Số tiền/điểm cộng hoặc trừ</label>
  </div>
  <input 
  type="number" 
@@ -1317,15 +1318,15 @@ export function Customers() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cộng) hoặc -1000 (trừ)"
- className="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
- <p className="text-[11px] text-stone-500 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
+ <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
  </div>
- <div className="flex gap-4 pt-4 border-t border-stone-100">
+ <div className="flex gap-4 pt-4 border-t border-slate-200">
  <button 
  type="button"
  onClick={() => setAdjustingCustomer(null)}
- className="flex-1 py-2.5 bg-stone-100 text-stone-700 rounded-xl font-bold text-sm hover:bg-stone-200 transition-all"
+ className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
  >
  Hủy
  </button>

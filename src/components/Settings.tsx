@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import { Wallet } from 'lucide-react';
 import React, { useState } from 'react';
 import { 
@@ -201,7 +202,7 @@ const SETTINGS_MODULE_GROUPS = [
 
 function getColorClasses(color: string) {
  switch (color) {
- case 'blue': return 'bg-[#F2F0E9] text-orange-700';
+ case 'blue': return 'bg-slate-100 text-orange-700';
  case 'orange': return 'bg-orange-50 text-orange-600';
  case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
@@ -210,7 +211,7 @@ function getColorClasses(color: string) {
  case 'rose': return 'bg-rose-50 text-rose-600';
  case 'cyan': return 'bg-cyan-50 text-cyan-600';
  case 'slate':
- default: return 'bg-stone-50 text-stone-600';
+ default: return 'bg-slate-50 text-slate-700';
  }
 }
 
@@ -362,18 +363,18 @@ export function SettingsPage() {
  <p className="text-sm text-[#6B7280] mt-1">Phân quyền Ma trận roles, cấu hình Phí sàn và quản lý OpenAPI/Webhook.</p>
  </div>
  <div className="flex gap-3 items-center">
- <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
+ <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <RefreshCw className="w-4 h-4 text-emerald-600" />
  Lịch sử cấu hình
  </button>
- <button className="bg-white border border-[#E5E7EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-50 transition-all flex items-center gap-2">
+ <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <Sparkles className="w-4 h-4 text-purple-600" />
  AI Config Audit
  </button>
  <button 
  onClick={handleSave}
  disabled={isSaving}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm disabled:opacity-50"
+ className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm disabled:opacity-50"
  >
  {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
  </button>
@@ -386,11 +387,11 @@ export function SettingsPage() {
  <div className="flex items-center gap-4 mb-4">
  <button 
  onClick={() => setActiveTab('overview')} 
- className="flex items-center gap-2 text-sm font-bold text-stone-500 hover:text-[#2563EB] bg-white px-4 py-2 rounded-lg shadow-sm border border-stone-200 transition-colors"
+ className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-[#2563EB] bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-300 transition-colors"
  >
  <ChevronLeft className="w-4 h-4" /> Tổng quan Cấu hình
  </button>
- <h2 className="text-lg font-bold text-stone-800 flex items-center gap-2">
+ <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
  {[
  { id: 'general', label: 'Cấu hình chung', icon: Settings },
  { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
@@ -417,8 +418,8 @@ export function SettingsPage() {
  {activeTab === 'overview' && (
  <div className="animate-in fade-in slide-in- duration-500 space-y-8">
  {/* Dashboard Cards similar to HRM */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Vai trò hệ thống</span>
  <Lock className="w-4 h-4 text-purple-600" />
@@ -428,17 +429,17 @@ export function SettingsPage() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Bảo mật cao</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tên miền trỏ về</span>
  <Globe className="w-4 h-4 text-orange-700" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-bold text-[#111827]">{customDomains.length} Domains</span>
- <span className="text-[10px] text-orange-700 font-bold bg-[#F2F0E9] px-2 py-0.5 rounded">Đã xác thực</span>
+ <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">Đã xác thực</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Điểm Webhook</span>
  <Webhook className="w-4 h-4 text-orange-600" />
@@ -448,7 +449,7 @@ export function SettingsPage() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">100% Uptime</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Ngành hàng</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -458,13 +459,13 @@ export function SettingsPage() {
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Tối ưu AI</span>
  </div>
  </div>
- </div>
+ </DraggableGrid>
 
  {/* Grouped Modules grid like HRM */}
  <div className="space-y-6">
  {SETTINGS_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
- <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2 px-1">
+ <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
  <div className="w-1 h-4 bg-[#2563EB] rounded-full" />
  {group.title}
  </h3>
@@ -473,7 +474,7 @@ export function SettingsPage() {
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -495,20 +496,20 @@ export function SettingsPage() {
  )}
  {activeTab === 'appearance' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="text-lg font-bold text-[#111827] flex items-center gap-2">
   <Sparkles className="w-5 h-5 text-rose-500" />
   Giao diện & Theme
  </h3>
  
  <div className="space-y-4">
-  <h4 className="font-semibold text-stone-800">Màu sắc chủ đạo (Primary Color)</h4>
+  <h4 className="font-semibold text-slate-900">Màu sắc chủ đạo (Primary Color)</h4>
   <div className="flex gap-4">
   {(['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate'] as const).map(color => (
   <button
   key={color}
   onClick={() => setPrimaryColor(color)}
-  className={`w-10 h-10 rounded-full flex items-center justify-center ${primaryColor === color ? 'ring-2 ring-offset-2 ring-stone-800' : ''}`}
+  className={`w-10 h-10 rounded-full flex items-center justify-center ${primaryColor === color ? 'ring-2 ring-offset-2 ring-slate-800' : ''}`}
   style={{ backgroundColor: `var(--color-${color}-600)` }}
   >
   {primaryColor === color && <Check className="w-5 h-5 text-white" />}
@@ -518,24 +519,24 @@ export function SettingsPage() {
  </div>
 
  <div className="space-y-4">
-  <h4 className="font-semibold text-stone-800">Bo góc bảng biểu (Border Radius)</h4>
+  <h4 className="font-semibold text-slate-900">Bo góc bảng biểu (Border Radius)</h4>
   <div className="flex gap-4">
-  <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
-  <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
-  <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
-  <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-xl flex-1 font-medium`}>Cong (xl)</button>
-  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-stone-200'} rounded-2xl flex-1 font-medium`}>Rất cong (2xl)</button>
+  <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
+  <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
+  <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
+  <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-xl flex-1 font-medium`}>Cong (xl)</button>
+  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-2xl flex-1 font-medium`}>Rất cong (2xl)</button>
   </div>
  </div>
 
  <div className="space-y-4">
-  <h4 className="font-semibold text-stone-800 flex items-center gap-2">Theme Lễ Tết</h4>
+  <h4 className="font-semibold text-slate-900 flex items-center gap-2">Theme Lễ Tết</h4>
   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
   {(['none', 'tet', 'christmas', 'mid-autumn', 'halloween'] as const).map(theme => (
   <button
   key={theme}
   onClick={() => setHolidayTheme(theme)}
-  className={`p-4 border rounded-xl text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-stone-200 hover:border-stone-300'}`}
+  className={`p-4 border rounded-xl text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-slate-300 hover:border-slate-400'}`}
   >
   <span className="text-2xl">
   {theme === 'tet' ? '🧧' : theme === 'christmas' ? '🎄' : theme === 'mid-autumn' ? '🌕' : theme === 'halloween' ? '🎃' : '✨'}
@@ -552,12 +553,12 @@ export function SettingsPage() {
 
  {activeTab === 'general' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-[#111827]">Cấu hình ví & Payout</h3>
- <div className="flex items-center justify-between p-4 bg-stone-50 rounded-lg border border-stone-100">
+ <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
  <div className="space-y-1">
- <p className="text-sm font-bold text-stone-900">Tính năng Duyệt Payout tự động</p>
- <p className="text-[10px] text-stone-500 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
+ <p className="text-sm font-bold text-slate-900">Tính năng Duyệt Payout tự động</p>
+ <p className="text-[10px] text-slate-600 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
  </div>
  <div className="w-12 h-6 bg-[#2563EB] rounded-full relative cursor-pointer">
  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
@@ -566,10 +567,10 @@ export function SettingsPage() {
  </div>
 
  <div className="flex justify-end gap-3 pt-4">
- <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-[#6B7280] hover:bg-stone-100 transition-all border border-transparent">
+ <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-[#6B7280] hover:bg-slate-100 transition-all border border-transparent">
  Hủy bỏ
  </button>
- <button className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm shadow-stone-900/5 active:scale-95">
+ <button className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95">
  Lưu cấu hình
  </button>
  </div>
@@ -578,7 +579,7 @@ export function SettingsPage() {
 
   {activeTab === 'wallet_crm' && (
   <div className="animate-in fade-in duration-300 space-y-6">
-    <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+    <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-[#111827] flex items-center gap-2">
           <Wallet className="w-5 h-5 text-primary-600" /> Cấu hình Ví CSKH & Khuyến mại
@@ -608,19 +609,19 @@ export function SettingsPage() {
           canTransfer: false,
           color: 'purple'
         }].map(wallet => (
-          <div key={wallet.name} className="border border-stone-200 rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div key={wallet.name} className="border border-slate-300 rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
-              <h4 className="font-bold text-stone-900 flex items-center gap-2">
+              <h4 className="font-bold text-slate-900 flex items-center gap-2">
                 <span className={`w-3 h-3 rounded-full bg-${wallet.color}-500`}></span>
                 {wallet.name}
               </h4>
-              <p className="text-sm text-stone-500 mt-1">{wallet.desc}</p>
+              <p className="text-sm text-slate-600 mt-1">{wallet.desc}</p>
             </div>
             
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2 py-1 rounded">Quy tắc: {wallet.usedFor}</span>
-              <label className="flex items-center gap-2 text-sm text-stone-700 cursor-pointer">
-                <input type="checkbox" checked={wallet.canTransfer} readOnly className="w-4 h-4 text-primary-600 rounded border-stone-300" />
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">Quy tắc: {wallet.usedFor}</span>
+              <label className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
+                <input type="checkbox" checked={wallet.canTransfer} readOnly className="w-4 h-4 text-primary-600 rounded border-slate-400" />
                 Cho phép KH điều chuyển / Rút
               </label>
             </div>
@@ -628,21 +629,21 @@ export function SettingsPage() {
         ))}
       </div>
 
-      <div className="pt-6 border-t border-stone-100">
+      <div className="pt-6 border-t border-slate-200">
         <h4 className="font-bold text-[#111827] mb-4">Quy tắc điều chuyển số dư (Transfer Rules)</h4>
         <div className="p-4 bg-orange-50 border border-orange-100 rounded-lg space-y-3">
-           <div className="flex items-center justify-between text-sm font-medium text-stone-800">
+           <div className="flex items-center justify-between text-sm font-medium text-slate-900">
              <div className="flex items-center gap-3">
                <span className="w-40">Ví Hoàn Tiền</span>
-               <ArrowRight className="w-4 h-4 text-stone-400" />
+               <ArrowRight className="w-4 h-4 text-slate-500" />
                <span className="w-40">Ví Khuyến Mại</span>
              </div>
              <span className="text-right">Tỷ lệ quy đổi: 1 VNĐ = 1.1 Khuyến mại</span>
            </div>
-           <div className="flex items-center justify-between text-sm font-medium text-stone-800 opacity-60">
+           <div className="flex items-center justify-between text-sm font-medium text-slate-900 opacity-60">
              <div className="flex items-center gap-3">
                <span className="w-40">Ví Khuyến Mại</span>
-               <ArrowRight className="w-4 h-4 text-stone-400" />
+               <ArrowRight className="w-4 h-4 text-slate-500" />
                <span className="w-40">Ví Hoàn Tiền</span>
              </div>
              <span className="text-right text-rose-600 italic">Cấm (Không hỗ trợ)</span>
@@ -656,17 +657,17 @@ export function SettingsPage() {
  {activeTab === 'fees' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {/* Section 1: Dynamic System Fees */}
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between">
  <div>
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <AlertCircle className="w-4 h-4 text-orange-500" /> Quản lý các loại Chi phí Hệ thống hỗ trợ
  </h3>
- <p className="text-xs text-stone-500 mt-1">Cấu hình linh hoạt các loại phí phát sinh ngoài phí hoa hồng (Fixed hoặc %).</p>
+ <p className="text-xs text-slate-600 mt-1">Cấu hình linh hoạt các loại phí phát sinh ngoài phí hoa hồng (Fixed hoặc %).</p>
  </div>
  <button 
  onClick={() => { setEditingFee(null); setNewFee({ type: 'percentage', value: 0, isActive: true, applyTo: { sellerTypes: ['normal'], categories: ['all'] } }); setShowFeeModal(true); }}
- className="flex items-center gap-2 bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold hover:bg-stone-800 transition-all shadow-sm"
+ className="flex items-center gap-2 bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm"
  >
  <Plus className="w-4 h-4" /> Thêm loại phí mới
  </button>
@@ -674,20 +675,20 @@ export function SettingsPage() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
  {systemFees.map((fee) => (
- <div key={fee.id} className={cn("p-4 rounded-xl border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-stone-200" : "bg-stone-50 border-stone-100 opacity-60")}>
+ <div key={fee.id} className={cn("p-4 rounded-xl border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-slate-300" : "bg-slate-50 border-slate-200 opacity-60")}>
  <div className="flex justify-between items-start mb-3 relative z-10">
  <div className="flex items-center gap-2">
- <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-[#F2F0E9] text-orange-700" : "bg-purple-50 text-purple-600")}>
+ <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-slate-100 text-orange-700" : "bg-purple-50 text-purple-600")}>
  {fee.type === 'fixed' ? <BadgeDollarSign className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
  </div>
  <div>
- <h4 className="font-bold text-sm text-stone-900 line-clamp-1">{fee.name}</h4>
- <p className="text-[10px] text-stone-500">{fee.type === 'fixed' ? 'Số tiền cố định' : 'Tỷ lệ % doanh thu'}</p>
+ <h4 className="font-bold text-sm text-slate-900 line-clamp-1">{fee.name}</h4>
+ <p className="text-[10px] text-slate-600">{fee.type === 'fixed' ? 'Số tiền cố định' : 'Tỷ lệ % doanh thu'}</p>
  </div>
  </div>
  <div 
  onClick={() => setSystemFees(systemFees.map(f => f.id === fee.id ? { ...f, isActive: !f.isActive } : f))}
- className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors shrink-0", fee.isActive ? "bg-emerald-500" : "bg-stone-300")}
+ className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors shrink-0", fee.isActive ? "bg-emerald-500" : "bg-slate-300")}
  >
  <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all", fee.isActive ? "right-1" : "left-1")} />
  </div>
@@ -698,11 +699,11 @@ export function SettingsPage() {
  {fee.type === 'fixed' ? formatCurrency(fee.value) : `${fee.value}%`}
  </span>
  <div className="mt-2 space-y-1.5">
- <div className="flex items-center gap-1.5 text-[10px] text-stone-600">
+ <div className="flex items-center gap-1.5 text-[10px] text-slate-700">
  <Users className="w-3 h-3" />
  {fee.applyTo.sellerTypes.map(st => st === 'mall' ? 'Shop Mall' : 'Seller thường').join(', ')}
  </div>
- <div className="flex items-center gap-1.5 text-[10px] text-stone-600">
+ <div className="flex items-center gap-1.5 text-[10px] text-slate-700">
  <Package className="w-3 h-3" />
  {fee.applyTo.categories.includes('all') ? 'Tất cả ngành hàng' : `Áp dụng ${fee.applyTo.categories.length} nhóm`}
  </div>
@@ -712,7 +713,7 @@ export function SettingsPage() {
  <div className="flex justify-end gap-2 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity">
  <button 
  onClick={() => { setEditingFee(fee); setNewFee(fee); setShowFeeModal(true); }}
- className="p-1.5 text-orange-700 hover:bg-[#F2F0E9] rounded"
+ className="p-1.5 text-orange-700 hover:bg-slate-100 rounded"
  >
  <Edit2 className="w-3.5 h-3.5" />
  </button>
@@ -733,13 +734,13 @@ export function SettingsPage() {
  </div>
 
  {/* Section 2: Platform Commission (Existing) */}
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between mb-4">
  <div>
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm">
  <BadgeDollarSign className="w-4 h-4 text-[#2563EB]" /> Phí hoa hồng theo Ngành hàng & Loại Nhà Bán
  </h3>
- <p className="text-xs text-stone-500 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
+ <p className="text-xs text-slate-600 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
  </div>
  <div className="flex gap-2">
  <button 
@@ -760,33 +761,33 @@ export function SettingsPage() {
  </div>
 
  {showAddCategory && (
- <div className="mb-4 p-4 bg-stone-50 border border-stone-200 rounded-xl flex items-center gap-3 animate-in slide-in- duration-200">
- <label className="text-sm font-bold text-stone-700 whitespace-nowrap">Tên ngành hàng:</label>
+ <div className="mb-4 p-4 bg-slate-50 border border-slate-300 rounded-xl flex items-center gap-3 animate-in slide-in- duration-200">
+ <label className="text-sm font-bold text-slate-800 whitespace-nowrap">Tên ngành hàng:</label>
  <input 
  type="text" 
  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
- className="flex-1 p-2 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
+ className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
  value={newCategoryName}
  onChange={(e) => setNewCategoryName(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
  />
  <button onClick={handleAddCategory} className="px-5 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700">Lưu</button>
- <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-stone-200 text-stone-700 rounded-lg text-sm font-bold shadow-sm hover:bg-stone-300">Hủy</button>
+ <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Hủy</button>
  </div>
  )}
 
- <div className="border border-[#E5E7EB] rounded-lg overflow-hidden shadow-sm">
+ <div className="border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <table className="w-full text-sm">
- <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+ <thead className="bg-[#F9FAFB] border-b border-slate-300">
  <tr>
  <th className="px-5 py-4 text-left font-bold text-[#6B7280] text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
- <th className="px-5 py-4 text-center border-l border-stone-200 bg-[#F2F0E9]/50 w-[25%]">
+ <th className="px-5 py-4 text-center border-l border-slate-300 bg-slate-100/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
  <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
  <span className="text-[9px] font-medium text-orange-700">Nhà bán cá nhân/nhỏ lẻ</span>
  </div>
  </th>
- <th className="px-5 py-4 text-center border-l border-stone-200 bg-amber-50/50 w-[25%]">
+ <th className="px-5 py-4 text-center border-l border-slate-300 bg-amber-50/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
  <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
  <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
@@ -797,16 +798,16 @@ export function SettingsPage() {
  </thead>
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {categoryFees.map((cf) => (
- <tr key={cf.id} className="hover:bg-stone-50/50 transition-colors group">
- <td className="px-5 py-4 text-sm font-bold text-stone-800">{cf.name}</td>
- <td className="px-5 py-4 border-l border-stone-100 bg-[#F2F0E9]/10">
+ <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
+ <td className="px-5 py-4 text-sm font-bold text-slate-900">{cf.name}</td>
+ <td className="px-5 py-4 border-l border-slate-200 bg-slate-100/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
  <input 
  type="number"
  value={cf.sellerFee}
  onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
- className="w-16 p-1.5 text-sm border-2 border-[#EAE7DF] rounded-lg text-center focus:outline-none focus:border-stone-900 font-bold text-blue-900 bg-white"
+ className="w-16 p-1.5 text-sm border-2 border-slate-300 rounded-lg text-center focus:outline-none focus:border-slate-900 font-bold text-blue-900 bg-white"
  />
  <span className="text-xs font-bold text-orange-500">%</span>
  </div>
@@ -815,7 +816,7 @@ export function SettingsPage() {
  )}
  </div>
  </td>
- <td className="px-5 py-4 border-l border-stone-100 bg-amber-50/10">
+ <td className="px-5 py-4 border-l border-slate-200 bg-amber-50/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
  <input 
@@ -853,7 +854,7 @@ export function SettingsPage() {
 
  {activeTab === 'website' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
  <Globe className="w-4 h-4 text-[#2563EB]" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
  </h3>
@@ -870,7 +871,7 @@ export function SettingsPage() {
  value={domain} 
  onChange={(e) => updateDomain(index, e.target.value)}
  placeholder="ví dụ: store.domain.com" 
- className="flex-1 p-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-stone-900 transition-all" 
+ className="flex-1 p-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
  />
  <button onClick={() => removeDomain(index)} className="p-3 text-red-500 hover:bg-red-50 rounded-lg">
  <Trash2 className="w-4 h-4" />
@@ -888,7 +889,7 @@ export function SettingsPage() {
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
- <div className="border-2 border-dashed border-[#E5E7EB] rounded-lg p-6 text-center hover:bg-stone-50 transition-colors">
+ <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
  <input type="file" id="logo-upload" className="hidden" accept="image/*" />
  <label htmlFor="logo-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
  Nhấn để tải lên hoặc kéo thả Logo
@@ -900,7 +901,7 @@ export function SettingsPage() {
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
- <div className="border-2 border-dashed border-[#E5E7EB] rounded-lg p-6 text-center hover:bg-stone-50 transition-colors">
+ <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
  <input type="file" id="favicon-upload" className="hidden" accept="image/x-icon,image/png" />
  <label htmlFor="favicon-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
  Nhấn để tải lên hoặc kéo thả Favicon
@@ -912,7 +913,7 @@ export function SettingsPage() {
  </div>
 
  <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
- <button className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm active:scale-95">
+ <button className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95">
  Lưu cấu hình website
  </button>
  </div>
@@ -923,7 +924,7 @@ export function SettingsPage() {
  {activeTab === 'rbac' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {!editingRole ? (
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm">
  <Lock className="w-4 h-4 text-orange-700" /> Quản lý Vai trò & Phân quyền
@@ -951,22 +952,22 @@ export function SettingsPage() {
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
  {roles.map(role => (
- <tr key={role.id} className="hover:bg-stone-50 transition-colors group">
+ <tr key={role.id} className="hover:bg-slate-50 transition-colors group">
  <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-[#111827]">{role.name}</span>
- <span className="text-[10px] text-stone-400 font-mono">ID: {role.id}</span>
+ <span className="text-[10px] text-slate-500 font-mono">ID: {role.id}</span>
  </div>
  </td>
  <td className="px-6 py-4">
- <span className="px-2 py-0.5 bg-[#F2F0E9] text-[#2563EB] text-[10px] font-bold rounded-full border border-[#EAE7DF]">
+ <span className="px-2 py-0.5 bg-slate-100 text-[#2563EB] text-[10px] font-bold rounded-full border border-slate-300">
  {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
  </span>
  </td>
  <td className="px-6 py-4 text-right">
  <button 
  onClick={() => setEditingRole(role)}
- className="text-xs font-bold text-[#2563EB] hover:bg-[#F2F0E9] px-3 py-1.5 rounded-lg transition-all"
+ className="text-xs font-bold text-[#2563EB] hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all"
  >
  Thiết lập chi tiết
  </button>
@@ -979,13 +980,13 @@ export function SettingsPage() {
  </div>
  ) : (
  <div className="space-y-6 animate-in slide-in- duration-300">
- <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-[#E5E7EB] shadow-sm">
+ <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-4">
  <button 
  onClick={() => setEditingRole(null)}
- className="p-2 hover:bg-stone-100 rounded-lg transition-all"
+ className="p-2 hover:bg-slate-100 rounded-lg transition-all"
  >
- <ArrowRight className="w-5 h-5 rotate-180 text-stone-400" />
+ <ArrowRight className="w-5 h-5 rotate-180 text-slate-500" />
  </button>
  <div>
  <div className="flex items-center gap-2">
@@ -993,17 +994,17 @@ export function SettingsPage() {
  type="text" 
  value={editingRole.name}
  onChange={(e) => setEditingRole({...editingRole, name: e.target.value})}
- className="text-lg font-bold text-stone-900 border-b border-transparent hover:border-stone-300 focus:border-stone-900 focus:outline-none bg-transparent"
+ className="text-lg font-bold text-slate-900 border-b border-transparent hover:border-slate-400 focus:border-slate-900 focus:outline-none bg-transparent"
  />
- <Edit2 className="w-4 h-4 text-stone-300" />
+ <Edit2 className="w-4 h-4 text-slate-500" />
  </div>
- <p className="text-xs text-stone-500">Thiết lập ma trận quyền cho {editingRole.name}</p>
+ <p className="text-xs text-slate-600">Thiết lập ma trận quyền cho {editingRole.name}</p>
  </div>
  </div>
  <div className="flex gap-2">
  <button 
  onClick={() => setEditingRole(null)}
- className="px-4 py-2 text-sm font-bold text-stone-600 hover:bg-stone-100 rounded-lg transition-all"
+ className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100 rounded-lg transition-all"
  >
  Hủy bỏ
  </button>
@@ -1013,16 +1014,16 @@ export function SettingsPage() {
  setEditingRole(null);
  addNotification('Đã cập nhật phân quyền', `Vai trò ${editingRole.name} đã được lưu thành công.`);
  }}
- className="px-6 py-2 bg-[#2563EB] text-[#FAF9F5] text-sm font-bold rounded-lg hover:bg-stone-800 transition-all shadow-sm shadow-stone-900/5"
+ className="px-6 py-2 bg-[#2563EB] text-[#FAF9F5] text-sm font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
  >
  Lưu thay đổi
  </button>
  </div>
  </div>
 
- <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
- <div className="p-4 bg-stone-50 border-b border-stone-200 flex justify-between items-center">
- <h4 className="font-bold text-stone-800 text-sm">Ma trận Quyền hạn chi tiết</h4>
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+ <div className="p-4 bg-slate-50 border-b border-slate-300 flex justify-between items-center">
+ <h4 className="font-bold text-slate-900 text-sm">Ma trận Quyền hạn chi tiết</h4>
  <label className="flex items-center gap-2 cursor-pointer">
  <input 
  type="checkbox" 
@@ -1034,13 +1035,13 @@ export function SettingsPage() {
  setEditingRole({...editingRole, permissions: []});
  }
  }}
- className="w-4 h-4 text-orange-700 rounded border-stone-300 focus:ring-orange-600"
+ className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
  />
- <span className="text-xs font-bold text-stone-700">Gán Toàn quyền (Super Admin)</span>
+ <span className="text-xs font-bold text-slate-800">Gán Toàn quyền (Super Admin)</span>
  </label>
  </div>
  
- <div className="bg-white border-b border-stone-200">
+ <div className="bg-white border-b border-slate-300">
  <div className="flex px-4 gap-6">
  {MODULE_PERMISSIONS.map(group => (
  <button
@@ -1049,8 +1050,8 @@ export function SettingsPage() {
  className={cn(
  "py-4 text-sm font-bold transition-all border-b-2",
  activeModuleTab === group.id
- ? "border-stone-900 text-orange-700"
- : "border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300"
+ ? "border-slate-900 text-orange-700"
+ : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
  )}
  >
  {group.label}
@@ -1064,10 +1065,10 @@ export function SettingsPage() {
  <div key={group.id} className="space-y-4 animate-in fade-in slide-in- duration-300">
  <div className="grid grid-cols-1 gap-3">
  {group.modules.map(module => (
- <div key={module.id} className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-100 hover:bg-white hover:shadow-sm transition-all group">
+ <div key={module.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm transition-all group">
  <div className="space-y-1">
- <p className="text-sm font-bold text-stone-800">{module.label}</p>
- <p className="text-[10px] text-stone-400 font-mono uppercase">Module: {module.id}</p>
+ <p className="text-sm font-bold text-slate-900">{module.label}</p>
+ <p className="text-[10px] text-slate-500 font-mono uppercase">Module: {module.id}</p>
  </div>
  <div className="flex gap-4 flex-wrap justify-end">
  {module.actions.map(action => {
@@ -1078,7 +1079,7 @@ export function SettingsPage() {
  return (
  <label key={action} className={cn(
  "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all cursor-pointer select-none",
- isChecked ? "bg-[#F2F0E9] border-orange-200 text-orange-800" : "bg-white border-stone-200 text-stone-500 hover:border-stone-300",
+ isChecked ? "bg-slate-100 border-orange-200 text-orange-800" : "bg-white border-slate-300 text-slate-600 hover:border-slate-400",
  isDisabled && "opacity-50 cursor-not-allowed"
  )}>
  <input 
@@ -1091,7 +1092,7 @@ export function SettingsPage() {
  : editingRole.permissions.filter(p => p !== permissionKey);
  setEditingRole({...editingRole, permissions: newPermissions});
  }}
- className="w-3.5 h-3.5 text-orange-700 rounded border-stone-300 focus:ring-orange-600"
+ className="w-3.5 h-3.5 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
  />
  <span className="text-[10px] font-bold uppercase tracking-tight">
  {action === 'view' ? 'Xem' : 
@@ -1118,37 +1119,37 @@ export function SettingsPage() {
 
  {activeTab === 'api' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
  </h3>
  <p className="text-xs text-[#6B7280]">Cấp quyền cho bên thứ 3 (Brand, Logistics) truy cập trực tiếp vào API sàn.</p>
- <div className="p-3 bg-stone-50 rounded-lg font-mono text-[10px] text-stone-500 flex justify-between items-center">
+ <div className="p-3 bg-slate-50 rounded-lg font-mono text-[10px] text-slate-600 flex justify-between items-center">
  <span>sk_live_vcomm_*********************</span>
  <button className="text-[#2563EB] font-bold">Copy</button>
  </div>
- <button className="w-full py-2 border border-[#E5E7EB] rounded-lg text-xs font-bold hover:bg-stone-50">Tạo mới Secret Key</button>
+ <button className="w-full py-2 border border-slate-300 rounded-lg text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
  </div>
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <AppWindow className="w-4 h-4 text-[#2563EB]" /> Webhook Settings
  </h3>
  <p className="text-xs text-[#6B7280]">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
  <div className="space-y-3">
  {MOCK_WEBHOOKS.map(wb => (
- <div key={wb.id} className="p-3 bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-between">
+ <div key={wb.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-stone-900">{wb.name}</p>
- <p className="text-[9px] text-stone-400 font-mono truncate max-w-[150px]">{wb.url}</p>
+ <p className="text-[10px] font-bold text-slate-900">{wb.name}</p>
+ <p className="text-[9px] text-slate-500 font-mono truncate max-w-[150px]">{wb.url}</p>
  </div>
  <button className="p-1.5 hover:bg-red-50 text-red-500 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
  </div>
  ))}
  </div>
- <button className="w-full py-2 bg-[#111827] text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-stone-800">Cấu hình Webhook mới</button>
+ <button className="w-full py-2 bg-[#111827] text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800">Cấu hình Webhook mới</button>
  </div>
- </div>
+ </DraggableGrid>
 
  <div className="bg-blue-900 text-[#FAF9F5] p-6 rounded-lg flex items-center gap-6">
  <div className="p-4 bg-white/10 rounded-lg border border-white/20">
@@ -1156,7 +1157,7 @@ export function SettingsPage() {
  </div>
  <div>
  <h4 className="font-bold text-lg mb-1">OpenAPI Public Documentation</h4>
- <p className="text-stone-400 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
+ <p className="text-slate-500 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
  <div className="flex gap-4 mt-3">
  <button className="text-xs font-bold text-blue-300 hover:underline">Download API Spec</button>
  <button className="text-xs font-bold text-blue-300 hover:underline">Xem Sandbox logs</button>
@@ -1168,26 +1169,26 @@ export function SettingsPage() {
 
  {activeTab === 'address' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <MapPin className="w-5 h-5 text-orange-700" /> Cấu hình Địa chỉ Hành chính (2 cấp)
  </h3>
- <button className="flex items-center gap-2 bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold hover:bg-stone-800 transition-all shadow-sm">
+ <button className="flex items-center gap-2 bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
  <Plus className="w-4 h-4" /> Thêm Tỉnh/Thành
  </button>
  </div>
 
  <div className="flex gap-4 mb-4">
  <div className="relative flex-1">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
- <input type="text" placeholder="Tìm kiếm tỉnh/thành phố..." className="w-full bg-stone-50 border border-[#E5E7EB] rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-stone-900 transition-all" />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+ <input type="text" placeholder="Tìm kiếm tỉnh/thành phố..." className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-slate-900 transition-all" />
  </div>
  </div>
 
- <div className="bg-stone-50 border border-stone-200 rounded-lg overflow-hidden">
+ <div className="bg-slate-50 border border-slate-300 rounded-lg overflow-hidden">
  <table className="w-full text-left text-sm">
- <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB] text-[#6B7280]">
+ <thead className="bg-[#F9FAFB] border-b border-slate-300 text-[#6B7280]">
  <tr>
  <th className="px-6 py-4 font-medium">Tên Tỉnh/Thành</th>
  <th className="px-6 py-4 font-medium">Mã code</th>
@@ -1198,29 +1199,29 @@ export function SettingsPage() {
  </thead>
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {MOCK_PROVINCES.map((prov) => (
- <tr key={prov.id} className="hover:bg-stone-50 transition-colors group">
- <td className="px-6 py-4 font-medium text-stone-900">{prov.name}</td>
+ <tr key={prov.id} className="hover:bg-slate-50 transition-colors group">
+ <td className="px-6 py-4 font-medium text-slate-900">{prov.name}</td>
  <td className="px-6 py-4">
- <span className="font-mono text-xs bg-stone-100 text-stone-600 px-2 py-1 rounded-md border border-stone-200">{prov.code}</span>
+ <span className="font-mono text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-md border border-slate-300">{prov.code}</span>
  </td>
  <td className="px-6 py-4">
- <div className="flex items-center gap-3 text-stone-600">
+ <div className="flex items-center gap-3 text-slate-700">
  <div>
  <span className="text-sm font-bold text-orange-700">{prov.wards}</span> đơn vị
  </div>
- <button className="text-[10px] text-orange-600 border border-[#EAE7DF] bg-[#F2F0E9] px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider hover:bg-[#EAE7DF]">Quản lý cấp 2</button>
+ <button className="text-[10px] text-orange-600 border border-slate-300 bg-slate-100 px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider hover:bg-[#EAE7DF]">Quản lý cấp 2</button>
  </div>
  </td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
  "px-2 py-1 rounded-lg text-[10px] font-bold uppercase",
- prov.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-stone-100 text-stone-500 border border-stone-200"
+ prov.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-100 text-slate-600 border border-slate-300"
  )}>
  {prov.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
  </span>
  </td>
  <td className="px-6 py-4 text-right">
- <button className="p-1.5 text-stone-400 hover:text-orange-700 hover:bg-[#F2F0E9] rounded-lg transition-colors">
+ <button className="p-1.5 text-slate-500 hover:text-orange-700 hover:bg-slate-100 rounded-lg transition-colors">
  <Edit2 className="w-4 h-4" />
  </button>
  </td>
@@ -1235,45 +1236,45 @@ export function SettingsPage() {
 
  {activeTab === 'org' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <Building2 className="w-5 h-5 text-orange-700" /> Quản lý Cơ cấu Tổ chức
  </h3>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 md:col-span-1">
- <h4 className="font-bold text-stone-800 mb-4">Phòng ban</h4>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-4 md:col-span-1">
+ <h4 className="font-bold text-slate-900 mb-4">Phòng ban</h4>
  {MOCK_DEPARTMENTS.map((dept) => (
- <div key={dept.id} className={cn("bg-white p-3 rounded-lg border border-stone-100 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
+ <div key={dept.id} className={cn("bg-white p-3 rounded-lg border border-slate-200 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
  <span className="text-sm font-medium">{dept.name}</span>
- <button className="text-[10px] bg-stone-100 px-2 py-1 rounded">Sửa</button>
+ <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
  </div>
  ))}
  </div>
- <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 md:col-span-1">
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-stone-800">Chức danh</h4>
+ <h4 className="font-bold text-slate-900">Chức danh</h4>
  <button 
  onClick={() => { setNewJobTitle({}); setEditingJobTitle(null); setShowAddJobTitleModal(true); }}
- className="text-xs bg-stone-900 text-[#FAF9F5] px-2 py-1 rounded hover:bg-stone-800 transition"
+ className="text-xs bg-slate-900 text-[#FAF9F5] px-2 py-1 rounded hover:bg-slate-800 transition"
  >
  <Plus className="w-3 h-3 inline" /> Thêm
  </button>
  </div>
  <div className="space-y-2 h-[400px] overflow-y-auto pr-1">
  {jobTitles.map((title) => (
- <div key={title.id} className="bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
+ <div key={title.id} className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
  <div className="flex justify-between items-start mb-1">
- <div className="font-bold text-sm text-stone-900">{title.name}</div>
+ <div className="font-bold text-sm text-slate-900">{title.name}</div>
  <button 
  onClick={() => { setEditingJobTitle(title); setNewJobTitle(title); setShowAddJobTitleModal(true); }}
- className="text-[10px] text-orange-700 hover:bg-[#F2F0E9] px-2 py-1 rounded"
+ className="text-[10px] text-orange-700 hover:bg-slate-100 px-2 py-1 rounded"
  >Sửa</button>
  </div>
- <div className="text-xs text-stone-500 mb-1 line-clamp-2" title={title.description}>{title.description || 'Chưa có mô tả'}</div>
+ <div className="text-xs text-slate-600 mb-1 line-clamp-2" title={title.description}>{title.description || 'Chưa có mô tả'}</div>
  <div className="flex gap-2 text-[10px]">
- <span className="bg-stone-100 text-stone-600 px-1.5 py-0.5 rounded">
+ <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
  Phòng: {MOCK_DEPARTMENTS.find(d => d.id === title.department)?.name || title.department}
  </span>
  {title.rank && (
@@ -1286,38 +1287,38 @@ export function SettingsPage() {
  ))}
  </div>
  </div>
- <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 md:col-span-1">
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-stone-800">Cấp bậc</h4>
- <button className="text-xs bg-stone-200 text-stone-700 px-2 py-1 rounded hover:bg-stone-300 transition">
+ <h4 className="font-bold text-slate-900">Cấp bậc</h4>
+ <button className="text-xs bg-slate-200 text-slate-800 px-2 py-1 rounded hover:bg-slate-300 transition">
  <Plus className="w-3 h-3 inline" /> Thêm
  </button>
  </div>
  <div className="space-y-2">
  {MOCK_JOB_RANKS.map((item) => (
- <div key={item.id} className="bg-white p-3 rounded-lg border border-stone-100 flex justify-between items-center shadow-sm">
+ <div key={item.id} className="bg-white p-3 rounded-lg border border-slate-200 flex justify-between items-center shadow-sm">
  <div>
  <div className="text-sm font-medium">{item.name}</div>
- <div className="text-[10px] text-stone-400">Level: {item.level}</div>
+ <div className="text-[10px] text-slate-500">Level: {item.level}</div>
  </div>
- <button className="text-[10px] bg-stone-100 px-2 py-1 rounded">Sửa</button>
+ <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
  </div>
  ))}
  </div>
  </div>
- </div>
+ </DraggableGrid>
  </div>
  </div>
  )}
 
  {activeTab === 'stores' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-stone-200 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
- <h3 className="font-bold text-stone-900 flex items-center gap-2">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Building2 className="w-5 h-5 text-orange-700" /> Quản lý Chuỗi cửa hàng / Chi nhánh
  </h3>
- <button className="bg-[#F2F0E9] text-orange-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#EAE7DF] flex items-center gap-2">
+ <button className="bg-slate-100 text-orange-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#EAE7DF] flex items-center gap-2">
  <Plus className="w-4 h-4" /> Thêm Cửa hàng
  </button>
  </div>
@@ -1325,43 +1326,43 @@ export function SettingsPage() {
  <div className="bg-primary-50 border border-primary-100 rounded-lg p-5 mb-6">
  <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
  <p className="text-sm text-primary-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
- <div className="grid grid-cols-2 gap-4">
+ <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
  <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-stone-400">Chi nhánh Quận 1</span>
- <p className="font-mono text-sm text-stone-900">sg1.v-erp.com</p>
+ <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Quận 1</span>
+ <p className="font-mono text-sm text-slate-900">sg1.v-erp.com</p>
  </div>
  <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
  </div>
  <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-stone-400">Chi nhánh Cầu Giấy</span>
- <p className="font-mono text-sm text-stone-900">hn1.v-erp.com</p>
+ <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Cầu Giấy</span>
+ <p className="font-mono text-sm text-slate-900">hn1.v-erp.com</p>
  </div>
  <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
  </div>
- </div>
+ </DraggableGrid>
  </div>
 
- <h4 className="font-bold text-stone-800 border-b border-stone-100 pb-2">Danh sách Cửa hàng & Nhân sự</h4>
+ <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Danh sách Cửa hàng & Nhân sự</h4>
  
  <div className="space-y-4">
  {[
  { id: 'STORE_001', name: 'Chi nhánh Quận 1 - Sài Gòn', address: '123 Lê Lợi, Q.1, TP.HCM', staff: 5, manager: 'Nguyễn Văn A' },
  { id: 'STORE_002', name: 'Chi nhánh Cầu Giấy - Hà Nội', address: '45 Xuân Thủy, Cầu Giấy, HN', staff: 8, manager: 'Trần Thị B' },
  ].map(store => (
- <div key={store.id} className="border border-stone-200 rounded-lg p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-stone-50">
+ <div key={store.id} className="border border-slate-300 rounded-lg p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
  <div>
- <h5 className="font-bold text-stone-900 text-lg flex items-center gap-2">{store.name}</h5>
- <p className="text-sm text-stone-500 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
+ <h5 className="font-bold text-slate-900 text-lg flex items-center gap-2">{store.name}</h5>
+ <p className="text-sm text-slate-600 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
  <div className="flex gap-4 mt-3">
- <span className="text-xs bg-stone-200/50 text-stone-600 px-2 py-1 rounded-md font-medium">Quản lý: <span className="font-bold">{store.manager}</span></span>
- <span className="text-xs bg-[#F2F0E9] text-orange-700 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
+ <span className="text-xs bg-slate-200/50 text-slate-700 px-2 py-1 rounded-md font-medium">Quản lý: <span className="font-bold">{store.manager}</span></span>
+ <span className="text-xs bg-slate-100 text-orange-700 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
  </div>
  </div>
  <div className="flex gap-2">
- <button className="p-2 bg-white border border-stone-200 text-stone-600 rounded-lg hover:bg-stone-100"><Edit2 className="w-4 h-4" /></button>
- <button className="p-2 bg-white border border-stone-200 text-stone-600 rounded-lg hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"><Trash2 className="w-4 h-4" /></button>
+ <button className="p-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100"><Edit2 className="w-4 h-4" /></button>
+ <button className="p-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  ))}
@@ -1371,69 +1372,69 @@ export function SettingsPage() {
  )}
  {activeTab === 'comms' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-stone-200 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
- <h3 className="font-bold text-stone-900 flex items-center gap-2">
+ <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <MessageSquare className="w-5 h-5 text-orange-700" /> Tích hợp SMS OTP & Zalo ZNS
  </h3>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
  {/* Zalo ZNS Config */}
- <div className="border border-stone-200 rounded-lg p-5 hover:border-blue-400 transition-colors">
- <div className="flex items-center justify-between border-b border-stone-100 pb-4 mb-4">
+ <div className="border border-slate-300 rounded-lg p-5 hover:border-blue-400 transition-colors">
+ <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-[#FAF9F5]"><MessageSquare className="w-5 h-5" /></div>
+ <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-[#FAF9F5]"><MessageSquare className="w-5 h-5" /></div>
  <div>
- <h4 className="font-bold text-stone-900">Zalo ZNS (Zalo Notification Service)</h4>
+ <h4 className="font-bold text-slate-900">Zalo ZNS (Zalo Notification Service)</h4>
  <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1 border border-emerald-100">Đang hoạt động</p>
  </div>
  </div>
  <div className="h-8 w-14 bg-[#EAE7DF] rounded-full p-1 cursor-pointer">
- <div className="w-6 h-6 bg-stone-900 rounded-full translate-x-6"></div>
+ <div className="w-6 h-6 bg-slate-900 rounded-full translate-x-6"></div>
  </div>
  </div>
  <div className="space-y-4">
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Official Account ID (OA ID)</label>
- <input type="text" defaultValue="2938475928374928" className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-stone-900 font-mono" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">Official Account ID (OA ID)</label>
+ <input type="text" defaultValue="2938475928374928" className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Zalo App ID</label>
- <input type="text" defaultValue="142345234523" className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-stone-900 font-mono" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">Zalo App ID</label>
+ <input type="text" defaultValue="142345234523" className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Access Token</label>
+ <label className="text-xs font-bold text-slate-700 block mb-1">Access Token</label>
  <div className="flex gap-2">
- <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-stone-900 font-mono" />
- <button className="px-3 bg-stone-100 border border-stone-200 rounded-lg hover:bg-stone-200 text-sm font-bold text-stone-600">Đồng bộ</button>
+ <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
+ <button className="px-3 bg-slate-100 border border-slate-300 rounded-lg hover:bg-slate-200 text-sm font-bold text-slate-700">Đồng bộ</button>
  </div>
  <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sẽ hết hạn vào 20:00 25/04/2026. Bật auto-refresh để tự làm mới.</p>
  </div>
  </div>
- <button className="w-full mt-6 py-2.5 bg-stone-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-colors shadow-sm">
+ <button className="w-full mt-6 py-2.5 bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
  Kiểm tra kết nối ZNS
  </button>
  </div>
 
  {/* SMS OTP Config */}
- <div className="border border-stone-200 rounded-lg p-5 hover:border-emerald-400 transition-colors">
- <div className="flex items-center justify-between border-b border-stone-100 pb-4 mb-4">
+ <div className="border border-slate-300 rounded-lg p-5 hover:border-emerald-400 transition-colors">
+ <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-[#FAF9F5]"><MessageSquare className="w-5 h-5" /></div>
  <div>
- <h4 className="font-bold text-stone-900">SMS OTP & Brandname</h4>
- <p className="text-[10px] text-stone-500 bg-stone-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">Chưa thiết lập</p>
+ <h4 className="font-bold text-slate-900">SMS OTP & Brandname</h4>
+ <p className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">Chưa thiết lập</p>
  </div>
  </div>
- <div className="h-8 w-14 bg-stone-200 rounded-full p-1 cursor-pointer">
+ <div className="h-8 w-14 bg-slate-200 rounded-full p-1 cursor-pointer">
  <div className="w-6 h-6 bg-white rounded-full shadow-sm"></div>
  </div>
  </div>
  <div className="space-y-4 opacity-70">
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Nhà cung cấp (SMS Vendor)</label>
- <select className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+ <label className="text-xs font-bold text-slate-700 block mb-1">Nhà cung cấp (SMS Vendor)</label>
+ <select className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
  <option>eSMS.vn</option>
  <option>VietGuys</option>
  <option>FPT SMS</option>
@@ -1441,43 +1442,43 @@ export function SettingsPage() {
  </select>
  </div>
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Brandname đăng ký</label>
- <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">Brandname đăng ký</label>
+ <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">API Key</label>
- <input type="password" placeholder="Nhập API Key..." className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">API Key</label>
+ <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-stone-600 block mb-1">Secret Key</label>
- <input type="password" placeholder="Nhập Secret..." className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">Secret Key</label>
+ <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  </div>
  </div>
- <button className="w-full mt-6 py-2.5 bg-stone-100 text-stone-600 rounded-lg text-sm font-bold hover:bg-stone-200 transition-colors">
+ <button className="w-full mt-6 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
  Lưu thiết lập SMS
  </button>
  </div>
- </div>
+ </DraggableGrid>
  
- <div className="bg-[#F2F0E9] border border-[#EAE7DF] rounded-lg p-5 mt-6">
+ <div className="bg-slate-100 border border-slate-300 rounded-lg p-5 mt-6">
  <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
  <p className="text-sm text-orange-800 mb-4">Cấu hình các sự kiện hệ thống tự động gọi API ZNS/SMS để thông báo chăm sóc khách hàng.</p>
  <div className="space-y-3">
- <label className="flex items-center gap-3 p-3 bg-white border border-[#EAE7DF] rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="w-4 h-4 text-orange-700 rounded border-stone-300 focus:ring-orange-600" />
- <span className="text-sm font-medium text-stone-700 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
- <span className="text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600" />
+ <span className="text-sm font-medium text-slate-800 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
+ <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-white border border-[#EAE7DF] rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="w-4 h-4 text-orange-700 rounded border-stone-300 focus:ring-orange-600" />
- <span className="text-sm font-medium text-stone-700 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer">
+ <input type="checkbox" defaultChecked className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600" />
+ <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
  <span className="text-[10px] font-bold text-orange-700 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-white border border-[#EAE7DF] rounded-lg cursor-pointer">
- <input type="checkbox" className="w-4 h-4 text-orange-700 rounded border-stone-300 focus:ring-orange-600" />
- <span className="text-sm font-medium text-stone-700 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer">
+ <input type="checkbox" className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600" />
+ <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
  <button className="text-[10px] font-bold text-orange-600 hover:text-orange-800 underline">Cấu hình Mẫu tin</button>
  </label>
  </div>
@@ -1488,7 +1489,7 @@ export function SettingsPage() {
 
  {activeTab === 'popup' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
  <Send className="w-4 h-4 text-[#2563EB]" /> Trung tâm Gửi thông báo (Push Notification)
  </h3>
@@ -1501,7 +1502,7 @@ export function SettingsPage() {
  placeholder="VD: Thông báo bảo trì hệ thống" 
  value={notiTitle}
  onChange={(e) => setNotiTitle(e.target.value)}
- className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
 
@@ -1512,13 +1513,13 @@ export function SettingsPage() {
  placeholder="Chi tiết thông báo..." 
  value={notiMessage}
  onChange={(e) => setNotiMessage(e.target.value)}
- className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
+ className="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
  />
  </div>
 
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
- <select className="w-full p-2.5 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
+ <select className="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
  <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
  <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
  <option value="customer">Tất cả Khách hàng (Storefront App)</option>
@@ -1542,7 +1543,7 @@ export function SettingsPage() {
  setNotiMessage('');
  setTimeout(() => setNotiStatus(''), 3000);
  }}
- className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2"
+ className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Send className="w-4 h-4" /> Bắn thông báo ngay
  </button>
@@ -1550,7 +1551,7 @@ export function SettingsPage() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
  <AppWindow className="w-4 h-4 text-[#2563EB]" /> Quản lý Popup Website
  </h3>
@@ -1559,17 +1560,17 @@ export function SettingsPage() {
  <div className="flex items-center justify-between">
  <label className="block text-xs font-bold text-[#6B7280] uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
  <div className="flex items-center gap-2">
- <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-stone-400 bg-stone-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
+ <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-500 bg-slate-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
  <div 
  onClick={() => setIsPopupActive(!isPopupActive)}
- className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", isPopupActive ? "bg-emerald-500" : "bg-stone-200")}
+ className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", isPopupActive ? "bg-emerald-500" : "bg-slate-200")}
  >
  <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300", isPopupActive ? "left-[22px]" : "left-1")} />
  </div>
  </div>
  </div>
  
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4" columns={2} gap={24}>
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1.5">Tiêu đề Popup</label>
@@ -1578,7 +1579,7 @@ export function SettingsPage() {
  placeholder="VD: Khuyến Mãi Hè 2024" 
  value={popupTitle}
  onChange={(e) => setPopupTitle(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
@@ -1588,7 +1589,7 @@ export function SettingsPage() {
  value={popupDesc}
  rows={2}
  onChange={(e) => setPopupDesc(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
  />
  </div>
  <div>
@@ -1598,7 +1599,7 @@ export function SettingsPage() {
  placeholder="https://example.com/banner.jpg" 
  value={popupImage}
  onChange={(e) => setPopupImage(e.target.value)}
- className="w-full p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
@@ -1609,22 +1610,22 @@ export function SettingsPage() {
  placeholder="Tên nút (VD: Xem ngay)" 
  value={popupCtaText}
  onChange={(e) => setPopupCtaText(e.target.value)}
- className="w-1/3 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-1/3 p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  <input 
  type="text" 
  placeholder="Link (URL)" 
  value={popupCtaLink}
  onChange={(e) => setPopupCtaLink(e.target.value)}
- className="flex-1 p-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="flex-1 p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  </div>
  </div>
  
- <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
- <div className="text-[10px] text-stone-400 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
- <div className="w-full max-w-[240px] bg-white rounded-lg shadow-sm border border-stone-100 overflow-hidden mt-4">
+ <div className="bg-slate-50 border border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
+ <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
+ <div className="w-full max-w-[240px] bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mt-4">
  {popupImage ? (
  <div className="h-24 overflow-hidden relative">
  <img src={popupImage} alt="Popup Banner Preview" className="w-full h-full object-cover" />
@@ -1635,8 +1636,8 @@ export function SettingsPage() {
  </div>
  )}
  <div className="p-3 text-center space-y-2">
- <h4 className="font-bold text-sm text-stone-800 break-words">{popupTitle || '...'}</h4>
- <p className="text-[10px] text-stone-500 line-clamp-3 break-words">{popupDesc || '...'}</p>
+ <h4 className="font-bold text-sm text-slate-900 break-words">{popupTitle || '...'}</h4>
+ <p className="text-[10px] text-slate-600 line-clamp-3 break-words">{popupDesc || '...'}</p>
  {(popupCtaText || popupCtaLink) && (
  <button className="w-full py-1.5 bg-primary-600 text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-primary-700 mt-2 truncate px-2">
  {popupCtaText || 'Click here'}
@@ -1645,12 +1646,12 @@ export function SettingsPage() {
  </div>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  
  <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
  <button 
  onClick={() => alert('Đã lưu cấu hình Popup!')}
- className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-sm active:scale-95"
+ className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
  >
  Lưu thiết lập Popup
  </button>
@@ -1662,41 +1663,41 @@ export function SettingsPage() {
 
  {activeTab === 'inventory' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
  <Package className="w-5 h-5 text-orange-700" /> Phân loại & Cấu hình Hàng hóa
  </h3>
- <p className="text-sm text-stone-500 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="bg-stone-50 border border-stone-200 rounded-lg p-5">
+ <p className="text-sm text-slate-600 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-5">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-stone-800">Danh mục Nhóm Hàng hóa</h4>
+ <h4 className="font-bold text-slate-900">Danh mục Nhóm Hàng hóa</h4>
  <button className="text-xs text-orange-700 font-bold hover:underline">+ Thêm nhóm</button>
  </div>
  <div className="space-y-2">
  {['Nguyên vật liệu (Raw Materials)', 'Thành phẩm (Finished Goods)', 'Bán thành phẩm (WIP)', 'Hàng hóa thương mại (Trading Goods)'].map((type, i) => (
- <div key={i} className="flex justify-between items-center bg-white p-3 border border-stone-100 rounded-lg">
+ <div key={i} className="flex justify-between items-center bg-white p-3 border border-slate-200 rounded-lg">
  <span className="text-sm font-medium">{type}</span>
- <button className="text-stone-400 hover:text-stone-600"><Edit2 className="w-4 h-4" /></button>
+ <button className="text-slate-500 hover:text-slate-700"><Edit2 className="w-4 h-4" /></button>
  </div>
  ))}
  </div>
  </div>
 
- <div className="bg-stone-50 border border-stone-200 rounded-lg p-5">
- <h4 className="font-bold text-stone-800 mb-4">Phương pháp Quản lý Kho</h4>
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-5">
+ <h4 className="font-bold text-slate-900 mb-4">Phương pháp Quản lý Kho</h4>
  <div className="space-y-3">
- <label className="flex items-center gap-3 p-3 bg-white border border-stone-100 rounded-lg cursor-pointer hover:bg-[#F2F0E9]/50">
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
  <input type="radio" name="inventory_method" className="w-4 h-4 text-orange-700" defaultChecked />
  <span className="text-sm font-medium">Bình quân gia quyền (Weighted Average)</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-white border border-stone-100 rounded-lg cursor-pointer hover:bg-[#F2F0E9]/50">
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
  <input type="radio" name="inventory_method" className="w-4 h-4 text-orange-700" />
  <span className="text-sm font-medium">Nhập trước xuất trước (FIFO)</span>
  </label>
  </div>
  </div>
- </div>
+ </DraggableGrid>
  </div>
  </div>
  )}
@@ -1705,71 +1706,71 @@ export function SettingsPage() {
  </div>
 
  {showAddJobTitleModal && (
- <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+ <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
- <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50">
- <h3 className="font-bold text-stone-800">{editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}</h3>
+ <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <h3 className="font-bold text-slate-900">{editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}</h3>
  <button 
  onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
- className="text-stone-400 hover:text-stone-600 font-bold text-lg leading-none"
+ className="text-slate-500 hover:text-slate-700 font-bold text-lg leading-none"
  >
  &times;
  </button>
  </div>
  <div className="p-4 overflow-y-auto flex-1 space-y-4">
  <div>
- <label className="block text-sm font-bold text-stone-700 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
  <input 
  type="text" 
  value={newJobTitle.name || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, name: e.target.value})}
- className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
+ className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
  placeholder="VD: Trưởng phòng Marketing"
  />
  </div>
  <div>
- <label className="block text-sm font-bold text-stone-700 mb-1">Phòng ban <span className="text-red-500">*</span></label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
  <select 
  value={newJobTitle.department || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
- className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
+ className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
  >
  <option value="">Chọn phòng ban</option>
  {MOCK_DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
  </select>
  </div>
  <div>
- <label className="block text-sm font-bold text-stone-700 mb-1">Cấp bậc</label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">Cấp bậc</label>
  <select 
  value={newJobTitle.rank || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
- className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
+ className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
  >
  <option value="">Chọn cấp bậc</option>
  {MOCK_JOB_RANKS.map(r => <option key={r.id} value={r.id}>{r.name} (Level {r.level})</option>)}
  </select>
  </div>
  <div>
- <label className="block text-sm font-bold text-stone-700 mb-1">Mô tả công việc</label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">Mô tả công việc</label>
  <textarea 
  value={newJobTitle.description || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
- className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm min-h-[100px]"
+ className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm min-h-[100px]"
  placeholder="Mô tả ngắn gọn chức năng, nhiệm vụ..."
  />
  </div>
  </div>
- <div className="p-4 border-t border-stone-100 flex justify-end gap-2 bg-stone-50">
+ <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
  <button 
  onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
- className="px-4 py-2 border border-stone-200 bg-white text-stone-600 rounded-lg text-sm font-bold hover:bg-stone-100"
+ className="px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-100"
  >
  Hủy
  </button>
  <button 
  onClick={handleSaveJobTitle}
  disabled={!newJobTitle.name || !newJobTitle.department}
- className="px-4 py-2 bg-stone-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-stone-800 disabled:opacity-50"
+ className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 disabled:opacity-50"
  >
  Lưu Chức danh
  </button>
@@ -1780,64 +1781,64 @@ export function SettingsPage() {
 
  {/* Fee Management Modal */}
  {showFeeModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in duration-200">
- <div className="bg-white w-full max-w-lg rounded-lg shadow-sm border border-stone-200 overflow-hidden animate-in zoom-in-95 slide-in- duration-300">
- <div className="flex items-center justify-between p-6 border-b border-stone-100 bg-stone-50/50">
+ <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+ <div className="bg-white w-full max-w-lg rounded-lg shadow-sm border border-slate-300 overflow-hidden animate-in zoom-in-95 slide-in- duration-300">
+ <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/50">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-[#F2F0E9] text-orange-700 rounded-xl flex items-center justify-center">
+ <div className="w-10 h-10 bg-slate-100 text-orange-700 rounded-xl flex items-center justify-center">
  <BadgeDollarSign className="w-6 h-6" />
  </div>
  <div>
- <h3 className="text-lg font-bold text-stone-900">{editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}</h3>
- <p className="text-xs text-stone-500">Thiết lập tham số và phạm vi áp dụng phí</p>
+ <h3 className="text-lg font-bold text-slate-900">{editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}</h3>
+ <p className="text-xs text-slate-600">Thiết lập tham số và phạm vi áp dụng phí</p>
  </div>
  </div>
- <button onClick={() => setShowFeeModal(false)} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
- <X className="w-5 h-5 text-stone-400" />
+ <button onClick={() => setShowFeeModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+ <X className="w-5 h-5 text-slate-500" />
  </button>
  </div>
 
  <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
  {/* Fee Name */}
  <div className="space-y-2">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Tên loại phí</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tên loại phí</label>
  <input 
  type="text" 
  value={newFee.name || ''}
  onChange={(e) => setNewFee({ ...newFee, name: e.target.value })}
  placeholder="VD: Phí vận hành kho, Phí thanh toán..."
- className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:border-stone-900 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+ className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
  />
  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-2">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Loại phí</label>
- <div className="flex bg-stone-100 p-1 rounded-xl">
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loại phí</label>
+ <div className="flex bg-slate-100 p-1 rounded-xl">
  <button 
  onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'percentage' ? "bg-white text-orange-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'percentage' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
  Phần trăm (%)
  </button>
  <button 
  onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'fixed' ? "bg-white text-orange-700 shadow-sm" : "text-stone-500 hover:text-stone-700")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'fixed' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
  Cố định (đ)
  </button>
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Giá trị</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Giá trị</label>
  <div className="relative">
  <input 
  type="number" 
  value={newFee.value || ''}
  onChange={(e) => setNewFee({ ...newFee, value: parseFloat(e.target.value) })}
- className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:border-stone-900 outline-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:border-slate-900 outline-none"
  />
- <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-xs">
+ <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">
  {newFee.type === 'percentage' ? '%' : 'đ'}
  </span>
  </div>
@@ -1846,7 +1847,7 @@ export function SettingsPage() {
 
  {/* Targeting: Seller Type */}
  <div className="space-y-3">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
  <div className="flex gap-4">
  {['mall', 'normal'].map((type) => {
  const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
@@ -1860,13 +1861,13 @@ export function SettingsPage() {
  }}
  className={cn(
  "flex-1 p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3",
- isSelected ? "border-stone-900 bg-[#F2F0E9]/50" : "border-stone-200 bg-white hover:border-stone-300"
+ isSelected ? "border-slate-900 bg-slate-100/50" : "border-slate-300 bg-white hover:border-slate-400"
  )}
  >
- <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-stone-900 bg-stone-900" : "border-stone-300")}>
+ <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-slate-900 bg-slate-900" : "border-slate-400")}>
  {isSelected && <Check className="w-3 h-3 text-[#FAF9F5]" />}
  </div>
- <span className={cn("text-xs font-bold", isSelected ? "text-orange-800" : "text-stone-600")}>
+ <span className={cn("text-xs font-bold", isSelected ? "text-orange-800" : "text-slate-700")}>
  {type === 'mall' ? 'Shop Mall' : 'Seller thường'}
  </span>
  </div>
@@ -1878,7 +1879,7 @@ export function SettingsPage() {
  {/* Targeting: Categories */}
  <div className="space-y-3">
  <div className="flex justify-between items-center">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Ngành hàng áp dụng</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
  <button 
  onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
  className="text-[10px] font-bold text-orange-700 hover:underline"
@@ -1907,7 +1908,7 @@ export function SettingsPage() {
  }}
  className={cn(
  "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
- isSelected ? "bg-primary-600 border-primary-600 text-[#FAF9F5] shadow-sm" : "bg-white border-stone-200 text-stone-500 hover:border-stone-300"
+ isSelected ? "bg-primary-600 border-primary-600 text-[#FAF9F5] shadow-sm" : "bg-white border-slate-300 text-slate-600 hover:border-slate-400"
  )}
  >
  {cat.name}
@@ -1919,21 +1920,21 @@ export function SettingsPage() {
 
  {/* Description */}
  <div className="space-y-2">
- <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">Mô tả (Ghi chú)</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
  <textarea 
  rows={2}
  value={newFee.description || ''}
  onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
  placeholder="Ghi chú về ý nghĩa loại phí này..."
- className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:border-stone-900 outline-none resize-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 outline-none resize-none"
  />
  </div>
  </div>
 
- <div className="p-6 bg-stone-50 border-t border-stone-100 flex gap-3">
+ <div className="p-6 bg-slate-50 border-t border-slate-200 flex gap-3">
  <button 
  onClick={() => setShowFeeModal(false)}
- className="flex-1 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl text-sm font-bold hover:bg-stone-50 transition-all"
+ className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all"
  >
  Hủy bỏ
  </button>
@@ -1947,7 +1948,7 @@ export function SettingsPage() {
  setShowFeeModal(false);
  addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
  }}
- className="flex-1 py-3 bg-[#2563EB] text-[#FAF9F5] rounded-xl text-sm font-bold hover:bg-stone-800 transition-all shadow-sm shadow-stone-900/5"
+ className="flex-1 py-3 bg-[#2563EB] text-[#FAF9F5] rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
  >
  {editingFee ? 'Cập nhật' : 'Xác nhận Thêm'}
  </button>

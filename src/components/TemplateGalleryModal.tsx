@@ -49,35 +49,35 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
   }, [] as any[]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-[#F3F4F6] rounded-xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="bg-white px-6 py-4 flex flex-col items-center justify-center relative border-b border-stone-200">
+        <div className="bg-white px-6 py-4 flex flex-col items-center justify-center relative border-b border-slate-300">
           <button 
             onClick={onClose} 
-            className="absolute right-4 top-4 p-2 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
+            className="absolute right-4 top-4 p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
           
-          <h2 className="text-xl font-bold text-stone-800">Mẫu yêu cầu</h2>
-          <p className="text-sm text-stone-500 mb-4">Chọn một gợi ý và chỉnh sửa để tạo nhanh yêu cầu</p>
+          <h2 className="text-xl font-bold text-slate-900">Mẫu yêu cầu</h2>
+          <p className="text-sm text-slate-600 mb-4">Chọn một gợi ý và chỉnh sửa để tạo nhanh yêu cầu</p>
           
           <div className="w-full max-w-2xl relative">
-            <Search className="w-5 h-5 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <Search className="w-5 h-5 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
             <input 
               type="text" 
               placeholder="Tìm kiếm yêu cầu"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-stone-100 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className="w-full pl-11 pr-4 py-2.5 bg-slate-100 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
             />
           </div>
         </div>
 
         {/* Create new bar */}
-        <div className="bg-white border-b border-stone-200 px-6 py-3 flex justify-center">
+        <div className="bg-white border-b border-slate-300 px-6 py-3 flex justify-center">
           <button 
             onClick={onCreateNew}
             className="flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
@@ -90,7 +90,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Sidebar */}
-          <div className="w-64 bg-white border-r border-stone-200 overflow-y-auto p-4 space-y-1">
+          <div className="w-64 bg-white border-r border-slate-300 overflow-y-auto p-4 space-y-1">
             {CATEGORIES.map(cat => (
               <button
                 key={cat.id}
@@ -99,7 +99,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
                   "w-full flex items-center px-4 py-3 rounded-lg text-sm font-semibold transition-colors text-left",
                   activeCategory === cat.id 
                     ? "bg-emerald-50 text-emerald-700" 
-                    : "text-stone-700 hover:bg-stone-50"
+                    : "text-slate-800 hover:bg-slate-50"
                 )}
               >
                 {cat.label}
@@ -111,18 +111,18 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
           <div className="flex-1 overflow-y-auto p-8 bg-[#F8F9FA]">
             {groupedTemplates.map(group => (
               <div key={group.id} className="mb-8">
-                <h3 className="text-sm font-bold text-stone-800 mb-4">{group.label}</h3>
+                <h3 className="text-sm font-bold text-slate-900 mb-4">{group.label}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {group.items.map((t: any) => (
                     <button
                       key={t.id}
                       onClick={() => onSelectTemplate(t)}
-                      className="bg-white p-4 rounded-xl border border-stone-200 hover:shadow-md hover:border-emerald-200 transition-all flex items-center gap-4 text-left group"
+                      className="bg-white p-4 rounded-xl border border-slate-300 hover:shadow-md hover:border-emerald-200 transition-all flex items-center gap-4 text-left group"
                     >
                       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", t.bg, t.color)}>
                         <t.icon className="w-5 h-5" />
                       </div>
-                      <span className="font-semibold text-stone-700 group-hover:text-emerald-700">{t.title}</span>
+                      <span className="font-semibold text-slate-800 group-hover:text-emerald-700">{t.title}</span>
                     </button>
                   ))}
                 </div>
@@ -130,7 +130,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
             ))}
             
             {groupedTemplates.length === 0 && (
-              <div className="text-center text-stone-400 py-12 font-medium">
+              <div className="text-center text-slate-500 py-12 font-medium">
                 Không tìm thấy mẫu yêu cầu nào.
               </div>
             )}
