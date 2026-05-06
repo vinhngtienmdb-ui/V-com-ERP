@@ -88,7 +88,7 @@ export function DraggableGrid({
     } catch(e) {}
 
     setLayouts(currentLayouts);
-    setOriginalLayouts(currentLayouts);
+    setOriginalLayouts(JSON.parse(JSON.stringify(currentLayouts)));
     setIsLoaded(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridId, columns]); 
@@ -99,8 +99,10 @@ export function DraggableGrid({
     // Clean up layouts to only store necessary properties for deep comparison
     const optimize = (layoutsObj: any) => {
         const res: any = {};
+        if (!layoutsObj) return res;
         for (const bp in layoutsObj) {
-            res[bp] = layoutsObj[bp].map((item: any) => ({i: item.i, x: item.x, y: item.y, w: item.w, h: item.h}));
+            if (!layoutsObj[bp]) continue;
+            res[bp] = layoutsObj[bp].map((item: any) => ({i: String(item.i), x: item.x, y: item.y, w: item.w, h: item.h}));
         }
         return res;
     };
@@ -118,13 +120,13 @@ export function DraggableGrid({
       const savedPath = window.location.pathname;
       const savedKey = `rgl-${savedPath}-${gridId}`;
       localStorage.setItem(savedKey, JSON.stringify(layouts));
-      setOriginalLayouts(layouts);
+      setOriginalLayouts(JSON.parse(JSON.stringify(layouts))); // Deep clone to prevent reference issues
       setIsDirty(false);
     } catch(e) {}
   };
 
   const handleCancel = () => {
-    setLayouts(originalLayouts);
+    setLayouts(JSON.parse(JSON.stringify(originalLayouts)));
     setIsDirty(false);
   };
 
