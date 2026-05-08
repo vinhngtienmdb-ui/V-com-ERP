@@ -326,3 +326,13 @@ body.hide-app-tables [role="table"] {
 .flex-col > * { /* Flex column children */
   min-width: 0;
 }
+
+.overflow-x-auto > table,
+.overflow-auto > table { 
+  width: 100%; 
+  min-width: max-content;
+}
+.overflow-x-auto th,
+.overflow-auto th {
+  white-space: nowrap;
+}

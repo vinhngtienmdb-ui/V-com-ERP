@@ -508,7 +508,8 @@ export function Orders() {
   <TableVirtuoso
     data={filteredOrders}
     components={{
-      Table: ({ style, ...props }) => <table {...props} className="w-full text-left border-collapse" style={{ ...style, minWidth: '800px' }} />,
+      Scroller: React.forwardRef((props, ref) => (<div {...props} ref={ref} className="overflow-auto custom-scrollbar" />)),
+      Table: ({ style, ...props }) => <table {...props} className="w-full text-left border-collapse table-auto" style={style} />,
       TableHead: React.forwardRef((props, ref) => <thead {...props} ref={ref} className="bg-[#F9FAFB] border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm" />),
       TableRow: (props) => {
         const order = props.item;
