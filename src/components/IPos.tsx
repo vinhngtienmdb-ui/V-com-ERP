@@ -1778,7 +1778,7 @@ export function IPosModule() {
           <p className="text-left">Thu ngân: {user?.displayName || "Admin"}</p>
         </div>
 
-        <div className="my-2 border-b border-dashed border-gray-400"></div>
+        <div className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0"></div>
 
         <table className="w-full text-left mb-2">
           <thead>
@@ -3171,7 +3171,7 @@ export function IPosModule() {
         </div>
 
         {activeTab !== "dashboard" && (
-          <div className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap">
+          <div className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap min-w-0">
             <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
             <button
               onClick={() => setActiveTab("dashboard")}
@@ -3795,7 +3795,7 @@ export function IPosModule() {
                     </button>
                   </div>
 
-                  <div className="flex gap-2.5 w-full overflow-x-auto no-scrollbar py-1">
+                  <div className="flex gap-2.5 w-full overflow-x-auto no-scrollbar py-1 min-w-0">
                     {(activeStoreConfig?.industry === "Bán buôn, bán lẻ"
                       ? [
                           "Tất cả",
@@ -3976,7 +3976,7 @@ export function IPosModule() {
             <div className="col-span-12 lg:col-span-5 xl:col-span-4 flex flex-col gap-5 overflow-hidden h-full animate-in slide-in- duration-500">
               {/* Suspended Carts (Hold/Resume) - Elegant pills */}
               {suspendedCarts.length > 0 && (
-                <div className="flex gap-2 w-full overflow-x-auto no-scrollbar py-1 shrink-0">
+                <div className="flex gap-2 w-full overflow-x-auto no-scrollbar py-1 shrink-0 min-w-0">
                   {suspendedCarts.map((sc) => (
                     <button
                       key={sc.id}
@@ -4526,7 +4526,7 @@ export function IPosModule() {
                   </p>
                 </div>
               </div>
-              <div className="flex bg-white p-1 rounded-sm border border-slate-300 shadow-sm overflow-x-auto no-scrollbar">
+              <div className="flex bg-white p-1 rounded-sm border border-slate-300 shadow-sm overflow-x-auto no-scrollbar min-w-0">
                 <button
                   onClick={() => setMgmtSubTab("revenue")}
                   className={cn(

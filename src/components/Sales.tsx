@@ -255,7 +255,7 @@ export function SalesManagement() {
  </button>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">

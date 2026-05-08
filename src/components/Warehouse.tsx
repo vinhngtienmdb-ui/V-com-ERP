@@ -335,7 +335,8 @@ export function WarehouseModule() {
  </div>
 
  <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
- <table className="w-full text-left border-collapse">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên khoản phí</th>
@@ -386,6 +387,7 @@ export function WarehouseModule() {
  ))}
  </tbody>
  </table>
+ </div>
  {(!LOGISTICS_FEES[selectedPartnerForFees] || LOGISTICS_FEES[selectedPartnerForFees].length === 0) && (
  <div className="py-20 flex flex-col items-center justify-center text-center opacity-50">
  <Receipt className="w-12 h-12 mb-4 text-slate-500" />
@@ -429,8 +431,9 @@ export function WarehouseModule() {
  </select>
  </div>
 
- <div className="border border-slate-300 rounded-lg overflow-hidden shadow-sm">
- <table className="w-full text-left border-collapse">
+ <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
  <th className="px-6 py-4">Vận đơn</th>
@@ -481,6 +484,7 @@ export function WarehouseModule() {
  ))}
  </tbody>
  </table>
+ </div>
  </div>
  </div>
  </div>
@@ -733,8 +737,9 @@ export function WarehouseModule() {
  ))}
  </div>
 
- <div className="border border-slate-300 rounded-xl overflow-hidden">
- <table className="w-full text-left">
+ <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
  <th className="px-6 py-4">Mã Nguyên liệu</th>
@@ -771,6 +776,7 @@ export function WarehouseModule() {
  ))}
  </tbody>
  </table>
+ </div>
  </div>
  </div>
  </div>

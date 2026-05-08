@@ -337,7 +337,7 @@ export function SignatureHub() {
  <div className="flex flex-wrap items-start gap-4">
  {item.flow.map((role, rIdx) => (
  <React.Fragment key={rIdx}>
- <div className="flex flex-col items-center bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 min-w-[120px]">
+ <div className="flex flex-col items-center bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 w-full">
  <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 font-black flex items-center justify-center text-xs mb-2">
  {rIdx + 1}
  </div>

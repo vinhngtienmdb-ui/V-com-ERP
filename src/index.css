@@ -318,3 +318,11 @@ body.hide-app-tables [role="table"] {
 
 
 
+
+
+/* Global fix for flex/grid overflow issues causing elements to break out of layouts */
+.grid > *, /* All grid items */
+.flex > .flex-1, /* Flex items that grow */
+.flex-col > * { /* Flex column children */
+  min-width: 0;
+}

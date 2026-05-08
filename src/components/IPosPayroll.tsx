@@ -160,8 +160,8 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                 </div>
              </div>
              
-             <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+             <div className="overflow-x-auto min-w-0">
+                <table className="w-full text-left text-sm">
                     <thead className="bg-[#F9FAFB] border-b border-slate-300 text-slate-600">
                         <tr>
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Nhân viên</th>

@@ -230,7 +230,7 @@ export function CustomerService() {
  {/* Main Content Area */}
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
  {/* Navigation Tabs */}
- <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar">
+ <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
  <button 
  onClick={() => setActiveTab('tickets')}
  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
@@ -299,7 +299,7 @@ export function CustomerService() {
  </div>
 
  {/* Content by Tab */}
- <div className="flex-1 overflow-x-auto">
+ <div className="flex-1 overflow-x-auto min-w-0">
  {activeTab === 'tickets' && (
  <table className="w-full text-left border-collapse">
  <thead>
@@ -361,6 +361,7 @@ export function CustomerService() {
  )}
 
  {activeTab === 'campaigns' && (
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
@@ -405,6 +406,7 @@ export function CustomerService() {
  ))}
  </tbody>
  </table>
+ </div>
  )}
 
  {activeTab === 'feedback' && (
@@ -565,7 +567,7 @@ export function CustomerService() {
 
  {/* Input Area */}
  <div className="p-4 bg-white border-t border-slate-300 flex flex-col gap-3">
- <div className="flex gap-2 p-1 overflow-x-auto hidden-scrollbar">
+ <div className="flex gap-2 p-1 overflow-x-auto hidden-scrollbar min-w-0">
  <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin chào</button>
  <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin thông tin nhận hàng</button>
  <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Gửi mã freeship</button>
@@ -689,7 +691,7 @@ export function CustomerService() {
  <button className="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold hover:bg-slate-200 transition-all">Đồng bộ OmiCall API</button>
  </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
@@ -934,7 +936,7 @@ export function CustomerService() {
  </DraggableGrid>
 
  {/* Staff List */}
- <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+ <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-50 border-b border-slate-200">
  <tr>
@@ -1223,7 +1225,7 @@ export function CustomerService() {
  <div>
  <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Copy JavaScript Snippet</h5>
  <div className="relative">
- <pre className="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto">
+ <pre className="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto min-w-0">
 {`<script>
  window.VCommChatOptions = {
  appId: "vcomm_live_9a8b7c6d",

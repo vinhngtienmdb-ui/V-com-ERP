@@ -42,7 +42,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto">
-         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden min-h-[400px]">
+         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-h-[400px] min-w-0">
              {tab === 'issues' ? (
                 <div className="p-8 text-center text-slate-600">
                    <AlertCircle className="w-12 h-12 text-rose-200 mx-auto mb-4" />
@@ -56,7 +56,8 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                    <p className="text-sm">Ghi nhận toàn bộ thao tác của nhân viên trên đơn hàng nhằm đối soát và kiểm toán.</p>
                 </div>
              ) : (
-                <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="overflow-x-auto min-w-0">
+                <table className="w-full text-left text-sm">
                    <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                        <tr>
                            <th className="px-4 py-3">Mã KH/Nguồn</th>
@@ -94,6 +95,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                        ))}
                    </tbody>
                </table>
+                </div>
              )}
          </div>
       </div>

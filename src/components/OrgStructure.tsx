@@ -168,7 +168,7 @@ export function OrgStructure() {
               )}
               
               {children.map(child => (
-                <div key={child.id} className="relative flex-1 min-w-[280px]">
+                <div key={child.id} className="relative flex-1 w-full">
                   <OrgChartNode node={child} level={level + 1} />
                 </div>
               ))}
@@ -222,7 +222,7 @@ export function OrgStructure() {
         ))}
       </div>
 
-      <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px]">
+      <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px] overflow-x-auto min-w-0">
         {activeTab === 'departments' && (
           <table className="w-full text-left">
             <thead>
@@ -262,6 +262,7 @@ export function OrgStructure() {
         )}
 
         {activeTab === 'titles' && (
+          <div className="overflow-x-auto min-w-0">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
@@ -295,9 +296,11 @@ export function OrgStructure() {
               )}
             </tbody>
           </table>
+          </div>
         )}
 
         {activeTab === 'ranks' && (
+          <div className="overflow-x-auto min-w-0">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
@@ -329,6 +332,7 @@ export function OrgStructure() {
               )}
             </tbody>
           </table>
+          </div>
         )}
 
         {activeTab === 'org_chart' && (

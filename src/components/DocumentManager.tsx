@@ -365,7 +365,7 @@ export function DocumentManager() {
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center font-bold bg-orange-50/50">Phòng ban</div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center font-bold bg-orange-50/50">Mức thưởng</div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center font-bold bg-orange-50/50">Ghi chú</div>
-                                      <div className="flex-1 min-w-[200px] border-r border-slate-300 px-2 flex items-center"></div>
+                                      <div className="flex-1 w-full border-r border-slate-300 px-2 flex items-center"></div>
                                     </>
                                   ) : rowIndex < 5 ? (
                                     <>
@@ -374,7 +374,7 @@ export function DocumentManager() {
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center">{['Sale','Marketing','IT','HR'][rowIndex-1]}</div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center text-right text-emerald-700 font-mono">{(rowIndex * 1500000).toLocaleString()} ₫</div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center">Xuất sắc Quý 1</div>
-                                      <div className="flex-1 min-w-[200px] border-r border-slate-300 px-2 flex items-center"></div>
+                                      <div className="flex-1 w-full border-r border-slate-300 px-2 flex items-center"></div>
                                     </>
                                   ) : (
                                     <>
@@ -383,7 +383,7 @@ export function DocumentManager() {
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center"></div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center"></div>
                                       <div className="w-32 shrink-0 border-r border-slate-300 px-2 flex items-center"></div>
-                                      <div className="flex-1 min-w-[200px] border-r border-slate-300 px-2 flex items-center"></div>
+                                      <div className="flex-1 w-full border-r border-slate-300 px-2 flex items-center"></div>
                                     </>
                                   )}
                                 </div>
@@ -392,7 +392,7 @@ export function DocumentManager() {
                           </div>
                           
                           {/* Sheet Tabs */}
-                          <div className="bg-slate-100 border-t border-slate-400 px-2 py-1 flex gap-1 h-8 shrink-0 text-xs font-semibold overflow-x-auto">
+                          <div className="bg-slate-100 border-t border-slate-400 px-2 py-1 flex gap-1 h-8 shrink-0 text-xs font-semibold overflow-x-auto min-w-0">
                             <button className="px-4 py-1 bg-white border border-slate-400 text-orange-700 shadow-sm text-[11px] rounded flex items-center gap-1">Sheet1</button>
                             <button className="px-4 py-1 text-slate-600 hover:bg-slate-200 text-[11px] rounded flex items-center gap-1">Sheet2</button>
                             <button className="px-2 py-1 text-slate-600 hover:bg-slate-200 rounded flex items-center"><Plus className="w-3 h-3"/></button>
@@ -580,14 +580,14 @@ export function DocumentManager() {
                   </div>
 
                   <div className="p-0 overflow-auto flex-1">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
+<table className="w-full text-left border-collapse">
                       <thead className="bg-slate-50 border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm">
                         <tr>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest whitespace-nowrap">Số KH/Ký hiệu</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Số KH/Ký hiệu</th>
                           <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trích yếu</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest whitespace-nowrap">Hình thức</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest whitespace-nowrap">Thiết lập luồng</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest whitespace-nowrap text-right">Trạng thái</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hình thức</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thiết lập luồng</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F3F4F6]">
@@ -597,7 +597,7 @@ export function DocumentManager() {
                             onClick={() => handleDocClick(doc)}
                             className="hover:bg-slate-50 transition-colors cursor-pointer group"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4">
                               <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">{doc.id}</p>
                               <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
@@ -609,7 +609,7 @@ export function DocumentManager() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4">
                               <span className={cn(
                                 "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight",
                                 doc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
@@ -618,7 +618,7 @@ export function DocumentManager() {
                                 {doc.category || 'Văn bản'}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4">
                                {/* Preview of routing to show it handles direct specific deps */}
                                <div className="flex items-center gap-2">
                                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded truncate max-w-[120px]">{doc.department}</span>
@@ -626,7 +626,7 @@ export function DocumentManager() {
                                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">NV Xử lý</span>
                                </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <td className="px-6 py-4 text-right">
                                <div className="flex justify-end">
                                   {doc.status === 'processing' ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-md">
@@ -696,7 +696,7 @@ export function DocumentManager() {
                    </div>
                    
                    <div className="space-y-6">
-                     <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6">
+                     <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6 overflow-x-auto min-w-0">
                        <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-blue-600" /> Cấu hình vai trò & Phân quyền</h4>
                        <table className="w-full text-left border-collapse">
                          <thead className="bg-slate-50 border-b border-[#F3F4F6]">

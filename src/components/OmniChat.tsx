@@ -233,7 +233,7 @@ export function OmniChat() {
 
  {/* AI Suggestions */}
  {suggestedReplies.length > 0 && (
- <div className="px-6 py-3 flex gap-2 overflow-x-auto bg-white border-y border-slate-200 no-scrollbar">
+ <div className="px-6 py-3 flex gap-2 overflow-x-auto bg-white border-y border-slate-200 no-scrollbar min-w-0">
  {suggestedReplies.map((reply, i) => (
  <button 
  key={i}

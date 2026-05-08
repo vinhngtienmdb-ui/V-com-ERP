@@ -139,7 +139,7 @@ export function AIOperations() {
  </DraggableGrid>
 
  <div className="bg-white rounded-none border border-slate-200 shadow-sm overflow-hidden">
- <div className="flex border-b border-slate-200 bg-slate-50/30 p-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+ <div className="flex border-b border-slate-200 bg-slate-50/30 p-2 overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
  {[
  { id: 'moderation', label: 'Bảo vệ Nội dung', icon: ShieldCheck },
  { id: 'pricing', label: 'AI Giá linh hoạt', icon: Zap },
@@ -306,7 +306,7 @@ export function AIOperations() {
  </h3>
  <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
  </div>
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-slate-200">

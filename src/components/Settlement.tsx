@@ -176,7 +176,7 @@ export function SettlementManagement() {
  </button>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  {activeTab === 'settlement' && (

@@ -1222,7 +1222,9 @@ export function HumanResources() {
  </div>
  </div>
  ) : (activeTab !== 'attendance' && activeTab !== 'kpi') ? (
- <table className="w-full text-left border-collapse">
+ <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
  {activeTab === 'personnel' && (
@@ -1550,6 +1552,8 @@ export function HumanResources() {
  })}
  </tbody>
  </table>
+ </div>
+ </div>
  ) : null}
  </div>
 
@@ -1684,8 +1688,9 @@ export function HumanResources() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
- <table className="w-full text-left border-collapse">
+ <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
@@ -1757,6 +1762,7 @@ export function HumanResources() {
  </table>
  </div>
  </div>
+ </div>
 
  <div className="col-span-12 lg:col-span-4 space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
@@ -1817,14 +1823,15 @@ export function HumanResources() {
  </div>
  </div>
  <p className="text-[10px] text-slate-500 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-primary-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
- </div>
- <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
- </div>
- </div>
- </DraggableGrid>
- )}
- </div>
- )}
+          </div>
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
+        </div>
+      </div>
+    </DraggableGrid>
+  )
+}
+  </div>
+)}
 
  {activeTab === 'kpi' && (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 p-8 bg-white min-h-[600px]">
@@ -1894,8 +1901,8 @@ export function HumanResources() {
  />
  </div>
  </div>
- <div className="overflow-x-auto">
- <table className="w-full">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/30 border-b border-slate-200 text-left">
  <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự & Vị trí</th>
@@ -2100,7 +2107,8 @@ export function HumanResources() {
 
  {/* Advanced Payroll Table */}
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
- <table className="w-full text-left border-collapse">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/80 border-b border-slate-200">
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest">Mã / Tên Nhân viên</th>
@@ -2162,6 +2170,7 @@ export function HumanResources() {
  )}
  </tbody>
  </table>
+ </div>
  <div className="bg-slate-50 border-t border-slate-200 p-4 text-xs text-slate-600 font-medium flex justify-between items-center">
  <p className="flex items-center gap-1.5">
  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Dữ liệu đã được đồng bộ với module Chấm công & KPI.
@@ -2555,7 +2564,7 @@ export function HumanResources() {
  </div>
  <div className="flex flex-wrap gap-2 mt-3">
  {selectedEmployee.skills?.map((s, i) => (
- <div key={i} className="px-3 py-1.5 bg-slate-100 text-orange-800 rounded-lg border border-slate-300 flex items-center justify-between gap-3 text-xs flex-1 min-w-[140px]">
+ <div key={i} className="px-3 py-1.5 bg-slate-100 text-orange-800 rounded-lg border border-slate-300 flex items-center justify-between gap-3 text-xs flex-1 w-full">
  <span className="font-bold">{s.name}</span>
  <span className="font-mono">{s.level}%</span>
  </div>

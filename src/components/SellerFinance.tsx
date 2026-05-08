@@ -104,7 +104,7 @@ export function SellerFinance() {
 
  <div className="p-6">
  {activeTab === 'credit' && (
- <div className="overflow-x-auto animate-in fade-in duration-300">
+ <div className="overflow-x-auto animate-in fade-in duration-300 min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">

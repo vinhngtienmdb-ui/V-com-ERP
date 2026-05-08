@@ -330,7 +330,7 @@ export function RequestHub() {
  <>
  <div className="p-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50/80">
  <div className="flex flex-wrap items-center gap-3 flex-1 w-full">
- <div className="relative flex-1 min-w-[200px] max-w-sm">
+ <div className="relative flex-1 w-full max-w-sm">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  <input 
  type="text" 
@@ -1205,7 +1205,7 @@ export function RequestHub() {
  </DraggableGrid>
  </div>
 
- <div className="space-y-4">
+ <div className="space-y-4 overflow-x-auto min-w-0">
  <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 px-2">
  <Layout className="w-4 h-4" /> DỮ LIỆU CHI TIẾT
  </h3>

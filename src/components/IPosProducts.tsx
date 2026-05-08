@@ -40,8 +40,8 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
                 <div className="flex items-center gap-2 mb-4 text-slate-600 font-medium text-sm">
                    <Box className="w-4 h-4" /> Danh sách sản phẩm (Mô phỏng)
                 </div>
-                <div className="border border-slate-300 rounded-sm overflow-hidden">
-                    <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="border border-slate-300 rounded-sm overflow-hidden overflow-x-auto min-w-0">
+                    <table className="w-full text-left text-sm">
                         <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                             <tr>
                                 <th className="px-4 py-3">SKU</th>

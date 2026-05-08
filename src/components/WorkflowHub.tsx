@@ -220,7 +220,7 @@ export function WorkflowHub() {
  task.status === 'in_progress' ? <RefreshCw className="w-7 h-7 animate-spin-slow" /> : 
  <ShieldAlert className="w-7 h-7" />}
  </div>
- <div className="flex-1 min-w-[200px]">
+ <div className="flex-1 w-full">
  <div className="flex items-center gap-2 mb-1">
  <span className="text-[10px] font-black text-orange-700 uppercase tracking-widest">{task.module} • {task.id}</span>
  {task.priority === 'critical' && <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />}

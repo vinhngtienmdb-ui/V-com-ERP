@@ -1075,17 +1075,17 @@ export function Customers() {
  </button>
  </div>
 
- <div className="overflow-x-auto bg-white border-t border-slate-200">
- <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+ <div className="overflow-x-auto bg-white border-t border-slate-200 min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-[20%]">Khách hàng</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-[18%]">Liên hệ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center w-[10%]">Kênh</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[15%]">Chi tiêu</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[15%]">Ví / Loyalty</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center w-[12%]">Trạng thái</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right w-[10%]">Action</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Liên hệ</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Kênh</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1233,7 +1233,7 @@ export function Customers() {
  </button>
  </div>
  )}
- <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal">
+ <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal min-w-0">
  <div className="flex gap-6 h-full items-start">
  {pipelineStages.map(stage => (
  <div 

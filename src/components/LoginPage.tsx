@@ -8,6 +8,13 @@ export function LoginPage() {
  const [password, setPassword] = React.useState('');
  const [isSubmitting, setIsSubmitting] = React.useState(false);
  const [error, setError] = React.useState<string | null>(null);
+ 
+ const [logo, setLogo] = React.useState<string | null>(null);
+
+ React.useEffect(() => {
+   const savedLogo = localStorage.getItem('system-logo');
+   if (savedLogo) setLogo(savedLogo);
+ }, []);
 
  const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
@@ -34,10 +41,16 @@ export function LoginPage() {
  
  <div className="relative z-10">
  <div className="flex items-center gap-3 mb-12">
- <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
- <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
- VComm <span className="text-orange-500">ERP</span>
- </h1>
+ {logo ? (
+   <img src={logo} alt="Logo" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
+ ) : (
+   <>
+     <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
+     <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
+     VComm <span className="text-orange-500">ERP</span>
+     </h1>
+   </>
+ )}
  </div>
  
  <div className="space-y-6 max-w-lg">

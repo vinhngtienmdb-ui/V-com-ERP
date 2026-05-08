@@ -125,16 +125,16 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap">Nhà cung cấp</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap">Ngành hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap">Liên hệ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap">Chính sách & HĐ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap text-center">Đánh giá</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -281,15 +281,15 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  </div>
  </DraggableGrid>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap w-[20%]">Mã Phiếu / Khối</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest min-w-[200px]">Nội dung & Người đề xuất</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap text-right">Dự toán / Mặt hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest whitespace-nowrap text-right">Ngày gửi</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">

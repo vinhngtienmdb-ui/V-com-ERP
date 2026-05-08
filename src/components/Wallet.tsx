@@ -337,7 +337,7 @@ export function WalletHub() {
  </DraggableGrid>
 
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden p-2 min-h-[600px]">
- <div className="flex border-b border-slate-200 bg-slate-50/50 p-1.5 overflow-x-auto scrollbar-hide">
+ <div className="flex border-b border-slate-200 bg-slate-50/50 p-1.5 overflow-x-auto scrollbar-hide min-w-0">
  {[
  { id: 'history', label: 'Lịch sử giao dịch', icon: History },
  { id: 'banking', label: 'Tài khoản Ngân hàng', icon: Landmark },
@@ -349,7 +349,7 @@ export function WalletHub() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "flex-1 px-8 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 min-w-[200px]",
+ "flex-1 px-8 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 w-full",
  activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
  )}
  >
@@ -411,7 +411,7 @@ export function WalletHub() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-slate-200">
@@ -470,7 +470,7 @@ export function WalletHub() {
  </span>
  </div>
  </td>
- <td className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-tighter whitespace-nowrap">{txn.timestamp}</td>
+ <td className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{txn.timestamp}</td>
  </tr>
  ))}
  </tbody>
@@ -611,7 +611,7 @@ export function WalletHub() {
  </DraggableGrid>
  </div>
 
- <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+ <div className="bg-white border border-slate-200 rounded-lg overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-stone-50">
@@ -914,13 +914,13 @@ export function WalletHub() {
  ))}
  </div>
  </div>
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full">
  <thead>
  <tr className="bg-slate-50 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-left">
  <th className="px-6 py-4">Đối tượng</th>
  <th className="px-6 py-4">Loại Ví</th>
- <th className="px-6 py-4 min-w-[200px]">Giao dịch / Chuyển đổi</th>
+ <th className="px-6 py-4 w-full">Giao dịch / Chuyển đổi</th>
  <th className="px-6 py-4 text-right">Biến động</th>
  <th className="px-6 py-4 text-right">Số dư mới</th>
  <th className="px-6 py-4">Thời gian</th>
@@ -982,7 +982,7 @@ export function WalletHub() {
  <p className="text-sm text-slate-500 leading-relaxed">Hệ thống AI giám sát mọi giao dịch 24/7 để phát hiện các hành vi bất thường như rửa tiền, gian lận thẻ hoặc nạp tiền ảo. Tự động đóng băng tài khoản khi có rủi ro cao để bảo vệ tài sản của Doanh nghiệp.</p>
  </div>
 
- <div className="relative z-10 flex flex-col gap-3 min-w-[240px]">
+ <div className="relative z-10 flex flex-col gap-3 w-full">
  <button className="w-full py-4 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-sm text-sm flex items-center justify-center gap-2">
  Fraud Analysis Report <BarChart2 className="w-4 h-4" />
  </button>

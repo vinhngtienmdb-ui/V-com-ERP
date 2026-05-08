@@ -21,7 +21,7 @@ import {
  PieChart as PieIcon,
  Sparkles
 } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
@@ -504,86 +504,99 @@ export function Orders() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
- <table className="w-full text-left border-collapse">
- <thead>
- <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đơn hàng & Khách hàng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Giao nhận & Tracking</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cước phí</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thanh toán</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Thao tác</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
- {filteredOrders.map((order) => (
- <tr 
- key={order.id} 
- className={cn(
- "bg-white hover:bg-slate-50 group hover:shadow-sm transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600",
- isDelayed(order.date, order.status) && "bg-red-50/30 border-l-red-500"
- )}
- onClick={() => setSelectedOrder(order)}
- >
- <td className="px-6 py-4">
- <div className="flex items-center gap-2">
- <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
- {isDelayed(order.date, order.status) && (
- <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Delayed</span>
- )}
- </div>
- <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
- <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
- </td>
- <td className="px-6 py-4">
- {order.carrier ? (
- <div className="flex items-center gap-3">
- <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm min-w-[80px] group-hover:border-orange-200 transition-colors">
- <span className="text-[10px] font-bold text-slate-800 uppercase">{order.carrier}</span>
- <span className="text-[10px] font-mono text-[#2563EB] font-bold">{order.tracking}</span>
- </div>
- <button className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1">
- <MapPin className="w-3 h-3" /> Tra cứu
- </button>
- </div>
- ) : (
- <span className="text-[10px] text-[#9CA3AF] italic">Chưa đẩy đơn</span>
- )}
- </td>
- <td className="px-6 py-4">
- <p className="text-sm font-semibold text-[#111827]">{formatCurrency(order.total)}</p>
- <p className="text-[10px] text-[#6B7280]">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
- </td>
- <td className="px-6 py-4">
- <p className="text-sm font-semibold text-[#111827]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
- </td>
- <td className="px-6 py-4">
- <div className="flex justify-center">
- <span className={cn(
- "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",
- statusStyles[order.status as keyof typeof statusStyles]
- )}>
- {React.createElement(statusIcons[order.status as keyof typeof statusIcons], { className: "w-3 h-3" })}
- {statusLabels[order.status as keyof typeof statusLabels]}
- </span>
- </div>
- </td>
- <td className="px-6 py-4 text-right">
- <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
- <button className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all active:scale-95">
- <MoreHorizontal className="w-4 h-4" />
- </button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- 
- {selectedOrder && (
+   <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4 h-[600px]">
+  <TableVirtuoso
+    data={filteredOrders}
+    components={{
+      Table: ({ style, ...props }) => <table {...props} className="w-full text-left border-collapse" style={{ ...style, minWidth: '800px' }} />,
+      TableHead: React.forwardRef((props, ref) => <thead {...props} ref={ref} className="bg-[#F9FAFB] border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm" />),
+      TableRow: (props) => {
+        const order = props.item;
+        return (
+          <tr 
+            {...props} 
+            className={cn(
+              "bg-white hover:bg-slate-50 group hover:shadow-sm transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600 border-b border-[#F3F4F6]",
+              isDelayed(order?.date || '', order?.status || '') && "bg-red-50/30 border-l-red-500"
+            )}
+            onClick={() => setSelectedOrder(order)}
+          />
+        );
+      }
+    }}
+    fixedHeaderContent={() => (
+      <tr>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Đơn hàng & Khách hàng</th>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Giao nhận & Tracking</th>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Cước phí</th>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Thanh toán</th>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center bg-[#F9FAFB]">Trạng thái</th>
+        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right bg-[#F9FAFB]">Thao tác</th>
+      </tr>
+    )}
+    itemContent={(index, order) => (
+      <>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
+            {isDelayed(order.date, order.status) && (
+              <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Delayed</span>
+            )}
+          </div>
+          <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
+          <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
+        </td>
+        <td className="px-6 py-4">
+          {order.carrier ? (
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-orange-200 transition-colors">
+                <span className="text-[10px] font-bold text-slate-800 uppercase">{order.carrier}</span>
+                <span className="text-[10px] font-mono text-[#2563EB] font-bold">{order.tracking}</span>
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); }}
+                className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1 shrink-0"
+              >
+                <MapPin className="w-3 h-3" /> Tra cứu
+              </button>
+            </div>
+          ) : (
+            <span className="text-[10px] text-[#9CA3AF] italic">Chưa đẩy đơn</span>
+          )}
+        </td>
+        <td className="px-6 py-4">
+          <p className="text-sm font-semibold text-[#111827]">{formatCurrency(order.total)}</p>
+          <p className="text-[10px] text-[#6B7280]">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
+        </td>
+        <td className="px-6 py-4">
+          <p className="text-sm font-semibold text-[#111827]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex justify-center">
+            <span className={cn(
+              "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",
+              statusStyles[order.status as keyof typeof statusStyles] || "bg-slate-100 text-slate-700"
+            )}>
+              {React.createElement(statusIcons[order.status as keyof typeof statusIcons] || Package, { className: "w-3 h-3" })}
+              {statusLabels[order.status as keyof typeof statusLabels] || order.status}
+            </span>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-right">
+          <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
+            <button 
+              onClick={(e) => { e.stopPropagation(); }}
+              className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all active:scale-95"
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </>
+    )}
+  />
+  </div>
+  {selectedOrder && (
  <OrderDetailModal 
  order={selectedOrder} 
  onClose={() => setSelectedOrder(null)} 
@@ -602,5 +615,6 @@ export function Orders() {
  </div>
  </div>
  </div>
- );
+ </div>
+  );
 }

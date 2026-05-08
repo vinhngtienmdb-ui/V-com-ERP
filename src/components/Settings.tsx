@@ -1,6 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import { Wallet } from 'lucide-react';
-import React, { useState } from 'react';
+import { Wallet , Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { 
  ShieldCheck, 
  Settings, 
@@ -270,6 +270,59 @@ export function SettingsPage() {
  const [editingJobTitle, setEditingJobTitle] = useState<JobTitle | null>(null);
  const [newJobTitle, setNewJobTitle] = useState<Partial<JobTitle>>({});
 
+ // Website States
+ const [systemLogo, setSystemLogo] = useState<string>('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=128&h=128&fit=crop');
+ const [systemFavicon, setSystemFavicon] = useState<string>('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=32&h=32&fit=crop');
+ const [isSavingWebsite, setIsSavingWebsite] = useState(false);
+
+ useEffect(() => {
+   const savedLogo = localStorage.getItem('system-logo');
+   const savedFavicon = localStorage.getItem('system-favicon');
+   if (savedLogo) setSystemLogo(savedLogo);
+   if (savedFavicon) setSystemFavicon(savedFavicon);
+ }, []);
+
+ const handleSaveWebsiteConfig = () => {
+  setIsSavingWebsite(true);
+  try {
+    localStorage.setItem('system-logo', systemLogo);
+    localStorage.setItem('system-favicon', systemFavicon);
+    
+    // Update favicon in DOM
+    const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    if (faviconLink) {
+        faviconLink.href = systemFavicon;
+    } else {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = systemFavicon;
+        document.head.appendChild(link);
+    }
+
+    setTimeout(() => {
+      setIsSavingWebsite(false);
+      // Using a simple notification since I don't see a toast library easily available
+      alert('Cấu hình website đã được lưu thành công!');
+    }, 800);
+  } catch (error) {
+    console.error('Error saving website config:', error);
+    setIsSavingWebsite(false);
+    alert('Có lỗi xảy ra khi lưu cấu hình!');
+  }
+ };
+
+ const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'favicon') => {
+  const file = e.target.files?.[0];
+  if (file) {
+  const reader = new FileReader();
+  reader.onloadend = () => {
+  if (type === 'logo') setSystemLogo(reader.result as string);
+  else setSystemFavicon(reader.result as string);
+  };
+  reader.readAsDataURL(file);
+  }
+ };
+
  const handleSaveJobTitle = () => {
  if (!newJobTitle.name || !newJobTitle.department) return;
  
@@ -469,12 +522,12 @@ export function SettingsPage() {
  <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
  {group.title}
  </h3>
- <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+ <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" columns={4} gap={20} id={`settings-group-${gIdx}`}>
  {group.items.map((mod) => (
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden h-full"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -488,7 +541,7 @@ export function SettingsPage() {
  </div>
  </div>
  ))}
- </div>
+ </DraggableGrid>
  </div>
  ))}
  </div>
@@ -776,7 +829,7 @@ export function SettingsPage() {
  </div>
  )}
 
- <div className="border border-slate-300 rounded-lg overflow-hidden shadow-sm">
+ <div className="border border-slate-300 rounded-lg overflow-hidden shadow-sm overflow-x-auto min-w-0">
  <table className="w-full text-sm">
  <thead className="bg-[#F9FAFB] border-b border-slate-300">
  <tr>
@@ -889,32 +942,72 @@ export function SettingsPage() {
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
- <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
- <input type="file" id="logo-upload" className="hidden" accept="image/*" />
- <label htmlFor="logo-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
+ <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
+ <input 
+ type="file" 
+ id="logo-upload" 
+ className="hidden" 
+ accept="image/*" 
+ onChange={(e) => handleFileUpload(e, 'logo')}
+ />
+ <label htmlFor="logo-upload" className="cursor-pointer flex flex-col items-center justify-center gap-2 w-full h-full p-2">
+ {systemLogo ? (
+ <img src={systemLogo} alt="System Logo" className="h-16 object-contain" referrerPolicy="no-referrer" />
+ ) : (
+ <Image className="w-8 h-8 text-slate-400" />
+ )}
+ <span className="text-xs font-bold text-[#2563EB]">
  Nhấn để tải lên hoặc kéo thả Logo
- </label>
+ </span>
  <p className="text-[10px] text-[#9CA3AF] mt-1">PNG, JPG tối đa 5MB</p>
+ </label>
  </div>
  </div>
  </div>
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-[#6B7280] mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
- <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
- <input type="file" id="favicon-upload" className="hidden" accept="image/x-icon,image/png" />
- <label htmlFor="favicon-upload" className="cursor-pointer text-xs font-bold text-[#2563EB]">
+ <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
+ <input 
+ type="file" 
+ id="favicon-upload" 
+ className="hidden" 
+ accept="image/x-icon,image/png" 
+ onChange={(e) => handleFileUpload(e, 'favicon')}
+ />
+ <label htmlFor="favicon-upload" className="cursor-pointer flex flex-col items-center justify-center gap-2 w-full h-full p-2">
+ {systemFavicon ? (
+ <img src={systemFavicon} alt="Favicon" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />
+ ) : (
+ <Globe className="w-6 h-6 text-slate-400" />
+ )}
+ <span className="text-xs font-bold text-[#2563EB]">
  Nhấn để tải lên hoặc kéo thả Favicon
- </label>
+ </span>
  <p className="text-[10px] text-[#9CA3AF] mt-1">ICO, PNG (32x32px)</p>
+ </label>
  </div>
  </div>
  </div>
  </div>
 
  <div className="flex justify-end gap-3 pt-4 border-t border-[#F3F4F6] mt-6">
- <button className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95">
- Lưu cấu hình website
+ <button 
+   onClick={handleSaveWebsiteConfig}
+   disabled={isSavingWebsite}
+   className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+ >
+   {isSavingWebsite ? (
+     <>
+       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+       Đang lưu...
+     </>
+   ) : (
+     <>
+       <Save className="w-4 h-4" />
+       Lưu cấu hình website
+     </>
+   )}
  </button>
  </div>
  </div>
@@ -941,7 +1034,7 @@ export function SettingsPage() {
  <Plus className="w-3.5 h-3.5" /> Tạo Vai trò mới
  </button>
  </div>
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
@@ -1186,7 +1279,7 @@ export function SettingsPage() {
  </div>
  </div>
 
- <div className="bg-slate-50 border border-slate-300 rounded-lg overflow-hidden">
+ <div className="bg-slate-50 border border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left text-sm">
  <thead className="bg-[#F9FAFB] border-b border-slate-300 text-[#6B7280]">
  <tr>

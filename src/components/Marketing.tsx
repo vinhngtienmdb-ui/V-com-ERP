@@ -337,7 +337,8 @@ export function Marketing() {
  <Plus className="w-3 h-3" /> Tạo mã giảm giá
  </button>
  </div>
- <table className="w-full text-left text-sm">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left text-sm">
  <thead>
  <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
  <th className="px-6 py-3">Tên chiến dịch</th>
@@ -368,6 +369,7 @@ export function Marketing() {
  </tr>
  </tbody>
  </table>
+</div>
  </div>
  </motion.div>
  )}
@@ -399,7 +401,7 @@ export function Marketing() {
  </button>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">

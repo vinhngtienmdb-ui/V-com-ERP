@@ -22,7 +22,7 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
           <button className="p-2 text-slate-600 hover:text-primary-600 transition-colors"><Search className="w-4 h-4"/></button>
         </div>
       </div>
-      <div className="bg-white border-b border-slate-300 px-6 py-2.5 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+      <div className="bg-white border-b border-slate-300 px-6 py-2.5 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap min-w-0">
           {[
             { id: 'kiem', label: 'Tồn Kho & Phiếu Nháp', icon: ClipboardList },
             { id: 'nhap', label: 'Nhập Hàng (Dự báo)', icon: ArrowDownToLine },
@@ -65,8 +65,8 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
                     <h4 className="font-bold text-sm text-slate-800">Phiếu kiểm kho & Bàn giao kho cuối ngày</h4>
                     <button className="text-sm text-primary-600 font-bold hover:underline">Lịch sử kiểm kho</button>
                  </div>
-                 <div className="overflow-x-auto">
-                 <table className="w-full text-left text-sm whitespace-nowrap">
+                 <div className="overflow-x-auto min-w-0">
+                 <table className="w-full text-left text-sm">
                     <thead className="bg-white border-b border-slate-200 text-slate-600 font-semibold">
                         <tr>
                             <th className="px-5 py-4">Mã NL/SKU</th>

@@ -541,8 +541,9 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
- <table className="w-full text-left border-collapse">
+ <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hồ sơ Đối tác</th>
@@ -654,6 +655,7 @@ export function SellerManagement() {
  ))}
  </tbody>
  </table>
+ </div>
  </div>
  </div>
 

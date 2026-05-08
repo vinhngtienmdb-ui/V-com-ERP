@@ -158,7 +158,7 @@ export function EMenu() {
 
  {/* Categories Horizontal Scroll */}
  <div className="bg-white px-6 py-4 sticky top-[85px] z-20 border-b border-stone-50">
- <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
+ <div className="flex gap-4 overflow-x-auto no-scrollbar py-2 min-w-0">
  {categories.map(cat => (
  <button
  key={cat}

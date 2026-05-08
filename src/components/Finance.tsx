@@ -401,7 +401,9 @@ export function Finance() {
  </button>
  </div>
  </div>
- <table className="w-full text-left">
+ <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
+ <div className="overflow-x-auto min-w-0">
+<table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
@@ -439,6 +441,8 @@ export function Finance() {
  ))}
  </tbody>
  </table>
+ </div>
+ </div>
  </div>
  )}
 

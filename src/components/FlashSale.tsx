@@ -322,7 +322,7 @@ export function FlashSale() {
 
  {/* PnL Projection Table */}
  {selectedProduct ? (
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
@@ -421,7 +421,7 @@ export function FlashSale() {
  <div className="text-[11px] text-slate-600 italic mb-3">Thêm 1 hoặc nhiều sản phẩm với mức giảm giá khác nhau...</div>
  
  {/* Table preview for added flash sale products */}
- <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden">
+ <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
  <tr>
@@ -634,7 +634,7 @@ export function FlashSale() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
@@ -747,7 +747,7 @@ export function FlashSale() {
  </div>
  </div>
  
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">

@@ -9,14 +9,34 @@ export function Sidebar() {
  const navigate = useNavigate();
  const location = useLocation();
  const { signOut } = useAuth();
+ 
+ const [logo, setLogo] = React.useState<string | null>(null);
+
+ React.useEffect(() => {
+   const savedLogo = localStorage.getItem('system-logo');
+   if (savedLogo) setLogo(savedLogo);
+   
+   // Listen for storage changes in other tabs/windows
+   const handleStorage = (e: StorageEvent) => {
+     if (e.key === 'system-logo') setLogo(e.newValue);
+   };
+   window.addEventListener('storage', handleStorage);
+   return () => window.removeEventListener('storage', handleStorage);
+ }, []);
 
  return (
  <aside className="w-[280px] bg-white border-r border-slate-300 flex flex-col h-full py-6">
  <div className="px-6 mb-8 flex items-center gap-3">
- <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
- <h1 className="font-serif tracking-tight text-xl font-black text-[#111827] tracking-tight">
- VComm <span className="text-[#2563EB]">ERP</span>
- </h1>
+ {logo ? (
+   <img src={logo} alt="Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+ ) : (
+   <>
+    <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
+    <h1 className="font-serif tracking-tight text-xl font-black text-[#111827]">
+    VComm <span className="text-[#2563EB]">ERP</span>
+    </h1>
+   </>
+ )}
  </div>
 
  <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-6">

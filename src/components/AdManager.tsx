@@ -118,7 +118,7 @@ export function AdManager() {
  </DraggableGrid>
 
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden p-2">
- <div className="flex border-b border-[#F3F4F6] bg-slate-50/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-hide">
+ <div className="flex border-b border-[#F3F4F6] bg-slate-50/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
  {[
  { id: 'bidding', label: 'Đấu thầu (Bidding Management)', icon: Zap },
  { id: 'analytics', label: 'Analytics Dashboard (Seller & Marketplace)', icon: BarChart3 }
@@ -154,7 +154,7 @@ export function AdManager() {
  </div>
  </div>
 
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">

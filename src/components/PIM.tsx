@@ -1054,7 +1054,7 @@ export function PIM() {
  className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-4 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
  />
  </div>
- <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap">
+ <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap min-w-0">
  <button 
  onClick={() => setFilterStatus('all')}
  className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-[#111827] shadow-sm" : "text-slate-600 hover:text-slate-800")}

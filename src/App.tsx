@@ -55,6 +55,21 @@ function AppLayout() {
  const location = useLocation();
  const isIPos = location.pathname === '/ipos';
 
+ React.useEffect(() => {
+   const savedFavicon = localStorage.getItem('system-favicon');
+   if (savedFavicon) {
+     const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+     if (faviconLink) {
+       faviconLink.href = savedFavicon;
+     } else {
+       const link = document.createElement('link');
+       link.rel = 'icon';
+       link.href = savedFavicon;
+       document.head.appendChild(link);
+     }
+   }
+ }, []);
+
  if (isIPos) {
  return (
  <div className="h-screen w-screen bg-slate-50 overflow-hidden">
