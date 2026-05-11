@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
  DollarSign, 
@@ -171,53 +170,40 @@ export function Finance() {
  {activeTab === 'overview' && (
  <div className="space-y-4">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-3" columns={4} gap={24}>
- <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-blue-600">Doanh thu Hệ thống (G.M.V)</span>
- <TrendingUp className="w-4 h-4 text-emerald-600" />
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0"><TrendingUp className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Doanh thu (G.M.V)</p>
+ <span className="text-base font-bold text-slate-900">{formatCurrency(totalIncome)}</span>
  </div>
- <div className="flex items-end justify-between">
- <span className="text-xl font-bold text-slate-900">{formatCurrency(totalIncome)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
+ <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded ml-auto shrink-0">Trực tiếp</span>
  </div>
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-rose-50 text-rose-600 rounded-lg shrink-0"><TrendingDown className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Chi phí & Quỹ lương</p>
+ <span className="text-base font-bold text-slate-900">{formatCurrency(totalExpense)}</span>
  </div>
- <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-rose-600">Tổng Chi phí & Quỹ lương</span>
- <TrendingDown className="w-4 h-4 text-rose-600" />
+ <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded ml-auto shrink-0">Đồng bộ</span>
  </div>
- <div className="flex items-end justify-between">
- <span className="text-xl font-bold text-slate-900">{formatCurrency(totalExpense)}</span>
- <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-teal-50 text-teal-600 rounded-lg shrink-0"><BadgeDollarSign className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Lợi nhuận ròng (P&L)</p>
+ <span className={cn("text-base font-bold", netProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>{formatCurrency(netProfit)}</span>
  </div>
+ <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded ml-auto shrink-0">Kết quả KD</span>
  </div>
- <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-teal-600">Lợi nhuận ròng (P&L)</span>
- <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-primary-50 text-primary-600 rounded-lg shrink-0"><ShieldCheck className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Dấu vân tay tài chính</p>
+ <span className="text-base font-bold text-slate-900">Trust Score: 9.8</span>
  </div>
- <div className="flex items-end justify-between">
- <span className={cn("text-2xl font-bold", netProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
- {formatCurrency(netProfit)}
- </span>
- <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
- </div>
- </div>
- <div className="bg-primary-600 p-3 rounded-xl border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
- <div className="absolute right-0 bottom-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
- <Building2 className="w-8 h-8 text-white" />
- </div>
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-primary-200 font-bold uppercase tracking-widest">Dấu vân tay tài chính</span>
- <ShieldCheck className="w-4 h-4 text-white" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-xl font-bold text-white">Trust Score: 9.8</span>
- <span className="text-[10px] text-white font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded ml-auto shrink-0 underline cursor-pointer">Xác minh</span>
  </div>
  </div>
- </DraggableGrid>
 
  {/* Module Grid */}
  <div className="space-y-3">

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { Users, Search, Plus, UserCircle2, Star, Download, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -29,7 +28,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto">
-         <DraggableGrid className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6" columns={3} gap={24}>
+         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
              <div className="bg-white p-5 rounded-sm border border-slate-300 shadow-sm flex items-center gap-4">
                  <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center"><Users className="w-6 h-6" /></div>
                  <div>
@@ -44,7 +43,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
                     <p className="text-xl font-bold text-slate-900">42</p>
                  </div>
              </div>
-         </DraggableGrid>
+         </div>
 
          <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-w-0 custom-scrollbar-x">
              <table className="min-w-[560px] w-full text-left text-sm border-collapse">

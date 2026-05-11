@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, Send, AlertTriangle, UserPlus, Plus, Trash2, Save } from 'lucide-react';
@@ -82,7 +81,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
       </div>
       
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2 col-span-1 md:col-span-2">
             <label className="block text-sm font-bold text-slate-800">Người đề xuất</label>
             <input 
@@ -240,7 +239,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             </div>
           </div>
 
-        </DraggableGrid>
+        </div>
 
         <div className="pt-6 border-t border-slate-200 flex justify-end gap-3">
           {onCancel && (

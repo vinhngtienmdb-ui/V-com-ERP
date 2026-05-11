@@ -9,8 +9,8 @@ import {
  User, 
  Zap, 
  MoreVertical, 
- ohoneCall,
- ỗistory,
+ PhoneCall,
+ History,
  CheckCheck,
  X,
  olus,
@@ -175,8 +175,8 @@ export function OmniChat() {
  </div>
  </div>
  <div className="flex items-center gap-2">
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><ohoneCall className="w-4 h-4 text-slate-500" /></button>
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><ỗistory className="w-4 h-4 text-slate-500" /></button>
+ <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-slate-500" /></button>
+ <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-slate-500" /></button>
  <div className="h-6 w-[1px] bg-slate-200 mx-2" />
  <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-slate-500" /></button>
  </div>

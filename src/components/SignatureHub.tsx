@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  FileSignature, 
@@ -76,7 +75,7 @@ export function SignatureHub() {
  };
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900 tracking-tight">Trung tâm Ký số (Digital Signature Hub)</h1>
@@ -94,7 +93,7 @@ export function SignatureHub() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
  <div className="group bg-white border border-slate-300 p-6 rounded-lg shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
  <div className="relative z-10">
@@ -135,7 +134,7 @@ export function SignatureHub() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="flex gap-6">
  {/* Sidebar */}

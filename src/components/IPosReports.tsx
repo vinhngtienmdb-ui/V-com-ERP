@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { BarChart, Search, Gift, Copy, Calendar, MoreHorizontal } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
@@ -83,7 +82,7 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
                 </div>
             ))}
          </div>
-         <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
              <div className="bg-white border border-slate-300 rounded-sm shadow-sm p-6 min-h-[300px] flex items-center justify-center">
                 <div className="text-center text-slate-500">
                    <BarChart className="w-12 h-12 mx-auto mb-3 text-slate-400" />
@@ -98,7 +97,7 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
                    <p className="text-xs">Đang phân tích dữ liệu...</p>
                 </div>
              </div>
-         </DraggableGrid>
+         </div>
       </div>
     </div>
   );

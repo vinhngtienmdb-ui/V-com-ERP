@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Users, 
@@ -226,7 +225,7 @@ export function SellerManagement() {
  };
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Quản lý Seller / Vendor</h1>
@@ -249,13 +248,13 @@ export function SellerManagement() {
  </div>
 
  {showConfig ? (
- <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="animate-in fade-in duration-300 space-y-3">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-3">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <Briefcase className="w-4 h-4 text-blue-600" /> Cấu hình Nhà bán hàng
  </h3>
 
- <div className="space-y-6">
+ <div className="space-y-3">
  {/* Section 1: Seller Onboarding & Approval */}
  <div>
  <h4 className="text-sm font-bold text-slate-900 mb-3">Quy trình Đăng ký & Duyệt</h4>
@@ -465,7 +464,7 @@ export function SellerManagement() {
  </div>
  ) : (
  <>
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex items-center gap-3 mb-4">
  <div className="p-2 bg-slate-100 text-blue-600 rounded-lg">
@@ -500,7 +499,7 @@ export function SellerManagement() {
  <div className="text-3xl font-bold text-slate-900">4.72 <span className="text-sm font-normal text-[#9CA3AF]">/ 5.0</span></div>
  <p className="mt-4 text-[10px] text-[#10B981] font-medium">+0.15 so với tháng trước</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -699,9 +698,9 @@ export function SellerManagement() {
  </div>
  <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
- <DraggableGrid className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar" columns={2} gap={32}>
+ <div className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar">
  {/* Left Col: Domain Setup */}
- <div className="space-y-6">
+ <div className="space-y-3">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <Globe className="w-5 h-5 text-primary-600" /> Tên miền POS (Domain)
@@ -845,7 +844,7 @@ export function SellerManagement() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </div>
  )}
@@ -868,7 +867,7 @@ export function SellerManagement() {
 
  <div className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-12 gap-8 custom-scrollbar">
  {/* Left Column: Information Overview & Selection */}
- <div className="md:col-span-5 space-y-6">
+ <div className="md:col-span-5 space-y-3">
  <div>
  <h3 className="font-bold text-slate-900 mb-3">Loại hình Đối tác</h3>
  <div className="grid grid-cols-3 gap-3">
@@ -975,7 +974,7 @@ export function SellerManagement() {
  </div>
 
  {/* Right Column: Configuration & Actions */}
- <div className="md:col-span-7 space-y-6">
+ <div className="md:col-span-7 space-y-3">
  <div className="p-6 border border-slate-300 rounded-xl bg-white shadow-sm">
  <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
  <Settings2 className="w-5 h-5 text-primary-600" /> Cấu hình Khởi tạo
@@ -1144,7 +1143,7 @@ export function SellerManagement() {
  <X className="w-5 h-5" />
  </button>
  </div>
- <div className="p-6 space-y-6">
+ <div className="p-6 space-y-3">
  <div>
  <div className="flex items-center justify-between mb-2">
  <h3 className="font-bold text-slate-900 text-lg">{selectedSeller.name}</h3>
@@ -1160,7 +1159,7 @@ export function SellerManagement() {
  </div>
  </div>
  
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="grid grid-cols-2 gap-4">
  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Mã số thuế</p>
  <p className="text-slate-900 font-mono text-sm">{selectedSeller.taxCode || '---'}</p>
@@ -1169,7 +1168,7 @@ export function SellerManagement() {
  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">CCCD người đại diện</p>
  <p className="text-slate-900 font-mono text-sm">{selectedSeller.identityCard || '---'}</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
  <div>
@@ -1199,7 +1198,7 @@ export function SellerManagement() {
  </div>
  <button onClick={() => setAdjustingSeller(null)} className="p-2 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
- <form onSubmit={submitAdjustBalance} className="p-6 space-y-6">
+ <form onSubmit={submitAdjustBalance} className="p-6 space-y-3">
  <div>
  <div className="flex justify-between items-center mb-1.5">
  <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>

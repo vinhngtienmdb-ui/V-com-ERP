@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
  Headphones, 
@@ -147,7 +146,7 @@ export function CustomerService() {
  };
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  {/* Header */}
  <div className="flex items-center justify-between">
  <div className="header-title">
@@ -185,7 +184,7 @@ export function CustomerService() {
  </div>
 
  {/* Overview Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
  <div className="flex justify-between items-start relative z-10 mb-2">
@@ -225,7 +224,7 @@ export function CustomerService() {
  <p className="text-3xl font-bold text-white relative z-10">68%</p>
  <div className="mt-2 text-[10px] text-primary-200 font-medium tracking-wide">Tỷ lệ tự động hóa tin nhắn</div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Main Content Area */}
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
@@ -903,9 +902,9 @@ export function CustomerService() {
  </div>
 
  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
- <div className="xl:col-span-2 space-y-6">
+ <div className="xl:col-span-2 space-y-3">
  {/* Team Stats */}
- <DraggableGrid className="grid grid-cols-3 gap-4" columns={3} gap={16}>
+ <div className="grid grid-cols-3 gap-4">
  <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm flex items-center gap-4">
  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
  <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
@@ -933,7 +932,7 @@ export function CustomerService() {
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ticket đang chờ xử lý</p>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Staff List */}
  <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0 custom-scrollbar-x">
@@ -1059,7 +1058,7 @@ export function CustomerService() {
  </div>
 
  {/* Ext & Routing Config */}
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm">
  <h4 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <Shield className="w-4 h-4 text-primary-600" /> Định tuyến thông minh (Smart Routing)
@@ -1119,7 +1118,7 @@ export function CustomerService() {
  </div>
  </div>
  
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
  {/* Fanpage Config */}
  <div className="bg-white rounded-xl p-6 border border-slate-300 shadow-sm flex flex-col">
  <div className="flex justify-between items-start mb-6">
@@ -1241,7 +1240,7 @@ export function CustomerService() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  )}
  </div>
@@ -1279,7 +1278,7 @@ export function CustomerService() {
  </button>
  </div>
 
- <div className="flex-1 overflow-y-auto p-6 space-y-6">
+ <div className="flex-1 overflow-y-auto p-6 space-y-3">
  {/* Customer Info */}
  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200">
  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">

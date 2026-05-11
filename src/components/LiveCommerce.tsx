@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Video, 
@@ -52,7 +51,7 @@ export function LiveCommerce() {
  const [activeTab, setActiveTab] = useState<'sessions' | 'analytics' | 'schedule'>('sessions');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Live-commerce Hub</h1>
@@ -70,7 +69,7 @@ export function LiveCommerce() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-slate-500 font-bold uppercase">Tổng Livestreams hôm nay</span>
@@ -103,7 +102,7 @@ export function LiveCommerce() {
  <div className="text-xl font-bold text-slate-900">18.5%</div>
  <p className="text-[10px] text-slate-500 mt-1">Tỷ lệ tương tác: Comment/Tim</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-slate-100">
@@ -187,34 +186,28 @@ export function LiveCommerce() {
  </div>
  </div>
 
- <div className="bg-slate-900 rounded-lg p-8 text-white relative overflow-hidden">
- <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
- <div className="flex-1 space-y-4 text-center md:text-left">
- <div className="flex items-center justify-center md:justify-start gap-4">
- <div className="p-3 bg-slate-800 rounded-lg">
- <Tv className="w-8 h-8 text-white" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Tv className="w-4 h-4" /></div>
+ <h3 className="text-sm font-bold text-slate-900">Live Management Hub</h3>
+ <span className="ml-auto px-2 py-0.5 bg-red-100 text-red-600 text-[9px] font-bold uppercase tracking-widest rounded animate-pulse">REC</span>
  </div>
- <h3 className="text-2xl font-bold italic">Live Management Hub</h3>
- </div>
- <p className="text-slate-500 text-sm leading-relaxed max-w-xl">
- Hệ thống điều phối luồng Livestream chuyên nghiệp cho Sàn. Cho phép Admin theo dõi hành vi người dùng, lọc bình luận tiêu cực thời gian thực và tự động gửi Voucher "giảm sâu" ngay khi lượt xem đạt mốc (Goal Achievement).
+ <div className="p-4 flex flex-col md:flex-row items-start gap-6">
+ <div className="flex-1 space-y-3">
+ <p className="text-sm text-slate-600 leading-relaxed">
+ Hệ thống điều phối luồng Livestream chuyên nghiệp. Theo dõi hành vi người dùng, lọc bình luận tiêu cực thời gian thực và tự động gửi Voucher khi lượt xem đạt mốc.
  </p>
- <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
- <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all text-sm flex items-center gap-2">
- Báo cáo doanh thu LIVE <ArrowRight className="w-4 h-4" />
+ <div className="flex flex-wrap gap-3">
+ <button className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all text-xs flex items-center gap-2">
+ Báo cáo doanh thu LIVE <ArrowRight className="w-3 h-3" />
  </button>
- <button className="px-8 py-3 bg-slate-800 border border-slate-700 text-white font-bold rounded-lg hover:bg-slate-700 transition-all text-sm">Cấu hình API RTMP/Stream</button>
+ <button className="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs">Cấu hình API RTMP/Stream</button>
  </div>
  </div>
- <div className="hidden lg:block w-72 h-48 bg-slate-800/50 rounded-2xl border border-slate-700 relative overflow-hidden">
- <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
- <div className="absolute top-4 left-4 px-2 py-0.5 bg-red-600 rounded text-[9px] font-bold uppercase tracking-widest animate-pulse">REC</div>
- <div className="absolute inset-0 flex items-center justify-center">
- <PlayCircle className="w-12 h-12 text-white/50" />
+ <div className="hidden lg:flex w-48 h-28 bg-slate-100 rounded-xl border border-slate-200 relative overflow-hidden shrink-0 items-center justify-center">
+ <PlayCircle className="w-10 h-10 text-slate-400" />
  </div>
  </div>
- </div>
- <Video className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/10" />
  </div>
  </div>
  );

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { 
  BarChart3, 

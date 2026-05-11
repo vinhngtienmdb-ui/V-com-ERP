@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
   FileText, 
@@ -275,7 +274,7 @@ export function DocumentManager() {
               )}
 
               {/* Detail Content */}
-              <DraggableGrid className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 flex-1 overflow-auto bg-slate-50/30" columns={3} gap={24}>
+              <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 flex-1 overflow-auto bg-slate-50/30">
                 <div className="xl:col-span-2 flex flex-col gap-4 h-[calc(100vh-200px)]">
                   {/* Header info */}
                   <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm shrink-0">
@@ -551,7 +550,7 @@ export function DocumentManager() {
                   </div>
                 </div>
 
-              </DraggableGrid>
+              </div>
             </div>
           ) : (
             // List View
@@ -670,7 +669,7 @@ export function DocumentManager() {
                       <p className="text-sm text-slate-600">Tạo và quản lý các sổ đăng ký văn bản đi/đến theo năm và loại hình.</p>
                     </div>
                   </div>
-                  <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" columns={3} gap={16}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="border border-slate-200 rounded-2xl p-4 bg-white shadow-sm hover:shadow-md">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-slate-900">Sổ công văn đến 2024</h4>
@@ -680,7 +679,7 @@ export function DocumentManager() {
                           <p>Số đến hiện tại: <span className="font-bold text-blue-600">345</span></p>
                         </div>
                     </div>
-                  </DraggableGrid>
+                  </div>
                 </div>
               )}
               {activeTab === 'config' && (

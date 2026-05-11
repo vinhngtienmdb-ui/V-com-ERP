@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Users,
@@ -246,7 +245,7 @@ export function WalletHub() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  {/* Main Wallet Card */}
  <div className="lg:col-span-2 relative h-[240px] rounded-lg bg-slate-900 p-8 text-white shadow-sm shadow-slate-900/5 overflow-hidden group">
  <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -334,7 +333,7 @@ export function WalletHub() {
  </button>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden p-2 min-h-[600px]">
  <div className="flex border-b border-slate-200 bg-slate-50/50 p-1.5 overflow-x-auto scrollbar-hide min-w-0">
@@ -485,7 +484,7 @@ export function WalletHub() {
  animate={{ opacity: 1, y: 0 }}
  className="space-y-8"
  >
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  {MOCK_BANK_ACCOUNTS.map(bank => (
  <div key={bank.id} className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -546,7 +545,7 @@ export function WalletHub() {
  <p className="text-xs text-slate-600 max-w-[200px] mx-auto mt-1">Connect your corporate bank account for instant payouts.</p>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-slate-900 rounded-lg p-8 text-white flex flex-col md:flex-row justify-between items-center gap-8 shadow-sm shadow-blue-200 overflow-hidden relative">
  <div className="absolute top-0 right-0 p-12 opacity-10">
@@ -593,7 +592,7 @@ export function WalletHub() {
  </div>
  </div>
  </div>
- <DraggableGrid className="relative z-10 flex-1 grid grid-cols-3 gap-2" columns={3} gap={8}>
+ <div className="relative z-10 flex-1 grid grid-cols-3 gap-2">
  {['BUYER PAYS', 'ESCROW LOCK', 'SELLER PAID'].map((step, i) => (
  <div key={i} className="flex flex-col items-center gap-4">
  <div className={cn(
@@ -608,7 +607,7 @@ export function WalletHub() {
  <div className="col-span-3 h-0.5 bg-white/10 mt-4 relative">
  <div className="absolute top-0 left-0 w-2/3 h-full bg-slate-800 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
  </div>
- </DraggableGrid>
+ </div>
  </div>
 
  <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden overflow-x-auto min-w-0">
@@ -661,7 +660,7 @@ export function WalletHub() {
  animate={{ opacity: 1, y: 0 }}
  className="space-y-8"
  >
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-3 border-l-4 border-slate-900 bg-slate-100/50 p-6 rounded-lg mb-4 flex items-center justify-between">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center">
@@ -759,7 +758,7 @@ export function WalletHub() {
  <p className="text-[10px] text-slate-500">Connect to international banks or wallets</p>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </motion.div>
  )}
  
@@ -769,7 +768,7 @@ export function WalletHub() {
  animate={{ opacity: 1, y: 0 }}
  className="space-y-8"
  >
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  {/* Points Earning Config */}
  <div className="bg-white p-6 rounded-2xl border border-purple-100 shadow-sm relative overflow-hidden">
  <div className="absolute top-0 right-0 p-4 opacity-5">
@@ -870,7 +869,7 @@ export function WalletHub() {
  </button>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  
  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm">
  <div className="p-6 border-b border-slate-200 flex flex-col gap-4">

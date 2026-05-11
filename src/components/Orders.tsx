@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useMemo, useEffect } from 'react';
 import {
  ShoppingBag,
@@ -521,47 +520,40 @@ export function Orders() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-4 border border-red-200 ring-1 ring-red-100 transition-all">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
- <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+ <div className="bg-white px-4 py-3 rounded-xl border border-red-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-red-50 text-red-600 rounded-lg shrink-0"><ShieldAlert className="w-4 h-4 animate-pulse" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest truncate">Cảnh báo chậm trễ</p>
+ <span className="text-xl font-bold text-red-600">{allOrders.filter(o => isDelayed(o.date, o.status)).length}</span>
  </div>
- <div className="text-3xl font-bold text-red-600">
- {allOrders.filter(o => isDelayed(o.date, o.status)).length}
+ <span className="text-[10px] text-red-500 font-bold bg-red-50 px-2 py-0.5 rounded ml-auto shrink-0">&gt;24h</span>
  </div>
- <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0"><PackageCheck className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Cần đóng gói</p>
+ <span className="text-xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'pending').length}</span>
  </div>
- <div className="bg-white p-4 border border-slate-200 transition-all">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Cần đóng gói</span>
- <PackageCheck className="w-4 h-4 text-blue-600" />
+ <span className="text-[10px] text-slate-500 font-bold bg-slate-50 px-2 py-0.5 rounded ml-auto shrink-0">{allOrders.filter(o => isDelayed(o.date, o.status) && o.status === 'pending').length} muộn</span>
  </div>
- <div className="text-3xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'pending').length}</div>
- <div className="mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{allOrders.filter(o => isDelayed(o.date, o.status) && o.status === 'pending').length} đơn đóng muộn ({">"}24h)</div>
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-purple-50 text-purple-600 rounded-lg shrink-0"><Truck className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Đang vận chuyển</p>
+ <span className="text-xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'shipped').length}</span>
  </div>
- <div className="bg-white p-4 border border-slate-200 transition-all">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đang vận chuyển</span>
- <Truck className="w-4 h-4 text-purple-500" />
+ <span className="text-[10px] text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded ml-auto shrink-0">GHTK 65%</span>
  </div>
- <div className="text-3xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'shipped').length}</div>
- <div className="mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
+ <div className="bg-white px-4 py-3 rounded-xl border border-orange-200 shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-orange-50 text-orange-600 rounded-lg shrink-0"><RotateCcw className="w-4 h-4" /></div>
+ <div className="min-w-0">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">Yêu cầu Đổi trả (RMA)</p>
+ <span className="text-xl font-bold text-orange-600">{String(allOrders.filter(o => o.status === 'returning').length).padStart(2, '0')}</span>
  </div>
- <div className="bg-[#111827] p-4 relative overflow-hidden group border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full text-white">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
- <RotateCcw className="w-4 h-4 text-orange-400" />
- </div>
- <div>
- <div className="text-3xl font-bold tracking-tighter">{String(allOrders.filter(o => o.status === 'returning').length).padStart(2, '0')}</div>
- <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">{allOrders.filter(o => o.status === 'returning' && isDelayed(o.date, o.status)).length} đơn cần xử lý gấp</p>
+ <span className="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded ml-auto shrink-0">{allOrders.filter(o => o.status === 'returning' && isDelayed(o.date, o.status)).length} gấp</span>
  </div>
  </div>
- <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
- </div>
- </DraggableGrid>
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-slate-500 font-bold uppercase">Tổng cước phí dự kiến</span>

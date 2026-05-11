@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Megaphone, 
@@ -97,7 +96,7 @@ export function Marketing() {
  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-1">
@@ -125,10 +124,10 @@ export function Marketing() {
  </div>
 
  {activeTab === 'overview' && (
- <div className="space-y-8">
+ <div className="space-y-4">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">GMV từ Marketing</span>
  <BarChart2 className="w-4 h-4 text-emerald-600" />
@@ -138,7 +137,7 @@ export function Marketing() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
  <Smartphone className="w-4 h-4 text-blue-600" />
@@ -148,7 +147,7 @@ export function Marketing() {
  <span className="text-[10px] text-blue-600 font-bold bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
  <TrendingUp className="w-4 h-4 text-blue-600" />
@@ -158,7 +157,7 @@ export function Marketing() {
  <span className="text-[10px] text-blue-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Campaign Active</span>
  <Megaphone className="w-4 h-4 text-primary-600" />
@@ -168,10 +167,10 @@ export function Marketing() {
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Matrix Grid Layout */}
- <div className="space-y-6">
+ <div className="space-y-3">
  {MARKETING_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
@@ -254,7 +253,7 @@ export function Marketing() {
  </div>
 
  <div className="p-6">
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
  {SOCIAL_ACCOUNTS.map(acc => (
  <div key={acc.id} className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-orange-200 transition-all shadow-sm relative group">
  <div className="flex items-center gap-4 mb-4">
@@ -289,7 +288,7 @@ export function Marketing() {
  </div>
  </div>
 
- <DraggableGrid className="p-6 bg-slate-100/30 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-8" columns={3} gap={32}>
+ <div className="p-6 bg-slate-100/30 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-8">
  <div className="flex gap-4">
  <div className="w-10 h-10 bg-white rounded-2xl shadow-sm border border-slate-300 flex items-center justify-center text-blue-600">
  <MessageSquare className="w-5 h-5" />
@@ -317,7 +316,7 @@ export function Marketing() {
  <p className="text-xs text-slate-600 mt-1">Gắn tag sản phẩm vào video TikTok/Instagram Reels tự động.</p>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </motion.div>
  )}

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  BadgeDollarSign, 
@@ -34,7 +33,7 @@ export function SellerFinance() {
  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout'>('credit');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Supply Chain Finance (Hỗ trợ tài chính)</h1>
@@ -52,7 +51,7 @@ export function SellerFinance() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-[#111827] text-white p-6 rounded-lg shadow-sm shadow-slate-900/10">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-slate-800 rounded-lg">
@@ -81,7 +80,7 @@ export function SellerFinance() {
  <div className="text-2xl font-bold text-emerald-600">125</div>
  <p className="text-[10px] text-slate-500 mt-1">Đủ điều kiện vay thấu chi 0%</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-slate-100">
@@ -185,7 +184,7 @@ export function SellerFinance() {
 
  <div className="bg-blue-600 hover:bg-blue-700 text-white p-10 rounded-lg relative overflow-hidden border border-slate-800 shadow-sm">
  <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-blue-600 rounded-lg shadow-sm shadow-slate-900/5">
  <GanttChartSquare className="w-8 h-8 text-white" />

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Zap, 
@@ -137,7 +136,7 @@ export function FlashSale() {
  const selectedProduct = MOCK_PRODUCTS.find(p => p.id === selectedProductId);
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Khuyến mãi & Group Buy</h1>
@@ -199,7 +198,7 @@ export function FlashSale() {
  </div>
  
  <div className="overflow-y-auto flex-1 pr-2 custom-scrollbar">
- <form className="space-y-6">
+ <form className="space-y-3">
  {/* General Settings */}
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
@@ -567,7 +566,7 @@ export function FlashSale() {
 
  {/* Stats - Hide if Voucher Tab is active */}
  {activeTab !== 'voucher' && (
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
@@ -611,7 +610,7 @@ export function FlashSale() {
  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">PnL Hiệu quả Tích lũy</p>
  <div className="text-xl font-bold text-slate-900">{formatCurrency(850000000)}</div>
  </div>
- </DraggableGrid>
+ </div>
  )}
 
  {/* Main Content Areas */}

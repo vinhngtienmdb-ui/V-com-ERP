@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -222,7 +221,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  </div>
  
  <div className="lg:col-span-2 space-y-3">
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="grid grid-cols-2 gap-4">
  <div className="p-5 border border-slate-200 rounded-xl bg-white shadow-sm group">
  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu</p>
  <p className="text-xl font-bold text-slate-900">{formatCurrency(customer.totalSpent)}</p>
@@ -234,7 +233,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  <span className="text-xs font-bold text-slate-500">đơn</span>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  
  <div className="bg-primary-50/50 border border-primary-100 p-3 rounded-xl relative overflow-hidden">
  <div className="absolute top-0 right-0 w-10 h-10 bg-primary-50 -mr-8 -mt-3 rounded-full opacity-50"></div>
@@ -548,7 +547,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  {activeTab === 'points' && (
  <div className="space-y-3">
  <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
- <DraggableGrid className="grid grid-cols-2 gap-3" columns={2} gap={24}>
+ <div className="grid grid-cols-2 gap-3">
  <div className="space-y-4 bg-white p-5 rounded-2xl border border-slate-300">
  <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
  <div>
@@ -576,7 +575,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
  </div>
  </div>
- </DraggableGrid>
+ </div>
  <div className="flex justify-end">
  <button onClick={onClose} className="px-6 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-slate-800">Lưu cấu hình</button>
  </div>
@@ -625,7 +624,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  </button>
  </div>
  
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="grid grid-cols-2 gap-4">
  <div className="p-4 rounded-lg border border-emerald-500 bg-emerald-50 relative overflow-hidden group">
  <h4 className="font-bold text-emerald-900">Landing Page Nệm Foam</h4>
  <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
@@ -650,7 +649,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  )}
  </div>
@@ -948,7 +947,7 @@ export function Customers() {
 
  {activeView === 'list' ? (
  <>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-3" columns={4} gap={24}>
+ <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
  <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
  <div className="flex items-end justify-between">
@@ -977,10 +976,10 @@ export function Customers() {
  <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* CRM Intelligence & RFM Segmentation */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-3" columns={3} gap={24}>
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
  <div className="lg:col-span-2 bg-white p-4 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
@@ -1050,7 +1049,7 @@ export function Customers() {
  </button>
  <div className="absolute -bottom-12 -right-12 w-10 h-10 bg-white/5 rounded-full blur-3xl" />
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">

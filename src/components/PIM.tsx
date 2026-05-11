@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
  Package, 
@@ -483,7 +482,7 @@ export function PIM() {
  });
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  {/* Banner Khuyến mãi/Tính năng mới */}
  <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-sm group">
  <img 
@@ -537,7 +536,7 @@ export function PIM() {
 
  <form onSubmit={handleAddProduct} className="flex-1 overflow-y-auto flex flex-col">
  {uploadMode === 'single' ? (
- <div className="p-10 space-y-8">
+ <div className="p-10 space-y-4">
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
  <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Tên sản phẩm</label>
@@ -669,7 +668,7 @@ export function PIM() {
  </div>
  </div>
  ) : (
- <div className="p-10 space-y-8 flex-1 flex flex-col justify-center">
+ <div className="p-10 space-y-4 flex-1 flex flex-col justify-center">
  <div 
  onDragOver={handleDragOver}
  onDrop={handleDrop}
@@ -823,7 +822,7 @@ export function PIM() {
  </div>
 
  {!isCameraActive ? (
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="aspect-video bg-slate-900 rounded-lg flex flex-col items-center justify-center text-white/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
  <Camera className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform" />
  <p className="text-sm font-bold">Bật Camera để quét mã vạch</p>
@@ -1008,7 +1007,7 @@ export function PIM() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" columns={4} gap={16}>
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
@@ -1046,7 +1045,7 @@ export function PIM() {
  </div>
  <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-6 border-b border-slate-100 space-y-4">
@@ -1237,33 +1236,26 @@ export function PIM() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-blue-500 p-8 rounded-2xl text-white shadow-sm flex flex-col justify-between group">
- <div className="relative z-10 space-y-6">
- <div className="flex items-center gap-4">
- <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
- <Sparkles className="w-8 h-8" />
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Sparkles className="w-4 h-4" /></div>
+ <h3 className="text-sm font-bold text-slate-900">AI Metadata Engine</h3>
+ <span className="ml-auto text-[10px] text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">v2.0</span>
  </div>
- <div>
- <h3 className="text-3xl font-extrabold italic font-sans tracking-tight">AI Metadata Engine</h3>
- <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mt-1 pl-1">Data Governance v2.0</p>
- </div>
- </div>
- <p className="text-blue-50 text-sm leading-relaxed max-w-sm">
- Tự động trích xuất thông tin kỹ thuật từ hình ảnh sản phẩm, tự động gắn tag SEO và đề xuất hạng mục tối ưu hóa P&L dựa trên dữ thị trường thời gian thực.
+ <div className="p-4 space-y-3">
+ <p className="text-sm text-slate-600 leading-relaxed">
+ Tự động trích xuất thông tin kỹ thuật từ hình ảnh, gắn tag SEO và đề xuất hạng mục tối ưu P&L dựa trên dữ liệu thị trường thực.
  </p>
+ <button className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg text-xs hover:bg-blue-700 transition-all uppercase tracking-widest">Khởi chạy AI Matrix</button>
  </div>
- <div className="relative z-10 pt-8">
- <button className="px-10 py-4 bg-[#111827] text-white font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
- </div>
- <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-10 border border-slate-200 rounded-2xl shadow-sm space-y-8 relative overflow-hidden group">
+ <div className="bg-white p-5 border border-slate-200 rounded-2xl shadow-sm space-y-4 relative overflow-hidden group">
  <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
  <ShieldCheck className="w-6 h-6 text-emerald-500" /> P&L Configuration Engine
  </h3>
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 hover:border-emerald-500/30 transition-all cursor-pointer">
  <div className="flex justify-between items-center mb-4">
  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global P&L Rules</span>
@@ -1301,7 +1293,7 @@ export function PIM() {
  </div>
  <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-100 opacity-50 group-hover:scale-105 transition-transform duration-700" />
  </div>
- </DraggableGrid>
+ </div>
  
  {/* P&L Details Modal */}
  {showPnLForProduct && (
@@ -1329,7 +1321,7 @@ export function PIM() {
  </div>
 
  {/* Body */}
- <div className="p-8 overflow-y-auto no-scrollbar space-y-8">
+ <div className="p-8 overflow-y-auto no-scrollbar space-y-4">
  {/* Product Info Summary */}
  <div className="flex items-center gap-6 pb-8 border-b border-slate-200">
  {showPnLForProduct.image ? (

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Trophy, 
@@ -35,7 +34,7 @@ export function Performance() {
  const [activeTab, setActiveTab] = useState<'kpi' | 'training' | 'review'>('kpi');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Hiệu suất & Đào tạo</h1>
@@ -53,7 +52,7 @@ export function Performance() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="p-2 bg-slate-100 text-blue-600 rounded-lg w-fit mb-3">
  <Target className="w-5 h-5" />
@@ -88,7 +87,7 @@ export function Performance() {
  <Star className="w-3 h-3 fill-current" /> Thưởng nóng GMV
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-slate-100">
@@ -110,7 +109,7 @@ export function Performance() {
  ))}
  </div>
 
- <div className="p-6 space-y-6">
+ <div className="p-6 space-y-3">
  {activeTab === 'kpi' && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
  {MOCK_KPIs.map(kpi => (
@@ -145,17 +144,19 @@ export function Performance() {
  </div>
  </div>
 
- <div className="bg-blue-600 hover:bg-blue-700 text-white p-8 rounded-lg flex flex-col items-center text-center space-y-4">
- <div className="p-3 bg-white/10 rounded-2xl border border-white/20">
- <Users className="w-8 h-8 text-blue-600" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Users className="w-4 h-4" /></div>
+ <h3 className="text-sm font-bold text-slate-900">Hệ thống Đào tạo & Đánh giá 360 Độ</h3>
  </div>
- <h3 className="text-xl font-bold italic">Hệ thống Đào tạo & Đánh giá 360 Độ</h3>
- <p className="text-slate-500 text-sm max-w-2xl">
- Tự động tổng hợp ý kiến từ Đồng nghiệp, Quản lý trực tiếp và Nhân viên cấp dưới để đưa ra cái nhìn khách quan nhất về năng lực. Kết nối trực tiếp kết quả học tập từ LMS để đề xuất thăng tiến hoặc điều chỉnh quỹ lương.
+ <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+ <p className="text-sm text-slate-600 leading-relaxed flex-1">
+ Tự động tổng hợp ý kiến từ Đồng nghiệp, Quản lý và Nhân viên cấp dưới. Kết nối kết quả học tập từ LMS để đề xuất thăng tiến hoặc điều chỉnh quỹ lương.
  </p>
- <button className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2">
- Mở cổng Đánh giá Định kỳ <ArrowRight className="w-4 h-4" />
+ <button className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all text-xs flex items-center gap-2 shrink-0">
+ Mở cổng Đánh giá <ArrowRight className="w-3 h-3" />
  </button>
+ </div>
  </div>
  </div>
  );

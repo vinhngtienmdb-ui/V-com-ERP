@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
  FileText, 
@@ -294,7 +293,7 @@ export function RequestHub() {
 
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title border-l-4 border-primary-600 pl-4 py-1">
  <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-primary-600">E-Form</span></h1>
@@ -320,7 +319,7 @@ export function RequestHub() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
@@ -337,7 +336,7 @@ export function RequestHub() {
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="flex gap-6">
  {/* Sidebar */}
@@ -559,7 +558,7 @@ export function RequestHub() {
  </div>
  </>
  ) : (
- <div className="p-6 space-y-8">
+ <div className="p-6 space-y-4">
  <div>
  <h3 className="text-lg font-bold text-slate-900 mb-2">Cài đặt Cấu trúc Phiếu (E-Form)</h3>
  <p className="text-sm text-slate-600 mb-4">Tạo và chỉnh sửa các loại phiếu đề xuất để sử dụng trong tổ chức.</p>
@@ -1092,7 +1091,7 @@ export function RequestHub() {
  </button>
  </div>
 
- <div className="flex-1 overflow-y-auto p-8 space-y-8">
+ <div className="flex-1 overflow-y-auto p-8 space-y-4">
  {/* Document Preview */}
  <div className="bg-slate-50 rounded-lg p-6 border border-slate-300 space-y-4">
  <div className="flex justify-between items-center border-b border-slate-300 pb-4">
@@ -1225,12 +1224,12 @@ export function RequestHub() {
  </div>
  </div>
 
- <div className="flex-1 space-y-8">
+ <div className="flex-1 space-y-4">
  <div className="bg-slate-50 p-6 rounded-none border border-slate-300">
  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
  <FileText className="w-4 h-4" /> THÔNG TIN ĐỀ XUẤT
  </h3>
- <DraggableGrid className="grid grid-cols-2 gap-y-4 gap-x-8" columns={2} gap={24}>
+ <div className="grid grid-cols-2 gap-y-4 gap-x-8">
  <div className="border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Người đề xuất</p>
  <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.requester}</p>
@@ -1243,7 +1242,7 @@ export function RequestHub() {
  <p className="text-[10px] font-bold text-slate-600 uppercase">Nội dung / Lý do</p>
  <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.title}</p>
  </div>
- </DraggableGrid>
+ </div>
  </div>
 
  <div className="space-y-4 overflow-x-auto min-w-0">
@@ -1275,7 +1274,7 @@ export function RequestHub() {
  </table>
  </div>
 
- <DraggableGrid className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 border-t-2 border-slate-900 pt-8 px-4" columns={4} gap={16}>
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 border-t-2 border-slate-900 pt-8 px-4">
  <div className="flex flex-col items-center gap-3">
  <p className="text-[10px] font-bold text-slate-900 uppercase">NGƯỜI ĐỀ XUẤT</p>
  <div className="h-24 w-full flex items-center justify-center italic text-slate-500 text-[10px] border border-dashed border-slate-400 bg-slate-50/50 p-2 text-center">
@@ -1333,7 +1332,7 @@ export function RequestHub() {
  )}
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
 
  <div className="mt-20 pt-8 border-t border-slate-300 text-center space-y-1">

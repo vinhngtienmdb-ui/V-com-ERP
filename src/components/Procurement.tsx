@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import { useState } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
@@ -262,7 +261,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50" columns={4} gap={16}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50">
  <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-blue-600" /> Tổng phiếu</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.length}</p>
@@ -279,7 +278,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><BadgeDollarSign className="w-4 h-4 text-purple-500" /> Tổng kinh phí duyệt</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{formatCurrency(MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
  <table className="min-w-[640px] w-full text-left border-collapse">
@@ -343,7 +342,7 @@ export function Procurement() {
  const [activeTab, setActiveTab] = useState<string>('overview');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-1">
@@ -367,10 +366,10 @@ export function Procurement() {
  </div>
 
  {activeTab === 'overview' && (
- <div className="space-y-8">
+ <div className="space-y-4">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -380,7 +379,7 @@ export function Procurement() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
  <Clock className="w-4 h-4 text-blue-600" />
@@ -390,7 +389,7 @@ export function Procurement() {
  <span className="text-[10px] text-blue-600 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
  <Building2 className="w-4 h-4 text-blue-600" />
@@ -400,7 +399,7 @@ export function Procurement() {
  <span className="text-[10px] text-blue-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đánh giá trung bình</span>
  <Star className="w-4 h-4 text-primary-600" />
@@ -410,10 +409,10 @@ export function Procurement() {
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Matrix Grid Layout */}
- <div className="space-y-6">
+ <div className="space-y-3">
  {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">

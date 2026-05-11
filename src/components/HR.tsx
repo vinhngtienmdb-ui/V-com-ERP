@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Users, 
@@ -599,7 +598,7 @@ export function HumanResources() {
 
  {activeTab === 'overview' && (
  <div className="space-y-4 animate-in fade-in duration-700">
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-3" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Tổng nhân sự</span>
@@ -639,7 +638,7 @@ export function HumanResources() {
  </div>
  <BrainCircuit className="absolute -bottom-6 -right-6 w-10 h-10 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
- </DraggableGrid>
+ </div>
 
  {/* HR Analytics Dashboard (Upgraded) */}
  <div className="bg-white p-3 rounded-2xl border border-slate-300 shadow-sm mb-6">
@@ -682,7 +681,7 @@ export function HumanResources() {
  <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2"><BrainCircuit className="w-4 h-4 text-blue-600" /> AI Insights</h4>
  <p className="text-xs text-blue-800 leading-relaxed">Tỷ lệ nghỉ việc (attrition rate) giảm ổn định trong Q2, đặc biệt sau khi triển khai chương trình phúc lợi mới. Nhu cầu tuyển mới tăng mạnh trong tháng 6 chuẩn bị cho mùa Sale cuối năm.</p>
  </div>
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="grid grid-cols-2 gap-4">
  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Time to Fill</span>
  <div className="text-xl font-bold text-slate-900">14 Ngày</div>
@@ -693,7 +692,7 @@ export function HumanResources() {
  <div className="text-xl font-bold text-slate-900">78</div>
  <span className="text-[10px] text-emerald-600 font-bold block mt-1">Hạng A Industry</span>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </div>
  </div>
@@ -733,7 +732,7 @@ export function HumanResources() {
  ))}
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3" columns={2} gap={32}>
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
  <div className="bg-white p-4 border border-slate-200 rounded-2xl shadow-sm space-y-4 relative overflow-hidden group">
  <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3 relative z-10">
  <Rocket className="w-6 h-6 text-emerald-500" /> New Hire Launchpad
@@ -782,9 +781,9 @@ export function HumanResources() {
  </div>
  <Activity className="absolute -top-12 -right-12 w-10 h-10 text-white/5 opacity-50" />
  </div>
- </DraggableGrid>
+ </div>
  
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-3 relative mt-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative mt-6">
  <div className="absolute inset-0 bg-white /50 to-transparent pointer-events-none rounded-lg" />
  <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-300 shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -811,7 +810,7 @@ export function HumanResources() {
  </button>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  )}
 
@@ -1662,7 +1661,7 @@ export function HumanResources() {
  </div>
  </div>
  ) : (
- <DraggableGrid className="grid grid-cols-12 gap-3" columns={12} gap={24}>
+ <div className="grid grid-cols-12 gap-3">
  <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden flex flex-col">
  <div className="p-3 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex gap-4">
@@ -1825,7 +1824,7 @@ export function HumanResources() {
           <div className="absolute -top-10 -right-10 w-10 h-10 bg-primary-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
         </div>
       </div>
-    </DraggableGrid>
+    </div>
   )
 }
   </div>
@@ -1851,7 +1850,7 @@ export function HumanResources() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-3" columns={3} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
  <div className="bg-primary-50 border border-primary-100 p-3 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
  <p className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">Average Completion</p>
@@ -1884,9 +1883,9 @@ export function HumanResources() {
  <p className="text-[10px] font-bold text-rose-600 uppercase tracking-tighter">Dưới 60% - Cần 1-on-1</p>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
- <DraggableGrid className="grid grid-cols-12 gap-3 mt-4" columns={12} gap={32}>
+ <div className="grid grid-cols-12 gap-3 mt-4">
  <div className="col-span-12 lg:col-span-8 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
  <div className="p-3 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-4">
  <h3 className="font-bold text-slate-900 text-sm uppercase tracking-widest">Bảng theo dõi mục tiêu chi tiết</h3>
@@ -2014,7 +2013,7 @@ export function HumanResources() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  )}
  </>
@@ -2080,7 +2079,7 @@ export function HumanResources() {
  </div>
 
  {/* Payroll Dashboard Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3" columns={4} gap={16}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-10 h-10 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng lương cơ bản</p>
@@ -2101,7 +2100,7 @@ export function HumanResources() {
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
  <p className="text-2xl font-bold text-white relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Advanced Payroll Table */}
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">

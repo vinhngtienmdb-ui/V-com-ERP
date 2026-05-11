@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Megaphone, 
@@ -65,7 +64,7 @@ export function AdManager() {
  const [activeTab, setActiveTab] = useState<'bidding' | 'analytics' | 'revenue'>('bidding');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Advertising Manager (Quảng cáo nội bộ)</h1>
@@ -82,7 +81,7 @@ export function AdManager() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-slate-500 font-bold uppercase">Doanh thu Quảng cáo tháng</span>
@@ -115,7 +114,7 @@ export function AdManager() {
  <div className="text-xl font-bold text-slate-900">1,245</div>
  <p className="text-[10px] text-[#F59E0B] font-medium mt-1">42 chiến dịch sắp hết ngân sách</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden p-2">
  <div className="flex border-b border-slate-100 bg-slate-50/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
@@ -240,7 +239,7 @@ export function AdManager() {
  <span className="px-3 py-1 bg-white border border-slate-200 rounded-2xl text-[10px] font-bold">Tháng 4, 2024</span>
  </div>
  </div>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
  <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="h-[300px] w-full">
  <ResponsiveContainer width="100%" height="100%">
@@ -284,11 +283,11 @@ export function AdManager() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
 
  {/* Seller ROI & performance */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
  <TrendingUp className="w-5 h-5 text-emerald-500" /> Top Seller ROAS (Return on Ad Spend)
@@ -344,7 +343,7 @@ export function AdManager() {
  Xem toàn bộ báo cáo CTR
  </button>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  )}
  </div>

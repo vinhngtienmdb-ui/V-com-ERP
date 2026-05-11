@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import { useState, useEffect } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
@@ -152,7 +151,7 @@ export function WarehouseModule() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Giá trị tồn kho</span>
@@ -193,7 +192,7 @@ export function WarehouseModule() {
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Realtime</span>
  </div>
  </div>
- </DraggableGrid>
+ </div>
 
  {/* Matrix Grid Layout */}
  <div className="space-y-6">

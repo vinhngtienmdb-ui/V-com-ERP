@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import { Wallet , Save } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { VietnamAddressSelector, VietnamProvinceBrowser, type VietnamAddress, EMPTY_ADDRESS, formatAddress } from './VietnamAddressSelector';
@@ -1683,7 +1682,7 @@ export function SettingsPage() {
 
  {activeTab === 'api' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
@@ -1713,7 +1712,7 @@ export function SettingsPage() {
  </div>
  <button className="w-full py-2 bg-[#111827] text-white rounded-lg text-xs font-bold hover:bg-slate-800">Cấu hình Webhook mới</button>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-blue-900 text-white p-6 rounded-lg flex items-center gap-6">
  <div className="p-4 bg-white/10 rounded-2xl border border-white/20">
@@ -1767,7 +1766,7 @@ export function SettingsPage() {
  <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
  </h3>
  </div>
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
  <h4 className="font-bold text-slate-900 mb-4">Phòng ban</h4>
  {MOCK_DEPARTMENTS.map((dept) => (
@@ -1831,7 +1830,7 @@ export function SettingsPage() {
  ))}
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </div>
  )}
@@ -1851,7 +1850,7 @@ export function SettingsPage() {
  <div className="bg-primary-50 border border-primary-100 rounded-lg p-5 mb-6">
  <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
  <p className="text-sm text-primary-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <div className="grid grid-cols-2 gap-4">
  <div className="bg-white p-3 rounded-2xl shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
  <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Quận 1</span>
@@ -1866,7 +1865,7 @@ export function SettingsPage() {
  </div>
  <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
  </div>
- </DraggableGrid>
+ </div>
  </div>
 
  <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Danh sách Cửa hàng & Nhân sự</h4>
@@ -1904,7 +1903,7 @@ export function SettingsPage() {
  </h3>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  {/* Zalo ZNS Config */}
  <div className="border border-slate-200 rounded-2xl p-5 hover:border-blue-400 transition-colors">
  <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
@@ -1985,7 +1984,7 @@ export function SettingsPage() {
  Lưu thiết lập SMS
  </button>
  </div>
- </DraggableGrid>
+ </div>
  
  <div className="bg-slate-100 border border-slate-200 rounded-2xl p-5 mt-6">
  <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
@@ -2095,7 +2094,7 @@ export function SettingsPage() {
  </div>
  </div>
  
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
  <div className="space-y-4">
  <div>
  <label className="block text-xs font-bold text-slate-500 mb-1.5">Tiêu đề Popup</label>
@@ -2171,7 +2170,7 @@ export function SettingsPage() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  
  <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
  <button 
@@ -2193,7 +2192,7 @@ export function SettingsPage() {
  <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
  </h3>
  <p className="text-sm text-slate-600 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
  <div className="flex justify-between items-center mb-4">
  <h4 className="font-bold text-slate-900">Danh mục Nhóm Hàng hóa</h4>
@@ -2222,7 +2221,7 @@ export function SettingsPage() {
  </label>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </div>
  )}

@@ -1,4 +1,3 @@
-import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  FileText, 
@@ -93,7 +92,7 @@ export function SettlementManagement() {
  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Đối soát & Hóa đơn Điện tử</h1>
@@ -111,7 +110,7 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
  <div className="text-xl font-bold text-slate-900">{formatCurrency(15450000000)}</div>
@@ -134,7 +133,7 @@ export function SettlementManagement() {
  <div className="text-2xl font-bold text-[#10B981]">{formatCurrency(845000000)}</div>
  <p className="text-[10px] text-slate-500 mt-1">Tháng: 03/2024</p>
  </div>
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-slate-100">
