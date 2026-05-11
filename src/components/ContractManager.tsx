@@ -79,7 +79,7 @@ export function ContractManager() {
  </div>
  <div className="flex items-center gap-2">
  {selectedContract.file && (
-   <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm">
+   <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm">
      <Download className="w-4 h-4" /> Tải tệp ({selectedContract.file.type})
    </button>
  )}
@@ -99,11 +99,11 @@ export function ContractManager() {
       <div className="flex-1 overflow-auto bg-[#e5e7eb] p-8 flex justify-center">
         {/* Mock Document Render */}
         <div className="bg-white w-[210mm] min-h-[297mm] shadow-lg p-[20mm]  mx-auto relative origin-top max-w-full">
-           <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[10px] font-bold rounded uppercase">
+           <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[9px] font-bold rounded uppercase">
               Preview: {selectedContract.file.name}
            </div>
            
-           <div className="space-y-6 text-sm text-slate-800 leading-relaxed mt-12 font-serif">
+           <div className="space-y-6 text-xs text-slate-800 leading-relaxed mt-12 font-serif">
              <h1 className="text-2xl font-bold text-center mb-8 uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br/><span className="text-lg">Độc lập - Tự do - Hạnh phúc</span></h1>
              <h2 className="text-xl font-bold text-center mt-12 mb-8">{selectedContract.title.split('-')[0].toUpperCase()}</h2>
              <p className="text-right italic">Hà Nội, ngày ... tháng ... năm ...</p>
@@ -127,7 +127,7 @@ export function ContractManager() {
     ) : (
       <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
         <File className="w-16 h-16 mb-4 opacity-50" />
-        <p className="text-sm font-medium">Không có tệp đính kèm nào được tìm thấy</p>
+        <p className="text-xs font-medium">Không có tệp đính kèm nào được tìm thấy</p>
       </div>
     )}
     
@@ -146,7 +146,7 @@ export function ContractManager() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <span className={cn(
-              "px-3 py-1.5 text-[11px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1.5",
+              "px-3 py-1.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1.5",
               selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : 
               selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600 border border-amber-200" : 
               selectedContract.status === "expiring_soon" ? "bg-orange-50 text-blue-600 border border-blue-200" :
@@ -164,17 +164,17 @@ export function ContractManager() {
             </div>
 
             <div className="border-t border-slate-200 pt-3">
-               <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Thời hạn</p>
+               <p className="text-[9px] text-slate-500 uppercase font-bold mb-1">Thời hạn</p>
                <p className={cn(
-                  "text-sm font-bold",
+                  "text-xs font-bold",
                   selectedContract.status === 'expired' ? "text-red-600" :
                   selectedContract.status === 'expiring_soon' ? "text-blue-600" : "text-slate-900"
                )}>{selectedContract.expiry}</p>
             </div>
             
             <div className="border-t border-slate-200 pt-3">
-               <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Giá trị</p>
-               <p className="text-sm font-bold text-slate-900">{selectedContract.value}</p>
+               <p className="text-[9px] text-slate-500 uppercase font-bold mb-1">Giá trị</p>
+               <p className="text-[13px] font-bold text-slate-900">{selectedContract.value}</p>
             </div>
           </div>
         </div>
@@ -183,13 +183,13 @@ export function ContractManager() {
         {selectedContract.status === 'pending' && (
           <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-xl space-y-3">
              <h4 className="text-xs font-bold uppercase text-blue-800 tracking-wider mb-2">Thao tác phê duyệt</h4>
-             <button onClick={() => handleStatusChange(selectedContract.id, "active")} className="w-full px-4 py-2 bg-emerald-600 text-white rounded font-bold text-sm hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-2">
+             <button onClick={() => handleStatusChange(selectedContract.id, "active")} className="w-full px-4 py-2 bg-emerald-600 text-white rounded font-bold text-xs hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-2">
                <CheckCircle2 className="w-4 h-4" /> Phê duyệt hồ sơ
              </button>
-             <button onClick={() => handleStatusChange(selectedContract.id, "returned")} className="w-full px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded font-bold text-sm hover:bg-slate-50 shadow-sm flex items-center justify-center gap-2">
+             <button onClick={() => handleStatusChange(selectedContract.id, "returned")} className="w-full px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded font-bold text-xs hover:bg-slate-50 shadow-sm flex items-center justify-center gap-2">
                <CornerDownRight className="w-4 h-4" /> Trả lại / Yêu cầu sửa
              </button>
-             <button onClick={() => handleStatusChange(selectedContract.id, "rejected")} className="w-full px-4 py-2 border border-red-200 text-red-600 bg-red-50 rounded font-bold text-sm hover:bg-red-100 shadow-sm flex items-center justify-center gap-2">
+             <button onClick={() => handleStatusChange(selectedContract.id, "rejected")} className="w-full px-4 py-2 border border-red-200 text-red-600 bg-red-50 rounded font-bold text-xs hover:bg-red-100 shadow-sm flex items-center justify-center gap-2">
                <XCircle className="w-4 h-4" /> Từ chối ký
              </button>
           </div>
@@ -210,12 +210,12 @@ export function ContractManager() {
                  {idx < selectedContract.signers.length - 1 && <div className="w-[2px] h-full bg-slate-200 my-1" />}
               </div>
               <div className="pb-1">
-                 <p className="text-sm font-bold text-slate-900">{signer.name}</p>
-                 <p className="text-[11px] text-slate-500">{signer.role}</p>
+                 <p className="text-[13px] font-bold text-slate-900">{signer.name}</p>
+                 <p className="text-[9px] text-slate-500">{signer.role}</p>
                  {signer.status === 'signed' ? (
-                   <span className="inline-block mt-1 text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Đã ký</span>
+                   <span className="inline-block mt-1 text-[9px] uppercase font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Đã ký</span>
                  ) : (
-                   <span className="inline-block mt-1 text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Đang chờ</span>
+                   <span className="inline-block mt-1 text-[9px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Đang chờ</span>
                  )}
               </div>
             </div>
@@ -249,9 +249,9 @@ export function ContractManager() {
              <div key={cmt.id} className="bg-slate-50 rounded-xl p-3 border border-slate-100 relative group">
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-xs font-bold text-slate-900">{cmt.author}</span>
-                  <span className="text-[10px] text-slate-400">{cmt.time}</span>
+                  <span className="text-[9px] text-slate-400">{cmt.time}</span>
                 </div>
-                <p className="text-sm text-slate-700">{cmt.content}</p>
+                <p className="text-xs text-slate-700">{cmt.content}</p>
                 
                 <button className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition-opacity">
                   <Reply className="w-3 h-3" />
@@ -259,7 +259,7 @@ export function ContractManager() {
              </div>
           ))}
           {(!selectedContract.comments || selectedContract.comments.length === 0) && (
-            <p className="text-center justify-center py-6 text-sm text-slate-400 italic">Chưa có bình luận nào.</p>
+            <p className="text-center justify-center py-6 text-xs text-slate-400 italic">Chưa có bình luận nào.</p>
           )}
         </div>
       </div>
@@ -274,7 +274,7 @@ export function ContractManager() {
            value={newComment}
            onChange={(e) => setNewComment(e.target.value)}
            placeholder="Nhập góp ý, ghi chú để yêu cầu sửa đổi..."
-           className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none pr-12 bg-slate-50 focus:bg-white"
+           className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none pr-12 bg-slate-50 focus:bg-white"
          />
          <button onClick={handleAddComment} className="absolute bottom-2 right-2 p-1.5 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors">
            <Send className="w-3.5 h-3.5" />
@@ -309,23 +309,23 @@ export function ContractManager() {
  
  <div className="p-6 space-y-5">
  <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl">
- <p className="text-sm text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-blue-900">{selectedContract?.title}</strong></p>
+ <p className="text-xs text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-blue-900">{selectedContract?.title}</strong></p>
  </div>
 
  <div>
- <label className="block text-sm font-semibold text-slate-800 mb-3">Chọn phương thức ký số</label>
+ <label className="block text-xs font-semibold text-slate-800 mb-3">Chọn phương thức ký số</label>
  <div className="space-y-3">
  <label className="flex items-center gap-3 p-3 border border-primary-200 bg-primary-50/50 rounded-lg cursor-pointer hover:bg-primary-50 transition-colors">
  <input type="radio" name="signMethod" defaultChecked className="w-4 h-4 text-primary-600 border-slate-400 focus:ring-primary-600" />
  <div>
- <p className="text-sm font-bold text-slate-900 flex items-center gap-2">Ký số SmartCA (Viettel, VNPT) <span className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-bold">Khuyên dùng</span></p>
+ <p className="text-[13px] font-bold text-slate-900 flex items-center gap-2">Ký số SmartCA (Viettel, VNPT) <span className="bg-emerald-100 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold">Khuyên dùng</span></p>
  <p className="text-xs text-slate-600 mt-0.5">Xác thực qua ứng dụng trên điện thoại thông minh.</p>
  </div>
  </label>
  <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
  <input type="radio" name="signMethod" className="w-4 h-4 text-primary-600 border-slate-400 focus:ring-primary-600" />
  <div>
- <p className="text-sm font-bold text-slate-900">Ký bằng USB Token</p>
+ <p className="text-[13px] font-bold text-slate-900">Ký bằng USB Token</p>
  <p className="text-xs text-slate-600 mt-0.5">Yêu cầu cắm USB và có phần mềm hỗ trợ (plugin).</p>
  </div>
  </label>
@@ -336,12 +336,12 @@ export function ContractManager() {
  <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
  <button 
  onClick={() => setSigningModalOpen(false)}
- className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+ className="px-4 py-2.5 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
  >
  Hủy bỏ
  </button>
  <button 
- className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+ className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
  onClick={() => {
  alert(`Yêu cầu ký số đã được gửi đến thiết bị SmartCA của bạn!`);
  setSigningModalOpen(false);
@@ -357,10 +357,10 @@ export function ContractManager() {
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Quản trị Hợp đồng</h1>
- <p className="text-sm text-slate-500 mt-1">Hợp đồng lao động, dịch vụ, mua bán và theo dõi thời hạn hợp đồng.</p>
+ <p className="text-xs text-slate-500 mt-1">Hợp đồng lao động, dịch vụ, mua bán và theo dõi thời hạn hợp đồng.</p>
  </div>
  <div className="flex gap-3">
- <button onClick={() => setShowCreateModal(true)} className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button onClick={() => setShowCreateModal(true)} className="bg-[#111827] text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo hợp đồng mới
  </button>
@@ -380,7 +380,7 @@ export function ContractManager() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id)}
  className={cn(
- "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
+ "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs transition-all text-left",
  activeTab === tab.id 
  ? "bg-primary-50 text-primary-700 font-bold" 
  : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
@@ -400,7 +400,7 @@ export function ContractManager() {
  <input 
  type="text" 
  placeholder="Tìm kiếm hợp đồng..."
- className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+ className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
  />
  </div>
  <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm">
@@ -412,29 +412,29 @@ export function ContractManager() {
  <table className="min-w-[680px] w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Mã HĐ / Tiêu đề</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-40">Đối tác / Nhân sự</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-32 whitespace-nowrap">Giá trị</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-40 whitespace-nowrap text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày hết hạn</th>
+ <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest">Mã HĐ / Tiêu đề</th>
+ <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-40">Đối tác / Nhân sự</th>
+ <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-32 whitespace-nowrap">Giá trị</th>
+ <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-40 whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày hết hạn</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {contracts.filter(doc => activeTab === 'signature' ? true : doc.type === activeTab).map(doc => (
  <tr key={doc.id} onClick={() => setSelectedContract(doc)} className="hover:bg-slate-50 transition-colors cursor-pointer">
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900">{doc.title}</p>
- <p className="text-[10px] text-slate-600 font-bold uppercase">{doc.id}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-bold text-slate-900">{doc.title}</p>
+ <p className="text-[9px] text-slate-600 font-bold uppercase">{doc.id}</p>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm font-medium text-slate-900">{doc.party}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-medium text-slate-900">{doc.party}</p>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-800">{doc.value}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-bold text-slate-800">{doc.value}</p>
  </td>
- <td className="px-6 py-4 text-center">
+ <td className="px-4 py-3 text-center">
  <span className={cn(
- "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'pending' ? "bg-amber-50 text-amber-600" :
  doc.status === "expiring_soon" ? "bg-orange-50 text-blue-600" : doc.status === "returned" ? "bg-slate-100 text-slate-700" : "bg-red-50 text-red-600"
@@ -451,7 +451,7 @@ export function ContractManager() {
  {doc.signatureStatus && (
  <div className="mt-1.5">
  <span className={cn(
- "px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1",
  doc.signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
  )}>
  <PenTool className="w-3 h-3" />
@@ -460,9 +460,9 @@ export function ContractManager() {
  </div>
  )}
  </td>
- <td className="px-6 py-4 text-right">
+ <td className="px-4 py-3 text-right">
  <p className={cn(
- "text-sm font-mono font-medium",
+ "text-xs font-mono font-medium",
  doc.status === 'expired' ? "text-red-500" :
  doc.status === 'expiring_soon' ? "text-blue-600 font-bold" : "text-slate-700"
  )}>{doc.expiry}</p>
@@ -476,7 +476,7 @@ export function ContractManager() {
     {showCreateModal && (
  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}>
  <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
- <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Tạo hợp đồng mới</h3>
  <button onClick={() => setShowCreateModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
  <X className="w-5 h-5" />
@@ -484,33 +484,33 @@ export function ContractManager() {
  </div>
  <div className="p-6 space-y-4">
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-2">Tiêu đề hợp đồng</label>
+ <label className="block text-[13px] font-bold text-slate-800 mb-2">Tiêu đề hợp đồng</label>
  <input type="text" placeholder="Nhập tiêu đề..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
  </div>
  <div className="grid grid-cols-2 gap-4">
    <div>
-   <label className="block text-sm font-bold text-slate-800 mb-2">Đối tác / Nhân sự</label>
+   <label className="block text-[13px] font-bold text-slate-800 mb-2">Đối tác / Nhân sự</label>
    <input type="text" placeholder="Tên bên B..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
    </div>
    <div>
-   <label className="block text-sm font-bold text-slate-800 mb-2">Giá trị dự kiến</label>
+   <label className="block text-[13px] font-bold text-slate-800 mb-2">Giá trị dự kiến</label>
    <input type="text" placeholder="VD: 50,000,000 ₫" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
    </div>
  </div>
  <div>
-  <label className="block text-sm font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
+  <label className="block text-[13px] font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
   <div className="border-2 border-dashed border-slate-300 p-8 rounded-xl flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
     <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200 group-hover:scale-110 transition-transform mb-3">
       <File className="w-6 h-6 text-primary-600" />
     </div>
-    <p className="text-sm font-bold text-slate-700">Kéo thả hoặc bấm để chọn tệp</p>
+    <p className="text-xs font-bold text-slate-700">Kéo thả hoặc bấm để chọn tệp</p>
     <p className="text-xs text-slate-500 mt-1">Hỗ trợ PDF, DOCX, XLSX, PPTX (Tối đa 20MB)</p>
   </div>
  </div>
  </div>
  <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 rounded-b-xl">
- <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-colors">Hủy</button>
- <button onClick={() => { alert('Tạo hợp đồng thành công!'); setShowCreateModal(false); }} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 transition-colors">Tạo & Trình duyệt</button>
+ <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-colors">Hủy</button>
+ <button onClick={() => { alert('Tạo hợp đồng thành công!'); setShowCreateModal(false); }} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition-colors">Tạo & Trình duyệt</button>
  </div>
  </div>
  </div>

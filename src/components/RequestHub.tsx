@@ -340,19 +340,19 @@ export function RequestHub() {
 
  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
+ <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-blue-600" /> Tôi gửi đi</h3>
+ <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-blue-600" /> Tôi gửi đi</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
+ <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
+ <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
  </div>
  </div>
@@ -471,30 +471,30 @@ export function RequestHub() {
  <table className="min-w-[680px] w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Loại / Mã phiếu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Người đề xuất</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày gửi</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Loại / Mã phiếu</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Người đề xuất</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày gửi</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {filteredRequests.length > 0 ? filteredRequests.map(doc => (
  <tr key={doc.id} onClick={() => setSelectedRequestForView(doc)} className="hover:bg-slate-50 transition-colors group cursor-pointer">
- <td className="px-6 py-4">
+ <td className="px-4 py-3">
  <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block mb-1">{doc.subtype}</span>
  <p className="text-[10px] text-slate-600 font-bold uppercase">{doc.id}</p>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm font-medium text-slate-900">{doc.title}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-medium text-slate-900">{doc.title}</p>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-800">{doc.requester}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-bold text-slate-800">{doc.requester}</p>
  </td>
- <td className="px-6 py-4 text-center">
+ <td className="px-4 py-3 text-center">
  <div className="flex flex-col gap-1 items-center">
  <span className={cn(
- "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'revoked' ? 'bg-slate-100 text-slate-500' : doc.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
  )}>
@@ -515,9 +515,9 @@ export function RequestHub() {
  )}
  </div>
  </td>
- <td className="px-6 py-4 text-right">
+ <td className="px-4 py-3 text-right">
  <div className="flex flex-col items-end gap-2">
- <p className="text-sm text-slate-700 font-mono">{doc.date}</p>
+ <p className="text-xs text-slate-700 font-mono">{doc.date}</p>
  {doc.status === 'pending' && (isAdmin || staffInfo?.role === 'director') && (
  <div className="flex gap-2 invisible group-hover:visible transition-all">
  <button 
@@ -560,7 +560,7 @@ export function RequestHub() {
  </div>
  <div>
  <p className="text-lg font-bold text-slate-900">Không tìm thấy phiếu nào</p>
- <p className="text-sm text-slate-600">Hãy thử thay đổi từ khóa hoặc bộ lọc của bạn.</p>
+ <p className="text-xs text-slate-600">Hãy thử thay đổi từ khóa hoặc bộ lọc của bạn.</p>
  </div>
  <button 
  onClick={clearAllFilters}
@@ -580,7 +580,7 @@ export function RequestHub() {
  <div className="p-6 space-y-4">
  <div>
  <h3 className="text-lg font-bold text-slate-900 mb-2">Cài đặt Cấu trúc Phiếu (E-Form)</h3>
- <p className="text-sm text-slate-600 mb-4">Tạo và chỉnh sửa các loại phiếu đề xuất để sử dụng trong tổ chức.</p>
+ <p className="text-xs text-slate-600 mb-4">Tạo và chỉnh sửa các loại phiếu đề xuất để sử dụng trong tổ chức.</p>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
  {formConfigs.map((item) => (
  <div key={item.id} className="border border-slate-200 rounded-2xl p-4 bg-slate-50 relative group">
@@ -607,7 +607,7 @@ export function RequestHub() {
  setShowTemplateGallery(true);
  }} className="border border-dashed border-slate-400 rounded-2xl p-4 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
  <Plus className="w-6 h-6 mb-2" />
- <span className="text-sm font-bold">Thêm loại phiếu mới</span>
+ <span className="text-[13px] font-bold">Thêm loại phiếu mới</span>
  </button>
  </div>
  </div>
@@ -641,7 +641,7 @@ export function RequestHub() {
  setFormConfigs(updated);
  }
  }}
- className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95"
+ className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95"
  >
  <Plus className="w-4 h-4 text-emerald-600" /> Chèn bước duyệt mới
  </button>
@@ -759,7 +759,7 @@ export function RequestHub() {
  <div className="mt-8 pt-6 border-t border-slate-300 flex justify-end">
  <button 
  onClick={() => alert('Đã lưu cấu hình luồng duyệt thành công!')}
- className="px-8 py-3 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
+ className="px-8 py-3 bg-primary-600 text-white rounded-xl text-[13px] font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
  >
  LƯU CẤU HÌNH LUỒNG DUYỆT
  </button>
@@ -774,7 +774,7 @@ export function RequestHub() {
  {showAddModal && (
  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowAddModal(false)}>
  <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
- <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
  <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
  <X className="w-5 h-5" />
@@ -782,7 +782,7 @@ export function RequestHub() {
  </div>
  <div className="p-6 space-y-4">
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-2">Loại đề xuất</label>
+ <label className="block text-[13px] font-bold text-slate-800 mb-2">Loại đề xuất</label>
  <select 
  value={newRequest.subtype}
  onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
@@ -798,7 +798,7 @@ export function RequestHub() {
  </select>
  </div>
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-2">Lý do / Nội dung chung</label>
+ <label className="block text-[13px] font-bold text-slate-800 mb-2">Lý do / Nội dung chung</label>
  <textarea 
  value={newRequest.title}
  onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
@@ -848,7 +848,7 @@ export function RequestHub() {
  </div>
   {/* Workflow Enhancements in Modal */}
   <div className="pt-6 border-t border-slate-200 mt-4">
-  <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+  <h4 className="text-[13px] font-bold text-slate-900 mb-4 flex items-center gap-2">
   <UserPlus className="w-4 h-4 text-emerald-600" />
   Tùy chỉnh luồng xử lý
   </h4>
@@ -863,7 +863,7 @@ export function RequestHub() {
   <div className="flex gap-2 items-center">
   <AlertTriangle className="w-4 h-4 text-rose-500" />
   <div>
-  <p className="text-sm font-bold text-rose-900">Yêu cầu xử lý khẩn cấp</p>
+  <p className="text-[13px] font-bold text-rose-900">Yêu cầu xử lý khẩn cấp</p>
   <p className="text-xs text-rose-600/80">Bỏ qua SLA rườm rà, thông báo ưu tiên trực tiếp tới người phê duyệt.</p>
   </div>
   </div>
@@ -871,7 +871,7 @@ export function RequestHub() {
 
   <div className="bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden">
   <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
-  <p className="text-sm font-bold text-slate-800">Người phê duyệt từng bước</p>
+  <p className="text-[13px] font-bold text-slate-800">Người phê duyệt từng bước</p>
   <button 
   type="button" 
   onClick={() => setNewRequest({...newRequest, customReviewers: [...(newRequest.customReviewers||[]), { step: (newRequest.customReviewers?.length || 0) + 1, reviewer: '' }]})}
@@ -923,13 +923,13 @@ export function RequestHub() {
   </div>
   </div>
   </div>
- <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
+ <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
+ <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
  Hủy
  </button>
  <button 
  onClick={handleAddRequest}
- className="px-6 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
+ className="px-6 py-2.5 text-[13px] font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
  Gửi đề xuất
  </button>
  </div>
@@ -948,7 +948,7 @@ export function RequestHub() {
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="w-full max-w-3xl bg-white shadow-2xl h-full overflow-y-auto flex flex-col border-l border-emerald-200" onClick={(e) => e.stopPropagation()}>
-        <div className="px-6 py-4 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
+        <div className="px-4 py-3 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
               <FileSignature className="w-5 h-5" />
@@ -979,28 +979,28 @@ export function RequestHub() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Người đề xuất</p>
-              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.requester}</p>
+              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.requester}</p>
             </div>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Ngày gửi</p>
-              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.date}</p>
+              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.date}</p>
             </div>
             <div className="col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Tiêu đề / Lý do</p>
-              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.title}</p>
+              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.title}</p>
             </div>
           </div>
 
           {/* Form Data */}
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-3 border-b border-emerald-100 pb-2 text-emerald-800 flex items-center gap-2">
+            <h4 className="text-[13px] font-bold text-slate-900 mb-3 border-b border-emerald-100 pb-2 text-emerald-800 flex items-center gap-2">
               <Layout className="w-4 h-4" /> Dữ liệu biểu mẫu
             </h4>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.fields?.map((field: any) => (
                 <div key={field.id} className={field.type === 'textarea' ? "col-span-2" : ""}>
                   <p className="text-xs font-bold text-slate-500 border-b border-slate-200 pb-1 mb-1">{field.label}</p>
-                  <p className="text-sm font-medium text-slate-900 mt-1">{(selectedRequestForView.formData || {})[field.id] || '---'}</p>
+                  <p className="text-[13px] font-medium text-slate-900 mt-1">{(selectedRequestForView.formData || {})[field.id] || '---'}</p>
                 </div>
               ))}
             </div>
@@ -1008,7 +1008,7 @@ export function RequestHub() {
 
           {/* Approval Workflow */}
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-4 border-b border-indigo-100 pb-2 text-indigo-800 flex items-center gap-2">
+            <h4 className="text-[13px] font-bold text-slate-900 mb-4 border-b border-indigo-100 pb-2 text-indigo-800 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" /> Luồng Phê duyệt
             </h4>
             <div className="relative pl-4 space-y-6">
@@ -1027,7 +1027,7 @@ export function RequestHub() {
                         log.status === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
                       )}>{log.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}</span>
                     </div>
-                    <p className="text-sm font-medium text-slate-900">{log.by}</p>
+                    <p className="text-[13px] font-medium text-slate-900">{log.by}</p>
                     <p className="text-[10px] text-slate-500 mt-1">{log.time}</p>
                   </div>
                 </div>
@@ -1053,7 +1053,7 @@ export function RequestHub() {
               {(selectedRequestForView.status === 'pending') && (!selectedRequestForView.approvalLog || selectedRequestForView.approvalLog.length === 0) && (
                 <button 
                   onClick={() => handleRevokeRequest(selectedRequestForView.id)}
-                  className="px-4 py-2 border border-rose-300 text-rose-600 rounded-lg text-sm font-bold hover:bg-rose-50 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 border border-rose-300 text-rose-600 rounded-lg text-[13px] font-bold hover:bg-rose-50 transition-colors flex items-center gap-2"
                 >
                   <X className="w-4 h-4" /> Thu hồi đề xuất
                 </button>
@@ -1063,7 +1063,7 @@ export function RequestHub() {
               {(selectedRequestForView.status === 'revoked' || selectedRequestForView.status === 'rejected') && (
                 <button 
                   onClick={() => handleDeleteRequest(selectedRequestForView.id)}
-                  className="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold hover:bg-rose-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-rose-600 text-white rounded-lg text-[13px] font-bold hover:bg-rose-700 transition-colors flex items-center gap-2"
                 >
                   <Trash2 className="w-4 h-4" /> Xóa vĩnh viễn
                 </button>
@@ -1078,13 +1078,13 @@ export function RequestHub() {
                       const updatedReq = { ...selectedRequestForView, status: 'approved' };
                       setSelectedRequestForView(updatedReq);
                     }}
-                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-[13px] font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4" /> Phê duyệt
                   </button>
                   <button 
                     onClick={() => setSigningRequestId(selectedRequestForView.id)}
-                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-[13px] font-bold hover:bg-blue-50 transition-colors flex items-center gap-2"
                   >
                     <FileSignature className="w-4 h-4" /> Ký & Duyệt
                   </button>
@@ -1093,7 +1093,7 @@ export function RequestHub() {
                       handleStatusChange(selectedRequestForView.id, 'rejected');
                       setSelectedRequestForView({ ...selectedRequestForView, status: 'rejected' });
                     }}
-                    className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-slate-800 text-white rounded-lg text-[13px] font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
                   >
                     Từ chối
                   </button>
@@ -1109,7 +1109,7 @@ export function RequestHub() {
                         setSelectedRequestForView({ ...selectedRequestForView, status: 'pending' });
                       }
                     }}
-                    className="px-4 py-2 border border-amber-500 text-amber-600 rounded-lg text-sm font-bold hover:bg-amber-50 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 border border-amber-500 text-amber-600 rounded-lg text-[13px] font-bold hover:bg-amber-50 transition-colors flex items-center gap-2"
                  >
                    <RefreshCw className="w-4 h-4" /> Reset trạng thái
                  </button>
@@ -1172,7 +1172,7 @@ export function RequestHub() {
 
  {/* CA Selection */}
  <div className="space-y-4">
- <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
+ <label className="text-[13px] font-bold text-slate-900 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-blue-600" /> Chọn Nhà cung cấp Chứng thực (CA)
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1190,7 +1190,7 @@ export function RequestHub() {
  )}
  >
  <div className="flex justify-between items-center">
- <h5 className="font-bold text-sm text-slate-900">{ca.label}</h5>
+ <h5 className="font-bold text-xs text-slate-900">{ca.label}</h5>
  <div className={cn("w-3 h-3 rounded-full border-2", signatureMethod === ca.id ? "bg-slate-900 border-slate-900" : "bg-white border-slate-400")} />
  </div>
  <p className="text-[10px] text-slate-600 font-medium">{ca.desc}</p>
@@ -1287,15 +1287,15 @@ export function RequestHub() {
  <div className="grid grid-cols-2 gap-y-4 gap-x-8">
  <div className="border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Người đề xuất</p>
- <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.requester}</p>
+ <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.requester}</p>
  </div>
  <div className="border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Loại phiếu</p>
- <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.subtype}</p>
+ <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.subtype}</p>
  </div>
  <div className="col-span-2 border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Nội dung / Lý do</p>
- <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.title}</p>
+ <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.title}</p>
  </div>
  </div>
  </div>

@@ -79,7 +79,7 @@ export function SignatureHub() {
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900 tracking-tight">Trung tâm Ký số (Digital Signature Hub)</h1>
- <p className="text-sm text-slate-500 mt-1 italic">Hệ thống ký số tập trung, hỗ trợ SmartCA, Viettel-CA và HSM Token.</p>
+ <p className="text-xs text-slate-500 mt-1 italic">Hệ thống ký số tập trung, hỗ trợ SmartCA, Viettel-CA và HSM Token.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2">
@@ -227,31 +227,31 @@ export function SignatureHub() {
  <table className="w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Ngày</th>
- <th className="px-6 py-4"></th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ngày</th>
+ <th className="px-4 py-3"></th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {filteredSignatures.map(doc => (
  <tr key={doc.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900">{doc.id}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-bold text-slate-900">{doc.id}</p>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm font-medium text-slate-900">{doc.title}</p>
+ <td className="px-4 py-3">
+ <p className="text-[13px] font-medium text-slate-900">{doc.title}</p>
  <p className="text-xs text-slate-600 font-mono mt-0.5">{doc.docId}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-4 py-3">
  <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg uppercase tracking-tight">
  {doc.type === 'contract' ? 'Hợp đồng' : doc.type === 'request' ? 'Đề xuất E-Form' : 'Văn bản (NĐ30)'}
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-4 py-3">
  <div className="flex items-center gap-2">
  <p className="text-[10px] text-slate-600 uppercase font-bold tracking-tight w-16">Luồng ký:</p>
  <div className="flex items-center gap-1">
@@ -273,19 +273,19 @@ export function SignatureHub() {
  ))}
  </div>
  </td>
- <td className="px-6 py-4 text-center">
+ <td className="px-4 py-3 text-center">
  <span className={cn(
- "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'signed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
  )}>
  {doc.status === 'signed' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
  {doc.status === 'signed' ? 'Đã ký số' : 'Chờ ký'}
  </span>
  </td>
- <td className="px-6 py-4">
- <p className="text-sm text-slate-700">{doc.requestDate}</p>
+ <td className="px-4 py-3">
+ <p className="text-xs text-slate-700">{doc.requestDate}</p>
  </td>
- <td className="px-6 py-4 text-right">
+ <td className="px-4 py-3 text-right">
  {doc.status === 'pending' && (
  <button 
  onClick={() => handleSign(doc)}
@@ -319,7 +319,7 @@ export function SignatureHub() {
  <div className="p-6">
  <div className="mb-6">
  <h3 className="text-lg font-bold text-slate-900">Cấu hình Quy trình Ký số & Phân quyền</h3>
- <p className="text-sm text-slate-600 mt-1">Thiết lập những ai có thẩm quyền ký và thứ tự ký cho từng loại tài liệu trong hệ thống.</p>
+ <p className="text-xs text-slate-600 mt-1">Thiết lập những ai có thẩm quyền ký và thứ tự ký cho từng loại tài liệu trong hệ thống.</p>
  </div>
 
  <div className="space-y-4">
@@ -362,7 +362,7 @@ export function SignatureHub() {
  <div className="mb-6 flex items-center justify-between">
  <div>
  <h3 className="text-lg font-bold text-slate-900">Quản lý Chứng thư số</h3>
- <p className="text-sm text-slate-600 mt-1">Danh sách chứng thư số, chữ ký điện tử hiện có trên hệ thống.</p>
+ <p className="text-xs text-slate-600 mt-1">Danh sách chứng thư số, chữ ký điện tử hiện có trên hệ thống.</p>
  </div>
  <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2">
  <Key className="w-4 h-4" />
@@ -390,7 +390,7 @@ export function SignatureHub() {
  {cert.status === 'active' ? 'Hoạt động' : 'Sắp hết hạn'}
  </span>
  </div>
- <p className="text-sm text-slate-600 mb-3">{cert.provider} • ID: {cert.id}</p>
+ <p className="text-xs text-slate-600 mb-3">{cert.provider} • ID: {cert.id}</p>
  <div className="flex items-center justify-between text-xs font-semibold">
  <span className="text-slate-700">Hết hạn: <span className={cert.status === 'expiring_soon' ? 'text-blue-600' : ''}>{cert.expiry}</span></span>
  <button className="text-primary-600 hover:text-primary-800">Cập nhật mật khẩu / PIN</button>
@@ -406,16 +406,16 @@ export function SignatureHub() {
  <div className="p-0">
  <div className="p-6 border-b border-slate-200 bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Nhật ký Hệ thống Ký số</h3>
- <p className="text-sm text-slate-600 mt-1">Lưu trữ lịch sử thao tác, xác thực và ký số trên toàn hệ thống.</p>
+ <p className="text-xs text-slate-600 mt-1">Lưu trữ lịch sử thao tác, xác thực và ký số trên toàn hệ thống.</p>
  </div>
  <div className="overflow-auto max-h-[500px]">
  <table className="w-full text-left">
  <thead className="bg-slate-50 sticky top-0">
  <tr>
- <th className="px-6 py-3 text-xs font-bold text-slate-600 uppercase">Thời gian</th>
- <th className="px-6 py-3 text-xs font-bold text-slate-600 uppercase">Thao tác</th>
- <th className="px-6 py-3 text-xs font-bold text-slate-600 uppercase">Người thực hiện</th>
- <th className="px-6 py-3 text-xs font-bold text-slate-600 uppercase">IP & Thiết bị</th>
+ <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thời gian</th>
+ <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thao tác</th>
+ <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Người thực hiện</th>
+ <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">IP & Thiết bị</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -426,10 +426,10 @@ export function SignatureHub() {
  { time: '14:15 26/04/2026', action: 'Tạo luồng trình ký mới REQ-99', user: 'Phòng Nhân sự', ip: '192.168.1.155 (Mac OS)' },
  ].map((log, idx) => (
  <tr key={idx} className="hover:bg-slate-50">
- <td className="px-6 py-4 text-sm text-slate-700 font-mono">{log.time}</td>
- <td className="px-6 py-4 text-sm font-semibold text-slate-900">{log.action}</td>
- <td className="px-6 py-4 text-sm text-slate-700">{log.user}</td>
- <td className="px-6 py-4 text-xs text-slate-600 font-mono">{log.ip}</td>
+ <td className="px-4 py-3 text-xs text-slate-700 font-mono">{log.time}</td>
+ <td className="px-4 py-3 text-sm font-semibold text-slate-900">{log.action}</td>
+ <td className="px-4 py-3 text-xs text-slate-700">{log.user}</td>
+ <td className="px-4 py-3 text-xs text-slate-600 font-mono">{log.ip}</td>
  </tr>
  ))}
  </tbody>
@@ -484,7 +484,7 @@ export function SignatureHub() {
  >
  <div className={cn("w-4 h-4 rounded-full border-2 flex-shrink-0", signatureMethod === ca.id ? "bg-primary-600 border-primary-600" : "bg-white border-slate-400")} />
  <div>
- <p className="text-sm font-bold text-slate-900">{ca.label}</p>
+ <p className="text-[13px] font-bold text-slate-900">{ca.label}</p>
  <p className="text-xs text-slate-600 mt-0.5">{ca.desc}</p>
  </div>
  </div>
@@ -497,13 +497,13 @@ export function SignatureHub() {
  <button 
  onClick={() => setSigningModalOpen(false)}
  disabled={isSigningInProcess}
- className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+ className="px-4 py-2.5 text-[13px] font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
  >
  Hủy bỏ
  </button>
  <button 
  disabled={isSigningInProcess}
- className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+ className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-[13px] font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
  onClick={confirmSign}
  >
  {isSigningInProcess ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
