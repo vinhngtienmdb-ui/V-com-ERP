@@ -84,12 +84,31 @@ export function RequestHub() {
 
  // Signature State
  const [signingRequestId, setSigningRequestId] = useState<string | null>(null);
- const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
+ const [signatureMethod, setSignatureMethod] = useState<'company_ca' | 'personal_ca' | 'personal_image'>('company_ca');
  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
 
  // Printing State
  const [showPrintModal, setShowPrintModal] = useState(false);
  const [selectedRequestForPrint, setSelectedRequestForPrint] = useState<any>(null);
+
+ // Detail View State
+ const [selectedRequestForView, setSelectedRequestForView] = useState<any>(null);
+
+ const handleRevokeRequest = (id: string) => {
+ if(window.confirm('Bạn có chắc muốn thu hồi đề xuất này?')) {
+  handleStatusChange(id, 'revoked');
+  if (selectedRequestForView?.id === id) {
+  setSelectedRequestForView({ ...selectedRequestForView, status: 'revoked' });
+  }
+ }
+ };
+
+ const handleDeleteRequest = (id: string) => {
+ if(window.confirm('Xóa vĩnh viễn đề xuất này?')) {
+  setRequests(requests.filter(r => r.id !== id));
+  setSelectedRequestForView(null);
+ }
+ };
 
  const handleStatusChange = (id: string, newStatus: string) => {
  const isDbRecord = dbRequestIds.has(id);
@@ -461,7 +480,7 @@ export function RequestHub() {
  </thead>
  <tbody className="divide-y divide-slate-100">
  {filteredRequests.length > 0 ? filteredRequests.map(doc => (
- <tr key={doc.id} className="hover:bg-slate-50 transition-colors group">
+ <tr key={doc.id} onClick={() => setSelectedRequestForView(doc)} className="hover:bg-slate-50 transition-colors group cursor-pointer">
  <td className="px-6 py-4">
  <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block mb-1">{doc.subtype}</span>
  <p className="text-[10px] text-slate-600 font-bold uppercase">{doc.id}</p>
@@ -477,12 +496,13 @@ export function RequestHub() {
  <span className={cn(
  "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
- doc.status === 'pending' ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
+ doc.status === 'revoked' ? 'bg-slate-100 text-slate-500' : doc.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
  )}>
  {doc.status === 'approved' && <CheckCircle2 className="w-3 h-3" />}
  {doc.status === 'pending' && <Clock className="w-3 h-3" />}
  {doc.status === 'rejected' && <AlertCircle className="w-3 h-3" />}
- {doc.status === 'approved' ? 'Đã duyệt' : doc.status === 'pending' ? 'Chờ duyệt' : 'Từ chối'}
+  {doc.status === 'revoked' && <X className="w-3 h-3" />}
+ {doc.status === 'approved' ? 'Đã duyệt' : doc.status === 'revoked' ? 'Đã thu hồi' : doc.status === 'pending' ? 'Chờ duyệt' : 'Từ chối'}
  </span>
  {doc.status === 'approved' && (
  <span className={cn(
@@ -521,9 +541,8 @@ export function RequestHub() {
  </div>
  )}
  <button 
- onClick={() => {
- setSelectedRequestForPrint(doc);
- setShowPrintModal(true);
+ onClick={(e) => {
+ e.stopPropagation(); setSelectedRequestForPrint(doc); setShowPrintModal(true);
  }}
  className="p-1 px-2 text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 text-[10px] font-bold"
  >
@@ -753,8 +772,8 @@ export function RequestHub() {
  </div>
 
  {showAddModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
+ <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowAddModal(false)}>
+ <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
  <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
  <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
@@ -917,165 +936,203 @@ export function RequestHub() {
  </div>
  </div>
  )}
- {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {false && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
- <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h3 className="text-lg font-bold text-slate-900">{editingFormConfig.name === 'Loại phiếu mới' ? 'Thêm Loại Phiếu Mới' : 'Sửa Thông Tin Phiếu'}</h3>
- <button onClick={() => setShowConfigModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
- <X className="w-5 h-5" />
- </button>
- </div>
- <div className="p-6 overflow-y-auto max-h-[80vh] flex flex-col md:flex-row gap-6">
- <div className="flex-1 space-y-4">
- <h4 className="font-bold text-slate-800 text-sm border-b border-slate-200 pb-2">Thông tin chung</h4>
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-2">Tên phiếu</label>
- <input 
- type="text" 
- value={editingFormConfig.name}
- onChange={(e) => setEditingFormConfig({...editingFormConfig, name: e.target.value})}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
- placeholder="Ví dụ: Đơn xin nghỉ phép"
- />
- </div>
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-2">Nhóm / Phân loại</label>
- <select 
- value={editingFormConfig.category}
- onChange={(e) => setEditingFormConfig({...editingFormConfig, category: e.target.value})}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
- >
- <option value="Hành chính">Hành chính</option>
- <option value="Tài chính">Tài chính</option>
- <option value="Khác">Khác</option>
- </select>
- </div>
- </div>
+ {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {/* Removed hidden old inline modal */}
+ 
+  {/* Selected Request Detail Slide-over Panel */}
+  <AnimatePresence>
+  {selectedRequestForView && (
+    <div className="fixed inset-0 z-[60] flex justify-end bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelectedRequestForView(null)}>
+      <motion.div 
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="w-full max-w-3xl bg-white shadow-2xl h-full overflow-y-auto flex flex-col border-l border-emerald-200" onClick={(e) => e.stopPropagation()}>
+        <div className="px-6 py-4 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
+              <FileSignature className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900">Chi tiết Đề xuất</h3>
+              <p className="text-xs text-emerald-700 font-medium">Phiếu: {selectedRequestForView.id} | {selectedRequestForView.subtype}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => {
+                setSelectedRequestForPrint(selectedRequestForView);
+                setShowPrintModal(true);
+              }}
+              className="p-2 text-slate-500 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"
+            >
+              <Printer className="w-4 h-4" /> In
+            </button>
+            <button onClick={() => setSelectedRequestForView(null)} className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6 flex-1 space-y-8">
+          {/* Header Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Người đề xuất</p>
+              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.requester}</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Ngày gửi</p>
+              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.date}</p>
+            </div>
+            <div className="col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Tiêu đề / Lý do</p>
+              <p className="text-sm font-bold text-slate-900">{selectedRequestForView.title}</p>
+            </div>
+          </div>
 
- <div className="flex-1 space-y-4">
- <div className="flex justify-between items-center border-b border-slate-200 pb-2">
- <h4 className="font-bold text-slate-800 text-sm">Cấu hình E-Form</h4>
- <button 
- onClick={() => {
- const newField = { id: `f${Date.now()}`, label: 'Trường mới', type: 'text', required: false };
- setEditingFormConfig({...editingFormConfig, fields: [...(editingFormConfig.fields || []), newField]});
- }}
- className="text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
- >
- <Plus className="w-3 h-3" /> Thêm trường
- </button>
- </div>
- <div className="space-y-3">
- {(editingFormConfig.fields || []).map((field: any, idx: number) => (
- <div key={field.id} className="bg-slate-50 border border-slate-300 p-3 rounded-lg relative group">
- <button 
- onClick={() => {
- setEditingFormConfig({
- ...editingFormConfig,
- fields: editingFormConfig.fields.filter((f: any) => f.id !== field.id)
- })
- }}
- className="absolute -top-2 -right-2 bg-rose-100 text-rose-600 rounded-full w-5 h-5 flex items-center justify-center invisible group-hover:visible shadow-sm"
- >
- <X className="w-3 h-3" />
- </button>
- <div className="grid grid-cols-2 gap-2 mb-2">
- <input 
- type="text" 
- value={field.label} 
- onChange={(e) => {
- const updated = [...editingFormConfig.fields];
- updated[idx].label = e.target.value;
- setEditingFormConfig({...editingFormConfig, fields: updated});
- }}
- className="border border-slate-300 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-primary-500 font-medium"
- placeholder="Tên trường (Label)" 
- />
- <select 
- value={field.type}
- onChange={(e) => {
- const updated = [...editingFormConfig.fields];
- updated[idx].type = e.target.value;
- setEditingFormConfig({...editingFormConfig, fields: updated});
- }}
- className="border border-slate-300 text-xs px-2 py-1.5 rounded bg-white w-full focus:outline-none focus:ring-1 focus:ring-primary-500 font-medium"
- >
- <option value="text">Văn bản ngắn</option>
- <option value="textarea">Văn bản dài</option>
- <option value="number">Số</option>
- <option value="date">Ngày tháng</option>
- <option value="select">Lựa chọn (Dropdown)</option>
- </select>
- </div>
- {field.type === 'select' && (
- <input 
- type="text"
- value={field.options?.join(', ') || ''}
- onChange={(e) => {
- const updated = [...editingFormConfig.fields];
- updated[idx].options = e.target.value.split(',').map(s => s.trim());
- setEditingFormConfig({...editingFormConfig, fields: updated});
- }}
- className="border border-slate-300 text-xs px-2 py-1.5 rounded bg-white w-full mb-2 focus:outline-none focus:ring-1 focus:ring-primary-500"
- placeholder="Tùy chọn (ngăn cách bằng dấu phẩy)"
- />
- )}
- <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer w-fit">
- <input 
- type="checkbox" 
- checked={field.required}
- onChange={(e) => {
- const updated = [...editingFormConfig.fields];
- updated[idx].required = e.target.checked;
- setEditingFormConfig({...editingFormConfig, fields: updated});
- }}
- className="rounded border-slate-400 text-primary-600 focus:ring-primary-500"
- /> Bắt buộc nhập
- </label>
- </div>
- ))}
- {(!editingFormConfig.fields || editingFormConfig.fields.length === 0) && (
- <div className="border border-dashed border-slate-400 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-500 bg-white">
- <FileEdit className="w-6 h-6 mb-2 text-slate-500" />
- <p className="text-sm font-medium">Chưa có trường dữ liệu nào.</p>
- <p className="text-xs">Bấm "Thêm trường" để cấu hình.</p>
- </div>
- )}
- </div>
- </div>
- </div>
- <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowConfigModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
- Hủy
- </button>
- <button 
- onClick={() => {
- const exists = formConfigs.find(f => f.id === editingFormConfig.id);
- if (exists) {
- setFormConfigs(formConfigs.map(f => f.id === editingFormConfig.id ? editingFormConfig : f));
- } else {
- setFormConfigs([...formConfigs, editingFormConfig]);
- }
- setShowConfigModal(false);
- }}
- className="px-6 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shadow-indigo-600/30">
- Lưu cấu hình
- </button>
- </div>
- </div>
- </div>
- )}
- {/* Digital Signature Modal */}
+          {/* Form Data */}
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 mb-3 border-b border-emerald-100 pb-2 text-emerald-800 flex items-center gap-2">
+              <Layout className="w-4 h-4" /> Dữ liệu biểu mẫu
+            </h4>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.fields?.map((field: any) => (
+                <div key={field.id} className={field.type === 'textarea' ? "col-span-2" : ""}>
+                  <p className="text-xs font-bold text-slate-500 border-b border-slate-200 pb-1 mb-1">{field.label}</p>
+                  <p className="text-sm font-medium text-slate-900 mt-1">{(selectedRequestForView.formData || {})[field.id] || '---'}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Approval Workflow */}
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 mb-4 border-b border-indigo-100 pb-2 text-indigo-800 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> Luồng Phê duyệt
+            </h4>
+            <div className="relative pl-4 space-y-6">
+              <div className="absolute left-[7px] top-4 bottom-4 w-px bg-slate-200" />
+              {(selectedRequestForView.approvalLog || []).map((log: any, idx: number) => (
+                <div key={idx} className="relative z-10 flex gap-4">
+                  <div className={cn(
+                    "w-[14px] h-[14px] rounded-full shrink-0 border-2 mt-1 bg-white",
+                    log.status === 'approved' ? "border-emerald-500" : "border-rose-500"
+                  )} />
+                  <div className="flex-1 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="text-xs font-bold text-slate-800">{log.stepName}</p>
+                      <span className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded",
+                        log.status === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                      )}>{log.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}</span>
+                    </div>
+                    <p className="text-sm font-medium text-slate-900">{log.by}</p>
+                    <p className="text-[10px] text-slate-500 mt-1">{log.time}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.workflow?.slice((selectedRequestForView.approvalLog || []).length).map((_: any, idx: number) => (
+                <div key={'w-'+idx} className="relative z-10 flex gap-4 opacity-50">
+                  <div className="w-[14px] h-[14px] rounded-full shrink-0 border-2 border-slate-300 bg-slate-100 mt-1" />
+                  <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <p className="text-xs font-bold text-slate-600 mb-1">Cấp duyệt {(selectedRequestForView.approvalLog || []).length + idx + 1}</p>
+                    <p className="text-[10px] font-bold text-amber-600">Đang chờ xử lý...</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Action Area based on Rules */}
+          <div className="pt-6 border-t border-slate-200">
+            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Thao tác</h4>
+            <div className="flex flex-wrap gap-3">
+              {/* Creator Revoke */}
+              {(selectedRequestForView.status === 'pending') && (!selectedRequestForView.approvalLog || selectedRequestForView.approvalLog.length === 0) && (
+                <button 
+                  onClick={() => handleRevokeRequest(selectedRequestForView.id)}
+                  className="px-4 py-2 border border-rose-300 text-rose-600 rounded-lg text-sm font-bold hover:bg-rose-50 transition-colors flex items-center gap-2"
+                >
+                  <X className="w-4 h-4" /> Thu hồi đề xuất
+                </button>
+              )}
+
+              {/* Delete Request */}
+              {(selectedRequestForView.status === 'revoked' || selectedRequestForView.status === 'rejected') && (
+                <button 
+                  onClick={() => handleDeleteRequest(selectedRequestForView.id)}
+                  className="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold hover:bg-rose-700 transition-colors flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" /> Xóa vĩnh viễn
+                </button>
+              )}
+              
+              {/* Approver Action */}
+              {selectedRequestForView.status === 'pending' && (
+                <>
+                  <button 
+                    onClick={() => {
+                      handleStatusChange(selectedRequestForView.id, 'approved');
+                      const updatedReq = { ...selectedRequestForView, status: 'approved' };
+                      setSelectedRequestForView(updatedReq);
+                    }}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Phê duyệt
+                  </button>
+                  <button 
+                    onClick={() => setSigningRequestId(selectedRequestForView.id)}
+                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors flex items-center gap-2"
+                  >
+                    <FileSignature className="w-4 h-4" /> Ký & Duyệt
+                  </button>
+                  <button 
+                    onClick={() => {
+                      handleStatusChange(selectedRequestForView.id, 'rejected');
+                      setSelectedRequestForView({ ...selectedRequestForView, status: 'rejected' });
+                    }}
+                    className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
+                  >
+                    Từ chối
+                  </button>
+                </>
+              )}
+
+              {/* Change Approval */}
+              {(selectedRequestForView.status === 'approved' || selectedRequestForView.status === 'rejected') && (
+                 <button 
+                    onClick={() => {
+                      if(window.confirm('Bạn muốn lùi trạng thái về chờ duyệt?')) {
+                        handleStatusChange(selectedRequestForView.id, 'pending');
+                        setSelectedRequestForView({ ...selectedRequestForView, status: 'pending' });
+                      }
+                    }}
+                    className="px-4 py-2 border border-amber-500 text-amber-600 rounded-lg text-sm font-bold hover:bg-amber-50 transition-colors flex items-center gap-2"
+                 >
+                   <RefreshCw className="w-4 h-4" /> Reset trạng thái
+                 </button>
+              )}
+
+            </div>
+          </div>
+
+        </div>
+      </motion.div>
+    </div>
+  )}
+  </AnimatePresence>
+
+  {/* Digital Signature Modal */}
  <AnimatePresence>
  {signingRequestId && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md" onClick={() => setSigningRequestId(null)}>
  <motion.div 
  initial={{ opacity: 0, scale: 0.95, y: 20 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.95, y: 20 }}
- className="bg-white rounded-xl w-full max-w-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]"
- >
+ className="bg-white rounded-xl w-full max-w-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
  <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
@@ -1120,9 +1177,9 @@ export function RequestHub() {
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  {[
- { id: 'smart_ca', label: 'VNPT SmartCA', desc: 'Remote Signing', color: 'blue' },
- { id: 'viettel_ca', label: 'Viettel-CA', desc: 'Cloud Token', color: 'rose' },
- { id: 'usb_token', label: 'USB Token', desc: 'Ký bằng thiết bị vật lý', color: 'slate' }
+ { id: 'company_ca', label: 'CA Công ty', desc: 'Chữ ký CA Doanh nghiệp', color: 'blue' },
+ { id: 'personal_ca', label: 'CA Cá nhân', desc: 'Chứng thư của NCC', color: 'emerald' },
+ { id: 'personal_image', label: 'Chữ ký ảnh', desc: 'Văn bản nội bộ', color: 'slate' }
  ].map((ca) => (
  <div 
  key={ca.id}
@@ -1181,14 +1238,12 @@ export function RequestHub() {
  {/* Print PDF / A4 Modal */}
  <AnimatePresence>
  {showPrintModal && selectedRequestForPrint && (
- <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
+ <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto" onClick={() => setShowPrintModal(false)}>
  <motion.div 
  initial={{ opacity: 0, y: 50 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: 50 }}
- className="bg-white rounded-none shadow-sm w-[210mm] min-h-[297mm] mx-auto p-[20mm] relative"
- id="a4-print-document"
- >
+ className="bg-white rounded-none shadow-sm w-[210mm] min-h-[297mm] mx-auto p-[20mm] relative" id="a4-print-document" onClick={(e) => e.stopPropagation()}>
  {/* Print Control Overlay (Visible only on UI, hidden in Print) */}
  <div className="absolute top-4 -right-16 flex flex-col gap-2 print:hidden">
  <button 
@@ -1318,13 +1373,22 @@ export function RequestHub() {
  <p className="text-[10px] font-bold text-slate-900 uppercase">NIÊM PHONG SỐ (CA)</p>
  <div className="h-24 w-full flex items-center justify-center relative border-2 border-slate-900 bg-slate-50/10">
  {selectedRequestForPrint.signatureStatus === 'signed' ? (
- <div className="relative flex flex-col items-center gap-1 p-2 text-center scale-90">
- <div className="text-orange-800 font-bold text-[8px] uppercase tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
- CERTIFICATE OK<br/>
- <span className="text-[10px] uppercase">{selectedRequestForPrint.signedBy}</span>
- </div>
- <p className="text-[7px] text-blue-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
- </div>
+  selectedRequestForPrint.caProvider === 'PERSONAL IMAGE' ? (
+    <div className="relative flex flex-col items-center gap-1 p-2 text-center">
+      <div className="text-blue-800 text-xl opacity-80 -rotate-3 mb-1" style={{ fontFamily: 'cursive' }}>
+        {selectedRequestForPrint.signedBy}
+      </div>
+      <p className="text-[7px] text-slate-500 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
+    </div>
+  ) : (
+    <div className="relative flex flex-col items-center gap-1 p-2 text-center scale-90">
+      <div className="text-orange-800 font-bold text-[8px] uppercase tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
+        CERTIFICATE: {selectedRequestForPrint.caProvider}<br/>
+        <span className="text-[10px] uppercase">{selectedRequestForPrint.signedBy}</span>
+      </div>
+      <p className="text-[7px] text-blue-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
+    </div>
+  )
  ) : (
  <div className="text-slate-500 italic text-[9px] text-center px-4 leading-tight">
  (Tài liệu chưa được ký số niêm phong)

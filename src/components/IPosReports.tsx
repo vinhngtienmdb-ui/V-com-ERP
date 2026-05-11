@@ -1,3 +1,4 @@
+import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { BarChart, Search, Gift, Copy, Calendar, MoreHorizontal } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
@@ -7,7 +8,7 @@ export function IPosPromotions({ activeStore }: { activeStore: any }) {
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <Gift className="w-5 h-5 text-primary-600" /> Chương trình Khuyến mại
           </h2>
           <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -24,7 +25,7 @@ export function IPosPromotions({ activeStore }: { activeStore: any }) {
             {[1,2,3].map(i => (
                 <div key={i} className="bg-white border border-slate-300 rounded-sm shadow-sm p-6 group">
                    <div className="flex justify-between items-start mb-4">
-                       <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded tracking-wider">Đang diễn ra</span>
+                       <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded tracking-wider">Đang diễn ra</span>
                        <button className="text-slate-500 hover:text-slate-900"><MoreHorizontal className="w-4 h-4"/></button>
                    </div>
                    <h3 className="text-sm font-bold text-slate-900 mb-2">Giảm 10% Tối đa 50k - Chào hè {i}</h3>
@@ -50,7 +51,7 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
          <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                <BarChart className="w-5 h-5 text-primary-600" /> Báo cáo Doanh thu & Vận hành
             </h2>
             <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -76,13 +77,13 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
                 <div key={i} className="bg-white border border-slate-300 rounded-sm shadow-sm p-5">
                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">{stat.label}</p>
                    <div className="flex items-end justify-between">
-                       <p className="text-xl font-bold text-slate-900">{stat.val}</p>
+                       <p className="text-2xl font-black text-slate-900">{stat.val}</p>
                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{stat.trend}</span>
                    </div>
                 </div>
             ))}
          </div>
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+         <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
              <div className="bg-white border border-slate-300 rounded-sm shadow-sm p-6 min-h-[300px] flex items-center justify-center">
                 <div className="text-center text-slate-500">
                    <BarChart className="w-12 h-12 mx-auto mb-3 text-slate-400" />
@@ -97,7 +98,7 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
                    <p className="text-xs">Đang phân tích dữ liệu...</p>
                 </div>
              </div>
-         </div>
+         </DraggableGrid>
       </div>
     </div>
   );

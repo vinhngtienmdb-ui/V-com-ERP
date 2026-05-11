@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { 
+ MessageSquare, Send, File, Download, Reply,
+  CornerDownRight, XCircle,
  FileText, 
  Briefcase, 
  ShoppingCart, 
@@ -21,151 +23,270 @@ import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 const MOCK_CONTRACTS = [
- { id: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'labor', subtype: 'Chính thức', status: 'active', party: 'Nguyễn Văn A', expiry: '01/01/2025', value: '-', signatureStatus: 'signed', signers: [{role: 'Người sử dụng lao động', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Nguyễn Văn A', status: 'signed'}] },
- { id: 'HDTV-002', title: 'Hợp đồng thử việc - Trần Thái B', type: 'labor', subtype: 'Thử việc', status: 'expiring_soon', signatureStatus: 'signed', party: 'Trần Thái B', expiry: '10/05/2024', value: '-', signers: [{role: 'Người sử dụng ND', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Trần Thái B', status: 'signed'}] },
- { id: 'HDMB-001', title: 'Hợp đồng mua bán thiết bị VP', type: 'sales', subtype: 'Mua bán', status: 'pending', signatureStatus: 'pending', party: 'Công ty ABC', expiry: '31/12/2024', value: '50,000,000 ₫', signers: [{role: 'Bên mua', name: 'Giám đốc', status: 'pending'}, {role: 'Bên bán', name: 'Đại diện bên bán', status: 'pending'}] },
- { id: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'service', subtype: 'Dịch vụ', status: 'expired', signatureStatus: 'signed', party: 'AI Partner LLC', expiry: '01/02/2024', value: '120,000,000 ₫', signers: [{role: 'Bên thuê', name: 'Giám đốc', status: 'signed'}, {role: 'Bên tư vấn', name: 'AI Partner LLC', status: 'signed'}] }
+ { id: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'labor', subtype: 'Chính thức', status: 'active', party: 'Nguyễn Văn A', expiry: '01/01/2025', value: '-', signatureStatus: 'signed', signers: [{role: 'Người sử dụng lao động', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Nguyễn Văn A', status: 'signed'}], file: { name: 'HDLD_NguyenVanA.docx', type: 'docx' }, comments: [ { id: 1, author: 'Nhân sự', time: '10:00 01/02', content: 'Đã cập nhật phụ lục đính kèm.' } ] },
+ { id: 'HDTV-002', title: 'Hợp đồng thử việc - Trần Thái B', type: 'labor', subtype: 'Thử việc', status: 'expiring_soon', signatureStatus: 'signed', party: 'Trần Thái B', expiry: '10/05/2024', value: '-', signers: [{role: 'Người sử dụng ND', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Trần Thái B', status: 'signed'}], file: { name: 'HDTV_TranThaiB_v2.pdf', type: 'pdf' }, comments: [] },
+ { id: 'HDMB-001', title: 'Hợp đồng mua bán thiết bị VP', type: 'sales', subtype: 'Mua bán', status: 'pending', signatureStatus: 'pending', party: 'Công ty ABC', expiry: '31/12/2024', value: '50,000,000 ₫', signers: [{role: 'Bên mua', name: 'Giám đốc', status: 'pending'}, {role: 'Bên bán', name: 'Đại diện bên bán', status: 'pending'}], file: { name: 'HDMB_ThietBi_VP.xlsx', type: 'xlsx' }, comments: [ { id: 2, author: 'Kế toán', time: '09:15 10/05', content: 'Nhờ xem lại điều khoản thanh toán mục 3.2.' } ] },
+ { id: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'service', subtype: 'Dịch vụ', status: 'expired', signatureStatus: 'signed', party: 'AI Partner LLC', expiry: '01/02/2024', value: '120,000,000 ₫', signers: [{role: 'Bên thuê', name: 'Giám đốc', status: 'signed'}, {role: 'Bên tư vấn', name: 'AI Partner LLC', status: 'signed'}], file: { name: 'HDDV_AI_Partner.pptx', type: 'pptx' }, comments: [] }
 ];
 
 export function ContractManager() {
  const [activeTab, setActiveTab] = useState('labor');
+ const [contracts, setContracts] = useState(MOCK_CONTRACTS);
  const [selectedContract, setSelectedContract] = useState<any>(null);
  const [signingModalOpen, setSigningModalOpen] = useState(false);
+ const [showCreateModal, setShowCreateModal] = useState(false);
+ const [newComment, setNewComment] = useState('');
  const navigate = useNavigate();
+
+ const handleStatusChange = (id: string, newStatus: string) => {
+   if (window.confirm('Bạn có chắc chắn muốn thực hiện hành động này?')) {
+     setContracts(contracts.map(c => c.id === id ? { ...c, status: newStatus } : c));
+     if (selectedContract?.id === id) {
+       setSelectedContract({ ...selectedContract, status: newStatus });
+     }
+   }
+ };
+
+ const handleAddComment = () => {
+   if (!newComment.trim() || !selectedContract) return;
+   const commentObj = {
+     id: Date.now(),
+     author: 'Tôi (Đang đăng nhập)',
+     time: new Date().toLocaleString('vi-VN', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'2-digit' }),
+     content: newComment.trim()
+   };
+   
+   const updatedContracts = contracts.map(c => 
+     c.id === selectedContract.id 
+       ? { ...c, comments: [...(c.comments || []), commentObj] } 
+       : c
+   );
+   
+   setContracts(updatedContracts);
+   setSelectedContract({ ...selectedContract, comments: [...(selectedContract.comments || []), commentObj] });
+   setNewComment('');
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- {selectedContract && (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
- <div className="flex items-center justify-between p-6 border-b border-slate-200">
+  {selectedContract && (
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in p-4" onClick={() => setSelectedContract(null)}>
+ <div className="bg-white rounded-xl shadow-2xl w-full max-w-[95vw] h-[95vh] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" onClick={(e) => e.stopPropagation()}>
+ <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
  <div>
  <h3 className="text-lg font-bold text-slate-900">{selectedContract.title}</h3>
- <p className="text-sm font-mono text-slate-600 mt-1">{selectedContract.id}</p>
+ <p className="text-xs font-mono text-slate-500 mt-0.5"><span className="uppercase font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{selectedContract.subtype || selectedContract.type}</span> • {selectedContract.id}</p>
  </div>
+ <div className="flex items-center gap-2">
+ {selectedContract.file && (
+   <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm">
+     <Download className="w-4 h-4" /> Tải tệp ({selectedContract.file.type})
+   </button>
+ )}
  <button 
  onClick={() => setSelectedContract(null)}
- className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+ className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors ml-2"
  >
  <X className="w-5 h-5" />
  </button>
  </div>
+ </div>
  
- <div className="p-6 space-y-6">
- <div className="grid grid-cols-2 gap-6">
- <div>
- <p className="text-sm text-slate-600">Đối tác / Nhân sự</p>
- <p className="text-base font-medium text-slate-900 mt-1">{selectedContract.party}</p>
- </div>
- <div>
- <p className="text-sm text-slate-600">Loại hợp đồng</p>
- <p className="text-base font-medium text-slate-900 mt-1">{selectedContract.subtype || selectedContract.type}</p>
- </div>
- <div>
- <p className="text-sm text-slate-600">Giá trị hợp đồng</p>
- <p className="text-base font-medium text-slate-900 mt-1">{selectedContract.value}</p>
- </div>
- <div>
- <p className="text-sm text-slate-600">Ngày hết hạn</p>
- <p className={cn(
- "text-base font-bold mt-1",
- selectedContract.status === 'expired' ? "text-red-600" :
- selectedContract.status === 'expiring_soon' ? "text-blue-600" : "text-slate-900"
- )}>{selectedContract.expiry}</p>
- </div>
- </div>
+ <div className="flex flex-1 overflow-hidden">
+  {/* Left Panel: Document Viewer */}
+  <div className="flex-1 bg-slate-100/50 border-r border-slate-200 flex flex-col relative">
+    {selectedContract.file ? (
+      <div className="flex-1 overflow-auto bg-[#e5e7eb] p-8 flex justify-center">
+        {/* Mock Document Render */}
+        <div className="bg-white w-[210mm] min-h-[297mm] shadow-lg p-[20mm]  mx-auto relative origin-top max-w-full">
+           <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[10px] font-bold rounded uppercase">
+              Preview: {selectedContract.file.name}
+           </div>
+           
+           <div className="space-y-6 text-sm text-slate-800 leading-relaxed mt-12 font-serif">
+             <h1 className="text-2xl font-bold text-center mb-8 uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br/><span className="text-lg">Độc lập - Tự do - Hạnh phúc</span></h1>
+             <h2 className="text-xl font-bold text-center mt-12 mb-8">{selectedContract.title.split('-')[0].toUpperCase()}</h2>
+             <p className="text-right italic">Hà Nội, ngày ... tháng ... năm ...</p>
+             <p>Căn cứ các văn bản pháp luật hiện hành và sự thỏa thuận của hai bên.</p>
+             <p>Hôm nay, chúng tôi gồm có:</p>
+             <div className="pl-4 border-l-2 border-slate-300 space-y-2">
+                <p><strong>Bên A:</strong> {selectedContract.signers?.[0]?.name || 'Công ty CP Giải pháp Công nghệ'}</p>
+                <p><strong>Bên B:</strong> {selectedContract.party}</p>
+             </div>
+             <p>Nội dung chi tiết hợp đồng được đính kèm ở các điều khoản tiếp theo...</p>
+             
+             {/* Mock text repeats */}
+             <div className="opacity-50 space-y-4">
+                <p>Điều 1: Nội dung công việc và thời gian thực hiện. Hai bên thống nhất thực hiện theo phụ lục đính kèm, đảm bảo các tiêu chí chất lượng, kỹ thuật và tiến độ.</p>
+                <p>Điều 2: Giá trị và phương thức thanh toán. Áp dụng thanh toán chuyển khoản, thời hạn không quá 5 ngày làm việc kể từ khi nhận đủ hồ sơ hợp lệ.</p>
+             </div>
+           </div>
 
- <div>
- <p className="text-sm text-slate-600 mb-2">Trạng thái hợp đồng</p>
- <div className="flex items-center gap-3">
- <span className={cn(
- "px-3 py-1.5 text-sm font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-2",
- selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
- selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600" : 
- selectedContract.status === 'expiring_soon' ? "bg-orange-50 text-blue-600" :
- "bg-red-50 text-red-600"
- )}>
- {selectedContract.status === 'active' && <CheckCircle2 className="w-4 h-4" />}
- {selectedContract.status === 'pending' && <Clock className="w-4 h-4" />}
- {selectedContract.status === 'expiring_soon' && <AlertTriangle className="w-4 h-4" />}
- {selectedContract.status === 'expired' && <AlertCircle className="w-4 h-4" />}
- {selectedContract.status === 'active' ? 'Đang có hiệu lực' : 
- selectedContract.status === 'pending' ? 'Chờ duyệt' : 
- selectedContract.status === 'expiring_soon' ? 'Sắp hết hạn (Cần gia hạn)' : 'Đã hết hạn'}
- </span>
- 
- {selectedContract.signatureStatus && (
- <span className={cn(
- "px-3 py-1.5 text-sm font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-2",
- selectedContract.signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
- )}>
- <PenTool className="w-4 h-4" />
- {selectedContract.signatureStatus === 'signed' ? 'Đã ký số' : 'Chưa ký hoàn tất'}
- </span>
- )}
- </div>
- </div>
+        </div>
+      </div>
+    ) : (
+      <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
+        <File className="w-16 h-16 mb-4 opacity-50" />
+        <p className="text-sm font-medium">Không có tệp đính kèm nào được tìm thấy</p>
+      </div>
+    )}
+    
+    {/* Comments Overlay Toggle */}
+    
+  </div>
 
- {selectedContract.signers && (
- <div className="border border-slate-200 rounded-2xl overflow-hidden">
- <div className="bg-slate-50 px-4 py-3 border-b border-slate-300">
- <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
- <ShieldCheck className="w-4 h-4 text-emerald-600" /> Tiến trình ký số
- </h4>
- </div>
- <div className="divide-y divide-slate-100 p-4">
- {selectedContract.signers.map((signer: any, idx: number) => (
- <div key={idx} className="flex items-center justify-between py-2">
- <div>
- <p className="text-sm font-bold text-slate-900">{signer.name}</p>
- <p className="text-xs text-slate-600">{signer.role}</p>
- </div>
- <div>
- {signer.status === 'signed' ? (
- <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
- <Check className="w-3 h-3" /> Đã ký
- </span>
- ) : (
- <span className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">
- <Clock className="w-3 h-3" /> Chờ ký
- </span>
- )}
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
- </div>
+  {/* Right Panel: Details & Comments & Actions */}
+  <div className="w-[400px] shrink-0 bg-white flex flex-col">
+    <div className="flex-1 overflow-y-auto">
+      <div className="p-4 space-y-6">
+        
+        {/* Status Box */}
+        <div className="bg-slate-50 p-4 border border-slate-200 rounded-xl">
+          <h4 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-3">Tình trạng hồ sơ</h4>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className={cn(
+              "px-3 py-1.5 text-[11px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1.5",
+              selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : 
+              selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600 border border-amber-200" : 
+              selectedContract.status === "expiring_soon" ? "bg-orange-50 text-blue-600 border border-blue-200" :
+              selectedContract.status === "returned" ? "bg-slate-100 text-slate-700 border border-slate-300" : "bg-red-50 text-red-600 border border-red-200"
+              )}>
+              {selectedContract.status === 'active' && <CheckCircle2 className="w-3.5 h-3.5" />}
+              {selectedContract.status === 'pending' && <Clock className="w-3.5 h-3.5" />}
+              {selectedContract.status === 'expiring_soon' && <AlertTriangle className="w-3.5 h-3.5" />}
+              {selectedContract.status === "expired" || selectedContract.status === "rejected" ? <AlertCircle className="w-3.5 h-3.5" /> : null}
+              {selectedContract.status === "returned" && <CornerDownRight className="w-3.5 h-3.5" />}
+              {selectedContract.status === 'active' ? 'Đang có hiệu lực' : 
+              selectedContract.status === 'pending' ? 'Chờ duyệt' : 
+              selectedContract.status === "expiring_soon" ? "Sắp hết hạn" : selectedContract.status === "returned" ? "Bị trả lại" : selectedContract.status === "rejected" ? "Từ chối duyệt" : "Đã hết hạn"}
+              </span>
+            </div>
 
- <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
- <button 
- onClick={() => setSelectedContract(null)}
- className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900"
- >
- Đóng
- </button>
- 
- {selectedContract.signatureStatus === 'pending' && (
- <button 
- onClick={() => setSigningModalOpen(true)}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 shadow-sm flex items-center gap-2"
- >
- <Key className="w-4 h-4" />
- Ký số (USB Token / SmartCA)
- </button>
+            <div className="border-t border-slate-200 pt-3">
+               <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Thời hạn</p>
+               <p className={cn(
+                  "text-sm font-bold",
+                  selectedContract.status === 'expired' ? "text-red-600" :
+                  selectedContract.status === 'expiring_soon' ? "text-blue-600" : "text-slate-900"
+               )}>{selectedContract.expiry}</p>
+            </div>
+            
+            <div className="border-t border-slate-200 pt-3">
+               <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Giá trị</p>
+               <p className="text-sm font-bold text-slate-900">{selectedContract.value}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Panel for Pending */}
+        {selectedContract.status === 'pending' && (
+          <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-xl space-y-3">
+             <h4 className="text-xs font-bold uppercase text-blue-800 tracking-wider mb-2">Thao tác phê duyệt</h4>
+             <button onClick={() => handleStatusChange(selectedContract.id, "active")} className="w-full px-4 py-2 bg-emerald-600 text-white rounded font-bold text-sm hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-2">
+               <CheckCircle2 className="w-4 h-4" /> Phê duyệt hồ sơ
+             </button>
+             <button onClick={() => handleStatusChange(selectedContract.id, "returned")} className="w-full px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded font-bold text-sm hover:bg-slate-50 shadow-sm flex items-center justify-center gap-2">
+               <CornerDownRight className="w-4 h-4" /> Trả lại / Yêu cầu sửa
+             </button>
+             <button onClick={() => handleStatusChange(selectedContract.id, "rejected")} className="w-full px-4 py-2 border border-red-200 text-red-600 bg-red-50 rounded font-bold text-sm hover:bg-red-100 shadow-sm flex items-center justify-center gap-2">
+               <XCircle className="w-4 h-4" /> Từ chối ký
+             </button>
+          </div>
+        )}
+
+        {/* Progress */}
+        {selectedContract.signers && (
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" /> 
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Tiến trình chữ ký số</h4>
+          </div>
+          <div className="p-3 space-y-3">
+          {selectedContract.signers.map((signer: any, idx: number) => (
+            <div key={idx} className="flex gap-3">
+              <div className="w-[20px] flex flex-col items-center">
+                 <div className={cn("w-2.5 h-2.5 rounded-full mt-1 shrink-0", signer.status === 'signed' ? "bg-emerald-500" : "bg-slate-300")} />
+                 {idx < selectedContract.signers.length - 1 && <div className="w-[2px] h-full bg-slate-200 my-1" />}
+              </div>
+              <div className="pb-1">
+                 <p className="text-sm font-bold text-slate-900">{signer.name}</p>
+                 <p className="text-[11px] text-slate-500">{signer.role}</p>
+                 {signer.status === 'signed' ? (
+                   <span className="inline-block mt-1 text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Đã ký</span>
+                 ) : (
+                   <span className="inline-block mt-1 text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Đang chờ</span>
+                 )}
+              </div>
+            </div>
+          ))}
+          </div>
+          
+          {selectedContract.signatureStatus === 'pending' && (
+             <div className="p-3 border-t border-slate-200 bg-slate-50">
+               <button 
+                onClick={() => setSigningModalOpen(true)}
+                className="w-full py-2 bg-primary-600 text-white rounded text-xs font-bold hover:bg-primary-700 flex items-center justify-center gap-2"
+               >
+                 <Key className="w-3.5 h-3.5" /> Ký số ngay
+               </button>
+             </div>
+          )}
+        </div>
+        )}
+
+      </div>
+      
+      {/* Comments Area */}
+      <div className="border-t border-slate-200">
+        <div className="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200">
+          <h4 className="text-xs font-bold uppercase text-slate-600 flex items-center gap-2">
+            <MessageSquare className="w-4 h-4" /> Bình luận & Góp ý ({selectedContract.comments?.length || 0})
+          </h4>
+        </div>
+        <div className="p-4 space-y-4">
+          {(selectedContract.comments || []).map((cmt: any) => (
+             <div key={cmt.id} className="bg-slate-50 rounded-xl p-3 border border-slate-100 relative group">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-xs font-bold text-slate-900">{cmt.author}</span>
+                  <span className="text-[10px] text-slate-400">{cmt.time}</span>
+                </div>
+                <p className="text-sm text-slate-700">{cmt.content}</p>
+                
+                <button className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition-opacity">
+                  <Reply className="w-3 h-3" />
+                </button>
+             </div>
+          ))}
+          {(!selectedContract.comments || selectedContract.comments.length === 0) && (
+            <p className="text-center justify-center py-6 text-sm text-slate-400 italic">Chưa có bình luận nào.</p>
+          )}
+        </div>
+      </div>
+      
+    </div>
+
+    {/* Comment Input */}
+    <div className="p-4 border-t border-slate-200 bg-white shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+       <div className="relative">
+         <textarea 
+           rows={2}
+           value={newComment}
+           onChange={(e) => setNewComment(e.target.value)}
+           placeholder="Nhập góp ý, ghi chú để yêu cầu sửa đổi..."
+           className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none pr-12 bg-slate-50 focus:bg-white"
+         />
+         <button onClick={handleAddComment} className="absolute bottom-2 right-2 p-1.5 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors">
+           <Send className="w-3.5 h-3.5" />
+         </button>
+       </div>
+    </div>
+  </div>
+ </div>
+ </div>
+ </div>
  )}
 
- {selectedContract.status === 'expiring_soon' && (
- <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
- <FileSignature className="w-4 h-4" />
- Gia hạn hợp đồng
- </button>
- )}
- </div>
- </div>
- </div>
- )}
 
  {signingModalOpen && (
  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
@@ -239,7 +360,7 @@ export function ContractManager() {
  <p className="text-sm text-slate-500 mt-1">Hợp đồng lao động, dịch vụ, mua bán và theo dõi thời hạn hợp đồng.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button onClick={() => setShowCreateModal(true)} className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo hợp đồng mới
  </button>
@@ -299,7 +420,7 @@ export function ContractManager() {
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
- {MOCK_CONTRACTS.filter(doc => activeTab === 'signature' ? true : doc.type === activeTab).map(doc => (
+ {contracts.filter(doc => activeTab === 'signature' ? true : doc.type === activeTab).map(doc => (
  <tr key={doc.id} onClick={() => setSelectedContract(doc)} className="hover:bg-slate-50 transition-colors cursor-pointer">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900">{doc.title}</p>
@@ -316,15 +437,16 @@ export function ContractManager() {
  "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'pending' ? "bg-amber-50 text-amber-600" :
- doc.status === 'expiring_soon' ? "bg-orange-50 text-blue-600" : "bg-red-50 text-red-600"
+ doc.status === "expiring_soon" ? "bg-orange-50 text-blue-600" : doc.status === "returned" ? "bg-slate-100 text-slate-700" : "bg-red-50 text-red-600"
  )}>
  {doc.status === 'active' && <CheckCircle2 className="w-3 h-3" />}
  {doc.status === 'pending' && <Clock className="w-3 h-3" />}
  {doc.status === 'expiring_soon' && <AlertTriangle className="w-3 h-3" />}
- {doc.status === 'expired' && <AlertCircle className="w-3 h-3" />}
+ {doc.status === "expired" || doc.status === "rejected" ? <AlertCircle className="w-3 h-3" /> : null}
+ {doc.status === "returned" && <CornerDownRight className="w-3 h-3" />}
  {doc.status === 'active' ? 'Hiệu lực' : 
  doc.status === 'pending' ? 'Chờ duyệt' : 
- doc.status === 'expiring_soon' ? 'Sắp hết hạn' : 'Hết hạn'}
+ doc.status === "expiring_soon" ? "Sắp hết hạn" : doc.status === "returned" ? "Trả lại" : doc.status === "rejected" ? "Từ chối" : "Hết hạn"}
  </span>
  {doc.signatureStatus && (
  <div className="mt-1.5">
@@ -351,7 +473,51 @@ export function ContractManager() {
  </table>
  </div>
  </div>
+    {showCreateModal && (
+ <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}>
+ <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
+ <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+ <h3 className="text-lg font-bold text-slate-900">Tạo hợp đồng mới</h3>
+ <button onClick={() => setShowCreateModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
+ <X className="w-5 h-5" />
+ </button>
+ </div>
+ <div className="p-6 space-y-4">
+ <div>
+ <label className="block text-sm font-bold text-slate-800 mb-2">Tiêu đề hợp đồng</label>
+ <input type="text" placeholder="Nhập tiêu đề..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
+ </div>
+ <div className="grid grid-cols-2 gap-4">
+   <div>
+   <label className="block text-sm font-bold text-slate-800 mb-2">Đối tác / Nhân sự</label>
+   <input type="text" placeholder="Tên bên B..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
+   </div>
+   <div>
+   <label className="block text-sm font-bold text-slate-800 mb-2">Giá trị dự kiến</label>
+   <input type="text" placeholder="VD: 50,000,000 ₫" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
+   </div>
+ </div>
+ <div>
+  <label className="block text-sm font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
+  <div className="border-2 border-dashed border-slate-300 p-8 rounded-xl flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
+    <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200 group-hover:scale-110 transition-transform mb-3">
+      <File className="w-6 h-6 text-primary-600" />
+    </div>
+    <p className="text-sm font-bold text-slate-700">Kéo thả hoặc bấm để chọn tệp</p>
+    <p className="text-xs text-slate-500 mt-1">Hỗ trợ PDF, DOCX, XLSX, PPTX (Tối đa 20MB)</p>
+  </div>
  </div>
  </div>
- );
+ <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 rounded-b-xl">
+ <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-colors">Hủy</button>
+ <button onClick={() => { alert('Tạo hợp đồng thành công!'); setShowCreateModal(false); }} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 transition-colors">Tạo & Trình duyệt</button>
+ </div>
+ </div>
+ </div>
+ )}
+  </div>
+  </div>
+  );
 }
+
+ 

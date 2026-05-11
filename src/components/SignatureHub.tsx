@@ -449,8 +449,8 @@ export function SignatureHub() {
  </div>
 
  {signingModalOpen && selectedDoc && (
- <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+ <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSigningModalOpen(false)}>
+ <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
  <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
  <div>
  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">

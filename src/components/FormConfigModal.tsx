@@ -26,8 +26,8 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-[#F8F9FA] rounded-xl w-full max-w-4xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={onClose}>
+      <div className="bg-[#F8F9FA] rounded-xl w-full max-w-4xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Tabs */}
         <div className="bg-white border-b border-slate-300 pt-4 px-6 flex justify-between items-end relative">
@@ -156,9 +156,111 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'design' && (
-            <div className="text-center py-20 text-slate-500 font-medium">
-              <Settings className="w-12 h-12 mx-auto mb-4 text-slate-500" />
-              <p>Trình thiết kế biểu mẫu (Kéo thả trường dữ liệu)</p>
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+              <div className="flex justify-between items-center border-b border-slate-300 pb-4 mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">Thiết kế biểu mẫu</h3>
+                  <p className="text-sm text-slate-600 mt-1">Sử dụng các trường dữ liệu để tạo ra mẫu nhập liệu theo nhu cầu.</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    const newField = { id: `f${Date.now()}`, label: 'Trường mới', type: 'text', required: false };
+                    setConfig({...config, fields: [...(config.fields || []), newField]});
+                  }}
+                  className="px-4 py-2 text-sm font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <span className="text-lg">+</span> Thêm trường
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {(config.fields || []).map((field: any, idx: number) => (
+                  <div key={field.id} className="bg-slate-50 border border-slate-300 p-4 rounded-xl relative group">
+                    <button 
+                      onClick={() => {
+                        setConfig({
+                          ...config,
+                          fields: config.fields.filter((f: any) => f.id !== field.id)
+                        });
+                      }}
+                      className="absolute -top-2 -right-2 bg-rose-100 text-rose-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                      title="Xóa trường này"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tên trường (Label)</label>
+                        <input 
+                          type="text" 
+                          value={field.label} 
+                          onChange={(e) => {
+                            const updated = [...config.fields];
+                            updated[idx].label = e.target.value;
+                            setConfig({...config, fields: updated});
+                          }}
+                          className="border border-slate-300 px-3 py-2 rounded-lg bg-white w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm"
+                          placeholder="Ví dụ: Họ và tên" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Loại dữ liệu</label>
+                        <select 
+                          value={field.type}
+                          onChange={(e) => {
+                            const updated = [...config.fields];
+                            updated[idx].type = e.target.value;
+                            setConfig({...config, fields: updated});
+                          }}
+                          className="border border-slate-300 px-3 py-2 rounded-lg bg-white w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm"
+                        >
+                          <option value="text">Văn bản ngắn</option>
+                          <option value="textarea">Văn bản dài</option>
+                          <option value="number">Số</option>
+                          <option value="date">Ngày tháng</option>
+                          <option value="select">Lựa chọn (Dropdown)</option>
+                        </select>
+                      </div>
+                    </div>
+                    {field.type === 'select' && (
+                      <div className="mb-3">
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Các tùy chọn (Ngăn cách bởi dấu phẩy)</label>
+                        <input 
+                          type="text"
+                          value={field.options?.join(', ') || ''}
+                          onChange={(e) => {
+                            const updated = [...config.fields];
+                            updated[idx].options = e.target.value.split(',').map((s: string) => s.trim());
+                            setConfig({...config, fields: updated});
+                          }}
+                          className="border border-slate-300 px-3 py-2 rounded-lg bg-white w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+                          placeholder="Cam, Táo, Nho..."
+                        />
+                      </div>
+                    )}
+                    <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer w-fit font-medium">
+                      <input 
+                        type="checkbox" 
+                        checked={field.required || false}
+                        onChange={(e) => {
+                          const updated = [...config.fields];
+                          updated[idx].required = e.target.checked;
+                          setConfig({...config, fields: updated});
+                        }}
+                        className="rounded border-slate-400 text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
+                      /> 
+                      Bắt buộc nhập
+                    </label>
+                  </div>
+                ))}
+                {(!config.fields || config.fields.length === 0) && (
+                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 flex flex-col items-center justify-center text-slate-500">
+                    <Settings className="w-8 h-8 mb-3 text-slate-400" />
+                    <p className="text-sm font-bold text-slate-700">Chưa có trường dữ liệu nào</p>
+                    <p className="text-xs text-slate-500 mt-1">Bấm "Thêm trường" để bắt đầu thiết kế E-Form.</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

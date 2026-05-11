@@ -40,6 +40,7 @@ import {
  Sparkles,
  Zap,
  Bot,
+ BrainCircuit,
  Volume2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -60,8 +61,7 @@ function ResponsiveGridLayout({ children, ...props }: any) {
 }
 import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
-import { auth } from '../lib/firebase';
-import { collection, onSnapshot, query, limit, orderBy, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, limit } from 'firebase/firestore';
 
 const data = [
  { name: 'T1', gmv: 4.5, traffic: 120000 },
@@ -119,20 +119,29 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: any) => (
- <div className={cn("bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 group hover:-translate-y-0.5 flex items-center gap-4", color)}>
- <div className="p-2.5 bg-slate-50 text-slate-600 rounded-lg border border-slate-200 shrink-0 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
-  <Icon className="w-5 h-5" />
+ <div className={cn("bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden", color)}>
+ <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 group-hover:scale-110 pointer-events-none">
+ <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
  </div>
- <div className="flex-1 min-w-0">
-  <div className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider truncate">{title}</div>
-  <div className="text-lg font-bold text-slate-900 tracking-tight leading-tight">{value}</div>
-  {subValue && <div className="text-[11px] text-slate-400 mt-0.5">{subValue}</div>}
+ <div className="relative z-10">
+ <div className="flex justify-between items-start mb-4">
+ <div className="p-3 bg-slate-50 text-slate-700 rounded-xl group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100 shadow-sm">
+ <Icon className="w-5 h-5" />
  </div>
  <div className={cn(
-  "text-xs flex items-center gap-0.5 font-semibold px-2 py-1 rounded-full shrink-0",
-  trend === 'up' ? "text-emerald-700 bg-emerald-50" : "text-rose-700 bg-rose-50"
+ "text-xs flex items-center gap-1 font-bold px-2.5 py-1 rounded-full border shadow-sm",
+ trend === 'up' ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200"
  )}>
-  {trend === 'up' ? '↗' : '↘'} {change}%
+ {trend === 'up' ? '↗' : '↘'} {change}%
+ </div>
+ </div>
+ <div className="text-[11px] text-slate-600 font-bold uppercase tracking-wider mb-1.5">{title}</div>
+ <div className="text-2xl font-black text-slate-900 tracking-tight">{value}</div>
+ {subValue && (
+ <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-200 text-[11px] text-slate-600 font-medium">
+ {subValue}
+ </div>
+ )}
  </div>
  </div>
 );
@@ -150,15 +159,15 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
  <div className="relative z-10 flex flex-col h-full">
  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
- <Icon className="w-5 h-5 text-white" />
+ <Icon className="w-5 h-5 text-[#FAF9F5]" />
  </div>
  <div className="mt-auto relative z-10">
- <h3 className="text-white font-bold tracking-tight text-lg mb-1 group-hover:translate-x-1 transition-transform">{title}</h3>
- <p className="text-white/70 text-xs font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{description}</p>
+ <h3 className="text-[#FAF9F5] font-bold tracking-tight text-lg mb-1 group-hover:translate-x-1 transition-transform">{title}</h3>
+ <p className="text-[#FAF9F5]/70 text-xs font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{description}</p>
  </div>
  </div>
  <div className="absolute -top-8 -right-8 p-4 opacity-[0.08] group-hover:opacity-[0.15] group-hover:rotate-12 transition-all transform scale-150 duration-500 pointer-events-none">
- <Icon className="w-32 h-32 text-white" />
+ <Icon className="w-32 h-32 text-[#FAF9F5]" />
  </div>
  </button>
 );
@@ -207,10 +216,6 @@ export function Dashboard() {
  const [dbOrdersLength, setDbOrdersLength] = useState(0);
  const [dbGMV, setDbGMV] = useState(0);
  const [dbCustomersLength, setDbCustomersLength] = useState(0);
- const [dbSellersLength, setDbSellersLength] = useState(0);
- const [dbConversionRate, setDbConversionRate] = useState(0);
- const [dateRangeStart, setDateRangeStart] = useState('');
- const [dateRangeEnd, setDateRangeEnd] = useState('');
  
  const [config, setConfig] = useState<Record<string, boolean>>(() => {
  const saved = localStorage.getItem('dashboard_config');
@@ -231,37 +236,6 @@ export function Dashboard() {
  });
  const [isConfigOpen, setIsConfigOpen] = useState(false);
 
- const [overviewLayout, setOverviewLayout] = useState(defaultOverviewLayout);
- const [performanceLayout, setPerformanceLayout] = useState(defaultPerformanceLayout);
- const [financeLayout, setFinanceLayout] = useState(defaultFinanceLayout);
-
- useEffect(() => {
-   const user = auth.currentUser;
-   if (!user) return;
-   getDoc(doc(db, 'preferences', user.uid, 'dashboard', 'layout')).then(snap => {
-     if (!snap.exists()) return;
-     const d = snap.data();
-     if (d.overview) setOverviewLayout(d.overview);
-     if (d.performance) setPerformanceLayout(d.performance);
-     if (d.finance) setFinanceLayout(d.finance);
-   }).catch(() => {});
- }, []);
-
- const saveLayoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
- const saveLayout = (tab: string, layouts: any) => {
-   if (saveLayoutRef.current) clearTimeout(saveLayoutRef.current);
-   saveLayoutRef.current = setTimeout(async () => {
-     const user = auth.currentUser;
-     if (!user) return;
-     try {
-       const ref = doc(db, 'preferences', user.uid, 'dashboard', 'layout');
-       const snap = await getDoc(ref);
-       const existing = snap.exists() ? snap.data() : {};
-       await setDoc(ref, { ...existing, [tab]: layouts }, { merge: true });
-     } catch {}
-   }, 1500);
- };
-
  const handleConfigChange = (key: string) => {
  const newConfig = { ...config, [key]: !config[key] };
  setConfig(newConfig);
@@ -271,118 +245,157 @@ export function Dashboard() {
  const [delayedOrdersCount, setDelayedOrdersCount] = useState(0);
 
  useEffect(() => {
+ // Listen to real orders from Firebase
+ const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
+ let gmv = 0;
+ let delayedCount = 0;
  const now = Date.now();
  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
- const startTs = dateRangeStart ? new Date(dateRangeStart).getTime() : null;
- const endTs = dateRangeEnd ? new Date(dateRangeEnd + 'T23:59:59').getTime() : null;
 
- const unsubOrders = onSnapshot(
-  query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(500)),
-  (snap) => {
-   let gmv = 0;
-   let delayedCount = 0;
-   let ordersInRange = 0;
-   let deliveredInRange = 0;
-   snap.docs.forEach(doc => {
-    const d = doc.data();
-    const createdAt = d.createdAt?.toDate?.()?.getTime?.() || null;
-    const inRange = !startTs || !endTs || (createdAt && createdAt >= startTs && createdAt <= endTs);
-    if (inRange) {
-     ordersInRange++;
-     if (d.status === 'delivered' || d.status === 'completed') { gmv += d.total || 0; deliveredInRange++; }
-     if (d.status === 'pending' || d.status === 'processing') {
-      const ct = d.createdAt?.toDate?.() || null;
-      if (ct && ct.getTime() < twentyFourHoursAgo) delayedCount++;
-     }
-    }
-   });
-   setDbOrdersLength(startTs ? ordersInRange : snap.size);
-   setDbGMV(gmv);
-   setDelayedOrdersCount(delayedCount);
-   setDbConversionRate(ordersInRange > 0 ? Math.round((deliveredInRange / ordersInRange) * 1000) / 10 : 0);
-  },
-  (error) => console.error('Dashboard orders snapshot error:', error)
- );
+ snap.docs.forEach(doc => {
+ const data = doc.data();
+ if (data.status === 'completed') {
+ gmv += data.total || 0;
+ }
 
- const unsubCustomers = onSnapshot(
-  collection(db, 'customers'),
-  (snap) => setDbCustomersLength(snap.size),
-  (error) => console.error('Dashboard customers snapshot error:', error)
- );
+ // Logic for delayed orders check (pending or processing for > 24h)
+ if (data.status === 'pending' || data.status === 'processing') {
+ const createdAt = data.createdAt?.toDate?.() || (data.date ? new Date(data.date) : null);
+ if (createdAt && createdAt.getTime() < twentyFourHoursAgo) {
+ delayedCount++;
+ }
+ }
+ });
+ setDbOrdersLength(snap.size);
+ setDbGMV(gmv);
+ setDelayedOrdersCount(delayedCount);
+ });
 
- const unsubSellers = onSnapshot(
-  collection(db, 'sellers'),
-  (snap) => setDbSellersLength(snap.size),
-  (error) => console.error('Dashboard sellers snapshot error:', error)
- );
+ const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
+ setDbCustomersLength(snap.size);
+ });
 
  return () => {
-  unsubOrders();
-  unsubCustomers();
-  unsubSellers();
+ unsubOrders();
+ unsubCustomers();
  };
- }, [dateRangeStart, dateRangeEnd]);
+ }, []);
 
  return (
- <div className="flex flex-col h-full gap-3 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
- {/* Dashboard Header */}
- <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-   <div className="flex items-center gap-4">
-    <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center shrink-0">
-     <Sparkles className="w-6 h-6 text-white" />
-    </div>
-    <div>
-     <div className="flex items-center gap-2 mb-1">
-      <span className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Bảng điều khiển</span>
-      <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
-       <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex h-1.5 w-1.5 bg-emerald-500"></span></span>
-       Realtime
-      </span>
-     </div>
-     <h1 className="text-xl font-bold text-slate-900">Tổng quan Hệ thống</h1>
-     <p className="text-sm text-slate-500 mt-0.5">AI-First · Trung tâm điều hành VComm ERP</p>
-    </div>
-   </div>
-   <div className="flex flex-wrap gap-2">
-    {[
-     { icon: Zap, label: 'Dự đoán: BẬT', cls: 'bg-amber-100 text-amber-700' },
-     { icon: Store, label: 'Kho: TỐT', cls: 'bg-emerald-100 text-emerald-700' },
-     { icon: Bot, label: 'Agent: Hoạt động', cls: 'bg-cyan-100 text-cyan-700' }
-    ].map(chip => (
-     <div key={chip.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${chip.cls}`}>
-      <chip.icon className="w-3.5 h-3.5" />
-      {chip.label}
-     </div>
-    ))}
-    <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
-     <Activity className="w-3.5 h-3.5" />
-     Báo cáo
-    </button>
-    <button
-     onClick={() => setIsConfigOpen(true)}
-     className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg transition-colors"
-    >
-     <Settings2 className="w-3.5 h-3.5" />
-     Tùy biến
-    </button>
-   </div>
-  </div>
+ <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
+ {/* AI Intelligence Command Center */}
+ <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
+ {/* Decorative background glass circles */}
+ <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
+ <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
+ 
+ <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
+ <BrainCircuit className="w-64 h-64" />
+ </div>
+ 
+ <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 h-full">
+ <div className="space-y-4">
+ <div className="flex items-center gap-4">
+ <div className="bg-white/15 p-3 rounded-lg backdrop-blur-xl border border-white/20 shadow-sm group-hover:rotate-12 transition-transform duration-500">
+ <Sparkles className="w-7 h-7 text-blue-200" />
+ </div>
+ <div>
+ <div className="flex items-center gap-2 mb-1">
+ <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Trung tâm Trí tuệ</span>
+ <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" />
+ </div>
+ <h2 className="text-3xl font-black tracking-tight leading-none">Trung tâm Điều hành VComm</h2>
+ <p className="text-blue-100/60 text-xs font-medium mt-2 max-w-md">Kiến trúc AI-First giúp tối ưu hóa 35% hiệu suất vận hành chuỗi cung ứng.</p>
+ </div>
+ </div>
+ 
+ <div className="flex flex-wrap gap-2 pt-2">
+ {[
+ { icon: Zap, label: 'Dự đoán: BẬT', color: 'text-amber-300' },
+ { icon: Store, label: 'Kho vận: TỐT', color: 'text-emerald-400' },
+ { icon: Bot, label: 'Omni Agent: HOẠT ĐỘNG', color: 'text-cyan-300' }
+ ].map((chip) => (
+ <div key={chip.label} className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors">
+ <chip.icon className={cn("w-3 h-3", chip.color)} />
+ <span className="text-[10px] font-bold tracking-wide uppercase">{chip.label}</span>
+ </div>
+ ))}
+ </div>
+ </div>
+
+ {/* AI Insights Card - Styled to match screenshot */}
+ <div className="relative flex-shrink-0 w-full md:w-auto h-full flex items-center md:items-stretch">
+ <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-lg border border-white/20 backdrop-blur-2xl shadow-sm w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-slate-900/5 flex flex-col justify-center">
+ <div className="flex items-center justify-between mb-4">
+ <div className="flex items-center gap-2">
+ <div className="p-1 px-2 bg-white/10 rounded border border-white/20">
+ <span className="text-[9px] font-black uppercase tracking-widest text-blue-300">AI Đề xuất Ưu tiên</span>
+ </div>
+ </div>
+ <div className="relative flex h-2 w-2">
+ <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+ <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
+ </div>
+ </div>
+ 
+ <p className="text-xs font-semibold leading-relaxed mb-5 text-slate-300 italic">
+ "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
+ </p>
+ 
+ <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
+ Thực thi Đề xuất AI
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+ <div>
+ <div className="flex items-center gap-3 mb-2">
+ <span className="px-3 py-1 bg-slate-100 text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60 shadow-sm">Bảng điều khiển Trực tiếp</span>
+ <span className="text-[11px] text-slate-600 font-bold uppercase tracking-wider flex items-center gap-1.5">
+ <span className="relative flex h-2 w-2">
+ <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+ <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+ </span>
+ Đồng bộ realtime
+ </span>
+ </div>
+ <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Tổng quan Hệ thống</h1>
+ <p className="text-sm text-slate-600 mt-2 max-w-lg font-medium">Theo dõi hiệu suất đa kênh.</p>
+ </div>
+ 
+ <div className="flex gap-3">
+ <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-orange-700 transition-all flex items-center justify-center gap-2 shadow-sm">
+ <Activity className="w-4 h-4 text-emerald-500" />
+ Báo cáo Vận hành
+ </button>
+ <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5">
+ Xuất dữ liệu BI
+ </button>
+ <button 
+ onClick={() => setIsConfigOpen(true)}
+ className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
+ >
+ <Settings2 className="w-4 h-4 text-orange-600" />
+ Tùy biến
+ </button>
+ </div>
  </div>
 
  {config.showQuickNav && (
- <div className="flex flex-wrap items-center gap-2">
- <button onClick={() => navigate('/pim')} className="bg-white border border-slate-200 px-3 py-1.5 text-[12px] font-bold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
- <Package className="w-3.5 h-3.5 text-blue-600" />
- PIM
+ <div className="flex flex-wrap items-center gap-3">
+ <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
+ <Package className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform" />
+ Hệ thống PIM
  </button>
- <button onClick={() => navigate('/orders')} className="bg-white border border-slate-200 px-3 py-1.5 text-[12px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center gap-1.5">
- <ListOrdered className="w-3.5 h-3.5 text-emerald-500" />
- Đơn hàng
+ <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
+ <ListOrdered className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+ Quản lý Đơn hàng
  </button>
- <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-200 px-3 py-1.5 text-[12px] font-bold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
- <Users className="w-3.5 h-3.5 text-slate-700" />
- Đối tác
+ <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
+ <Users className="w-4 h-4 text-slate-800 group-hover:scale-110 transition-transform" />
+ Trung tâm Đối tác
  </button>
  </div>
  )}
@@ -393,11 +406,11 @@ export function Dashboard() {
  className="bg-white to-white border border-red-200 p-4 rounded-xl cursor-pointer hover:shadow-sm transition-all group"
  >
  <div className="flex items-start gap-4">
- <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all shadow-sm shrink-0 mt-0.5">
+ <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-[#FAF9F5] transition-all shadow-sm shrink-0 mt-0.5">
  <ShoppingCart className="w-5 h-5" />
  </div>
  <div>
- <h4 className="text-sm font-bold text-red-900 tracking-tight flex items-center gap-2">
+ <h4 className="text-sm font-black text-red-900 tracking-tight flex items-center gap-2">
  Cảnh báo SLA: {delayedOrdersCount} đơn &gt;24h
  <span className="relative flex h-2 w-2">
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -412,13 +425,13 @@ export function Dashboard() {
 
  {/* Tabs */}
  <div className="flex items-center gap-6 border-b border-slate-300 shrink-0">
- <button onClick={() => setActiveTab('overview')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'overview' ? "border-slate-900 text-blue-600" : "border-transparent text-slate-600 hover:text-slate-900")}>
+ <button onClick={() => setActiveTab('overview')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'overview' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
  Kinh doanh & Bán hàng
  </button>
- <button onClick={() => setActiveTab('performance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'performance' ? "border-slate-900 text-blue-600" : "border-transparent text-slate-600 hover:text-slate-900")}>
+ <button onClick={() => setActiveTab('performance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'performance' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
  Hiệu suất Vận hành
  </button>
- <button onClick={() => setActiveTab('finance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'finance' ? "border-slate-900 text-blue-600" : "border-transparent text-slate-600 hover:text-slate-900")}>
+ <button onClick={() => setActiveTab('finance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'finance' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
  Tài chính & Dòng tiền
  </button>
  </div>
@@ -429,7 +442,7 @@ export function Dashboard() {
  <div className="bg-white w-full max-w-sm h-full shadow-sm animate-in slide-in-from-right duration-300 flex flex-col">
  <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
  <div className="flex items-center gap-3">
- <div className="p-2 bg-[#EAE7DF] text-blue-600 rounded-lg">
+ <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
  <Settings2 className="w-5 h-5" />
  </div>
  <h3 className="font-bold text-slate-900 text-lg">Tùy chỉnh Giao diện</h3>
@@ -456,7 +469,7 @@ export function Dashboard() {
  ].map(item => (
  <label key={item.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/50 hover:border-slate-300 transition-colors cursor-pointer group">
  <div className="flex items-center gap-3">
- <item.icon className={cn("w-5 h-5", config[item.id] ? "text-blue-600" : "text-slate-500 group-hover:text-orange-500")} />
+ <item.icon className={cn("w-5 h-5", config[item.id] ? "text-orange-600" : "text-slate-500 group-hover:text-orange-500")} />
  <span className={cn("text-sm font-bold", config[item.id] ? "text-slate-900" : "text-slate-600 group-hover:text-slate-800")}>{item.label}</span>
  </div>
  <div className={cn("w-11 h-6 rounded-full p-1 transition-colors relative shadow-inner", config[item.id] ? "bg-slate-900" : "bg-slate-300")}>
@@ -468,7 +481,7 @@ export function Dashboard() {
  </div>
  </div>
  <div className="p-5 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
- <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-slate-900 shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5 transition-all flex justify-center items-center gap-2">
+ <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-[#FAF9F5] rounded-xl text-sm font-bold hover:bg-slate-900 shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5 transition-all flex justify-center items-center gap-2">
  <CheckCircle2 className="w-5 h-5" /> Lưu tùy chỉnh
  </button>
  </div>
@@ -488,31 +501,19 @@ export function Dashboard() {
       </div>
     </div>
  {config.showStats && (
- <div className="space-y-4">
- <div className="flex items-center gap-3 flex-wrap">
-  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Lọc theo thời gian:</span>
-  <input type="date" value={dateRangeStart} onChange={e => setDateRangeStart(e.target.value)} className="border border-slate-200 rounded-2xl px-3 py-1.5 text-sm focus:outline-none bg-white" />
-  <span className="text-slate-400 text-sm">—</span>
-  <input type="date" value={dateRangeEnd} onChange={e => setDateRangeEnd(e.target.value)} className="border border-slate-200 rounded-2xl px-3 py-1.5 text-sm focus:outline-none bg-white" />
-  {(dateRangeStart || dateRangeEnd) && (
-  <button onClick={() => { setDateRangeStart(''); setDateRangeEnd(''); }} className="text-xs text-slate-500 hover:text-red-500 font-medium px-2 py-1 rounded hover:bg-red-50 transition-colors">Xóa bộ lọc</button>
-  )}
- </div>
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
- <StatCard title="GMV Thực tế" value={formatCurrency(dbGMV || 0)} change="15.8" icon={DollarSign} trend="up" />
+ <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+ <StatCard title="GMV Thực tế" value={formatCurrency(dbGMV || 6700000000)} change="15.8" icon={DollarSign} trend="up" />
  <StatCard title="Traffic (Truy cập)" value="192,450" change="24.2" icon={Eye} trend="up" />
- <StatCard title="Tổng đơn hàng" value={dbOrdersLength.toLocaleString()} change="8.2" icon={ShoppingCart} trend="up" />
- <StatCard title="Khách hàng" value={dbCustomersLength.toLocaleString()} change="5.4" icon={Users} trend="up" />
- <StatCard title="Seller hoạt động" value={dbSellersLength > 0 ? dbSellersLength.toLocaleString() : '426'} change="2.1" icon={Store} trend="up" />
- <StatCard title="Tỉ lệ chuyển đổi" value={dbConversionRate > 0 ? `${dbConversionRate}%` : '3.8%'} change="1.2" icon={ListOrdered} trend="up" />
- </div>
+ <StatCard title="Tổng đơn hàng" value={dbOrdersLength > 0 ? dbOrdersLength.toLocaleString() : "8,560"} change="8.2" icon={ShoppingCart} trend="up" />
+ <StatCard title="Khách hàng" value={dbCustomersLength > 0 ? dbCustomersLength.toLocaleString() : "15,248"} change="5.4" icon={Users} trend="up" />
+ <StatCard title="Seller hoạt động" value="426" change="2.1" icon={Store} trend="up" />
+ <StatCard title="Tỉ lệ chuyển đổi" value="3.8%" change="1.2" icon={ListOrdered} trend="up" />
  </div>
  )}
 
   <ResponsiveGridLayout
   className="layout w-full -mx-4 md:mx-0"
-  layouts={overviewLayout}
-  onLayoutChange={(_: any, all: any) => { setOverviewLayout(all); saveLayout('overview', all); }}
+  layouts={defaultOverviewLayout}
   breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
   cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
   rowHeight={100}
@@ -549,7 +550,7 @@ export function Dashboard() {
   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} dy={12}/>
   <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value}T`} />
   <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value / 1000}k`} />
-  <Tooltip cursor={{ stroke: "#E2E8F0", strokeWidth: 1 }} />
+  <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}/>
   <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
   {/* @ts-ignore */}
   <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
@@ -560,11 +561,11 @@ export function Dashboard() {
   )}
 
   {config.showCommunity && (
-  <div key="community" className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between h-full w-full">
+  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
   <div className="drag-handle cursor-move px-8 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
   <div className="flex items-center gap-4 mb-6 pointer-events-none">
   <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5 shadow-inner border border-slate-700">
-  <Users className="w-6 h-6 text-white" />
+  <Users className="w-6 h-6 text-[#FAF9F5]" />
   </div>
   <div>
   <h3 className="text-lg font-bold tracking-tight">Cộng đồng Seller</h3>
@@ -575,7 +576,7 @@ export function Dashboard() {
   <button className="px-5 w-fit py-2 pointer-events-auto bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all shadow-sm">Duyệt Seller mới</button>
   </div>
   </div>
-  <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-white opacity-[0.02] pointer-events-none" />
+  <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F5] opacity-[0.02] pointer-events-none" />
   </div>
   )}
 
@@ -602,7 +603,7 @@ export function Dashboard() {
   <div key="topSellers" className="bg-white rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90 backdrop-blur-sm rounded-t-xl">
   <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
-  <button className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
+  <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
   </div>
   <div className="divide-y divide-slate-100 overflow-y-auto flex-1 custom-scrollbar">
   {sellerData.map((seller, index) => (
@@ -635,8 +636,7 @@ export function Dashboard() {
  
  <ResponsiveGridLayout
   className="layout w-full -mx-4 md:mx-0"
-  layouts={performanceLayout}
-  onLayoutChange={(_: any, all: any) => { setPerformanceLayout(all); saveLayout('performance', all); }}
+  layouts={defaultPerformanceLayout}
   breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
   cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
   rowHeight={100}
@@ -644,66 +644,69 @@ export function Dashboard() {
   margin={[24, 24]}
  >
   {config.showSLA && (
-  <div key="sla" className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full w-full overflow-hidden">
-  {/* Header */}
-  <div className="drag-handle cursor-move px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors">
-  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 pointer-events-none">
-  <Activity className="w-4 h-4 text-blue-500" />
+  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
+  <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
+  <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2 pointer-events-none">
+  <Activity className="w-5 h-5 text-orange-500" />
   Báo cáo Vận hành
   </h3>
-  <div className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
-  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+  <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
+  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
   Live
   </div>
   </div>
-
-  {/* Stat mini-cards */}
-  <div className="p-4 flex-1 flex flex-col gap-3 overflow-y-auto">
-  <div className="grid grid-cols-2 gap-3">
-  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Giao đúng hạn</div>
-  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-0.5">98.5<span className="text-xs font-medium text-slate-400">%</span></div>
-  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-medium">+1.2% <TrendingUp className="w-3 h-3"/></div>
+  
+  <div className="px-6 flex-1 flex flex-col justify-end relative z-10 pb-6 pointer-events-none">
+  <div className="grid grid-cols-2 gap-4 mb-8">
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Giao đúng hạn</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  98.5<span className="text-sm font-normal text-slate-500">%</span>
   </div>
-  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Lỗi / Sự cố</div>
-  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-0.5">1.2<span className="text-xs font-medium text-slate-400">%</span></div>
-  <div className="text-xs text-rose-600 mt-1 flex items-center gap-1 font-medium">-0.4% <TrendingDown className="w-3 h-3"/></div>
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
   </div>
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Lỗi / Sự cố</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  1.2<span className="text-sm font-normal text-slate-500">%</span>
   </div>
-
-  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between">
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
+  </div>
+  <div className="bg-white/5 border border-white/10 rounded-lg p-4 col-span-2 flex justify-between items-center">
   <div>
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Xử lý Đơn (TB)</div>
-  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-1">2.4<span className="text-xs font-medium text-slate-400">giờ</span></div>
-  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-medium">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Xử lý Đơn (TB)</div>
+  <div className="text-2xl font-bold flex items-baseline gap-1">
+  2.4<span className="text-sm font-normal text-slate-500">giờ</span>
   </div>
-  <div className="w-20 h-10">
-  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible">
-  <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
+  </div>
+  <div className="w-24 h-12 opacity-80">
+  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
+  <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
   </div>
   </div>
-
-  {/* Progress bars */}
-  <div className="space-y-3 mt-1">
-  {[
-  { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-500', unit: '%' },
-  { label: 'Tỉ lệ Duyệt Tự động',   value: 82.5, color: 'bg-emerald-500', unit: '%' },
-  { label: 'Tỷ lệ Hủy/Hoàn trả',   value: 2.4,  color: 'bg-rose-500', unit: '%' },
-  ].map((item) => (
-  <div key={item.label}>
-  <div className="flex justify-between items-center mb-1">
-  <span className="text-xs font-medium text-slate-600">{item.label}</span>
-  <span className="text-xs font-bold text-slate-900">{item.value}{item.unit}</span>
   </div>
-  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-  <div className={cn("h-full rounded-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
+  
+  <div className="space-y-5">
+  {[
+  { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-400', unit: '%' },
+  { label: 'Tỉ lệ Duyệt Tự động', value: 82.5, color: 'bg-emerald-400', unit: '%' },
+  { label: 'Tỷ lệ Hủy/Hoàn trả', value: 2.4, color: 'bg-rose-400', unit: '%' },
+  ].map((item) => (
+  <div key={item.label} className="group">
+  <div className="flex justify-between items-end mb-2">
+  <span className="text-xs font-bold text-slate-500">{item.label}</span>
+  <span className="text-sm font-black text-[#FAF9F5]">{item.value}{item.unit}</span>
+  </div>
+  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+  <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
   </div>
   </div>
   ))}
   </div>
   </div>
+  <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-800/20 blur-3xl rounded-full pointer-events-none"></div>
   </div>
   )}
 
@@ -718,7 +721,7 @@ export function Dashboard() {
   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
   <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} dy={8} />
   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} />
-  <Tooltip />
+  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }} />
   <Line type="monotone" dataKey="orders" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
   </LineChart>
   </ResponsiveContainer>
@@ -734,8 +737,7 @@ export function Dashboard() {
  
  <ResponsiveGridLayout
   className="layout w-full -mx-4 md:mx-0"
-  layouts={financeLayout}
-  onLayoutChange={(_: any, all: any) => { setFinanceLayout(all); saveLayout('finance', all); }}
+  layouts={defaultFinanceLayout}
   breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
   cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
   rowHeight={100}
@@ -754,7 +756,7 @@ export function Dashboard() {
   <div key="revenueExpense" className="bg-white rounded-xl border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-primary-900 text-lg flex items-center gap-2 pointer-events-none">
-  <LineChartIcon className="w-5 h-5 text-blue-600" />
+  <LineChartIcon className="w-5 h-5 text-orange-700" />
   Biểu đồ Thu Chi (Tháng)
   </h3>
   </div>
@@ -766,6 +768,7 @@ export function Dashboard() {
   <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
   <Tooltip 
   cursor={{ fill: '#F3F4F6' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
   formatter={(value) => [`${value} triệu VNĐ`, '']}
   />
   <Legend wrapperStyle={{ paddingTop: '20px' }} />
@@ -803,6 +806,7 @@ export function Dashboard() {
   <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
   <Tooltip 
   cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
   formatter={(value) => [`${value} triệu VNĐ`, '']}
   />
   <Legend wrapperStyle={{ paddingTop: '20px' }} />

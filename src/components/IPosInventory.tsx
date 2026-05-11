@@ -10,9 +10,9 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
 
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
-      <div className="bg-white border-b border-slate-300 px-6 py-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <Boxes className="w-5 h-5 text-primary-600" /> Quản lý Kho {FNB_MODE ? '(F&B Định Lượng)' : '(Sản phẩm hoàn chỉnh)'}
           </h2>
           <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -45,12 +45,12 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
             </button>
           ))}
       </div>
-      <div className="flex-1 p-3 overflow-y-auto">
-        <div className="bg-white border border-slate-300 rounded-xl shadow-sm p-3">
+      <div className="flex-1 p-6 overflow-y-auto">
+        <div className="bg-white border border-slate-300 rounded-xl shadow-sm p-6 min-h-[400px]">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h3 className="font-bold text-slate-900 uppercase text-lg">{invTab.replace('_', ' ')}</h3>
+            <h3 className="font-black text-slate-900 uppercase text-lg">{invTab.replace('_', ' ')}</h3>
             <div className="flex gap-2">
-                <button className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-2xl text-sm font-bold shadow-sm hover:bg-slate-50 hover:border-primary-200 transition-colors flex items-center gap-2">
+                <button className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-50 hover:border-primary-200 transition-colors flex items-center gap-2">
                   <Plus className="w-4 h-4" /> Tạo Phiếu Nháp
                 </button>
                 <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-indigo-600/20 hover:bg-primary-700 transition-colors flex items-center gap-2">
@@ -65,27 +65,27 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
                     <h4 className="font-bold text-sm text-slate-800">Phiếu kiểm kho & Bàn giao kho cuối ngày</h4>
                     <button className="text-sm text-primary-600 font-bold hover:underline">Lịch sử kiểm kho</button>
                  </div>
-                 <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
-                 <table className="min-w-[560px] w-full text-left text-sm border-collapse">
+                 <div className="overflow-x-auto min-w-0">
+                 <table className="w-full text-left text-sm">
                     <thead className="bg-white border-b border-slate-200 text-slate-600 font-semibold">
                         <tr>
-                            <th className="px-5 py-2 w-28 whitespace-nowrap">Mã NL/SKU</th>
-                            <th className="px-5 py-2">Tên Nguyên Liệu / Sản Phẩm</th>
-                            {FNB_MODE && <th className="px-5 py-2 w-20 whitespace-nowrap">ĐV Tính</th>}
-                            <th className="px-5 py-2 w-36 whitespace-nowrap text-right">Tồn Kho Lý Thuyết</th>
-                            <th className="px-5 py-2 w-36 whitespace-nowrap text-right">Tồn Kho Thực Tế</th>
-                            <th className="px-5 py-2 w-24 whitespace-nowrap text-center">Trạng thái</th>
+                            <th className="px-5 py-4">Mã NL/SKU</th>
+                            <th className="px-5 py-4">Tên Nguyên Liệu / Sản Phẩm</th>
+                            {FNB_MODE && <th className="px-5 py-4">ĐV Tính</th>}
+                            <th className="px-5 py-4 text-right">Tồn Kho Lý Thuyết</th>
+                            <th className="px-5 py-4 text-right">Tồn Kho Thực Tế</th>
+                            <th className="px-5 py-4 text-center">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
                         {[1,2,3,4,5].map(i => (
                             <tr key={i} className="border-b last:border-0 border-stone-50 hover:bg-slate-50/50 transition-colors">
-                                <td className="px-5 py-2 font-mono text-slate-500 text-xs font-bold">NL00{i}</td>
-                                <td className="px-5 py-2 font-bold text-slate-900">{FNB_MODE ? `Hạt cà phê Arabica Lô ${i}` : `Sản phẩm đóng gói ${i}`}</td>
-                                {FNB_MODE && <td className="px-5 py-2 text-slate-700 font-medium">Kg</td>}
-                                <td className="px-5 py-2 text-right text-slate-600 font-medium">{4 + i * 2.5}</td>
-                                <td className="px-5 py-2 text-right text-primary-700 font-bold text-base">{4 + i * 2.5}</td>
-                                <td className="px-5 py-2 text-center"><span className="text-[10px] bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Khớp</span></td>
+                                <td className="px-5 py-4 font-mono text-slate-500 text-xs font-bold">NL00{i}</td>
+                                <td className="px-5 py-4 font-bold text-slate-900">{FNB_MODE ? `Hạt cà phê Arabica Lô ${i}` : `Sản phẩm đóng gói ${i}`}</td>
+                                {FNB_MODE && <td className="px-5 py-4 text-slate-700 font-medium">Kg</td>}
+                                <td className="px-5 py-4 text-right text-slate-600 font-medium">{4 + i * 2.5}</td>
+                                <td className="px-5 py-4 text-right text-primary-700 font-black text-base">{4 + i * 2.5}</td>
+                                <td className="px-5 py-4 text-center"><span className="text-[10px] bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Khớp</span></td>
                             </tr>
                         ))}
                     </tbody>
@@ -93,51 +93,51 @@ export function IPosInventory({ activeStore }: { activeStore: any }) {
                  </div>
              </div>
           ) : invTab === 'nhap' ? (
-             <div className="border border-slate-200 rounded-xl p-4 text-center bg-slate-50/50 shadow-sm">
-                <ArrowDownToLine className="w-8 h-8 text-primary-300 mx-auto mb-5" />
+             <div className="border border-slate-200 rounded-xl p-10 text-center bg-slate-50/50 shadow-sm">
+                <ArrowDownToLine className="w-16 h-16 text-primary-300 mx-auto mb-5" />
                 <h4 className="font-bold text-slate-900 text-xl mb-2">Nhập kho & Dự báo</h4>
-                <p className="text-sm text-slate-600 mb-3 max-w-md mx-auto">Tạo phiếu nhập kho từ nhà cung cấp hoặc xem dự báo nhập hàng dựa trên AI.</p>
+                <p className="text-sm text-slate-600 mb-8 max-w-md mx-auto">Tạo phiếu nhập kho từ nhà cung cấp hoặc xem dự báo nhập hàng dựa trên AI.</p>
                 <div className="flex gap-4 justify-center">
-                    <button className="px-4 py-3 bg-primary-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-primary-700 transition-colors">Tạo Phiếu Nhập</button>
-                    <button className="px-4 py-3 bg-white text-primary-700 border border-primary-200 font-bold rounded-lg text-sm shadow-sm hover:bg-primary-50 transition-colors">Xem Phân Tích Dự Báo</button>
+                    <button className="px-8 py-3 bg-primary-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-primary-700 transition-colors">Tạo Phiếu Nhập</button>
+                    <button className="px-8 py-3 bg-white text-primary-700 border border-primary-200 font-bold rounded-lg text-sm shadow-sm hover:bg-primary-50 transition-colors">Xem Phân Tích Dự Báo</button>
                 </div>
              </div>
           ) : invTab === 'xuat' ? (
-             <div className="border border-slate-200 rounded-xl p-4 text-center bg-slate-50/50 shadow-sm">
-                <ArrowUpFromLine className="w-8 h-8 text-orange-300 mx-auto mb-5" />
+             <div className="border border-slate-200 rounded-xl p-10 text-center bg-slate-50/50 shadow-sm">
+                <ArrowUpFromLine className="w-16 h-16 text-orange-300 mx-auto mb-5" />
                 <h4 className="font-bold text-slate-900 text-xl mb-2">Xuất kho & Hàng Lỗi/Hủy</h4>
-                <p className="text-sm text-slate-600 mb-3 max-w-md mx-auto">Tạo phiếu xuất kho sử dụng hoặc ghi nhận sản phẩm lỗi, hỏng.</p>
+                <p className="text-sm text-slate-600 mb-8 max-w-md mx-auto">Tạo phiếu xuất kho sử dụng hoặc ghi nhận sản phẩm lỗi, hỏng.</p>
                 <div className="flex gap-4 justify-center">
-                    <button className="px-4 py-3 bg-blue-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-orange-700 transition-colors">Tạo Phiếu Xuất</button>
-                    <button className="px-4 py-3 bg-white text-blue-600 border border-orange-200 font-bold rounded-lg text-sm shadow-sm hover:bg-orange-50 transition-colors">Khai Báo Hàng Lỗi</button>
+                    <button className="px-8 py-3 bg-orange-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-orange-700 transition-colors">Tạo Phiếu Xuất</button>
+                    <button className="px-8 py-3 bg-white text-orange-700 border border-orange-200 font-bold rounded-lg text-sm shadow-sm hover:bg-orange-50 transition-colors">Khai Báo Hàng Lỗi</button>
                 </div>
              </div>
           ) : invTab === 'goi' ? (
-             <div className="border border-slate-200 rounded-xl p-4 text-center bg-slate-50/50 shadow-sm">
-                <Package className="w-8 h-8 text-teal-300 mx-auto mb-5" />
+             <div className="border border-slate-200 rounded-xl p-10 text-center bg-slate-50/50 shadow-sm">
+                <Package className="w-16 h-16 text-teal-300 mx-auto mb-5" />
                 <h4 className="font-bold text-slate-900 text-xl mb-2">Quản lý Gói Sản Phẩm (Bundle)</h4>
-                <p className="text-sm text-slate-600 mb-3 max-w-md mx-auto">Đóng gói hoặc bung gói các sản phẩm để quản lý tồn kho linh hoạt.</p>
+                <p className="text-sm text-slate-600 mb-8 max-w-md mx-auto">Đóng gói hoặc bung gói các sản phẩm để quản lý tồn kho linh hoạt.</p>
                 <div className="flex gap-4 justify-center">
-                    <button className="px-4 py-3 bg-teal-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-teal-700 transition-colors">Đóng Gói SP</button>
-                    <button className="px-4 py-3 bg-white text-teal-700 border border-teal-200 font-bold rounded-lg text-sm shadow-sm hover:bg-teal-50 transition-colors">Bung Gói SP</button>
+                    <button className="px-8 py-3 bg-teal-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-teal-700 transition-colors">Đóng Gói SP</button>
+                    <button className="px-8 py-3 bg-white text-teal-700 border border-teal-200 font-bold rounded-lg text-sm shadow-sm hover:bg-teal-50 transition-colors">Bung Gói SP</button>
                 </div>
              </div>
           ) : invTab === 'kiemke_thang' ? (
-             <div className="border border-slate-200 rounded-xl p-4 text-center bg-slate-50/50 shadow-sm">
-                <Layers className="w-8 h-8 text-blue-600 mx-auto mb-5" />
+             <div className="border border-slate-200 rounded-xl p-10 text-center bg-slate-50/50 shadow-sm">
+                <Layers className="w-16 h-16 text-blue-300 mx-auto mb-5" />
                 <h4 className="font-bold text-slate-900 text-xl mb-2">Kiểm Kê Tháng (Kế Toán)</h4>
-                <p className="text-sm text-slate-600 mb-3 max-w-lg mx-auto">Tính năng dành riêng cho bộ phận Kế Toán chốt tồn kho cuối tháng theo phương pháp FIFO/LIFO.</p>
-                <button className="px-4 py-3 bg-blue-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-blue-700 transition-colors">Mở Dashboard Kế Toán</button>
+                <p className="text-sm text-slate-600 mb-8 max-w-lg mx-auto">Tính năng dành riêng cho bộ phận Kế Toán chốt tồn kho cuối tháng theo phương pháp FIFO/LIFO.</p>
+                <button className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-blue-700 transition-colors">Mở Dashboard Kế Toán</button>
              </div>
           ) : (
-             <div className="mt-3 border border-dashed border-slate-300 rounded-xl p-5 text-center text-slate-500 bg-slate-50/30">
+             <div className="mt-8 border border-dashed border-slate-300 rounded-xl p-16 text-center text-slate-500 bg-slate-50/30">
                 {FNB_MODE ? (
                   <p className="mb-3 font-bold text-slate-800 text-lg">Đang bật Mô hình Kho F&B (Định lượng BOM)</p>
                 ) : (
                   <p className="mb-3 font-bold text-slate-800 text-lg">Đang bật Mô hình Kho Bán Lẻ (Quản lý theo SKU/Lô/HSD)</p>
                 )}
                 <p className="text-sm max-w-md mx-auto">Tính năng <span className="font-bold text-primary-600 uppercase tracking-wide">{invTab.replace('_', ' ')}</span> sẽ được đồng bộ với Hệ thống Kế toán và báo cáo chốt ca cuối ngày.</p>
-                <div className="flex justify-center mt-3">
+                <div className="flex justify-center mt-8">
                    <Settings2 className="w-12 h-12 text-slate-500 animate-spin-slow" />
                 </div>
              </div>

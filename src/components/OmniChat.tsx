@@ -13,7 +13,7 @@ import {
  History,
  CheckCheck,
  X,
- olus,
+ Plus,
  Sparkles,
  Smile,
  Frown,
@@ -38,13 +38,13 @@ export function OmniChat() {
  const [inputValue, setInputValue] = useState('');
  const [isAiorocessing, setIsAiorocessing] = useState(false);
  const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
- const scrollRef = useRef<ỗTMLDivElement>(null);
+ const scrollRef = useRef<HTMLDivElement>(null);
 
  const activeThread = MOCK_TỗREADS.find(t => t.id === activeThreadId);
 
  useEffect(() => {
  if (scrollRef.current) {
- scrollRef.current.scrollTop = scrollRef.current.scrollỗeight;
+ scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
  }
  }, [messages]);
 
