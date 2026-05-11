@@ -119,29 +119,20 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: any) => (
- <div className={cn("bg-white p-5 rounded-2xl border border-slate-300 shadow-sm hover:shadow-sm hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden", color)}>
- <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 group-hover:scale-110 pointer-events-none">
- <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
+ <div className={cn("bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 group hover:-translate-y-0.5 flex items-center gap-4", color)}>
+ <div className="p-2.5 bg-slate-50 text-slate-600 rounded-lg border border-slate-200 shrink-0 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
+  <Icon className="w-5 h-5" />
  </div>
- <div className="relative z-10">
- <div className="flex justify-between items-start mb-4">
- <div className="p-3 bg-slate-50 text-slate-700 rounded-xl group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100 shadow-sm">
- <Icon className="w-5 h-5" />
+ <div className="flex-1 min-w-0">
+  <div className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider truncate">{title}</div>
+  <div className="text-lg font-bold text-slate-900 tracking-tight leading-tight">{value}</div>
+  {subValue && <div className="text-[11px] text-slate-400 mt-0.5">{subValue}</div>}
  </div>
  <div className={cn(
- "text-xs flex items-center gap-1 font-bold px-2.5 py-1 rounded-full border shadow-sm",
- trend === 'up' ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200"
+  "text-xs flex items-center gap-0.5 font-semibold px-2 py-1 rounded-full shrink-0",
+  trend === 'up' ? "text-emerald-700 bg-emerald-50" : "text-rose-700 bg-rose-50"
  )}>
- {trend === 'up' ? '↗' : '↘'} {change}%
- </div>
- </div>
- <div className="text-[11px] text-slate-600 font-bold uppercase tracking-wider mb-1.5">{title}</div>
- <div className="text-xl font-bold text-slate-900 tracking-tight">{value}</div>
- {subValue && (
- <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-200 text-[11px] text-slate-600 font-medium">
- {subValue}
- </div>
- )}
+  {trend === 'up' ? '↗' : '↘'} {change}%
  </div>
  </div>
 );
@@ -507,7 +498,7 @@ export function Dashboard() {
   <button onClick={() => { setDateRangeStart(''); setDateRangeEnd(''); }} className="text-xs text-slate-500 hover:text-red-500 font-medium px-2 py-1 rounded hover:bg-red-50 transition-colors">Xóa bộ lọc</button>
   )}
  </div>
- <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
  <StatCard title="GMV Thực tế" value={formatCurrency(dbGMV || 0)} change="15.8" icon={DollarSign} trend="up" />
  <StatCard title="Traffic (Truy cập)" value="192,450" change="24.2" icon={Eye} trend="up" />
  <StatCard title="Tổng đơn hàng" value={dbOrdersLength.toLocaleString()} change="8.2" icon={ShoppingCart} trend="up" />
