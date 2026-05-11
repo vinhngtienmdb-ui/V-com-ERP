@@ -55,13 +55,20 @@ export function PIM() {
  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
  
  useEffect(() => {
- const unsub = onSnapshot(collection(db, 'products'), (snap) => {
- let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
- data = data.filter(p => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category));
- setProducts(data);
- if (data.length === 0) seedDemoPimProducts();
- setLoading(false);
- });
+ const unsub = onSnapshot(
+  collection(db, 'products'),
+  (snap) => {
+   let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+   data = data.filter((p: any) => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category));
+   setProducts(data);
+   if (data.length === 0) seedDemoPimProducts();
+   setLoading(false);
+  },
+  (error) => {
+   console.error('PIM products snapshot error:', error);
+   setLoading(false);
+  }
+ );
  return () => unsub();
  }, []);
 
@@ -486,7 +493,7 @@ export function PIM() {
  referrerPolicy="no-referrer"
  />
  <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-12">
- <h2 className="text-3xl font-black text-[#FAF9F5] italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
+ <h2 className="text-3xl font-bold text-white italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
  <p className="text-blue-100 text-sm mt-3 max-w-lg">Tối ưu hoá giá bán tự động dựa trên dữ liệu đối thủ và tồn kho thực tế. Giúp tăng 15% biên lợi nhuận chỉ trong 1 thao tác.</p>
  <button className="mt-6 w-fit px-8 py-3 bg-white text-blue-800 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm">
  Trải nghiệm ngay
@@ -497,32 +504,32 @@ export function PIM() {
  {/* Modal Bổ sung sản phẩm */}
  {isUploadModalOpen && (
  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
- <div className="bg-white w-full max-w-4xl rounded-lg shadow-sm border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
- <div className="p-8 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
+ <div className="bg-white w-full max-w-4xl rounded-2xl shadow-sm border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
+ <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-slate-900 rounded-[1.5rem] shadow-sm shadow-slate-900/5">
- <ArrowUpCircle className="w-8 h-8 text-[#FAF9F5]" />
+ <ArrowUpCircle className="w-8 h-8 text-white" />
  </div>
  <div>
- <h2 className="text-2xl font-black text-[#111827] tracking-tight">Thêm sản phẩm mới</h2>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-[0.2em] mt-1">Automatic SKU & AI Validation flow</p>
+ <h2 className="text-xl font-bold text-slate-900 tracking-tight">Thêm sản phẩm mới</h2>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Automatic SKU & AI Validation flow</p>
  </div>
  </div>
  
  <div className="flex bg-slate-100 p-1.5 rounded-lg mx-8">
  <button 
  onClick={() => setUploadMode('single')}
- className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+ className={cn("px-6 py-2.5 text-xs font-bold rounded-lg transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >Nhập thủ công</button>
  <button 
  onClick={() => setUploadMode('bulk')}
- className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+ className={cn("px-6 py-2.5 text-xs font-bold rounded-lg transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >Tải lên (CSV/Excel)</button>
  </div>
 
  <button 
  onClick={() => { setIsUploadModalOpen(false); setUploadMode('single'); setFileValidation({status: 'idle', message: ''}); }}
- className="p-3 hover:bg-white rounded-lg text-[#9CA3AF] transition-all hover:text-[#111827] border border-transparent hover:border-slate-300 group"
+ className="p-3 hover:bg-white rounded-2xl text-[#9CA3AF] transition-all hover:text-slate-900 border border-transparent hover:border-slate-300 group"
  >
  <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
  </button>
@@ -533,19 +540,19 @@ export function PIM() {
  <div className="p-10 space-y-8">
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Tên sản phẩm</label>
  <input 
  type="text" required placeholder="Ví dụ: iPhone 16 Pro Max..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
  value={newProduct.name}
  onChange={e => setNewProduct({...newProduct, name: e.target.value})}
  />
  </div>
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Thương hiệu</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Thương hiệu</label>
  <input 
  type="text" required placeholder="Apple, Samsung, Sony..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
  value={newProduct.brand}
  onChange={e => setNewProduct({...newProduct, brand: e.target.value})}
  />
@@ -554,9 +561,9 @@ export function PIM() {
 
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ngành hàng</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Ngành hàng</label>
  <select 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-bold appearance-none"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-bold appearance-none"
  value={newProduct.category}
  onChange={e => setNewProduct({...newProduct, category: e.target.value})}
  >
@@ -567,11 +574,11 @@ export function PIM() {
  </select>
  </div>
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mã SKU (Tự động hoặc Thủ công)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Mã SKU (Tự động hoặc Thủ công)</label>
  <div className="relative">
  <input 
  type="text" required placeholder="Mã SKU định danh..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-5 pr-12 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold text-orange-700"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-5 pr-12 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold text-blue-600"
  value={newProduct.sku}
  onChange={e => setNewProduct({...newProduct, sku: e.target.value})}
  />
@@ -579,7 +586,7 @@ export function PIM() {
  type="button"
  onClick={generateSKU}
  title="Sinh mã SKU tự động"
- className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-orange-700 rounded-lg transition-all"
+ className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-blue-600 rounded-lg transition-all"
  >
  <Hash className="w-5 h-5" />
  </button>
@@ -589,19 +596,19 @@ export function PIM() {
 
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá niêm yết (VNĐ)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Giá niêm yết (VNĐ)</label>
  <input 
  type="number" required placeholder="30.000.000" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.price}
  onChange={e => setNewProduct({...newProduct, price: e.target.value})}
  />
  </div>
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tồn kho ban đầu</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Tồn kho ban đầu</label>
  <input 
  type="number" required placeholder="Số lượng nhập kho..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.stock}
  onChange={e => setNewProduct({...newProduct, stock: e.target.value})}
  />
@@ -610,19 +617,19 @@ export function PIM() {
 
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá vốn (VNĐ)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Giá vốn (VNĐ)</label>
  <input 
  type="number" placeholder="Mặc định: 70% giá niêm yết" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.costPrice}
  onChange={e => setNewProduct({...newProduct, costPrice: e.target.value})}
  />
  </div>
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Chi phí ẩn (VC, Đóng gói... VNĐ)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Chi phí ẩn (VC, Đóng gói... VNĐ)</label>
  <input 
  type="number" placeholder="Ví dụ: 15.000" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.hiddenCosts}
  onChange={e => setNewProduct({...newProduct, hiddenCosts: e.target.value})}
  />
@@ -631,10 +638,10 @@ export function PIM() {
 
  {/* Add additional details per user request */}
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mô tả sản phẩm chi tiết</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Mô tả sản phẩm chi tiết</label>
  <textarea 
  rows={3} placeholder="Mô tả công năng, đặc điểm nổi bật..."
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
  value={newProduct.description}
  onChange={e => setNewProduct({...newProduct, description: e.target.value})}
  ></textarea>
@@ -642,19 +649,19 @@ export function PIM() {
 
  <div className="grid grid-cols-2 gap-8">
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Trọng lượng (Gram)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Trọng lượng (Gram)</label>
  <input 
  type="number" placeholder="Ví dụ: 500" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.weight}
  onChange={e => setNewProduct({...newProduct, weight: e.target.value})}
  />
  </div>
  <div className="space-y-3">
- <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Kích thước (DxRxC) (cm)</label>
+ <label className="text-[11px] font-bold text-slate-900 uppercase tracking-widest px-1">Kích thước (DxRxC) (cm)</label>
  <input 
  type="text" placeholder="Ví dụ: 15x10x5" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.dimensions}
  onChange={e => setNewProduct({...newProduct, dimensions: e.target.value})}
  />
@@ -684,25 +691,25 @@ export function PIM() {
  
  {fileValidation.status === 'idle' && (
  <>
- <div className="w-20 h-20 bg-white shadow-sm shadow-slate-200/50 rounded-full flex items-center justify-center text-orange-700">
+ <div className="w-20 h-20 bg-white shadow-sm shadow-slate-200/50 rounded-full flex items-center justify-center text-blue-600">
  <UploadCloud className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-xl font-black text-[#111827]">Kéo thả file CSV/Excel vào đây</h3>
- <p className="text-sm text-[#6B7280] font-medium mt-2">Hoặc click để chọn file từ máy tính của bạn (Tối đa 50MB)</p>
+ <h3 className="text-xl font-bold text-slate-900">Kéo thả file CSV/Excel vào đây</h3>
+ <p className="text-sm text-slate-500 font-medium mt-2">Hoặc click để chọn file từ máy tính của bạn (Tối đa 50MB)</p>
  </div>
- <p className="text-[10px] uppercase font-black tracking-widest text-[#9CA3AF]">Hỗ trợ: .CSV, .XLS, .XLSX</p>
+ <p className="text-[10px] uppercase font-bold tracking-widest text-[#9CA3AF]">Hỗ trợ: .CSV, .XLS, .XLSX</p>
  </>
  )}
 
  {fileValidation.status === 'validating' && (
  <>
- <div className="w-20 h-20 bg-white shadow-sm shadow-blue-200/50 rounded-full flex items-center justify-center text-orange-700">
+ <div className="w-20 h-20 bg-white shadow-sm shadow-blue-200/50 rounded-full flex items-center justify-center text-blue-600">
  <Sparkles className="w-8 h-8 animate-pulse" />
  </div>
  <div>
- <h3 className="text-xl font-black text-orange-700">Đang quét và chuẩn hóa dữ liệu...</h3>
- <p className="text-sm text-orange-600 font-medium mt-2">{fileValidation.message}</p>
+ <h3 className="text-xl font-bold text-blue-600">Đang quét và chuẩn hóa dữ liệu...</h3>
+ <p className="text-sm text-blue-600 font-medium mt-2">{fileValidation.message}</p>
  </div>
  </>
  )}
@@ -713,7 +720,7 @@ export function PIM() {
  <AlertCircle className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-xl font-black text-red-600">Lỗi xác thực dữ liệu</h3>
+ <h3 className="text-xl font-bold text-red-600">Lỗi xác thực dữ liệu</h3>
  <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 font-medium text-left">
  Phát hiện dữ liệu thiếu định dạng tiền tệ (Cột Giá Bán) hoặc các trường bắt buộc bị trống. <br />
  Bạn có thể sử dụng <b>AI Auto-correction</b> để hỗ trợ điền tự động các trường này.
@@ -735,7 +742,7 @@ export function PIM() {
  setFileValidation({status: 'success', message: `AI đã xử lý xong. Cập nhật ${parsedCount} sản phẩm hợp vệ, 0 lỗi.`, data: parsedCount});
  }, 2500);
  }}
- className="px-6 py-2.5 bg-red-600 text-[#FAF9F5] font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-sm shadow-red-500/20"
+ className="px-6 py-2.5 bg-red-600 text-white font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-sm shadow-red-500/20"
  ><Sparkles className="w-4 h-4"/> Sửa lỗi với AI</button>
  </div>
  </>
@@ -747,7 +754,7 @@ export function PIM() {
  <CheckCircle2 className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-xl font-black text-emerald-600">Pass: Dữ liệu đạt chuẩn ERP</h3>
+ <h3 className="text-xl font-bold text-emerald-600">Pass: Dữ liệu đạt chuẩn ERP</h3>
  <p className="text-sm text-emerald-500 font-medium mt-2">{fileValidation.message}</p>
  </div>
  </>
@@ -755,17 +762,17 @@ export function PIM() {
  </div>
  
  {fileValidation.status === 'idle' && (
- <div className="flex justify-between items-center bg-slate-100/50 border border-slate-300 rounded-lg p-6 hover:border-orange-200 transition-all">
+ <div className="flex justify-between items-center bg-slate-100/50 border border-slate-200 rounded-2xl p-6 hover:border-orange-200 transition-all">
  <div className="flex items-center gap-4">
- <div className="p-3 bg-white rounded-lg shadow-sm">
- <DownloadCloud className="w-6 h-6 text-orange-700" />
+ <div className="p-3 bg-white rounded-2xl shadow-sm">
+ <DownloadCloud className="w-6 h-6 text-blue-600" />
  </div>
  <div>
- <p className="text-sm font-bold text-[#111827]">Tải File Mẫu (Template)</p>
- <p className="text-[10px] text-[#6B7280] font-bold mt-0.5">Bản chuẩn 2.0 đã bao gồm schema của AI Server.</p>
+ <p className="text-sm font-bold text-slate-900">Tải File Mẫu (Template)</p>
+ <p className="text-[10px] text-slate-500 font-bold mt-0.5">Bản chuẩn 2.0 đã bao gồm schema của AI Server.</p>
  </div>
  </div>
- <a href="#" className="flex items-center gap-2 text-xs font-bold text-orange-700 hover:text-orange-800 bg-white px-5 py-2.5 rounded-lg border border-slate-300 shadow-sm transition-all relative z-20 uppercase tracking-widest">
+ <a href="#" className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-orange-800 bg-white px-5 py-2.5 rounded-2xl border border-slate-300 shadow-sm transition-all relative z-20 uppercase tracking-widest">
  Tải Template
  </a>
  </div>
@@ -777,14 +784,14 @@ export function PIM() {
  <button 
  type="button"
  onClick={() => setIsUploadModalOpen(false)}
- className="px-8 py-5 border border-slate-300 text-[#4B5563] font-black rounded-lg text-[11px] hover:bg-slate-50 transition-all uppercase tracking-[0.2em]"
+ className="px-8 py-5 border border-slate-300 text-[#4B5563] font-bold rounded-lg text-[11px] hover:bg-slate-50 transition-all uppercase tracking-widest"
  >
  Hủy bỏ
  </button>
  <button 
  type="submit"
  disabled={uploadMode === 'bulk' && fileValidation.status !== 'success'}
- className="flex-1 py-5 bg-[#111827] text-[#FAF9F5] font-black rounded-lg text-[11px] hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="flex-1 py-5 bg-[#111827] text-white font-bold rounded-lg text-[11px] hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm shadow-slate-900/40 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  {uploadMode === 'bulk' ? 'Import Dữ Liệu' : 'Duyệt & Thêm vào hệ thống'} <Plus className="w-5 h-5" />
  </button>
@@ -798,7 +805,7 @@ export function PIM() {
  <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
  <div className="bg-white w-full max-w-xl rounded-lg shadow-sm p-8 animate-in zoom-in-95">
  <div className="flex justify-between items-center mb-6">
- <h2 className="text-xl font-black">Quét mã vạch & Kiểm kê</h2>
+ <h2 className="text-xl font-bold">Quét mã vạch & Kiểm kê</h2>
  <button onClick={() => { setIsScanMode(false); setIsCameraActive(false); }} className="p-2 hover:bg-slate-100 rounded-lg">
  <X className="w-5 h-5 text-slate-600" />
  </button>
@@ -807,17 +814,17 @@ export function PIM() {
  <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-lg">
  <button 
  onClick={() => setInventoryUpdateMode(false)}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-orange-700 shadow-sm" : "text-slate-600")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-blue-600 shadow-sm" : "text-slate-600")}
  >Tìm kiếm chung</button>
  <button 
  onClick={() => setInventoryUpdateMode(true)}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", inventoryUpdateMode ? "bg-white text-orange-700 shadow-sm" : "text-slate-600")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", inventoryUpdateMode ? "bg-white text-blue-600 shadow-sm" : "text-slate-600")}
  >Bổ sung tồn kho (+1)</button>
  </div>
 
  {!isCameraActive ? (
  <div className="space-y-6">
- <div className="aspect-video bg-slate-900 rounded-lg flex flex-col items-center justify-center text-[#FAF9F5]/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
+ <div className="aspect-video bg-slate-900 rounded-lg flex flex-col items-center justify-center text-white/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
  <Camera className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform" />
  <p className="text-sm font-bold">Bật Camera để quét mã vạch</p>
  <p className="text-[10px] uppercase tracking-widest mt-1">Hỗ trợ QR, Barcode, SKU</p>
@@ -838,7 +845,7 @@ export function PIM() {
  value={currentSku}
  onChange={(e) => setCurrentSku(e.target.value)}
  placeholder="Nhập mã SKU/Barcode..."
- className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold"
+ className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-mono font-bold"
  onKeyDown={(e) => {
  if (e.key === 'Enter') {
  handleScannedResult(currentSku);
@@ -851,13 +858,13 @@ export function PIM() {
  handleScannedResult(currentSku);
  setCurrentSku('');
  }} 
- className="px-6 py-2 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:bg-slate-800"
+ className="px-6 py-2 bg-[#111827] text-white font-bold rounded-lg text-xs hover:bg-slate-800"
  >Thêm</button>
  </div>
  </div>
  ) : (
  <div className="space-y-4">
- <div id="reader" className="w-full h-full overflow-hidden rounded-lg border-4 border-slate-900/20 shadow-inner"></div>
+ <div id="reader" className="w-full h-full overflow-hidden rounded-2xl border-4 border-slate-900/20 shadow-inner"></div>
  <button 
  onClick={() => setIsCameraActive(false)}
  className="w-full py-3 bg-red-50 text-red-600 font-bold rounded-lg text-xs hover:bg-red-100 transition-all flex items-center justify-center gap-2"
@@ -870,7 +877,7 @@ export function PIM() {
  {!inventoryUpdateMode && (
  <div className="mt-8">
  <div className="flex justify-between items-center mb-3">
- <h4 className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Danh sách SKU đã quét ({scannedSkus.length})</h4>
+ <h4 className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Danh sách SKU đã quét ({scannedSkus.length})</h4>
  {scannedSkus.length > 0 && (
  <button onClick={() => setScannedSkus([])} className="text-[10px] font-bold text-red-500 hover:underline">Xóa tất cả</button>
  )}
@@ -878,7 +885,7 @@ export function PIM() {
  <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
  {scannedSkus.map(sku => (
  <div key={sku} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg text-xs font-mono font-bold border border-slate-200 animate-in slide-in- transition-all">
- <span className="text-orange-700">{sku}</span>
+ <span className="text-blue-600">{sku}</span>
  <div className="flex items-center gap-4">
  <span className="text-[10px] text-slate-500">
  {products.find(p => p.sku === sku || p.id === sku)?.name || 'SKU chưa xác định'}
@@ -903,7 +910,7 @@ export function PIM() {
  setIsScanMode(false); 
  }} 
  disabled={scannedSkus.length === 0}
- className="flex-1 py-4 bg-[#111827] text-[#FAF9F5] rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-sm shadow-slate-900/20"
+ className="flex-1 py-4 bg-[#111827] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-sm shadow-slate-900/20"
  >
  Tìm kiếm {scannedSkus.length} SKU
  </button>
@@ -912,14 +919,14 @@ export function PIM() {
  )}
 
  {inventoryUpdateMode && (
- <div className="mt-8 p-4 bg-slate-100 border border-slate-300 rounded-lg">
+ <div className="mt-8 p-4 bg-slate-100 border border-slate-200 rounded-2xl">
  <div className="flex gap-3">
- <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
- <Zap className="w-5 h-5 text-orange-700" />
+ <div className="p-2 bg-white rounded-2xl shadow-sm shrink-0">
+ <Zap className="w-5 h-5 text-blue-600" />
  </div>
  <div>
  <p className="text-xs font-bold text-blue-900">Chế độ Bổ sung Tồn kho</p>
- <p className="text-[10px] text-orange-700 font-medium mt-1">Khi quét thành công một mã vạch hợp lệ, hệ thống sẽ tự động cộng 1 đơn vị vào tồn kho của sản phẩm đó ngay lập tức.</p>
+ <p className="text-[10px] text-blue-600 font-medium mt-1">Khi quét thành công một mã vạch hợp lệ, hệ thống sẽ tự động cộng 1 đơn vị vào tồn kho của sản phẩm đó ngay lập tức.</p>
  </div>
  </div>
  </div>
@@ -931,15 +938,15 @@ export function PIM() {
  {/* Confirmation Dialog */}
  {deleteConfirm && (
  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#111827]/60 backdrop-blur-sm animate-in fade-in duration-300">
- <div className="bg-white w-full max-w-md rounded-lg shadow-sm border border-slate-300 overflow-hidden p-8 animate-in zoom-in-95 duration-300">
+ <div className="bg-white w-full max-w-md rounded-2xl shadow-sm border border-slate-300 overflow-hidden p-8 animate-in zoom-in-95 duration-300">
  <div className="flex flex-col items-center text-center space-y-4">
  <div className="p-4 bg-red-50 rounded-full text-red-600">
  <Trash2 className="w-8 h-8" />
  </div>
  <div className="space-y-2">
- <h3 className="text-xl font-bold text-[#111827]">Xác nhận xóa sản phẩm?</h3>
- <p className="text-sm text-[#6B7280]">
- Bạn có chắc chắn muốn xóa sản phẩm <span className="font-bold text-[#111827]">"{deleteConfirm.name}"</span> không? Hành động này không thể hoàn tác.
+ <h3 className="text-xl font-bold text-slate-900">Xác nhận xóa sản phẩm?</h3>
+ <p className="text-sm text-slate-500">
+ Bạn có chắc chắn muốn xóa sản phẩm <span className="font-bold text-slate-900">"{deleteConfirm.name}"</span> không? Hành động này không thể hoàn tác.
  </p>
  </div>
  </div>
@@ -952,7 +959,7 @@ export function PIM() {
  </button>
  <button 
  onClick={confirmDelete}
- className="flex-1 py-4 bg-red-600 text-[#FAF9F5] font-bold rounded-lg text-xs hover:bg-red-700 transition-all uppercase tracking-widest shadow-sm shadow-red-500/20"
+ className="flex-1 py-4 bg-red-600 text-white font-bold rounded-lg text-xs hover:bg-red-700 transition-all uppercase tracking-widest shadow-sm shadow-red-500/20"
  >
  Xóa ngay
  </button>
@@ -963,15 +970,15 @@ export function PIM() {
 
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản lý Sản phẩm (PIM)</h1>
- <p className="text-sm text-[#6B7280] mt-1">Chuẩn hóa dữ liệu, quản lý duyệt sản phẩm Seller và vận hành AI Governance.</p>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Quản lý Sản phẩm (PIM)</h1>
+ <p className="text-sm text-slate-500 mt-1">Chuẩn hóa dữ liệu, quản lý duyệt sản phẩm Seller và vận hành AI Governance.</p>
  </div>
  <div className="flex gap-3">
  <button 
  onClick={toggleScanMode}
- className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
+ className="bg-white border border-slate-300 px-6 py-2 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
  >
- <ScanBarcode className="w-5 h-5 text-[#2563EB]" />
+ <ScanBarcode className="w-5 h-5 text-blue-600" />
  Quét mã / Kiểm kê
  </button>
  <button 
@@ -982,19 +989,19 @@ export function PIM() {
  isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
  )}
  >
- <Sparkles className={cn("w-4 h-4 text-[#2563EB] group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
+ <Sparkles className={cn("w-4 h-4 text-blue-600 group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
  {isScanning ? "AI đang quét dữ liệu..." : "AI Auto-Scan SP"}
  </button>
  <button 
  onClick={() => setIsUploadModalOpen(true)}
- className="bg-[#111827] text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 active:scale-95"
+ className="bg-[#111827] text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 active:scale-95"
  >
  <Plus className="w-4 h-4" /> Bổ sung sản phẩm
  </button>
  <button 
  onClick={handleBulkApprove}
  disabled={isScanning}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95 disabled:opacity-50"
+ className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95 disabled:opacity-50"
  >
  Duyệt sản phẩm mới (Bulk)
  </button>
@@ -1002,47 +1009,47 @@ export function PIM() {
  </div>
 
  <DraggableGrid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" columns={4} gap={16}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
  <Clock className="w-5 h-5 text-amber-500" />
  </div>
- <div className="text-3xl font-bold text-[#111827]">245</div>
+ <div className="text-3xl font-bold text-slate-900">245</div>
  <p className="text-[10px] text-amber-600 mt-2 font-bold bg-amber-50 px-2 py-0.5 rounded w-fit">Cần SLA xử lý: 4h</p>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Lỗi chuẩn hóa (AI)</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Lỗi chuẩn hóa (AI)</span>
  <AlertCircle className="w-5 h-5 text-red-500" />
  </div>
  <div className="text-3xl font-bold text-red-500">18</div>
  <p className="text-[10px] text-slate-500 mt-2">Phát hiện bởi AI Auto-Scan</p>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
- <Calculator className="w-5 h-5 text-orange-700" />
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
+ <Calculator className="w-5 h-5 text-blue-600" />
  </div>
- <div className="text-3xl font-bold text-[#111827]">22.4%</div>
+ <div className="text-3xl font-bold text-slate-900">22.4%</div>
  <p className="text-[10px] text-emerald-600 mt-2 font-bold">Tối ưu +1.2% Target</p>
  </div>
  <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Category AI</span>
- <Zap className="w-5 h-5 text-orange-600" />
+ <Zap className="w-5 h-5 text-blue-600" />
  </div>
  <div>
- <div className="text-3xl font-bold text-[#FAF9F5] tracking-tighter">99.2%</div>
+ <div className="text-3xl font-bold text-white tracking-tighter">99.2%</div>
  <p className="text-[10px] text-emerald-400 font-bold mt-1 uppercase">Accuracy Rate</p>
  </div>
  </div>
- <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
+ <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
  </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
- <div className="p-6 border-b border-[#F3F4F6] space-y-4">
+ <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+ <div className="p-6 border-b border-slate-100 space-y-4">
  <div className="flex flex-col xl:flex-row gap-4 justify-between items-start">
  <div className="relative flex-1 max-w-2xl">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
@@ -1051,13 +1058,13 @@ export function PIM() {
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  placeholder="Tìm sản phẩm (Tên, SKU, ID, Nhà bán, Thương hiệu)..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-4 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
  />
  </div>
  <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap min-w-0">
  <button 
  onClick={() => setFilterStatus('all')}
- className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-[#111827] shadow-sm" : "text-slate-600 hover:text-slate-800")}
+ className={cn("px-6 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap", filterStatus === 'all' ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >Tất cả trạng thái</button>
  <button 
  onClick={() => setFilterStatus('pending_approval')}
@@ -1079,7 +1086,7 @@ export function PIM() {
  <select
  value={filterCategory}
  onChange={(e) => setFilterCategory(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-200 rounded-2xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
  >
  <option value="all">Tất cả ngành hàng</option>
  {categories.map(category => (
@@ -1090,7 +1097,7 @@ export function PIM() {
  <select
  value={filterBrand}
  onChange={(e) => setFilterBrand(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-200 rounded-2xl px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
  >
  <option value="all">Tất cả thương hiệu</option>
  {brands.map(brand => (
@@ -1102,7 +1109,7 @@ export function PIM() {
 
  <div className="p-8 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
  {filteredProducts.map((product) => (
- <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
+ <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
  <div className="absolute top-4 left-4 z-20">
   <input 
     type="checkbox" 
@@ -1122,7 +1129,7 @@ export function PIM() {
  </button>
  <button 
  onClick={() => setDeleteConfirm({ id: product.id, name: product.name })}
- className="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-[#FAF9F5] shadow-sm transition-all"
+ className="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white shadow-sm transition-all"
  title="Xóa sản phẩm"
  >
  <Trash2 className="w-5 h-5" />
@@ -1132,15 +1139,15 @@ export function PIM() {
  {/* Image & Badges */}
  <div className="relative h-60 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-6 group-hover:shadow-sm transition-all">
  <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover group-hover:scale-105 transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
- <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[9px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
+ <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-2xl text-[9px] font-bold text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
  {product.id}
  </div>
  {/* Status Badge */}
  <div className="absolute bottom-3 left-3 flex gap-2 z-10">
  <span className={cn(
- "px-4 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-2 shadow-sm uppercase tracking-widest border backdrop-blur-md",
- product.status === 'hidden' ? "bg-slate-600/90 text-[#FAF9F5] border-slate-500" :
- product.status === 'in_stock' ? "bg-emerald-500/90 text-[#FAF9F5] border-emerald-400" : "bg-amber-500/90 text-[#FAF9F5] border-amber-400"
+ "px-4 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 shadow-sm uppercase tracking-widest border backdrop-blur-md",
+ product.status === 'hidden' ? "bg-slate-600/90 text-white border-slate-500" :
+ product.status === 'in_stock' ? "bg-emerald-500/90 text-white border-emerald-400" : "bg-amber-500/90 text-white border-amber-400"
  )}>
  {product.status === 'hidden' ? <EyeOff className="w-4 h-4" /> :
  product.status === 'in_stock' ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
@@ -1153,30 +1160,30 @@ export function PIM() {
  {/* Info Area */}
  <div className="flex flex-col flex-1">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] font-black text-orange-700 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300 uppercase tracking-widest shadow-sm inline-block">
+ <span className="text-[10px] font-bold text-blue-600 bg-slate-100 px-3 py-1.5 rounded-2xl border border-slate-300 uppercase tracking-widest shadow-sm inline-block">
  {product.category}
  </span>
  </div>
- <h3 className="text-xl font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-5 flex-1">
+ <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 tracking-tight leading-tight mb-5 flex-1">
  {product.name}
  </h3>
 
  <div className="space-y-4 mb-6">
- <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg border border-slate-200">
+ <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
  <div className="flex items-center gap-2.5 text-xs text-[#4B5563] font-bold">
  <ShieldCheck className="w-5 h-5 text-emerald-500" />
  <span className="truncate max-w-[120px]">{product.sellerName}</span>
  </div>
- <div className="flex items-center gap-2 text-xs text-[#6B7280] font-medium">
+ <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
  <Hash className="w-4 h-4 text-orange-500" />
- <span className="font-mono text-[11px] uppercase font-black">{product.sku}</span>
+ <span className="font-mono text-[11px] uppercase font-bold">{product.sku}</span>
  </div>
  </div>
 
  <div className="flex justify-between items-end px-2">
  <div className="space-y-1.5">
- <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest">Giá bán</p>
- <p className="text-2xl font-black text-[#111827] font-mono leading-none">
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Giá bán</p>
+ <p className="text-xl font-bold text-slate-900 font-mono leading-none">
  {formatCurrency(product.price)}
  </p>
  </div>
@@ -1185,21 +1192,21 @@ export function PIM() {
  <Target className="w-3.5 h-3.5" /> Profit
  </p>
  <div className="flex items-baseline gap-2">
- <p className="text-lg font-black text-emerald-600 font-mono leading-none">
+ <p className="text-lg font-bold text-emerald-600 font-mono leading-none">
  +{formatCurrency(product.profit)}
  </p>
- <span className="text-[10px] font-black text-emerald-500/80 bg-emerald-50 px-1.5 py-0.5 rounded-lg border border-emerald-100">+{product.margin}%</span>
+ <span className="text-[10px] font-bold text-emerald-500/80 bg-emerald-50 px-1.5 py-0.5 rounded-lg border border-emerald-100">+{product.margin}%</span>
  </div>
  </div>
  </div>
 
  <div className="border-t border-slate-200 pt-4 mt-4 flex justify-between items-center px-2 relative z-20">
- <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest" title="Bao gồm phí vận chuyển, đóng gói,...">Chi phí ẩn (VC, Đóng gói...)</p>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest" title="Bao gồm phí vận chuyển, đóng gói,...">Chi phí ẩn (VC, Đóng gói...)</p>
  <input 
  type="number"
  defaultValue={product.hiddenCosts || 0}
  onBlur={(e) => updateHiddenCost(product, Number(e.target.value))}
- className="w-28 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
+ className="w-28 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-slate-900 shadow-sm transition-all"
  placeholder="VD: 15000"
  />
  </div>
@@ -1208,18 +1215,18 @@ export function PIM() {
  {/* Footer Metrics */}
  <div className="mt-auto pt-5 border-t border-slate-200 flex items-center justify-between">
  <div className="flex flex-col gap-2">
- <div className="flex items-center gap-2 text-[10px] font-black text-orange-700">
+ <div className="flex items-center gap-2 text-[10px] font-bold text-blue-600">
  <Sparkles className="w-4 h-4 text-orange-500 animate-pulse" /> AI Verified
  </div>
  <div className="flex items-center gap-2">
  <div className={cn("w-2.5 h-2.5 rounded-full", product.stock < 10 ? "bg-red-500 animate-pulse" : "bg-emerald-500")}></div>
- <p className="text-[11px] text-[#111827] font-black uppercase tracking-tighter">Kho: {product.stock} SP</p>
+ <p className="text-[11px] text-slate-900 font-bold uppercase tracking-tighter">Kho: {product.stock} SP</p>
  </div>
  </div>
 
  <button 
  onClick={() => setShowPnLForProduct(product)}
- className="flex items-center gap-2 text-[11px] font-black text-orange-700 hover:translate-x-1 transition-all bg-slate-100 px-4 py-2.5 rounded-lg group/btn"
+ className="flex items-center gap-2 text-[11px] font-bold text-blue-600 hover:translate-x-1 transition-all bg-slate-100 px-4 py-2.5 rounded-lg group/btn"
  >
  Chi tiết P&L <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
  </button>
@@ -1231,14 +1238,14 @@ export function PIM() {
  </div>
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-10 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
+ <div className="bg-blue-500 p-8 rounded-2xl text-white shadow-sm flex flex-col justify-between group">
  <div className="relative z-10 space-y-6">
  <div className="flex items-center gap-4">
- <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
+ <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
  <Sparkles className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-3xl font-extrabold italic font-serif tracking-tight">AI Metadata Engine</h3>
+ <h3 className="text-3xl font-extrabold italic font-sans tracking-tight">AI Metadata Engine</h3>
  <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mt-1 pl-1">Data Governance v2.0</p>
  </div>
  </div>
@@ -1247,23 +1254,23 @@ export function PIM() {
  </p>
  </div>
  <div className="relative z-10 pt-8">
- <button className="px-10 py-4 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
+ <button className="px-10 py-4 bg-[#111827] text-white font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
  </div>
- <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
+ <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-10 border border-slate-300 rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
- <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3">
+ <div className="bg-white p-10 border border-slate-200 rounded-2xl shadow-sm space-y-8 relative overflow-hidden group">
+ <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
  <ShieldCheck className="w-6 h-6 text-emerald-500" /> P&L Configuration Engine
  </h3>
  <div className="space-y-6">
- <div className="p-6 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-500/30 transition-all cursor-pointer">
+ <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 hover:border-emerald-500/30 transition-all cursor-pointer">
  <div className="flex justify-between items-center mb-4">
  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global P&L Rules</span>
  <Info className="w-4 h-4 text-slate-500" />
  </div>
  <div className="flex items-end gap-3">
- <div className="text-3xl font-bold text-[#111827]">94%</div>
+ <div className="text-3xl font-bold text-slate-900">94%</div>
  <p className="text-[10px] text-emerald-600 font-bold uppercase pb-1.5 tracking-tighter">Độ chính xác định mức</p>
  </div>
  <div className="mt-4 pt-4 border-t border-slate-300/50 flex justify-between items-center">
@@ -1272,7 +1279,7 @@ export function PIM() {
  </div>
  </div>
  <div className="space-y-4">
- <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-[0.2em] pl-2">Top Profit Categories</h4>
+ <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-2">Top Profit Categories</h4>
  <div className="space-y-3">
  {[
  { name: 'Thời trang', share: 45, color: 'bg-slate-800' },
@@ -1303,11 +1310,11 @@ export function PIM() {
  {/* Header */}
  <div className="px-8 py-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-orange-700">
+ <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-blue-600">
  <Calculator className="w-6 h-6" />
  </div>
  <div>
- <h3 className="text-xl font-black text-slate-900 tracking-tight">Chi tiết P&L Sản phẩm</h3>
+ <h3 className="text-xl font-bold text-slate-900 tracking-tight">Chi tiết P&L Sản phẩm</h3>
  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
  Ref: {showPnLForProduct.sku || showPnLForProduct.id}
  </p>
@@ -1335,17 +1342,17 @@ export function PIM() {
  <div className="flex-1">
  <h4 className="text-lg font-bold text-slate-900">{showPnLForProduct.name}</h4>
  <div className="flex items-center gap-3 mt-2">
- <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase tracking-widest">
+ <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold uppercase tracking-widest">
  {showPnLForProduct.category || 'N/A'}
  </span>
- <span className="px-2.5 py-1 bg-slate-100 text-orange-700 rounded-lg text-[10px] font-black uppercase tracking-widest">
+ <span className="px-2.5 py-1 bg-slate-100 text-blue-600 rounded-lg text-[10px] font-bold uppercase tracking-widest">
  {showPnLForProduct.brand || 'No Brand'}
  </span>
  </div>
  </div>
  <button 
  onClick={saveProductPricing}
- className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] text-xs font-black rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 uppercase tracking-widest"
+ className="px-6 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 uppercase tracking-widest"
  >
  Lưu thay đổi
  </button>
@@ -1354,58 +1361,58 @@ export function PIM() {
  {/* Financial Metrics Grid */}
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
  <div className="space-y-4">
- <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
- <Sparkles className="w-3.5 h-3.5 text-orange-600" /> Cấu hình Giá & Chi phí gốc
+ <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+ <Sparkles className="w-3.5 h-3.5 text-blue-600" /> Cấu hình Giá & Chi phí gốc
  </h5>
  
  <div className="bg-slate-50 rounded-lg p-5 space-y-5 border border-slate-200">
  <div className="space-y-2">
  <div className="flex justify-between items-center px-1">
- <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Giá bán lẻ (Retail)</span>
+ <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Giá bán lẻ (Retail)</span>
  </div>
  <input 
  type="number"
  value={pnlPrice}
  onChange={(e) => setPnlPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
  <div className="flex justify-between items-center px-1">
- <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Giá vốn (COGS)</span>
+ <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Giá vốn (COGS)</span>
  </div>
  <input 
  type="number"
  value={pnlCostPrice}
  onChange={(e) => setPnlCostPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
  <div className="flex justify-between items-center px-1">
- <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Chi phí ẩn (Hidden Cost)</span>
+ <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chi phí ẩn (Hidden Cost)</span>
  <span title="Chi phí bao bì, tem nhãn, quà tặng kèm..."><Info className="w-3 h-3 text-slate-500" /></span>
  </div>
  <input 
  type="number"
  value={pnlHiddenCosts}
  onChange={(e) => setPnlHiddenCosts(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  </div>
  </div>
 
  <div className="space-y-4">
- <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+ <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
  <Zap className="w-3.5 h-3.5 text-amber-500" /> Hệ sinh thái phí sàn
  </h5>
  
- <div className="bg-white rounded-lg p-5 space-y-4 border border-slate-300 shadow-sm">
+ <div className="bg-white rounded-2xl p-5 space-y-4 border border-slate-300 shadow-sm">
  {/* Mandatory Fees */}
  <div className="flex justify-between items-center p-3 bg-red-50/50 rounded-lg border border-red-100">
  <div>
- <p className="text-[11px] font-black text-slate-800">Phí cố định & Thanh toán</p>
+ <p className="text-[11px] font-bold text-slate-800">Phí cố định & Thanh toán</p>
  <p className="text-[9px] text-red-500 font-bold uppercase tracking-tight">Bắt buộc theo quy định sàn</p>
  </div>
  <div className="text-right">
@@ -1424,7 +1431,7 @@ export function PIM() {
  >
  <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", useOptionalPlatformFees ? "left-4.5" : "left-0.5")} />
  </button>
- <p className="text-[11px] font-black text-slate-800 uppercase tracking-widest">Sử dụng chi phí tùy chọn</p>
+ <p className="text-[11px] font-bold text-slate-800 uppercase tracking-widest">Sử dụng chi phí tùy chọn</p>
  </div>
  <p className="text-xs font-mono font-bold text-slate-800">
  {useOptionalPlatformFees ? `-${formatCurrency(
@@ -1449,11 +1456,11 @@ export function PIM() {
  <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.serviceFee ? "left-4.5" : "left-0.5")} />
  </button>
  <div>
- <p className="text-[11px] font-black text-slate-800">Gói dịch vụ (Freeship Xtra...)</p>
- <p className="text-[9px] text-orange-600 font-bold">Tùy chọn hiển thị</p>
+ <p className="text-[11px] font-bold text-slate-800">Gói dịch vụ (Freeship Xtra...)</p>
+ <p className="text-[9px] text-blue-600 font-bold">Tùy chọn hiển thị</p>
  </div>
  </div>
- <p className="text-xs font-mono font-bold text-orange-700">
+ <p className="text-xs font-mono font-bold text-blue-600">
  -{formatCurrency(pnlOptionalFees.serviceFee ? pnlPrice * 0.05 : 0)}
  </p>
  </div>
@@ -1470,7 +1477,7 @@ export function PIM() {
  <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.adFee ? "left-4.5" : "left-0.5")} />
  </button>
  <div>
- <p className="text-[11px] font-black text-slate-800">Quảng cáo & Marketing</p>
+ <p className="text-[11px] font-bold text-slate-800">Quảng cáo & Marketing</p>
  <p className="text-[9px] text-amber-500 font-bold">Dự kiến chi trả</p>
  </div>
  </div>
@@ -1491,7 +1498,7 @@ export function PIM() {
  <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", pnlOptionalFees.affiliateFee ? "left-4.5" : "left-0.5")} />
  </button>
  <div>
- <p className="text-[11px] font-black text-slate-800">Tiếp thị liên kết (Affiliate)</p>
+ <p className="text-[11px] font-bold text-slate-800">Tiếp thị liên kết (Affiliate)</p>
  <p className="text-[9px] text-purple-500 font-bold">5% Giá bán</p>
  </div>
  </div>
@@ -1518,30 +1525,30 @@ export function PIM() {
  const netMargin = pnlPrice > 0 ? (netProfit / pnlPrice) * 100 : 0;
 
  return (
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden flex items-center justify-between shadow-sm shadow-blue-900/20">
+ <div className="bg-slate-900 rounded-lg p-8 text-white relative overflow-hidden flex items-center justify-between shadow-sm shadow-blue-900/20">
  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-20 translate-x-20" />
  <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl -translate-x-10 translate-y-10" />
  
  <div className="relative z-10 space-y-2">
  <div className="flex items-center gap-2">
- <h5 className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em]">Lợi nhuận ròng thực tế (Actual Net Profit)</h5>
- <div className="px-2 py-0.5 bg-blue-400/30 rounded-full text-[9px] font-black uppercase">Real-time update</div>
+ <h5 className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Lợi nhuận ròng thực tế (Actual Net Profit)</h5>
+ <div className="px-2 py-0.5 bg-blue-400/30 rounded-full text-[9px] font-bold uppercase">Real-time update</div>
  </div>
  <div className="flex items-end gap-3">
- <span className="text-4xl font-black tracking-tight font-mono">
+ <span className="text-4xl font-bold tracking-tight font-mono">
  {formatCurrency(netProfit)}
  </span>
  <span className="text-sm font-bold text-blue-200 pb-2">
  / SP bán ra
  </span>
  </div>
- <p className="text-[10px] text-blue-300 font-medium">
+ <p className="text-[10px] text-blue-600 font-medium">
  Tổng chi phí khấu trừ: {formatCurrency(totalFees + pnlCostPrice + pnlHiddenCosts)}
  </p>
  </div>
 
  <div className="relative z-10 text-right bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
- <div className="text-3xl font-black font-mono">
+ <div className="text-3xl font-bold font-mono">
  {netMargin.toFixed(1)}%
  </div>
  <div className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-1">
@@ -1553,9 +1560,9 @@ export function PIM() {
  })()}
  
  <div className="flex items-start gap-3 p-5 bg-slate-50 rounded-xl border border-slate-200">
- <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+ <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
  <div className="space-y-1">
- <p className="text-xs font-black text-slate-800 uppercase tracking-tight">Cơ chế tính toán ERP 2.0</p>
+ <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">Cơ chế tính toán ERP 2.0</p>
  <p className="text-[11px] text-slate-600 leading-relaxed">
  * Hệ thống tự động tính phí sàn theo các hạng mục được bật. <br />
  * <b>Chi phí ẩn</b> được cộng trực tiếp vào giá vốn để tính Gross Margin trước khi trừ phí sàn. <br />

@@ -136,7 +136,7 @@ export function IPosSettings() {
  <MonitorSmartphone className="w-6 h-6" />
  </div>
  <div>
- <h1 className="font-serif tracking-tight text-xl font-bold text-slate-900">Cài đặt iPOS & Phân quyền</h1>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Cài đặt iPOS & Phân quyền</h1>
  <p className="text-sm text-slate-600 mt-1">Thiết lập vai trò nâng cao và giới hạn quyền truy cập từng module iPOS.</p>
  </div>
  </div>
@@ -144,7 +144,7 @@ export function IPosSettings() {
  <button onClick={() => navigate('/ipos')} className="px-4 py-2 border border-slate-300 text-slate-800 bg-white rounded-lg text-sm font-semibold hover:bg-slate-50 shadow-sm">
  Quay lại iPOS
  </button>
- <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
+ <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
  <Save className="w-4 h-4" />
  Lưu thay đổi
  </button>
@@ -215,7 +215,7 @@ export function IPosSettings() {
  "p-6",
  mIdx !== IPOS_MODULES.length - 1 ? "border-b border-slate-200" : ""
  )}>
- <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+ <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
  <span className="w-1.5 h-4 bg-primary-500 rounded-full inline-block"></span>
  {module.name}
  </h3>
@@ -245,7 +245,7 @@ export function IPosSettings() {
  />
  <div className={cn(
  "w-5 h-5 rounded flex items-center justify-center transition-colors shadow-sm",
- isGranted ? "bg-emerald-500 text-[#FAF9F5]" : "bg-slate-200 text-transparent"
+ isGranted ? "bg-emerald-500 text-white" : "bg-slate-200 text-transparent"
  )}>
  <Check className="w-3.5 h-3.5" />
  </div>

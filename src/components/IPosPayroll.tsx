@@ -108,7 +108,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-emerald-600" /> Bảng Lương & Nhân Sự
           </h2>
           <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name || 'Tất cả chi nhánh'}</p>
@@ -123,7 +123,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
            <button className="bg-emerald-600 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-emerald-700 flex items-center gap-2 transition-all">
              <CreditCard className="w-4 h-4" /> Thanh toán tự động (SePay)
            </button>
-           <button className="bg-slate-900 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 flex items-center gap-2 transition-all">
+           <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 flex items-center gap-2 transition-all">
              <Download className="w-4 h-4" /> Xuất Excel
            </button>
         </div>
@@ -133,20 +133,20 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
              {[{ label: 'Tổng lương thực nhận', val: formatCurrency(stats.totalNetPay), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-primary-600', bg: 'bg-primary-50' },
-               { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' }].map((stat, idx) => (
+               { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-blue-600', bg: 'bg-orange-50' }].map((stat, idx) => (
                  <div key={idx} className="bg-white border text-center md:text-left border-slate-300 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", stat.bg, stat.color)}>
                          <stat.icon className="w-6 h-6" />
                      </div>
                      <div>
-                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
-                         <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.val}</p>
+                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
+                         <p className="text-3xl font-bold text-slate-900 tracking-tight">{stat.val}</p>
                      </div>
                  </div>
              ))}
          </div>
          
-         <div className="bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden mb-6">
+         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
              <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
                 <div>
                    <h3 className="font-bold text-slate-900 flex items-center gap-2 text-lg">
@@ -156,22 +156,22 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                 </div>
                 <div className="flex gap-2">
                     <button className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-50 transition-colors">Đồng bộ lại chấm công</button>
-                    <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 transition-colors">Chốt bảng lương</button>
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-xs font-bold shadow-sm hover:bg-slate-800 transition-colors">Chốt bảng lương</button>
                 </div>
              </div>
              
-             <div className="overflow-x-auto min-w-0">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-[#F9FAFB] border-b border-slate-300 text-slate-600">
+             <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+                <table className="min-w-[960px] w-full text-left text-sm border-collapse">
+                    <thead className="bg-slate-50 border-b border-slate-300 text-slate-600">
                         <tr>
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Nhân viên</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-center">Công chuẩn / Thực tế</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-center">Tăng ca (OT)</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-right">Lương CB & OT</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-right">Thưởng / Phụ cấp</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-right">Khấu trừ (Phạt/Thuế/BH)</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-right">Thực nhận (Net)</th>
-                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest text-center">Trạng thái</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-40 whitespace-nowrap text-center">Công chuẩn / Thực tế</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-32 whitespace-nowrap text-center">Tăng ca (OT)</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-36 whitespace-nowrap text-right">Lương CB & OT</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-36 whitespace-nowrap text-right">Thưởng / Phụ cấp</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-44 whitespace-nowrap text-right">Khấu trừ (Phạt/Thuế/BH)</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-36 whitespace-nowrap text-right">Thực nhận (Net)</th>
+                            <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest w-28 whitespace-nowrap text-center">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -202,7 +202,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         {emp.otHours > 0 ? (
-                                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full text-xs font-bold">
+                                            <span className="inline-flex items-center gap-1 bg-orange-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-bold">
                                                 <Clock className="w-3.5 h-3.5" /> +{emp.otHours}h
                                             </span>
                                         ) : (
@@ -211,7 +211,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <p className="font-bold text-slate-800">{formatCurrency(details.actualBase)}</p>
-                                        {details.otPay > 0 && <p className="text-[10px] text-orange-600 font-bold uppercase mt-1">+ {formatCurrency(details.otPay)} (OT)</p>}
+                                        {details.otPay > 0 && <p className="text-[10px] text-blue-600 font-bold uppercase mt-1">+ {formatCurrency(details.otPay)} (OT)</p>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {emp.allowances > 0 && <p className="text-[10px] text-primary-600 font-bold uppercase">PC: +{formatCurrency(emp.allowances)}</p>}
@@ -225,11 +225,11 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                         {details.deductions === 0 && <span className="text-slate-500">-</span>}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <p className="font-black text-primary-700 text-base">{formatCurrency(details.net)}</p>
+                                        <p className="font-bold text-primary-700 text-base">{formatCurrency(details.net)}</p>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
                                             emp.status === 'paid' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                                         )}>
                                             {emp.status === 'paid' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
@@ -251,7 +251,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
               <div className="w-full md:w-[480px] bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-8">
                   <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
                       <div>
-                          <h3 className="font-black text-slate-900 text-lg">Phiếu Lương Chi Tiết</h3>
+                          <h3 className="font-bold text-slate-900 text-lg">Phiếu Lương Chi Tiết</h3>
                           <p className="text-xs text-slate-600 uppercase tracking-widest font-bold mt-1">Kỳ lương: {selectedMonth} • {selectedEmployee.id}</p>
                       </div>
                       <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
@@ -265,7 +265,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                               <UserCircle2 className="w-8 h-8" />
                           </div>
                           <div>
-                              <p className="font-black text-xl text-slate-900 tracking-tight">{selectedEmployee.name}</p>
+                              <p className="font-bold text-xl text-slate-900 tracking-tight">{selectedEmployee.name}</p>
                               <span className="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 uppercase tracking-widest">
                                   {selectedEmployee.role}
                               </span>
@@ -274,7 +274,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
 
                       {/* Thu nhập */}
                       <div className="space-y-4">
-                          <h4 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
+                          <h4 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
                               1. Tổng Thu Nhập (Gross)
                           </h4>
                           <div className="space-y-3 px-2">
@@ -299,13 +299,13 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                           </div>
                           <div className="bg-slate-50 p-3 rounded-lg flex justify-between items-center border border-slate-200">
                               <span className="font-bold text-slate-800 text-xs uppercase tracking-widest">Tổng thu nhập</span>
-                              <span className="font-black text-slate-900 text-lg">{formatCurrency(calculateDetails(selectedEmployee).gross)}</span>
+                              <span className="font-bold text-slate-900 text-lg">{formatCurrency(calculateDetails(selectedEmployee).gross)}</span>
                           </div>
                       </div>
 
                       {/* Khấu trừ */}
                       <div className="space-y-4">
-                          <h4 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
+                          <h4 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2 border-b border-slate-200 pb-2">
                               2. Các Khoản Khấu Trừ
                           </h4>
                           <div className="space-y-3 px-2">
@@ -326,17 +326,17 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                           </div>
                           <div className="bg-slate-50 p-3 rounded-lg flex justify-between items-center border border-slate-200">
                               <span className="font-bold text-slate-800 text-xs uppercase tracking-widest">Tổng khấu trừ</span>
-                              <span className="font-black text-rose-600 text-lg">-{formatCurrency(calculateDetails(selectedEmployee).deductions)}</span>
+                              <span className="font-bold text-rose-600 text-lg">-{formatCurrency(calculateDetails(selectedEmployee).deductions)}</span>
                           </div>
                       </div>
 
                       {/* Thực nhận */}
-                      <div className="bg-gradient-to-r from-primary-900 to-primary-800 rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
+                      <div className="bg-blue-600 rounded-2xl p-6 text-white shadow-md group">
                           <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />
-                          <p className="text-[10px] text-primary-200 font-black uppercase tracking-widest mb-1 relative z-10">
+                          <p className="text-[10px] text-primary-200 font-bold uppercase tracking-widest mb-1 relative z-10">
                               3. Lương Thực Nhận (Net Pay)
                           </p>
-                          <p className="text-4xl font-black tracking-tight relative z-10">
+                          <p className="text-4xl font-bold tracking-tight relative z-10">
                               {formatCurrency(calculateDetails(selectedEmployee).net)}
                           </p>
                           <div className="mt-4 pt-4 border-t border-primary-700/50 flex items-center justify-between relative z-10">
@@ -344,7 +344,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                                   Trạng thái
                               </span>
                               <span className={cn(
-                                  "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5",
+                                  "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5",
                                   selectedEmployee.status === 'paid' ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
                               )}>
                                   {selectedEmployee.status === 'paid' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
@@ -358,7 +358,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                       <button className="flex-1 py-3 bg-white border border-slate-300 text-slate-800 font-bold rounded-lg hover:bg-slate-100 transition-colors text-xs uppercase tracking-widest shadow-sm">
                           In Phiếu
                       </button>
-                      <button className="flex-[2] py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
+                      <button className="flex-[2] py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
                           Gửi Phiếu Lương (Zalo/Email) <ArrowRight className="w-4 h-4" />
                       </button>
                   </div>

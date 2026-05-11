@@ -1,5 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
  FileText, 
  Send, 
@@ -34,6 +34,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { TemplateGalleryModal } from './TemplateGalleryModal';
 import { FormConfigModal } from './FormConfigModal';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 
 const INITIAL_REQUESTS = [
  { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -56,6 +58,22 @@ export function RequestHub() {
  const { user, isAdmin, staffInfo } = useAuth();
  const { addNotification } = useNotifications();
  const [requests, setRequests] = useState(INITIAL_REQUESTS);
+ const [dbRequestIds, setDbRequestIds] = useState<Set<string>>(new Set());
+
+ useEffect(() => {
+ const q = query(collection(db, 'requests'), orderBy('createdAt', 'desc'), limit(100));
+ const unsub = onSnapshot(q, (snap) => {
+  if (snap.empty) return;
+  const dbReqs = snap.docs.map(d => ({ id: d.id, ...d.data() as any }));
+  const ids = new Set(dbReqs.map((r: any) => r.id));
+  setDbRequestIds(ids);
+  setRequests(prev => {
+  const mockOnly = prev.filter(r => !ids.has(r.id));
+  return [...dbReqs, ...mockOnly];
+  });
+ }, (err) => console.error('RequestHub snapshot error:', err));
+ return () => unsub();
+ }, []);
  
  // Settings State
  const [formConfigs, setFormConfigs] = useState(INITIAL_FORM_CONFIGS);
@@ -75,6 +93,7 @@ export function RequestHub() {
  const [selectedRequestForPrint, setSelectedRequestForPrint] = useState<any>(null);
 
  const handleStatusChange = (id: string, newStatus: string) => {
+ const isDbRecord = dbRequestIds.has(id);
  setRequests(requests.map(req => {
  if (req.id === id) {
  const config = formConfigs.find(c => c.name === req.subtype);
@@ -131,6 +150,10 @@ export function RequestHub() {
  }
  return req;
  }));
+ if (isDbRecord) {
+  updateDoc(doc(db, 'requests', id), { status: newStatus, updatedAt: serverTimestamp() })
+  .catch(err => console.error('RequestHub status update error:', err));
+ }
  };
  const [searchReqQuery, setSearchReqQuery] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
@@ -216,6 +239,8 @@ export function RequestHub() {
  customReviewers: newRequest.customReviewers
  };
  
+ addDoc(collection(db, 'requests'), { ...request, createdAt: serverTimestamp() })
+  .catch(err => console.error('RequestHub addRequest error:', err));
  setRequests([request, ...requests]);
  setShowAddModal(false);
  setNewRequest({ 
@@ -229,26 +254,42 @@ export function RequestHub() {
  };
 
  const executeSignature = async () => {
+ if (!signingRequestId) return;
  setIsSigningInProcess(true);
- // Simulate API call to CA provider
- await new Promise(resolve => setTimeout(resolve, 2000));
- 
- if (signingRequestId) {
- setRequests(requests.map(req => 
- req.id === signingRequestId ? { 
- ...req, 
- signatureStatus: 'signed', 
- status: 'approved',
- signedBy: user?.displayName || 'User',
- signedAt: new Date().toLocaleString('vi-VN'),
- caProvider: signatureMethod.toUpperCase().replace('_', ' ')
- } : req
+ try {
+ const res = await fetch('/api/signature/sign', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+  requestId: signingRequestId,
+  provider: signatureMethod,
+  signerName: user?.displayName || user?.email || 'Unknown',
+  }),
+ });
+ if (!res.ok) throw new Error(`Signature API error: ${res.status}`);
+
+ const signedData = {
+  signatureStatus: 'signed',
+  status: 'approved',
+  signedBy: user?.displayName || 'User',
+  signedAt: new Date().toLocaleString('vi-VN'),
+  caProvider: signatureMethod.toUpperCase().replace('_', ' '),
+ };
+
+ setRequests(requests.map(req =>
+  req.id === signingRequestId ? { ...req, ...signedData } : req
  ));
+
+ if (dbRequestIds.has(signingRequestId)) {
+  updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() })
+  .catch(err => console.error('Signature updateDoc error:', err));
  }
- 
+ } catch (err) {
+ console.error('executeSignature error:', err);
+ } finally {
  setIsSigningInProcess(false);
  setSigningRequestId(null);
- alert("Ký số thành công! Tài liệu đã được gắn dấu thời gian và lưu trữ vào WorkflowHub.");
+ }
  };
 
 
@@ -256,13 +297,13 @@ export function RequestHub() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title border-l-4 border-primary-600 pl-4 py-1">
- <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-primary-600">E-Form</span></h1>
- <p className="text-xs font-bold text-slate-600 mt-2 uppercase tracking-[0.2em]">Hành chính • Tài chính • Nhân sự • Quy trình số</p>
+ <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-primary-600">E-Form</span></h1>
+ <p className="text-xs font-bold text-slate-600 mt-2 uppercase tracking-widest">Hành chính • Tài chính • Nhân sự • Quy trình số</p>
  </div>
  <div className="flex gap-3">
  <button 
  onClick={() => navigate('/signature')}
- className="bg-emerald-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2"
+ className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2"
  >
  <FileSignature className="w-4 h-4" />
  Trung tâm Ký số
@@ -272,7 +313,7 @@ export function RequestHub() {
    setTemplateAction('submit_request');
    setShowTemplateGallery(true);
  }}
- className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo đề xuất
  </button>
@@ -282,19 +323,19 @@ export function RequestHub() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" columns={4} gap={24}>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-orange-600" /> Tôi gửi đi</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
+ <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-blue-600" /> Tôi gửi đi</h3>
+ <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
  </div>
  </DraggableGrid>
 
@@ -325,7 +366,7 @@ export function RequestHub() {
  </div>
 
  {/* Content */}
- <div className="flex-1 bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden flex flex-col">
+ <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
  {activeTab !== 'settings' ? (
  <>
  <div className="p-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50/80">
@@ -337,7 +378,7 @@ export function RequestHub() {
  placeholder="Tìm theo mã, nội dung hoặc loại phiếu..."
  value={searchReqQuery}
  onChange={(e) => setSearchReqQuery(e.target.value)}
- className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm placeholder:text-slate-500 transition-all"
+ className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm placeholder:text-slate-500 transition-all"
  />
  </div>
  
@@ -345,7 +386,7 @@ export function RequestHub() {
  <select
  value={statusFilter}
  onChange={(e) => setStatusFilter(e.target.value)}
- className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 cursor-pointer hover:border-slate-400"
+ className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 cursor-pointer hover:border-slate-400"
  >
  <option value="all">Trạng thái (Tất cả)</option>
  <option value="pending">Chờ duyệt</option>
@@ -356,7 +397,7 @@ export function RequestHub() {
  <select
  value={requesterFilter}
  onChange={(e) => setRequesterFilter(e.target.value)}
- className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 max-w-[150px] cursor-pointer hover:border-slate-400"
+ className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 max-w-[150px] cursor-pointer hover:border-slate-400"
  >
  <option value="all">Người tạo (Mọi người)</option>
  {uniqueRequesters.map(req => (
@@ -365,8 +406,8 @@ export function RequestHub() {
  </select>
  </div>
 
- <div className="flex items-center gap-2 bg-white border border-slate-300 rounded-lg p-1.5 shadow-sm">
- <div className="flex items-center gap-1.5 text-[10px] uppercase font-black text-slate-500 px-2 border-r border-slate-200">
+ <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm">
+ <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-500 px-2 border-r border-slate-200">
  <Clock className="w-3 h-3" /> Từ
  </div>
  <input 
@@ -376,7 +417,7 @@ export function RequestHub() {
  className="text-xs bg-transparent focus:outline-none font-bold text-slate-800"
  />
  <div className="text-slate-500 mx-1">/</div>
- <div className="flex items-center gap-1.5 text-[10px] uppercase font-black text-slate-500 px-2 border-r border-slate-200">
+ <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-500 px-2 border-r border-slate-200">
  Đến
  </div>
  <input 
@@ -400,7 +441,7 @@ export function RequestHub() {
  <div className="flex items-center gap-2 shrink-0">
  <button 
  onClick={() => {}} // Could trigger a re-fetch if using API
- className="p-2 text-slate-500 hover:text-emerald-600 bg-white border border-slate-300 rounded-lg shadow-sm transition-all hover:bg-emerald-50 active:scale-95"
+ className="p-2 text-slate-500 hover:text-emerald-600 bg-white border border-slate-200 rounded-2xl shadow-sm transition-all hover:bg-emerald-50 active:scale-95"
  title="Làm mới"
  >
  <RefreshCw className="w-4 h-4" />
@@ -408,18 +449,18 @@ export function RequestHub() {
  </div>
  </div>
 
- <div className="p-0 overflow-auto">
- <table className="w-full text-left border-collapse">
- <thead className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+ <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+ <table className="min-w-[680px] w-full text-left border-collapse">
+ <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Loại / Mã phiếu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nội dung</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Người đề xuất</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Ngày gửi</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Loại / Mã phiếu</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Người đề xuất</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày gửi</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
+ <tbody className="divide-y divide-slate-100">
  {filteredRequests.length > 0 ? filteredRequests.map(doc => (
  <tr key={doc.id} className="hover:bg-slate-50 transition-colors group">
  <td className="px-6 py-4">
@@ -447,7 +488,7 @@ export function RequestHub() {
  {doc.status === 'approved' && (
  <span className={cn(
  "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
- (doc as any).signatureStatus === 'signed' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-700"
+ (doc as any).signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
  )}>
  <FileSignature className="w-3 h-3" />
  {(doc as any).signatureStatus === 'signed' ? 'Đã ký số' : 'Chờ ký số'}
@@ -468,7 +509,7 @@ export function RequestHub() {
  </button>
  <button 
  onClick={() => setSigningRequestId(doc.id)}
- className="px-2 py-1 bg-slate-100 text-orange-700 text-[10px] font-bold rounded hover:bg-[#EAE7DF] flex items-center gap-1"
+ className="px-2 py-1 bg-slate-100 text-blue-600 text-[10px] font-bold rounded hover:bg-[#EAE7DF] flex items-center gap-1"
  >
  <FileSignature className="w-3 h-3" /> Ký & Duyệt
  </button>
@@ -485,7 +526,7 @@ export function RequestHub() {
  setSelectedRequestForPrint(doc);
  setShowPrintModal(true);
  }}
- className="p-1 px-2 text-slate-500 hover:text-orange-700 transition-colors flex items-center gap-1 text-[10px] font-bold"
+ className="p-1 px-2 text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 text-[10px] font-bold"
  >
  <Printer className="w-3.5 h-3.5" /> In phiếu
  </button>
@@ -505,7 +546,7 @@ export function RequestHub() {
  </div>
  <button 
  onClick={clearAllFilters}
- className="px-4 py-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
+ className="px-4 py-2 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
  >
  Xóa tất cả bộ lọc
  </button>
@@ -524,7 +565,7 @@ export function RequestHub() {
  <p className="text-sm text-slate-600 mb-4">Tạo và chỉnh sửa các loại phiếu đề xuất để sử dụng trong tổ chức.</p>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
  {formConfigs.map((item) => (
- <div key={item.id} className="border border-slate-300 rounded-lg p-4 bg-slate-50 relative group">
+ <div key={item.id} className="border border-slate-200 rounded-2xl p-4 bg-slate-50 relative group">
  <div className="flex justify-between items-start mb-2">
  <h4 className="font-bold text-slate-900">{item.name}</h4>
  <div className="flex gap-2 invisible group-hover:visible">
@@ -546,7 +587,7 @@ export function RequestHub() {
  <button onClick={() => {
  setTemplateAction('create_config');
  setShowTemplateGallery(true);
- }} className="border border-dashed border-slate-400 rounded-lg p-4 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
+ }} className="border border-dashed border-slate-400 rounded-2xl p-4 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
  <Plus className="w-6 h-6 mb-2" />
  <span className="text-sm font-bold">Thêm loại phiếu mới</span>
  </button>
@@ -554,18 +595,18 @@ export function RequestHub() {
  </div>
 
  {formConfigs.length > 0 && selectedConfigForWorkflow && (
- <div className="bg-slate-50 border border-slate-300 rounded-lg p-6 shadow-sm">
+ <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm">
  <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-300 pb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-primary-600 text-[#FAF9F5] rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
+ <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
  <Layout className="w-6 h-6" />
  </div>
  <div>
- <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Cấu hình luồng cho phiếu</label>
+ <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Cấu hình luồng cho phiếu</label>
  <select 
  value={selectedConfigForWorkflow}
  onChange={(e) => setSelectedConfigForWorkflow(e.target.value)}
- className="text-lg font-black text-slate-900 bg-transparent focus:outline-none cursor-pointer hover:text-primary-600 transition-colors"
+ className="text-lg font-bold text-slate-900 bg-transparent focus:outline-none cursor-pointer hover:text-primary-600 transition-colors"
  >
  {formConfigs.map(c => (
  <option key={c.id} value={c.id}>{c.name}</option>
@@ -596,16 +637,16 @@ export function RequestHub() {
  <React.Fragment key={step.id}>
  <div className="flex items-start gap-6 relative z-10 group">
  <div className={cn(
- "w-12 h-12 rounded-lg font-black flex items-center justify-center shrink-0 border-4 transition-all shadow-sm",
- idx === 0 ? "bg-emerald-600 border-white text-[#FAF9F5] shadow-emerald-100" : "bg-white border-slate-200 text-slate-500 group-hover:border-primary-100 group-hover:text-primary-600"
+ "w-12 h-12 rounded-lg font-bold flex items-center justify-center shrink-0 border-4 transition-all shadow-sm",
+ idx === 0 ? "bg-emerald-600 border-white text-white shadow-emerald-100" : "bg-white border-slate-200 text-slate-500 group-hover:border-primary-100 group-hover:text-primary-600"
  )}>
  {idx + 1}
  </div>
  
- <div className="flex-1 bg-white border border-slate-300 p-5 rounded-lg shadow-sm group-hover:shadow-sm transition-all group-hover:border-primary-200">
+ <div className="flex-1 bg-white border border-slate-300 p-5 rounded-2xl shadow-sm group-hover:shadow-sm transition-all group-hover:border-primary-200">
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
- <h5 className="font-black text-slate-900 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
+ <h5 className="font-bold text-slate-900 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
  {idx === 0 && <span className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold text-slate-600 rounded uppercase">Bắt buộc</span>}
  </div>
  {idx > 0 && (
@@ -622,7 +663,7 @@ export function RequestHub() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-1.5">
- <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Phương thức xác thực</label>
+ <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phương thức xác thực</label>
  <select 
  value={step.ruleType}
  onChange={(e) => {
@@ -643,7 +684,7 @@ export function RequestHub() {
  <div className="space-y-1.5">
  {step.ruleType === 'specific' ? (
  <>
- <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Thành viên phê duyệt</label>
+ <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thành viên phê duyệt</label>
  <select 
  value={step.specificUser}
  onChange={(e) => {
@@ -663,7 +704,7 @@ export function RequestHub() {
  </>
  ) : (
  <>
- <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Thời hạn xác thực (SLA)</label>
+ <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời hạn xác thực (SLA)</label>
  <select 
  value={step.sla}
  onChange={(e) => {
@@ -693,14 +734,14 @@ export function RequestHub() {
  <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center mx-2 text-slate-600">
  <CheckCircle2 className="w-4 h-4" />
  </div>
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Phiếu được hoàn tất và lưu trữ vào WorkflowHub</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phiếu được hoàn tất và lưu trữ vào WorkflowHub</p>
  </div>
  </div>
 
  <div className="mt-8 pt-6 border-t border-slate-300 flex justify-end">
  <button 
  onClick={() => alert('Đã lưu cấu hình luồng duyệt thành công!')}
- className="px-8 py-3 bg-primary-600 text-[#FAF9F5] rounded-xl text-sm font-black shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
+ className="px-8 py-3 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
  >
  LƯU CẤU HÌNH LUỒNG DUYỆT
  </button>
@@ -727,7 +768,7 @@ export function RequestHub() {
  <select 
  value={newRequest.subtype}
  onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+ className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
  >
  {Array.from(new Set(formConfigs.map(c => c.category))).map(cat => (
  <optgroup key={cat} label={cat}>
@@ -743,7 +784,7 @@ export function RequestHub() {
  <textarea 
  value={newRequest.title}
  onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
+ className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
  placeholder="Ví dụ: Nghỉ phép 2 ngày đi du lịch gia đình..."
  />
  </div>
@@ -758,14 +799,14 @@ export function RequestHub() {
  </label>
  {field.type === 'textarea' ? (
  <textarea 
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
  />
  ) : field.type === 'select' ? (
  <select
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
@@ -776,7 +817,7 @@ export function RequestHub() {
  ) : (
  <input 
  type={field.type} 
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
@@ -810,7 +851,7 @@ export function RequestHub() {
   </div>
   </label>
 
-  <div className="bg-slate-50 rounded-lg border border-slate-300 overflow-hidden">
+  <div className="bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden">
   <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
   <p className="text-sm font-bold text-slate-800">Người phê duyệt từng bước</p>
   <button 
@@ -834,7 +875,7 @@ export function RequestHub() {
   newRef[index].reviewer = e.target.value;
   setNewRequest({...newRequest, customReviewers: newRef});
   }}
-  className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+  className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
   required
   >
   <option value="">-- Chọn người phê duyệt --</option>
@@ -865,12 +906,12 @@ export function RequestHub() {
   </div>
   </div>
  <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
+ <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
  Hủy
  </button>
  <button 
  onClick={handleAddRequest}
- className="px-6 py-2.5 text-sm font-bold text-[#FAF9F5] bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
+ className="px-6 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
  Gửi đề xuất
  </button>
  </div>
@@ -895,7 +936,7 @@ export function RequestHub() {
  type="text" 
  value={editingFormConfig.name}
  onChange={(e) => setEditingFormConfig({...editingFormConfig, name: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+ className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
  placeholder="Ví dụ: Đơn xin nghỉ phép"
  />
  </div>
@@ -904,7 +945,7 @@ export function RequestHub() {
  <select 
  value={editingFormConfig.category}
  onChange={(e) => setEditingFormConfig({...editingFormConfig, category: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+ className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
  >
  <option value="Hành chính">Hành chính</option>
  <option value="Tài chính">Tài chính</option>
@@ -996,7 +1037,7 @@ export function RequestHub() {
  </div>
  ))}
  {(!editingFormConfig.fields || editingFormConfig.fields.length === 0) && (
- <div className="border border-dashed border-slate-400 rounded-lg p-6 flex flex-col items-center justify-center text-slate-500 bg-white">
+ <div className="border border-dashed border-slate-400 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-500 bg-white">
  <FileEdit className="w-6 h-6 mb-2 text-slate-500" />
  <p className="text-sm font-medium">Chưa có trường dữ liệu nào.</p>
  <p className="text-xs">Bấm "Thêm trường" để cấu hình.</p>
@@ -1006,7 +1047,7 @@ export function RequestHub() {
  </div>
  </div>
  <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowConfigModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
+ <button onClick={() => setShowConfigModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
  Hủy
  </button>
  <button 
@@ -1019,7 +1060,7 @@ export function RequestHub() {
  }
  setShowConfigModal(false);
  }}
- className="px-6 py-2.5 text-sm font-bold text-[#FAF9F5] bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shadow-indigo-600/30">
+ className="px-6 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shadow-indigo-600/30">
  Lưu cấu hình
  </button>
  </div>
@@ -1038,7 +1079,7 @@ export function RequestHub() {
  >
  <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-slate-900 text-[#FAF9F5] rounded-xl flex items-center justify-center">
+ <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
  <FileSignature className="w-5 h-5" />
  </div>
  <div>
@@ -1056,10 +1097,10 @@ export function RequestHub() {
  <div className="bg-slate-50 rounded-lg p-6 border border-slate-300 space-y-4">
  <div className="flex justify-between items-center border-b border-slate-300 pb-4">
  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu phê duyệt</span>
- <span className="px-2 py-0.5 bg-[#EAE7DF] text-orange-700 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
+ <span className="px-2 py-0.5 bg-[#EAE7DF] text-blue-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
  </div>
  <div className="space-y-3">
- <h4 className="text-xl font-black text-slate-900">{requests.find(r => r.id === signingRequestId)?.title}</h4>
+ <h4 className="text-xl font-bold text-slate-900">{requests.find(r => r.id === signingRequestId)?.title}</h4>
  <div className="grid grid-cols-2 gap-4 text-xs">
  <div>
  <p className="text-slate-500 mb-1">Loại chứng từ:</p>
@@ -1076,7 +1117,7 @@ export function RequestHub() {
  {/* CA Selection */}
  <div className="space-y-4">
  <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
- <ShieldCheck className="w-4 h-4 text-orange-700" /> Chọn Nhà cung cấp Chứng thực (CA)
+ <ShieldCheck className="w-4 h-4 text-blue-600" /> Chọn Nhà cung cấp Chứng thực (CA)
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  {[
@@ -1121,7 +1162,7 @@ export function RequestHub() {
  <button 
  onClick={executeSignature}
  disabled={isSigningInProcess}
- className="flex-[2] py-4 bg-slate-900 text-[#FAF9F5] rounded-lg font-black text-sm shadow-sm shadow-blue-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+ className="flex-[2] py-4 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-sm shadow-blue-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
  >
  {isSigningInProcess ? (
  <>
@@ -1153,7 +1194,7 @@ export function RequestHub() {
  <div className="absolute top-4 -right-16 flex flex-col gap-2 print:hidden">
  <button 
  onClick={() => window.print()}
- className="p-3 bg-slate-900 text-[#FAF9F5] rounded-full shadow-sm hover:scale-110 transition-transform"
+ className="p-3 bg-blue-600 text-white rounded-full shadow-sm hover:scale-110 transition-transform"
  title="In ngay"
  >
  <Printer className="w-5 h-5" />
@@ -1170,15 +1211,15 @@ export function RequestHub() {
  <div className="flex flex-col h-full border-[3px] border-slate-900 p-8">
  <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
  <div className="flex items-center gap-4">
- <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-[#FAF9F5] font-black text-2xl tracking-tighter">OS</div>
+ <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-2xl tracking-tighter">OS</div>
  <div>
- <h2 className="text-xl font-black uppercase tracking-tighter">Omni-System Enterprise</h2>
+ <h2 className="text-xl font-bold uppercase tracking-tighter">Omni-System Enterprise</h2>
  <p className="text-[10px] font-bold text-slate-600 italic">Hệ thống Quản trị Doanh nghiệp Toàn diện</p>
  <p className="text-[10px] text-slate-500">Số 102, Tòa nhà TechHub, Quận 1, TP. HCM</p>
  </div>
  </div>
  <div className="text-right">
- <h1 className="font-serif tracking-tight text-2xl font-black uppercase tracking-tight text-slate-900 underline underline-offset-8">PHIẾU ĐỀ XUẤT</h1>
+ <h1 className="font-sans tracking-tight text-xl font-bold uppercase tracking-tight text-slate-900 underline underline-offset-8">PHIẾU ĐỀ XUẤT</h1>
  <p className="text-xs font-bold text-slate-800 mt-4 italic">Số: {selectedRequestForPrint.id}</p>
  <p className="text-xs font-bold text-slate-800">Ngày tạo: {selectedRequestForPrint.date}</p>
  </div>
@@ -1186,41 +1227,41 @@ export function RequestHub() {
 
  <div className="flex-1 space-y-8">
  <div className="bg-slate-50 p-6 rounded-none border border-slate-300">
- <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+ <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
  <FileText className="w-4 h-4" /> THÔNG TIN ĐỀ XUẤT
  </h3>
  <DraggableGrid className="grid grid-cols-2 gap-y-4 gap-x-8" columns={2} gap={24}>
  <div className="border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Người đề xuất</p>
- <p className="text-sm font-black text-slate-900">{selectedRequestForPrint.requester}</p>
+ <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.requester}</p>
  </div>
  <div className="border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Loại phiếu</p>
- <p className="text-sm font-black text-slate-900">{selectedRequestForPrint.subtype}</p>
+ <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.subtype}</p>
  </div>
  <div className="col-span-2 border-b border-slate-300 pb-1">
  <p className="text-[10px] font-bold text-slate-600 uppercase">Nội dung / Lý do</p>
- <p className="text-sm font-black text-slate-900">{selectedRequestForPrint.title}</p>
+ <p className="text-sm font-bold text-slate-900">{selectedRequestForPrint.title}</p>
  </div>
  </DraggableGrid>
  </div>
 
  <div className="space-y-4 overflow-x-auto min-w-0">
- <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 px-2">
+ <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 px-2">
  <Layout className="w-4 h-4" /> DỮ LIỆU CHI TIẾT
  </h3>
  <table className="w-full border-2 border-slate-900">
  <thead>
- <tr className="bg-slate-900 text-[#FAF9F5]">
- <th className="px-4 py-2 text-[10px] font-black uppercase text-left border-r border-white/20">Trường thông tin</th>
- <th className="px-4 py-2 text-[10px] font-black uppercase text-left">Giá trị</th>
+ <tr className="bg-blue-600 text-white">
+ <th className="px-4 py-2 text-[10px] font-bold uppercase text-left border-r border-white/20">Trường thông tin</th>
+ <th className="px-4 py-2 text-[10px] font-bold uppercase text-left">Giá trị</th>
  </tr>
  </thead>
  <tbody>
  {formConfigs.find(c => c.name === selectedRequestForPrint.subtype)?.fields.map((field: any) => (
  <tr key={field.id} className="border-b border-slate-900">
  <td className="px-4 py-3 text-xs font-bold text-slate-800 border-r border-slate-900 bg-slate-50">{field.label}</td>
- <td className="px-4 py-3 text-xs font-black text-slate-900">
+ <td className="px-4 py-3 text-xs font-bold text-slate-900">
  {(selectedRequestForPrint as any).formData?.[field.id] || '---'}
  </td>
  </tr>
@@ -1236,7 +1277,7 @@ export function RequestHub() {
 
  <DraggableGrid className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 border-t-2 border-slate-900 pt-8 px-4" columns={4} gap={16}>
  <div className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-black text-slate-900 uppercase">NGƯỜI ĐỀ XUẤT</p>
+ <p className="text-[10px] font-bold text-slate-900 uppercase">NGƯỜI ĐỀ XUẤT</p>
  <div className="h-24 w-full flex items-center justify-center italic text-slate-500 text-[10px] border border-dashed border-slate-400 bg-slate-50/50 p-2 text-center">
  (Ký hồ sơ điện tử, <br/>ghi rõ họ tên)
  </div>
@@ -1247,11 +1288,11 @@ export function RequestHub() {
  {/* Dynamic Approval Logs for N levels */}
  {(selectedRequestForPrint.approvalLog || []).map((log: any, lIdx: number) => (
  <div key={lIdx} className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-black text-slate-900 uppercase text-center">{log.stepName.toUpperCase()}</p>
+ <p className="text-[10px] font-bold text-slate-900 uppercase text-center">{log.stepName.toUpperCase()}</p>
  <div className="h-24 w-full flex flex-col items-center justify-center relative border border-slate-400 bg-slate-50/30 p-2">
  <div className="text-center">
  <div className={cn(
- "font-mono text-[9px] border-2 p-1 rotate-[-5deg] tracking-tight font-black uppercase mb-1 px-2 whitespace-nowrap",
+ "font-mono text-[9px] border-2 p-1 rotate-[-5deg] tracking-tight font-bold uppercase mb-1 px-2 whitespace-nowrap",
  log.status === 'approved' ? "text-emerald-700 border-emerald-700" : "text-rose-700 border-rose-700"
  )}>
  {log.status === 'approved' ? '✓ ĐÃ DUYỆT' : '✗ TỪ CHỐI'}
@@ -1266,7 +1307,7 @@ export function RequestHub() {
  {/* Waiting Steps */}
  {formConfigs.find(c => c.name === selectedRequestForPrint.subtype)?.workflow.slice((selectedRequestForPrint.approvalLog || []).length).map((_: any, sIdx: number) => (
  <div key={`wait-${sIdx}`} className="flex flex-col items-center gap-3 opacity-40">
- <p className="text-[10px] font-black text-slate-500 uppercase text-center">Xác thực cấp {(selectedRequestForPrint.approvalLog || []).length + sIdx + 1}</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase text-center">Xác thực cấp {(selectedRequestForPrint.approvalLog || []).length + sIdx + 1}</p>
  <div className="h-24 w-full flex items-center justify-center relative border border-dashed border-slate-300 bg-slate-100">
  <span className="text-[8px] font-bold text-slate-500 italic">Đang chờ xử lý...</span>
  </div>
@@ -1275,15 +1316,15 @@ export function RequestHub() {
  
  {/* Digital Signature Slot */}
  <div className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-black text-slate-900 uppercase">NIÊM PHONG SỐ (CA)</p>
+ <p className="text-[10px] font-bold text-slate-900 uppercase">NIÊM PHONG SỐ (CA)</p>
  <div className="h-24 w-full flex items-center justify-center relative border-2 border-slate-900 bg-slate-50/10">
  {selectedRequestForPrint.signatureStatus === 'signed' ? (
  <div className="relative flex flex-col items-center gap-1 p-2 text-center scale-90">
- <div className="text-orange-800 font-black text-[8px] uppercase tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
+ <div className="text-orange-800 font-bold text-[8px] uppercase tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
  CERTIFICATE OK<br/>
  <span className="text-[10px] uppercase">{selectedRequestForPrint.signedBy}</span>
  </div>
- <p className="text-[7px] text-orange-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
+ <p className="text-[7px] text-blue-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
  </div>
  ) : (
  <div className="text-slate-500 italic text-[9px] text-center px-4 leading-tight">
@@ -1296,7 +1337,7 @@ export function RequestHub() {
  </div>
 
  <div className="mt-20 pt-8 border-t border-slate-300 text-center space-y-1">
- <p className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Tài liệu này được tạo và lưu trữ trên hệ thống Omni-System ERP v2.0</p>
+ <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu này được tạo và lưu trữ trên hệ thống Omni-System ERP v2.0</p>
  <p className="text-[7px] text-slate-500 font-mono">MD5: {Math.random().toString(36).substring(7).toUpperCase()} | Timestamp: {new Date().toISOString()}</p>
  </div>
  </div>

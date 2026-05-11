@@ -140,12 +140,12 @@ export function FlashSale() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Khuyến mãi & Group Buy</h1>
- <p className="text-sm text-[#6B7280] mt-1">Quản lý giảm giá, chiến dịch Flash Sale, Mã ưu đãi và mô hình "Mua chung sập giá".</p>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Khuyến mãi & Group Buy</h1>
+ <p className="text-sm text-slate-500 mt-1">Quản lý giảm giá, chiến dịch Flash Sale, Mã ưu đãi và mô hình "Mua chung sập giá".</p>
  </div>
  <button 
  onClick={() => setIsModalOpen(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> 
  {activeTab === 'group_buy' ? 'Tạo Mua Chung' : activeTab === 'flash_sale' ? 'Tạo Flash Sale' : 'Tạo Voucher'}
@@ -157,7 +157,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('group_buy')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'group_buy' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'group_buy' ? "border-[#2563EB] text-blue-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Users2 className="w-4 h-4" />
@@ -167,7 +167,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('flash_sale')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'flash_sale' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'flash_sale' ? "border-[#2563EB] text-blue-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Zap className="w-4 h-4" />
@@ -177,7 +177,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('voucher')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'voucher' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'voucher' ? "border-[#2563EB] text-blue-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Ticket className="w-4 h-4" />
@@ -187,11 +187,11 @@ export function FlashSale() {
 
  {isModalOpen && activeTab === 'group_buy' && (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] flex flex-col">
+ <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-sm max-h-[90vh] flex flex-col">
  <div className="flex justify-between items-center mb-6 shrink-0">
  <div className="flex items-center gap-2 text-rose-600">
  <Zap className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo chiến dịch Mua Chung Sập Giá</h2>
+ <h2 className="text-lg font-bold text-slate-900">Tạo chiến dịch Mua Chung Sập Giá</h2>
  </div>
  <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
  <X className="w-5 h-5" />
@@ -208,7 +208,7 @@ export function FlashSale() {
  </div>
  <div>
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">KOL/KOC Khởi tạo</label>
- <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
+ <select className="w-full border border-slate-400 rounded-2xl p-2.5 text-sm bg-white" required>
  <option value="">-- Chọn KOL/KOC --</option>
  {MOCK_AFFILIATES.filter(a => a.type === 'kol').map(kol => (
  <option key={kol.id} value={kol.name}>{kol.name} ({kol.followers ? `${(kol.followers/1000).toFixed(0)}K followers` : ''})</option>
@@ -218,7 +218,7 @@ export function FlashSale() {
  <div className="md:col-span-2">
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Sản phẩm triển khai</label>
  <select 
- className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
+ className="w-full border border-slate-400 rounded-2xl p-2.5 text-sm bg-white" 
  required
  value={selectedProductId}
  onChange={(e) => setSelectedProductId(e.target.value)}
@@ -240,7 +240,7 @@ export function FlashSale() {
  </div>
 
  {/* Tiers Configuration */}
- <div className="bg-slate-50 p-5 rounded-lg border border-slate-300">
+ <div className="bg-slate-50 p-5 rounded-2xl border border-slate-300">
  <div className="flex justify-between items-center mb-4">
  <div>
  <h4 className="text-sm font-bold text-slate-900">Các mốc giảm giá (Multi-tier)</h4>
@@ -257,7 +257,7 @@ export function FlashSale() {
  
  <div className="space-y-3">
  {tiers.map((tier, index) => (
- <div key={index} className="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-300">
+ <div key={index} className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-300">
  <div className="flex-1">
  <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Mốc đơn hàng đạt</label>
  <div className="relative">
@@ -302,8 +302,8 @@ export function FlashSale() {
  </div>
 
  {/* PnL Parameters */}
- <div className="bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><Calculator className="w-4 h-4 text-orange-600" /> Bảng tính Lợi nhuận (P&L)</h4>
+ <div className="bg-white p-5 rounded-2xl border border-slate-300">
+ <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><Calculator className="w-4 h-4 text-blue-600" /> Bảng tính Lợi nhuận (P&L)</h4>
  
  <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-200">
  <div>
@@ -325,7 +325,7 @@ export function FlashSale() {
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
- <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
+ <tr className="bg-slate-50 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
  <th className="p-3 rounded-tl-lg">Mốc đơn</th>
  <th className="p-3">Giá bán/SP</th>
  <th className="p-3 text-right">Lợi nhuận/SP</th>
@@ -343,11 +343,11 @@ export function FlashSale() {
  return (
  <tr key={idx} className="border-b border-slate-200 last:border-0 hover:bg-slate-50/50">
  <td className="p-3 font-bold text-slate-900">{tier.quantity} x {tier.discount}%</td>
- <td className="p-3 font-mono text-orange-700">{formatCurrency(salePrice)}</td>
+ <td className="p-3 font-mono text-blue-600">{formatCurrency(salePrice)}</td>
  <td className={cn("p-3 font-mono text-right font-bold", profitPerItem > 0 ? "text-emerald-600" : "text-rose-600")}>
  {formatCurrency(profitPerItem)}
  </td>
- <td className={cn("p-3 font-mono text-right font-black", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
+ <td className={cn("p-3 font-mono text-right font-bold", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
  {formatCurrency(totalProfit)}
  </td>
  </tr>
@@ -368,7 +368,7 @@ export function FlashSale() {
  </div>
  
  <div className="mt-6 pt-4 border-t border-slate-200 shrink-0">
- <button className="w-full bg-rose-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-rose-500/25 hover:bg-rose-700 transition flex items-center justify-center gap-2">
+ <button className="w-full bg-rose-600 text-white p-3 rounded-lg font-bold shadow-sm shadow-rose-500/25 hover:bg-rose-700 transition flex items-center justify-center gap-2">
  <Zap className="w-5 h-5 fill-current" /> Khởi chạy Mua Chung Sập Giá
  </button>
  </div>
@@ -378,11 +378,11 @@ export function FlashSale() {
 
  {isModalOpen && activeTab === 'flash_sale' && (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+ <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
  <div className="flex justify-between items-center mb-6 shrink-0">
- <div className="flex items-center gap-2 text-orange-600">
+ <div className="flex items-center gap-2 text-blue-600">
  <Zap className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo Flash Sale</h2>
+ <h2 className="text-lg font-bold text-slate-900">Tạo Flash Sale</h2>
  </div>
  <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
  <X className="w-5 h-5" />
@@ -405,10 +405,10 @@ export function FlashSale() {
  </div>
  </div>
 
- <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
+ <div className="bg-slate-50 p-4 border border-slate-200 rounded-2xl">
  <h4 className="text-sm font-bold text-slate-900 mb-2">Thêm Sản phẩm Flash Sale</h4>
  <div className="flex gap-2 mb-3">
- <select className="flex-1 border border-slate-400 rounded-lg p-2 text-sm bg-white" required>
+ <select className="flex-1 border border-slate-400 rounded-2xl p-2 text-sm bg-white" required>
  <option value="">-- Chọn sản phẩm tham gia --</option>
  {MOCK_PRODUCTS.map(p => (
  <option key={p.id} value={p.id}>{p.name} (Gốc: {formatCurrency(p.price)})</option>
@@ -416,7 +416,7 @@ export function FlashSale() {
  </select>
  <input type="number" placeholder="Giảm giá (%)" className="w-24 border border-slate-400 rounded-lg p-2 text-sm" />
  <input type="number" placeholder="Giới hạn (SP)" className="w-32 border border-slate-400 rounded-lg p-2 text-sm" />
- <button type="button" className="bg-slate-800 text-[#FAF9F5] px-3 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition"><Plus className="w-4 h-4"/></button>
+ <button type="button" className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition"><Plus className="w-4 h-4"/></button>
  </div>
  <div className="text-[11px] text-slate-600 italic mb-3">Thêm 1 hoặc nhiều sản phẩm với mức giảm giá khác nhau...</div>
  
@@ -445,7 +445,7 @@ export function FlashSale() {
  </div>
  </div>
 
- <button className="w-full bg-orange-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-orange-500/25 hover:bg-orange-700 transition mt-4">
+ <button className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold shadow-sm shadow-orange-500/25 hover:bg-orange-700 transition mt-4">
  Lưu & Khởi chạy Flash Sale
  </button>
  </form>
@@ -455,11 +455,11 @@ export function FlashSale() {
 
  {isModalOpen && activeTab === 'voucher' && (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+ <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
  <div className="flex justify-between items-center mb-6">
  <div className="flex items-center gap-2 text-emerald-600">
  <Ticket className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo Voucher Mới</h2>
+ <h2 className="text-lg font-bold text-slate-900">Tạo Voucher Mới</h2>
  </div>
  <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
  <X className="w-5 h-5" />
@@ -475,7 +475,7 @@ export function FlashSale() {
  <div>
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Phân loại Voucher</label>
  <select 
- className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
+ className="w-full border border-slate-400 rounded-2xl p-2.5 text-sm bg-white" 
  required
  value={voucherType}
  onChange={(e) => setVoucherType(e.target.value as any)}
@@ -488,14 +488,14 @@ export function FlashSale() {
  </div>
 
  {voucherType === 'seller' && (
- <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
+ <div className="bg-slate-50 p-4 border border-slate-200 rounded-2xl">
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-2">Áp dụng cho Nhà bán / Cửa hàng</label>
  <div className="max-h-40 overflow-y-auto border border-slate-300 rounded bg-white">
  {MOCK_SELLERS.length > 0 ? MOCK_SELLERS.map(seller => (
  <label key={seller.id} className="flex items-center gap-3 p-3 border-b border-slate-200 hover:bg-slate-50 cursor-pointer last:border-b-0">
  <input 
  type="checkbox" 
- className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
+ className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600"
  checked={selectedSellers.includes(seller.id)}
  onChange={(e) => {
  if (e.target.checked) {
@@ -520,7 +520,7 @@ export function FlashSale() {
  <div className="grid grid-cols-3 gap-4">
  <div className="col-span-1">
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Loại Giảm Giá</label>
- <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
+ <select className="w-full border border-slate-400 rounded-2xl p-2.5 text-sm bg-white" required>
  <option value="percent">Giảm theo %</option>
  <option value="fixed">Giảm số tiền cố định</option>
  </select>
@@ -557,7 +557,7 @@ export function FlashSale() {
  </div>
  </div>
 
- <button className="w-full bg-emerald-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-emerald-500/25 hover:bg-emerald-700 transition mt-4">
+ <button className="w-full bg-emerald-600 text-white p-3 rounded-lg font-bold shadow-sm shadow-emerald-500/25 hover:bg-emerald-700 transition mt-4">
  Phát hành Voucher
  </button>
  </form>
@@ -568,64 +568,64 @@ export function FlashSale() {
  {/* Stats - Hide if Voucher Tab is active */}
  {activeTab !== 'voucher' && (
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
  <Users2 className="w-5 h-5" />
  </div>
  <span className="text-[10px] text-rose-600 font-bold">HOT NEW</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Trưởng nhóm KOL tham gia</p>
- <div className="text-2xl font-bold text-[#111827]">24</div>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Trưởng nhóm KOL tham gia</p>
+ <div className="text-xl font-bold text-slate-900">24</div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
- <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+ <div className="p-2 bg-orange-50 text-blue-600 rounded-lg">
  <Zap className="w-5 h-5" />
  </div>
- <span className="text-[10px] text-[#2563EB] font-bold">Live Deal</span>
+ <span className="text-[10px] text-blue-600 font-bold">Live Deal</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Flash Sale Đang chạy</p>
- <div className="text-2xl font-bold text-[#111827]">03</div>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Flash Sale Đang chạy</p>
+ <div className="text-xl font-bold text-slate-900">03</div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
- <div className="p-2 bg-slate-100 text-orange-700 rounded-lg">
+ <div className="p-2 bg-slate-100 text-blue-600 rounded-lg">
  <TrendingUp className="w-5 h-5" />
  </div>
  <span className="text-[10px] text-[#10B981] font-bold">+28%</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Người dùng tham gia mua</p>
- <div className="text-2xl font-bold text-[#111827]">15,400</div>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Người dùng tham gia mua</p>
+ <div className="text-xl font-bold text-slate-900">15,400</div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
  <BarChart2 className="w-5 h-5" />
  </div>
  <span className="text-[10px] text-[#10B981] font-bold">+18.5% Margin</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">PnL Hiệu quả Tích lũy</p>
- <div className="text-2xl font-bold text-[#111827]">{formatCurrency(850000000)}</div>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">PnL Hiệu quả Tích lũy</p>
+ <div className="text-xl font-bold text-slate-900">{formatCurrency(850000000)}</div>
  </div>
  </DraggableGrid>
  )}
 
  {/* Main Content Areas */}
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+ <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  {activeTab !== 'voucher' ? (
  <>
- <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+ <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
  <div className="flex gap-4">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
  <input 
  type="text" 
  placeholder="Tìm chiến dịch giảm giá..." 
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
  <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
@@ -637,31 +637,31 @@ export function FlashSale() {
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
- <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chiến dịch Group Buy / Flash Sale</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Tiến độ người tham gia</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Khuyến mãi hiện tại</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Hiệu quả PnL</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trạng thái</th>
+ <tr className="bg-slate-50 border-b border-slate-100">
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Chiến dịch Group Buy / Flash Sale</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Tiến độ người tham gia</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Khuyến mãi hiện tại</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Hiệu quả PnL</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Trạng thái</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
+ <tbody className="divide-y divide-slate-100">
  {MOCK_FLASH_SALES.filter(c => c.type === activeTab).map((campaign) => (
- <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
+ <tr key={campaign.id} className="hover:bg-slate-50 group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-3 rounded-lg flex items-center justify-center shrink-0",
- campaign.type === 'group_buy' ? "bg-rose-50 text-rose-600" : "bg-orange-50 text-orange-600"
+ campaign.type === 'group_buy' ? "bg-rose-50 text-rose-600" : "bg-orange-50 text-blue-600"
  )}>
  {campaign.type === 'group_buy' ? <Users2 className="w-5 h-5" /> : <Zap className="w-5 h-5 fill-current" />}
  </div>
  <div>
- <p className="text-sm font-semibold text-[#111827]">{campaign.name}</p>
+ <p className="text-sm font-semibold text-slate-900">{campaign.name}</p>
  <div className="flex items-center gap-2 mt-1">
  <span className={cn(
  "text-[10px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded flex items-center gap-1",
- campaign.type === 'group_buy' ? "bg-rose-100 text-rose-600" : "bg-orange-100 text-orange-600"
+ campaign.type === 'group_buy' ? "bg-rose-100 text-rose-600" : "bg-orange-100 text-blue-600"
  )}>
  {campaign.type === 'group_buy' ? <><Users2 className="w-3 h-3"/> MUA CHUNG</> : <><Zap className="w-3 h-3"/> FLASH SALE</>}
  </span>
@@ -693,8 +693,8 @@ export function FlashSale() {
  <td className="px-6 py-4 text-right">
  {campaign.type === 'group_buy' ? (
  <>
- <p className="text-lg font-black text-rose-600 border-rose-200">-{Math.min((campaign.baseDiscount || 0) + Math.floor((campaign.currentParticipants || 0) / 100), campaign.maxDiscount || 0)}%</p>
- <p className="text-[10px] text-[#6B7280]">Khởi điểm: -{campaign.baseDiscount}%</p>
+ <p className="text-lg font-bold text-rose-600 border-rose-200">-{Math.min((campaign.baseDiscount || 0) + Math.floor((campaign.currentParticipants || 0) / 100), campaign.maxDiscount || 0)}%</p>
+ <p className="text-[10px] text-slate-500">Khởi điểm: -{campaign.baseDiscount}%</p>
  </>
  ) : (
  <p className="text-sm font-bold text-slate-900">Cố định / Khung giờ</p>
@@ -705,14 +705,14 @@ export function FlashSale() {
  <div className="flex items-center gap-1.5">
  <span className="text-sm font-bold text-emerald-600">{campaign.roi > 0 ? '+' + formatCurrency(campaign.gmvGenerated * 0.185) : '--'}</span>
  </div>
- <p className="text-[10px] text-[#6B7280]">GMV: {formatCurrency(campaign.gmvGenerated)}</p>
+ <p className="text-[10px] text-slate-500">GMV: {formatCurrency(campaign.gmvGenerated)}</p>
  </div>
  </td>
  <td className="px-6 py-4">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :
- campaign.status === 'upcoming' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-500"
+ campaign.status === 'upcoming' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-500"
  )}>
  {campaign.status === 'active' ? 'ĐANG CHẠY' : 
  campaign.status === 'upcoming' ? 'SẮP DIỄN RA' : 'ĐÃ KẾT THÚC'}
@@ -731,14 +731,14 @@ export function FlashSale() {
  </>
  ) : (
  <>
- <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+ <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
  <div className="flex gap-4">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
  <input 
  type="text" 
  placeholder="Tìm theo mã code, tên người tạo..." 
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
  <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
@@ -750,27 +750,27 @@ export function FlashSale() {
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
- <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Mã Voucher</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nguồn (Admin/Nhà bán)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Chi tiết Giảm giá</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Lượt SC & Hạn sử dụng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+ <tr className="bg-slate-50 border-b border-slate-100">
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Mã Voucher</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Nguồn (Admin/Nhà bán)</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiết Giảm giá</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Lượt SC & Hạn sử dụng</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
+ <tbody className="divide-y divide-slate-100">
  {MOCK_VOUCHERS.map(voucher => (
- <tr key={voucher.id} className="hover:bg-[#F9FAFB] transition-colors">
+ <tr key={voucher.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-2.5 rounded-lg border border-dashed border-2",
- voucher.creatorType === 'admin' ? "border-emerald-200 bg-emerald-50 text-emerald-600" : "border-orange-200 bg-slate-100 text-orange-700"
+ voucher.creatorType === 'admin' ? "border-emerald-200 bg-emerald-50 text-emerald-600" : "border-orange-200 bg-slate-100 text-blue-600"
  )}>
  <Ticket className="w-5 h-5" />
  </div>
  <div>
- <p className="font-mono text-base font-black text-slate-900 tracking-wide">{voucher.code}</p>
+ <p className="font-mono text-base font-bold text-slate-900 tracking-wide">{voucher.code}</p>
  <p className="text-[10px] text-slate-600 mt-0.5">Giảm tối đa {formatCurrency(voucher.maxDiscount || voucher.value)}</p>
  </div>
  </div>
@@ -782,7 +782,7 @@ export function FlashSale() {
  ) : voucher.creatorType === 'shipping' ? (
  <Package className="w-4 h-4 text-purple-500" />
  ) : (
- <Store className="w-4 h-4 text-orange-600" />
+ <Store className="w-4 h-4 text-blue-600" />
  )}
  <div>
  <p className="text-xs font-bold text-slate-800">{voucher.creatorName}</p>
@@ -819,7 +819,7 @@ export function FlashSale() {
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap",
  voucher.status === 'active' ? "bg-emerald-50 text-emerald-600" :
- voucher.status === 'upcoming' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-500"
+ voucher.status === 'upcoming' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-500"
  )}>
  {voucher.status === 'active' ? 'ĐANG PHÁT HÀNH' : 
  voucher.status === 'upcoming' ? 'SẮP PHÁT HÀNH' : 'ĐÃ HẾT HẠN'}

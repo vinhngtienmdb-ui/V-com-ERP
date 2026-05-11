@@ -26,7 +26,7 @@ const TEMPLATES = [
   { id: 't5', title: 'Đề nghị thanh toán', category: 'tai_chinh', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-100' },
   { id: 't6', title: 'Đề nghị tạm ứng', category: 'tai_chinh', icon: DollarSign, color: 'text-teal-600', bg: 'bg-teal-100' },
   { id: 't7', title: 'Đề xuất cấp văn phòng phẩm', category: 'hanh_chinh', icon: Briefcase, color: 'text-red-600', bg: 'bg-red-100' },
-  { id: 't8', title: 'Đề nghị cấp danh thiếp', category: 'hanh_chinh', icon: Users, color: 'text-orange-600', bg: 'bg-orange-100' },
+  { id: 't8', title: 'Đề nghị cấp danh thiếp', category: 'hanh_chinh', icon: Users, color: 'text-blue-600', bg: 'bg-orange-100' },
   { id: 't9', title: 'Đề xuất đào tạo nhân sự', category: 'nhan_su', icon: FileText, color: 'text-yellow-600', bg: 'bg-yellow-100' },
   { id: 't10', title: 'Đề xuất tuyển dụng mới', category: 'nhan_su', icon: CheckSquare, color: 'text-lime-600', bg: 'bg-lime-100' }
 ];
@@ -50,7 +50,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-[#F3F4F6] rounded-xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-slate-100 rounded-xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Header */}
         <div className="bg-white px-6 py-4 flex flex-col items-center justify-center relative border-b border-slate-300">

@@ -185,7 +185,7 @@ export function OrgStructure() {
     <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
+          <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
           <p className="text-sm text-slate-600">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
         </div>
         {activeTab !== 'org_chart' && (
@@ -222,7 +222,7 @@ export function OrgStructure() {
         ))}
       </div>
 
-      <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px] overflow-x-auto min-w-0">
+      <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden min-h-[500px] overflow-x-auto min-w-0">
         {activeTab === 'departments' && (
           <table className="w-full text-left">
             <thead>
@@ -358,7 +358,7 @@ export function OrgStructure() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden border border-slate-300"
+              className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-300"
             >
               <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
                 <h3 className="font-bold text-slate-900">
@@ -397,7 +397,7 @@ export function OrgStructure() {
                       <select 
                         value={formData.parentId || ''} 
                         onChange={(e) => setFormData({...formData, parentId: e.target.value})}
-                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                        className="w-full border border-slate-300 px-4 py-2 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                       >
                         <option value="">Không có cữ bộ trực thuộc (Cao nhất)</option>
                         {departments.filter(d => d.id !== editingItem?.id).map(d => (
@@ -425,7 +425,7 @@ export function OrgStructure() {
                       <select 
                         value={formData.departmentId || ''} 
                         onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
-                        className="w-full border border-slate-300 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                        className="w-full border border-slate-300 px-4 py-2 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                       >
                         <option value="">-- Chọn phòng ban --</option>
                         {departments.map(d => (

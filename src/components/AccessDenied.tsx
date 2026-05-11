@@ -7,13 +7,13 @@ export function AccessDenied() {
 
  return (
  <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center">
- <div className="max-w-md w-full bg-white rounded-lg border border-slate-300 shadow-sm p-10 space-y-8">
+ <div className="max-w-md w-full bg-white rounded-2xl border border-slate-300 shadow-sm p-10 space-y-8">
  <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center mx-auto animate-pulse">
  <ShieldAlert className="w-10 h-10" />
  </div>
  
  <div className="space-y-3">
- <h1 className="font-serif tracking-tight text-2xl font-black text-slate-900 leading-tight">Yêu cầu xác thực Nhân sự</h1>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900 leading-tight">Yêu cầu xác thực Nhân sự</h1>
  <p className="text-slate-600 text-sm leading-relaxed">
  Chào <span className="font-bold text-slate-900">{user?.displayName}</span>, tài khoản của bạn chưa được cấp quyền truy cập hệ thống quản trị VComm ERP.
  </p>
@@ -28,7 +28,7 @@ export function AccessDenied() {
 
  <button 
  onClick={() => signOut()}
- className="w-full py-4 bg-slate-900 text-[#FAF9F5] rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3"
+ className="w-full py-4 bg-blue-600 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3"
  >
  <LogOut className="w-4 h-4" /> Đăng xuất & Đổi tài khoản
  </button>

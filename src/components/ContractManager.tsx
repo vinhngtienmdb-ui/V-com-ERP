@@ -70,7 +70,7 @@ export function ContractManager() {
  <p className={cn(
  "text-base font-bold mt-1",
  selectedContract.status === 'expired' ? "text-red-600" :
- selectedContract.status === 'expiring_soon' ? "text-orange-600" : "text-slate-900"
+ selectedContract.status === 'expiring_soon' ? "text-blue-600" : "text-slate-900"
  )}>{selectedContract.expiry}</p>
  </div>
  </div>
@@ -82,7 +82,7 @@ export function ContractManager() {
  "px-3 py-1.5 text-sm font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-2",
  selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600" : 
- selectedContract.status === 'expiring_soon' ? "bg-orange-50 text-orange-600" :
+ selectedContract.status === 'expiring_soon' ? "bg-orange-50 text-blue-600" :
  "bg-red-50 text-red-600"
  )}>
  {selectedContract.status === 'active' && <CheckCircle2 className="w-4 h-4" />}
@@ -97,7 +97,7 @@ export function ContractManager() {
  {selectedContract.signatureStatus && (
  <span className={cn(
  "px-3 py-1.5 text-sm font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-2",
- selectedContract.signatureStatus === 'signed' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-700"
+ selectedContract.signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
  )}>
  <PenTool className="w-4 h-4" />
  {selectedContract.signatureStatus === 'signed' ? 'Đã ký số' : 'Chưa ký hoàn tất'}
@@ -107,7 +107,7 @@ export function ContractManager() {
  </div>
 
  {selectedContract.signers && (
- <div className="border border-slate-300 rounded-lg overflow-hidden">
+ <div className="border border-slate-200 rounded-2xl overflow-hidden">
  <div className="bg-slate-50 px-4 py-3 border-b border-slate-300">
  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-emerald-600" /> Tiến trình ký số
@@ -149,7 +149,7 @@ export function ContractManager() {
  {selectedContract.signatureStatus === 'pending' && (
  <button 
  onClick={() => setSigningModalOpen(true)}
- className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-slate-800 shadow-sm flex items-center gap-2"
+ className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 shadow-sm flex items-center gap-2"
  >
  <Key className="w-4 h-4" />
  Ký số (USB Token / SmartCA)
@@ -157,7 +157,7 @@ export function ContractManager() {
  )}
 
  {selectedContract.status === 'expiring_soon' && (
- <button className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
+ <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
  <FileSignature className="w-4 h-4" />
  Gia hạn hợp đồng
  </button>
@@ -187,7 +187,7 @@ export function ContractManager() {
  </div>
  
  <div className="p-6 space-y-5">
- <div className="p-4 bg-slate-100 border border-slate-300 rounded-lg">
+ <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl">
  <p className="text-sm text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-blue-900">{selectedContract?.title}</strong></p>
  </div>
 
@@ -201,7 +201,7 @@ export function ContractManager() {
  <p className="text-xs text-slate-600 mt-0.5">Xác thực qua ứng dụng trên điện thoại thông minh.</p>
  </div>
  </label>
- <label className="flex items-center gap-3 p-3 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
+ <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
  <input type="radio" name="signMethod" className="w-4 h-4 text-primary-600 border-slate-400 focus:ring-primary-600" />
  <div>
  <p className="text-sm font-bold text-slate-900">Ký bằng USB Token</p>
@@ -220,7 +220,7 @@ export function ContractManager() {
  Hủy bỏ
  </button>
  <button 
- className="px-5 py-2.5 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+ className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
  onClick={() => {
  alert(`Yêu cầu ký số đã được gửi đến thiết bị SmartCA của bạn!`);
  setSigningModalOpen(false);
@@ -235,11 +235,11 @@ export function ContractManager() {
 
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản trị Hợp đồng</h1>
- <p className="text-sm text-[#6B7280] mt-1">Hợp đồng lao động, dịch vụ, mua bán và theo dõi thời hạn hợp đồng.</p>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Quản trị Hợp đồng</h1>
+ <p className="text-sm text-slate-500 mt-1">Hợp đồng lao động, dịch vụ, mua bán và theo dõi thời hạn hợp đồng.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo hợp đồng mới
  </button>
@@ -272,37 +272,37 @@ export function ContractManager() {
  </div>
 
  {/* Content */}
- <div className="flex-1 bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden flex flex-col">
+ <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
  <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div className="relative w-64">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  <input 
  type="text" 
  placeholder="Tìm kiếm hợp đồng..."
- className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+ className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
  />
  </div>
- <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-300 rounded-lg shadow-sm">
+ <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm">
  <RefreshCw className="w-4 h-4" />
  </button>
  </div>
 
- <div className="p-0 overflow-auto">
- <table className="w-full text-left border-collapse">
- <thead className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+ <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+ <table className="min-w-[680px] w-full text-left border-collapse">
+ <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Mã HĐ / Tiêu đề</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đối tác / Nhân sự</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Giá trị</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Ngày hết hạn</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Mã HĐ / Tiêu đề</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-40">Đối tác / Nhân sự</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-32 whitespace-nowrap">Giá trị</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-40 whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày hết hạn</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
+ <tbody className="divide-y divide-slate-100">
  {MOCK_CONTRACTS.filter(doc => activeTab === 'signature' ? true : doc.type === activeTab).map(doc => (
  <tr key={doc.id} onClick={() => setSelectedContract(doc)} className="hover:bg-slate-50 transition-colors cursor-pointer">
  <td className="px-6 py-4">
- <p className="text-sm font-bold text-[#111827]">{doc.title}</p>
+ <p className="text-sm font-bold text-slate-900">{doc.title}</p>
  <p className="text-[10px] text-slate-600 font-bold uppercase">{doc.id}</p>
  </td>
  <td className="px-6 py-4">
@@ -316,7 +316,7 @@ export function ContractManager() {
  "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'pending' ? "bg-amber-50 text-amber-600" :
- doc.status === 'expiring_soon' ? "bg-orange-50 text-orange-600" : "bg-red-50 text-red-600"
+ doc.status === 'expiring_soon' ? "bg-orange-50 text-blue-600" : "bg-red-50 text-red-600"
  )}>
  {doc.status === 'active' && <CheckCircle2 className="w-3 h-3" />}
  {doc.status === 'pending' && <Clock className="w-3 h-3" />}
@@ -330,7 +330,7 @@ export function ContractManager() {
  <div className="mt-1.5">
  <span className={cn(
  "px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1",
- doc.signatureStatus === 'signed' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-700"
+ doc.signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
  )}>
  <PenTool className="w-3 h-3" />
  {doc.signatureStatus === 'signed' ? 'Đã ký số' : 'Chưa ký'}
@@ -342,7 +342,7 @@ export function ContractManager() {
  <p className={cn(
  "text-sm font-mono font-medium",
  doc.status === 'expired' ? "text-red-500" :
- doc.status === 'expiring_soon' ? "text-orange-600 font-bold" : "text-slate-700"
+ doc.status === 'expiring_soon' ? "text-blue-600 font-bold" : "text-slate-700"
  )}>{doc.expiry}</p>
  </td>
  </tr>

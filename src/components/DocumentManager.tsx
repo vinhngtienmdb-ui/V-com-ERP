@@ -87,7 +87,7 @@ export function DocumentManager() {
     <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="font-serif tracking-tight text-2xl font-semibold text-slate-900">Quản trị Công văn & e-Office</h1>
+          <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Quản trị Công văn & e-Office</h1>
           <p className="text-sm text-slate-600 mt-1">Hệ thống quản lý văn bản, áp dụng Nghị định 30/CP, ký số và luân chuyển.</p>
         </div>
         <div className="flex gap-3 items-center">
@@ -111,7 +111,7 @@ export function DocumentManager() {
           </button>
           <button 
             onClick={() => setIsCreatingDoc(true)}
-            className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Tạo văn bản mới
@@ -149,7 +149,7 @@ export function DocumentManager() {
         )}
 
         {/* Content */}
-        <div className={cn("flex-1 bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden flex flex-col", selectedDoc ? "lg:w-full" : "")}>
+        <div className={cn("flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col", selectedDoc ? "lg:w-full" : "")}>
           
           {selectedDoc ? (
             // Document Detail View
@@ -168,7 +168,7 @@ export function DocumentManager() {
                     <PenTool className="w-4 h-4 text-emerald-600" /> Ký / Phê duyệt
                   </button>
                   {currentUserRole === 'archivist' && (
-                    <button className="px-3 py-1.5 bg-orange-600 text-white text-sm font-medium rounded hover:bg-orange-700 flex items-center gap-2">
+                    <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded hover:bg-orange-700 flex items-center gap-2">
                       <Send className="w-4 h-4" /> Ban hành nhanh
                     </button>
                   )}
@@ -177,7 +177,7 @@ export function DocumentManager() {
 
               {/* Routing Form Overlay */}
               {showRoutingForm && (
-                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
+                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-200 rounded-2xl z-20 animate-in slide-in-from-top-2 p-5">
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><Share className="w-4 h-4" /> Luân chuyển văn bản</h3>
                   <div className="space-y-4">
                     <div>
@@ -191,14 +191,14 @@ export function DocumentManager() {
                         ].map(dept => (
                            <div key={dept.id} className="mb-2">
                              <label className="flex items-center gap-2 text-sm p-1.5 hover:bg-slate-100 rounded cursor-pointer font-semibold text-slate-900 border border-transparent hover:border-slate-300 transition-all">
-                               <input type="checkbox" className="text-orange-600 rounded border-slate-400 w-4 h-4" />
+                               <input type="checkbox" className="text-blue-600 rounded border-slate-400 w-4 h-4" />
                                {dept.name}
                              </label>
                              {dept.users.length > 0 && (
                                <div className="ml-6 mt-1 flex flex-col gap-1 border-l border-slate-300 pl-2">
                                  {dept.users.map(user => (
                                    <label key={user.id} className="flex items-center gap-2 text-sm p-1.5 hover:bg-white rounded cursor-pointer border border-transparent hover:border-slate-300 hover:shadow-sm transition-all text-slate-700">
-                                     <input type="checkbox" className="text-orange-600 rounded border-slate-400 w-3.5 h-3.5" />
+                                     <input type="checkbox" className="text-blue-600 rounded border-slate-400 w-3.5 h-3.5" />
                                      {user.name}
                                    </label>
                                  ))}
@@ -215,7 +215,7 @@ export function DocumentManager() {
                         <option>Để phối hợp</option>
                         <option>Để biết / Theo dõi</option>
                         <option>Trình duyệt / Trình ký</option>
-                        <option className="font-bold text-orange-700">Ban hành / Đóng dấu (Chuyển Văn thư)</option>
+                        <option className="font-bold text-blue-600">Ban hành / Đóng dấu (Chuyển Văn thư)</option>
                       </select>
                     </div>
                     <div>
@@ -232,24 +232,24 @@ export function DocumentManager() {
 
               {/* Sign Form Overlay */}
               {showSignForm && (
-                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
+                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-200 rounded-2xl z-20 animate-in slide-in-from-top-2 p-5">
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><ShieldCheck className="w-4 h-4" /> Ký & Thao tác</h3>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">Loại hình tác vụ</label>
                       <div className="grid grid-cols-2 gap-2">
                         <label className="flex items-center gap-2 text-sm p-2 border border-slate-300 rounded cursor-pointer hover:bg-slate-50">
-                          <input type="radio" name="signType" className="text-orange-600" defaultChecked /> Ký chỉ đạo
+                          <input type="radio" name="signType" className="text-blue-600" defaultChecked /> Ký chỉ đạo
                         </label>
                         <label className="flex items-center gap-2 text-sm p-2 border border-slate-300 rounded cursor-pointer hover:bg-slate-50">
-                          <input type="radio" name="signType" className="text-orange-600" /> Ký nháy
+                          <input type="radio" name="signType" className="text-blue-600" /> Ký nháy
                         </label>
                         <label className="flex items-center gap-2 text-sm p-2 border border-slate-300 rounded cursor-pointer hover:bg-slate-50">
-                          <input type="radio" name="signType" className="text-orange-600" /> Bút phê
+                          <input type="radio" name="signType" className="text-blue-600" /> Bút phê
                         </label>
                         {currentUserRole === 'archivist' && (
                           <label className="flex items-center gap-2 text-sm p-2 border border-orange-200 bg-orange-50 text-orange-800 rounded cursor-pointer hover:bg-orange-100 font-medium">
-                            <input type="radio" name="signType" className="text-orange-600" /> Ký số Cty
+                            <input type="radio" name="signType" className="text-blue-600" /> Ký số Cty
                           </label>
                         )}
                       </div>
@@ -278,12 +278,12 @@ export function DocumentManager() {
               <DraggableGrid className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 flex-1 overflow-auto bg-slate-50/30" columns={3} gap={24}>
                 <div className="xl:col-span-2 flex flex-col gap-4 h-[calc(100vh-200px)]">
                   {/* Header info */}
-                  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm shrink-0">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm shrink-0">
                     <div className="flex items-center gap-3 mb-2">
                       <span className={cn(
                         "px-2.5 py-1 text-[11px] font-bold rounded uppercase tracking-tight",
                         selectedDoc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
-                        selectedDoc.type === 'outbound' ? "bg-slate-100 text-orange-700" : "bg-emerald-50 text-emerald-600"
+                        selectedDoc.type === 'outbound' ? "bg-slate-100 text-blue-600" : "bg-emerald-50 text-emerald-600"
                       )}>
                         {selectedDoc.category}
                       </span>
@@ -327,7 +327,7 @@ export function DocumentManager() {
                           <div className="bg-slate-50 border-b border-slate-300 p-2 flex items-center gap-4 text-xs shrink-0 select-none">
                             <div className="flex gap-2 text-slate-600 font-medium">
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">File</span>
-                              <span className="bg-white border text-orange-700 px-2 py-1 rounded shadow-sm border-slate-300 cursor-pointer font-bold">Home</span>
+                              <span className="bg-white border text-blue-600 px-2 py-1 rounded shadow-sm border-slate-300 cursor-pointer font-bold">Home</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Insert</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Data</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Review</span>
@@ -393,14 +393,14 @@ export function DocumentManager() {
                           
                           {/* Sheet Tabs */}
                           <div className="bg-slate-100 border-t border-slate-400 px-2 py-1 flex gap-1 h-8 shrink-0 text-xs font-semibold overflow-x-auto min-w-0">
-                            <button className="px-4 py-1 bg-white border border-slate-400 text-orange-700 shadow-sm text-[11px] rounded flex items-center gap-1">Sheet1</button>
+                            <button className="px-4 py-1 bg-white border border-slate-400 text-blue-600 shadow-sm text-[11px] rounded flex items-center gap-1">Sheet1</button>
                             <button className="px-4 py-1 text-slate-600 hover:bg-slate-200 text-[11px] rounded flex items-center gap-1">Sheet2</button>
                             <button className="px-2 py-1 text-slate-600 hover:bg-slate-200 rounded flex items-center"><Plus className="w-3 h-3"/></button>
                           </div>
                         </div>
                       ) : (
                         // Mock PDF / Word Page
-                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-12 text-slate-900 font-serif relative transition-all">
+                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-12 text-slate-900 font-sans relative transition-all">
                            {/* Watermark / Digital Signature Stamp mock */}
                            {selectedDoc.status === 'signed' && (
                              <div className="absolute top-12 right-12 border-2 border-red-600 text-red-600 px-3 py-2 rounded transform rotate-[-5deg] opacity-70 flex flex-col items-center max-w-[150px]">
@@ -475,7 +475,7 @@ export function DocumentManager() {
                   
                   {/* AI Summary Block */}
                   <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100/50 rounded-lg p-5 shadow-sm shrink-0">
-                    <div className="flex items-center gap-2 text-orange-700 mb-2">
+                    <div className="flex items-center gap-2 text-blue-600 mb-2">
                       <Sparkles className="w-4 h-4" />
                       <h4 className="text-sm font-bold">AI Tóm tắt nội dung</h4>
                     </div>
@@ -483,10 +483,10 @@ export function DocumentManager() {
                   </div>
 
                   {/* Flow / Info Tabs */}
-                  <div className="bg-white border border-slate-300 rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden">
+                  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex-1 flex flex-col overflow-hidden">
                      {/* Mini tabs */}
                      <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
-                       <button className="flex-1 py-3 text-xs justify-center font-bold text-slate-900 border-b-2 border-orange-600 flex items-center gap-1"><RefreshCw className="w-3 h-3"/> Luồng xử lý</button>
+                       <button className="flex-1 py-3 text-xs justify-center font-bold text-slate-900 border-b-2 border-blue-600 flex items-center gap-1"><RefreshCw className="w-3 h-3"/> Luồng xử lý</button>
                        <button className="flex-1 py-3 text-xs justify-center font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-1"><MessageCircle className="w-3 h-3"/> Bút phê & Ý kiến</button>
                      </div>
                      
@@ -535,10 +535,10 @@ export function DocumentManager() {
                                 </div>
                              </div>
                              <div className="pb-2">
-                                <p className={cn("text-sm font-bold", currentUserRole === 'archivist' ? "text-orange-600" : "text-slate-600")}>Phát hành / Đóng dấu</p>
+                                <p className={cn("text-sm font-bold", currentUserRole === 'archivist' ? "text-blue-600" : "text-slate-600")}>Phát hành / Đóng dấu</p>
                                 <p className="text-[11px] text-slate-600 flex items-center gap-1 mt-1"><UserCheck className="w-3 h-3"/> Bộ phận Văn thư</p>
                                 {currentUserRole === 'archivist' ? (
-                                  <button className="mt-2 text-xs font-bold bg-orange-600 text-white px-3 py-1.5 rounded-md hover:bg-orange-700 shadow-sm flex items-center gap-1">
+                                  <button className="mt-2 text-xs font-bold bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-orange-700 shadow-sm flex items-center gap-1">
                                     <ShieldCheck className="w-3.5 h-3.5" /> Thực hiện ký số pháp nhân
                                   </button>
                                 ) : (
@@ -565,15 +565,15 @@ export function DocumentManager() {
                         <input 
                           type="text" 
                           placeholder="Tìm kiếm theo số KH, trích yếu..."
-                          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-orange-600"
+                          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-orange-600"
                         />
                       </div>
-                      <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-colors">
+                      <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-colors">
                         <Filter className="w-4 h-4" />
                       </button>
                     </div>
                     <div className="flex gap-2 w-full sm:w-auto justify-end">
-                      <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-300 rounded-lg shadow-sm transition-colors">
+                      <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm transition-colors">
                         <RefreshCw className="w-4 h-4" />
                       </button>
                     </div>
@@ -581,16 +581,16 @@ export function DocumentManager() {
 
                   <div className="p-0 overflow-auto flex-1">
 <table className="w-full text-left border-collapse">
-                      <thead className="bg-slate-50 border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm">
+                      <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 shadow-sm">
                         <tr>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Số KH/Ký hiệu</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trích yếu</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hình thức</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thiết lập luồng</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Số KH/Ký hiệu</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Trích yếu</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Hình thức</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Thiết lập luồng</th>
+                          <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Trạng thái</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#F3F4F6]">
+                      <tbody className="divide-y divide-slate-100">
                         {MOCK_DOCS.filter(doc => doc.type === activeTab).map(doc => (
                           <tr 
                             key={doc.id} 
@@ -598,7 +598,7 @@ export function DocumentManager() {
                             className="hover:bg-slate-50 transition-colors cursor-pointer group"
                           >
                             <td className="px-6 py-4">
-                              <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">{doc.id}</p>
+                              <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{doc.id}</p>
                               <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
                             <td className="px-6 py-4">
@@ -613,7 +613,7 @@ export function DocumentManager() {
                               <span className={cn(
                                 "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight",
                                 doc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
-                                doc.type === 'outbound' ? "bg-slate-100 text-orange-700" : "bg-emerald-50 text-emerald-600"
+                                doc.type === 'outbound' ? "bg-slate-100 text-blue-600" : "bg-emerald-50 text-emerald-600"
                               )}>
                                 {doc.category || 'Văn bản'}
                               </span>
@@ -671,13 +671,13 @@ export function DocumentManager() {
                     </div>
                   </div>
                   <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" columns={3} gap={16}>
-                    <div className="border border-slate-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md">
+                    <div className="border border-slate-200 rounded-2xl p-4 bg-white shadow-sm hover:shadow-md">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-slate-900">Sổ công văn đến 2024</h4>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-emerald-50 text-emerald-600">Đang mở</span>
                         </div>
                         <div className="text-sm text-slate-600 mb-4 space-y-1">
-                          <p>Số đến hiện tại: <span className="font-bold text-orange-700">345</span></p>
+                          <p>Số đến hiện tại: <span className="font-bold text-blue-600">345</span></p>
                         </div>
                     </div>
                   </DraggableGrid>
@@ -690,7 +690,7 @@ export function DocumentManager() {
                        <h3 className="text-lg font-bold text-slate-900">Cấu hình hệ thống</h3>
                        <p className="text-sm text-slate-600">Quản lý sơ đồ tổ chức, phân quyền và quy trình luân chuyển.</p>
                      </div>
-                     <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+                     <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
                         <Plus className="w-4 h-4" /> Thêm mới
                      </button>
                    </div>
@@ -699,15 +699,15 @@ export function DocumentManager() {
                      <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6 overflow-x-auto min-w-0">
                        <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-blue-600" /> Cấu hình vai trò & Phân quyền</h4>
                        <table className="w-full text-left border-collapse">
-                         <thead className="bg-slate-50 border-b border-[#F3F4F6]">
+                         <thead className="bg-slate-50 border-b border-slate-100">
                            <tr>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Vai trò / Chức danh</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Phòng ban</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Quyền hạn hệ thống</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase text-right">Thao tác</th>
+                             <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Vai trò / Chức danh</th>
+                             <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Phòng ban</th>
+                             <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Quyền hạn hệ thống</th>
+                             <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase text-right">Thao tác</th>
                            </tr>
                          </thead>
-                         <tbody className="divide-y divide-[#F3F4F6]">
+                         <tbody className="divide-y divide-slate-100">
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Tổng Giám đốc</td>
                              <td className="px-4 py-3 text-slate-700">Ban Giám đốc</td>
@@ -738,7 +738,7 @@ export function DocumentManager() {
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Cán bộ Văn thư</td>
                              <td className="px-4 py-3 text-slate-700">Phòng Hành chính</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-orange-50 text-orange-700 text-[10px] font-bold rounded uppercase border border-orange-100">Văn thư / Cấp số / Ban hành</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-orange-50 text-blue-600 text-[10px] font-bold rounded uppercase border border-orange-100">Văn thư / Cấp số / Ban hành</span></td>
                              <td className="px-4 py-3 text-right">
                                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
@@ -764,7 +764,7 @@ export function DocumentManager() {
                        <p className="text-slate-600 mb-4 text-sm">Tùy biến bộ quy tắc sinh số tự động quản lý theo các hình thức văn bản, phòng ban, và biểu mẫu.</p>
                        
                        <div className="space-y-4">
-                         <div className="border border-slate-300 rounded-lg p-4 bg-slate-50">
+                         <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
                            <div className="flex justify-between items-start mb-3">
                               <div>
                                  <h5 className="font-bold text-slate-900">Quyết định (Ban Giám đốc)</h5>
@@ -789,7 +789,7 @@ export function DocumentManager() {
                            </div>
                          </div>
                          
-                         <div className="border border-slate-300 rounded-lg p-4 bg-slate-50">
+                         <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
                            <div className="flex justify-between items-start mb-3">
                               <div>
                                  <h5 className="font-bold text-slate-900">Công văn nội bộ (Các phòng ban)</h5>
@@ -834,7 +834,7 @@ export function DocumentManager() {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-orange-600" />
+                <FileText className="w-5 h-5 text-blue-600" />
                 Tiếp nhận / Khởi tạo văn bản
               </h2>
               <button onClick={() => setIsCreatingDoc(false)} className="text-slate-500 hover:text-slate-700"><X className="w-5 h-5" /></button>
@@ -886,7 +886,7 @@ export function DocumentManager() {
                     
                     <div className="space-y-4">
                        <label className="flex items-start gap-3 text-sm cursor-pointer p-2 hover:bg-orange-100/50 rounded-lg transition-colors border border-transparent hover:border-orange-200">
-                         <input type="checkbox" className="mt-1 w-4 h-4 text-orange-600 rounded border-slate-400" defaultChecked />
+                         <input type="checkbox" className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-400" defaultChecked />
                          <div>
                             <span className="font-bold text-slate-900">Trình Giám đốc / Tổng Giám đốc</span>
                             <p className="text-xs text-slate-600 mt-0.5">Để xem xét, phê duyệt và phân công xử lý tiếp theo</p>
@@ -904,14 +904,14 @@ export function DocumentManager() {
                             ].map(dept => (
                                <div key={dept.id} className="mb-2">
                                  <label className="flex items-center gap-2 text-sm p-1.5 hover:bg-slate-100 rounded cursor-pointer font-semibold text-slate-900 border border-transparent hover:border-slate-300 transition-all">
-                                   <input type="checkbox" className="text-orange-600 rounded border-slate-400 w-4 h-4" />
+                                   <input type="checkbox" className="text-blue-600 rounded border-slate-400 w-4 h-4" />
                                    {dept.name}
                                  </label>
                                  {dept.users.length > 0 && (
                                    <div className="ml-6 mt-1 flex flex-col gap-1 border-l border-slate-300 pl-2">
                                      {dept.users.map(user => (
                                        <label key={user.id} className="flex items-center gap-2 text-sm p-1.5 hover:bg-white rounded cursor-pointer border border-transparent hover:border-slate-300 hover:shadow-sm transition-all text-slate-700">
-                                         <input type="checkbox" className="text-orange-600 rounded border-slate-400 w-3.5 h-3.5" />
+                                         <input type="checkbox" className="text-blue-600 rounded border-slate-400 w-3.5 h-3.5" />
                                          {user.name}
                                        </label>
                                      ))}
@@ -928,7 +928,7 @@ export function DocumentManager() {
                               <option>Để phối hợp</option>
                               <option>Để biết / Theo dõi</option>
                               <option>Trình duyệt / Trình ký</option>
-                              <option className="font-bold text-orange-700">Ban hành / Đóng dấu (Chuyển Văn thư)</option>
+                              <option className="font-bold text-blue-600">Ban hành / Đóng dấu (Chuyển Văn thư)</option>
                             </select>
                           </div>
                        </div>

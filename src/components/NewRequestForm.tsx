@@ -89,7 +89,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               type="text" 
               value={requester}
               onChange={(e) => setRequester(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700"
+              className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700"
             />
           </div>
           
@@ -98,7 +98,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             <select 
               value={requestType}
               onChange={(e) => setRequestType(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium cursor-pointer"
+              className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium cursor-pointer"
             >
               <option value="Hanh chinh">Hành chính</option>
               <option value="Tai chinh">Tài chính</option>
@@ -113,7 +113,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               required
               value={requestDate}
               onChange={(e) => setRequestDate(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+              className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
             />
           </div>
 
@@ -123,7 +123,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               value={content}
               required
               onChange={(e) => setContent(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
+              className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
               placeholder="Nhập chi tiết nội dung đề xuất..."
             />
           </div>
@@ -138,7 +138,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 step="0.5"
                 value={leaveDays}
                 onChange={(e) => setLeaveDays(e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 placeholder="Ví dụ: 1.5"
               />
             </div>
@@ -152,7 +152,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   type="text"
                   value={expenseContent}
                   onChange={(e) => setExpenseContent(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: Công tác phí, mua sắm thiết bị..."
                 />
               </div>
@@ -163,7 +163,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                   placeholder="Ví dụ: 1000000"
                 />
               </div>
@@ -194,7 +194,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 </div>
               </label>
 
-              <div className="bg-slate-50 rounded-lg border border-slate-300 overflow-hidden">
+              <div className="bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
                   <p className="text-sm font-bold text-slate-800">Gán người xử lý cụ thể</p>
                   <button 
@@ -214,7 +214,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                       <select 
                         value={reviewer.reviewer}
                         onChange={(e) => handleReviewerChange(index, e.target.value)}
-                        className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       >
                         <option value="">-- Chọn người phê duyệt --</option>
@@ -247,7 +247,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             <button 
               type="button" 
               onClick={onCancel}
-              className="px-6 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+              className="px-6 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-colors shadow-sm"
             >
               Hủy
             </button>

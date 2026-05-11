@@ -94,7 +94,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   value={config.description || ''}
                   onChange={(e) => setConfig({...config, description: e.target.value})}
                   placeholder="Nhập mô tả cho yêu cầu"
-                  className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
                 />
               </div>
 
@@ -103,7 +103,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                 <select 
                   value={config.category}
                   onChange={(e) => setConfig({...config, category: e.target.value})}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                 >
                   <option value="vang_mat">Vắng mặt</option>
                   <option value="giai_trinh">Giải trình công</option>
@@ -200,12 +200,12 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               <div className="pt-6 mt-6 border-t border-slate-300">
                 <h4 className="text-sm font-bold text-slate-900 mb-4">Luồng phê duyệt mặc định</h4>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-300">
-                    <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-2 py-1 rounded w-16 text-center">BƯỚC 1</span>
+                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-300">
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded w-16 text-center">BƯỚC 1</span>
                     <span className="text-sm font-semibold text-slate-800 flex-1">Quản lý trực tiếp</span>
                   </div>
-                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-300">
-                    <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-2 py-1 rounded w-16 text-center">BƯỚC 2</span>
+                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-300">
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded w-16 text-center">BƯỚC 2</span>
                     <span className="text-sm font-semibold text-slate-800 flex-1">Ban Giám Đốc</span>
                   </div>
                 </div>

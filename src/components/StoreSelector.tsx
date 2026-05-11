@@ -74,7 +74,7 @@ export function StoreSelector() {
       {/* Dynamic Background Effects */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-600/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,transparent_0%,#0F172A_100%)]" />
       </div>
 
@@ -87,7 +87,7 @@ export function StoreSelector() {
               <div className="w-10 h-10 bg-primary-600 rounded-sm flex items-center justify-center shadow-lg shadow-indigo-600/20 border border-white/10">
                 <Store className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
+              <h2 className="text-2xl font-bold tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
             </div>
             
             <div className="space-y-4">
@@ -163,7 +163,7 @@ export function StoreSelector() {
             <div className="flex flex-col h-full animate-in fade-in duration-500">
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
                     <MapPin className="w-4 h-4" /> Chọn Chi Nhánh
                   </h3>
                   <p className="text-slate-600 text-sm">Hiển thị các chi nhánh bạn có quyền truy cập</p>
@@ -204,7 +204,7 @@ export function StoreSelector() {
                           </div>
                           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
                         </div>
-                        <h4 className="text-lg font-black text-slate-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
+                        <h4 className="text-lg font-bold text-slate-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
                         <p className="text-xs text-slate-600 flex items-start gap-1.5 mt-2 line-clamp-2 leading-relaxed">
                           <MapPin className="w-4 h-4 text-slate-500 shrink-0" /> {store.address}
                         </p>
@@ -229,13 +229,13 @@ export function StoreSelector() {
                   <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mb-2 shadow-inner ring-4 ring-primary-50/50">
                     <Lock className="w-7 h-7" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900">Bảo mật trạm POS</h3>
+                  <h3 className="text-xl font-bold text-slate-900">Bảo mật trạm POS</h3>
                   <div className="flex gap-4">
                     {[0, 1, 2, 3].map((index) => (
                       <div 
                         key={index}
                         className={cn(
-                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-black bg-slate-50 border-2 transition-all duration-300",
+                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-bold bg-slate-50 border-2 transition-all duration-300",
                           pin.length > index ? "border-primary-600 text-primary-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-slate-300 text-transparent",
                           isError && "border-rose-500 text-rose-500 animate-shake"
                         )}
@@ -252,7 +252,7 @@ export function StoreSelector() {
                     <button
                       key={num}
                       onClick={() => handlePinInput(num)}
-                      className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                      className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-bold text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                     >
                       {num}
                     </button>
@@ -271,7 +271,7 @@ export function StoreSelector() {
                   </div>
                   <button
                     onClick={() => handlePinInput('0')}
-                    className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                    className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-bold text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                   >
                     0
                   </button>
@@ -291,7 +291,7 @@ export function StoreSelector() {
                     onClick={() => {
                       setTimeout(() => setActiveStore(selectedStoreForPin), 500);
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-sm text-xs font-bold hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-sm text-xs font-bold hover:bg-slate-800 transition-colors"
                   >
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     Quẹt thẻ Nhân viên

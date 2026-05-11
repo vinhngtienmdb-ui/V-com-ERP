@@ -1,77 +1,48 @@
-import { GoogleGenAI } from "@google/genai";
 
-let aiModel: GoogleGenAI | null = null;
+const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY || '';
 
-function getAI() {
- if (!aiModel) {
- const key = process.env.GEMINI_API_KEY;
- if (!key || key === 'undefined') {
- console.warn("GEMINI_API_KEY is not set. Generating mock response.");
- return null;
- }
- aiModel = new GoogleGenAI({ apiKey: key });
- }
- return aiModel;
+async function callAIAPI(endpoint: string, body: object): Promise<string> {
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-key': INTERNAL_API_KEY,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) throw new Error(`AI API responded with ${response.status}`);
+    const data = await response.json() as { text?: string };
+    return data.text || 'Xin lỗi, vui lòng thử lại sau.';
+  } catch (error) {
+    console.error('AI API call failed:', error);
+    return 'Xin lỗi, hệ thống AI đang bận. Vui lòng liên hệ nhân viên hỗ trợ trực tiếp.';
+  }
 }
 
-const SYSTEM_INSTRUCTION = `
-You are a helpful customer support AI for VComm, a major e-commerce marketplace in Vietnam. 
-Your goal is to help users with their orders, product questions, and general inquiries.
-
-Context: 
-- You are integrated into the ERP system.
-- You should provide concise, helpful, and professional answers in Vietnamese.
-- If a user asks about an order, ask for their Order ID if they haven't provided it.
-- If a user asks about a product, ask for the Product Name or Category.
-- You can act as a representative for Zalo OA, Facebook Messenger, or Live Chat.
-`;
-
-export async function generateRMAResponse(order: any) {
- const prompt = `Soạn thảo phản hồi chuyên nghiệp cho khách hàng về yêu cầu hoàn trả (RMA) của đơn hàng ${order.id}. Đơn hàng có phương thức thanh toán: ${order.paymentMethod}. Hãy lịch sự, xin lỗi về sự cố và đề xuất hướng giải quyết dựa trên chính sách sàn.`;
- return await getAiChatResponse(prompt);
+export interface OrderForRMA {
+  id: string;
+  paymentMethod: string;
 }
 
-export async function generateCustomerCareMessage(customer: any) {
- const prompt = `Hãy soạn một tin nhắn chăm sóc khách hàng cá nhân hóa cho khách hàng ${customer.name}. 
- Thông tin khách hàng: 
- - Tổng chi tiêu: ${customer.totalSpent} VNĐ
- - Số đơn hàng: ${customer.orderCount}
- - Chỉ số RFM: Recency=${customer.rfmScore?.recency}, Frequency=${customer.rfmScore?.frequency}, Monetary=${customer.rfmScore?.monetary}
- 
- Mục tiêu: Gửi lời cảm ơn, hỏi thăm sự hài lòng về các sản phẩm đã mua gần đây và đề xuất họ quay lại sàn xem các ưu đãi mới. Văn phong lịch sự, thân thiện, mang tính cá nhân cao.`;
- return await getAiChatResponse(prompt);
+export interface CustomerForCare {
+  name: string;
+  totalSpent: number;
+  orderCount: number;
+  rfmScore?: { recency: number; frequency: number; monetary: number };
 }
 
-export async function getAiChatResponse(message: string, history: { role: 'user' | 'model', content: string }[] = []) {
- try {
- const contents = history.map(h => ({
- role: h.role === 'model' ? 'model' : 'user',
- parts: [{ text: h.content }]
- }));
+export async function generateRMAResponse(order: OrderForRMA): Promise<string> {
+  return callAIAPI('/api/ai/rma', { order });
+}
 
- // Add current message
- contents.push({
- role: 'user',
- parts: [{ text: message }]
- });
+export async function generateCustomerCareMessage(customer: CustomerForCare): Promise<string> {
+  return callAIAPI('/api/ai/customer-care', { customer });
+}
 
- const ai = getAI();
- if (!ai) {
- return "Xin chào! (Mock response: Chưa cấu hình GEMINI_API_KEY. Vui lòng thêm vào Variables trên Vercel)";
- }
-
- const response = await ai.models.generateContent({
- model: "gemini-3-flash-preview",
- contents: contents as any,
- config: {
- systemInstruction: SYSTEM_INSTRUCTION,
- temperature: 0.7,
- },
- });
-
- return response.text?.trim() || "Xin lỗi, tôi gặp sự cố khi xử lý câu hỏi của bạn. Vui lòng thử lại sau.";
- } catch (error) {
- console.error("Gemini Error:", error);
- return "Xin lỗi, hệ thống AI đang bận. Vui lòng liên hệ nhân viên hỗ trợ trực tiếp.";
- }
+export async function getAiChatResponse(
+  message: string,
+  history: { role: 'user' | 'model'; content: string }[] = []
+): Promise<string> {
+  return callAIAPI('/api/ai/chat', { message, history });
 }

@@ -2,84 +2,56 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 0. Global Safety Net
-    match /{document=**} {
-      allow read: if isStaff();
-      allow read, write: if false; // Deny all others
-    }
 
     // --- Helper Primitives ---
     function isSignedIn() { return request.auth != null; }
-    function isEmailVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
     function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
     function incoming() { return request.resource.data; }
     function existing() { return resource.data; }
-    
-    // Auth tokens never contain custom claims. Roles must be looked up.
+
+    // Role checks via Firestore staff document
     function getStaffDoc() {
       return get(/databases/$(database)/documents/staff/$(request.auth.uid));
     }
-    
+
     function isStaff() {
-      return isSignedIn() && (
-        exists(/databases/$(database)/documents/staff/$(request.auth.uid)) ||
-        request.auth.token.email == 'admin@v-erp.com' ||
-        request.auth.token.email == 'vinh.ngtienmdb@gmail.com' ||
-        // Check if user is in ipos_staff (requires a way to check without knowing docId, or specific rules per collection)
-        true // Allow read for basic staff check if signed in, but refine per-collection
-      );
+      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid));
     }
-    
+
     function isAdmin() {
-      return isSignedIn() && (
-        (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && getStaffDoc().data.role == 'admin') ||
-        request.auth.token.email == 'admin@v-erp.com' ||
-        request.auth.token.email == 'vinh.ngtienmdb@gmail.com'
-      );
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/staff/$(request.auth.uid)) &&
+        getStaffDoc().data.role == 'admin';
     }
 
-    // --- Helper for iPOS Store-based RBAC ---
-    function getIPosStaff(storeId) {
-       // Note: This is an expensive get() if called in a loop, but useful for single doc access
-       // However, we don't know the docId of the staff record.
-       // We'll rely on the user having a staff record in the store.
-       return true; 
+    // 0. Global Safety Net — deny everything not explicitly allowed
+    match /{document=**} {
+      allow read, write: if false;
     }
 
-    // --- Enterprise Collections ---
-    
-    // 0.1 Internal / System
+    // 0.1 Internal / System — read-only for signed-in users
     match /_internal/{docId} {
       allow read: if isSignedIn();
     }
 
-    // iPOS Management
+    // iPOS Staff
     match /ipos_staff/{docId} {
-       allow get: if isSignedIn();
-       allow list: if isSignedIn() && (
-         isAdmin() || 
-         resource.data.email == request.auth.token.email ||
-         resource.data.assignedStoreId == request.headers.get('x-store-id', '') // Optional header if user implements it, but for now:
-       );
-       // Allow querying by email for RBAC check
-       allow list: if isSignedIn() && resource.data.email == request.auth.token.email;
-
-       allow create, update, delete: if isSignedIn() && (
-         isAdmin() ||
-         // Simplified: admins/managers of the store can manage staff
-         // In a real app, we'd lookup the role of the person making the request
-         request.auth.token.email == 'vinh.ngtienmdb@gmail.com'
-       );
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.email == request.auth.token.email
+      );
+      allow create, update, delete: if isAdmin();
     }
 
     match /ipos_stores/{storeId} {
-       allow read: if isSignedIn();
-       allow write: if isAdmin() || request.auth.token.email == 'vinh.ngtienmdb@gmail.com';
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
-    // 1. Products
+    // 1. Products — staff-only read; restrict updates by role
     match /products/{productId} {
-      allow read: if true; // Publicly readable for eMenu
+      allow read: if isStaff();
       allow create: if isStaff();
       allow update: if isStaff() && isValidProduct(incoming()) && (
         (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'price', 'name', 'category', 'updatedAt', 'sku'])) ||
@@ -90,7 +62,6 @@ service cloud.firestore {
       function isValidProduct(data) {
         return data.name is string && data.name.size() >= 2 && data.name.size() <= 200 &&
                data.price is number && data.price >= 0 &&
-               // Optional fields for flexibility during seeding
                (data.stock == null || data.stock is number) &&
                (data.sku == null || (data.sku is string && data.sku.size() > 0));
       }
@@ -100,17 +71,20 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow get: if isStaff();
       allow list: if isStaff();
-      
-      // Allow customers to create eMenu orders
-      allow create: if (isStaff() || (incoming().source == 'emenu' && incoming().status == 'pending')) && 
-                    isValidId(orderId) && isValidOrder(incoming()) && (
-                      (isStaff() && incoming().staffId == request.auth.uid) || 
-                      (incoming().source == 'emenu')
-                    ) &&
-                    incoming().createdAt is timestamp;
-      
+
+      // Allow customers to create eMenu orders (no auth required for source == 'emenu')
+      allow create: if (
+          isStaff() ||
+          (incoming().source == 'emenu' && incoming().status == 'pending')
+        ) &&
+        isValidId(orderId) &&
+        isValidOrder(incoming()) && (
+          (isStaff() && incoming().staffId == request.auth.uid) ||
+          (incoming().source == 'emenu')
+        ) &&
+        incoming().createdAt is timestamp;
+
       allow update: if isStaff() && isValidOrder(incoming()) && (
-        // Staff can complete their own orders, Admins can do anything
         (existing().staffId == request.auth.uid || isAdmin()) &&
         incoming().staffId == existing().staffId &&
         incoming().createdAt == existing().createdAt &&
@@ -130,7 +104,6 @@ service cloud.firestore {
     match /customers/{customerId} {
       allow get: if isStaff();
       allow list: if isStaff();
-      
       allow create: if isStaff() && isValidId(customerId) && isValidCustomer(incoming());
       allow update: if isStaff() && isValidCustomer(incoming()) && (
         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'tier', 'points', 'aiInsight', 'lastPurchase'])
@@ -151,9 +124,9 @@ service cloud.firestore {
     // 4. Staff Profiles
     match /staff/{staffId} {
       allow read: if isSignedIn();
-      allow write: if isAdmin() || (isSignedIn() && request.auth.token.email == 'admin@v-erp.com' && staffId == request.auth.uid);
+      allow write: if isAdmin() || (isSignedIn() && staffId == request.auth.uid && isAdmin());
     }
-    
+
     // 4a. Shifts
     match /shifts/{shiftId} {
       allow read: if isStaff();
@@ -163,14 +136,12 @@ service cloud.firestore {
     // 5. Finance Transactions
     match /transactions/{txId} {
       allow read: if isAdmin() || isStaff();
-      allow create: if isStaff() && (
-        incoming().createdAt is timestamp
-      );
+      allow create: if isStaff() && incoming().createdAt is timestamp;
     }
 
     // 6. Sync Logs
     match /pos_sync_logs/{logId} {
-       allow read, write: if isStaff();
+      allow read, write: if isStaff();
     }
 
     // 7. POS Sync Data

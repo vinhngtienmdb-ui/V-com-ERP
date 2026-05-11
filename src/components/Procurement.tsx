@@ -35,8 +35,8 @@ const PURCHASING_MODULE_GROUPS = [
 
 function getColorClasses(color: string) {
  switch (color) {
- case 'blue': return 'bg-slate-100 text-orange-700';
- case 'orange': return 'bg-orange-50 text-orange-600';
+ case 'blue': return 'bg-slate-100 text-blue-600';
+ case 'orange': return 'bg-orange-50 text-blue-600';
  case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
@@ -84,7 +84,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  <div className="flex items-center gap-4">
  <button 
  onClick={onBack} 
- className="flex items-center justify-center p-2 text-slate-500 hover:text-orange-700 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-300"
+ className="flex items-center justify-center p-2 text-slate-500 hover:text-blue-600 hover:bg-white rounded-2xl transition-all shadow-sm border border-transparent hover:border-slate-300"
  title="Quay lại"
  >
  <ArrowLeft className="w-5 h-5" />
@@ -103,14 +103,14 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  placeholder="Tìm theo tên ncc..." 
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+ className="w-full bg-white border border-slate-300 rounded-2xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
  />
  </div>
  <div className="relative">
  <select
  value={categoryFilter}
  onChange={(e) => setCategoryFilter(e.target.value)}
- className="appearance-none bg-white border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
+ className="appearance-none bg-white border border-slate-300 rounded-2xl pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
  >
  <option value="all">Tất cả ngành hàng</option>
  {categories.map(c => (
@@ -119,22 +119,22 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </select>
  <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  </div>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm">
+ <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm">
  + Thêm NCC
  </button>
  </div>
  </div>
 
- <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+ <table className="min-w-[860px] w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-32 whitespace-nowrap">Ngành hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-44 whitespace-nowrap">Liên hệ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-48">Chính sách & HĐ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-20 whitespace-nowrap text-center">Đánh giá</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-28 whitespace-nowrap text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -146,7 +146,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  {supplier.name.charAt(0)}
  </div>
  <div>
- <p className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition-colors cursor-pointer">{supplier.name}</p>
+ <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer">{supplier.name}</p>
  <p className="text-[10px] text-slate-600 font-mono mt-0.5">{supplier.id}</p>
  </div>
  </div>
@@ -169,9 +169,9 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </td>
  <td className="px-6 py-4">
- <div className="flex items-start gap-2 max-w-[200px]">
+ <div className="flex items-start gap-2">
  <FileText className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
- <p className="text-xs text-slate-700 leading-snug">{supplier.policies}</p>
+ <p className="text-xs text-slate-700 leading-snug line-clamp-2">{supplier.policies}</p>
  </div>
  </td>
  <td className="px-6 py-4 text-center">
@@ -221,7 +221,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <div className="flex items-center gap-4">
  <button 
  onClick={onBack} 
- className="flex items-center justify-center p-2 text-slate-500 hover:text-orange-700 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-300"
+ className="flex items-center justify-center p-2 text-slate-500 hover:text-blue-600 hover:bg-white rounded-2xl transition-all shadow-sm border border-transparent hover:border-slate-300"
  title="Quay lại"
  >
  <ArrowLeft className="w-5 h-5" />
@@ -240,14 +240,14 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  placeholder="Tìm theo tiêu đề, ID..." 
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+ className="w-full bg-white border border-slate-300 rounded-2xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
  />
  </div>
  <div className="relative">
  <select
  value={statusFilter}
  onChange={(e) => setStatusFilter(e.target.value)}
- className="appearance-none bg-white border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
+ className="appearance-none bg-white border border-slate-300 rounded-2xl pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
  >
  <option value="all">Tất cả trạng thái</option>
  <option value="pending">Chờ phê duyệt</option>
@@ -256,7 +256,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  </select>
  <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  </div>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" /> Tạo Đề xuất
  </button>
  </div>
@@ -264,32 +264,32 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50" columns={4} gap={16}>
  <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-orange-600" /> Tổng phiếu</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.length}</p>
+ <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-blue-600" /> Tổng phiếu</h3>
+ <p className="text-xl font-bold text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ duyệt</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'pending').length}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'pending').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').length}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
  <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><BadgeDollarSign className="w-4 h-4 text-purple-500" /> Tổng kinh phí duyệt</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{formatCurrency(MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
+ <p className="text-xl font-bold text-slate-900 mt-2">{formatCurrency(MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
  </div>
  </DraggableGrid>
 
- <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+ <table className="min-w-[640px] w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-36 whitespace-nowrap">Mã Phiếu / Khối</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nội dung & Người đề xuất</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-40 whitespace-nowrap text-right">Dự toán / Mặt hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-28 whitespace-nowrap text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-32 whitespace-nowrap text-right">Ngày gửi</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -300,14 +300,14 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <span className="mt-1 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">{req.department}</span>
  </td>
  <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-orange-700 transition-colors">{req.title}</p>
+ <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors">{req.title}</p>
  <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
  </td>
- <td className="px-6 py-4 text-right">
- <p className="text-sm font-black text-rose-600">{formatCurrency(req.value)}</p>
+ <td className="px-6 py-4 w-40 whitespace-nowrap text-right">
+ <p className="text-sm font-bold text-rose-600">{formatCurrency(req.value)}</p>
  <p className="text-[10px] text-slate-600 font-medium">{req.itemsCount} Danh mục mặt hàng</p>
  </td>
- <td className="px-6 py-4 text-center">
+ <td className="px-6 py-4 w-28 whitespace-nowrap text-center">
  <span className={cn(
  "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  req.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
@@ -319,7 +319,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  {req.status === 'approved' ? 'Đã duyệt' : req.status === 'pending' ? 'Chờ duyệt' : 'Từ chối'}
  </span>
  </td>
- <td className="px-6 py-4 text-right">
+ <td className="px-6 py-4 w-32 whitespace-nowrap text-right">
  <p className="text-sm text-slate-700 font-mono">{req.date}</p>
  </td>
  </tr>
@@ -352,15 +352,15 @@ export function Procurement() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Mua hàng & Nhà cung cấp</h1>
  </div>
- <p className="text-sm text-[#6B7280]">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
+ <p className="text-sm text-slate-500">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" /> Báo cáo chi tiêu
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" /> Tạo đề xuất mới
  </button>
  </div>
@@ -372,41 +372,41 @@ export function Procurement() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(1850000000)}</span>
+ <span className="text-xl font-bold text-slate-900">{formatCurrency(1850000000)}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
- <Clock className="w-4 h-4 text-orange-700" />
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
+ <Clock className="w-4 h-4 text-blue-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">12 Phiếu</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
+ <span className="text-xl font-bold text-slate-900">12 Phiếu</span>
+ <span className="text-[10px] text-blue-600 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
- <Building2 className="w-4 h-4 text-orange-600" />
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
+ <Building2 className="w-4 h-4 text-blue-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">240 NCC</span>
- <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
+ <span className="text-xl font-bold text-slate-900">240 NCC</span>
+ <span className="text-[10px] text-blue-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đánh giá trung bình</span>
  <Star className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">4.85/5</span>
+ <span className="text-xl font-bold text-slate-900">4.85/5</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
  </div>
  </div>
@@ -417,7 +417,7 @@ export function Procurement() {
  {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
- <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
+ <span className="w-1 h-4 bg-blue-600 rounded-full inline-block" />
  {group.title}
  </h3>
  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -425,17 +425,17 @@ export function Procurement() {
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-2xl border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
- <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
- <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
+ <h3 className="font-bold text-slate-900 text-sm mb-1.5 group-hover:text-blue-600 transition-colors">{mod.label}</h3>
+ <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{mod.desc}</p>
  </div>
  </div>
  ))}
@@ -450,11 +450,11 @@ export function Procurement() {
  {activeTab === 'pur_req_form' && <PurchaseRequests onBack={() => setActiveTab('overview')} />}
 
  {activeTab !== 'overview' && activeTab !== 'sup_list' && activeTab !== 'pur_req_form' && (
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
- <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
+ <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+ <div className="p-6 border-b border-slate-100 bg-slate-50/50">
  <button 
  onClick={() => setActiveTab('overview')} 
- className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
+ className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
  >
  <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
  </button>
@@ -462,7 +462,7 @@ export function Procurement() {
  
  <div className="p-16 flex flex-col items-center justify-center text-center">
  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
- <ShoppingCart className="w-10 h-10 text-orange-600" />
+ <ShoppingCart className="w-10 h-10 text-blue-600" />
  </div>
  <h3 className="text-xl font-bold text-slate-900 mb-2">Phân hệ: {activeTab}</h3>
  <p className="text-slate-600 max-w-md mx-auto leading-relaxed">

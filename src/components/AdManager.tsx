@@ -68,57 +68,57 @@ export function AdManager() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Advertising Manager (Quảng cáo nội bộ)</h1>
- <p className="text-sm text-[#6B7280] mt-1">Hệ thống đấu thầu từ khóa, đấu thầu vị trí hiển thị và phân tích hiệu quả ROAS cho Sàn.</p>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Advertising Manager (Quảng cáo nội bộ)</h1>
+ <p className="text-sm text-slate-500 mt-1">Hệ thống đấu thầu từ khóa, đấu thầu vị trí hiển thị và phân tích hiệu quả ROAS cho Sàn.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <GanttChartSquare className="w-4 h-4" />
  Báo cáo ROAS Tổng thể
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
+ <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
  Cấu hình vị trí Đấu thầu
  </button>
  </div>
  </div>
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Doanh thu Quảng cáo tháng</span>
- <BadgeDollarSign className="w-4 h-4 text-[#2563EB]" />
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Doanh thu Quảng cáo tháng</span>
+ <BadgeDollarSign className="w-4 h-4 text-blue-600" />
  </div>
- <div className="text-2xl font-bold text-[#111827]">{formatCurrency(1540000000)}</div>
+ <div className="text-xl font-bold text-slate-900">{formatCurrency(1540000000)}</div>
  <p className="text-[10px] text-[#10B981] font-medium mt-1">+12.5% so với tháng trước</p>
  </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Lượt Click (CTR)</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Lượt Click (CTR)</span>
  <MousePointerClick className="w-4 h-4 text-[#8B5CF6]" />
  </div>
- <div className="text-2xl font-bold text-[#111827]">425k</div>
- <p className="text-[10px] text-[#6B7280] mt-1">CTR Trung bình: 3.2%</p>
+ <div className="text-xl font-bold text-slate-900">425k</div>
+ <p className="text-[10px] text-slate-500 mt-1">CTR Trung bình: 3.2%</p>
  </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">ROAS Trung bình sàn</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase">ROAS Trung bình sàn</span>
  <TrendingUp className="w-4 h-4 text-[#10B981]" />
  </div>
- <div className="text-2xl font-bold text-[#111827]">6.5x</div>
- <p className="text-[10px] text-[#6B7280] mt-1">1đ quảng cáo → 6.5đ doanh thu</p>
+ <div className="text-xl font-bold text-slate-900">6.5x</div>
+ <p className="text-[10px] text-slate-500 mt-1">1đ quảng cáo → 6.5đ doanh thu</p>
  </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Chiến dịch đang chạy</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Chiến dịch đang chạy</span>
  <Target className="w-4 h-4 text-orange-500" />
  </div>
- <div className="text-2xl font-bold text-[#111827]">1,245</div>
+ <div className="text-xl font-bold text-slate-900">1,245</div>
  <p className="text-[10px] text-[#F59E0B] font-medium mt-1">42 chiến dịch sắp hết ngân sách</p>
  </div>
  </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden p-2">
- <div className="flex border-b border-[#F3F4F6] bg-slate-50/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
+ <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden p-2">
+ <div className="flex border-b border-slate-100 bg-slate-50/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
  {[
  { id: 'bidding', label: 'Đấu thầu (Bidding Management)', icon: Zap },
  { id: 'analytics', label: 'Analytics Dashboard (Seller & Marketplace)', icon: BarChart3 }
@@ -128,7 +128,7 @@ export function AdManager() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-8 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-3",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-[#2563EB] text-blue-600 bg-slate-100/30" : "border-transparent text-slate-500 hover:text-slate-900"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -138,14 +138,14 @@ export function AdManager() {
 
  {activeTab === 'bidding' && (
  <div className="animate-in fade-in duration-500">
- <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
+ <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
  <div className="flex gap-4">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
  <input 
  type="text" 
  placeholder="Tìm Seller, Từ khóa, Vị trí..." 
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ className="bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
  <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm text-[#4B5563] flex items-center gap-2 font-medium">
@@ -157,27 +157,27 @@ export function AdManager() {
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
- <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Tên thầu / Seller</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Loại & Mục tiêu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-right">Giá thầu (Bid)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Ngân sách / Đã tiêu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-right">Click / Imp</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-center">Trạng thái</th>
+ <tr className="bg-slate-50 border-b border-slate-100">
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase">Tên thầu / Seller</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase">Loại & Mục tiêu</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase text-right">Giá thầu (Bid)</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase">Ngân sách / Đã tiêu</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase text-right">Click / Imp</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase text-center">Trạng thái</th>
  </tr>
  </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
+ <tbody className="divide-y divide-slate-100">
  {MOCK_BIDS.map(bid => (
  <tr key={bid.id} className="hover:bg-slate-50 transition-colors text-xs">
  <td className="px-6 py-4">
- <p className="font-bold text-[#111827]">{bid.id}</p>
+ <p className="font-bold text-slate-900">{bid.id}</p>
  <p className="text-[10px] text-slate-600 font-mono">Seller ID: {bid.sellerId}</p>
  </td>
  <td className="px-6 py-4">
  <div className="space-y-1">
  <span className={cn(
  "px-2 py-0.5 rounded text-[9px] font-bold uppercase",
- bid.type === 'keyword' ? "bg-slate-100 text-orange-700" :
+ bid.type === 'keyword' ? "bg-slate-100 text-blue-600" :
  bid.type === 'banner' ? "bg-purple-50 text-purple-600" : "bg-emerald-50 text-emerald-600"
  )}>
  {bid.type.replace('_', ' ')}
@@ -186,18 +186,18 @@ export function AdManager() {
  </div>
  </td>
  <td className="px-6 py-4 text-right">
- <p className="font-bold text-[#111827]">{formatCurrency(bid.bidAmount)}</p>
+ <p className="font-bold text-slate-900">{formatCurrency(bid.bidAmount)}</p>
  <p className="text-[10px] text-slate-500">trên {bid.type === 'keyword' ? 'Click' : '1000 Imp'}</p>
  </td>
  <td className="px-6 py-4">
  <div className="max-w-[120px] space-y-1.5">
- <div className="flex justify-between text-[10px] font-bold text-[#6B7280]">
+ <div className="flex justify-between text-[10px] font-bold text-slate-500">
  <span>{((bid.spent / bid.budget) * 100).toFixed(0)}%</span>
  <span>{formatCurrency(bid.spent)}</span>
  </div>
  <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
  <div 
- className={cn("h-full rounded-full transition-all duration-700", bid.status === 'active' ? "bg-[#2563EB]" : "bg-slate-400")} 
+ className={cn("h-full rounded-full transition-all duration-700", bid.status === 'active' ? "bg-blue-600" : "bg-slate-400")} 
  style={{ width: `${(bid.spent / bid.budget) * 100}%` }}
  />
  </div>
@@ -205,7 +205,7 @@ export function AdManager() {
  </div>
  </td>
  <td className="px-6 py-4 text-right">
- <p className="font-bold text-[#111827]">{bid.clicks.toLocaleString()}</p>
+ <p className="font-bold text-slate-900">{bid.clicks.toLocaleString()}</p>
  <p className="text-[10px] text-slate-500">{bid.impressions.toLocaleString()} views</p>
  </td>
  <td className="px-6 py-4">
@@ -230,18 +230,18 @@ export function AdManager() {
  {activeTab === 'analytics' && (
  <div className="animate-in fade-in duration-500 p-8 space-y-10">
  {/* Marketplace Revenue Analytics */}
- <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
+ <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
  <div className="flex justify-between items-center mb-6">
  <div>
- <h3 className="text-xl font-bold text-[#111827]">Marketplace Ad Revenue Trends</h3>
- <p className="text-xs text-[#6B7280]">Tổng doanh thu từ quảng cáo nội bộ của sàn trong 30 ngày qua.</p>
+ <h3 className="text-xl font-bold text-slate-900">Marketplace Ad Revenue Trends</h3>
+ <p className="text-xs text-slate-500">Tổng doanh thu từ quảng cáo nội bộ của sàn trong 30 ngày qua.</p>
  </div>
  <div className="flex gap-2">
- <span className="px-3 py-1 bg-white border border-slate-300 rounded-lg text-[10px] font-bold">Tháng 4, 2024</span>
+ <span className="px-3 py-1 bg-white border border-slate-200 rounded-2xl text-[10px] font-bold">Tháng 4, 2024</span>
  </div>
  </div>
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
- <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
  <div className="h-[300px] w-full">
  <ResponsiveContainer width="100%" height="100%">
  <AreaChart data={REVENUE_DATA}>
@@ -255,7 +255,6 @@ export function AdManager() {
  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#64748B'}} />
  <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#64748B'}} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
  <Tooltip 
- contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
  formatter={(v: any) => [formatCurrency(v), 'Doanh thu']}
  />
  <Area type="monotone" dataKey="revenue" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
@@ -264,9 +263,9 @@ export function AdManager() {
  </div>
  </div>
  <div className="space-y-4">
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm h-full flex flex-col justify-center">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm h-full flex flex-col justify-center">
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Doanh thu trung bình ngày</p>
- <h4 className="text-3xl font-black text-[#111827]">{formatCurrency(54000000)}</h4>
+ <h4 className="text-3xl font-bold text-slate-900">{formatCurrency(54000000)}</h4>
  <div className="mt-6 pt-6 border-t border-stone-50 space-y-3">
  <div className="flex justify-between items-center text-xs">
  <span className="text-slate-600">Từ khóa (Keywords)</span>
@@ -290,8 +289,8 @@ export function AdManager() {
 
  {/* Seller ROI & performance */}
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
- <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
+ <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
  <TrendingUp className="w-5 h-5 text-emerald-500" /> Top Seller ROAS (Return on Ad Spend)
  </h3>
  <div className="h-[250px] w-full">
@@ -300,7 +299,7 @@ export function AdManager() {
  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 9, fill: '#64748B'}} />
  <YAxis axisLine={false} tickLine={false} tick={{fontSize: 9, fill: '#64748B'}} />
- <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+ <Tooltip cursor={{fill: "transparent"}} />
  <Bar dataKey="roas" radius={[4, 4, 0, 0]} barSize={32}>
  {SELLER_PERFORMANCE.map((entry, index) => (
  <Cell key={`cell-${index}`} fill={entry.roas > 7 ? '#10B981' : '#2563EB'} />
@@ -315,8 +314,8 @@ export function AdManager() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
- <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
+ <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
  <MousePointerClick className="w-5 h-5 text-[#8B5CF6]" /> Campaign CTR (Click-Through Rate)
  </h3>
  <div className="space-y-4">
@@ -327,13 +326,13 @@ export function AdManager() {
  {i + 1}
  </div>
  <div>
- <p className="text-sm font-bold text-[#111827]">{seller.name}</p>
+ <p className="text-sm font-bold text-slate-900">{seller.name}</p>
  <p className="text-[10px] text-slate-500">Campaign Accuracy: High</p>
  </div>
  </div>
  <div className="text-right">
  <div className="flex items-center gap-2 justify-end">
- <span className="text-sm font-black text-[#111827]">{seller.ctr}%</span>
+ <span className="text-sm font-bold text-slate-900">{seller.ctr}%</span>
  <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-all" />
  </div>
  <p className="text-[9px] font-bold text-emerald-500">Above Benchmark</p>
@@ -341,7 +340,7 @@ export function AdManager() {
  </div>
  ))}
  </div>
- <button className="w-full py-3 mt-6 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-orange-700 transition-all uppercase tracking-widest">
+ <button className="w-full py-3 mt-6 border border-slate-200 rounded-2xl text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all uppercase tracking-widest">
  Xem toàn bộ báo cáo CTR
  </button>
  </div>
@@ -350,7 +349,7 @@ export function AdManager() {
  )}
  </div>
 
- <div className="bg-primary-900 text-[#FAF9F5] p-8 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+ <div className="bg-primary-900 text-white p-8 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
  <div className="flex-1 space-y-4">
  <div className="flex items-center gap-3">
  <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5">
@@ -361,7 +360,7 @@ export function AdManager() {
  <p className="text-slate-500 text-sm leading-relaxed max-w-lg">Thuật toán đấu thầu tự động dựa trên mức độ liên quan (Relevance Score) và Giá thầu. Đảm bảo trải nghiệm người dùng không bị "spam" quảng cáo rác, đồng thời tối ưu hóa ROAS cho những Nhà bán hàng thực lực.</p>
  <div className="flex gap-4 pt-4">
  <button className="px-8 py-3 bg-white text-primary-900 font-bold rounded-lg text-sm hover:bg-slate-100 transition-all">Phân tích ROAS Sàn</button>
- <button className="px-8 py-3 border border-primary-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-primary-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
+ <button className="px-8 py-3 border border-primary-700 text-white font-bold rounded-lg text-sm hover:bg-primary-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
  </div>
  </div>
  <Megaphone className="absolute -bottom-10 -right-10 w-64 h-64 text-primary-800/30 -rotate-12" />

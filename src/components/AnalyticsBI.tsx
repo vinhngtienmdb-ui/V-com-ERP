@@ -51,18 +51,18 @@ export function AnalyticsBI() {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
+ <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
  <div className="w-1 h-1 bg-slate-900 rounded-full animate-pulse" />
  </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Business Intelligence</h1>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900 tracking-tight">Business Intelligence</h1>
  <p className="text-sm text-slate-600 font-medium mt-1">Hệ thống phân tích chuyên sâu RFM, LTV, CAC và Giám sát gian lận thời gian thực.</p>
  </div>
  <div className="flex flex-wrap gap-3">
- <button className="bg-white border border-slate-300 px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5">
+ <button className="bg-white border border-slate-300 px-5 py-2.5 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5">
  <Download className="w-4 h-4 text-slate-500" />
  Xuất báo cáo (PDF/XLS)
  </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+ <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
  <Zap className="w-4 h-4" />
  Đồng bộ dữ liệu LTV
  </button>
@@ -83,18 +83,18 @@ export function AnalyticsBI() {
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-4">
  <span className={cn(
- "text-[10px] font-black uppercase tracking-widest",
+ "text-[10px] font-bold uppercase tracking-widest",
  stat.alert ? "text-rose-600" : "text-slate-500"
  )}>{stat.label}</span>
  <div className={cn(
  "p-2 rounded-xl border transition-transform group-hover:rotate-12",
- stat.alert ? "bg-rose-100 border-rose-200 text-rose-600 animate-pulse" : "bg-slate-50 border-slate-200 text-slate-500 group-hover:bg-slate-100 group-hover:text-orange-700"
+ stat.alert ? "bg-rose-100 border-rose-200 text-rose-600 animate-pulse" : "bg-slate-50 border-slate-200 text-slate-500 group-hover:bg-slate-100 group-hover:text-blue-600"
  )}>
  <stat.icon className="w-4 h-4" />
  </div>
  </div>
  <div>
- <div className={cn("text-2xl font-black tracking-tight mb-1", stat.alert ? "text-rose-700" : "text-slate-900")}>
+ <div className={cn("text-2xl font-bold tracking-tight mb-1", stat.alert ? "text-rose-700" : "text-slate-900")}>
  {typeof stat.value === 'number' && stat.label !== 'Gian lận (Cảnh báo)' ? formatCurrency(stat.value) : stat.value}
  </div>
  <div className="flex items-center gap-2">
@@ -120,8 +120,8 @@ export function AnalyticsBI() {
  <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
- <Users className="w-5 h-5 text-orange-700" /> Phân tích RFM (Recency/Frequency/Monetary)
+ <h3 className="text-lg font-bold text-slate-900 flex items-center gap-3">
+ <Users className="w-5 h-5 text-blue-600" /> Phân tích RFM (Recency/Frequency/Monetary)
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Phân vị khách hàng dựa trên lịch sử mua sắm</p>
  </div>
@@ -145,7 +145,6 @@ export function AnalyticsBI() {
  />
  <Tooltip 
  cursor={{ fill: '#F8FAFC', radius: 4 }} 
- contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px' }} 
  />
  <Bar dataKey="count" radius={0} barSize={32}>
  {RFM_DATA.map((entry, index) => (
@@ -164,7 +163,7 @@ export function AnalyticsBI() {
  <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
+ <h3 className="text-lg font-bold text-slate-900 flex items-center gap-3">
  <TrendingUp className="w-5 h-5 text-emerald-600" /> Xu hướng AOV & CLV (Predictive)
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Dự báo chuyển động tài chính trong 6 tháng tới</p>
@@ -172,11 +171,11 @@ export function AnalyticsBI() {
  <div className="flex gap-4 p-1.5 bg-slate-50 rounded-xl">
  <div className="flex items-center gap-2 px-2">
  <div className="w-2 h-2 rounded-full bg-slate-900" />
- <span className="text-[10px] font-black uppercase text-slate-600">CLV</span>
+ <span className="text-[10px] font-bold uppercase text-slate-600">CLV</span>
  </div>
  <div className="flex items-center gap-2 px-2">
  <div className="w-2 h-2 rounded-full bg-emerald-500" />
- <span className="text-[10px] font-black uppercase text-slate-600">AOV</span>
+ <span className="text-[10px] font-bold uppercase text-slate-600">AOV</span>
  </div>
  </div>
  </div>
@@ -203,7 +202,6 @@ export function AnalyticsBI() {
  />
  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }} />
  <Tooltip 
- contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px' }} 
  />
  <Area type="monotone" dataKey="clv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorCLV)" />
  <Area type="monotone" dataKey="aov" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorAOV)" />
@@ -214,7 +212,7 @@ export function AnalyticsBI() {
  </DraggableGrid>
 
  {/* Fraud Detection Command Console */}
- <div className="bg-slate-900 text-[#FAF9F5] p-10 rounded-none relative overflow-hidden shadow-sm shadow-blue-900/20">
+ <div className="bg-blue-600 hover:bg-blue-700 text-white p-10 rounded-none relative overflow-hidden shadow-sm shadow-blue-900/20">
  <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
  <Radar className="w-80 h-80 rotate-12" />
  </div>
@@ -223,26 +221,26 @@ export function AnalyticsBI() {
  <div className="lg:col-span-2 space-y-6">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-rose-600 rounded-none shadow-sm shadow-rose-600/30 group hover:rotate-12 transition-transform duration-500">
- <ShieldAlert className="w-7 h-7 text-[#FAF9F5]" />
+ <ShieldAlert className="w-7 h-7 text-white" />
  </div>
  <div>
  <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400">Security Node</span>
+ <span className="text-[10px] font-bold uppercase tracking-widest text-rose-400">Security Node</span>
  <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" />
  </div>
- <h3 className="text-2xl font-black tracking-tight">AI Fraud Detection Guardian</h3>
+ <h3 className="text-2xl font-bold tracking-tight">AI Fraud Detection Guardian</h3>
  </div>
  </div>
  
- <p className="text-slate-500 text-base font-medium leading-relaxed max-w-2xl bg-white/5 p-4 rounded-lg border border-white/5">
+ <p className="text-slate-500 text-base font-medium leading-relaxed max-w-2xl bg-white/5 p-4 rounded-2xl border border-white/5">
  Phân tích hành vi chuỗi cung ứng và thanh toán đa điểm. Tự động gắn cờ cho các tài khoản có dấu hiệu Sybil Attack hoặc can thiệp tham số Voucher hệ thống.
  </p>
  
  <div className="flex flex-wrap gap-4 pt-2">
- <button className="px-6 py-3 bg-white text-slate-900 font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 hover:-translate-y-0.5">
+ <button className="px-6 py-3 bg-white text-slate-900 font-bold rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 hover:-translate-y-0.5">
  Open Security Console
  </button>
- <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">
+ <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-white font-bold rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">
  Configure AI Policy
  </button>
  </div>
@@ -251,7 +249,7 @@ export function AnalyticsBI() {
  <div className="space-y-4">
  <div className="p-6 bg-white/5 backdrop-blur-2xl rounded-none border border-white/10 space-y-4 shadow-sm">
  <div className="flex justify-between items-center">
- <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest flex items-center gap-2">
+ <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest flex items-center gap-2">
  <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> Incident Detected
  </span>
  <span className="text-[10px] text-slate-600 font-bold font-mono">2 min ago</span>
@@ -260,7 +258,7 @@ export function AnalyticsBI() {
  "Detecting 124 orders using Voucher SALE153 from same Fingerprint ID cluster."
  </p>
  <div className="pt-2 border-t border-white/5">
- <button className="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-[#FAF9F5] rounded-none text-[10px] font-black uppercase tracking-widest transition-all border border-rose-500/30">
+ <button className="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded-none text-[10px] font-bold uppercase tracking-widest transition-all border border-rose-500/30">
  Immediate Block & Void
  </button>
  </div>

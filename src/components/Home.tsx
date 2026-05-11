@@ -1,293 +1,200 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
- ArrowRight, 
- Search, 
- Star, 
- History,
- LayoutGrid,
- Menu
-} from 'lucide-react';
+import { Search, Star, Grid3x3, Layers } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { navGroups } from '../constants';
+import { useAuth } from '../context/AuthContext';
+
+const colorBg: Record<string, string> = {
+ blue:    'bg-blue-500',
+ indigo:  'bg-indigo-500',
+ violet:  'bg-violet-500',
+ cyan:    'bg-cyan-500',
+ emerald: 'bg-emerald-500',
+ amber:   'bg-amber-500',
+ orange:  'bg-orange-500',
+ red:     'bg-red-500',
+ rose:    'bg-rose-500',
+ pink:    'bg-pink-500',
+ teal:    'bg-teal-600',
+ sky:     'bg-sky-500',
+ purple:  'bg-purple-600',
+ fuchsia: 'bg-fuchsia-500',
+ lime:    'bg-lime-500',
+ yellow:  'bg-yellow-500',
+ slate:   'bg-slate-600',
+ gray:    'bg-slate-500',
+};
+
+const allItems = navGroups.flatMap(g => g.items);
+
+function useStarred() {
+ const [starred, setStarred] = React.useState<string[]>(() => {
+  try { return JSON.parse(localStorage.getItem('starred-modules') || '[]'); } catch { return []; }
+ });
+ const toggle = (path: string) => {
+  setStarred(prev => {
+   const next = prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path];
+   localStorage.setItem('starred-modules', JSON.stringify(next));
+   return next;
+  });
+ };
+ return { starred, toggle };
+}
+
+function ModuleCard({
+ item, navigate, isStarred, onToggleStar,
+}: {
+ item: any;
+ navigate: (p: string) => void;
+ isStarred: boolean;
+ onToggleStar: (p: string) => void;
+}) {
+ const bg = colorBg[item.color || 'blue'] || 'bg-blue-500';
+ return (
+  <div className="relative group">
+   <button
+    onClick={() => navigate(item.path)}
+    className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200 w-full min-h-[160px] justify-between"
+   >
+    <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-200', bg)}>
+     <item.icon className="w-7 h-7 text-white" />
+    </div>
+    <div className="w-full">
+     <p className="text-sm font-semibold text-slate-800 leading-snug">{item.label}</p>
+     {item.description && (
+      <p className="text-xs text-slate-400 mt-1 leading-snug line-clamp-1">{item.description}</p>
+     )}
+    </div>
+   </button>
+   <button
+    onClick={e => { e.stopPropagation(); onToggleStar(item.path); }}
+    className={cn(
+     'absolute top-2.5 right-2.5 w-6 h-6 rounded-lg flex items-center justify-center transition-all',
+     isStarred
+      ? 'opacity-100 bg-amber-50 text-amber-500'
+      : 'opacity-0 group-hover:opacity-100 bg-slate-100 text-slate-400 hover:text-amber-500'
+    )}
+   >
+    <Star className={cn('w-3.5 h-3.5', isStarred && 'fill-amber-500')} />
+   </button>
+  </div>
+ );
+}
+
+type Tab = 'features' | 'starred' | 'all';
 
 export function Home() {
  const navigate = useNavigate();
+ const { staffInfo } = useAuth();
+ const { starred, toggle } = useStarred();
  const [searchQuery, setSearchQuery] = React.useState('');
+ const [activeTab, setActiveTab] = React.useState<Tab>('features');
 
- const filteredGroups = navGroups.map(group => ({
- ...group,
- items: group.items.filter(item => 
- item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
- item.description?.toLowerCase().includes(searchQuery.toLowerCase())
- )
- })).filter(group => group.items.length > 0);
+ const hour = new Date().getHours();
+ const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+ const userName = staffInfo?.name || 'bạn';
 
- return (
- <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 pb-20 pt-2">
- {/* Hero / Search Section */}
- <div className="relative overflow-hidden bg-slate-900 rounded-lg p-8 md:p-12 text-[#FAF9F5] border border-slate-800 shadow-sm">
- {/* Animated Background Gradients */}
- <div className="absolute top-0 right-0 w-96 h-96 bg-slate-900/20 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
- <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
- 
- <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
- <LayoutGrid className="w-80 h-80 rotate-12" />
- </div>
- 
- <div className="relative z-10 max-w-4xl">
- <div className="flex items-center gap-3 mb-8">
- <div className="flex h-2 w-2 relative">
- <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
- <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"></span>
- </div>
- <span className="text-xs font-bold text-emerald-400 uppercase tracking-[0.2em]">Hệ thống vận hành tối ưu</span>
- <div className="w-px h-3 bg-slate-700 mx-2" />
- <span className="text-xs font-medium text-slate-500">Version 2.5.0-Enterprise</span>
- </div>
+ const tabs: { id: Tab; label: string; icon: any }[] = [
+  { id: 'features', label: 'Chức năng', icon: Grid3x3 },
+  { id: 'starred',  label: 'Đánh dấu',  icon: Star },
+  { id: 'all',      label: 'Tất cả',    icon: Layers },
+ ];
 
- <h1 className="font-serif tracking-tight text-4xl md:text-5xl font-black tracking-tight mb-6 text-[#FAF9F5] leading-tight">
- Trung tâm Điều hành <br />
- <span className="bg-white bg-clip-text text-transparent">VComm ERP Intelligence</span>
- </h1>
- 
- <p className="text-slate-500 text-lg font-medium mb-10 max-w-2xl leading-relaxed">
- Hệ thống quản trị doanh nghiệp hợp nhất. <br className="hidden md:block" />
- Truy cập nhanh tất cả các module vận hành từ một giao diện AI-First tập trung.
- </p>
- 
- <div className="flex flex-col md:flex-row items-center gap-6">
- <div className="relative group flex-1 w-full max-w-xl">
- <div className="absolute -inset-1 bg-white rounded-xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200"></div>
- <div className="relative">
- <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-orange-500 transition-colors" />
- <input 
- type="text"
- placeholder="Tìm kiếm module hoặc chức năng (Shift + /)..."
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="w-full bg-slate-800/80 border border-slate-700/50 rounded-xl py-4 pl-14 pr-6 text-base text-[#FAF9F5] placeholder-stone-500 focus:outline-none focus:ring-0 focus:border-slate-900/50 transition-all backdrop-blur-xl"
- />
- </div>
- </div>
- 
- <div className="flex flex-wrap items-center justify-center gap-4 bg-white/5 border border-white/10 p-2 pl-4 rounded-xl backdrop-blur-md">
- <div className="flex items-center gap-2">
- <History className="w-4 h-4 text-slate-500" />
- <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mr-2">Vừa mở:</span>
- </div>
- <div className="flex gap-2">
- {['Dashboard', 'Đơn hàng', 'Sản phẩm'].map(item => (
- <button key={item} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md text-xs font-bold text-slate-500 transition-colors border border-white/5">
- {item}
- </button>
- ))}
- </div>
- </div>
- </div>
- </div>
- </div>
-
- {/* Grid of Modules */}
- <div className="space-y-12">
- {filteredGroups.map((group, idx) => (
- <div key={idx} className="space-y-6">
- <div className="flex items-center gap-4">
- <h2 className="text-sm font-black text-slate-600 uppercase tracking-[0.2em]">
- {group.title}
- </h2>
- <div className="flex-1 h-px bg-slate-200" />
- </div>
- 
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
- {group.items.map((item) => {
- const colorClasses: Record<string, any> = {
- blue: { 
- icon: 'text-orange-700 bg-slate-100 group-hover:bg-slate-900 group-hover:shadow-blue-200',
- border: 'hover:border-slate-900',
- text: 'group-hover:text-orange-700',
- action: 'text-orange-700'
- },
- indigo: { 
- icon: 'text-primary-600 bg-primary-50 group-hover:bg-primary-600 group-hover:shadow-indigo-200',
- border: 'hover:border-primary-600',
- text: 'group-hover:text-primary-600',
- action: 'text-primary-600'
- },
- violet: { 
- icon: 'text-violet-600 bg-violet-50 group-hover:bg-violet-600 group-hover:shadow-violet-200',
- border: 'hover:border-violet-600',
- text: 'group-hover:text-violet-600',
- action: 'text-violet-600'
- },
- cyan: { 
- icon: 'text-cyan-600 bg-cyan-50 group-hover:bg-cyan-600 group-hover:shadow-cyan-200',
- border: 'hover:border-cyan-600',
- text: 'group-hover:text-cyan-600',
- action: 'text-cyan-600'
- },
- emerald: { 
- icon: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-600 group-hover:shadow-emerald-200',
- border: 'hover:border-emerald-600',
- text: 'group-hover:text-emerald-600',
- action: 'text-emerald-600'
- },
- amber: { 
- icon: 'text-amber-600 bg-amber-50 group-hover:bg-amber-600 group-hover:shadow-amber-200',
- border: 'hover:border-amber-600',
- text: 'group-hover:text-amber-600',
- action: 'text-amber-600'
- },
- slate: { 
- icon: 'text-slate-700 bg-slate-50 group-hover:bg-slate-600 group-hover:shadow-slate-200',
- border: 'hover:border-slate-600',
- text: 'group-hover:text-slate-700',
- action: 'text-slate-700'
- },
- orange: { 
- icon: 'text-orange-600 bg-orange-50 group-hover:bg-orange-600 group-hover:shadow-orange-200',
- border: 'hover:border-orange-600',
- text: 'group-hover:text-orange-600',
- action: 'text-orange-600'
- },
- sky: { 
- icon: 'text-sky-600 bg-sky-50 group-hover:bg-sky-600 group-hover:shadow-sky-200',
- border: 'hover:border-sky-600',
- text: 'group-hover:text-sky-600',
- action: 'text-sky-600'
- },
- rose: { 
- icon: 'text-rose-600 bg-rose-50 group-hover:bg-rose-600 group-hover:shadow-rose-200',
- border: 'hover:border-rose-600',
- text: 'group-hover:text-rose-600',
- action: 'text-rose-600'
- },
- pink: { 
- icon: 'text-pink-600 bg-pink-50 group-hover:bg-pink-600 group-hover:shadow-pink-200',
- border: 'hover:border-pink-600',
- text: 'group-hover:text-pink-600',
- action: 'text-pink-600'
- },
- teal: { 
- icon: 'text-teal-600 bg-teal-50 group-hover:bg-teal-600 group-hover:shadow-teal-200',
- border: 'hover:border-teal-600',
- text: 'group-hover:text-teal-600',
- action: 'text-teal-600'
- },
- red: { 
- icon: 'text-red-600 bg-red-50 group-hover:bg-red-600 group-hover:shadow-red-200',
- border: 'hover:border-red-600',
- text: 'group-hover:text-red-600',
- action: 'text-red-600'
- },
- yellow: { 
- icon: 'text-yellow-600 bg-yellow-50 group-hover:bg-yellow-600 group-hover:shadow-yellow-200',
- border: 'hover:border-yellow-600',
- text: 'group-hover:text-yellow-600',
- action: 'text-yellow-600'
- },
- purple: { 
- icon: 'text-purple-600 bg-purple-50 group-hover:bg-purple-600 group-hover:shadow-purple-200',
- border: 'hover:border-purple-600',
- text: 'group-hover:text-purple-600',
- action: 'text-purple-600'
- },
- fuchsia: { 
- icon: 'text-fuchsia-600 bg-fuchsia-50 group-hover:bg-fuchsia-600 group-hover:shadow-fuchsia-200',
- border: 'hover:border-fuchsia-600',
- text: 'group-hover:text-fuchsia-600',
- action: 'text-fuchsia-600'
- },
- lime: { 
- icon: 'text-lime-600 bg-lime-50 group-hover:bg-lime-600 group-hover:shadow-lime-200',
- border: 'hover:border-lime-600',
- text: 'group-hover:text-lime-600',
- action: 'text-lime-600'
- },
- gray: { 
- icon: 'text-slate-700 bg-slate-50 group-hover:bg-slate-600 group-hover:shadow-slate-200',
- border: 'hover:border-slate-600',
- text: 'group-hover:text-slate-700',
- action: 'text-slate-700'
- },
- };
- 
- const classes = colorClasses[item.color || 'blue'] || colorClasses.blue;
+ const displayItems = React.useMemo(() => {
+  let items = activeTab === 'starred'
+   ? allItems.filter(i => starred.includes(i.path))
+   : allItems;
+  if (searchQuery.trim()) {
+   const q = searchQuery.toLowerCase();
+   items = items.filter(i =>
+    i.label.toLowerCase().includes(q) || i.description?.toLowerCase().includes(q)
+   );
+  }
+  return items;
+ }, [activeTab, starred, searchQuery]);
 
  return (
- <button
- key={item.path}
- onClick={() => navigate(item.path)}
- className={cn(
- "group relative bg-white border border-slate-300 rounded-xl p-5 text-left hover:shadow-sm transition-all duration-300 overflow-hidden border-b-2 active:translate-y-0",
- "hover:-translate-y-0.5", 
- classes.border
- )}
- >
- <div className="relative z-10">
- <div className={cn(
- "w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
- "group-hover:text-[#FAF9F5] group-hover:shadow-sm", 
- classes.icon
- )}>
- <item.icon className="w-5 h-5" />
- </div>
- 
- <h3 className={cn("text-base font-bold text-slate-900 mb-1 tracking-tight transition-colors", classes.text)}>
- {item.label}
- </h3>
- 
- <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-2 italic">
- {item.description || 'Module quản lý nghiệp vụ hệ thống.'}
- </p>
- 
- <div className={cn("mt-4 flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0", classes.action)}>
- <span>Truy cập</span>
- <ArrowRight className="w-3 h-3" />
- </div>
- </div>
+  <div className="flex flex-col gap-5 pb-10 animate-in fade-in duration-500">
 
- {/* Decorative background elements */}
- <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500 pointer-events-none">
- <item.icon className="w-32 h-32 -mr-8 -mt-8" />
- </div>
- </button>
- );
- })}
- </div>
- </div>
- ))}
+   {/* Greeting */}
+   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+     <h1 className="text-xl font-bold text-slate-900">
+      {greeting}, <span className="text-blue-600">{userName}</span> 👋
+     </h1>
+     <p className="text-sm text-slate-500 mt-1">Chào mừng bạn trở lại hệ thống VComm ERP</p>
+    </div>
+    <div className="relative w-full sm:w-72">
+     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+     <input
+      type="text"
+      placeholder="Tìm kiếm module..."
+      value={searchQuery}
+      onChange={e => setSearchQuery(e.target.value)}
+      className="w-full bg-white border border-slate-200 py-2.5 pl-10 pr-4 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 rounded-xl"
+     />
+    </div>
+   </div>
 
- {filteredGroups.length === 0 && (
- <div className="py-20 text-center space-y-4">
- <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500">
- <Search className="w-10 h-10" />
- </div>
- <h3 className="text-xl font-bold text-slate-900">Không tìm thấy module phù hợp</h3>
- <p className="text-slate-600">Thử tìm kiếm với từ khóa khác hoặc duyệt danh mục bên dưới.</p>
- <button 
- onClick={() => setSearchQuery('')}
- className="text-orange-700 font-bold hover:underline"
- >
- Xóa tìm kiếm
- </button>
- </div>
- )}
- </div>
+   {/* Tabs */}
+   {!searchQuery && (
+    <div className="flex items-center gap-1.5">
+     {tabs.map(tab => (
+      <button
+       key={tab.id}
+       onClick={() => setActiveTab(tab.id)}
+       className={cn(
+        'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all',
+        activeTab === tab.id
+         ? 'bg-blue-600 text-white shadow-sm'
+         : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-800'
+       )}
+      >
+       <tab.icon className="w-3.5 h-3.5" />
+       {tab.label}
+       {tab.id === 'starred' && starred.length > 0 && (
+        <span className={cn(
+         'text-xs font-bold px-1.5 py-0.5 rounded-full',
+         activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-600'
+        )}>{starred.length}</span>
+       )}
+      </button>
+     ))}
+    </div>
+   )}
 
- {/* Footer Support */}
- <footer className="mt-12 pt-12 border-t border-slate-300">
- <div className="flex flex-col md:flex-row items-center justify-between gap-6">
- <div className="flex items-center gap-6">
- <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Hỗ trợ kỹ thuật: 1900 8888</div>
- <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Version: 2.5.0-Enterprise</div>
- </div>
- <div className="flex gap-4">
- <button className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors">Hướng dẫn sử dụng</button>
- <button className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors">Báo cáo sự cố</button>
- </div>
- </div>
- </footer>
- </div>
+   {/* Module grid */}
+   {activeTab === 'starred' && !searchQuery && displayItems.length === 0 ? (
+    <div className="py-20 text-center">
+     <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <Star className="w-8 h-8 text-amber-400" />
+     </div>
+     <p className="text-slate-600 font-medium">Chưa có module nào được đánh dấu</p>
+     <p className="text-sm text-slate-400 mt-1">Hover vào module và nhấn ⭐ để thêm vào đây</p>
+    </div>
+   ) : (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+     {displayItems.map(item => (
+      <ModuleCard
+       key={item.path}
+       item={item}
+       navigate={navigate}
+       isStarred={starred.includes(item.path)}
+       onToggleStar={toggle}
+      />
+     ))}
+     {displayItems.length === 0 && searchQuery && (
+      <div className="col-span-full py-16 text-center">
+       <Search className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+       <p className="text-slate-500">Không tìm thấy module phù hợp</p>
+       <button onClick={() => setSearchQuery('')} className="mt-2 text-blue-600 text-sm hover:underline">
+        Xóa tìm kiếm
+       </button>
+      </div>
+     )}
+    </div>
+   )}
+  </div>
  );
 }

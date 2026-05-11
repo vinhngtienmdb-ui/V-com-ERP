@@ -36,21 +36,21 @@ export function AIChatBot() {
  <>
  <button 
  onClick={() => setIsOpen(!isOpen)}
- className="fixed bottom-6 right-6 p-4 bg-[#111827] text-[#FAF9F5] rounded-full shadow-sm hover:bg-slate-800 transition-all z-[1000] active:scale-95"
+ className="fixed bottom-6 right-6 p-4 bg-[#111827] text-white rounded-full shadow-sm hover:bg-slate-800 transition-all z-[1000] active:scale-95"
  >
  <MessageSquare className="w-6 h-6" />
  </button>
 
  {isOpen && (
- <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-lg shadow-sm border border-slate-300 flex flex-col z-[1000] animate-in slide-in- fade-in duration-300">
- <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50 rounded-t-[2rem]">
+ <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-sm border border-slate-300 flex flex-col z-[1000] animate-in slide-in- fade-in duration-300">
+ <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-[2rem]">
  <div className="flex items-center gap-3">
  <div className="p-2 bg-slate-900 rounded-lg">
- <Bot className="w-5 h-5 text-[#FAF9F5]" />
+ <Bot className="w-5 h-5 text-white" />
  </div>
- <h3 className="font-black text-[#111827]">Trợ lý VComm</h3>
+ <h3 className="font-bold text-slate-900">Trợ lý VComm</h3>
  </div>
- <button onClick={() => setIsOpen(false)} className="text-[#9CA3AF] hover:text-[#111827]">
+ <button onClick={() => setIsOpen(false)} className="text-[#9CA3AF] hover:text-slate-900">
  <X className="w-5 h-5" />
  </button>
  </div>
@@ -58,28 +58,28 @@ export function AIChatBot() {
  <div className="flex-1 overflow-y-auto p-6 space-y-4">
  {messages.map((m, i) => (
  <div key={i} className={cn("flex", m.role === 'user' ? "justify-end" : "justify-start")}>
- <div className={cn("max-w-[80%] p-4 rounded-lg text-xs leading-relaxed", m.role === 'user' ? "bg-slate-900 text-[#FAF9F5] rounded-tr-none" : "bg-slate-100 text-[#111827] rounded-tl-none")}>
+ <div className={cn("max-w-[80%] p-4 rounded-lg text-xs leading-relaxed", m.role === 'user' ? "bg-blue-600 hover:bg-blue-700 text-white rounded-tr-none" : "bg-slate-100 text-slate-900 rounded-tl-none")}>
  {m.content}
  </div>
  </div>
  ))}
  {isLoading && (
  <div className="flex justify-start">
- <div className="bg-slate-100 text-[#111827] p-4 rounded-lg rounded-tl-none text-xs">Đang suy nghĩ...</div>
+ <div className="bg-slate-100 text-slate-900 p-4 rounded-lg rounded-tl-none text-xs">Đang suy nghĩ...</div>
  </div>
  )}
  <div ref={messagesEndRef} />
  </div>
 
- <div className="p-4 border-t border-[#F3F4F6] flex gap-2">
+ <div className="p-4 border-t border-slate-100 flex gap-2">
  <input 
  value={input}
  onChange={(e) => setInput(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
  placeholder="Nhập yêu cầu của bạn..."
- className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10"
+ className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10"
  />
- <button onClick={handleSend} className="p-3 bg-[#111827] text-[#FAF9F5] rounded-lg hover:bg-slate-800">
+ <button onClick={handleSend} className="p-3 bg-[#111827] text-white rounded-lg hover:bg-slate-800">
  <Send className="w-4 h-4" />
  </button>
  </div>

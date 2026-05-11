@@ -10,7 +10,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       <div className="bg-white border-b border-slate-300 px-6 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-primary-600" /> Quản lý Đơn hàng
               </h2>
               <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -56,15 +56,15 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                    <p className="text-sm">Ghi nhận toàn bộ thao tác của nhân viên trên đơn hàng nhằm đối soát và kiểm toán.</p>
                 </div>
              ) : (
-                <div className="overflow-x-auto min-w-0">
-                <table className="w-full text-left text-sm">
+                <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
+                <table className="min-w-[620px] w-full text-left text-sm border-collapse">
                    <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                        <tr>
-                           <th className="px-4 py-3">Mã KH/Nguồn</th>
+                           <th className="px-4 py-3 whitespace-nowrap">Mã KH/Nguồn</th>
                            <th className="px-4 py-3">Thông tin Đơn</th>
-                           <th className="px-4 py-3">Trạng thái & Đối soát</th>
-                           <th className="px-4 py-3 text-right">Tổng thanh toán</th>
-                           <th className="px-4 py-3 text-center">Thao tác</th>
+                           <th className="px-4 py-3 w-40 whitespace-nowrap">Trạng thái & Đối soát</th>
+                           <th className="px-4 py-3 w-36 whitespace-nowrap text-right">Tổng thanh toán</th>
+                           <th className="px-4 py-3 w-24 whitespace-nowrap text-center">Thao tác</th>
                        </tr>
                    </thead>
                    <tbody>
@@ -80,13 +80,13 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                                </td>
                                <td className="px-4 py-4">
                                    <div className="flex flex-col gap-1">
-                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
+                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
                                           {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
                                       </span>
                                       <span className="text-[10px] font-bold text-slate-500">COD: Đã đối soát</span>
                                    </div>
                                </td>
-                               <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(150000 * i)}</td>
+                               <td className="px-4 py-4 text-right font-bold text-primary-600">{formatCurrency(150000 * i)}</td>
                                <td className="px-4 py-4 text-center space-x-2">
                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>

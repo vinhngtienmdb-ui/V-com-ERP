@@ -9,7 +9,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <Users className="w-5 h-5 text-primary-600" /> Quản lý Khách hàng
           </h2>
           <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -34,27 +34,27 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
                  <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center"><Users className="w-6 h-6" /></div>
                  <div>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Tổng KH Chi Nhánh</p>
-                    <p className="text-2xl font-black text-slate-900">1,248</p>
+                    <p className="text-xl font-bold text-slate-900">1,248</p>
                  </div>
              </div>
              <div className="bg-white p-5 rounded-sm border border-slate-300 shadow-sm flex items-center gap-4">
                  <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center"><Star className="w-6 h-6" /></div>
                  <div>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">KH VIP (Tích cực)</p>
-                    <p className="text-2xl font-black text-slate-900">42</p>
+                    <p className="text-xl font-bold text-slate-900">42</p>
                  </div>
              </div>
          </DraggableGrid>
 
-         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-w-0">
-             <table className="w-full text-left text-sm">
+         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-w-0 custom-scrollbar-x">
+             <table className="min-w-[560px] w-full text-left text-sm border-collapse">
                 <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                     <tr>
                         <th className="px-4 py-3">Khách hàng</th>
-                        <th className="px-4 py-3">Phân loại</th>
-                        <th className="px-4 py-3 text-right">Tổng chi tiêu</th>
-                        <th className="px-4 py-3 text-right">Số điểm</th>
-                        <th className="px-4 py-3 text-center">Đồng bộ CRM</th>
+                        <th className="px-4 py-3 w-24 whitespace-nowrap">Phân loại</th>
+                        <th className="px-4 py-3 w-36 whitespace-nowrap text-right">Tổng chi tiêu</th>
+                        <th className="px-4 py-3 w-24 whitespace-nowrap text-right">Số điểm</th>
+                        <th className="px-4 py-3 w-28 whitespace-nowrap text-center">Đồng bộ CRM</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,12 +68,12 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
                                 </div>
                             </td>
                             <td className="px-4 py-4">
-                                <span className={cn("px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider", i%2===0 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700")}>
+                                <span className={cn("px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider", i%2===0 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700")}>
                                     {i%2===0 ? 'VIP' : 'Thường'}
                                 </span>
                             </td>
                             <td className="px-4 py-4 text-right font-medium text-slate-700">{formatCurrency(1500000 * i)}</td>
-                            <td className="px-4 py-4 text-right font-black text-emerald-600">{100 * i}</td>
+                            <td className="px-4 py-4 text-right font-bold text-emerald-600">{100 * i}</td>
                             <td className="px-4 py-4 text-center">
                                 <span className="text-[10px] font-bold text-emerald-600 flex items-center justify-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"/> Đã đồng bộ</span>
                             </td>

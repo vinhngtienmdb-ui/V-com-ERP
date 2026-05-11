@@ -1,10 +1,10 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
- ShoppingBag, 
- Search, 
- Filter, 
- MoreHorizontal, 
+import {
+ ShoppingBag,
+ Search,
+ Filter,
+ MoreHorizontal,
  Truck,
  RotateCcw,
  PackageCheck,
@@ -19,18 +19,23 @@ import {
  Download,
  BrainCircuit,
  PieChart as PieIcon,
- Sparkles
+ Sparkles,
+ CheckSquare,
+ Square,
+ ChevronDown
 } from 'lucide-react';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, addDoc, updateDoc, doc, serverTimestamp, increment } from 'firebase/firestore';
 
-const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
+const OrderDetailModal = ({ order, onClose, onStatusChange }: { order: any; onClose: () => void; onStatusChange: (orderId: string, newStatus: string) => Promise<void> }) => {
  const [isGenerating, setIsGenerating] = useState(false);
  const [aiResponse, setAiResponse] = useState<string | null>(null);
+ const [selectedStatus, setSelectedStatus] = useState(order.status);
+ const [updatingStatus, setUpdatingStatus] = useState(false);
 
  const handleDraftRma = async (order: any) => {
  setIsGenerating(true);
@@ -49,7 +54,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-sm animate-in zoom-in-95 duration-200">
  <div className="flex justify-between items-start mb-6">
  <div>
- <h2 className="text-2xl font-black text-[#111827]">Chi tiết đơn hàng {order.id}</h2>
+ <h2 className="text-xl font-bold text-slate-900">Chi tiết đơn hàng {order.id}</h2>
  <p className="text-sm text-slate-600 font-medium">Đặt ngày: {order.date}</p>
  </div>
  <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-600">
@@ -59,15 +64,15 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
 
  <div className="grid grid-cols-2 gap-6 mb-8">
  <div className="space-y-2">
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Thông tin khách hàng</p>
- <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thông tin khách hàng</p>
+ <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
  <User className="w-5 h-5 text-slate-500" />
  <span className="font-bold text-slate-900">{order.customerName}</span>
  </div>
  </div>
  <div className="space-y-2">
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Phương thức thanh toán</p>
- <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phương thức thanh toán</p>
+ <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
  <DollarSign className="w-5 h-5 text-slate-500" />
  <span className="font-bold text-slate-900">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
  </div>
@@ -75,8 +80,8 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  </div>
 
  <div className="space-y-4 mb-8">
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Danh sách sản phẩm</p>
- <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Danh sách sản phẩm</p>
+ <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
  {order.items && order.items.length > 0 ? (
  order.items.map((item: any, idx: number) => (
  <div key={idx} className="flex justify-between py-3 border-b last:border-0 border-slate-300 items-center">
@@ -97,15 +102,15 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
  <div className="space-y-4">
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lịch sử Vận chuyển</p>
- <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lịch sử Vận chuyển</p>
+ <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
  <div className="flex items-center gap-4 mb-4">
- <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
+ <div className="p-2 bg-[#EAE7DF] text-blue-600 rounded-lg">
  <Truck className="w-6 h-6" />
  </div>
  <div>
  <p className="font-bold text-slate-900">{order.carrier || 'Chưa vận chuyển'}</p>
- <p className="font-mono text-xs text-orange-700">{order.tracking || 'N/A'}</p>
+ <p className="font-mono text-xs text-blue-600">{order.tracking || 'N/A'}</p>
  </div>
  </div>
  
@@ -131,34 +136,49 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  </div>
 
  <div className="space-y-4">
- <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Hỗ trợ CSKH (AI)</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Hỗ trợ CSKH (AI)</p>
  <div className="p-4 rounded-lg bg-slate-100 border border-slate-300">
- <button onClick={() => handleDraftRma(order)} disabled={isGenerating} className="text-xs font-bold text-[#FAF9F5] bg-slate-900 hover:bg-slate-800 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center">
+ <button onClick={() => handleDraftRma(order)} disabled={isGenerating} className="text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center">
  <BrainCircuit className="w-4 h-4" /> {isGenerating ? 'AI Đang phân tích và tạo phản hồi...' : 'Tạo phản hồi RMA bằng AI'}
  </button>
  {aiResponse ? (
- <div className="bg-white p-3 rounded-lg border border-slate-300 shadow-sm text-sm text-slate-800 whitespace-pre-line leading-relaxed h-48 overflow-y-auto custom-scrollbar">
+ <div className="bg-white p-3 rounded-2xl border border-slate-300 shadow-sm text-sm text-slate-800 whitespace-pre-line leading-relaxed h-48 overflow-y-auto custom-scrollbar">
  {aiResponse}
  </div>
  ) : (
- <div className="bg-white/50 p-3 rounded-lg border border-slate-300 border-dashed text-sm text-slate-600 text-center flex flex-col items-center justify-center h-48">
- <BrainCircuit className="w-8 h-8 text-blue-300 mb-2 opacity-50" />
+ <div className="bg-white/50 p-3 rounded-2xl border border-slate-300 border-dashed text-sm text-slate-600 text-center flex flex-col items-center justify-center h-48">
+ <BrainCircuit className="w-8 h-8 text-blue-600 mb-2 opacity-50" />
  Nhấp để tự động phân tích đơn hàng<br/>và sinh mẫu phản hồi CSKH.
  </div>
  )}
  </div>
  
- {/* Action buttons based on payment rules */}
- <div className="space-y-2 mt-4">
- {order.paymentMethod === 'cod' && order.status === 'delivered' && (
- <button className="w-full bg-emerald-500 text-[#FAF9F5] px-4 py-3 rounded-lg text-sm font-bold hover:bg-emerald-600 shadow-sm flex items-center justify-center gap-2">
- <DollarSign className="w-5 h-5" /> Xác nhận thực thu COD
- </button>
- )}
+ <div className="space-y-3 mt-4">
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Cập nhật trạng thái</p>
+ <div className="flex gap-2">
+  <select
+  value={selectedStatus}
+  onChange={e => setSelectedStatus(e.target.value)}
+  className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none bg-white"
+  >
+  {Object.entries(statusLabels).map(([val, label]) => (
+   <option key={val} value={val}>{label}</option>
+  ))}
+  </select>
+  <button
+  onClick={async () => {
+   if (selectedStatus === order.status) return;
+   setUpdatingStatus(true);
+   await onStatusChange(order.id, selectedStatus);
+   setUpdatingStatus(false);
+   onClose();
+  }}
+  disabled={updatingStatus || selectedStatus === order.status}
+  className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  >{updatingStatus ? '...' : 'Lưu'}</button>
+ </div>
  {order.paymentMethod === 'cod' && order.status === 'processing' && (
- <button className="w-full bg-slate-100 text-slate-500 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
- <Clock className="w-5 h-5" /> Chờ giao để thu COD
- </button>
+  <p className="text-[10px] text-amber-600 font-medium">Chưa thu COD — chờ giao hàng thành công</p>
  )}
  </div>
  </div>
@@ -294,22 +314,27 @@ export function Orders() {
  const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
  const [statusFilter, setStatusFilter] = useState<string>('all');
  const [dateQuery, setDateQuery] = useState<string>('');
+ const [searchQuery, setSearchQuery] = useState<string>('');
  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
  const [dbOrders, setDbOrders] = useState<any[]>([]);
 
  useEffect(() => {
  const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
- const unsub = onSnapshot(q, (snap) => {
- const data = snap.docs.map(doc => {
- const d = doc.data();
- return {
- id: doc.id,
- ...d,
- date: d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')
- };
- });
- setDbOrders(data);
- });
+ const unsub = onSnapshot(
+  q,
+  (snap) => {
+   const data = snap.docs.map(doc => {
+    const d = doc.data();
+    return {
+     id: doc.id,
+     ...d,
+     date: d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')
+    };
+   });
+   setDbOrders(data);
+  },
+  (error) => console.error('Orders snapshot error:', error)
+ );
  return () => unsub();
  }, []);
 
@@ -318,13 +343,103 @@ export function Orders() {
  }, [dbOrders]);
 
  const filteredOrders = useMemo(() => {
+ const q = searchQuery.trim().toLowerCase();
  return allOrders.filter(order => {
  const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
  const matchesDate = !dateQuery || (order.date && order.date.includes(dateQuery));
  const matchesActiveStep = activeStep === 'all' || (activeStep === 'rma' && order.status === 'returning');
- return matchesStatus && matchesDate && matchesActiveStep;
+ const matchesSearch = !q || (
+  (order.id && order.id.toLowerCase().includes(q)) ||
+  (order.tracking && order.tracking.toLowerCase().includes(q)) ||
+  (order.customerName && order.customerName.toLowerCase().includes(q)) ||
+  (order.phone && order.phone.includes(q))
+ );
+ return matchesStatus && matchesDate && matchesActiveStep && matchesSearch;
  });
- }, [allOrders, activeStep, statusFilter, dateQuery]);
+ }, [allOrders, activeStep, statusFilter, dateQuery, searchQuery]);
+
+ useEffect(() => { setSelectedIds(new Set()); }, [statusFilter, activeStep, searchQuery, dateQuery]);
+
+ const handleStatusChange = async (orderId: string, newStatus: string) => {
+ const isMockOrder = orderId.startsWith('ORD-2024') || orderId.startsWith('ORD-DELAY');
+ const order = allOrders.find(o => o.id === orderId);
+ if (!order) return;
+
+ if (!isMockOrder) {
+  await updateDoc(doc(db, 'orders', orderId), { status: newStatus, updatedAt: serverTimestamp() });
+ }
+
+ if (newStatus === 'delivered') {
+  await addDoc(collection(db, 'finance_transactions'), {
+  description: `Thu hộ đơn hàng #${orderId} - ${order.customerName}`,
+  amount: order.total,
+  type: 'income',
+  category: 'Sales',
+  orderId,
+  dateStr: new Date().toLocaleDateString('vi-VN'),
+  createdAt: serverTimestamp(),
+  createdBy: 'system_pipeline'
+  });
+ }
+
+ if (newStatus === 'shipped' && order.items) {
+  for (const item of order.items) {
+  if (item.productId) {
+   try {
+   await updateDoc(doc(db, 'products', item.productId), {
+    stock: increment(-(item.quantity || 1))
+   });
+   } catch (e) {
+   console.warn('Stock deduction failed for', item.productId, e);
+   }
+  }
+  }
+ }
+ };
+
+ const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+ const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
+ const [bulkLoading, setBulkLoading] = useState(false);
+
+ const toggleSelect = (id: string, e: React.MouseEvent) => {
+   e.stopPropagation();
+   setSelectedIds(prev => {
+     const next = new Set(prev);
+     next.has(id) ? next.delete(id) : next.add(id);
+     return next;
+   });
+ };
+
+ const toggleSelectAll = () => {
+   if (selectedIds.size === filteredOrders.length) {
+     setSelectedIds(new Set());
+   } else {
+     setSelectedIds(new Set(filteredOrders.map(o => o.id)));
+   }
+ };
+
+ const handleBulkStatus = async (newStatus: string) => {
+   setBulkLoading(true);
+   await Promise.all([...selectedIds].map(id => handleStatusChange(id, newStatus)));
+   setSelectedIds(new Set());
+   setBulkLoading(false);
+   setBulkStatusOpen(false);
+ };
+
+ const handleBulkExport = () => {
+   const rows = filteredOrders.filter(o => selectedIds.has(o.id));
+   const headers = ['Mã đơn', 'Khách hàng', 'Ngày', 'Tổng tiền', 'Trạng thái', 'Thanh toán', 'Carrier', 'Tracking', 'Cước phí'];
+   const csv = [headers, ...rows.map(o => [
+     o.id, o.customerName, o.date, o.total,
+     statusLabels[o.status as keyof typeof statusLabels] || o.status,
+     paymentMethodLabels[o.paymentMethod] || o.paymentMethod,
+     o.carrier || '', o.tracking || '', o.shippingCost || 0
+   ])].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement('a'); a.href = url; a.download = `orders_bulk_${Date.now()}.csv`; a.click();
+   URL.revokeObjectURL(url);
+ };
 
  const [aiResponse, setAiResponse] = useState('');
  const [isGenerating, setIsGenerating] = useState(false);
@@ -389,82 +504,84 @@ export function Orders() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Vận hành Đơn hàng & Logistics</h1>
- <p className="text-sm text-[#6B7280] mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
+ <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Vận hành Đơn hàng & Logistics</h1>
+ <p className="text-sm text-slate-500 mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
  </div>
  <div className="flex gap-3">
- <button 
+ <button
  onClick={addDemoOrders}
  className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
  >
  <Sparkles className="w-4 h-4" />
- Mã giảm giá
+ Thêm đơn mẫu
  </button>
- <button className="bg-[#111827] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-[#111827] text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  + Tạo đơn mới
  </button>
  </div>
  </div>
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
+ <div className="bg-white p-4 border border-red-200 ring-1 ring-red-100 transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
  <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
  </div>
- <div className="text-3xl font-black text-red-600">
+ <div className="text-3xl font-bold text-red-600">
  {allOrders.filter(o => isDelayed(o.date, o.status)).length}
  </div>
  <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-4 border border-slate-200 transition-all">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Cần đóng gói</span>
- <PackageCheck className="w-4 h-4 text-orange-600" />
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Cần đóng gói</span>
+ <PackageCheck className="w-4 h-4 text-blue-600" />
  </div>
- <div className="text-3xl font-black text-[#111827]">42</div>
- <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">12 đơn đóng muộn ({">"}24h)</div>
+ <div className="text-3xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'pending').length}</div>
+ <div className="mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{allOrders.filter(o => isDelayed(o.date, o.status) && o.status === 'pending').length} đơn đóng muộn ({">"}24h)</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-4 border border-slate-200 transition-all">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang vận chuyển</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Đang vận chuyển</span>
  <Truck className="w-4 h-4 text-purple-500" />
  </div>
- <div className="text-3xl font-black text-[#111827]">156</div>
- <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
+ <div className="text-3xl font-bold text-slate-900">{allOrders.filter(o => o.status === 'shipped').length}</div>
+ <div className="mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
  </div>
- <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full text-[#FAF9F5]">
+ <div className="bg-[#111827] p-4 relative overflow-hidden group border border-slate-800">
+ <div className="relative z-10 flex flex-col justify-between h-full text-white">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
  <RotateCcw className="w-4 h-4 text-orange-400" />
  </div>
  <div>
- <div className="text-3xl font-black tracking-tighter">08</div>
- <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
+ <div className="text-3xl font-bold tracking-tighter">{String(allOrders.filter(o => o.status === 'returning').length).padStart(2, '0')}</div>
+ <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">{allOrders.filter(o => o.status === 'returning' && isDelayed(o.date, o.status)).length} đơn cần xử lý gấp</p>
  </div>
  </div>
- <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
+ <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
  </DraggableGrid>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng cước phí dự kiến</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Tổng cước phí dự kiến</span>
  <DollarSign className="w-4 h-4 text-emerald-500" />
  </div>
- <div className="text-2xl font-bold text-[#111827]">{formatCurrency(12450000)}</div>
+ <div className="text-xl font-bold text-slate-900">{formatCurrency(allOrders.reduce((sum, o) => sum + (o.shippingCost || 0), 0))}</div>
  <div className="mt-1 text-[10px] text-[#10B981]">Tiết kiệm 8% với Hợp đồng sàn</div>
  </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
- <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
+ <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+ <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
  <div className="flex gap-4">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input 
- type="text" 
- placeholder="Mã đơn, Mã Tracking, SĐT..." 
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+ <input
+ type="text"
+ value={searchQuery}
+ onChange={(e) => setSearchQuery(e.target.value)}
+ placeholder="Mã đơn, Mã Tracking, SĐT..."
+ className="bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
  />
  </div>
  
@@ -472,7 +589,7 @@ export function Orders() {
  <select 
  value={statusFilter}
  onChange={(e) => setStatusFilter(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-[#4B5563] appearance-none"
+ className="bg-white border border-slate-200 rounded-2xl px-3 py-2 text-sm text-[#4B5563] appearance-none"
  >
  <option value="all">Tất cả trạng thái</option>
  {Object.entries(statusLabels).map(([key, label]) => (
@@ -487,37 +604,78 @@ export function Orders() {
  value={dateQuery}
  onChange={(e) => setDateQuery(e.target.value)}
  placeholder="Ngày (YYYY-MM-DD)"
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-48"
+ className="bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-sm focus:outline-none w-48"
  />
  </div>
  </div>
  
- <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
+ <div className="flex border border-slate-200 rounded-2xl overflow-hidden bg-white">
  <button 
  onClick={() => setActiveStep('all')}
- className={cn("px-4 py-2 text-xs font-semibold", activeStep === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
+ className={cn("px-4 py-2 text-xs font-semibold", activeStep === 'all' ? "bg-blue-600 text-white" : "text-[#4B5563]")}
  >Tất cả</button>
  <button 
  onClick={() => setActiveStep('rma')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300", activeStep === 'rma' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300", activeStep === 'rma' ? "bg-blue-600 text-white" : "text-[#4B5563]")}
  >Phê duyệt Hoàn tiền/Trả hàng</button>
  </div>
  </div>
 
-   <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4 h-[600px]">
+   {selectedIds.size > 0 && (
+     <div className="mt-4 flex items-center gap-3 bg-blue-600 text-white px-5 py-3 rounded-xl shadow-sm animate-in slide-in-from-top-2 duration-200">
+       <CheckSquare className="w-4 h-4 text-orange-400 shrink-0" />
+       <span className="text-sm font-bold">{selectedIds.size} đơn đã chọn</span>
+       <div className="flex-1" />
+       <div className="relative">
+         <button
+           onClick={() => setBulkStatusOpen(v => !v)}
+           disabled={bulkLoading}
+           className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-colors"
+         >
+           Đổi trạng thái <ChevronDown className="w-3 h-3" />
+         </button>
+         {bulkStatusOpen && (
+           <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden z-20 animate-in fade-in duration-150">
+             {Object.entries(statusLabels).map(([key, label]) => (
+               <button key={key} onClick={() => handleBulkStatus(key)}
+                 className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 font-medium">
+                 {label}
+               </button>
+             ))}
+           </div>
+         )}
+       </div>
+       <button onClick={handleBulkExport}
+         className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-colors">
+         <Download className="w-3.5 h-3.5" /> Xuất CSV
+       </button>
+       <button onClick={() => setSelectedIds(new Set())}
+         className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors">
+         <X className="w-4 h-4" />
+       </button>
+     </div>
+   )}
+
+   <div className="bg-white border border-slate-200 overflow-hidden mt-3">
   <TableVirtuoso
     data={filteredOrders}
     components={{
-      Scroller: React.forwardRef((props, ref) => (<div {...props} ref={ref} className="overflow-auto custom-scrollbar" />)),
-      Table: ({ style, ...props }) => <table {...props} className="w-full text-left border-collapse table-auto" style={style} />,
-      TableHead: React.forwardRef((props, ref) => <thead {...props} ref={ref} className="bg-[#F9FAFB] border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm" />),
+      Scroller: React.forwardRef((props, ref) => (
+        <div {...props} ref={ref} className="overflow-auto custom-scrollbar custom-scrollbar-x" />
+      )),
+      Table: ({ style, ...props }) => (
+        <table {...props} style={style} className="min-w-[780px] w-full text-left border-collapse" />
+      ),
+      TableHead: React.forwardRef((props, ref) => (
+        <thead {...props} ref={ref} className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 shadow-sm" />
+      )),
       TableRow: (props) => {
         const order = props.item;
         return (
-          <tr 
-            {...props} 
+          <tr
+            {...props}
             className={cn(
-              "bg-white hover:bg-slate-50 group hover:shadow-sm transition-all cursor-pointer relative border-l-4 border-transparent hover:border-l-indigo-600 border-b border-[#F3F4F6]",
+              "bg-white hover:bg-slate-50 group transition-all cursor-pointer border-l-4 border-transparent hover:border-l-indigo-600 border-b border-slate-100",
               isDelayed(order?.date || '', order?.status || '') && "bg-red-50/30 border-l-red-500"
             )}
             onClick={() => setSelectedOrder(order)}
@@ -527,80 +685,91 @@ export function Orders() {
     }}
     fixedHeaderContent={() => (
       <tr>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Đơn hàng & Khách hàng</th>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Giao nhận & Tracking</th>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Cước phí</th>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">Thanh toán</th>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center bg-[#F9FAFB]">Trạng thái</th>
-        <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right bg-[#F9FAFB]">Thao tác</th>
+        <th className="px-3 py-1.5 bg-slate-50 w-10 text-center" onClick={e => e.stopPropagation()}>
+          <button onClick={toggleSelectAll} className="text-slate-400 hover:text-slate-700 transition-colors">
+            {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
+              ? <CheckSquare className="w-4 h-4 text-blue-600" />
+              : <Square className="w-4 h-4" />}
+          </button>
+        </th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 w-44 whitespace-nowrap">Đơn hàng & Khách hàng</th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 whitespace-nowrap">Giao nhận & Tracking</th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 w-32 whitespace-nowrap">Cước phí</th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 w-32 whitespace-nowrap">Thanh toán</th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center bg-slate-50 w-32 whitespace-nowrap">Trạng thái</th>
+        <th className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right bg-slate-50 w-16 whitespace-nowrap">Thao tác</th>
       </tr>
     )}
-    itemContent={(index, order) => (
+    itemContent={(_index, order) => (
       <>
-        <td className="px-6 py-4">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
+        <td className="px-3 py-1.5 w-10 text-center" onClick={e => toggleSelect(order.id, e)}>
+          {selectedIds.has(order.id)
+            ? <CheckSquare className="w-4 h-4 text-blue-600 inline" />
+            : <Square className="w-4 h-4 text-slate-300 inline group-hover:text-slate-400 transition-colors" />}
+        </td>
+        <td className="px-3 py-1.5 w-44">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors whitespace-nowrap">#{order.id.split('-').pop()}</p>
             {isDelayed(order.date, order.status) && (
-              <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Delayed</span>
+              <span className="shrink-0 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-bold uppercase rounded">!</span>
             )}
           </div>
-          <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
-          <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5 font-medium truncate max-w-[160px]">{order.customerName}</p>
+          <p className="text-[10px] text-[#9CA3AF] mt-0.5 whitespace-nowrap">{order.date}</p>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-1.5">
           {order.carrier ? (
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-orange-200 transition-colors">
-                <span className="text-[10px] font-bold text-slate-800 uppercase">{order.carrier}</span>
-                <span className="text-[10px] font-mono text-[#2563EB] font-bold">{order.tracking}</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="min-w-0 flex-1 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm group-hover:border-orange-200 transition-colors">
+                <p className="text-[10px] font-bold text-slate-800 uppercase whitespace-nowrap">{order.carrier}</p>
+                <p className="text-[10px] font-mono text-blue-600 font-bold truncate">{order.tracking}</p>
               </div>
-              <button 
+              <button
                 onClick={(e) => { e.stopPropagation(); }}
-                className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1 shrink-0"
+                className="shrink-0 text-[10px] text-blue-600 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1"
               >
-                <MapPin className="w-3 h-3" /> Tra cứu
+                <MapPin className="w-3 h-3" /> Tra
               </button>
             </div>
           ) : (
             <span className="text-[10px] text-[#9CA3AF] italic">Chưa đẩy đơn</span>
           )}
         </td>
-        <td className="px-6 py-4">
-          <p className="text-sm font-semibold text-[#111827]">{formatCurrency(order.total)}</p>
-          <p className="text-[10px] text-[#6B7280]">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
+        <td className="px-3 py-1.5 w-32 whitespace-nowrap">
+          <p className="text-sm font-semibold text-slate-900">{formatCurrency(order.total)}</p>
+          <p className="text-[10px] text-slate-500">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
         </td>
-        <td className="px-6 py-4">
-          <p className="text-sm font-semibold text-[#111827]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
+        <td className="px-3 py-1.5 w-32">
+          <p className="text-xs font-semibold text-slate-900 truncate max-w-[110px]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-1.5 w-32">
           <div className="flex justify-center">
             <span className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",
+              "px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1",
               statusStyles[order.status as keyof typeof statusStyles] || "bg-slate-100 text-slate-700"
             )}>
-              {React.createElement(statusIcons[order.status as keyof typeof statusIcons] || Package, { className: "w-3 h-3" })}
+              {React.createElement(statusIcons[order.status as keyof typeof statusIcons] || Package, { className: "w-3 h-3 shrink-0" })}
               {statusLabels[order.status as keyof typeof statusLabels] || order.status}
             </span>
           </div>
         </td>
-        <td className="px-6 py-4 text-right">
-          <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
-            <button 
-              onClick={(e) => { e.stopPropagation(); }}
-              className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all active:scale-95"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
-          </div>
+        <td className="px-3 py-1.5 w-16 text-right">
+          <button
+            onClick={(e) => { e.stopPropagation(); }}
+            className="p-2 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all opacity-0 group-hover:opacity-100"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
         </td>
       </>
     )}
   />
   </div>
   {selectedOrder && (
- <OrderDetailModal 
- order={selectedOrder} 
- onClose={() => setSelectedOrder(null)} 
+ <OrderDetailModal
+ order={selectedOrder}
+ onClose={() => setSelectedOrder(null)}
+ onStatusChange={handleStatusChange}
  />
  )}
 
