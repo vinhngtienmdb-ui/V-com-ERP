@@ -644,69 +644,66 @@ export function Dashboard() {
   margin={[24, 24]}
  >
   {config.showSLA && (
-  <div key="sla" className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
-  <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
-  <h3 className="font-bold text-white text-lg flex items-center gap-2 pointer-events-none">
-  <Activity className="w-5 h-5 text-orange-500" />
+  <div key="sla" className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full w-full overflow-hidden">
+  {/* Header */}
+  <div className="drag-handle cursor-move px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors">
+  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 pointer-events-none">
+  <Activity className="w-4 h-4 text-blue-500" />
   Báo cáo Vận hành
   </h3>
-  <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
-  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+  <div className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
+  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
   Live
   </div>
   </div>
-  
-  <div className="px-6 flex-1 flex flex-col justify-end relative z-10 pb-6 pointer-events-none">
-  <div className="grid grid-cols-2 gap-4 mb-2">
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Giao đúng hạn</div>
-  <div className="text-2xl font-bold flex items-baseline gap-1">
-  98.5<span className="text-sm font-normal text-slate-500">%</span>
+
+  {/* Stat mini-cards */}
+  <div className="p-4 flex-1 flex flex-col gap-3 overflow-y-auto">
+  <div className="grid grid-cols-2 gap-3">
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Giao đúng hạn</div>
+  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-0.5">98.5<span className="text-xs font-medium text-slate-400">%</span></div>
+  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-medium">+1.2% <TrendingUp className="w-3 h-3"/></div>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Lỗi / Sự cố</div>
+  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-0.5">1.2<span className="text-xs font-medium text-slate-400">%</span></div>
+  <div className="text-xs text-rose-600 mt-1 flex items-center gap-1 font-medium">-0.4% <TrendingDown className="w-3 h-3"/></div>
   </div>
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Lỗi / Sự cố</div>
-  <div className="text-2xl font-bold flex items-baseline gap-1">
-  1.2<span className="text-sm font-normal text-slate-500">%</span>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
-  </div>
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4 col-span-2 flex justify-between items-center">
+
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between">
   <div>
-  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Xử lý Đơn (TB)</div>
-  <div className="text-2xl font-bold flex items-baseline gap-1">
-  2.4<span className="text-sm font-normal text-slate-500">giờ</span>
+  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Xử lý Đơn (TB)</div>
+  <div className="text-xl font-bold text-slate-900 flex items-baseline gap-1">2.4<span className="text-xs font-medium text-slate-400">giờ</span></div>
+  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-medium">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
-  </div>
-  <div className="w-24 h-12 opacity-80">
-  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
-  <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  <div className="w-20 h-10">
+  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible">
+  <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
   </div>
   </div>
-  </div>
-  
-  <div className="space-y-5">
+
+  {/* Progress bars */}
+  <div className="space-y-3 mt-1">
   {[
-  { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-400', unit: '%' },
-  { label: 'Tỉ lệ Duyệt Tự động', value: 82.5, color: 'bg-emerald-400', unit: '%' },
-  { label: 'Tỷ lệ Hủy/Hoàn trả', value: 2.4, color: 'bg-rose-400', unit: '%' },
+  { label: 'Tỷ lệ Hoàn thành Đơn', value: 94.2, color: 'bg-blue-500', unit: '%' },
+  { label: 'Tỉ lệ Duyệt Tự động',   value: 82.5, color: 'bg-emerald-500', unit: '%' },
+  { label: 'Tỷ lệ Hủy/Hoàn trả',   value: 2.4,  color: 'bg-rose-500', unit: '%' },
   ].map((item) => (
-  <div key={item.label} className="group">
-  <div className="flex justify-between items-end mb-2">
-  <span className="text-xs font-bold text-slate-500">{item.label}</span>
-  <span className="text-sm font-bold text-white">{item.value}{item.unit}</span>
+  <div key={item.label}>
+  <div className="flex justify-between items-center mb-1">
+  <span className="text-xs font-medium text-slate-600">{item.label}</span>
+  <span className="text-xs font-bold text-slate-900">{item.value}{item.unit}</span>
   </div>
-  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-  <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
+  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+  <div className={cn("h-full rounded-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
   </div>
   </div>
   ))}
   </div>
   </div>
-  <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-800/20 blur-3xl rounded-full pointer-events-none"></div>
   </div>
   )}
 
