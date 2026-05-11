@@ -107,7 +107,7 @@ import { IPosReports, IPosPromotions } from "./IPosReports";
 import { IPosStaff, IPosStore } from "../types/erp";
 import { useNavigate } from "react-router-dom";
 
-const BOM_MAP: Record<string, { materialId: string; quantity: number }[]> = {
+const BOM_MAP: Recordpstring, { materialId: string; quantity: number }[]> = {
   "Cafe Phin Sữa Đá": [
     { materialId: "MAT-001", quantity: 0.03 }, // 30g Coffee beans
     { materialId: "MAT-002", quantity: 0.02 }, // 20ml Condensed milk
@@ -198,7 +198,7 @@ const CartItemEditingModal = ({
   onSave: (updatedItem: any) => void 
 }) => {
   const [note, setNote] = useState(item.note || '');
-  const [toppings, setToppings] = useState<any[]>(item.toppings || []);
+  const [toppings, setToppings] = useStatepany[]>(item.toppings || []);
 
   const handleToggleTopping = (topping: any) => {
     if (toppings.find(t => t.id === topping.id)) {
@@ -213,78 +213,78 @@ const CartItemEditingModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-          <div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">{item.name}</h3>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-primary-600 mt-1">Tùy chỉnh món</p>
-          </div>
-          <button onClick={onClose} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    pdiv className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+      pdiv className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        pdiv className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+          pdiv>
+            ph3 className="text-xl font-bold text-slate-900 tracking-tight">{item.name}p/h3>
+            pp className="text-[10px] uppercase font-bold tracking-widest text-primary-600 mt-1">Tùy chỉnh mónp/p>
+          p/div>
+          pbutton onClick={onClose} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+            pX className="w-5 h-5" />
+          p/button>
+        p/div>
         
-        <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+        pdiv className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {/* Ghi chú */}
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
+          pdiv className="space-y-3">
+            plabel className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
               Ghi chú thêm
-            </label>
-            <textarea
+            p/label>
+            ptextarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Ví dụ: Ít đá, không đường, ..."
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all resize-none shadow-sm h-24"
             />
-          </div>
+          p/div>
 
           {/* Toppings */}
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
+          pdiv className="space-y-3">
+            plabel className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
               Thêm Topping / Phụ phí
-            </label>
-            <div className="space-y-2">
+            p/label>
+            pdiv className="space-y-2">
               {MOCK_TOPPINGS.map(topping => {
                 const isSelected = toppings.some((t: any) => t.id === topping.id);
                 return (
-                  <label 
+                  plabel 
                     key={topping.id} 
                     className={cn(
                       "w-full flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
                       isSelected ? "border-primary-600 bg-primary-50/50" : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
                     )}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
+                    pdiv className="flex items-center gap-3">
+                      pdiv className={cn(
                         "w-5 h-5 rounded border flex items-center justify-center transition-colors",
                         isSelected ? "bg-primary-600 border-primary-600 text-white" : "border-slate-400"
                       )}>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
-                      </div>
-                      <span className={cn("text-sm font-bold", isSelected ? "text-primary-900" : "text-slate-800")}>{topping.name}</span>
-                    </div>
-                    <span className={cn("text-xs font-bold", isSelected ? "text-primary-600" : "text-slate-600")}>
+                        {isSelected && pCheckCircle2 className="w-3.5 h-3.5" />}
+                      p/div>
+                      pspan className={cn("text-sm font-bold", isSelected ? "text-primary-900" : "text-slate-800")}>{topping.name}p/span>
+                    p/div>
+                    pspan className={cn("text-xs font-bold", isSelected ? "text-primary-600" : "text-slate-600")}>
                       +{new Intl.NumberFormat('vi-VN').format(topping.price)}
-                    </span>
-                    <input type="checkbox" className="hidden" checked={isSelected} onChange={() => handleToggleTopping(topping)} />
-                  </label>
+                    p/span>
+                    pinput type="checkbox" className="hidden" checked={isSelected} onChange={() => handleToggleTopping(topping)} />
+                  p/label>
                 );
               })}
-            </div>
-          </div>
-        </div>
+            p/div>
+          p/div>
+        p/div>
 
-        <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm">
+        pdiv className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
+          pbutton onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm">
             Hủy
-          </button>
-          <button onClick={handleSave} className="px-6 py-2.5 rounded-lg font-bold bg-primary-600 hover:bg-primary-700 text-white shadow-sm transition-colors text-sm flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4" /> Lưu tùy chỉnh
-          </button>
-        </div>
-      </div>
-    </div>
+          p/button>
+          pbutton onClick={handleSave} className="px-6 py-2.5 rounded-lg font-bold bg-primary-600 hover:bg-primary-700 text-white shadow-sm transition-colors text-sm flex items-center gap-2">
+            pCheckCircle2 className="w-4 h-4" /> Lưu tùy chỉnh
+          p/button>
+        p/div>
+      p/div>
+    p/div>
   );
 };
 
@@ -292,8 +292,8 @@ export function IPosModule() {
   const { user } = useAuth();
   const { activeStore } = useStore();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]);
-  const [cart, setCart] = useState<any[]>(() => {
+  const [products, setProducts] = useStatepany[]>([]);
+  const [cart, setCart] = useStatepany[]>(() => {
     const saved = localStorage.getItem("ipos_cart");
     return saved ? JSON.parse(saved) : [];
   });
@@ -301,7 +301,7 @@ export function IPosModule() {
   useEffect(() => {
     localStorage.setItem("ipos_cart", JSON.stringify(cart));
   }, [cart]);
-  const [customer, setCustomer] = useState<any | null>(() => {
+  const [customer, setCustomer] = useStatepany | null>(() => {
     const saved = localStorage.getItem("ipos_customer");
     return saved ? JSON.parse(saved) : null;
   });
@@ -314,7 +314,7 @@ export function IPosModule() {
     const saved = localStorage.getItem("ipos_shift_active");
     return saved === "true";
   });
-  const [shiftData, setShiftData] = useState<any>(() => {
+  const [shiftData, setShiftData] = useStatepany>(() => {
     const saved = localStorage.getItem("ipos_shift_data");
     return saved ? JSON.parse(saved) : null;
   });
@@ -456,7 +456,7 @@ export function IPosModule() {
       },
     ];
   };
-  const [activeTab, setActiveTab] = useState<
+  const [activeTab, setActiveTab] = useStatep
     | "sales"
     | "history"
     | "lookup"
@@ -473,8 +473,8 @@ export function IPosModule() {
     | "reports"
     | "promotions"
   >("dashboard");
-  const [orderHistory, setOrderHistory] = useState<any[]>([]);
-  const [incomingExternalOrders, setIncomingExternalOrders] = useState<any[]>([
+  const [orderHistory, setOrderHistory] = useStatepany[]>([]);
+  const [incomingExternalOrders, setIncomingExternalOrders] = useStatepany[]>([
     {
       id: `EXT-${Date.now()}-1`,
       platform: "GrabFood",
@@ -507,16 +507,16 @@ export function IPosModule() {
   ]);
 
   // RBAC State
-  const [userRole, setUserRole] = useState<"admin" | "manager" | "employee">(
+  const [userRole, setUserRole] = useStatep"admin" | "manager" | "employee">(
     "employee",
   );
-  const [staffList, setStaffList] = useState<IPosStaff[]>([]);
+  const [staffList, setStaffList] = useStatepIPosStaff[]>([]);
   const [isAddingStaff, setIsAddingStaff] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<IPosStaff | null>(null);
-  const [mgmtSubTab, setMgmtSubTab] = useState<
+  const [editingStaff, setEditingStaff] = useStatepIPosStaff | null>(null);
+  const [mgmtSubTab, setMgmtSubTab] = useStatep
     "staff" | "store" | "revenue" | "reports" | "channels"
   >("revenue");
-  const [staffForm, setStaffForm] = useState<Partial<IPosStaff>>({
+  const [staffForm, setStaffForm] = useStatepPartialpIPosStaff>>({
     fullName: "",
     email: "",
     phone: "",
@@ -541,18 +541,18 @@ export function IPosModule() {
     }
   }, [editingStaff, isAddingStaff]);
 
-  const [suspendedCarts, setSuspendedCarts] = useState<any[]>([]);
-  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [suspendedCarts, setSuspendedCarts] = useStatepany[]>([]);
+  const [selectedStaff, setSelectedStaff] = useStatepany>(null);
   const [isReturnMode, setIsReturnMode] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  const [selectedProductLookup, setSelectedProductLookup] = useState<
+  const [selectedProductLookup, setSelectedProductLookup] = useStatep
     any | null
   >(null);
   const [showShiftSummary, setShowShiftSummary] = useState(false);
-  const [printMode, setPrintMode] = useState<"proforma" | "customer_bill" | "kitchen_bill">("customer_bill");
+  const [printMode, setPrintMode] = useStatep"proforma" | "customer_bill" | "kitchen_bill">("customer_bill");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
-  const [completedOrderData, setCompletedOrderData] = useState<any>(null);
+  const [completedOrderData, setCompletedOrderData] = useStatepany>(null);
   const [invoiceEmail, setInvoiceEmail] = useState("");
   const [invoiceTaxCode, setInvoiceTaxCode] = useState("");
   const [invoiceCompanyName, setInvoiceCompanyName] = useState("");
@@ -561,20 +561,20 @@ export function IPosModule() {
   const [showPromoInputModal, setShowPromoInputModal] = useState(false);
   const [customPromoInput, setCustomPromoInput] = useState("");
   const [customItem, setCustomItem] = useState({ name: "", price: "" });
-  const [editingCartItem, setEditingCartItem] = useState<any>(null);
+  const [editingCartItem, setEditingCartItem] = useStatepany>(null);
   const [orderNote, setOrderNote] = useState("");
   const [isOffline, setIsOffline] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [voiceHint, setVoiceHint] = useState<string | null>(null);
+  const [voiceHint, setVoiceHint] = useStatepstring | null>(null);
   const [returnReason, setReturnReason] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<
+  const [paymentMethod, setPaymentMethod] = useStatep
     "cash" | "qr" | "pos" | "promo_qr" | "loyalty" | "virtual_account"
   >("cash");
   const [usePromoWallet, setUsePromoWallet] = useState(false);
   const [showCustomerPromoQR, setShowCustomerPromoQR] = useState(false);
-  const [customPromoAmount, setCustomPromoAmount] = useState<number>(0);
-  const [guestCash, setGuestCash] = useState<string>("");
+  const [customPromoAmount, setCustomPromoAmount] = useStatepnumber>(0);
+  const [guestCash, setGuestCash] = useStatepstring>("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Keyboard Shortcuts
@@ -626,10 +626,10 @@ export function IPosModule() {
   const [actualCashInput, setActualCashInput] = useState("");
   const [openingCashInput, setOpeningCashInput] = useState("2000000");
   const [handoverNote, setHandoverNote] = useState("");
-  const [selectedTableForQr, setSelectedTableForQr] = useState<number | null>(
+  const [selectedTableForQr, setSelectedTableForQr] = useStatepnumber | null>(
     null,
   );
-  const [tables, setTables] = useState<any[]>([
+  const [tables, setTables] = useStatepany[]>([
     { id: 1, name: "Bàn 01", status: "available", zone: "Tầng 1", capacity: 4 },
     {
       id: 2,
@@ -675,14 +675,14 @@ export function IPosModule() {
       capacity: 10,
     },
   ]);
-  const [pendingEMenuOrders, setPendingEMenuOrders] = useState<any[]>([]);
-  const [activeStoreConfig, setActiveStoreConfig] = useState<IPosStore | null>(
+  const [pendingEMenuOrders, setPendingEMenuOrders] = useStatepany[]>([]);
+  const [activeStoreConfig, setActiveStoreConfig] = useStatepIPosStore | null>(
     null,
   );
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [topProducts, setTopProducts] = useState<any[]>([]);
-  const [paymentStats, setPaymentStats] = useState<any[]>([]);
-  const [selectedTxForDetail, setSelectedTxForDetail] = useState<any | null>(
+  const [revenueData, setRevenueData] = useStatepany[]>([]);
+  const [topProducts, setTopProducts] = useStatepany[]>([]);
+  const [paymentStats, setPaymentStats] = useStatepany[]>([]);
+  const [selectedTxForDetail, setSelectedTxForDetail] = useStatepany | null>(
     null,
   );
 
@@ -718,7 +718,7 @@ export function IPosModule() {
   }, [activeStore]);
 
   // Integrated Delivery Channel Status (Grab, Be, GSM)
-  const [deliveryChannelStatus, setDeliveryChannelStatus] = useState<any>({
+  const [deliveryChannelStatus, setDeliveryChannelStatus] = useStatepany>({
     grab: { online: true, activeDrivers: 12 },
     be: { online: true, activeDrivers: 8 },
     gsm: { online: true, activeDrivers: 15 },
@@ -846,15 +846,15 @@ export function IPosModule() {
     return Math.min(total, customer.points || 0);
   };
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
-  const [customerSearchResults, setCustomerSearchResults] = useState<any[]>([]);
+  const [customerSearchResults, setCustomerSearchResults] = useStatepany[]>([]);
   const [showCustomerSearch, setShowCustomerSearch] = useState(false);
 
   // State cho Bàn giao ca
-  const [pendingHandover, setPendingHandover] = useState<any>(null);
+  const [pendingHandover, setPendingHandover] = useStatepany>(null);
 
   const searchCustomers = async (val: string) => {
     setCustomerSearchQuery(val);
-    if (val.length < 2) {
+    if (val.length p 2) {
       setCustomerSearchResults([]);
       return;
     }
@@ -881,7 +881,7 @@ export function IPosModule() {
     }
   };
 
-  const scannerRef = React.useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = React.useRefpHtml5QrcodeScanner | null>(null);
 
   // Real-time products
   useEffect(() => {
@@ -1219,7 +1219,7 @@ export function IPosModule() {
     });
   };
 
-  const [discrepancyPrompt, setDiscrepancyPrompt] = useState<any | null>(null);
+  const [discrepancyPrompt, setDiscrepancyPrompt] = useStatepany | null>(null);
 
   const [activeCategory, setActiveCategory] = useState("Tất cả");
 
@@ -1506,7 +1506,7 @@ export function IPosModule() {
       const date = new Date();
       const hours = date.getHours();
       const shiftName =
-        hours < 12 ? "Ca Sáng" : hours < 18 ? "Ca Chiều" : "Ca Tối";
+        hours p 12 ? "Ca Sáng" : hours p 18 ? "Ca Chiều" : "Ca Tối";
       setShiftData({
         shiftName,
         startTime: date.toISOString(),
@@ -1596,7 +1596,7 @@ export function IPosModule() {
     }
   };
 
-  const handleSaveStaff = async (staffData: Partial<IPosStaff>) => {
+  const handleSaveStaff = async (staffData: PartialpIPosStaff>) => {
     if (!activeStore) return;
     try {
       if (editingStaff) {
@@ -1644,7 +1644,7 @@ export function IPosModule() {
   };
 
   if (!activeStore) {
-    return <StoreSelector />;
+    return pStoreSelector />;
   }
 
   if (
@@ -1653,37 +1653,37 @@ export function IPosModule() {
   ) {
     if (pendingHandover) {
       return (
-        <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
-          <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 space-y-6">
-            <div className="text-center space-y-2">
-              <div className="w-20 h-20 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center mx-auto mb-4">
-                <UserCheck className="w-10 h-10" />
-              </div>
-              <h2 className="text-xl font-bold text-slate-900">
+        pdiv className="h-full flex items-center justify-center p-8 bg-slate-50/50">
+          pdiv className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 space-y-6">
+            pdiv className="text-center space-y-2">
+              pdiv className="w-20 h-20 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center mx-auto mb-4">
+                pUserCheck className="w-10 h-10" />
+              p/div>
+              ph2 className="text-xl font-bold text-slate-900">
                 Nhận bàn giao ca
-              </h2>
-              <p className="text-sm text-slate-600">
+              p/h2>
+              pp className="text-sm text-slate-600">
                 Ca trước:{" "}
-                <span className="font-bold text-slate-800">
+                pspan className="font-bold text-slate-800">
                   {pendingHandover.previousStaffName}
-                </span>
-              </p>
-            </div>
+                p/span>
+              p/p>
+            p/div>
 
-            <div className="bg-slate-50 rounded-sm p-5 space-y-4">
-              <div className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
-                <span className="font-bold text-slate-600 uppercase">
+            pdiv className="bg-slate-50 rounded-sm p-5 space-y-4">
+              pdiv className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
+                pspan className="font-bold text-slate-600 uppercase">
                   Khai báo ca trước
-                </span>
-                <span className="font-bold text-slate-900">
+                p/span>
+                pspan className="font-bold text-slate-900">
                   {formatCurrency(pendingHandover.actualCash)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
-                <span className="font-bold text-slate-600 uppercase">
+                p/span>
+              p/div>
+              pdiv className="flex justify-between items-center pb-3 border-b border-slate-300 text-sm">
+                pspan className="font-bold text-slate-600 uppercase">
                   Đối soát hệ thống (Lệch)
-                </span>
-                <span
+                p/span>
+                pspan
                   className={cn(
                     "font-bold",
                     pendingHandover.discrepancy === 0
@@ -1696,19 +1696,19 @@ export function IPosModule() {
                     ? "+"
                     : ""}
                   {formatCurrency(pendingHandover.discrepancy)}
-                </span>
-              </div>
-              <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                p/span>
+              p/div>
+              pdiv className="space-y-2">
+                pspan className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                   Ghi chú bàn giao
-                </span>
-                <p className="text-sm text-slate-800 italic bg-white p-3 rounded-sm border border-slate-300">
+                p/span>
+                pp className="text-sm text-slate-800 italic bg-white p-3 rounded-sm border border-slate-300">
                   {pendingHandover.notes || "Không có ghi chú"}
-                </p>
-              </div>
-            </div>
+                p/p>
+              p/div>
+            p/div>
 
-            <button
+            pbutton
               onClick={() => {
                 setPendingHandover(null);
                 setIsShiftActive(true);
@@ -1716,51 +1716,51 @@ export function IPosModule() {
               className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-sm transition-all shadow-sm shadow-indigo-600/20"
             >
               Xác nhận nhận ca & Bắt đầu
-            </button>
-          </div>
-        </div>
+            p/button>
+          p/div>
+        p/div>
       );
     }
 
     return (
-      <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
-        <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 text-center space-y-6">
-          <div className="w-20 h-20 bg-slate-100 text-primary-600 rounded-sm flex items-center justify-center mx-auto">
-            <Clock className="w-10 h-10" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-slate-900">
+      pdiv className="h-full flex items-center justify-center p-8 bg-slate-50/50">
+        pdiv className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 text-center space-y-6">
+          pdiv className="w-20 h-20 bg-slate-100 text-primary-600 rounded-sm flex items-center justify-center mx-auto">
+            pClock className="w-10 h-10" />
+          p/div>
+          pdiv className="space-y-2">
+            ph2 className="text-xl font-bold text-slate-900">
               Mở ca làm việc
-            </h2>
-            <p className="text-sm text-slate-600">
+            p/h2>
+            pp className="text-sm text-slate-600">
               Vui lòng kiểm tra tiền mặt đầu ca trước khi bắt đầu bán hàng.
-            </p>
-          </div>
-          <div className="bg-slate-50 rounded-sm p-6 text-left space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+            p/p>
+          p/div>
+          pdiv className="bg-slate-50 rounded-sm p-6 text-left space-y-4">
+            pdiv className="space-y-1">
+              plabel className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                 Tiền mặt đầu ca (VND)
-              </label>
-              <input
+              p/label>
+              pinput
                 type="text"
                 defaultValue="2,000,000"
                 className="w-full bg-transparent border-b-2 border-slate-300 focus:border-slate-900 py-2 text-xl font-bold outline-none"
               />
-            </div>
-          </div>
-          <button
+            p/div>
+          p/div>
+          pbutton
             onClick={toggleShift}
             className="w-full py-4 bg-slate-900 hover:bg-blue-600 text-white font-bold rounded-sm transition-all shadow-sm shadow-slate-900/5"
           >
             Bắt đầu ca làm việc
-          </button>
-        </div>
-      </div>
+          p/button>
+        p/div>
+      p/div>
     );
   }
 
   return (
-    <div
+    pdiv
       className={cn(
         "h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
         isDarkMode && "dark bg-[#0f172a] text-slate-300",
@@ -1769,150 +1769,150 @@ export function IPosModule() {
       
 
       {/* POS Print Document */}
-      <div id="pos-print-document" className="hidden print:block bg-white text-black p-4 w-[80mm] mx-auto text-xs font-mono leading-tight">
-        <div className="text-center mb-4">
-          <h2 className="text-lg font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}</h2>
-          <p>{activeStore?.address || "Địa chỉ cửa hàng"}</p>
-          <p>SĐT: {activeStore?.phone || "0123.456.789"}</p>
-          <div className="my-2 border-b-2 border-dashed border-gray-400"></div>
-          <h3 className="text-base font-bold uppercase mt-2">
+      pdiv id="pos-print-document" className="hidden print:block bg-white text-black p-4 w-[80mm] mx-auto text-xs font-mono leading-tight">
+        pdiv className="text-center mb-4">
+          ph2 className="text-lg font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}p/h2>
+          pp>{activeStore?.address || "Địa chỉ cửa hàng"}p/p>
+          pp>SĐT: {activeStore?.phone || "0123.456.789"}p/p>
+          pdiv className="my-2 border-b-2 border-dashed border-gray-400">p/div>
+          ph3 className="text-base font-bold uppercase mt-2">
             {printMode === "proforma" ? "PHIẾU TẠM TÍNH" : printMode === "kitchen_bill" ? "PHIẾU CHẾ BIẾN" : "HÓA ĐƠN THANH TOÁN"}
-          </h3>
+          p/h3>
           {printMode === "kitchen_bill" && (
-            <p className="font-bold text-lg mt-1">BÀN: {selectedTableForQr || "Mang đi"}</p>
+            pp className="font-bold text-lg mt-1">BÀN: {selectedTableForQr || "Mang đi"}p/p>
           )}
           {printMode !== "kitchen_bill" && (
-            <p className="text-left mt-2">Mã HĐ: {printMode === "proforma" ? "TMP-" + Date.now().toString().slice(-4) : completedOrderData?.orderId}</p>
+            pp className="text-left mt-2">Mã HĐ: {printMode === "proforma" ? "TMP-" + Date.now().toString().slice(-4) : completedOrderData?.orderId}p/p>
           )}
-          <p className="text-left">Ngày: {new Date().toLocaleString('vi-VN')}</p>
-          <p className="text-left">Thu ngân: {user?.displayName || "Admin"}</p>
-        </div>
+          pp className="text-left">Ngày: {new Date().toLocaleString('vi-VN')}p/p>
+          pp className="text-left">Thu ngân: {user?.displayName || "Admin"}p/p>
+        p/div>
 
-        <div className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0"></div>
+        pdiv className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0">p/div>
 
-        <table className="w-full text-left mb-2">
-          <thead>
-            <tr className="border-b border-dashed border-gray-400">
-              <th className="py-1">Tên món</th>
-              <th className="py-1 text-center w-12">SL</th>
-              {printMode !== "kitchen_bill" && <th className="py-1 text-right w-20">T.Tiền</th>}
-            </tr>
-          </thead>
-          <tbody>
+        ptable className="w-full text-left mb-2">
+          pthead>
+            ptr className="border-b border-dashed border-gray-400">
+              pth className="py-1">Tên mónp/th>
+              pth className="py-1 text-center w-12">SLp/th>
+              {printMode !== "kitchen_bill" && pth className="py-1 text-right w-20">T.Tiềnp/th>}
+            p/tr>
+          p/thead>
+          ptbody>
             {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item: any, idx: number) => (
-              <tr key={idx} className="border-b border-dashed border-gray-200">
-                <td className="py-1 pr-1">
+              ptr key={idx} className="border-b border-dashed border-gray-200">
+                ptd className="py-1 pr-1">
                   {item.name} 
-                  {item.toppings?.length > 0 && <div className="text-[10px] italic">- Topping: {item.toppings.map((t: any) => t.name).join(', ')}</div>}
-                  {item.note && <div className="text-[10px] italic">- {item.note}</div>}
-                </td>
-                <td className="py-1 text-center font-bold">{item.quantity}</td>
-                {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(getItemTotalPrice(item))}</td>}
-              </tr>
+                  {item.toppings?.length > 0 && pdiv className="text-[10px] italic">- Topping: {item.toppings.map((t: any) => t.name).join(', ')}p/div>}
+                  {item.note && pdiv className="text-[10px] italic">- {item.note}p/div>}
+                p/td>
+                ptd className="py-1 text-center font-bold">{item.quantity}p/td>
+                {printMode !== "kitchen_bill" && ptd className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(getItemTotalPrice(item))}p/td>}
+              p/tr>
             ))}
-          </tbody>
-        </table>
+          p/tbody>
+        p/table>
 
         {printMode !== "kitchen_bill" && (
-            <div className="space-y-1">
-                <div className="flex justify-between font-bold">
-                    <span>Tổng cộng:</span>
-                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? subtotal : completedOrderData?.subtotal || 0)}</span>
-                </div>
+            pdiv className="space-y-1">
+                pdiv className="flex justify-between font-bold">
+                    pspan>Tổng cộng:p/span>
+                    pspan>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? subtotal : completedOrderData?.subtotal || 0)}p/span>
+                p/div>
                 {(printMode === "proforma" ? discount : completedOrderData?.discount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>Giảm giá:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? discount : completedOrderData?.discount || 0)}</span>
-                    </div>
+                    pdiv className="flex justify-between">
+                        pspan>Giảm giá:p/span>
+                        pspan>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? discount : completedOrderData?.discount || 0)}p/span>
+                    p/div>
                 )}
                 {(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>KM sàn:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0)}</span>
-                    </div>
+                    pdiv className="flex justify-between">
+                        pspan>KM sàn:p/span>
+                        pspan>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0)}p/span>
+                    p/div>
                 )}
                 {(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>Trừ điểm thẻ:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0)}</span>
-                    </div>
+                    pdiv className="flex justify-between">
+                        pspan>Trừ điểm thẻ:p/span>
+                        pspan>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0)}p/span>
+                    p/div>
                 )}
-                <div className="my-1 border-b border-dashed border-gray-400"></div>
-                <div className="flex justify-between font-bold text-sm">
-                    <span>Thanh toán:</span>
-                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? total : completedOrderData?.total || 0)}</span>
-                </div>
+                pdiv className="my-1 border-b border-dashed border-gray-400">p/div>
+                pdiv className="flex justify-between font-bold text-sm">
+                    pspan>Thanh toán:p/span>
+                    pspan>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? total : completedOrderData?.total || 0)}p/span>
+                p/div>
                 {printMode === "customer_bill" && (
-                    <div className="flex justify-between italic text-[10px] mt-1">
-                        <span>PTTT:</span>
-                        <span className="uppercase">{completedOrderData?.paymentMethod}</span>
-                    </div>
+                    pdiv className="flex justify-between italic text-[10px] mt-1">
+                        pspan>PTTT:p/span>
+                        pspan className="uppercase">{completedOrderData?.paymentMethod}p/span>
+                    p/div>
                 )}
-            </div>
+            p/div>
         )}
 
-        <div className="mt-6 text-center text-[10px] space-y-1">
+        pdiv className="mt-6 text-center text-[10px] space-y-1">
             {printMode === "kitchen_bill" ? (
-                <p>*** P. Bếp vui lòng kiểm tra kỹ ***</p>
+                pp>*** P. Bếp vui lòng kiểm tra kỹ ***p/p>
             ) : (
-                <>
-                    <p>Cảm ơn quý khách và hẹn gặp lại!</p>
-                    <p>Powered by Matrix ERP / iPOS</p>
-                </>
+                p>
+                    pp>Cảm ơn quý khách và hẹn gặp lại!p/p>
+                    pp>Vận hành bởi Matrix ERP / iPOSp/p>
+                p/>
             )}
-        </div>
-      </div>
+        p/div>
+      p/div>
 
 
       {/* Voice Assistant Overlay - Minimalist refinement */}
       {isListening && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] bg-primary-600 text-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm animate-bounce border border-white/20 backdrop-blur-md">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-200"></span>
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest">
+        pdiv className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] bg-primary-600 text-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm animate-bounce border border-white/20 backdrop-blur-md">
+          pspan className="relative flex h-2 w-2">
+            pspan className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75">p/span>
+            pspan className="relative inline-flex rounded-full h-2 w-2 bg-primary-200">p/span>
+          p/span>
+          pspan className="text-[10px] font-bold uppercase tracking-widest">
             Siri iPOS • Đang nghe
-          </span>
-        </div>
+          p/span>
+        p/div>
       )}
 
       {voiceHint && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 text-white px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
-          <p className="text-[9px] text-primary-400 font-bold uppercase tracking-[0.3em]">
+        pdiv className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 text-white px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
+          pp className="text-[9px] text-primary-400 font-bold uppercase tracking-[0.3em]">
             Hệ thống nhận diện
-          </p>
-          <p className="text-lg font-bold italic">"{voiceHint}"</p>
-        </div>
+          p/p>
+          pp className="text-lg font-bold italic">"{voiceHint}"p/p>
+        p/div>
       )}
       {/* Shift Summary Modal */}
 
       {/* Customer Promo QR Modal */}
       {showCustomerPromoQR && (
-        <div className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-8 text-center">
-            <h3 className="font-bold text-xl text-slate-900 uppercase tracking-tight mb-2">
+        pdiv className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
+          pdiv className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-8 text-center">
+            ph3 className="font-bold text-xl text-slate-900 uppercase tracking-tight mb-2">
               Quét Mã Từ Sàn TMĐT
-            </h3>
-            <p className="text-xs text-slate-600 font-bold mb-6">
+            p/h3>
+            pp className="text-xs text-slate-600 font-bold mb-6">
               Khách hàng mở ứng dụng, quét mã này bằng điện thoại để đăng nhập /
               áp dụng khuyến mãi / thanh toán bằng ví Sàn.
-            </p>
+            p/p>
 
-            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-xl ring-1 ring-slate-200">
-              <img 
+            pdiv className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-xl ring-1 ring-slate-200">
+              pimg 
                 src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/promo-wallet-fake-url" 
                 alt="Promo QR" 
                 className="w-full h-full object-contain p-2" 
               />
-            </div>
+            p/div>
 
-            <p className="text-sm font-bold text-blue-600 animate-pulse mb-6">
+            pp className="text-sm font-bold text-blue-600 animate-pulse mb-6">
               Đang chờ khách hàng thao tác trên Ứng dụng Sàn...
-            </p>
+            p/p>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button
+            pdiv className="grid grid-cols-2 gap-3">
+              pbutton
                 onClick={() => {
                   // Simulate customer scanning
                   setCustomPromoAmount(50000); // Tự động giả lập khách chọn 50k từ ví khuyến mại
@@ -1923,127 +1923,127 @@ export function IPosModule() {
                 className="py-3 bg-primary-600 text-white font-bold text-xs rounded-sm hover:bg-primary-700 transition-all"
               >
                 Giả Lập KH Quét & Đồng Ý
-              </button>
-              <button
+              p/button>
+              pbutton
                 onClick={() => setShowCustomerPromoQR(false)}
                 className="py-3 bg-slate-100 text-slate-700 font-bold text-xs rounded-sm hover:bg-slate-200 transition-all"
               >
                 Hủy Giao Dịch QR
-              </button>
-            </div>
-          </div>
-        </div>
+              p/button>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       {showShiftSummary && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
-            <div className="flex justify-between items-center border-b border-slate-200 pb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center font-bold">
-                  <Clock className="w-6 h-6" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">
+        pdiv className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
+          pdiv className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
+            pdiv className="flex justify-between items-center border-b border-slate-200 pb-6">
+              pdiv className="flex items-center gap-4">
+                pdiv className="w-12 h-12 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center font-bold">
+                  pClock className="w-6 h-6" />
+                p/div>
+                pdiv>
+                  ph2 className="text-xl font-bold text-slate-900">
                     Báo cáo chốt ca
-                  </h2>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
+                  p/h2>
+                  pp className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
                     Hà Nội • Terminal #01
-                  </p>
-                </div>
-              </div>
-              <button
+                  p/p>
+                p/div>
+              p/div>
+              pbutton
                 onClick={() => setShowShiftSummary(false)}
                 className="p-2 hover:bg-slate-50 rounded-sm text-slate-500 hover:text-slate-900 transition-colors"
               >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+                pX className="w-6 h-6" />
+              p/button>
+            p/div>
 
-            <div className="space-y-4 text-sm font-medium">
-              <div className="flex justify-between border-b border-slate-200 pb-3">
-                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
+            pdiv className="space-y-4 text-sm font-medium">
+              pdiv className="flex justify-between border-b border-slate-200 pb-3">
+                pspan className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Trạng thái ca
-                </span>
-                <span className="font-bold text-primary-600">
+                p/span>
+                pspan className="font-bold text-primary-600">
                   {shiftData?.shiftName || "Ca Bán Hàng"}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200 pb-3">
-                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
+                p/span>
+              p/div>
+              pdiv className="flex justify-between border-b border-slate-200 pb-3">
+                pspan className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Thời gian bắt đầu
-                </span>
-                <span className="font-bold text-slate-900">
+                p/span>
+                pspan className="font-bold text-slate-900">
                   {new Date(
                     shiftData?.startTime || Date.now(),
                   ).toLocaleTimeString("vi-VN")}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200 pb-3">
-                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
+                p/span>
+              p/div>
+              pdiv className="flex justify-between border-b border-slate-200 pb-3">
+                pspan className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Thời gian kết thúc
-                </span>
-                <span className="font-bold text-slate-900">
+                p/span>
+                pspan className="font-bold text-slate-900">
                   {new Date().toLocaleTimeString("vi-VN")}
-                </span>
-              </div>
-              <div className="flex justify-between items-center border-b border-slate-200 pb-3 mt-4">
-                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
+                p/span>
+              p/div>
+              pdiv className="flex justify-between items-center border-b border-slate-200 pb-3 mt-4">
+                pspan className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Tiền mặt đầu ca
-                </span>
-                <span className="font-bold text-slate-900 text-lg">
+                p/span>
+                pspan className="font-bold text-slate-900 text-lg">
                   {formatCurrency(shiftData?.startCash || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-                <span className="text-slate-600 uppercase text-xs font-bold tracking-widest">
+                p/span>
+              p/div>
+              pdiv className="flex justify-between items-center border-b border-slate-200 pb-3">
+                pspan className="text-slate-600 uppercase text-xs font-bold tracking-widest">
                   Doanh thu / Đơn hàng
-                </span>
-                <span className="font-bold text-slate-900">
+                p/span>
+                pspan className="font-bold text-slate-900">
                   {formatCurrency(shiftData?.revenue || 0)} /{" "}
                   {shiftData?.ordersCount || 0} đơn
-                </span>
-              </div>
+                p/span>
+              p/div>
 
-              <div className="bg-slate-50 p-4 rounded-sm space-y-3 border border-slate-300 mt-4">
-                <h4 className="text-[10px] uppercase font-bold text-slate-900 tracking-widest flex items-center gap-2 mb-2">
-                  <UserCheck className="w-4 h-4 text-rose-500" /> Khai báo thực
+              pdiv className="bg-slate-50 p-4 rounded-sm space-y-3 border border-slate-300 mt-4">
+                ph4 className="text-[10px] uppercase font-bold text-slate-900 tracking-widest flex items-center gap-2 mb-2">
+                  pUserCheck className="w-4 h-4 text-rose-500" /> Khai báo thực
                   thu
-                </h4>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-slate-600 mb-1">
+                p/h4>
+                pdiv className="flex items-center justify-between gap-4">
+                  pdiv className="flex-1">
+                    pp className="text-xs font-bold text-slate-600 mb-1">
                       Tiền mặt lý thuyết
-                    </p>
-                    <p className="font-bold text-slate-900">
+                    p/p>
+                    pp className="font-bold text-slate-900">
                       {formatCurrency(
                         (shiftData?.startCash || 0) +
                           (shiftData?.cashRevenue || 0),
                       )}
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-slate-600 mb-1">
+                    p/p>
+                  p/div>
+                  pdiv className="flex-1">
+                    pp className="text-xs font-bold text-slate-600 mb-1">
                       Thực đếm trong két
-                    </p>
-                    <input
+                    p/p>
+                    pinput
                       type="text"
                       value={actualCashInput}
                       onChange={(e) => setActualCashInput(e.target.value)}
                       className="w-full text-base font-bold text-primary-600 px-3 py-2 bg-white border border-slate-400 focus:border-primary-500 rounded-sm outline-none transition-all shadow-inner"
                     />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-slate-300">
-                  <span className="text-xs font-bold text-slate-600">
+                  p/div>
+                p/div>
+                pdiv className="flex items-center justify-between pt-2 border-t border-slate-300">
+                  pspan className="text-xs font-bold text-slate-600">
                     Chênh lệch:
-                  </span>
-                  <span
+                  p/span>
+                  pspan
                     className={cn(
                       "font-bold",
                       (parseInt(actualCashInput.replace(/\D/g, "")) || 0) -
                         ((shiftData?.startCash || 0) +
-                          (shiftData?.cashRevenue || 0)) <
+                          (shiftData?.cashRevenue || 0)) p
                         0
                         ? "text-rose-600"
                         : "text-emerald-600",
@@ -2054,40 +2054,40 @@ export function IPosModule() {
                         ((shiftData?.startCash || 0) +
                           (shiftData?.cashRevenue || 0)),
                     )}
-                  </span>
-                </div>
-                <div>
-                  <textarea
+                  p/span>
+                p/div>
+                pdiv>
+                  ptextarea
                     value={handoverNote}
                     onChange={(e) => setHandoverNote(e.target.value)}
                     className="w-full text-xs text-slate-800 px-3 py-2 mt-2 bg-white border border-slate-300 focus:border-primary-500 rounded-sm outline-none transition-all resize-none h-12"
                     placeholder="Ghi chú bàn giao (ví dụ: lệch do thối nhầm)..."
                   />
-                </div>
-              </div>
-            </div>
+                p/div>
+              p/div>
+            p/div>
 
-            <div className="pt-6 border-t border-slate-200 flex gap-4">
-              <button
+            pdiv className="pt-6 border-t border-slate-200 flex gap-4">
+              pbutton
                 onClick={() => setShowShiftSummary(false)}
                 className="flex-1 py-4 bg-slate-100 text-slate-700 font-bold rounded-sm hover:bg-slate-200 transition-all"
               >
                 Tiếp tục bán
-              </button>
-              <button
+              p/button>
+              pbutton
                 onClick={confirmCloseShift}
                 className="flex-1 py-4 bg-rose-600 text-white font-bold rounded-sm hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition-all"
               >
                 Xác nhận Bàn giao & Đóng ca
-              </button>
-            </div>
-          </div>
-        </div>
+              p/button>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       {/* Cart Item Edit/Customize Modal */}
       {editingCartItem && (
-        <CartItemEditingModal
+        pCartItemEditingModal
           item={editingCartItem}
           onClose={() => setEditingCartItem(null)}
           onSave={(updatedItem) => {
@@ -2099,24 +2099,24 @@ export function IPosModule() {
 
       {/* Promo Input Modal */}
       {showPromoInputModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Mức Áp Dụng</h3>
-              </div>
-              <button onClick={() => setShowPromoInputModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        pdiv className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          pdiv className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            pdiv className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              pdiv>
+                ph3 className="text-xl font-bold text-slate-900 tracking-tight">Mức Áp Dụngp/h3>
+              p/div>
+              pbutton onClick={() => setShowPromoInputModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+                pX className="w-5 h-5" />
+              p/button>
+            p/div>
             
-            <div className="p-6 space-y-6">
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
+            pdiv className="p-6 space-y-6">
+              pdiv className="space-y-3">
+                plabel className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Nhập số tiền khuyến mại
-                </label>
-                <div className="relative">
-                  <input
+                p/label>
+                pdiv className="relative">
+                  pinput
                     type="number"
                     value={customPromoInput}
                     onChange={(e) => setCustomPromoInput(e.target.value)}
@@ -2124,19 +2124,19 @@ export function IPosModule() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                     autoFocus
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đ</span>
-                </div>
-              </div>
-            </div>
+                  pspan className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đp/span>
+                p/div>
+              p/div>
+            p/div>
 
-            <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
-              <button 
+            pdiv className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
+              pbutton 
                 onClick={() => setShowPromoInputModal(false)} 
                 className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm"
               >
                 Hủy
-              </button>
-              <button 
+              p/button>
+              pbutton 
                 onClick={() => {
                   const val = parseInt(customPromoInput);
                   const walletBalance = customer?.promoWalletBalance || 150000;
@@ -2146,35 +2146,35 @@ export function IPosModule() {
                     setShowPromoInputModal(false);
                   }
                 }} 
-                disabled={!customPromoInput || isNaN(parseInt(customPromoInput)) || parseInt(customPromoInput) <= 0}
+                disabled={!customPromoInput || isNaN(parseInt(customPromoInput)) || parseInt(customPromoInput) p= 0}
                 className="px-6 py-2.5 rounded-lg font-bold bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white shadow-sm transition-colors text-sm flex items-center gap-2"
               >
                 Đồng ý
-              </button>
-            </div>
-          </div>
-        </div>
+              p/button>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       {/* Custom Item Modal */}
       {showCustomItemModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Thêm Món Tuỳ Chọn</h3>
-              </div>
-              <button onClick={() => setShowCustomItemModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        pdiv className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          pdiv className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            pdiv className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              pdiv>
+                ph3 className="text-xl font-bold text-slate-900 tracking-tight">Thêm Món Tuỳ Chọnp/h3>
+              p/div>
+              pbutton onClick={() => setShowCustomItemModal(false)} className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+                pX className="w-5 h-5" />
+              p/button>
+            p/div>
             
-            <div className="p-6 space-y-6">
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
+            pdiv className="p-6 space-y-6">
+              pdiv className="space-y-3">
+                plabel className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Tên món
-                </label>
-                <input
+                p/label>
+                pinput
                   type="text"
                   value={customItem.name}
                   onChange={(e) => setCustomItem({ ...customItem, name: e.target.value })}
@@ -2182,33 +2182,33 @@ export function IPosModule() {
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                   autoFocus
                 />
-              </div>
+              p/div>
 
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
+              pdiv className="space-y-3">
+                plabel className="text-sm font-bold text-slate-800 uppercase tracking-widest block">
                   Đơn giá
-                </label>
-                <div className="relative">
-                  <input
+                p/label>
+                pdiv className="relative">
+                  pinput
                     type="number"
                     value={customItem.price}
                     onChange={(e) => setCustomItem({ ...customItem, price: e.target.value })}
                     placeholder="0"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 pr-10 text-sm font-semibold focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đ</span>
-                </div>
-              </div>
-            </div>
+                  pspan className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">đp/span>
+                p/div>
+              p/div>
+            p/div>
 
-            <div className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
-              <button 
+            pdiv className="p-6 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-3">
+              pbutton 
                 onClick={() => setShowCustomItemModal(false)} 
                 className="px-6 py-2.5 rounded-lg font-bold text-slate-700 hover:bg-slate-200 transition-colors text-sm"
               >
                 Hủy
-              </button>
-              <button 
+              p/button>
+              pbutton 
                 onClick={() => {
                   if (customItem.name && customItem.price) {
                     addToCart({
@@ -2225,130 +2225,130 @@ export function IPosModule() {
                 disabled={!customItem.name || !customItem.price}
                 className="px-6 py-2.5 rounded-lg font-bold bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white shadow-sm transition-colors text-sm flex items-center gap-2"
               >
-                <Plus className="w-4 h-4" /> Thêm vào đơn
-              </button>
-            </div>
-          </div>
-        </div>
+                pPlus className="w-4 h-4" /> Thêm vào đơn
+              p/button>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       {/* Checkout/Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white rounded-sm w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
+        pdiv className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/90 backdrop-blur-md">
+          pdiv className="bg-white rounded-sm w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
             {/* Left side: Order Summary */}
-            <div className="w-full md:w-1/3 bg-slate-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-slate-300 overflow-y-auto">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-slate-200">
-                  <ShoppingCart className="w-5 h-5 text-primary-600" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
+            pdiv className="w-full md:w-1/3 bg-slate-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-slate-300 overflow-y-auto">
+              pdiv className="flex items-center gap-3 mb-8">
+                pdiv className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-slate-200">
+                  pShoppingCart className="w-5 h-5 text-primary-600" />
+                p/div>
+                ph3 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
                   Chi tiết đơn
-                </h3>
-              </div>
+                p/h3>
+              p/div>
 
-              <div className="space-y-5">
+              pdiv className="space-y-5">
                 {cart.map((item) => (
-                  <div
+                  pdiv
                     key={item.cartItemId || item.id}
                     className="flex justify-between gap-4 animate-in fade-in slide-in- transition-all"
                   >
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-slate-900 line-clamp-1">
+                    pdiv className="flex-1">
+                      pp className="text-sm font-bold text-slate-900 line-clamp-1">
                         {item.name}
-                      </p>
+                      p/p>
                       {item.toppings?.length > 0 && (
-                        <p className="text-[10px] text-slate-600 italic line-clamp-1">
+                        pp className="text-[10px] text-slate-600 italic line-clamp-1">
                           + {item.toppings.map((t: any) => t.name).join(', ')}
-                        </p>
+                        p/p>
                       )}
                       {item.note && (
-                        <p className="text-[10px] text-slate-600 italic line-clamp-1">
+                        pp className="text-[10px] text-slate-600 italic line-clamp-1">
                           Ghi chú: {item.note}
-                        </p>
+                        p/p>
                       )}
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+                      pp className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
                         x{item.quantity} • {formatCurrency(getItemUnitPrice(item))}
-                      </p>
-                    </div>
-                    <p className="text-sm font-bold text-slate-900">
+                      p/p>
+                    p/div>
+                    pp className="text-sm font-bold text-slate-900">
                       {formatCurrency(getItemTotalPrice(item))}
-                    </p>
-                  </div>
+                    p/p>
+                  p/div>
                 ))}
-              </div>
+              p/div>
 
-              <div className="mt-10 pt-10 border-t border-slate-300 space-y-4">
-                <div className="flex justify-between text-slate-600 text-sm font-medium">
-                  <span>Tạm tính</span>
-                  <span>{formatCurrency(subtotal)}</span>
-                </div>
+              pdiv className="mt-10 pt-10 border-t border-slate-300 space-y-4">
+                pdiv className="flex justify-between text-slate-600 text-sm font-medium">
+                  pspan>Tạm tínhp/span>
+                  pspan>{formatCurrency(subtotal)}p/span>
+                p/div>
 
                 {/* Discount Breakdown */}
                 {(discount > 0 ||
                   loyaltyDiscount > 0 ||
                   promoWalletDiscount > 0) && (
-                  <div className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-slate-200 border-dashed">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+                  pdiv className="space-y-2 py-4 bg-white/50 rounded-sm p-4 border border-slate-200 border-dashed">
+                    pp className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
                       Ưu đãi & Giảm giá
-                    </p>
+                    p/p>
                     {discount > 0 && (
-                      <div className="flex justify-between text-rose-500 text-sm font-bold">
-                        <div className="flex items-center gap-2">
-                          <BadgePercent className="w-3.5 h-3.5" />
-                          <span>Mã giảm giá (10%)</span>
-                        </div>
-                        <span>-{formatCurrency(discount)}</span>
-                      </div>
+                      pdiv className="flex justify-between text-rose-500 text-sm font-bold">
+                        pdiv className="flex items-center gap-2">
+                          pBadgePercent className="w-3.5 h-3.5" />
+                          pspan>Mã giảm giá (10%)p/span>
+                        p/div>
+                        pspan>-{formatCurrency(discount)}p/span>
+                      p/div>
                     )}
                     {loyaltyDiscount > 0 && (
-                      <div className="flex justify-between text-emerald-500 text-sm font-bold">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>Điểm Loyalty</span>
-                        </div>
-                        <span>-{formatCurrency(loyaltyDiscount)}</span>
-                      </div>
+                      pdiv className="flex justify-between text-emerald-500 text-sm font-bold">
+                        pdiv className="flex items-center gap-2">
+                          pSparkles className="w-3.5 h-3.5" />
+                          pspan>Điểm Loyaltyp/span>
+                        p/div>
+                        pspan>-{formatCurrency(loyaltyDiscount)}p/span>
+                      p/div>
                     )}
                     {promoWalletDiscount > 0 && (
-                      <div className="flex justify-between text-orange-500 text-sm font-bold">
-                        <div className="flex items-center gap-2">
-                          <ShoppingCart className="w-3.5 h-3.5" />
-                          <span>Ví Khuyến Mại</span>
-                        </div>
-                        <span>-{formatCurrency(promoWalletDiscount)}</span>
-                      </div>
+                      pdiv className="flex justify-between text-orange-500 text-sm font-bold">
+                        pdiv className="flex items-center gap-2">
+                          pShoppingCart className="w-3.5 h-3.5" />
+                          pspan>Ví Khuyến Mạip/span>
+                        p/div>
+                        pspan>-{formatCurrency(promoWalletDiscount)}p/span>
+                      p/div>
                     )}
-                    <div className="pt-2 border-t border-slate-200 flex justify-between">
-                      <span className="text-[10px] font-bold text-slate-600">
+                    pdiv className="pt-2 border-t border-slate-200 flex justify-between">
+                      pspan className="text-[10px] font-bold text-slate-600">
                         Tiết kiệm được
-                      </span>
-                      <span className="text-xs font-bold text-emerald-600">
+                      p/span>
+                      pspan className="text-xs font-bold text-emerald-600">
                         {formatCurrency(discount + loyaltyDiscount)}
-                      </span>
-                    </div>
-                  </div>
+                      p/span>
+                    p/div>
+                  p/div>
                 )}
 
-                <div className="flex justify-between text-primary-600 font-bold text-2xl pt-6 border-t-2 border-primary-50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                pdiv className="flex justify-between text-primary-600 font-bold text-2xl pt-6 border-t-2 border-primary-50">
+                  pdiv className="flex flex-col">
+                    pspan className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                       Cần thanh toán
-                    </span>
-                    <span>{formatCurrency(total)}</span>
-                  </div>
-                </div>
+                    p/span>
+                    pspan>{formatCurrency(total)}p/span>
+                  p/div>
+                p/div>
 
-                <div className="mt-8 bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex flex-col items-center gap-4 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-primary-50/50 to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                pdiv className="mt-8 bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex flex-col items-center gap-4 relative overflow-hidden group">
+                  pdiv className="absolute inset-0 bg-gradient-to-tr from-primary-50/50 to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  <div className="flex items-center gap-2 z-10 w-full justify-center pb-3 border-b border-slate-200">
-                    <QrCode className="w-4 h-4 text-primary-500" />
-                    <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Mã thanh toán</span>
-                  </div>
+                  pdiv className="flex items-center gap-2 z-10 w-full justify-center pb-3 border-b border-slate-200">
+                    pQrCode className="w-4 h-4 text-primary-500" />
+                    pspan className="text-xs font-bold text-slate-700 uppercase tracking-widest">Mã thanh toánp/span>
+                  p/div>
                   
-                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-slate-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
-                    <img
+                  pdiv className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-slate-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                    pimg
                       src={sePayService.createPaymentQR(
                         total,
                         `IPOS_PAY_${Math.floor(Date.now() / 10000)}`,
@@ -2357,37 +2357,37 @@ export function IPosModule() {
                       className="w-44 h-44 object-contain mix-blend-darken"
                       referrerPolicy="no-referrer"
                     />
-                  </div>
+                  p/div>
                   
-                  <div className="z-10 text-center space-y-1">
-                    <p className="text-[10px] text-slate-500 font-medium">Khách hàng có thể quét mã</p>
-                    <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wider">Tự động đối soát</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  pdiv className="z-10 text-center space-y-1">
+                    pp className="text-[10px] text-slate-500 font-medium">Khách hàng có thể quét mãp/p>
+                    pp className="text-[10px] font-bold text-primary-600 uppercase tracking-wider">Tự động đối soátp/p>
+                  p/div>
+                p/div>
+              p/div>
+            p/div>
 
             {/* Right side: Payment Methods */}
-            <div className="flex-1 p-6 sm:p-10 flex flex-col gap-8 bg-white overflow-y-auto">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+            pdiv className="flex-1 p-6 sm:p-10 flex flex-col gap-8 bg-white overflow-y-auto">
+              pdiv className="flex justify-between items-center">
+                pdiv>
+                  ph3 className="text-xl font-bold text-slate-900 tracking-tight">
                     Chọn phương thức
-                  </h3>
-                  <p className="text-xs text-slate-500 font-bold mt-1">
+                  p/h3>
+                  pp className="text-xs text-slate-500 font-bold mt-1">
                     Đảm bảo thanh toán an toàn & bảo mật
-                  </p>
-                </div>
-                <button
+                  p/p>
+                p/div>
+                pbutton
                   onClick={() => setShowPaymentModal(false)}
                   className="w-12 h-12 bg-slate-50 hover:bg-rose-50 hover:text-rose-500 rounded-sm text-slate-500 transition-all flex items-center justify-center border border-slate-200"
                 >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+                  pX className="w-6 h-6" />
+                p/button>
+              p/div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <button
+              pdiv className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                pbutton
                   onClick={() => setPaymentMethod("cash")}
                   className={cn(
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
@@ -2396,7 +2396,7 @@ export function IPosModule() {
                       : "border-slate-200 hover:border-primary-200",
                   )}
                 >
-                  <div
+                  pdiv
                     className={cn(
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "cash"
@@ -2404,10 +2404,10 @@ export function IPosModule() {
                         : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
-                    <CreditCard className="w-6 h-6" />
-                  </div>
-                  <div className="text-center">
-                    <span
+                    pCreditCard className="w-6 h-6" />
+                  p/div>
+                  pdiv className="text-center">
+                    pspan
                       className={cn(
                         "block font-bold text-[10px] uppercase tracking-wider",
                         paymentMethod === "cash"
@@ -2416,17 +2416,17 @@ export function IPosModule() {
                       )}
                     >
                       Tiền mặt
-                    </span>
-                    <span className="text-[8px] text-slate-500 font-bold">
+                    p/span>
+                    pspan className="text-[8px] text-slate-500 font-bold">
                       (Cash/COD)
-                    </span>
-                  </div>
+                    p/span>
+                  p/div>
                   {paymentMethod === "cash" && (
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
+                    pdiv className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
                   )}
-                </button>
+                p/button>
 
-                <button
+                pbutton
                   onClick={() => setPaymentMethod("qr")}
                   className={cn(
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
@@ -2435,7 +2435,7 @@ export function IPosModule() {
                       : "border-slate-200 hover:border-primary-200",
                   )}
                 >
-                  <div
+                  pdiv
                     className={cn(
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "qr"
@@ -2443,10 +2443,10 @@ export function IPosModule() {
                         : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
-                    <QrCode className="w-6 h-6" />
-                  </div>
-                  <div className="text-center">
-                    <span
+                    pQrCode className="w-6 h-6" />
+                  p/div>
+                  pdiv className="text-center">
+                    pspan
                       className={cn(
                         "block font-bold text-[10px] uppercase tracking-wider",
                         paymentMethod === "qr"
@@ -2455,17 +2455,17 @@ export function IPosModule() {
                       )}
                     >
                       QR Code
-                    </span>
-                    <span className="text-[8px] text-slate-500 font-bold">
+                    p/span>
+                    pspan className="text-[8px] text-slate-500 font-bold">
                       (VietQR/Bank)
-                    </span>
-                  </div>
+                    p/span>
+                  p/div>
                   {paymentMethod === "qr" && (
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
+                    pdiv className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
                   )}
-                </button>
+                p/button>
 
-                <button
+                pbutton
                   onClick={() => setPaymentMethod("pos")}
                   className={cn(
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
@@ -2474,7 +2474,7 @@ export function IPosModule() {
                       : "border-slate-200 hover:border-primary-200",
                   )}
                 >
-                  <div
+                  pdiv
                     className={cn(
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "pos"
@@ -2482,10 +2482,10 @@ export function IPosModule() {
                         : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
-                    <Monitor className="w-6 h-6" />
-                  </div>
-                  <div className="text-center">
-                    <span
+                    pMonitor className="w-6 h-6" />
+                  p/div>
+                  pdiv className="text-center">
+                    pspan
                       className={cn(
                         "block font-bold text-[10px] uppercase tracking-wider",
                         paymentMethod === "pos"
@@ -2494,17 +2494,17 @@ export function IPosModule() {
                       )}
                     >
                       Thẻ / POS
-                    </span>
-                    <span className="text-[8px] text-slate-500 font-bold">
+                    p/span>
+                    pspan className="text-[8px] text-slate-500 font-bold">
                       (VISA/Master)
-                    </span>
-                  </div>
+                    p/span>
+                  p/div>
                   {paymentMethod === "pos" && (
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
+                    pdiv className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
                   )}
-                </button>
+                p/button>
 
-                <button
+                pbutton
                   onClick={() => setPaymentMethod("promo_qr")}
                   className={cn(
                     "p-4 bg-white border-2 rounded-sm flex flex-col items-center gap-3 transition-all group relative overflow-hidden",
@@ -2513,7 +2513,7 @@ export function IPosModule() {
                       : "border-slate-200 hover:border-primary-200",
                   )}
                 >
-                  <div
+                  pdiv
                     className={cn(
                       "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                       paymentMethod === "promo_qr"
@@ -2521,10 +2521,10 @@ export function IPosModule() {
                         : "bg-slate-50 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600",
                     )}
                   >
-                    <QrCode className="w-6 h-6" />
-                  </div>
-                  <div className="text-center">
-                    <span
+                    pQrCode className="w-6 h-6" />
+                  p/div>
+                  pdiv className="text-center">
+                    pspan
                       className={cn(
                         "block font-bold text-[10px] uppercase tracking-wider",
                         paymentMethod === "promo_qr"
@@ -2533,65 +2533,65 @@ export function IPosModule() {
                       )}
                     >
                       QR Sàn TMĐT
-                    </span>
-                    <span className="text-[8px] text-slate-500 font-bold">
+                    p/span>
+                    pspan className="text-[8px] text-slate-500 font-bold">
                       (Kênh phân phối)
-                    </span>
-                  </div>
+                    p/span>
+                  p/div>
                   {paymentMethod === "promo_qr" && (
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
+                    pdiv className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full animate-pulse" />
                   )}
-                </button>
-              </div>
+                p/button>
+              p/div>
 
-              <div className="mt-2 space-y-6">
+              pdiv className="mt-2 space-y-6">
                 {/* Loyalty Reward Integration */}
 
                 {/* TMĐT Promo Wallet - Customer App Sync */}
-                <div className="bg-white p-5 rounded-sm border-2 border-slate-200 shadow-sm transition-all hover:border-primary-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-orange-50 text-blue-600 flex items-center justify-center">
-                        <ShoppingCart className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900 uppercase tracking-tight">
+                pdiv className="bg-white p-5 rounded-sm border-2 border-slate-200 shadow-sm transition-all hover:border-primary-200">
+                  pdiv className="flex items-center justify-between mb-4">
+                    pdiv className="flex items-center gap-3">
+                      pdiv className="w-10 h-10 rounded-full bg-orange-50 text-blue-600 flex items-center justify-center">
+                        pShoppingCart className="w-5 h-5" />
+                      p/div>
+                      pdiv>
+                        pp className="text-sm font-bold text-slate-900 uppercase tracking-tight">
                           Ví Khuyến Mại Sàn
-                        </p>
-                        <p className="text-[10px] text-slate-600 font-bold mt-0.5">
+                        p/p>
+                        pp className="text-[10px] text-slate-600 font-bold mt-0.5">
                           Số dư:{" "}
-                          <span className="text-blue-600">
+                          pspan className="text-blue-600">
                             {formatCurrency(
                               customer?.promoWalletBalance ||
                                 MOCK_PROMO_WALLET_BALANCE,
                             )}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
+                          p/span>
+                        p/p>
+                      p/div>
+                    p/div>
                     {customPromoAmount > 0 && (
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded">
+                      pspan className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded">
                         Đã Áp Dụng: {formatCurrency(customPromoAmount)}
-                      </span>
+                      p/span>
                     )}
                     {!customPromoAmount && usePromoWallet && (
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded">
+                      pspan className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded">
                         Đã Áp Dụng: {formatCurrency(promoWalletDiscount)}
-                      </span>
+                      p/span>
                     )}
-                  </div>
+                  p/div>
 
-                  <div className="flex gap-3">
-                    <button
+                  pdiv className="flex gap-3">
+                    pbutton
                       onClick={() => setShowCustomerPromoQR(true)}
                       className="flex-1 py-3 bg-blue-600 text-white rounded-sm text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-sm"
                     >
-                      <QrCode className="w-4 h-4" /> Khách Quét QR Áp Mã
-                    </button>
+                      pQrCode className="w-4 h-4" /> Khách Quét QR Áp Mã
+                    p/button>
 
                     {customPromoAmount === 0 ? (
-                      <>
-                        <button
+                      p>
+                        pbutton
                           onClick={() => setUsePromoWallet(!usePromoWallet)}
                           className={cn(
                             "flex-1 py-3 border-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all",
@@ -2603,8 +2603,8 @@ export function IPosModule() {
                           {usePromoWallet
                             ? "Hủy Dùng Tối Đa"
                             : "Dùng Tối Đa (50%)"}
-                        </button>
-                        <button
+                        p/button>
+                        pbutton
                           onClick={() => {
                             setCustomPromoInput("");
                             setShowPromoInputModal(true);
@@ -2612,21 +2612,21 @@ export function IPosModule() {
                           className="flex-1 py-3 border-2 bg-white border-slate-300 text-slate-700 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:border-primary-300 hover:text-primary-600 transition-all"
                         >
                           Tùy Chọn Mức Áp Dụng
-                        </button>
-                      </>
+                        p/button>
+                      p/>
                     ) : (
-                      <button
+                      pbutton
                         onClick={() => setCustomPromoAmount(0)}
                         className="flex-1 py-3 border-2 border-rose-200 bg-rose-50 text-rose-600 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all"
                       >
                         Hủy Áp Dụng Tùy Chọn
-                      </button>
+                      p/button>
                     )}
-                  </div>
-                </div>
+                  p/div>
+                p/div>
 
                 {customer && (customer.points || 0) > 0 && (
-                  <div
+                  pdiv
                     className={cn(
                       "group p-5 rounded-sm border-2 transition-all cursor-pointer flex items-center justify-between",
                       useLoyaltyPoints
@@ -2635,8 +2635,8 @@ export function IPosModule() {
                     )}
                     onClick={() => setUseLoyaltyPoints(!useLoyaltyPoints)}
                   >
-                    <div className="flex items-center gap-4">
-                      <div
+                    pdiv className="flex items-center gap-4">
+                      pdiv
                         className={cn(
                           "w-12 h-12 rounded-sm flex items-center justify-center transition-all",
                           useLoyaltyPoints
@@ -2644,31 +2644,31 @@ export function IPosModule() {
                             : "bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600",
                         )}
                       >
-                        <Sparkles className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900 uppercase tracking-tight">
+                        pSparkles className="w-6 h-6" />
+                      p/div>
+                      pdiv>
+                        pp className="text-sm font-bold text-slate-900 uppercase tracking-tight">
                           Thanh toán bằng Điểm Loyalty
-                        </p>
-                        <p className="text-[10px] text-slate-600 font-bold mt-0.5">
+                        p/p>
+                        pp className="text-[10px] text-slate-600 font-bold mt-0.5">
                           Sẵn có:{" "}
-                          <span className="text-emerald-600">
+                          pspan className="text-emerald-600">
                             {(customer.points || 0).toLocaleString()} điểm
-                          </span>
-                          <span className="mx-2 opacity-30">•</span>
+                          p/span>
+                          pspan className="mx-2 opacity-30">•p/span>
                           Khả dụng:{" "}
-                          <span className="text-primary-600">
+                          pspan className="text-primary-600">
                             {formatCurrency(
                               Math.min(
                                 subtotal - discount,
                                 customer.points || 0,
                               ),
                             )}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                    <div
+                          p/span>
+                        p/p>
+                      p/div>
+                    p/div>
+                    pdiv
                       className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
                         useLoyaltyPoints
@@ -2677,27 +2677,27 @@ export function IPosModule() {
                       )}
                     >
                       {useLoyaltyPoints ? (
-                        <CheckCircle2 className="w-4 h-4" />
+                        pCheckCircle2 className="w-4 h-4" />
                       ) : (
-                        <div className="w-2 h-2 bg-slate-100 rounded-full" />
+                        pdiv className="w-2 h-2 bg-slate-100 rounded-full" />
                       )}
-                    </div>
-                  </div>
+                    p/div>
+                  p/div>
                 )}
 
                 {/* Payment Method Details */}
-                <AnimatePresence mode="wait">
+                pAnimatePresence mode="wait">
                   {paymentMethod === "qr" ? (
-                    <motion.div
+                    pmotion.div
                       key="qr-view"
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-primary-50 rounded-md border border-primary-100 shadow-inner"
                     >
-                      <div className="bg-white p-3 rounded-md shadow-sm ring-1 ring-black/5 relative group overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <img
+                      pdiv className="bg-white p-3 rounded-md shadow-sm ring-1 ring-black/5 relative group overflow-hidden">
+                        pdiv className="absolute inset-0 bg-gradient-to-tr from-primary-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        pimg
                           src={sePayService.createPaymentQR(
                             total,
                             `IPOS_PAY_${Date.now()}`,
@@ -2706,119 +2706,119 @@ export function IPosModule() {
                           className="w-40 h-40 relative z-10 object-contain drop-shadow-sm mix-blend-darken"
                           referrerPolicy="no-referrer"
                         />
-                      </div>
-                      <div className="text-center sm:text-left space-y-4">
-                        <div className="space-y-1">
-                          <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                      p/div>
+                      pdiv className="text-center sm:text-left space-y-4">
+                        pdiv className="space-y-1">
+                          ph4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                             Quét mã VietQR Đa Năng
-                            <span className="px-2 py-0.5 bg-blue-600 text-white text-[8px] font-bold uppercase rounded shadow-sm inline-block">
+                            pspan className="px-2 py-0.5 bg-blue-600 text-white text-[8px] font-bold uppercase rounded shadow-sm inline-block">
                               SePay Active
-</span>
-                          </h4>
-                          <p className="text-[11px] text-slate-600 font-medium pb-2">
+p/span>
+                          p/h4>
+                          pp className="text-[11px] text-slate-600 font-medium pb-2">
                             Hỗ trợ: Momo, ZaloPay, VNPay, và mọi Ngân hàng
-                          </p>
-                          <p className="text-xs text-primary-600 font-bold uppercase tracking-widest flex items-center gap-1.5">
-                            <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
+                          p/p>
+                          pp className="text-xs text-primary-600 font-bold uppercase tracking-widest flex items-center gap-1.5">
+                            pRefreshCcw className="w-3.5 h-3.5 animate-spin" />
                             Auto-Reconciliation Enabled
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-slate-700 border border-primary-100/50 leading-relaxed shadow-sm">
+                          p/p>
+                        p/div>
+                        pdiv className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-slate-700 border border-primary-100/50 leading-relaxed shadow-sm">
                           Sử dụng bất kỳ ứng dụng Ngân hàng để thanh toán. Hệ
-                          thống sẽ <strong>tự động chốt đơn</strong> ngay khi
+                          thống sẽ pstrong>tự động chốt đơnp/strong> ngay khi
                           tiền vào tài khoản.
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex -space-x-2">
+                        p/div>
+                        pdiv className="flex items-center gap-3">
+                          pdiv className="flex -space-x-2">
                             {[1, 2, 3].map((i) => (
-                              <div
+                              pdiv
                                 key={i}
                                 className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center"
                               >
-                                <Building2 className="w-3 h-3 text-slate-500" />
-                              </div>
+                                pBuilding2 className="w-3 h-3 text-slate-500" />
+                              p/div>
                             ))}
-                          </div>
-                          <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                          p/div>
+                          pspan className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                             Linked with 30+ Banks
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
+                          p/span>
+                        p/div>
+                      p/div>
+                    p/motion.div>
                   ) : paymentMethod === "pos" ? (
-                    <motion.div
+                    pmotion.div
                       key="pos-view"
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
-                        <Monitor className="w-12 h-12 text-primary-600" />
-                        <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
-                      </div>
-                      <div className="space-y-4 mt-2">
-                        <h4 className="text-xl font-bold text-slate-900 tracking-tight">
+                      pdiv className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
+                        pMonitor className="w-12 h-12 text-primary-600" />
+                        pdiv className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
+                      p/div>
+                      pdiv className="space-y-4 mt-2">
+                        ph4 className="text-xl font-bold text-slate-900 tracking-tight">
                           Vui lòng quẹt thẻ trên máy SmartPOS
-                        </h4>
-                        <p className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
+                        p/h4>
+                        pp className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
                           Số tiền{" "}
-                          <strong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
+                          pstrong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
                             {formatCurrency(total)}
-                          </strong>{" "}
+                          p/strong>{" "}
                           đã được đẩy xuống thiết bị. Hệ thống đang chờ tín hiệu
                           phản hồi.
-                        </p>
-                      </div>
-                    </motion.div>
+                        p/p>
+                      p/div>
+                    p/motion.div>
                   ) : paymentMethod === "virtual_account" ? (
-                    <motion.div
+                    pmotion.div
                       key="va-view"
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
-                        <Building2 className="w-12 h-12 text-primary-600" />
+                      pdiv className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
+                        pBuilding2 className="w-12 h-12 text-primary-600" />
                         {isProcessing && (
-                          <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
+                          pdiv className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
                         )}
-                      </div>
-                      <div className="space-y-4 mt-2">
-                        <h4 className="text-xl font-bold text-slate-900 tracking-tight">
+                      p/div>
+                      pdiv className="space-y-4 mt-2">
+                        ph4 className="text-xl font-bold text-slate-900 tracking-tight">
                           Hệ thống đang chờ chuyển khoản
-                        </h4>
-                        <p className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
+                        p/h4>
+                        pp className="text-sm text-slate-600 font-medium max-w-[320px] mx-auto leading-relaxed">
                           Vui lòng khách hàng chuyển{" "}
-                          <strong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
+                          pstrong className="text-slate-900 text-lg bg-white px-2 py-0.5 rounded shadow-sm mx-1">
                             {formatCurrency(total)}
-                          </strong>{" "}
+                          p/strong>{" "}
                           vào tài khoản định danh được hiển thị trên ứng dụng
                           của khách.
-                        </p>
-                      </div>
-                    </motion.div>
+                        p/p>
+                      p/div>
+                    p/motion.div>
                   ) : paymentMethod === "promo_qr" ? (
-                    <motion.div
+                    pmotion.div
                       key="promo-qr-view"
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="flex flex-col sm:flex-row items-center gap-8 p-12 bg-orange-50 rounded-sm border border-orange-200 shadow-inner overflow-hidden relative"
                     >
-                      <div className="absolute top-0 right-0 p-3 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-bl-sm">
+                      pdiv className="absolute top-0 right-0 p-3 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-bl-sm">
                         TMĐT Integration
-                      </div>
-                      <div className="w-48 h-48 bg-white rounded-xl shadow-lg border border-orange-100 flex items-center justify-center relative overflow-hidden group border-dashed">
-                        <div className="absolute inset-0 bg-slate-900/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none" />
-                        <div className="text-center p-4">
-                          <QrCode className="w-16 h-16 text-orange-400 mx-auto mb-3" />
-                          <p className="font-bold text-orange-800 text-xs text-center leading-relaxed">
+                      p/div>
+                      pdiv className="w-48 h-48 bg-white rounded-xl shadow-lg border border-orange-100 flex items-center justify-center relative overflow-hidden group border-dashed">
+                        pdiv className="absolute inset-0 bg-slate-900/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none" />
+                        pdiv className="text-center p-4">
+                          pQrCode className="w-16 h-16 text-orange-400 mx-auto mb-3" />
+                          pp className="font-bold text-orange-800 text-xs text-center leading-relaxed">
                             Sử dụng máy quét mã vạch hoặc bấm để bắt đầu quét
-                          </p>
-                        </div>
-                        <button
+                          p/p>
+                        p/div>
+                        pbutton
                           onClick={() => {
                             // Mock recording a customer and scanning their floor wallet promo QR
                             if (!customer) {
@@ -2829,60 +2829,60 @@ export function IPosModule() {
                           }}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
-                        <div className="absolute top-0 left-0 w-full h-0.5 shadow-[0_0_15px_4px_rgba(249,115,22,0.6)] bg-orange-400 opacity-50 animate-scan" />
-                      </div>
-                      <div className="text-center sm:text-left space-y-4 max-w-sm">
-                        <div className="space-y-1">
-                          <h4 className="text-xl font-bold text-orange-900 leading-tight">
+                        pdiv className="absolute top-0 left-0 w-full h-0.5 shadow-[0_0_15px_4px_rgba(249,115,22,0.6)] bg-orange-400 opacity-50 animate-scan" />
+                      p/div>
+                      pdiv className="text-center sm:text-left space-y-4 max-w-sm">
+                        pdiv className="space-y-1">
+                          ph4 className="text-xl font-bold text-orange-900 leading-tight">
                             Quét Mã QR Sàn
-                            <br />
+                            pbr />
                             Shopee, Lazada, TikTok
-                          </h4>
-                          <p className="text-xs text-blue-600 font-medium pb-2">
+                          p/h4>
+                          pp className="text-xs text-blue-600 font-medium pb-2">
                             Hệ thống sẽ tự động trích xuất thông tin khách hàng
                             và số dư khuyến mại được trợ giá.
-                          </p>
-                        </div>
+                          p/p>
+                        p/div>
                         {promoWalletDiscount > 0 ? (
-                          <div className="p-4 bg-emerald-50 rounded-sm border border-emerald-200 shadow-sm flex items-start gap-4 animate-in slide-in-bottom-2">
-                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="font-bold text-emerald-800 text-sm">
+                          pdiv className="p-4 bg-emerald-50 rounded-sm border border-emerald-200 shadow-sm flex items-start gap-4 animate-in slide-in-bottom-2">
+                            pdiv className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                              pCheckCircle2 className="w-4 h-4" />
+                            p/div>
+                            pdiv>
+                              pp className="font-bold text-emerald-800 text-sm">
                                 Đã ghi nhận mã KM
-                              </p>
-                              <p className="text-xs text-emerald-600 mt-0.5">
+                              p/p>
+                              pp className="text-xs text-emerald-600 mt-0.5">
                                 Trợ giá sàn tài trợ:{" "}
-                                <strong>
+                                pstrong>
                                   {formatCurrency(promoWalletDiscount)}
-                                </strong>
-                              </p>
-                            </div>
-                          </div>
+                                p/strong>
+                              p/p>
+                            p/div>
+                          p/div>
                         ) : (
-                          <div className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-orange-800 border border-orange-200 leading-relaxed shadow-sm flex items-center gap-3">
-                            <ScanLine className="w-5 h-5 text-orange-500 animate-pulse shrink-0" />{" "}
+                          pdiv className="p-4 bg-white/60 backdrop-blur-md rounded-sm text-xs font-bold text-orange-800 border border-orange-200 leading-relaxed shadow-sm flex items-center gap-3">
+                            pScanLine className="w-5 h-5 text-orange-500 animate-pulse shrink-0" />{" "}
                             Chờ quét mã người dùng...
-                          </div>
+                          p/div>
                         )}
-                      </div>
-                    </motion.div>
+                      p/div>
+                    p/motion.div>
                   ) : (
-                    <motion.div
+                    pmotion.div
                       key="cash-view"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       className="bg-slate-50 p-8 rounded-sm border border-slate-300 shadow-inner space-y-6"
                     >
-                      <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
+                      pdiv className="flex justify-between items-center">
+                        pspan className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
                           Khách Đưa
-                        </span>
-                        <div className="flex gap-2">
+                        p/span>
+                        pdiv className="flex gap-2">
                           {[100000, 200000, 500000].map((val) => (
-                            <button
+                            pbutton
                               key={val}
                               onClick={() => {
                                 setGuestCash(val.toString());
@@ -2892,16 +2892,16 @@ export function IPosModule() {
                               {val >= 1000000
                                 ? val / 1000000 + "M"
                                 : val / 1000 + "k"}
-                            </button>
+                            p/button>
                           ))}
-                        </div>
-                      </div>
+                        p/div>
+                      p/div>
 
-                      <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-500 group-focus-within:text-primary-600 transition-all">
+                      pdiv className="relative group">
+                        pspan className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-500 group-focus-within:text-primary-600 transition-all">
                           đ
-                        </span>
-                        <input
+                        p/span>
+                        pinput
                           id="cash-input"
                           type="number"
                           value={guestCash}
@@ -2909,13 +2909,13 @@ export function IPosModule() {
                           placeholder={total.toString()}
                           className="w-full bg-white border border-slate-300 focus:border-primary-600 focus:ring-2 focus:ring-primary-50 rounded-sm py-2 pl-8 pr-3 text-lg font-bold text-slate-900 outline-none transition-all shadow-sm text-right"
                         />
-                      </div>
+                      p/div>
 
-                      <div className="flex justify-between items-center pt-4 border-t border-slate-300">
-                        <span className="text-sm font-bold text-slate-600 uppercase">
+                      pdiv className="flex justify-between items-center pt-4 border-t border-slate-300">
+                        pspan className="text-sm font-bold text-slate-600 uppercase">
                           Tiền thối lại
-                        </span>
-                        <span
+                        p/span>
+                        pspan
                           className={cn(
                             "text-2xl font-bold",
                             Number(guestCash) - total >= 0
@@ -2926,21 +2926,21 @@ export function IPosModule() {
                           {guestCash && Number(guestCash) >= total
                             ? formatCurrency(Number(guestCash) - total)
                             : "--"}
-                        </span>
-                      </div>
-                    </motion.div>
+                        p/span>
+                      p/div>
+                    p/motion.div>
                   )}
-                </AnimatePresence>
-              </div>
+                p/AnimatePresence>
+              p/div>
 
-              <div className="mt-auto pt-6 flex gap-4">
-                <button
+              pdiv className="mt-auto pt-6 flex gap-4">
+                pbutton
                   onClick={() => setShowPaymentModal(false)}
                   className="px-6 py-3 bg-slate-100 text-slate-600 font-bold rounded-md hover:bg-slate-200 hover:text-slate-800 transition-all text-xs uppercase tracking-widest shadow-sm"
                 >
                   Quay lại
-                </button>
-                <button
+                p/button>
+                pbutton
                   id="complete-payment-button"
                   onClick={completeOrder}
                   disabled={isProcessing}
@@ -2950,119 +2950,119 @@ export function IPosModule() {
                   )}
                 >
                   {isProcessing ? (
-                    <span className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    pspan className="flex items-center gap-3">
+                      pdiv className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Đang xử lý...
-                    </span>
+                    p/span>
                   ) : (
-                    <>
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="relative z-10 flex items-center gap-3 drop-shadow-md">
+                    p>
+                      pdiv className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      pspan className="relative z-10 flex items-center gap-3 drop-shadow-md">
                         Hoàn tất thanh toán
-                        <CheckCircle2 className="w-6 h-6 animate-pulse" />
-                      </span>
-                    </>
+                        pCheckCircle2 className="w-6 h-6 animate-pulse" />
+                      p/span>
+                    p/>
                   )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+                p/button>
+              p/div>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       
       {/* Payment Success & Printing / E-Invoice Modal */}
       {showPaymentSuccessModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-slate-300/50">
-            <div className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-8 text-center space-y-3 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:2rem_2rem]" />
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-emerald-500/30 mb-2">
-                  <CheckCircle2 className="w-7 h-7 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
-                <p className="text-sm text-slate-600 font-medium">Đơn hàng <strong className="text-emerald-700 font-bold">#{completedOrderData?.orderId}</strong> đã được ghi nhận.</p>
-              </div>
-            </div>
+        pdiv className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/40 backdrop-blur-sm">
+          pdiv className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-slate-300/50">
+            pdiv className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-8 text-center space-y-3 relative overflow-hidden">
+              pdiv className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:2rem_2rem]" />
+              pdiv className="relative z-10">
+                pdiv className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-emerald-500/30 mb-2">
+                  pCheckCircle2 className="w-7 h-7 text-white" />
+                p/div>
+                ph2 className="text-xl font-bold text-emerald-900 tracking-tight">Thanh toán thành công!p/h2>
+                pp className="text-sm text-slate-600 font-medium">Đơn hàng pstrong className="text-emerald-700 font-bold">#{completedOrderData?.orderId}p/strong> đã được ghi nhận.p/p>
+              p/div>
+            p/div>
             
-            <div className="p-6 space-y-6 bg-slate-50/50">
-                <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100 group-hover:scale-105 transition-all"><Printer className="w-5 h-5" /></div>
-                        <span className="font-bold text-slate-800 text-sm">In phiếu tính tiền</span>
-                    </button>
-                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
-                        <div className="p-3 bg-orange-50 text-blue-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all"><ChefHat className="w-5 h-5" /></div>
-                        <span className="font-bold text-slate-800 text-sm">In bill chế biến</span>
-                    </button>
-                </div>
+            pdiv className="p-6 space-y-6 bg-slate-50/50">
+                pdiv className="grid grid-cols-2 gap-4">
+                    pbutton onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                        pdiv className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100 group-hover:scale-105 transition-all">pPrinter className="w-5 h-5" />p/div>
+                        pspan className="font-bold text-slate-800 text-sm">In phiếu tính tiềnp/span>
+                    p/button>
+                    pbutton onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                        pdiv className="p-3 bg-orange-50 text-blue-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all">pChefHat className="w-5 h-5" />p/div>
+                        pspan className="font-bold text-slate-800 text-sm">In bill chế biếnp/span>
+                    p/button>
+                p/div>
 
-                <div className="border border-slate-300 bg-white rounded-xl overflow-hidden shadow-sm">
-                    <div className="p-4 bg-slate-50/50 border-b border-slate-200 flex items-center gap-3">
-                        <Receipt className="w-4 h-4 text-primary-500" />
-                        <h3 className="font-bold text-slate-900 text-sm">Phát hành Hóa đơn điện tử (VAT)</h3>
-                    </div>
-                    <div className="p-5 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Mã số thuế</label>
-                            <input
+                pdiv className="border border-slate-300 bg-white rounded-xl overflow-hidden shadow-sm">
+                    pdiv className="p-4 bg-slate-50/50 border-b border-slate-200 flex items-center gap-3">
+                        pReceipt className="w-4 h-4 text-primary-500" />
+                        ph3 className="font-bold text-slate-900 text-sm">Phát hành Hóa đơn điện tử (VAT)p/h3>
+                    p/div>
+                    pdiv className="p-5 space-y-4">
+                        pdiv className="grid grid-cols-2 gap-4">
+                            pdiv className="space-y-1.5 focus-within:text-primary-600 transition-colors">
+                            plabel className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Mã số thuếp/label>
+                            pinput
                                 type="text"
                                 value={invoiceTaxCode}
                                 onChange={(e) => setInvoiceTaxCode(e.target.value)}
                                 className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="VD: 0101234567"
                             />
-                            </div>
-                            <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Tên Khách / Công ty</label>
-                            <input
+                            p/div>
+                            pdiv className="space-y-1.5 focus-within:text-primary-600 transition-colors">
+                            plabel className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Tên Khách / Công typ/label>
+                            pinput
                                 type="text"
                                 value={invoiceCompanyName}
                                 onChange={(e) => setInvoiceCompanyName(e.target.value)}
                                 className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="..."
                             />
-                            </div>
-                        </div>
+                            p/div>
+                        p/div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                                <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Địa chỉ</label>
-                                <input
+                        pdiv className="grid grid-cols-2 gap-4">
+                            pdiv className="space-y-1.5 focus-within:text-primary-600 transition-colors">
+                                plabel className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Địa chỉp/label>
+                                pinput
                                     type="text"
                                     value={invoiceAddress}
                                     onChange={(e) => setInvoiceAddress(e.target.value)}
                                     className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                     placeholder="Địa chỉ xuất HD"
                                 />
-                            </div>
-                            <div className="space-y-1.5 focus-within:text-primary-600 transition-colors">
-                            <label className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Email nhận hóa đơn</label>
-                            <input
+                            p/div>
+                            pdiv className="space-y-1.5 focus-within:text-primary-600 transition-colors">
+                            plabel className="text-[10px] font-bold text-inherit uppercase tracking-widest text-slate-600">Email nhận hóa đơnp/label>
+                            pinput
                                 type="email"
                                 value={invoiceEmail}
                                 onChange={(e) => setInvoiceEmail(e.target.value)}
                                 className="w-full text-sm font-medium text-slate-900 px-3 py-2 bg-slate-50 border border-slate-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 rounded-lg outline-none transition-all placeholder:text-slate-500"
                                 placeholder="Email nhận HDĐT"
                             />
-                            </div>
-                        </div>
+                            p/div>
+                        p/div>
                         
-                        <button disabled={!invoiceTaxCode || !invoiceEmail} onClick={() => {
+                        pbutton disabled={!invoiceTaxCode || !invoiceEmail} onClick={() => {
                             alert("Yêu cầu phát hành HĐĐT đã được gửi lên hệ thống!");
                             setShowPaymentSuccessModal(false);
                             setActiveTab("history");
                         }} className="w-full py-3 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2">
                             Xác nhận xuất HĐĐT
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        p/button>
+                    p/div>
+                p/div>
+            p/div>
             
-            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
-                <button
+            pdiv className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+                pbutton
                     onClick={() => {
                         setShowPaymentSuccessModal(false);
                         setActiveTab("history");
@@ -3070,69 +3070,69 @@ export function IPosModule() {
                     className="px-6 py-2.5 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm shadow-sm"
                 >
                     Đóng & Tạo đơn mới
-                </button>
-            </div>
-          </div>
-        </div>
+                p/button>
+            p/div>
+          p/div>
+        p/div>
       )}
 
       {/* Scanner Modal */}
       {isScannerOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-white rounded-sm p-8 w-full max-w-lg space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Quét mã sản phẩm</h2>
-              <button
+        pdiv className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
+          pdiv className="bg-white rounded-sm p-8 w-full max-w-lg space-y-6">
+            pdiv className="flex justify-between items-center">
+              ph2 className="text-xl font-bold">Quét mã sản phẩmp/h2>
+              pbutton
                 onClick={() => setIsScannerOpen(false)}
                 className="p-2 hover:bg-slate-100 rounded-sm"
               >
-                <X />
-              </button>
-            </div>
-            <div
+                pX />
+              p/button>
+            p/div>
+            pdiv
               id="pos-reader"
               className="overflow-hidden rounded-sm border border-slate-300 shadow-inner"
-            ></div>
-            <p className="text-center text-xs text-slate-600 font-bold uppercase tracking-wider">
+            >p/div>
+            pp className="text-center text-xs text-slate-600 font-bold uppercase tracking-wider">
               Đưa mã vạch vào vùng nhận diện
-            </p>
-          </div>
-        </div>
+            p/p>
+          p/div>
+        p/div>
       )}
 
       {/* Header - Refined with better depth and hierarchy */}
-      <div className="flex justify-between items-center bg-white p-3 rounded-sm border border-slate-300 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <button
+      pdiv className="flex justify-between items-center bg-white p-3 rounded-sm border border-slate-300 shadow-sm sticky top-0 z-50">
+        pdiv className="flex items-center gap-4">
+          pbutton
             onClick={() => (window.location.href = "/")}
             className="w-10 h-10 bg-slate-50 rounded-sm flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-primary-600 transition-all border border-slate-200 group"
             title="Trở về Trung tâm ERP"
           >
-            <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
-          </button>
+            pArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
+          p/button>
 
-          <div className="flex items-center gap-3.5 border-r border-slate-200 pr-5">
-            <div className="w-11 h-11 bg-blue-600 text-white rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
-              <Store className="w-5 h-5 relative z-10" />
-              <div className="absolute inset-0 bg-white /50 to-transparent group-hover:scale-110 transition-transform" />
-              <div
+          pdiv className="flex items-center gap-3.5 border-r border-slate-200 pr-5">
+            pdiv className="w-11 h-11 bg-blue-600 text-white rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
+              pStore className="w-5 h-5 relative z-10" />
+              pdiv className="absolute inset-0 bg-white /50 to-transparent group-hover:scale-110 transition-transform" />
+              pdiv
                 className={cn(
                   "absolute -top-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full shadow-sm z-20",
                   isOffline ? "bg-rose-500 animate-pulse" : "bg-emerald-500",
                 )}
               />
-            </div>
-            <div
+            p/div>
+            pdiv
               onClick={() => setActiveTab("dashboard")}
               className="cursor-pointer hover:opacity-80 transition-opacity"
               title="Về trang tổng quan"
             >
-              <h1 className="font-sans tracking-tight text-base font-bold text-slate-900 leading-none tracking-tight">
+              ph1 className="font-sans tracking-tight text-base font-bold text-slate-900 leading-none tracking-tight">
                 iPOS Terminal
-              </h1>
-              <p className="text-[10px] text-slate-600 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
-                {activeStore?.name} <span className="opacity-30">•</span>{" "}
-                <span
+              p/h1>
+              pp className="text-[10px] text-slate-600 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
+                {activeStore?.name} pspan className="opacity-30">•p/span>{" "}
+                pspan
                   className={
                     isOffline
                       ? "text-rose-500 font-bold"
@@ -3140,18 +3140,18 @@ export function IPosModule() {
                   }
                 >
                   {isOffline ? "OFFLINE (LƯU TẠM)" : "LIVE SYNC"}
-                </span>
-              </p>
-            </div>
-          </div>
+                p/span>
+              p/p>
+            p/div>
+          p/div>
 
-          <div className="hidden xl:flex gap-8 pl-3">
-            <div className="space-y-1">
-              <p className="text-[10px] text-slate-600 font-medium ml-1">
+          pdiv className="hidden xl:flex gap-8 pl-3">
+            pdiv className="space-y-1">
+              pp className="text-[10px] text-slate-600 font-medium ml-1">
                 Thu ngân vận hành
-              </p>
-              <div className="flex items-center gap-2.5 group">
-                <div className="w-7 h-7 bg-slate-100 rounded-sm flex items-center justify-center text-xs font-bold text-primary-600 border border-slate-300 shadow-sm transition-transform group-hover:scale-105">
+              p/p>
+              pdiv className="flex items-center gap-2.5 group">
+                pdiv className="w-7 h-7 bg-slate-100 rounded-sm flex items-center justify-center text-xs font-bold text-primary-600 border border-slate-300 shadow-sm transition-transform group-hover:scale-105">
                   {(
                     selectedStaff?.name ||
                     user?.displayName ||
@@ -3160,8 +3160,8 @@ export function IPosModule() {
                   )
                     .charAt(0)
                     .toUpperCase()}
-                </div>
-                <select
+                p/div>
+                pselect
                   className="text-sm font-bold text-slate-800 bg-transparent outline-none cursor-pointer hover:text-primary-600 transition-colors"
                   value={selectedStaff?.id || user?.uid}
                   onChange={(e) =>
@@ -3171,25 +3171,25 @@ export function IPosModule() {
                     })
                   }
                 >
-                  <option value={user?.uid || "default"}>
+                  poption value={user?.uid || "default"}>
                     {user?.displayName || user?.email || "Nhân viên hiện tại"}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
+                  p/option>
+                p/select>
+              p/div>
+            p/div>
+          p/div>
+        p/div>
 
         {activeTab !== "dashboard" && (
-          <div className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap min-w-0">
-            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
-            <button
+          pdiv className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap min-w-0">
+            pstyle>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}p/style>
+            pbutton
               onClick={() => setActiveTab("dashboard")}
               className="px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100"
             >
-              <LayoutDashboard className="w-4 h-4" /> Tổng quan
-            </button>
-            <button
+              pLayoutDashboard className="w-4 h-4" /> Tổng quan
+            p/button>
+            pbutton
               onClick={() => setActiveTab("sales")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3198,10 +3198,10 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <ShoppingCart className="w-4 h-4" /> Bán hàng
-            </button>
+              pShoppingCart className="w-4 h-4" /> Bán hàng
+            p/button>
             {activeStoreConfig?.industry !== "Bán buôn, bán lẻ" && (
-              <button
+              pbutton
                 onClick={() => setActiveTab("tables")}
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3210,14 +3210,14 @@ export function IPosModule() {
                     : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
-                <Grid3x3 className="w-4 h-4" />{" "}
+                pGrid3x3 className="w-4 h-4" />{" "}
                 {activeStoreConfig?.industry === "Lưu trú, làm đẹp"
                   ? "Sơ đồ phòng"
                   : "Sơ đồ bàn"}
-              </button>
+              p/button>
             )}
             {["admin", "manager"].includes(userRole) && (
-              <button
+              pbutton
                 onClick={() => setActiveTab("management")}
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3226,11 +3226,11 @@ export function IPosModule() {
                     : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
-                <ShieldCheck className="w-4 h-4" /> Quản trị
-              </button>
+                pShieldCheck className="w-4 h-4" /> Quản trị
+              p/button>
             )}
             {activeStoreConfig?.industry !== "Lưu trú, làm đẹp" && (
-              <button
+              pbutton
                 onClick={() => setActiveTab("delivery")}
                 className={cn(
                   "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 relative",
@@ -3239,15 +3239,15 @@ export function IPosModule() {
                     : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
                 )}
               >
-                <Building2 className="w-4 h-4" /> Đối tác Giao hàng
+                pBuilding2 className="w-4 h-4" /> Đối tác Giao hàng
                 {incomingExternalOrders.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full animate-pulse">
+                  pspan className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full animate-pulse">
                     {incomingExternalOrders.length}
-                  </span>
+                  p/span>
                 )}
-              </button>
+              p/button>
             )}
-            <button
+            pbutton
               onClick={() => setActiveTab("lookup")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3256,10 +3256,10 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <Search className="w-4 h-4" /> Tra cứu
-            </button>
+              pSearch className="w-4 h-4" /> Tra cứu
+            p/button>
 
-            <button
+            pbutton
               onClick={() => setActiveTab("inventory")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3268,9 +3268,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <Boxes className="w-4 h-4" /> Kho
-            </button>
-            <button
+              pBoxes className="w-4 h-4" /> Kho
+            p/button>
+            pbutton
               onClick={() => setActiveTab("products")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3279,9 +3279,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <Tag className="w-4 h-4" /> Sản phẩm
-            </button>
-            <button
+              pTag className="w-4 h-4" /> Sản phẩm
+            p/button>
+            pbutton
               onClick={() => setActiveTab("payroll")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3290,9 +3290,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <DollarSign className="w-4 h-4" /> Tính lương
-            </button>
-            <button
+              pDollarSign className="w-4 h-4" /> Tính lương
+            p/button>
+            pbutton
               onClick={() => setActiveTab("orders")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3301,9 +3301,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <ShoppingBag className="w-4 h-4" /> Đơn hàng
-            </button>
-            <button
+              pShoppingBag className="w-4 h-4" /> Đơn hàng
+            p/button>
+            pbutton
               onClick={() => setActiveTab("customers")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3312,9 +3312,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <Users className="w-4 h-4" /> Khách hàng
-            </button>
-            <button
+              pUsers className="w-4 h-4" /> Khách hàng
+            p/button>
+            pbutton
               onClick={() => setActiveTab("reports")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3323,9 +3323,9 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <BarChart4 className="w-4 h-4" /> Báo cáo
-            </button>
-            <button
+              pBarChart4 className="w-4 h-4" /> Báo cáo
+            p/button>
+            pbutton
               onClick={() => setActiveTab("promotions")}
               className={cn(
                 "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
@@ -3334,14 +3334,14 @@ export function IPosModule() {
                   : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
               )}
             >
-              <Gift className="w-4 h-4" /> Khuyến mại
-            </button>
-          </div>
+              pGift className="w-4 h-4" /> Khuyến mại
+            p/button>
+          p/div>
         )}
 
-        <div className="flex gap-3 items-center">
-          <div className="flex gap-1.5 px-1.5 py-1.5 bg-slate-50 rounded-sm border border-slate-200 mr-2">
-            <button
+        pdiv className="flex gap-3 items-center">
+          pdiv className="flex gap-1.5 px-1.5 py-1.5 bg-slate-50 rounded-sm border border-slate-200 mr-2">
+            pbutton
               onClick={startListening}
               className={cn(
                 "w-9 h-9 rounded-sm transition-all flex items-center justify-center relative",
@@ -3350,21 +3350,21 @@ export function IPosModule() {
                   : "bg-white text-slate-600 hover:text-primary-600 hover:shadow-sm border border-slate-300",
               )}
             >
-              <Mic className="w-4 h-4" />
-            </button>
-            <button
+              pMic className="w-4 h-4" />
+            p/button>
+            pbutton
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="w-9 h-9 bg-white text-slate-600 rounded-sm hover:text-amber-500 hover:shadow-sm transition-all border border-slate-300 flex items-center justify-center"
             >
               {isDarkMode ? (
-                <Sparkles className="w-4 h-4 text-amber-500" />
+                pSparkles className="w-4 h-4 text-amber-500" />
               ) : (
-                <Monitor className="w-4 h-4" />
+                pMonitor className="w-4 h-4" />
               )}
-            </button>
-          </div>
+            p/button>
+          p/div>
 
-          <button
+          pbutton
             onClick={() =>
               setActiveTab(activeTab === "sales" ? "history" : "sales")
             }
@@ -3376,51 +3376,51 @@ export function IPosModule() {
             )}
           >
             {activeTab === "history" ? (
-              <ShoppingCart className="w-4 h-4" />
+              pShoppingCart className="w-4 h-4" />
             ) : (
-              <History className="w-4 h-4" />
+              pHistory className="w-4 h-4" />
             )}
             {activeTab === "history" ? "Bán hàng" : "Lịch sử"}
             {pendingEMenuOrders.length > 0 && activeTab !== "history" && (
-              <span className="ml-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+              pspan className="ml-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
                 {pendingEMenuOrders.length}
-              </span>
+              p/span>
             )}
-          </button>
+          p/button>
 
-          <button
+          pbutton
             onClick={toggleShift}
             className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-sm text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
           >
-            <Clock className="w-4 h-4" /> Chốt ca
-          </button>
-        </div>
-      </div>
+            pClock className="w-4 h-4" /> Chốt ca
+          p/button>
+        p/div>
+      p/div>
 
-      <div className="grid grid-cols-12 gap-8 flex-1 overflow-hidden">
+      pdiv className="grid grid-cols-12 gap-8 flex-1 overflow-hidden">
         {activeTab === "dashboard" ? (
-          <div className="col-span-12 space-y-8 animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar pb-20 scrollbar-hide">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-1">
-                <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+          pdiv className="col-span-12 space-y-8 animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar pb-20 scrollbar-hide">
+            pdiv className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              pdiv className="space-y-1">
+                ph2 className="text-3xl font-bold text-slate-900 tracking-tight">
                   Chào buổi sáng, {user?.displayName || "Admin"}!
-                </h2>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+                p/h2>
+                pp className="text-sm font-bold text-slate-500 uppercase tracking-widest">
                   Hệ thống iPOS đã sẵn sàng vận hành •{" "}
                   {new Date().toLocaleDateString("vi-VN")}
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <button
+                p/p>
+              p/div>
+              pdiv className="flex gap-3">
+                pbutton
                   onClick={() => setActiveTab("sales")}
                   className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-sm font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95"
                 >
-                  <Plus className="w-4 h-4" /> Bán hàng ngay
-                </button>
-              </div>
-            </div>
+                  pPlus className="w-4 h-4" /> Bán hàng ngay
+                p/button>
+              p/div>
+            p/div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            pdiv className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
                   label: "Tổng Doanh thu",
@@ -3455,12 +3455,12 @@ export function IPosModule() {
                   bg: "bg-amber-50",
                 },
               ].map((card, i) => (
-                <div
+                pdiv
                   key={card.label}
                   className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 group"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div
+                  pdiv className="flex justify-between items-start mb-4">
+                    pdiv
                       className={cn(
                         "p-3 rounded-xl transition-colors",
                         card.bg,
@@ -3468,83 +3468,83 @@ export function IPosModule() {
                         "group-hover:bg-primary-600 group-hover:text-white",
                       )}
                     >
-                      <card.icon className="w-6 h-6" />
-                    </div>
-                    <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
+                      pcard.icon className="w-6 h-6" />
+                    p/div>
+                    pspan className="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
                       {card.trend}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-slate-600 mb-1">
+                    p/span>
+                  p/div>
+                  pp className="text-sm font-semibold text-slate-600 mb-1">
                     {card.label}
-                  </p>
-                  <p className="text-3xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-primary-600 transition-colors">
+                  p/p>
+                  pp className="text-3xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-primary-600 transition-colors">
                     {card.value}
-                  </p>
-                </div>
+                  p/p>
+                p/div>
               ))}
-            </div>
+            p/div>
 
-            <div className="space-y-6">
+            pdiv className="space-y-6">
               {getIposModuleGroups(
                 activeStoreConfig,
                 userRole,
                 incomingExternalOrders.length,
               ).map((group, idx) => (
-                <div
+                pdiv
                   key={idx}
                   className="bg-white rounded-2xl border border-slate-300 shadow-sm p-6 sm:p-8"
                 >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-1.5 h-6 bg-slate-900 rounded-full" />
-                    <h2 className="text-xl font-bold text-slate-900">
+                  pdiv className="flex items-center gap-3 mb-6">
+                    pdiv className="w-1.5 h-6 bg-slate-900 rounded-full" />
+                    ph2 className="text-xl font-bold text-slate-900">
                       {group.title}
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    p/h2>
+                  p/div>
+                  pdiv className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {group.items.map((item) => (
-                      <button
+                      pbutton
                         key={item.id}
                         onClick={() => setActiveTab(item.id as any)}
                         className="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-primary-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
                       >
-                        <div
+                        pdiv
                           className={cn(
                             "p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105",
                             getColorClasses(item.color),
                           )}
                         >
-                          <item.icon className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-slate-900 mb-1">
+                          pitem.icon className="w-6 h-6" />
+                        p/div>
+                        pdiv className="flex-1 min-w-0">
+                          ph3 className="text-sm font-bold text-slate-900 mb-1">
                             {item.label}
-                          </h3>
-                          <p className="text-xs text-slate-600 leading-relaxed">
+                          p/h3>
+                          pp className="text-xs text-slate-600 leading-relaxed">
                             {item.desc}
-                          </p>
-                        </div>
-                      </button>
+                          p/p>
+                        p/div>
+                      p/button>
                     ))}
-                  </div>
-                </div>
+                  p/div>
+                p/div>
               ))}
-            </div>
+            p/div>
 
             {/* Delivery Channel Live Monitor */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
-                  <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh
+            pdiv className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+              pdiv className="flex items-center justify-between mb-8">
+                ph3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
+                  pMonitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh
                   Giao hàng (Live)
-                </h3>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />{" "}
+                p/h3>
+                pdiv className="flex gap-2">
+                  pspan className="px-3 py-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm">
+                    pdiv className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />{" "}
                     Đang theo dõi
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  p/span>
+                p/div>
+              p/div>
+              pdiv className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
                   {
                     id: "grab",
@@ -3568,82 +3568,82 @@ export function IPosModule() {
                     stats: deliveryChannelStatus.gsm,
                   },
                 ].map((ch) => (
-                  <div
+                  pdiv
                     key={ch.id}
                     className="p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between group hover:bg-white hover:shadow-md hover:border-primary-100 transition-all duration-300"
                   >
-                    <div className="flex items-center gap-4">
-                      <div
+                    pdiv className="flex items-center gap-4">
+                      pdiv
                         className={cn(
                           "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md transition-transform group-hover:scale-110",
                           ch.color,
                         )}
                       >
                         {ch.icon}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
+                      p/div>
+                      pdiv>
+                        pp className="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
                           {ch.name}
-                        </p>
-                        <p className="text-xs font-semibold mt-0.5 text-slate-600">
+                        p/p>
+                        pp className="text-xs font-semibold mt-0.5 text-slate-600">
                           {ch.stats.online ? (
-                            <span className="text-emerald-600">Trực tuyến</span>
+                            pspan className="text-emerald-600">Trực tuyếnp/span>
                           ) : (
                             "Ngoại tuyến"
                           )}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-slate-900 leading-none group-hover:text-blue-600 transition-colors">
+                        p/p>
+                      p/div>
+                    p/div>
+                    pdiv className="text-right">
+                      pp className="text-xl font-bold text-slate-900 leading-none group-hover:text-blue-600 transition-colors">
                         {ch.stats.activeDrivers}
-                      </p>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">
+                      p/p>
+                      pp className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">
                         Tài xế gần đây
-                      </p>
-                    </div>
-                  </div>
+                      p/p>
+                    p/div>
+                  p/div>
                 ))}
-              </div>
-            </div>
+              p/div>
+            p/div>
 
-            <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
-              <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
-                    <Zap className="w-5 h-5 text-blue-600" /> Hoạt động Bán
+            pDraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
+              pdiv className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+                pdiv className="flex items-center justify-between mb-8">
+                  ph3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
+                    pZap className="w-5 h-5 text-blue-600" /> Hoạt động Bán
                     hàng (Live)
-                  </h3>
-                </div>
-                <div className="h-[320px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={revenueData}>
-                      <defs>
-                        <linearGradient
+                  p/h3>
+                p/div>
+                pdiv className="h-[320px] w-full">
+                  pResponsiveContainer width="100%" height="100%">
+                    pAreaChart data={revenueData}>
+                      pdefs>
+                        plinearGradient
                           id="dashRevenue"
                           x1="0"
                           y1="0"
                           x2="0"
                           y2="1"
                         >
-                          <stop
+                          pstop
                             offset="5%"
                             stopColor="#4f46e5"
                             stopOpacity={0.2}
                           />
-                          <stop
+                          pstop
                             offset="95%"
                             stopColor="#4f46e5"
                             stopOpacity={0}
                           />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
+                        p/linearGradient>
+                      p/defs>
+                      pCartesianGrid
                         strokeDasharray="3 3"
                         vertical={false}
                         stroke="#f1f5f9"
                       />
-                      <XAxis
+                      pXAxis
                         dataKey="day"
                         axisLine={false}
                         tickLine={false}
@@ -3654,7 +3654,7 @@ export function IPosModule() {
                         }}
                         dy={10}
                       />
-                      <YAxis
+                      pYAxis
                         axisLine={false}
                         tickLine={false}
                         tick={{
@@ -3665,7 +3665,7 @@ export function IPosModule() {
                         tickFormatter={(v) => `${v / 1000}k`}
                         dx={-10}
                       />
-                      <Tooltip
+                      pTooltip
                         contentStyle={{
                           borderRadius: "12px",
                           border: "none",
@@ -3673,7 +3673,7 @@ export function IPosModule() {
                             "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
                         }}
                       />
-                      <Area
+                      pArea
                         type="monotone"
                         dataKey="revenue"
                         stroke="#4f46e5"
@@ -3682,40 +3682,40 @@ export function IPosModule() {
                         fill="url(#dashRevenue)"
                         activeDot={{ r: 6, strokeWidth: 0 }}
                       />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+                    p/AreaChart>
+                  p/ResponsiveContainer>
+                p/div>
+              p/div>
 
-              <div className="space-y-6 flex flex-col">
-                <div className="bg-gradient-to-br from-primary-900 to-slate-900 rounded-xl p-8 text-white relative overflow-hidden shadow-lg group">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full translate-y-16 -translate-x-16 blur-xl" />
-                  <div className="relative z-10 space-y-6">
-                    <div className="space-y-1">
-                      <p className="text-[11px] font-bold text-primary-200 tracking-widest uppercase mb-1">
+              pdiv className="space-y-6 flex flex-col">
+                pdiv className="bg-gradient-to-br from-primary-900 to-slate-900 rounded-xl p-8 text-white relative overflow-hidden shadow-lg group">
+                  pdiv className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
+                  pdiv className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full translate-y-16 -translate-x-16 blur-xl" />
+                  pdiv className="relative z-10 space-y-6">
+                    pdiv className="space-y-1">
+                      pp className="text-[11px] font-bold text-primary-200 tracking-widest uppercase mb-1">
                         Trạng thái Cửa hàng
-                      </p>
-                      <h4 className="text-2xl font-bold tracking-tight">
+                      p/p>
+                      ph4 className="text-2xl font-bold tracking-tight">
                         {isShiftActive ? "Đang hoạt động" : "Đã đóng ca"}
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur-sm border border-white/5">
-                      <div className="flex -space-x-3">
+                      p/h4>
+                    p/div>
+                    pdiv className="flex items-center gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur-sm border border-white/5">
+                      pdiv className="flex -space-x-3">
                         {[1, 2, 3].map((i) => (
-                          <div
+                          pdiv
                             key={i}
                             className="w-10 h-10 rounded-full border-2 border-primary-900 bg-slate-800 flex items-center justify-center text-xs font-bold shadow-sm"
                           >
                             {i}
-                          </div>
+                          p/div>
                         ))}
-                      </div>
-                      <span className="text-xs font-semibold text-primary-100">
+                      p/div>
+                      pspan className="text-xs font-semibold text-primary-100">
                         3 nhân viên Online
-                      </span>
-                    </div>
-                    <button
+                      p/span>
+                    p/div>
+                    pbutton
                       onClick={() => {
                         setActiveTab("management");
                         setMgmtSubTab("revenue");
@@ -3723,16 +3723,16 @@ export function IPosModule() {
                       className="w-full py-3 bg-white text-primary-900 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-md"
                     >
                       Xem báo cáo CA
-                    </button>
-                  </div>
-                </div>
+                    p/button>
+                  p/div>
+                p/div>
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
-                  <h4 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-ping inline-block" />{" "}
+                pdiv className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
+                  ph4 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    pspan className="w-2 h-2 bg-rose-500 rounded-full animate-ping inline-block" />{" "}
                     Tips vận hành AI
-                  </h4>
-                  <div className="space-y-3">
+                  p/h4>
+                  pdiv className="space-y-3">
                     {[
                       {
                         t: "Tăng cường nhân sự vào 18h tối nay",
@@ -3743,39 +3743,39 @@ export function IPosModule() {
                         c: "Đang là xu hướng",
                       },
                     ].map((tip, i) => (
-                      <div
+                      pdiv
                         key={i}
                         className="flex gap-4 p-4 bg-slate-50 rounded-lg hover:bg-primary-50/50 hover:border-primary-100 border border-transparent transition-all cursor-default group/tip"
                       >
-                        <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full mt-1.5 shrink-0 shadow-sm shadow-emerald-200" />
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 group-hover/tip:text-primary-700 transition-colors">
+                        pdiv className="w-2.5 h-2.5 bg-emerald-500 rounded-full mt-1.5 shrink-0 shadow-sm shadow-emerald-200" />
+                        pdiv>
+                          pp className="text-sm font-bold text-slate-900 group-hover/tip:text-primary-700 transition-colors">
                             {tip.t}
-                          </p>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">
+                          p/p>
+                          pp className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">
                             {tip.c}
-                          </p>
-                        </div>
-                      </div>
+                          p/p>
+                        p/div>
+                      p/div>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </DraggableGrid>
-          </div>
+                  p/div>
+                p/div>
+              p/div>
+            p/DraggableGrid>
+          p/div>
         ) : activeTab === "sales" ? (
-          <>
+          p>
             {/* Main Content Area */}
-            <div className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
-              <div className="flex gap-4 shrink-0 transition-all">
+            pdiv className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
+              pdiv className="flex gap-4 shrink-0 transition-all">
                 {/* Product Search & Categories - Refined with Glass effect */}
-                <div className="bg-white rounded-xl border border-slate-300 shadow-sm p-4 flex-1 flex flex-col items-center gap-4">
-                  <div className="flex flex-col sm:flex-row gap-3 items-center w-full">
-                    <div className="relative flex-1 w-full group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="w-5 h-5 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
-                      </div>
-                      <input
+                pdiv className="bg-white rounded-xl border border-slate-300 shadow-sm p-4 flex-1 flex flex-col items-center gap-4">
+                  pdiv className="flex flex-col sm:flex-row gap-3 items-center w-full">
+                    pdiv className="relative flex-1 w-full group">
+                      pdiv className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        pSearch className="w-5 h-5 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
+                      p/div>
+                      pinput
                         type="text"
                         id="barcode-search"
                         placeholder="Tìm món, mã SKU (F2)..."
@@ -3783,29 +3783,29 @@ export function IPosModule() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
-                    </div>
-                    <button
+                    p/div>
+                    pbutton
                       onClick={() => setShowCustomItemModal(true)}
                       title="Thêm món tùy chọn (F3)"
                       id="custom-item-button"
                       className="h-[52px] px-6 bg-white border border-slate-300 text-slate-800 hover:text-primary-700 hover:border-primary-200 hover:bg-primary-50 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 whitespace-nowrap active:scale-95"
                     >
-                      <Plus className="w-4 h-4" />
+                      pPlus className="w-4 h-4" />
                       Tùy Chọn
-                    </button>
+                    p/button>
 
-                    <button
+                    pbutton
                       onClick={() => setIsScannerOpen(true)}
                       className="h-[52px] bg-primary-600 text-white px-6 rounded-lg flex items-center gap-3 hover:bg-primary-700 transition-all shadow-md shadow-indigo-600/20 active:scale-95 group w-full sm:w-auto justify-center shrink-0"
                     >
-                      <ScanLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm font-bold tracking-wide">
+                      pScanLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      pspan className="text-sm font-bold tracking-wide">
                         Quét mã
-                      </span>
-                    </button>
-                  </div>
+                      p/span>
+                    p/button>
+                  p/div>
 
-                  <div className="flex gap-2.5 w-full overflow-x-auto no-scrollbar py-1 min-w-0">
+                  pdiv className="flex gap-2.5 w-full overflow-x-auto no-scrollbar py-1 min-w-0">
                     {(activeStoreConfig?.industry === "Bán buôn, bán lẻ"
                       ? [
                           "Tất cả",
@@ -3831,7 +3831,7 @@ export function IPosModule() {
                             "Tráng miệng",
                           ]
                     ).map((cat, idx) => (
-                      <button
+                      pbutton
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
                         className={cn(
@@ -3842,66 +3842,66 @@ export function IPosModule() {
                         )}
                       >
                         {cat}
-                      </button>
+                      p/button>
                     ))}
-                  </div>
-                </div>
-              </div>
+                  p/div>
+                p/div>
+              p/div>
 
               {/* Product Grid - Refined with better rhythm and card design */}
-              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
-                <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+              pdiv className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+                pdiv className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                   {products
                     .filter((p) =>
                       p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
                       (activeCategory === "Tất cả" || p.category === activeCategory)
                     )
                     .map((product) => (
-                      <div
+                      pdiv
                         key={product.id}
                         className="group relative flex flex-col transition-all duration-300 bg-white rounded-xl border border-slate-200 hover:border-primary-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden"
                       >
-                        <button
+                        pbutton
                           onClick={() => addToCart(product)}
                           className="absolute inset-0 z-10 w-full h-full cursor-pointer"
                         />
 
-                        <div className="aspect-[4/3.5] bg-slate-50/50 relative overflow-hidden transition-all border-b border-slate-200">
-                          <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent pointer-events-none" />
+                        pdiv className="aspect-[4/3.5] bg-slate-50/50 relative overflow-hidden transition-all border-b border-slate-200">
+                          pdiv className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent pointer-events-none" />
 
                           {/* Image or Placeholder */}
                           {product.image ? (
-                            <img
+                            pimg
                               src={product.image}
                               alt={product.name}
                               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                               referrerPolicy="no-referrer"
                             />
                           ) : (
-                            <div className="absolute inset-0 flex items-center justify-center opacity-5 group-hover:opacity-10 transition-opacity">
-                              <Monitor className="w-16 h-16" />
-                            </div>
+                            pdiv className="absolute inset-0 flex items-center justify-center opacity-5 group-hover:opacity-10 transition-opacity">
+                              pMonitor className="w-16 h-16" />
+                            p/div>
                           )}
 
-                          <div className="absolute top-3 left-3 flex gap-2">
-                            <span className="text-[10px] font-bold text-slate-700 bg-white/95 backdrop-blur px-2.5 py-1 rounded shadow-sm">
+                          pdiv className="absolute top-3 left-3 flex gap-2">
+                            pspan className="text-[10px] font-bold text-slate-700 bg-white/95 backdrop-blur px-2.5 py-1 rounded shadow-sm">
                               {product.category}
-                            </span>
-                          </div>
-                          {product.stock <= 10 && (
-                            <div className="absolute top-3 right-3 bg-rose-500 text-white rounded p-1.5 shadow-sm shadow-rose-200 animate-pulse">
-                              <AlertCircle className="w-3.5 h-3.5" />
-                            </div>
+                            p/span>
+                          p/div>
+                          {product.stock p= 10 && (
+                            pdiv className="absolute top-3 right-3 bg-rose-500 text-white rounded p-1.5 shadow-sm shadow-rose-200 animate-pulse">
+                              pAlertCircle className="w-3.5 h-3.5" />
+                            p/div>
                           )}
 
-                          <div className="absolute bottom-3 right-3 flex items-center justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20 pointer-events-none">
-                            <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-md">
-                              <Plus className="w-4 h-4" />
-                            </div>
-                          </div>
+                          pdiv className="absolute bottom-3 right-3 flex items-center justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20 pointer-events-none">
+                            pdiv className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-md">
+                              pPlus className="w-4 h-4" />
+                            p/div>
+                          p/div>
 
-                          <div className="absolute bottom-3 left-3 flex items-center justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
-                            <button
+                          pdiv className="absolute bottom-3 left-3 flex items-center justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                            pbutton
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedProductLookup(product);
@@ -3909,141 +3909,141 @@ export function IPosModule() {
                               }}
                               className="w-8 h-8 bg-white/95 backdrop-blur text-slate-700 hover:text-primary-600 rounded-full flex items-center justify-center shadow-md"
                             >
-                              <Search className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
+                              pSearch className="w-3.5 h-3.5" />
+                            p/button>
+                          p/div>
+                        p/div>
 
-                        <div className="p-4 flex flex-col gap-1.5">
-                          <h3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[40px]">
+                        pdiv className="p-4 flex flex-col gap-1.5">
+                          ph3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[40px]">
                             {product.name}
-                          </h3>
-                          <div className="flex justify-between items-end mt-1">
-                            <p className="text-base font-bold text-primary-600">
+                          p/h3>
+                          pdiv className="flex justify-between items-end mt-1">
+                            pp className="text-base font-bold text-primary-600">
                               {formatCurrency(product.price)}
-                            </p>
-                            <span
+                            p/p>
+                            pspan
                               className={cn(
                                 "text-[10px] font-bold px-2 py-0.5 rounded",
-                                product.stock <= 10
+                                product.stock p= 10
                                   ? "text-rose-600 bg-rose-50"
                                   : "text-emerald-700 bg-emerald-50/80",
                               )}
                             >
                               Tồn: {product.stock}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                            p/span>
+                          p/div>
+                        p/div>
+                      p/div>
                     ))}
-                </div>
+                p/div>
 
                 {/* AI Suggestions Section (Upsell) */}
                 {cart.length > 0 && (
-                  <div className="mt-4 pt-10 border-t border-slate-200 animate-in slide-in- duration-700">
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
-                          <BadgePercent className="w-4 h-4" />
-                        </div>
-                        <h4 className="font-bold text-sm text-slate-900">
+                  pdiv className="mt-4 pt-10 border-t border-slate-200 animate-in slide-in- duration-700">
+                    pdiv className="flex items-center justify-between mb-8">
+                      pdiv className="flex items-center gap-3">
+                        pdiv className="w-8 h-8 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
+                          pBadgePercent className="w-4 h-4" />
+                        p/div>
+                        ph4 className="font-bold text-sm text-slate-900">
                           Gợi ý thông minh cho đơn hàng này
-                        </h4>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        p/h4>
+                      p/div>
+                    p/div>
+                    pdiv className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {products
                         .filter((p) => !cart.find((ci) => ci.id === p.id))
                         .slice(0, 4)
                         .map((product) => (
-                          <div
+                          pdiv
                             key={product.id}
                             className="bg-slate-50 border border-slate-300 rounded-sm p-4 flex flex-col justify-between gap-3 group hover:bg-white hover:border-blue-300 hover:shadow-sm transition-all"
                           >
-                            <p className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-primary-600 transition-colors">
+                            pp className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-primary-600 transition-colors">
                               {product.name}
-                            </p>
-                            <div className="flex justify-between items-center">
-                              <p className="text-[13px] font-bold text-slate-700">
+                            p/p>
+                            pdiv className="flex justify-between items-center">
+                              pp className="text-[13px] font-bold text-slate-700">
                                 {formatCurrency(product.price)}
-                              </p>
-                              <button
+                              p/p>
+                              pbutton
                                 onClick={() => addToCart(product)}
                                 className="p-2 bg-blue-600 text-white rounded-sm hover:bg-slate-800 transition-all shadow-sm active:scale-95"
                               >
-                                <Plus className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
+                                pPlus className="w-3.5 h-3.5" />
+                              p/button>
+                            p/div>
+                          p/div>
                         ))}
-                    </div>
-                  </div>
+                    p/div>
+                  p/div>
                 )}
-              </div>
-            </div>
+              p/div>
+            p/div>
 
             {/* Cart/Checkout Sidebar - Modern touch-friendly desk */}
-            <div className="col-span-12 lg:col-span-5 xl:col-span-4 flex flex-col gap-5 overflow-hidden h-full animate-in slide-in- duration-500">
+            pdiv className="col-span-12 lg:col-span-5 xl:col-span-4 flex flex-col gap-5 overflow-hidden h-full animate-in slide-in- duration-500">
               {/* Suspended Carts (Hold/Resume) - Elegant pills */}
               {suspendedCarts.length > 0 && (
-                <div className="flex gap-2 w-full overflow-x-auto no-scrollbar py-1 shrink-0 min-w-0">
+                pdiv className="flex gap-2 w-full overflow-x-auto no-scrollbar py-1 shrink-0 min-w-0">
                   {suspendedCarts.map((sc) => (
-                    <button
+                    pbutton
                       key={sc.id}
                       onClick={() => resumeCart(sc)}
                       className="shrink-0 px-4 py-2 bg-amber-50 border border-amber-200/50 rounded-sm flex items-center gap-3 hover:bg-amber-100 transition-all active:scale-95 shadow-sm"
                     >
-                      <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                      <span className="text-[9px] font-bold text-amber-700 uppercase tracking-widest">
+                      pdiv className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                      pspan className="text-[9px] font-bold text-amber-700 uppercase tracking-widest">
                         {sc.time}
-                      </span>
-                    </button>
+                      p/span>
+                    p/button>
                   ))}
-                </div>
+                p/div>
               )}
 
               {/* Customer Selection - Modern unified bar */}
-              <div className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-md shrink-0">
+              pdiv className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-md shrink-0">
                 {customer ? (
-                  <div className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center shadow-inner border border-primary-100 relative group-hover:scale-105 transition-transform">
-                        <User className="w-5 h-5" />
-                        <div className="absolute 0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-slate-900 text-sm tracking-tight">
+                  pdiv className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
+                    pdiv className="flex items-center gap-4">
+                      pdiv className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center shadow-inner border border-primary-100 relative group-hover:scale-105 transition-transform">
+                        pUser className="w-5 h-5" />
+                        pdiv className="absolute 0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
+                      p/div>
+                      pdiv>
+                        pdiv className="flex items-center gap-2">
+                          pp className="font-bold text-slate-900 text-sm tracking-tight">
                             {customer.name}
-                          </p>
-                          <span className="text-[10px] bg-primary-100 text-primary-700 font-bold px-2 py-0.5 rounded-full tracking-wide">
+                          p/p>
+                          pspan className="text-[10px] bg-primary-100 text-primary-700 font-bold px-2 py-0.5 rounded-full tracking-wide">
                             {customer.tier || "Thành viên"}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                          p/span>
+                        p/div>
+                        pp className="text-[11px] text-slate-600 font-medium mt-0.5">
                           {customer.phone}{" "}
-                          <span className="mx-1.5 text-slate-500">|</span>{" "}
-                          <span className="text-blue-600 font-bold">
+                          pspan className="mx-1.5 text-slate-500">|p/span>{" "}
+                          pspan className="text-blue-600 font-bold">
                             {customer.points || 0}
-                          </span>{" "}
+                          p/span>{" "}
                           điểm
-                        </p>
-                      </div>
-                    </div>
-                    <button
+                        p/p>
+                      p/div>
+                    p/div>
+                    pbutton
                       onClick={() => setCustomer(null)}
                       className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-full transition-all border border-slate-300"
                     >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
+                      pX className="w-4 h-4" />
+                    p/button>
+                  p/div>
                 ) : showCustomerSearch ? (
-                  <div className="space-y-4 relative z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="w-4 h-4 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
-                      </div>
-                      <input
+                  pdiv className="space-y-4 relative z-50 animate-in fade-in zoom-in-95 duration-200">
+                    pdiv className="relative group">
+                      pdiv className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        pSearch className="w-4 h-4 text-slate-500 group-focus-within:text-primary-600 transition-colors" />
+                      p/div>
+                      pinput
                         autoFocus
                         type="text"
                         placeholder="SĐT khách hàng (10 số)..."
@@ -4051,17 +4051,17 @@ export function IPosModule() {
                         onChange={(e) => searchCustomers(e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-10 py-3 text-sm font-medium outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-50 focus:bg-white transition-all placeholder:text-slate-500"
                       />
-                      <button
+                      pbutton
                         onClick={() => setShowCustomerSearch(false)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
                       >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
+                        pX className="w-4 h-4" />
+                      p/button>
+                    p/div>
                     {customerSearchResults.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-xl bg-white">
+                      pdiv className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-xl bg-white">
                         {customerSearchResults.map((c) => (
-                          <button
+                          pbutton
                             key={c.id}
                             onClick={() => {
                               setCustomer(c);
@@ -4069,63 +4069,63 @@ export function IPosModule() {
                             }}
                             className="w-full text-left p-4 hover:bg-slate-50 transition-all flex justify-between items-center group/item"
                           >
-                            <div>
-                              <p className="text-sm font-semibold text-slate-900 group-hover/item:text-primary-600 transition-colors">
+                            pdiv>
+                              pp className="text-sm font-semibold text-slate-900 group-hover/item:text-primary-600 transition-colors">
                                 {c.name}
-                              </p>
-                              <p className="text-xs text-slate-600 mt-0.5">
+                              p/p>
+                              pp className="text-xs text-slate-600 mt-0.5">
                                 {c.phone}
-                              </p>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-slate-500 group-hover/item:text-primary-600 group-hover/item:translate-x-1 transition-all" />
-                          </button>
+                              p/p>
+                            p/div>
+                            pArrowRight className="w-4 h-4 text-slate-500 group-hover/item:text-primary-600 group-hover/item:translate-x-1 transition-all" />
+                          p/button>
                         ))}
-                      </div>
+                      p/div>
                     )}
-                  </div>
+                  p/div>
                 ) : (
-                  <button
+                  pbutton
                     onClick={() => setShowCustomerSearch(true)}
                     className="w-full flex items-center gap-4 group transition-all"
                   >
-                    <div className="w-12 h-12 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-all border border-dashed border-slate-400 group-hover:border-primary-300">
-                      <Plus className="w-5 h-5" />
-                    </div>
-                    <div className="text-left flex-1">
-                      <p className="font-semibold text-slate-800 text-sm group-hover:text-primary-700 transition-colors">
+                    pdiv className="w-12 h-12 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-all border border-dashed border-slate-400 group-hover:border-primary-300">
+                      pPlus className="w-5 h-5" />
+                    p/div>
+                    pdiv className="text-left flex-1">
+                      pp className="font-semibold text-slate-800 text-sm group-hover:text-primary-700 transition-colors">
                         Nhập thông tin khách hàng
-                      </p>
-                      <p className="text-xs text-slate-600 mt-0.5">
+                      p/p>
+                      pp className="text-xs text-slate-600 mt-0.5">
                         Tích điểm mua hàng / Ưu đãi thành viên
-                      </p>
-                    </div>
-                  </button>
+                      p/p>
+                    p/div>
+                  p/button>
                 )}
-              </div>
+              p/div>
 
-              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm flex flex-col overflow-hidden relative">
-                <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center shrink-0">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-sm flex items-center justify-center shadow-sm">
-                      <ShoppingCart className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm">
+              pdiv className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm flex flex-col overflow-hidden relative">
+                pdiv className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center shrink-0">
+                  pdiv className="flex items-center gap-3">
+                    pdiv className="w-10 h-10 bg-blue-600 text-white rounded-sm flex items-center justify-center shadow-sm">
+                      pShoppingCart className="w-5 h-5" />
+                    p/div>
+                    pdiv>
+                      ph3 className="font-bold text-slate-900 text-sm">
                         Đơn hàng hiện tại
-                      </h3>
-                      <p className="text-xs text-primary-600 font-bold mt-0.5">
+                      p/h3>
+                      pp className="text-xs text-primary-600 font-bold mt-0.5">
                         {cart.reduce((a, b) => a + b.quantity, 0)} món
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
+                      p/p>
+                    p/div>
+                  p/div>
+                  pdiv className="flex gap-2">
+                    pbutton
                       onClick={holdCart}
                       className="w-9 h-9 bg-white border border-slate-300 text-slate-600 rounded-sm hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm flex items-center justify-center"
                     >
-                      <Save className="w-4 h-4" />
-                    </button>
-                    <button
+                      pSave className="w-4 h-4" />
+                    p/button>
+                    pbutton
                       onClick={() => {
                         setCart([]);
                         setCustomer(null);
@@ -4133,14 +4133,14 @@ export function IPosModule() {
                       }}
                       className="w-9 h-9 bg-white border border-slate-300 text-rose-500 rounded-sm hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center"
                     >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                      pTrash2 className="w-4 h-4" />
+                    p/button>
+                  p/div>
+                p/div>
 
                 {/* Mode Switcher */}
-                <div className="flex p-1 bg-slate-100 mx-5 mt-5 rounded-sm shrink-0 border border-slate-300/50">
-                  <button
+                pdiv className="flex p-1 bg-slate-100 mx-5 mt-5 rounded-sm shrink-0 border border-slate-300/50">
+                  pbutton
                     onClick={() => {
                       setIsReturnMode(false);
                       setReturnReason("");
@@ -4153,8 +4153,8 @@ export function IPosModule() {
                     )}
                   >
                     Bán hàng
-                  </button>
-                  <button
+                  p/button>
+                  pbutton
                     onClick={() => setIsReturnMode(true)}
                     className={cn(
                       "flex-1 py-1.5 text-xs font-bold rounded-sm transition-all",
@@ -4164,194 +4164,194 @@ export function IPosModule() {
                     )}
                   >
                     Đổi trả
-                  </button>
-                </div>
+                  p/button>
+                p/div>
 
                 {isReturnMode && (
-                  <div className="px-6 mt-4 animate-in slide-in-">
-                    <select
+                  pdiv className="px-6 mt-4 animate-in slide-in-">
+                    pselect
                       value={returnReason}
                       onChange={(e) => setReturnReason(e.target.value)}
                       className="w-full bg-rose-50 border border-rose-100 rounded-sm px-4 py-3 text-xs font-bold text-rose-600 outline-none focus:ring-2 ring-rose-200 transition-all cursor-pointer"
                     >
-                      <option value="">-- Chọn lý do đổi trả --</option>
-                      <option value="defective">Sản phẩm lỗi/hỏng</option>
-                      <option value="wrong_size">Nhầm kích cỡ</option>
-                      <option value="not_expected">Không ưng ý</option>
-                      <option value="warranty">Bảo hành</option>
-                    </select>
-                  </div>
+                      poption value="">-- Chọn lý do đổi trả --p/option>
+                      poption value="defective">Sản phẩm lỗi/hỏngp/option>
+                      poption value="wrong_size">Nhầm kích cỡp/option>
+                      poption value="not_expected">Không ưng ýp/option>
+                      poption value="warranty">Bảo hànhp/option>
+                    p/select>
+                  p/div>
                 )}
 
-                <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-slate-50/30">
+                pdiv className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-slate-50/30">
                   {cart.map((item) => (
-                    <div
+                    pdiv
                       key={item.cartItemId || item.id}
                       className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-slate-200 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-primary-100 hover:shadow-md"
                     >
                       {isReturnMode && (
-                        <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />
+                        pdiv className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />
                       )}
-                      <div className="flex-1 pr-3">
-                        <p className="font-bold text-slate-900 text-sm leading-snug mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
+                      pdiv className="flex-1 pr-3">
+                        pp className="font-bold text-slate-900 text-sm leading-snug mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
                           {item.name}
-                        </p>
+                        p/p>
 
-                        <div className="flex items-center gap-2">
-                          <p className="text-[11px] text-slate-600 font-semibold font-bold tracking-tight">
+                        pdiv className="flex items-center gap-2">
+                          pp className="text-[11px] text-slate-600 font-semibold font-bold tracking-tight">
                             {formatCurrency(item.price)}
-                            {item.toppings?.length > 0 && <span className="text-primary-500 ml-1">(+Topping)</span>}
+                            {item.toppings?.length > 0 && pspan className="text-primary-500 ml-1">(+Topping)p/span>}
                             {(item.itemDiscount || 0) > 0 && (
-                              <span className="text-rose-500 ml-1">
+                              pspan className="text-rose-500 ml-1">
                                 (-{formatCurrency(item.itemDiscount)})
-                              </span>
+                              p/span>
                             )}
-                          </p>
-                          <span className="text-[8px] text-slate-500">•</span>
-                          <button
+                          p/p>
+                          pspan className="text-[8px] text-slate-500">•p/span>
+                          pbutton
                             onClick={() => setEditingCartItem(item)}
                             className="text-[10px] text-slate-500 hover:text-primary-600 font-bold uppercase tracking-widest flex items-center gap-1 transition-colors"
                           >
-                            <Edit2 className="w-3 h-3" />
+                            pEdit2 className="w-3 h-3" />
                             Sửa / Note
-                          </button>
-                        </div>
+                          p/button>
+                        p/div>
                         {item.toppings?.length > 0 && (
-                          <p className="text-[10px] text-slate-600 font-medium italic mt-0.5">
+                          pp className="text-[10px] text-slate-600 font-medium italic mt-0.5">
                             Topping: {item.toppings.map((t: any) => t.name).join(', ')}
-                          </p>
+                          p/p>
                         )}
                         {item.note && (
-                          <p className="text-[10px] text-primary-600 font-medium italic mt-0.5">
+                          pp className="text-[10px] text-primary-600 font-medium italic mt-0.5">
                             * {item.note}
-                          </p>
+                          p/p>
                         )}
 
-                        <div className="flex items-center gap-5 mt-4 bg-slate-50 w-fit p-1 rounded-sm border border-slate-200">
-                          <button
+                        pdiv className="flex items-center gap-5 mt-4 bg-slate-50 w-fit p-1 rounded-sm border border-slate-200">
+                          pbutton
                             onClick={() => updateQuantity(item.cartItemId || item.id, -1)}
                             className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-rose-500 hover:border-rose-200 transition-all active:scale-90"
                           >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="text-sm font-bold w-6 text-center text-slate-900">
+                            pMinus className="w-3.5 h-3.5" />
+                          p/button>
+                          pspan className="text-sm font-bold w-6 text-center text-slate-900">
                             {item.quantity}
-                          </span>
-                          <button
+                          p/span>
+                          pbutton
                             onClick={() => updateQuantity(item.cartItemId || item.id, 1)}
                             className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors active:scale-90 flex items-center justify-center hover:text-primary-600 hover:border-primary-200 transition-all active:scale-90"
                           >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                      <div className="text-right flex flex-col items-end justify-between self-stretch">
-                        <button
+                            pPlus className="w-3.5 h-3.5" />
+                          p/button>
+                        p/div>
+                      p/div>
+                      pdiv className="text-right flex flex-col items-end justify-between self-stretch">
+                        pbutton
                           onClick={() => removeFromCart(item.cartItemId || item.id)}
                           className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
                         >
-                          <Trash className="w-4 h-4" />
-                        </button>
-                        <p className="font-bold text-primary-600 text-base tracking-tight leading-none mt-4">
+                          pTrash className="w-4 h-4" />
+                        p/button>
+                        pp className="font-bold text-primary-600 text-base tracking-tight leading-none mt-4">
                           {formatCurrency(getItemTotalPrice(item))}
-                        </p>
-                      </div>
-                    </div>
+                        p/p>
+                      p/div>
+                    p/div>
                   ))}
                   {cart.length > 0 && (
-                    <div className="py-2">
-                      <textarea
+                    pdiv className="py-2">
+                      ptextarea
                         placeholder="Ghi chú đơn hàng (VD: Giao sau 5h...)"
                         className="w-full bg-white border border-slate-300 rounded-xl p-4 text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all custom-scrollbar resize-none h-24 shadow-sm"
                         value={orderNote}
                         onChange={(e) => setOrderNote(e.target.value)}
                       />
-                    </div>
+                    p/div>
                   )}
                   {cart.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-5 py-12">
-                      <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 border-4 border-white shadow-inner">
-                        <ShoppingCart className="w-12 h-12" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                    pdiv className="h-full flex flex-col items-center justify-center text-center space-y-5 py-12">
+                      pdiv className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 border-4 border-white shadow-inner">
+                        pShoppingCart className="w-12 h-12" />
+                      p/div>
+                      pdiv>
+                        pp className="text-sm font-bold text-slate-900 uppercase tracking-widest">
                           Giỏ hàng trống
-                        </p>
-                        <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto">
+                        p/p>
+                        pp className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto">
                           Mời thêm sản phẩm từ danh sách bên trái hoặc quét mã
                           vạch
-                        </p>
-                      </div>
-                    </div>
+                        p/p>
+                      p/div>
+                    p/div>
                   )}
-                </div>
+                p/div>
 
-                <div className="p-6 bg-white border-t border-slate-200 space-y-5 rounded-b-xl shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] relative z-20">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-slate-600">
-                      <span className="text-sm font-medium">
+                pdiv className="p-6 bg-white border-t border-slate-200 space-y-5 rounded-b-xl shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] relative z-20">
+                  pdiv className="space-y-3">
+                    pdiv className="flex justify-between items-center text-slate-600">
+                      pspan className="text-sm font-medium">
                         Tạm tính ({cart.reduce((a, b) => a + b.quantity, 0)}{" "}
                         món)
-                      </span>
-                      <span className="text-base font-semibold text-slate-900">
+                      p/span>
+                      pspan className="text-base font-semibold text-slate-900">
                         {formatCurrency(subtotal)}
-                      </span>
-                    </div>
+                      p/span>
+                    p/div>
                     {discount > 0 && (
-                      <div className="flex justify-between items-center text-rose-500 animate-in fade-in slide-in-">
-                        <span className="text-sm font-bold flex items-center gap-2">
-                          <BadgePercent className="w-4 h-4" /> Khuyến mãi
-                        </span>
-                        <span className="text-base font-bold">
+                      pdiv className="flex justify-between items-center text-rose-500 animate-in fade-in slide-in-">
+                        pspan className="text-sm font-bold flex items-center gap-2">
+                          pBadgePercent className="w-4 h-4" /> Khuyến mãi
+                        p/span>
+                        pspan className="text-base font-bold">
                           -{formatCurrency(discount)}
-                        </span>
-                      </div>
+                        p/span>
+                      p/div>
                     )}
 
-                    <div
+                    pdiv
                       className={cn(
                         "rounded-xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-lg mt-4",
                         isReturnMode ? "bg-rose-600" : "bg-slate-900",
                       )}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-                      <div className="relative z-10">
-                        <p className="text-xs font-semibold text-white/70 mb-1">
+                      pdiv className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+                      pdiv className="relative z-10">
+                        pp className="text-xs font-semibold text-white/70 mb-1">
                           CẦN THANH TOÁN
-                        </p>
-                        <p className="text-4xl font-bold tracking-tight">
+                        p/p>
+                        pp className="text-4xl font-bold tracking-tight">
                           {isReturnMode ? "-" : ""}
                           {formatCurrency(total)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                        p/p>
+                      p/div>
+                    p/div>
+                  p/div>
 
-                  <div className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-200">
-                    <button className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
-                      <CreditCard className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
-                      <span className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
+                  pdiv className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-200">
+                    pbutton className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
+                      pCreditCard className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
+                      pspan className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
                         Quẹt Thẻ
-                      </span>
-                    </button>
-                    <button className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
-                      <QrCode className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
-                      <span className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
+                      p/span>
+                    p/button>
+                    pbutton className="h-[64px] bg-white border border-slate-300 hover:border-primary-400 hover:bg-primary-50/50 rounded-xl flex items-center justify-center gap-3 transition-colors group">
+                      pQrCode className="w-5 h-5 text-slate-500 group-hover:text-primary-600" />
+                      pspan className="text-sm font-bold text-slate-800 group-hover:text-primary-700">
                         Mã QR
-                      </span>
-                    </button>
-                  </div>
+                      p/span>
+                    p/button>
+                  p/div>
 
-                  <div className="flex gap-3">
-                    <button
+                  pdiv className="flex gap-3">
+                    pbutton
                       disabled={cart.length === 0}
                       onClick={handlePrintProforma}
                       className="w-16 h-16 bg-slate-50 border border-slate-300 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
                       title="In tạm tính"
                     >
-                      <FileText className="w-6 h-6" />
-                    </button>
-                    <button
+                      pFileText className="w-6 h-6" />
+                    p/button>
+                    pbutton
                       id="pay-button"
                       disabled={cart.length === 0}
                       onClick={() => setShowPaymentModal(true)}
@@ -4362,63 +4362,63 @@ export function IPosModule() {
                           : "bg-primary-600 text-white hover:bg-primary-700",
                       )}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      pdiv className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       {isReturnMode ? (
-                        <ArrowRight className="w-5 h-5 -rotate-180" />
+                        pArrowRight className="w-5 h-5 -rotate-180" />
                       ) : (
-                        <Zap className="w-5 h-5" />
+                        pZap className="w-5 h-5" />
                       )}
                       {isReturnMode ? "XÁC NHẬN TRẢ HÀNG" : "THANH TOÁN NHANH"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+                    p/button>
+                  p/div>
+                p/div>
+              p/div>
+            p/div>
+          p/>
         ) : activeTab === "tables" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-200 gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
-                  <Grid3x3 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-slate-900 leading-none">
+          pdiv className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 flex flex-col gap-6 overflow-hidden animate-in slide-in-">
+            pdiv className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-200 gap-4">
+              pdiv className="flex items-center gap-3">
+                pdiv className="w-10 h-10 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center">
+                  pGrid3x3 className="w-5 h-5" />
+                p/div>
+                pdiv>
+                  ph3 className="font-bold text-lg text-slate-900 leading-none">
                     {activeStoreConfig?.industry === "Lưu trú, làm đẹp"
                       ? "Sơ đồ Phòng"
                       : "Sơ đồ Bàn / Phòng"}
-                  </h3>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1.5">
+                  p/h3>
+                  pp className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1.5">
                     Trực quan hóa không gian phục vụ
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
-                <span className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded border border-slate-300">
-                  <div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400" />{" "}
+                  p/p>
+                p/div>
+              p/div>
+              pdiv className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+                pspan className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded border border-slate-300">
+                  pdiv className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400" />{" "}
                   Trống ({tables.filter((t) => t.status === "available").length}
                   )
-                </span>
-                <span className="flex items-center gap-2 px-2 py-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-100">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />{" "}
+                p/span>
+                pspan className="flex items-center gap-2 px-2 py-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-100">
+                  pdiv className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />{" "}
                   Đang dùng (
                   {tables.filter((t) => t.status === "occupied").length})
-                </span>
-                <span className="flex items-center gap-2 px-2 py-1 bg-amber-50 text-amber-600 rounded border border-amber-100">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Đã
+                p/span>
+                pspan className="flex items-center gap-2 px-2 py-1 bg-amber-50 text-amber-600 rounded border border-amber-100">
+                  pdiv className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Đã
                   đặt ({tables.filter((t) => t.status === "reserved").length})
-                </span>
-                <span className="flex items-center gap-2 px-2 py-1 bg-slate-100 text-primary-600 rounded border border-slate-300">
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Đang
+                p/span>
+                pspan className="flex items-center gap-2 px-2 py-1 bg-slate-100 text-primary-600 rounded border border-slate-300">
+                  pdiv className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Đang
                   dọn ({tables.filter((t) => t.status === "cleaning").length})
-                </span>
-              </div>
-            </div>
+                p/span>
+              p/div>
+            p/div>
 
-            <div className="flex-1 overflow-y-auto mt-2 pr-2 custom-scrollbar">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            pdiv className="flex-1 overflow-y-auto mt-2 pr-2 custom-scrollbar">
+              pdiv className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                 {tables.map((table) => (
-                  <div
+                  pdiv
                     key={table.id}
                     className={cn(
                       "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-sm relative group overflow-hidden",
@@ -4445,8 +4445,8 @@ export function IPosModule() {
                       }
                     }}
                   >
-                    <div className="flex justify-between items-start mb-auto">
-                      <div
+                    pdiv className="flex justify-between items-start mb-auto">
+                      pdiv
                         className={cn(
                           "w-8 h-8 rounded-sm flex items-center justify-center",
                           table.status === "available"
@@ -4459,85 +4459,85 @@ export function IPosModule() {
                         )}
                       >
                         {activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? (
-                          <Store className="w-4.5 h-4.5" />
+                          pStore className="w-4.5 h-4.5" />
                         ) : (
-                          <Coffee className="w-4.5 h-4.5" />
+                          pCoffee className="w-4.5 h-4.5" />
                         )}
-                      </div>
+                      p/div>
                       {table.status === "occupied" && (
-                        <span className="text-[9px] font-bold bg-emerald-600 text-white px-1.5 py-0.5 rounded shadow-sm">
+                        pspan className="text-[9px] font-bold bg-emerald-600 text-white px-1.5 py-0.5 rounded shadow-sm">
                           LIVE
-                        </span>
+                        p/span>
                       )}
-                    </div>
+                    p/div>
 
-                    <div className="space-y-0.5">
-                      <h4 className="font-bold text-sm tracking-tight">
+                    pdiv className="space-y-0.5">
+                      ph4 className="font-bold text-sm tracking-tight">
                         {table.name}
-                      </h4>
-                      <p className="text-[9px] font-bold text-slate-500 opacity-60 uppercase tracking-widest">
+                      p/h4>
+                      pp className="text-[9px] font-bold text-slate-500 opacity-60 uppercase tracking-widest">
                         {table.zone} • {table.capacity} chỗ
-                      </p>
-                    </div>
+                      p/p>
+                    p/div>
 
                     {table.status === "occupied" && (
-                      <div className="mt-2 pt-2 border-t border-emerald-100 flex justify-between items-center animate-in fade-in slide-in-">
-                        <p className="text-[10px] font-bold">
+                      pdiv className="mt-2 pt-2 border-t border-emerald-100 flex justify-between items-center animate-in fade-in slide-in-">
+                        pp className="text-[10px] font-bold">
                           {formatCurrency(table.currentOrder.total)}
-                        </p>
-                        <span className="text-[9px] font-medium opacity-60">
+                        p/p>
+                        pspan className="text-[9px] font-medium opacity-60">
                           {table.currentOrder.items} món
-                        </span>
-                      </div>
+                        p/span>
+                      p/div>
                     )}
 
                     {table.status === "reserved" && (
-                      <div className="mt-2 pt-2 border-t border-amber-100 flex items-center gap-1.5 text-amber-600 font-bold">
-                        <Clock className="w-3 h-3" />
-                        <span className="text-[9px]">
+                      pdiv className="mt-2 pt-2 border-t border-amber-100 flex items-center gap-1.5 text-amber-600 font-bold">
+                        pClock className="w-3 h-3" />
+                        pspan className="text-[9px]">
                           {table.reservationTime}
-                        </span>
-                      </div>
+                        p/span>
+                      p/div>
                     )}
 
                     {/* Quick Actions Hover */}
-                    <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                      <button
+                    pdiv className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                      pbutton
                         className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600 hover:scale-110 transition-transform shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTableForQr(table.id);
                         }}
                       >
-                        <QrCode className="w-5 h-5" />
-                      </button>
-                      <p className="text-[10px] font-bold text-white uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-sm">
+                        pQrCode className="w-5 h-5" />
+                      p/button>
+                      pp className="text-[10px] font-bold text-white uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-sm">
                         Chọn Bàn
-                      </p>
-                    </div>
-                  </div>
+                      p/p>
+                    p/div>
+                  p/div>
                 ))}
-              </div>
-            </div>
-          </div>
+              p/div>
+            p/div>
+          p/div>
         ) : activeTab === "management" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
-            <div className="p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary-600 text-white rounded-sm flex items-center justify-center shadow-sm shadow-indigo-200">
-                  <Settings2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          pdiv className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
+            pdiv className="p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-4">
+              pdiv className="flex items-center gap-4">
+                pdiv className="w-12 h-12 bg-primary-600 text-white rounded-sm flex items-center justify-center shadow-sm shadow-indigo-200">
+                  pSettings2 className="w-6 h-6" />
+                p/div>
+                pdiv>
+                  ph2 className="text-xl font-bold text-slate-900 tracking-tight">
                     Hệ thống Quản trị & Phân quyền
-                  </h2>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                  p/h2>
+                  pp className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
                     Thiết lập cửa hàng & nhân sự • {activeStore?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="flex bg-white p-1 rounded-sm border border-slate-300 shadow-sm overflow-x-auto no-scrollbar min-w-0">
-                <button
+                  p/p>
+                p/div>
+              p/div>
+              pdiv className="flex bg-white p-1 rounded-sm border border-slate-300 shadow-sm overflow-x-auto no-scrollbar min-w-0">
+                pbutton
                   onClick={() => setMgmtSubTab("revenue")}
                   className={cn(
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
@@ -4547,8 +4547,8 @@ export function IPosModule() {
                   )}
                 >
                   Báo cáo Doanh thu
-                </button>
-                <button
+                p/button>
+                pbutton
                   onClick={() => setMgmtSubTab("staff")}
                   className={cn(
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
@@ -4558,8 +4558,8 @@ export function IPosModule() {
                   )}
                 >
                   Nhân viên
-                </button>
-                <button
+                p/button>
+                pbutton
                   onClick={() => setMgmtSubTab("store")}
                   className={cn(
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
@@ -4569,8 +4569,8 @@ export function IPosModule() {
                   )}
                 >
                   Cửa hàng
-                </button>
-                <button
+                p/button>
+                pbutton
                   onClick={() => setMgmtSubTab("channels")}
                   className={cn(
                     "px-6 py-2 rounded-sm text-xs font-bold transition-all whitespace-nowrap",
@@ -4580,14 +4580,14 @@ export function IPosModule() {
                   )}
                 >
                   Kênh bán hàng
-                </button>
-              </div>
-            </div>
+                p/button>
+              p/div>
+            p/div>
 
-            <div className="flex-1 overflow-y-auto p-8">
+            pdiv className="flex-1 overflow-y-auto p-8">
               {mgmtSubTab === "revenue" ? (
-                <div className="space-y-8 animate-in backdrop-blur-sm">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                pdiv className="space-y-8 animate-in backdrop-blur-sm">
+                  pdiv className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {[
                       {
                         label: "Doanh thu hôm nay",
@@ -4618,71 +4618,71 @@ export function IPosModule() {
                         bg: "bg-slate-100",
                       },
                     ].map((stat, idx) => (
-                      <div
+                      pdiv
                         key={stat.label}
                         className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all"
                       >
-                        <div className="flex justify-between items-start mb-4">
-                          <div
+                        pdiv className="flex justify-between items-start mb-4">
+                          pdiv
                             className={cn(
                               "p-2 rounded-sm",
                               stat.bg,
                               stat.color,
                             )}
                           >
-                            <stat.icon className="w-5 h-5" />
-                          </div>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            pstat.icon className="w-5 h-5" />
+                          p/div>
+                          pspan className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                             Live
-                          </span>
-                        </div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
+                          p/span>
+                        p/div>
+                        pp className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
                           {stat.label}
-                        </p>
-                        <p className="text-xl font-bold text-slate-900 tracking-tight">
+                        p/p>
+                        pp className="text-xl font-bold text-slate-900 tracking-tight">
                           {stat.value}
-                        </p>
-                      </div>
+                        p/p>
+                      p/div>
                     ))}
-                  </div>
+                  p/div>
 
-                  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
-                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
-                      <div className="flex items-center justify-between mb-8">
-                        <h4 className="font-extrabold text-slate-900 flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5 text-primary-600" />{" "}
+                  pDraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
+                    pdiv className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
+                      pdiv className="flex items-center justify-between mb-8">
+                        ph4 className="font-extrabold text-slate-900 flex items-center gap-2">
+                          pTrendingUp className="w-5 h-5 text-primary-600" />{" "}
                           Biểu đồ doanh thu tuần
-                        </h4>
-                      </div>
-                      <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={revenueData}>
-                            <defs>
-                              <linearGradient
+                        p/h4>
+                      p/div>
+                      pdiv className="h-[300px] w-full">
+                        pResponsiveContainer width="100%" height="100%">
+                          pAreaChart data={revenueData}>
+                            pdefs>
+                              plinearGradient
                                 id="colorRevenue"
                                 x1="0"
                                 y1="0"
                                 x2="0"
                                 y2="1"
                               >
-                                <stop
+                                pstop
                                   offset="5%"
                                   stopColor="#4f46e5"
                                   stopOpacity={0.1}
                                 />
-                                <stop
+                                pstop
                                   offset="95%"
                                   stopColor="#4f46e5"
                                   stopOpacity={0}
                                 />
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid
+                              p/linearGradient>
+                            p/defs>
+                            pCartesianGrid
                               strokeDasharray="3 3"
                               vertical={false}
                               stroke="#f1f5f9"
                             />
-                            <XAxis
+                            pXAxis
                               dataKey="day"
                               axisLine={false}
                               tickLine={false}
@@ -4693,7 +4693,7 @@ export function IPosModule() {
                               }}
                               dy={10}
                             />
-                            <YAxis
+                            pYAxis
                               axisLine={false}
                               tickLine={false}
                               tick={{
@@ -4703,7 +4703,7 @@ export function IPosModule() {
                               }}
                               tickFormatter={(value) => `${value / 1000000}M`}
                             />
-                            <Tooltip
+                            pTooltip
                               contentStyle={{
                                 borderRadius: "16px",
                                 border: "none",
@@ -4715,7 +4715,7 @@ export function IPosModule() {
                                 "Doanh thu",
                               ]}
                             />
-                            <Area
+                            pArea
                               type="monotone"
                               dataKey="revenue"
                               stroke="#4f46e5"
@@ -4723,21 +4723,21 @@ export function IPosModule() {
                               fillOpacity={1}
                               fill="url(#colorRevenue)"
                             />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
+                          p/AreaChart>
+                        p/ResponsiveContainer>
+                      p/div>
+                    p/div>
 
-                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
-                      <h4 className="font-extrabold text-slate-900 mb-8 flex items-center gap-2">
-                        <PieChartIcon className="w-5 h-5 text-primary-600" /> Tỷ
+                    pdiv className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
+                      ph4 className="font-extrabold text-slate-900 mb-8 flex items-center gap-2">
+                        pPieChartIcon className="w-5 h-5 text-primary-600" /> Tỷ
                         lệ sản phẩm bán chạy
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div className="h-[240px]">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                              <Pie
+                      p/h4>
+                      pdiv className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        pdiv className="h-[240px]">
+                          pResponsiveContainer width="100%" height="100%">
+                            pPieChart>
+                              pPie
                                 data={topProducts}
                                 cx="50%"
                                 cy="50%"
@@ -4747,7 +4747,7 @@ export function IPosModule() {
                                 dataKey="value"
                               >
                                 {topProducts.map((entry, index) => (
-                                  <Cell
+                                  pCell
                                     key={`cell-${index}`}
                                     fill={
                                       [
@@ -4759,19 +4759,19 @@ export function IPosModule() {
                                     }
                                   />
                                 ))}
-                              </Pie>
-                              <Tooltip />
-                            </PieChart>
-                          </ResponsiveContainer>
-                        </div>
-                        <div className="space-y-4">
+                              p/Pie>
+                              pTooltip />
+                            p/PieChart>
+                          p/ResponsiveContainer>
+                        p/div>
+                        pdiv className="space-y-4">
                           {topProducts.map((p, i) => (
-                            <div
+                            pdiv
                               key={i}
                               className="flex items-center justify-between"
                             >
-                              <div className="flex items-center gap-3">
-                                <div
+                              pdiv className="flex items-center gap-3">
+                                pdiv
                                   className="w-3 h-3 rounded-full"
                                   style={{
                                     backgroundColor: [
@@ -4782,62 +4782,62 @@ export function IPosModule() {
                                     ][i % 4],
                                   }}
                                 />
-                                <span className="text-xs font-bold text-slate-700">
+                                pspan className="text-xs font-bold text-slate-700">
                                   {p.name}
-                                </span>
-                              </div>
-                              <span className="text-xs font-bold text-slate-900">
+                                p/span>
+                              p/div>
+                              pspan className="text-xs font-bold text-slate-900">
                                 {p.value}%
-                              </span>
-                            </div>
+                              p/span>
+                            p/div>
                           ))}
-                        </div>
-                      </div>
-                    </div>
-                  </DraggableGrid>
+                        p/div>
+                      p/div>
+                    p/div>
+                  p/DraggableGrid>
 
-                  <div className="bg-slate-900 rounded-sm p-8 text-white relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-white /20 to-transparent opacity-50" />
-                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                      <div className="space-y-4 text-center md:text-left">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">
-                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-100">
+                  pdiv className="bg-slate-900 rounded-sm p-8 text-white relative overflow-hidden group">
+                    pdiv className="absolute inset-0 bg-white /20 to-transparent opacity-50" />
+                    pdiv className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                      pdiv className="space-y-4 text-center md:text-left">
+                        pdiv className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">
+                          pdiv className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                          pspan className="text-[10px] font-bold uppercase tracking-widest text-emerald-100">
                             AI Insight • Phân tích Doanh thu
-                          </span>
-                        </div>
-                        <h3 className="text-2xl font-bold tracking-tight leading-tight max-w-md">
+                          p/span>
+                        p/div>
+                        ph3 className="text-2xl font-bold tracking-tight leading-tight max-w-md">
                           Doanh thu dự kiến tháng này đạt 185,000,000 VND (Tăng
                           12%)
-                        </h3>
-                        <p className="text-sm text-primary-100 opacity-70">
+                        p/h3>
+                        pp className="text-sm text-primary-100 opacity-70">
                           Model AI đề xuất nhập thêm 20% nguyên liệu "Cafe Phin"
                           cho ngày Thứ 7 & Thứ 8 để tránh cháy hàng.
-                        </p>
-                      </div>
-                      <button className="px-8 py-4 bg-white text-primary-600 font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 transition-all">
+                        p/p>
+                      p/div>
+                      pbutton className="px-8 py-4 bg-white text-primary-600 font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 transition-all">
                         Chi tiết dự báo AI
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                      p/button>
+                    p/div>
+                  p/div>
+                p/div>
               ) : mgmtSubTab === "channels" ? (
-                <div className="space-y-8 animate-in fade-in slide-in- duration-500">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="text-xl font-bold text-slate-900 tracking-tight">
+                pdiv className="space-y-8 animate-in fade-in slide-in- duration-500">
+                  pdiv className="flex justify-between items-center">
+                    pdiv>
+                      ph4 className="text-xl font-bold text-slate-900 tracking-tight">
                         Liên kết Kênh bán hàng (Delivery)
-                      </h4>
-                      <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
+                      p/h4>
+                      pp className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
                         Đồng bộ menu & đơn hàng với các nền tảng giao hàng
-                      </p>
-                    </div>
-                    <button className="px-6 py-3 bg-primary-600 text-white font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:shadow-indigo-100 transition-all">
+                      p/p>
+                    p/div>
+                    pbutton className="px-6 py-3 bg-primary-600 text-white font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:shadow-indigo-100 transition-all">
                       Quét thiết bị POS mới
-                    </button>
-                  </div>
+                    p/button>
+                  p/div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  pdiv className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                       {
                         name: "GrabFood",
@@ -4868,21 +4868,21 @@ export function IPosModule() {
                         desc: "Kích hoạt để nhận đơn từ Shopee.",
                       },
                     ].map((platform, idx) => (
-                      <div
+                      pdiv
                         key={idx}
                         className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all group"
                       >
-                        <div className="flex justify-between items-start mb-6">
-                          <div
+                        pdiv className="flex justify-between items-start mb-6">
+                          pdiv
                             className={cn(
                               "w-14 h-14 rounded-sm flex items-center justify-center text-white font-bold text-xs",
                               platform.color,
                             )}
                           >
                             {platform.logo}
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <span
+                          p/div>
+                          pdiv className="flex flex-col items-end">
+                            pspan
                               className={cn(
                                 "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
                                 platform.status === "Đã kết nối"
@@ -4891,9 +4891,9 @@ export function IPosModule() {
                               )}
                             >
                               {platform.status}
-                            </span>
-                            <div className="mt-4 flex items-center gap-2">
-                              <div
+                            p/span>
+                            pdiv className="mt-4 flex items-center gap-2">
+                              pdiv
                                 className={cn(
                                   "w-2 h-2 rounded-full",
                                   platform.status === "Đã kết nối"
@@ -4901,23 +4901,23 @@ export function IPosModule() {
                                     : "bg-slate-200",
                                 )}
                               />
-                              <span className="text-[10px] font-bold text-slate-500">
+                              pspan className="text-[10px] font-bold text-slate-500">
                                 API: Up
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <h5 className="text-lg font-bold text-slate-900 mb-2">
+                              p/span>
+                            p/div>
+                          p/div>
+                        p/div>
+                        ph5 className="text-lg font-bold text-slate-900 mb-2">
                           {platform.name}
-                        </h5>
-                        <p className="text-xs text-slate-500 font-medium mb-6 leading-relaxed">
+                        p/h5>
+                        pp className="text-xs text-slate-500 font-medium mb-6 leading-relaxed">
                           {platform.desc}
-                        </p>
-                        <div className="pt-6 border-t border-stone-50 flex gap-3">
-                          <button className="flex-1 py-3 bg-slate-50 text-slate-700 font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-100 transition-all">
+                        p/p>
+                        pdiv className="pt-6 border-t border-stone-50 flex gap-3">
+                          pbutton className="flex-1 py-3 bg-slate-50 text-slate-700 font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-100 transition-all">
                             Cấu hình
-                          </button>
-                          <button
+                          p/button>
+                          pbutton
                             className={cn(
                               "flex-1 py-3 font-bold text-[10px] uppercase tracking-widest rounded-sm transition-all",
                               platform.status === "Đã kết nối"
@@ -4928,80 +4928,80 @@ export function IPosModule() {
                             {platform.status === "Đã kết nối"
                               ? "Ngắt kết nối"
                               : "Kết nối ngay"}
-                          </button>
-                        </div>
-                      </div>
+                          p/button>
+                        p/div>
+                      p/div>
                     ))}
-                  </div>
+                  p/div>
 
-                  <div className="bg-emerald-900 rounded-sm p-10 text-white relative overflow-hidden">
-                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                      <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-800 rounded-full">
-                          <Sparkles className="w-4 h-4 text-emerald-400" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">
+                  pdiv className="bg-emerald-900 rounded-sm p-10 text-white relative overflow-hidden">
+                    pdiv className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                      pdiv className="space-y-4">
+                        pdiv className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-800 rounded-full">
+                          pSparkles className="w-4 h-4 text-emerald-400" />
+                          pspan className="text-[10px] font-bold uppercase tracking-widest">
                             Tính năng mới • Hệ thống iPOS
-                          </span>
-                        </div>
-                        <h4 className="text-3xl font-bold tracking-tight leading-tight max-w-xl">
+                          p/span>
+                        p/div>
+                        ph4 className="text-3xl font-bold tracking-tight leading-tight max-w-xl">
                           Tự động điều phối Driver Xanh SM & Grab cho các đơn
                           hàng độc lập từ iPOS E-Menu.
-                        </h4>
-                        <p className="text-emerald-100/70 text-sm max-w-lg">
+                        p/h4>
+                        pp className="text-emerald-100/70 text-sm max-w-lg">
                           Hệ thống sẽ tự động gọi tài xế gần nhất để giao hàng
                           khi bạn chốt đơn tại quầy hoặc từ các kênh online, tối
                           ưu hóa thời gian vận chuyển.
-                        </p>
-                      </div>
-                      <button className="px-10 py-5 bg-white text-emerald-900 font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 active:scale-95 transition-all">
+                        p/p>
+                      p/div>
+                      pbutton className="px-10 py-5 bg-white text-emerald-900 font-bold text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 active:scale-95 transition-all">
                         Kích hoạt Smart Shipping
-                      </button>
-                    </div>
-                    <Layers className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 rotate-12" />
-                  </div>
-                </div>
+                      p/button>
+                    p/div>
+                    pLayers className="absolute -bottom-12 -right-12 w-64 h-64 text-white/5 rotate-12" />
+                  p/div>
+                p/div>
               ) : mgmtSubTab === "staff" ? (
-                <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                      <h3 className="font-bold text-slate-900">
+                pdiv className="space-y-6">
+                  pdiv className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    pdiv>
+                      ph3 className="font-bold text-slate-900">
                         Danh sách nhân sự ({staffList.length})
-                      </h3>
-                      <p className="text-xs text-slate-600 font-medium">
+                      p/h3>
+                      pp className="text-xs text-slate-600 font-medium">
                         Quản lý tài khoản truy cập và vai trò của nhân viên tại
                         chi nhánh này.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button
+                      p/p>
+                    p/div>
+                    pdiv className="flex items-center gap-3">
+                      pbutton
                         onClick={() => navigate("/ipos-settings")}
                         className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-300 text-slate-800 rounded-sm text-xs font-bold hover:bg-slate-50 transition-all shadow-sm active:scale-95"
                       >
-                        <Shield className="w-4 h-4" /> Cài đặt Phân quyền
-                      </button>
-                      <button
+                        pShield className="w-4 h-4" /> Cài đặt Phân quyền
+                      p/button>
+                      pbutton
                         onClick={() => {
                           setEditingStaff(null);
                           setIsAddingStaff(true);
                         }}
                         className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-sm text-xs font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100 active:scale-95"
                       >
-                        <Plus className="w-4 h-4" /> Thêm nhân sự mới
-                      </button>
-                    </div>
-                  </div>
+                        pPlus className="w-4 h-4" /> Thêm nhân sự mới
+                      p/button>
+                    p/div>
+                  p/div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+                  pdiv className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
                     {staffList.map((staff) => (
-                      <div
+                      pdiv
                         key={staff.id}
                         className="group relative bg-white border border-slate-300 rounded-sm p-6 hover:border-primary-500 hover:shadow-sm hover:shadow-slate-100 transition-all duration-300"
                       >
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="w-12 h-12 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
-                            <User className="w-6 h-6" />
-                          </div>
-                          <div
+                        pdiv className="flex justify-between items-start mb-4">
+                          pdiv className="w-12 h-12 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                            pUser className="w-6 h-6" />
+                          p/div>
+                          pdiv
                             className={cn(
                               "px-3 py-1 rounded-sm text-[9px] font-bold uppercase tracking-widest border",
                               staff.role === "admin"
@@ -5012,21 +5012,21 @@ export function IPosModule() {
                             )}
                           >
                             {staff.role}
-                          </div>
-                        </div>
-                        <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
+                          p/div>
+                        p/div>
+                        ph4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
                           {staff.fullName}
-                        </h4>
-                        <p className="text-xs text-slate-600 font-medium mb-1">
+                        p/h4>
+                        pp className="text-xs text-slate-600 font-medium mb-1">
                           {staff.email}
-                        </p>
-                        <p className="text-[10px] text-slate-500 font-mono font-bold">
+                        p/p>
+                        pp className="text-[10px] text-slate-500 font-mono font-bold">
                           {staff.id}
-                        </p>
+                        p/p>
 
-                        <div className="mt-6 pt-6 border-t border-stone-50 flex justify-between items-center">
-                          <div className="flex items-center gap-2">
-                            <div
+                        pdiv className="mt-6 pt-6 border-t border-stone-50 flex justify-between items-center">
+                          pdiv className="flex items-center gap-2">
+                            pdiv
                               className={cn(
                                 "w-2 h-2 rounded-full",
                                 staff.status === "active"
@@ -5034,76 +5034,76 @@ export function IPosModule() {
                                   : "bg-slate-300",
                               )}
                             />
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            pspan className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                               {staff.status === "active"
                                 ? "Đang hoạt động"
                                 : "Tạm khóa"}
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
+                            p/span>
+                          p/div>
+                          pdiv className="flex gap-2">
+                            pbutton
                               onClick={() => {
                                 setEditingStaff(staff);
                                 setIsAddingStaff(true);
                               }}
                               className="p-2 hover:bg-primary-50 text-slate-500 hover:text-primary-600 transition-colors rounded-sm"
                             >
-                              <Key className="w-4 h-4" />
-                            </button>
-                            <button
+                              pKey className="w-4 h-4" />
+                            p/button>
+                            pbutton
                               onClick={() => handleDeleteStaff(staff.id)}
                               className="p-2 hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors rounded-sm"
                             >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                              pTrash2 className="w-4 h-4" />
+                            p/button>
+                          p/div>
+                        p/div>
+                      p/div>
                     ))}
-                  </div>
-                </div>
+                  p/div>
+                p/div>
               ) : (
-                <div className="space-y-8 max-w-2xl">
-                  <div className="space-y-2">
-                    <h3 className="font-bold text-slate-900">
+                pdiv className="space-y-8 max-w-2xl">
+                  pdiv className="space-y-2">
+                    ph3 className="font-bold text-slate-900">
                       Cấu hình Chi nhánh
-                    </h3>
-                    <p className="text-xs text-slate-600 font-medium">
+                    p/h3>
+                    pp className="text-xs text-slate-600 font-medium">
                       Thiết lập các quy tắc vận hành cho chi nhánh{" "}
-                      <span className="font-bold text-primary-600">
+                      pspan className="font-bold text-primary-600">
                         {activeStore?.name}
-                      </span>
+                      p/span>
                       .
-                    </p>
-                  </div>
+                    p/p>
+                  p/div>
 
-                  <div className="space-y-6">
-                    <div className="bg-slate-50 p-6 rounded-sm space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                  pdiv className="space-y-6">
+                    pdiv className="bg-slate-50 p-6 rounded-sm space-y-6">
+                      pdiv className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        pdiv className="space-y-1.5">
+                          plabel className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                             Ngành nghề
-                          </label>
-                          <select
+                          p/label>
+                          pselect
                             className="w-full h-10 px-3 bg-white border border-slate-300 rounded-sm text-sm font-medium text-slate-800 outline-none focus:ring-1 focus:ring-primary-500"
                             value={activeStoreConfig?.industry || ""}
                             onChange={(e) =>
                               handleUpdateStoreField("industry", e.target.value)
                             }
                           >
-                            <option value="">Chọn ngành nghề...</option>
+                            poption value="">Chọn ngành nghề...p/option>
                             {Object.keys(INDUSTRY_SECTORS).map((sector) => (
-                              <option key={sector} value={sector}>
+                              poption key={sector} value={sector}>
                                 {sector}
-                              </option>
+                              p/option>
                             ))}
-                          </select>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                          p/select>
+                        p/div>
+                        pdiv className="space-y-1.5">
+                          plabel className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                             Loại hình chi tiết
-                          </label>
-                          <select
+                          p/label>
+                          pselect
                             className="w-full h-10 px-3 bg-white border border-slate-300 rounded-sm text-sm font-medium text-slate-800 outline-none focus:ring-1 focus:ring-primary-500"
                             value={activeStoreConfig?.subIndustry || ""}
                             onChange={(e) =>
@@ -5114,31 +5114,31 @@ export function IPosModule() {
                             }
                             disabled={!activeStoreConfig?.industry}
                           >
-                            <option value="">Chọn hình thức...</option>
+                            poption value="">Chọn hình thức...p/option>
                             {activeStoreConfig?.industry &&
                               (INDUSTRY_SECTORS as any)[
                                 activeStoreConfig.industry
                               ]?.map((subSector: string) => (
-                                <option key={subSector} value={subSector}>
+                                poption key={subSector} value={subSector}>
                                   {subSector}
-                                </option>
+                                p/option>
                               ))}
-                          </select>
-                        </div>
-                      </div>
+                          p/select>
+                        p/div>
+                      p/div>
 
-                      <div className="border-t border-slate-300 pt-6 space-y-4">
-                        <div className="flex justify-between items-center">
-                          <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-slate-900">
+                      pdiv className="border-t border-slate-300 pt-6 space-y-4">
+                        pdiv className="flex justify-between items-center">
+                          pdiv className="space-y-0.5">
+                            pp className="text-sm font-bold text-slate-900">
                               Mở ca làm việc bắt buộc
-                            </p>
-                            <p className="text-xs text-slate-600">
+                            p/p>
+                            pp className="text-xs text-slate-600">
                               Yêu cầu nhân viên khai báo két tiền trước khi bắt
                               đầu bán hàng.
-                            </p>
-                          </div>
-                          <button
+                            p/p>
+                          p/div>
+                          pbutton
                             onClick={() =>
                               handleUpdateStoreConfig(
                                 "requireShiftOpening",
@@ -5152,26 +5152,26 @@ export function IPosModule() {
                                 : "bg-slate-300",
                             )}
                           >
-                            <div
+                            pdiv
                               className={cn(
                                 "w-4 h-4 bg-white rounded-full transition-all",
                                 activeStoreConfig?.config
                                   ?.requireShiftOpening && "translate-x-6",
                               )}
                             />
-                          </button>
-                        </div>
+                          p/button>
+                        p/div>
 
-                        <div className="flex justify-between items-center">
-                          <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-slate-900">
+                        pdiv className="flex justify-between items-center">
+                          pdiv className="space-y-0.5">
+                            pp className="text-sm font-bold text-slate-900">
                               Tự động in hóa đơn
-                            </p>
-                            <p className="text-xs text-slate-600">
+                            p/p>
+                            pp className="text-xs text-slate-600">
                               In phiếu thu ngay sau khi hoàn tất thanh toán.
-                            </p>
-                          </div>
-                          <button
+                            p/p>
+                          p/div>
+                          pbutton
                             onClick={() =>
                               handleUpdateStoreConfig(
                                 "printReceiptAutomatically",
@@ -5187,7 +5187,7 @@ export function IPosModule() {
                                 : "bg-slate-300",
                             )}
                           >
-                            <div
+                            pdiv
                               className={cn(
                                 "w-4 h-4 bg-white rounded-full transition-all",
                                 activeStoreConfig?.config
@@ -5195,20 +5195,20 @@ export function IPosModule() {
                                   "translate-x-6",
                               )}
                             />
-                          </button>
-                        </div>
+                          p/button>
+                        p/div>
 
-                        <div className="flex justify-between items-center">
-                          <div className="space-y-0.5">
-                            <p className="text-sm font-bold text-slate-900">
+                        pdiv className="flex justify-between items-center">
+                          pdiv className="space-y-0.5">
+                            pp className="text-sm font-bold text-slate-900">
                               Cho phép trả hàng
-                            </p>
-                            <p className="text-xs text-slate-600">
+                            p/p>
+                            pp className="text-xs text-slate-600">
                               Kích hoạt tính năng hoàn tiền cho các hóa đơn đã
                               thanh toán.
-                            </p>
-                          </div>
-                          <button
+                            p/p>
+                          p/div>
+                          pbutton
                             onClick={() =>
                               handleUpdateStoreConfig(
                                 "allowReturns",
@@ -5222,76 +5222,76 @@ export function IPosModule() {
                                 : "bg-slate-300",
                             )}
                           >
-                            <div
+                            pdiv
                               className={cn(
                                 "w-4 h-4 bg-white rounded-full transition-all",
                                 activeStoreConfig?.config?.allowReturns &&
                                   "translate-x-6",
                               )}
                             />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                          p/button>
+                        p/div>
+                      p/div>
+                    p/div>
 
-                    <div className="p-6 bg-primary-50 border border-primary-100 rounded-sm flex items-start gap-4">
-                      <ShieldCheck className="w-6 h-6 text-primary-600 shrink-0" />
-                      <div className="space-y-1">
-                        <p className="text-sm font-bold text-primary-900">
+                    pdiv className="p-6 bg-primary-50 border border-primary-100 rounded-sm flex items-start gap-4">
+                      pShieldCheck className="w-6 h-6 text-primary-600 shrink-0" />
+                      pdiv className="space-y-1">
+                        pp className="text-sm font-bold text-primary-900">
                           Quyền hạn của bạn
-                        </p>
-                        <p className="text-xs text-primary-700 leading-relaxed">
+                        p/p>
+                        pp className="text-xs text-primary-700 leading-relaxed">
                           Bạn đang truy cập với vai trò{" "}
-                          <span className="font-bold uppercase tracking-widest">
+                          pspan className="font-bold uppercase tracking-widest">
                             {userRole}
-                          </span>
+                          p/span>
                           . Bạn có toàn quyền thiết lập nhân sự và cấu hình chi
                           tiết cho cửa hàng này.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                        p/p>
+                      p/div>
+                    p/div>
+                  p/div>
+                p/div>
               )}
-            </div>
-          </div>
+            p/div>
+          p/div>
         ) : activeTab === "delivery" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 p-8 flex-1 animate-in slide-in- overflow-y-auto">
-            <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          pdiv className="col-span-12 bg-white rounded-sm border border-slate-300 p-8 flex-1 animate-in slide-in- overflow-y-auto">
+            pdiv className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
+              pdiv>
+                ph2 className="text-xl font-bold text-slate-900 tracking-tight">
                   Đối tác Giao hàng
-                </h2>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
+                p/h2>
+                pp className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
                   Đơn đặt hàng từ ứng dụng ngoài
-                </p>
-              </div>
-            </div>
+                p/p>
+              p/div>
+            p/div>
 
             {discrepancyPrompt && (
-              <div className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
-                <div className="bg-white rounded-sm max-w-lg shadow-sm p-8 space-y-6">
-                  <div className="w-16 h-16 bg-orange-100 text-blue-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <AlertCircle className="w-8 h-8" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">
+              pdiv className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+                pdiv className="bg-white rounded-sm max-w-lg shadow-sm p-8 space-y-6">
+                  pdiv className="w-16 h-16 bg-orange-100 text-blue-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                    pAlertCircle className="w-8 h-8" />
+                  p/div>
+                  pdiv className="text-center">
+                    ph3 className="text-lg font-bold text-slate-900 mb-2">
                       Phát hiện Sai lệch Thông tin
-                    </h3>
-                    <p className="text-sm text-slate-700 leading-relaxed">
+                    p/h3>
+                    pp className="text-sm text-slate-700 leading-relaxed">
                       {discrepancyPrompt.message}
-                    </p>
-                  </div>
-                  <div className="flex gap-4 pt-4 border-t border-slate-200">
-                    <button
+                    p/p>
+                  p/div>
+                  pdiv className="flex gap-4 pt-4 border-t border-slate-200">
+                    pbutton
                       onClick={() =>
                         proceedWithExternalOrder(discrepancyPrompt.order, null)
                       }
                       className="flex-1 py-3 bg-white border border-slate-300 shadow-sm text-slate-700 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all font-semibold"
                     >
                       Tạo KH Mới
-                    </button>
-                    <button
+                    p/button>
+                    pbutton
                       onClick={() =>
                         proceedWithExternalOrder(
                           discrepancyPrompt.order,
@@ -5301,29 +5301,29 @@ export function IPosModule() {
                       className="flex-1 py-3 bg-primary-600 text-white rounded-sm font-bold text-xs uppercase tracking-widest shadow-sm shadow-indigo-200 hover:bg-primary-700 transition-all"
                     >
                       Liên kết
-                    </button>
-                  </div>
-                </div>
-              </div>
+                    p/button>
+                  p/div>
+                p/div>
+              p/div>
             )}
 
             {incomingExternalOrders.length === 0 ? (
-              <div className="py-20 text-center space-y-4">
-                <div className="w-16 h-16 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-slate-300">
-                  <Building2 className="w-8 h-8" />
-                </div>
-                <p className="text-sm font-bold text-slate-500">
+              pdiv className="py-20 text-center space-y-4">
+                pdiv className="w-16 h-16 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-slate-300">
+                  pBuilding2 className="w-8 h-8" />
+                p/div>
+                pp className="text-sm font-bold text-slate-500">
                   Không có đơn hàng mới nào
-                </p>
-              </div>
+                p/p>
+              p/div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              pdiv className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {incomingExternalOrders.map((order) => (
-                  <div
+                  pdiv
                     key={order.id}
                     className="bg-white border border-slate-300 rounded-sm p-6 shadow-sm hover:border-primary-300 transition-all group flex flex-col relative overflow-hidden"
                   >
-                    <div
+                    pdiv
                       className={cn(
                         "absolute top-0 left-0 w-full h-1",
                         order.platform === "GrabFood"
@@ -5337,9 +5337,9 @@ export function IPosModule() {
                                 : "bg-slate-400",
                       )}
                     />
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <span
+                    pdiv className="flex justify-between items-start mb-4">
+                      pdiv>
+                        pspan
                           className={cn(
                             "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded line-clamp-1",
                             order.platform === "GrabFood"
@@ -5354,117 +5354,117 @@ export function IPosModule() {
                           )}
                         >
                           {order.platform}
-                        </span>
-                        <h3 className="font-bold text-slate-900 mt-2">
+                        p/span>
+                        ph3 className="font-bold text-slate-900 mt-2">
                           {order.customerName}
-                        </h3>
-                        <p className="text-[10px] text-slate-600 font-mono font-bold mt-0.5">
+                        p/h3>
+                        pp className="text-[10px] text-slate-600 font-mono font-bold mt-0.5">
                           {order.targetPhone}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-primary-600">
+                        p/p>
+                      p/div>
+                      pdiv className="text-right">
+                        pp className="text-sm font-bold text-primary-600">
                           {formatCurrency(order.total)}
-                        </p>
-                        <p className="text-[10px] text-slate-500 font-bold mt-1">
+                        p/p>
+                        pp className="text-[10px] text-slate-500 font-bold mt-1">
                           {order.items.length} món
-                        </p>
-                      </div>
-                    </div>
+                        p/p>
+                      p/div>
+                    p/div>
 
-                    <div className="flex-1 space-y-2 mb-6">
+                    pdiv className="flex-1 space-y-2 mb-6">
                       {order.items.map((item: any, idx: number) => (
-                        <div
+                        pdiv
                           key={idx}
                           className="flex justify-between text-xs text-slate-700"
                         >
-                          <span>
+                          pspan>
                             {item.quantity}x {item.name}
-                          </span>
-                        </div>
+                          p/span>
+                        p/div>
                       ))}
-                    </div>
+                    p/div>
 
-                    <button
+                    pbutton
                       onClick={() => handleProcessExternalOrder(order)}
                       className="w-full py-3 bg-primary-50 text-primary-700 font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-primary-600 hover:text-white transition-all shadow-sm active:scale-95"
                     >
                       Nhận & Gọi Tài xế
-                    </button>
-                  </div>
+                    p/button>
+                  p/div>
                 ))}
-              </div>
+              p/div>
             )}
-          </div>
+          p/div>
         ) : activeTab === "lookup" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-10 flex-1 animate-in slide-in-">
-            <button
+          pdiv className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-10 flex-1 animate-in slide-in-">
+            pbutton
               onClick={() => setActiveTab("sales")}
               className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary-600 mb-6 transition-colors"
             >
-              <Undo2 className="w-4 h-4" /> Quay lại
-            </button>
+              pUndo2 className="w-4 h-4" /> Quay lại
+            p/button>
 
             {selectedProductLookup && (
-              <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-12" columns={2} gap={48}>
-                <div className="aspect-square bg-slate-50 rounded-sm border border-slate-200 flex items-center justify-center relative overflow-hidden">
-                  <Monitor className="w-24 h-24 text-slate-400" />
-                  <div className="absolute top-6 left-6 bg-primary-600 text-white px-4 py-1.5 rounded-sm font-bold text-[10px] uppercase tracking-widest shadow-sm">
+              pDraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-12" columns={2} gap={48}>
+                pdiv className="aspect-square bg-slate-50 rounded-sm border border-slate-200 flex items-center justify-center relative overflow-hidden">
+                  pMonitor className="w-24 h-24 text-slate-400" />
+                  pdiv className="absolute top-6 left-6 bg-primary-600 text-white px-4 py-1.5 rounded-sm font-bold text-[10px] uppercase tracking-widest shadow-sm">
                     In Stock
-                  </div>
-                </div>
-                <div className="space-y-8">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-3xl font-bold text-slate-900 mb-1 leading-tight">
+                  p/div>
+                p/div>
+                pdiv className="space-y-8">
+                  pdiv className="flex justify-between items-start">
+                    pdiv>
+                      ph2 className="text-3xl font-bold text-slate-900 mb-1 leading-tight">
                         {selectedProductLookup.name}
-                      </h2>
-                      <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">
+                      p/h2>
+                      pp className="text-slate-600 text-xs font-bold uppercase tracking-widest">
                         {selectedProductLookup.id}
-                      </p>
-                    </div>
-                    <button className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-sm text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
-                      <RefreshCcw className="w-4 h-4" /> Đặt giữ hàng
-                    </button>
-                  </div>
+                      p/p>
+                    p/div>
+                    pbutton className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-sm text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
+                      pRefreshCcw className="w-4 h-4" /> Đặt giữ hàng
+                    p/button>
+                  p/div>
 
-                  <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
-                    <div className="p-5 bg-slate-50 rounded-sm space-y-1">
-                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
+                  pDraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
+                    pdiv className="p-5 bg-slate-50 rounded-sm space-y-1">
+                      pp className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
                         Giá bán
-                      </p>
-                      <p className="text-xl font-bold text-slate-900">
+                      p/p>
+                      pp className="text-xl font-bold text-slate-900">
                         {formatCurrency(selectedProductLookup.price)}
-                      </p>
-                    </div>
-                    <div className="p-5 bg-emerald-50 rounded-sm space-y-1 border border-emerald-100">
-                      <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
+                      p/p>
+                    p/div>
+                    pdiv className="p-5 bg-emerald-50 rounded-sm space-y-1 border border-emerald-100">
+                      pp className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
                         Tồn kho hệ thống
-                      </p>
-                      <p className="text-xl font-bold text-emerald-600">
+                      p/p>
+                      pp className="text-xl font-bold text-emerald-600">
                         {selectedProductLookup.stock || 0}
-                      </p>
-                    </div>
-                  </DraggableGrid>
+                      p/p>
+                    p/div>
+                  p/DraggableGrid>
 
-                  <div className="space-y-3">
-                    <h4 className="font-bold text-[10px] uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                      <RefreshCcw className="w-3.5 h-3.5 text-primary-600" />{" "}
+                  pdiv className="space-y-3">
+                    ph4 className="font-bold text-[10px] uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                      pRefreshCcw className="w-3.5 h-3.5 text-primary-600" />{" "}
                       Liên chi nhánh
-                    </h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-sm shadow-sm hover:border-primary-200 transition-all">
-                        <span className="text-sm font-medium text-slate-800">
+                    p/h4>
+                    pdiv className="space-y-2">
+                      pdiv className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-sm shadow-sm hover:border-primary-200 transition-all">
+                        pspan className="text-sm font-medium text-slate-800">
                           CN Quận 1 (Chính)
-                        </span>
-                        <span className="font-bold text-xs text-primary-600">
+                        p/span>
+                        pspan className="font-bold text-xs text-primary-600">
                           {selectedProductLookup.stock || 0} sp
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                        p/span>
+                      p/div>
+                    p/div>
+                  p/div>
 
-                  <button
+                  pbutton
                     onClick={() => {
                       addToCart(selectedProductLookup);
                       setActiveTab("sales");
@@ -5472,310 +5472,310 @@ export function IPosModule() {
                     className="w-full py-5 bg-primary-600 text-white rounded-sm font-bold text-sm uppercase tracking-widest shadow-sm shadow-indigo-600/20 hover:bg-primary-700 active:scale-95 transition-all"
                   >
                     Thêm vào đơn hàng
-                  </button>
-                </div>
-              </DraggableGrid>
+                  p/button>
+                p/div>
+              p/DraggableGrid>
             )}
-          </div>
+          p/div>
         ) : activeTab === "inventory" ? (
-          <IPosInventory activeStore={activeStore} />
+          pIPosInventory activeStore={activeStore} />
         ) : activeTab === "products" ? (
-          <IPosProducts activeStore={activeStore} />
+          pIPosProducts activeStore={activeStore} />
         ) : activeTab === "payroll" ? (
-          <IPosPayroll activeStore={activeStore} />
+          pIPosPayroll activeStore={activeStore} />
         ) : activeTab === "orders" ? (
-          <IPosOrders activeStore={activeStore} />
+          pIPosOrders activeStore={activeStore} />
         ) : activeTab === "customers" ? (
-          <IPosCustomers activeStore={activeStore} />
+          pIPosCustomers activeStore={activeStore} />
         ) : activeTab === "reports" ? (
-          <IPosReports activeStore={activeStore} />
+          pIPosReports activeStore={activeStore} />
         ) : activeTab === "promotions" ? (
-          <IPosPromotions activeStore={activeStore} />
+          pIPosPromotions activeStore={activeStore} />
         ) : (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 overflow-y-auto">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="font-bold text-slate-900 flex items-center gap-2 text-base">
-                <History className="w-5 h-5 text-primary-600" /> Nhật ký đơn hàng
-              </h3>
-              <div className="flex gap-2">
-                <div className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+          pdiv className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 overflow-y-auto">
+            pdiv className="flex items-center justify-between mb-8">
+              ph3 className="font-bold text-slate-900 flex items-center gap-2 text-base">
+                pHistory className="w-5 h-5 text-primary-600" /> Nhật ký đơn hàng
+              p/h3>
+              pdiv className="flex gap-2">
+                pdiv className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                   Hôm nay
-                </div>
-              </div>
-            </div>
+                p/div>
+              p/div>
+            p/div>
 
             {/* Pending E-Menu Orders Section */}
             {pendingEMenuOrders.length > 0 && (
-              <div className="mb-10 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-[10px] font-bold text-rose-500 uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse inline-block" />
+              pdiv className="mb-10 space-y-4">
+                pdiv className="flex items-center justify-between">
+                  ph4 className="text-[10px] font-bold text-rose-500 uppercase tracking-widest flex items-center gap-2">
+                    pspan className="w-2 h-2 bg-rose-500 rounded-full animate-pulse inline-block" />
                     Đơn E-Menu mới ({pendingEMenuOrders.length})
-                  </h4>
-                  <span className="text-[10px] font-bold text-slate-500">
+                  p/h4>
+                  pspan className="text-[10px] font-bold text-slate-500">
                     Yêu cầu từ khách tại bàn
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  p/span>
+                p/div>
+                pdiv className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {pendingEMenuOrders.map((order) => (
-                    <div
+                    pdiv
                       key={order.id}
                       className="p-5 bg-rose-50/50 rounded-sm border border-rose-100 flex flex-col gap-4 shadow-sm hover:shadow-sm transition-all"
                     >
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
-                            <QrCode className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-slate-900">
+                      pdiv className="flex justify-between items-start">
+                        pdiv className="flex items-center gap-3">
+                          pdiv className="w-10 h-10 bg-white rounded-sm flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
+                            pQrCode className="w-5 h-5" />
+                          p/div>
+                          pdiv>
+                            pp className="font-bold text-slate-900">
                               BÀN {order.tableId}
-                            </p>
-                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+                            p/p>
+                            pp className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
                               {order.items?.length || 0} món •{" "}
                               {formatCurrency(order.total)}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-slate-500">
+                            p/p>
+                          p/div>
+                        p/div>
+                        pspan className="text-[10px] font-bold text-slate-500">
                           {order.time || "Vừa xong"}
-                        </span>
-                      </div>
+                        p/span>
+                      p/div>
 
-                      <div className="flex gap-2 border-t border-rose-100 pt-4">
-                        <button
+                      pdiv className="flex gap-2 border-t border-rose-100 pt-4">
+                        pbutton
                           onClick={() => handleProcessEMenuOrder(order)}
                           className="flex-1 py-2.5 bg-rose-600 text-white rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-rose-700 transition-all shadow-sm shadow-rose-600/20 active:scale-95"
                         >
                           Nhận & Xử lý
-                        </button>
-                        <button
+                        p/button>
+                        pbutton
                           onClick={() => handleDeclineOrder(order.id)}
                           className="px-4 py-2.5 bg-white text-rose-600 rounded-sm text-[10px] font-bold uppercase tracking-widest border border-rose-200 hover:bg-rose-50 transition-all active:scale-95"
                         >
                           Hủy
-                        </button>
-                      </div>
-                    </div>
+                        p/button>
+                      p/div>
+                    p/div>
                   ))}
-                </div>
-                <div className="w-full h-px bg-slate-100" />
-              </div>
+                p/div>
+                pdiv className="w-full h-px bg-slate-100" />
+              p/div>
             )}
 
-            <div className="space-y-3">
+            pdiv className="space-y-3">
               {orderHistory.map((tx) => (
-                <div
+                pdiv
                   key={tx.id}
                   className="flex items-center justify-between p-5 bg-slate-50 rounded-sm border border-slate-200 hover:bg-white hover:shadow-sm hover:border-primary-200 transition-all cursor-pointer group"
                   onClick={() => setSelectedTxForDetail(tx)}
                 >
-                  <div className="flex items-center gap-5">
-                    <div className="w-10 h-10 bg-white rounded-sm shadow-inner flex items-center justify-center font-bold text-xs text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors uppercase">
+                  pdiv className="flex items-center gap-5">
+                    pdiv className="w-10 h-10 bg-white rounded-sm shadow-inner flex items-center justify-center font-bold text-xs text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors uppercase">
                       {tx.time}
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900 text-base">
+                    p/div>
+                    pdiv>
+                      pp className="font-bold text-slate-900 text-base">
                         {tx.id}
-                      </p>
-                      <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+                      p/p>
+                      pp className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
                         {tx.items} sản phẩm • {tx.status}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <p className="font-bold text-slate-900 text-lg">
+                      p/p>
+                    p/div>
+                  p/div>
+                  pdiv className="flex items-center gap-6">
+                    pdiv className="text-right">
+                      pp className="font-bold text-slate-900 text-lg">
                         {formatCurrency(tx.total)}
-                      </p>
-                      <button className="text-[9px] font-bold text-primary-600 uppercase tracking-widest hover:underline flex items-center gap-1 justify-end">
-                        <Printer className="w-3 h-3" /> In biên lai
-                      </button>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-500 transition-colors" />
-                  </div>
-                </div>
+                      p/p>
+                      pbutton className="text-[9px] font-bold text-primary-600 uppercase tracking-widest hover:underline flex items-center gap-1 justify-end">
+                        pPrinter className="w-3 h-3" /> In biên lai
+                      p/button>
+                    p/div>
+                    pChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-500 transition-colors" />
+                  p/div>
+                p/div>
               ))}
-            </div>
-          </div>
+            p/div>
+          p/div>
         )}
-      </div>
+      p/div>
 
       {/* Print Proforma View */}
-      <div className="hidden print:block w-[80mm] p-4 text-black bg-white font-mono text-xs">
-        <h2 className="text-center font-bold text-xl uppercase mb-2">
+      pdiv className="hidden print:block w-[80mm] p-4 text-black bg-white font-mono text-xs">
+        ph2 className="text-center font-bold text-xl uppercase mb-2">
           HÓA ĐƠN TẠM TÍNH
-        </h2>
-        <p className="text-center">{activeStore?.name || "VComm ERP Store"}</p>
-        <p className="text-center mb-4">
+        p/h2>
+        pp className="text-center">{activeStore?.name || "VComm ERP Store"}p/p>
+        pp className="text-center mb-4">
           Nhân viên: {selectedStaff?.name || user?.displayName}
-        </p>
-        <p className="mb-4">Khách hàng: {customer?.name || "Khách lẻ"}</p>
+        p/p>
+        pp className="mb-4">Khách hàng: {customer?.name || "Khách lẻ"}p/p>
 
-        <div className="border-t border-dashed border-black pt-2 mb-2">
+        pdiv className="border-t border-dashed border-black pt-2 mb-2">
           {cart.map((item, idx) => (
-            <div key={idx} className="flex justify-between mb-1">
-              <div className="flex-1 truncate max-w-[50mm]">
+            pdiv key={idx} className="flex justify-between mb-1">
+              pdiv className="flex-1 truncate max-w-[50mm]">
                 {item.quantity}x {item.name}
-              </div>
-              <div>
+              p/div>
+              pdiv>
                 {formatCurrency(getItemTotalPrice(item))}
-              </div>
-            </div>
+              p/div>
+            p/div>
           ))}
-        </div>
+        p/div>
 
-        <div className="border-t border-dashed border-black pt-2 space-y-1">
-          <div className="flex justify-between">
-            <span>Tạm tính</span>
-            <span>{formatCurrency(subtotal)}</span>
-          </div>
+        pdiv className="border-t border-dashed border-black pt-2 space-y-1">
+          pdiv className="flex justify-between">
+            pspan>Tạm tínhp/span>
+            pspan>{formatCurrency(subtotal)}p/span>
+          p/div>
           {discount > 0 && (
-            <div className="flex justify-between">
-              <span>Giảm giá</span>
-              <span>-{formatCurrency(discount)}</span>
-            </div>
+            pdiv className="flex justify-between">
+              pspan>Giảm giáp/span>
+              pspan>-{formatCurrency(discount)}p/span>
+            p/div>
           )}
           {loyaltyDiscount > 0 && (
-            <div className="flex justify-between text-emerald-500 text-sm font-bold">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Điểm Loyalty</span>
-              </div>
-              <span>-{formatCurrency(loyaltyDiscount)}</span>
-            </div>
+            pdiv className="flex justify-between text-emerald-500 text-sm font-bold">
+              pdiv className="flex items-center gap-2">
+                pSparkles className="w-3.5 h-3.5" />
+                pspan>Điểm Loyaltyp/span>
+              p/div>
+              pspan>-{formatCurrency(loyaltyDiscount)}p/span>
+            p/div>
           )}
           {promoWalletDiscount > 0 && (
-            <div className="flex justify-between text-orange-500 text-sm font-bold">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>Ví Khuyến Mại</span>
-              </div>
-              <span>-{formatCurrency(promoWalletDiscount)}</span>
-            </div>
+            pdiv className="flex justify-between text-orange-500 text-sm font-bold">
+              pdiv className="flex items-center gap-2">
+                pShoppingCart className="w-3.5 h-3.5" />
+                pspan>Ví Khuyến Mạip/span>
+              p/div>
+              pspan>-{formatCurrency(promoWalletDiscount)}p/span>
+            p/div>
           )}
-          <div className="flex justify-between font-bold text-sm mt-2 pt-2 border-t border-black">
-            <span>PHẢI THANH TOÁN</span>
-            <span>{formatCurrency(total)}</span>
-          </div>
-        </div>
-        <div className="text-center mt-6">
-          <p>Cảm ơn quý khách!</p>
-          <p className="text-[10px] mt-1 italic">
+          pdiv className="flex justify-between font-bold text-sm mt-2 pt-2 border-t border-black">
+            pspan>PHẢI THANH TOÁNp/span>
+            pspan>{formatCurrency(total)}p/span>
+          p/div>
+        p/div>
+        pdiv className="text-center mt-6">
+          pp>Cảm ơn quý khách!p/p>
+          pp className="text-[10px] mt-1 italic">
             Bill In Tạm Tính Không Có Giá Trị Thuế
-          </p>
-        </div>
-      </div>
+          p/p>
+        p/div>
+      p/div>
       {/* Hidden Print View for Receipt */}
-      <div className="hidden print:block p-8 bg-white text-black font-mono text-[10px] w-[80mm]">
-        <div className="text-center border-b border-dashed border-black pb-4 mb-4">
-          <h1 className="font-sans tracking-tight text-sm font-bold uppercase">
+      pdiv className="hidden print:block p-8 bg-white text-black font-mono text-[10px] w-[80mm]">
+        pdiv className="text-center border-b border-dashed border-black pb-4 mb-4">
+          ph1 className="font-sans tracking-tight text-sm font-bold uppercase">
             VComm ERP iPOS System
-          </h1>
-          <p>Chi nhánh: {activeStore?.name}</p>
-          <p>{activeStore?.address}</p>
-          <p>SĐT: 1900 1234</p>
-        </div>
+          p/h1>
+          pp>Chi nhánh: {activeStore?.name}p/p>
+          pp>{activeStore?.address}p/p>
+          pp>SĐT: 1900 1234p/p>
+        p/div>
 
-        <div className="mb-4">
-          <p className="font-bold uppercase mb-2">HÓA ĐƠN TẠM TÍNH</p>
-          <p>Ngày: {new Date().toLocaleString("vi-VN")}</p>
-          <p>Nhân viên: {user?.displayName || "NV Bán hàng"}</p>
+        pdiv className="mb-4">
+          pp className="font-bold uppercase mb-2">HÓA ĐƠN TẠM TÍNHp/p>
+          pp>Ngày: {new Date().toLocaleString("vi-VN")}p/p>
+          pp>Nhân viên: {user?.displayName || "NV Bán hàng"}p/p>
           {customer && (
-            <p>
+            pp>
               Khách hàng: {customer.name} ({customer.phone})
-            </p>
+            p/p>
           )}
-        </div>
+        p/div>
 
-        <div className="border-b border-dashed border-black pb-2 mb-2">
+        pdiv className="border-b border-dashed border-black pb-2 mb-2">
           {cart.map((item, idx) => (
-            <div key={idx} className="flex justify-between py-1">
-              <span className="flex-1">
+            pdiv key={idx} className="flex justify-between py-1">
+              pspan className="flex-1">
                 {item.name} x{item.quantity}
-              </span>
-              <span>
+              p/span>
+              pspan>
                 {formatCurrency(getItemTotalPrice(item))}
-              </span>
-            </div>
+              p/span>
+            p/div>
           ))}
-        </div>
+        p/div>
 
-        <div className="space-y-1">
-          <div className="flex justify-between">
-            <span>Tạm tính:</span>
-            <span>{formatCurrency(subtotal)}</span>
-          </div>
+        pdiv className="space-y-1">
+          pdiv className="flex justify-between">
+            pspan>Tạm tính:p/span>
+            pspan>{formatCurrency(subtotal)}p/span>
+          p/div>
           {discount > 0 && (
-            <div className="flex justify-between">
-              <span>Giảm giá:</span>
-              <span>-{formatCurrency(discount)}</span>
-            </div>
+            pdiv className="flex justify-between">
+              pspan>Giảm giá:p/span>
+              pspan>-{formatCurrency(discount)}p/span>
+            p/div>
           )}
           {loyaltyDiscount > 0 && (
-            <div className="flex justify-between text-emerald-500 text-sm font-bold">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Điểm Loyalty</span>
-              </div>
-              <span>-{formatCurrency(loyaltyDiscount)}</span>
-            </div>
+            pdiv className="flex justify-between text-emerald-500 text-sm font-bold">
+              pdiv className="flex items-center gap-2">
+                pSparkles className="w-3.5 h-3.5" />
+                pspan>Điểm Loyaltyp/span>
+              p/div>
+              pspan>-{formatCurrency(loyaltyDiscount)}p/span>
+            p/div>
           )}
           {promoWalletDiscount > 0 && (
-            <div className="flex justify-between text-orange-500 text-sm font-bold">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>Ví Khuyến Mại</span>
-              </div>
-              <span>-{formatCurrency(promoWalletDiscount)}</span>
-            </div>
+            pdiv className="flex justify-between text-orange-500 text-sm font-bold">
+              pdiv className="flex items-center gap-2">
+                pShoppingCart className="w-3.5 h-3.5" />
+                pspan>Ví Khuyến Mạip/span>
+              p/div>
+              pspan>-{formatCurrency(promoWalletDiscount)}p/span>
+            p/div>
           )}
-          <div className="flex justify-between font-bold text-xs pt-2 border-t border-dashed border-black">
-            <span>TỔNG CỘNG:</span>
-            <span>{formatCurrency(total)}</span>
-          </div>
-        </div>
+          pdiv className="flex justify-between font-bold text-xs pt-2 border-t border-dashed border-black">
+            pspan>TỔNG CỘNG:p/span>
+            pspan>{formatCurrency(total)}p/span>
+          p/div>
+        p/div>
 
-        <div className="text-center mt-8 border-t border-dashed border-black pt-4">
-          <p>Cảm ơn quý khách!</p>
-          <p>Hẹn gặp lại.</p>
-        </div>
-      </div>
+        pdiv className="text-center mt-8 border-t border-dashed border-black pt-4">
+          pp>Cảm ơn quý khách!p/p>
+          pp>Hẹn gặp lại.p/p>
+        p/div>
+      p/div>
 
       {/* Staff Management MODAL */}
-      <AnimatePresence>
+      pAnimatePresence>
         {isAddingStaff && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
-            <motion.div
+          pdiv className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+            pmotion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-sm w-full max-w-xl shadow-sm overflow-hidden"
             >
-              <div className="p-8 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary-600 text-white rounded-sm flex items-center justify-center">
-                    <UserCheck className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+              pdiv className="p-8 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                pdiv className="flex items-center gap-4">
+                  pdiv className="w-10 h-10 bg-primary-600 text-white rounded-sm flex items-center justify-center">
+                    pUserCheck className="w-5 h-5" />
+                  p/div>
+                  ph3 className="text-xl font-bold text-slate-900 tracking-tight">
                     {editingStaff ? "Cập nhật nhân sự" : "Thêm nhân sự mới"}
-                  </h3>
-                </div>
-                <button
+                  p/h3>
+                p/div>
+                pbutton
                   onClick={() => setIsAddingStaff(false)}
                   className="p-2 hover:bg-white rounded-sm transition-all shadow-sm"
                 >
-                  <X className="w-6 h-6 text-slate-500" />
-                </button>
-              </div>
+                  pX className="w-6 h-6 text-slate-500" />
+                p/button>
+              p/div>
 
-              <div className="p-8 space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+              pdiv className="p-8 space-y-6">
+                pdiv className="grid grid-cols-2 gap-6">
+                  pdiv className="space-y-2">
+                    plabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
                       Họ và tên
-                    </label>
-                    <input
+                    p/label>
+                    pinput
                       type="text"
                       className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
                       placeholder="Nguyễn Văn A"
@@ -5784,12 +5784,12 @@ export function IPosModule() {
                         setStaffForm({ ...staffForm, fullName: e.target.value })
                       }
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                  p/div>
+                  pdiv className="space-y-2">
+                    plabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
                       Số điện thoại
-                    </label>
-                    <input
+                    p/label>
+                    pinput
                       type="text"
                       className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none font-mono"
                       placeholder="09xxx"
@@ -5798,14 +5798,14 @@ export function IPosModule() {
                         setStaffForm({ ...staffForm, phone: e.target.value })
                       }
                     />
-                  </div>
-                </div>
+                  p/div>
+                p/div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                pdiv className="space-y-2">
+                  plabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
                     Địa chỉ Email (Để đăng nhập)
-                  </label>
-                  <input
+                  p/label>
+                  pinput
                     type="email"
                     className="w-full bg-slate-50 border border-slate-300 rounded-sm px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all outline-none"
                     placeholder="staff@example.com"
@@ -5814,13 +5814,13 @@ export function IPosModule() {
                       setStaffForm({ ...staffForm, email: e.target.value })
                     }
                   />
-                </div>
+                p/div>
 
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                pdiv className="space-y-3">
+                  plabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
                     Vai trò & Phân quyền
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  p/label>
+                  pdiv className="grid grid-cols-3 gap-3">
                     {[
                       {
                         id: "employee",
@@ -5841,7 +5841,7 @@ export function IPosModule() {
                         desc: "Toàn quyền",
                       },
                     ].map((role) => (
-                      <button
+                      pbutton
                         key={role.id}
                         onClick={() =>
                           setStaffForm({ ...staffForm, role: role.id as any })
@@ -5854,11 +5854,11 @@ export function IPosModule() {
                         )}
                       >
                         {staffForm.role === role.id && (
-                          <div className="absolute top-2 right-2">
-                            <CheckCircle2 className="w-4 h-4 text-primary-600" />
-                          </div>
+                          pdiv className="absolute top-2 right-2">
+                            pCheckCircle2 className="w-4 h-4 text-primary-600" />
+                          p/div>
                         )}
-                        <role.icon
+                        prole.icon
                           className={cn(
                             "w-6 h-6 mb-1",
                             staffForm.role === role.id
@@ -5866,7 +5866,7 @@ export function IPosModule() {
                               : "text-slate-500",
                           )}
                         />
-                        <p
+                        pp
                           className={cn(
                             "text-xs font-bold",
                             staffForm.role === role.id
@@ -5875,227 +5875,227 @@ export function IPosModule() {
                           )}
                         >
                           {role.name}
-                        </p>
-                        <p className="text-[9px] font-medium text-slate-500">
+                        p/p>
+                        pp className="text-[9px] font-medium text-slate-500">
                           {role.desc}
-                        </p>
-                      </button>
+                        p/p>
+                      p/button>
                     ))}
-                  </div>
-                </div>
-              </div>
+                  p/div>
+                p/div>
+              p/div>
 
-              <div className="p-8 bg-slate-50/50 border-t border-slate-200 flex gap-4">
-                <button
+              pdiv className="p-8 bg-slate-50/50 border-t border-slate-200 flex gap-4">
+                pbutton
                   onClick={() => setIsAddingStaff(false)}
                   className="flex-1 py-4 bg-white border border-slate-300 text-slate-500 font-bold rounded-sm hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                 >
                   Hủy bỏ
-                </button>
-                <button
+                p/button>
+                pbutton
                   onClick={() => handleSaveStaff(staffForm)}
                   className="flex-[2] py-4 bg-primary-600 text-white rounded-sm font-bold text-xs uppercase tracking-widest shadow-sm shadow-indigo-200 hover:bg-primary-700 active:scale-95 transition-all"
                 >
                   {editingStaff ? "Cập nhật thay đổi" : "Xác nhận thêm mới"}
-                </button>
-              </div>
-            </motion.div>
-          </div>
+                p/button>
+              p/div>
+            p/motion.div>
+          p/div>
         )}
-      </AnimatePresence>
+      p/AnimatePresence>
 
       {/* Receipt Detail Modal */}
-      <AnimatePresence>
+      pAnimatePresence>
         {selectedTxForDetail && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-end p-0 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div
+          pdiv className="fixed inset-0 z-[200] flex items-center justify-end p-0 bg-slate-900/40 backdrop-blur-sm">
+            pmotion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               className="bg-white h-full w-full max-w-md shadow-sm flex flex-col"
             >
-              <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-600 text-white rounded-sm flex items-center justify-center">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+              pdiv className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                pdiv className="flex items-center gap-4">
+                  pdiv className="w-10 h-10 bg-blue-600 text-white rounded-sm flex items-center justify-center">
+                    pFileText className="w-5 h-5" />
+                  p/div>
+                  pdiv>
+                    ph3 className="text-lg font-bold text-slate-900 tracking-tight">
                       Chi tiết Hóa đơn
-                    </h3>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                    p/h3>
+                    pp className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                       Mã giao dịch: {selectedTxForDetail.id}
-                    </p>
-                  </div>
-                </div>
-                <button
+                    p/p>
+                  p/div>
+                p/div>
+                pbutton
                   onClick={() => setSelectedTxForDetail(null)}
                   className="p-2 hover:bg-white rounded-sm transition-all shadow-sm"
                 >
-                  <X className="w-6 h-6 text-slate-500" />
-                </button>
-              </div>
+                  pX className="w-6 h-6 text-slate-500" />
+                p/button>
+              p/div>
 
-              <div className="flex-1 overflow-y-auto p-8">
-                <div className="bg-slate-50 rounded-sm p-8 border border-dashed border-slate-300 relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+              pdiv className="flex-1 overflow-y-auto p-8">
+                pdiv className="bg-slate-50 rounded-sm p-8 border border-dashed border-slate-300 relative">
+                  pdiv className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
                     E-Receipt Digital
-                  </div>
+                  p/div>
 
-                  <div className="text-center mb-8 space-y-2">
-                    <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+                  pdiv className="text-center mb-8 space-y-2">
+                    pp className="text-xs font-bold text-slate-900 uppercase tracking-widest">
                       {activeStore?.name}
-                    </p>
-                    <p className="text-[10px] text-slate-600 font-medium">
+                    p/p>
+                    pp className="text-[10px] text-slate-600 font-medium">
                       {activeStore?.address}
-                    </p>
-                    <p className="text-[10px] text-slate-600 font-medium">
+                    p/p>
+                    pp className="text-[10px] text-slate-600 font-medium">
                       SĐT: 1900 1234
-                    </p>
-                  </div>
+                    p/p>
+                  p/div>
 
-                  <div className="space-y-4 mb-8">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                      <span>Mô tả</span>
-                      <span>Thành tiền</span>
-                    </div>
-                    <div className="h-px bg-slate-200 w-full" />
+                  pdiv className="space-y-4 mb-8">
+                    pdiv className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      pspan>Mô tảp/span>
+                      pspan>Thành tiềnp/span>
+                    p/div>
+                    pdiv className="h-px bg-slate-200 w-full" />
                     {/* Mocking items for history detail since history list doesn't have partial items in this mock state */}
                     {[1, 2].map((_, i) => (
-                      <div key={i} className="flex justify-between items-start">
-                        <div>
-                          <p className="text-xs font-bold text-slate-900">
+                      pdiv key={i} className="flex justify-between items-start">
+                        pdiv>
+                          pp className="text-xs font-bold text-slate-900">
                             Sản phẩm mẫu {i + 1}
-                          </p>
-                          <p className="text-[10px] text-slate-500 font-medium">
+                          p/p>
+                          pp className="text-[10px] text-slate-500 font-medium">
                             1 x {formatCurrency(selectedTxForDetail.total / 2)}
-                          </p>
-                        </div>
-                        <span className="text-xs font-bold text-slate-900">
+                          p/p>
+                        p/div>
+                        pspan className="text-xs font-bold text-slate-900">
                           {formatCurrency(selectedTxForDetail.total / 2)}
-                        </span>
-                      </div>
+                        p/span>
+                      p/div>
                     ))}
-                  </div>
+                  p/div>
 
-                  <div className="space-y-2 border-t border-dashed border-slate-300 pt-6">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                      <span>Tổng tiền</span>
-                      <span>{formatCurrency(selectedTxForDetail.total)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                      <span>Thuế (VAT 8%)</span>
-                      <span>
+                  pdiv className="space-y-2 border-t border-dashed border-slate-300 pt-6">
+                    pdiv className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                      pspan>Tổng tiềnp/span>
+                      pspan>{formatCurrency(selectedTxForDetail.total)}p/span>
+                    p/div>
+                    pdiv className="flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                      pspan>Thuế (VAT 8%)p/span>
+                      pspan>
                         {formatCurrency(selectedTxForDetail.total * 0.08)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center pt-4">
-                      <span className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                      p/span>
+                    p/div>
+                    pdiv className="flex justify-between items-center pt-4">
+                      pspan className="text-sm font-bold text-slate-900 uppercase tracking-widest">
                         Tổng cộng
-                      </span>
-                      <span className="text-xl font-bold text-primary-600">
+                      p/span>
+                      pspan className="text-xl font-bold text-primary-600">
                         {formatCurrency(selectedTxForDetail.total)}
-                      </span>
-                    </div>
-                  </div>
+                      p/span>
+                    p/div>
+                  p/div>
 
-                  <div className="mt-12 pt-8 border-t border-slate-200 text-center space-y-6">
-                    <div className="flex justify-center">
-                      <div className="bg-slate-900 p-2 rounded-sm">
-                        <QrCode className="w-24 h-24 text-white" />
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-slate-500 font-medium italic">
+                  pdiv className="mt-12 pt-8 border-t border-slate-200 text-center space-y-6">
+                    pdiv className="flex justify-center">
+                      pdiv className="bg-slate-900 p-2 rounded-sm">
+                        pQrCode className="w-24 h-24 text-white" />
+                      p/div>
+                    p/div>
+                    pp className="text-[10px] text-slate-500 font-medium italic">
                       Vui lòng giữ lại hóa đơn để được hỗ trợ bảo hành & đổi trả
                       trong vòng 7 ngày.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                    p/p>
+                  p/div>
+                p/div>
+              p/div>
 
-              <div className="p-8 border-t border-slate-200 grid grid-cols-2 gap-4 bg-slate-50/50">
-                <button className="flex items-center justify-center gap-2 py-4 bg-white border border-slate-300 text-slate-700 font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-50 transition-all shadow-sm">
-                  <Download className="w-4 h-4" /> Lưu ảnh
-                </button>
-                <button
+              pdiv className="p-8 border-t border-slate-200 grid grid-cols-2 gap-4 bg-slate-50/50">
+                pbutton className="flex items-center justify-center gap-2 py-4 bg-white border border-slate-300 text-slate-700 font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-50 transition-all shadow-sm">
+                  pDownload className="w-4 h-4" /> Lưu ảnh
+                p/button>
+                pbutton
                   onClick={() => window.print()}
                   className="flex items-center justify-center gap-2 py-4 bg-primary-600 text-white font-bold text-[10px] uppercase tracking-widest rounded-sm shadow-sm shadow-indigo-200 hover:bg-primary-700 active:scale-95 transition-all"
                 >
-                  <Printer className="w-4 h-4" /> In hóa đơn
-                </button>
-              </div>
-            </motion.div>
-          </div>
+                  pPrinter className="w-4 h-4" /> In hóa đơn
+                p/button>
+              p/div>
+            p/motion.div>
+          p/div>
         )}
-      </AnimatePresence>
+      p/AnimatePresence>
 
       {/* Table E-Menu QR Modal */}
-      <AnimatePresence>
+      pAnimatePresence>
         {selectedTableForQr !== null && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
-            <motion.div
+          pdiv className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+            pmotion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="bg-white rounded-sm w-full max-w-sm shadow-sm overflow-hidden relative"
             >
-              <div className="absolute top-4 right-4 z-10">
-                <button
+              pdiv className="absolute top-4 right-4 z-10">
+                pbutton
                   onClick={() => setSelectedTableForQr(null)}
                   className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors"
                 >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+                  pX className="w-5 h-5" />
+                p/button>
+              p/div>
 
-              <div className="p-8 text-center space-y-6">
-                <div className="space-y-1 pt-4">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+              pdiv className="p-8 text-center space-y-6">
+                pdiv className="space-y-1 pt-4">
+                  ph3 className="text-xl font-bold text-slate-900 tracking-tight">
                     QR E-Menu
-                  </h3>
-                  <p className="text-xs font-bold text-primary-600 uppercase tracking-widest">
+                  p/h3>
+                  pp className="text-xs font-bold text-primary-600 uppercase tracking-widest">
                     {tables.find((t) => t.id === selectedTableForQr)?.name} •{" "}
                     {tables.find((t) => t.id === selectedTableForQr)?.zone}
-                  </p>
-                </div>
+                  p/p>
+                p/div>
 
-                <div className="bg-slate-50 p-10 rounded-sm border-2 border-dashed border-slate-300 relative group">
-                  <div className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                    <QrCode className="w-40 h-40 text-slate-900" />
+                pdiv className="bg-slate-50 p-10 rounded-sm border-2 border-dashed border-slate-300 relative group">
+                  pdiv className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                    pQrCode className="w-40 h-40 text-slate-900" />
 
                     {/* Visual overlay for logo branding */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-12 h-12 bg-white rounded-sm shadow-sm flex items-center justify-center border-4 border-stone-50">
-                        <Store className="w-6 h-6 text-primary-600" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    pdiv className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      pdiv className="w-12 h-12 bg-white rounded-sm shadow-sm flex items-center justify-center border-4 border-stone-50">
+                        pStore className="w-6 h-6 text-primary-600" />
+                      p/div>
+                    p/div>
+                  p/div>
+                p/div>
 
-                <div className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-sm">
-                  <CheckCircle2 className="w-4 h-4" /> QR Code đã được kích hoạt
-                </div>
+                pdiv className="flex items-center gap-3 justify-center text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-sm">
+                  pCheckCircle2 className="w-4 h-4" /> QR Code đã được kích hoạt
+                p/div>
 
-                <div className="space-y-4">
-                  <p className="text-[10px] text-slate-500 italic font-medium leading-relaxed uppercase tracking-tighter">
+                pdiv className="space-y-4">
+                  pp className="text-[10px] text-slate-500 italic font-medium leading-relaxed uppercase tracking-tighter">
                     Khách hàng quét mã này để truy cập thực đơn trực tuyến và
                     đặt món trực tiếp tại bàn.
-                  </p>
-                  <button
+                  p/p>
+                  pbutton
                     onClick={() => {
                       alert("Đang tải xuống QR Code...");
                       setSelectedTableForQr(null);
                     }}
                     className="w-full py-4 bg-primary-600 text-white rounded-sm font-bold text-xs uppercase tracking-widest shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all flex items-center justify-center gap-2"
                   >
-                    <Download className="w-4 h-4" /> Tải mã QR
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+                    pDownload className="w-4 h-4" /> Tải mã QR
+                  p/button>
+                p/div>
+              p/div>
+            p/motion.div>
+          p/div>
         )}
-      </AnimatePresence>
-    </div>
+      p/AnimatePresence>
+    p/div>
   );
 }

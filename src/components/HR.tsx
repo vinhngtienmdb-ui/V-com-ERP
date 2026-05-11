@@ -1311,10 +1311,10 @@ export function HumanResources() {
  <div className="flex items-center gap-1.5 font-bold">
  {emp.recentSentiment === 'positive' && <span className="text-emerald-500 flex items-center gap-1"><Smile className="w-3.5 h-3.5"/> Good</span>}
  {emp.recentSentiment === 'neutral' && <span className="text-slate-600 flex items-center gap-1"><MoreVertical className="w-3.5 h-3.5"/> OK</span>}
- {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5"/> High Risk</span>}
+ {emp.recentSentiment === 'critical' && <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5"/> Rủi ro cao</span>}
  </div>
  {emp.leaveBalance && (
- <p className="text-[10px] text-slate-500 mt-1">Leaves: <span className={cn("font-bold text-slate-900", emp.leaveBalance.total - emp.leaveBalance.used <= 2 && "text-red-600")}>{emp.leaveBalance.total - emp.leaveBalance.used} left</span></p>
+ <p className="text-[10px] text-slate-500 mt-1">Phép còn: <span className={cn("font-bold text-slate-900", emp.leaveBalance.total - emp.leaveBalance.used <= 2 && "text-red-600")}>{emp.leaveBalance.total - emp.leaveBalance.used} ngày</span></p>
  )}
  </div>
  </td>
@@ -2651,7 +2651,7 @@ export function HumanResources() {
  </div>
  <div>
  <h3 className="font-bold text-sm">HR Copilot</h3>
- <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Online</p>
+ <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Trực tuyến</p>
  </div>
  </div>
  <button onClick={() => setIsCopilotOpen(false)} className="text-slate-500 hover:text-white transition">

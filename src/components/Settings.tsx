@@ -1691,7 +1691,7 @@ export function SettingsPage() {
  <p className="text-xs text-slate-500">Cấp quyền cho bên thứ 3 (Brand, Logistics) truy cập trực tiếp vào API sàn.</p>
  <div className="p-3 bg-slate-50 rounded-lg font-mono text-[10px] text-slate-600 flex justify-between items-center">
  <span>sk_live_vcomm_*********************</span>
- <button className="text-blue-600 font-bold">Copy</button>
+ <button className="text-blue-600 font-bold">Sao chép</button>
  </div>
  <button className="w-full py-2 border border-slate-200 rounded-2xl text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
  </div>
@@ -2149,7 +2149,7 @@ export function SettingsPage() {
  </div>
  
  <div className="bg-slate-50 border border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
- <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Preview</div>
+ <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Xem trước</div>
  <div className="w-full max-w-[240px] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
  {popupImage ? (
  <div className="h-24 overflow-hidden relative">

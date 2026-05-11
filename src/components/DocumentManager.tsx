@@ -331,7 +331,7 @@ export function DocumentManager() {
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Insert</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Data</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Review</span>
-                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">View</span>
+                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Xem</span>
                             </div>
                           </div>
                           

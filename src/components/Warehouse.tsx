@@ -507,31 +507,31 @@ export function WarehouseModule() {
  </div>
  </div>
  
- <div className="p-8 space-y-8">
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-slate-900 rounded-xl p-8 text-white relative overflow-hidden h-[400px]">
- <div className="relative z-10">
- <h3 className="text-xl font-bold mb-2">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
- <p className="text-slate-500 text-sm mb-8">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
- 
- <div className="flex items-end gap-3 h-48">
+ <div className="p-4 space-y-4">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+ <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+ <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
+ <h3 className="text-sm font-bold text-slate-900">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
+ <p className="text-xs text-slate-500 mt-0.5">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
+ </div>
+ <div className="p-4">
+ <div className="flex items-end gap-2 h-40">
  {[45, 65, 35, 85, 55, 95, 75, 45, 65, 80, 70, 90].map((val, i) => (
- <div key={i} className="flex-1 flex flex-col items-center gap-2">
- <div 
- className="w-full bg-primary-500/30 border-t-2 border-primary-400 rounded-t-sm transition-all hover:bg-primary-400"
+ <div key={i} className="flex-1 flex flex-col items-center gap-1">
+ <div
+ className="w-full bg-blue-100 border-t-2 border-blue-500 rounded-t-sm transition-all hover:bg-blue-200"
  style={{ height: `${val}%` }}
  />
- <span className="text-[8px] text-slate-600 font-bold">W{i+1}</span>
+ <span className="text-[9px] text-slate-500 font-semibold">T{i+1}</span>
  </div>
  ))}
  </div>
  </div>
- <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full -mr-32 -mt-32" />
  </div>
 
  <div className="space-y-6">
  <div className="bg-white border-2 border-primary-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20">
- <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">AI Recommendation</h4>
+ <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Đề xuất AI</h4>
  <div className="space-y-4">
  <div className="flex gap-3">
  <div className="p-2 bg-amber-50 text-amber-600 rounded-lg h-fit">
@@ -570,7 +570,7 @@ export function WarehouseModule() {
  </div>
  </div>
  </div>
- </DraggableGrid>
+ </div>
  </div>
  </div>
  )}

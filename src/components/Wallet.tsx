@@ -258,7 +258,7 @@ export function WalletHub() {
  <div>
  <div className="flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full w-fit">
  <ShieldCheck className="w-3.5 h-3.5 text-blue-100" />
- <span className="text-[10px] font-bold uppercase tracking-widest text-blue-50">Verified Business Wallet</span>
+ <span className="text-[10px] font-bold uppercase tracking-widest text-blue-50">Ví doanh nghiệp đã xác thực</span>
  </div>
  <p className="text-xs font-medium text-blue-100 mt-4 uppercase tracking-tighter opacity-60">Tổng số dư khả dụng</p>
  <h2 className="text-4xl font-bold mt-1 tracking-tight italic">{formatCurrency(24500000000)}</h2>
@@ -306,7 +306,7 @@ export function WalletHub() {
  <div className="p-2 bg-primary-50 rounded-lg">
  <Activity className="w-4 h-4 text-primary-600" />
  </div>
- <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">Cashflow Analytics</p>
+ <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">Phân tích dòng tiền</p>
  </div>
  <TrendingUp className="w-4 h-4 text-emerald-500" />
  </div>
@@ -393,7 +393,7 @@ export function WalletHub() {
  <option value="deposit">Nạp tiền</option>
  <option value="withdraw">Rút tiền</option>
  <option value="payment">Thanh toán</option>
- <option value="payout">Payout</option>
+ <option value="payout">Giải ngân</option>
  </select>
  <select 
  value={filterStatus}
@@ -500,23 +500,23 @@ export function WalletHub() {
  </div>
  <div>
  <h4 className="font-bold text-slate-900 leading-none">{bank.bankName}</h4>
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{bank.type} account</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Tài khoản {bank.type}</p>
  </div>
  </div>
  <div>
- <p className="text-[10px] font-bold text-slate-500 uppercase">Account Number</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase">Số tài khoản</p>
  <p className="text-xl font-mono font-bold text-slate-800 tracking-wider mt-1">{bank.accountNumber}</p>
  </div>
  <div>
- <p className="text-[10px] font-bold text-slate-500 uppercase">Account Holder</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase">Chủ tài khoản</p>
  <p className="text-sm font-bold text-slate-900 tracking-tight uppercase italic">{bank.accountName}</p>
  </div>
  </div>
  <div className="text-right">
  {bank.isDefault && (
- <div className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded-lg mb-4">Primary</div>
+ <div className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded-lg mb-4">Mặc định</div>
  )}
- <p className="text-[10px] font-bold text-slate-500 uppercase">Balance</p>
+ <p className="text-[10px] font-bold text-slate-500 uppercase">Số dư</p>
  <p className="text-xl font-bold text-slate-900">{formatCurrency(bank.balance)}</p>
  </div>
  </div>
@@ -686,7 +686,7 @@ export function WalletHub() {
  className="px-4 py-2 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-blue-600 hover:bg-white shadow-sm transition-all flex items-center gap-2"
  >
  <RefreshCcw className={cn("w-3 h-3", isSyncing && "animate-spin")} />
- Refresh Balance
+ Làm mới số dư
  </button>
  </div>
  </div>
