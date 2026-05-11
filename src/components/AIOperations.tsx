@@ -94,49 +94,44 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" columns={4} gap={24}>
- <div className="bg-stone-950 text-white p-3 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full">
- <div className="flex justify-between items-start mb-6">
- <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5 group-hover:scale-110 transition-transform duration-500">
- <Cpu className="w-6 h-6" />
+ <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+ {/* System Health card */}
+ <div className="bg-slate-900 text-white px-4 py-3 rounded-xl relative overflow-hidden group shadow-sm flex items-center gap-3">
+ <div className="p-2 bg-slate-800 rounded-lg shrink-0">
+ <Cpu className="w-4 h-4 text-white" />
  </div>
- <div className="flex flex-col items-end">
- <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">System Health</span>
- <span className="text-xs font-bold text-emerald-400">99.99%</span>
+ <div className="flex-1 min-w-0">
+ <div className="flex items-center gap-1.5 mb-0.5">
+ <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">System Health</span>
+ <span className="text-[10px] font-bold text-emerald-400">99.99%</span>
  </div>
+ <div className="text-base font-bold tracking-tight truncate">12 Tác nhân</div>
+ <p className="text-[10px] text-slate-500 font-medium mt-0.5 uppercase tracking-widest truncate">Nút Nơ-ron hoạt động</p>
  </div>
- <div>
- <div className="text-lg font-bold tracking-tight">12 Tác nhân</div>
- <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
- </div>
- </div>
- <div className="absolute top-0 right-0 w-14 h-14 bg-slate-900/5 rounded-full blur-3xl" />
- <Sparkles className="absolute -bottom-6 -right-6 w-14 h-14 text-white/5 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
  {[
- { label: 'Duyệt AI tự động', value: '8,421', sub: 'Tác vụ / 24h', icon: ShieldCheck, color: 'emerald' },
- { label: 'Cảnh báo rủi ro', value: '12', sub: 'Detected today', icon: AlertTriangle, color: 'rose', alert: true },
- { label: 'Độ trễ suy luận', value: '140ms', sub: 'Avg Response', icon: Activity, color: 'blue' },
+ { label: 'Duyệt AI tự động', value: '8,421', sub: 'Tác vụ / 24h', icon: ShieldCheck, alert: false },
+ { label: 'Cảnh báo rủi ro',  value: '12',    sub: 'Detected today', icon: AlertTriangle, alert: true },
+ { label: 'Độ trễ suy luận',  value: '140ms', sub: 'Avg Response',   icon: Activity, alert: false },
  ].map((stat) => (
- <div key={stat.label} className="bg-white p-3 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-3 group hover:shadow-slate-900/5 transition-all">
+ <div key={stat.label} className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
  <div className={cn(
- "p-4 rounded-none transition-transform group-hover:scale-110 duration-500",
- stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-blue-600"
+ "p-2 rounded-lg shrink-0 transition-colors",
+ stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-600 border border-slate-200 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100"
  )}>
- <stat.icon className="w-6 h-6" />
+ <stat.icon className="w-4 h-4" />
  </div>
- <div>
- <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
- <div className={cn("text-2xl font-bold tracking-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
+ <div className="flex-1 min-w-0">
+ <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider truncate">{stat.label}</p>
+ <div className={cn("text-lg font-bold tracking-tight leading-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
  {stat.value}
  </div>
- <p className="text-[10px] text-slate-600 font-bold mt-0.5">{stat.sub}</p>
+ <p className="text-[10px] text-slate-400 font-medium">{stat.sub}</p>
  </div>
  </div>
  ))}
- </DraggableGrid>
+ </div>
 
  <div className="bg-white rounded-none border border-slate-200 shadow-sm overflow-hidden">
  <div className="flex border-b border-slate-200 bg-slate-50/30 p-2 overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
