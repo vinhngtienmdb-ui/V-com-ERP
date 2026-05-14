@@ -35,6 +35,7 @@ import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { customersRepo, ordersRepo } from '../services/repositories';
 
 const CopyButton = ({ value }: { value: string }) => {
  const [copied, setCopied] = useState(false);
@@ -798,17 +799,13 @@ export function Customers() {
  };
 
  useEffect(() => {
- // Fetch customers
- const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
- const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
- setCustomers(data);
- setLoading(false);
+ // Subscribe qua repositories (zod validate + error tập trung).
+ const unsubCustomers = customersRepo.subscribe([], (items) => {
+   setCustomers(items as any);
+   setLoading(false);
  });
-
- // Fetch all completed orders to aggregate totalSpent per customer
- const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
- const ordersData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
- setOrders(ordersData.filter(o => o.status === 'completed' && o.customerId));
+ const unsubOrders = ordersRepo.subscribe([], (items) => {
+   setOrders((items as any[]).filter((o) => o.status === 'completed' && o.customerId));
  });
 
  return () => {

@@ -289,6 +289,107 @@ export const SellerTaxReportSchema = z.object({
   generatedAt: Timestamp.optional(),
 });
 
+// ── Campaign (Marketing/FlashSale/Voucher/Ads) ─────────────────────────────
+export const CampaignType = z.enum([
+  'flash_sale',     // Flash sale theo khung giờ
+  'voucher',        // Mã giảm giá
+  'group_buy',      // Mua chung
+  'landing_page',   // Trang đích marketing
+  'ad_facebook',    // Quảng cáo FB
+  'ad_google',      // Google Ads
+  'ad_tiktok',      // TikTok Ads
+]);
+
+export const CampaignStatus = z.enum(['draft', 'upcoming', 'active', 'paused', 'expired', 'cancelled']);
+
+export const CampaignSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2).max(200),
+  type: CampaignType,
+  status: CampaignStatus,
+  budget: z.number().nonnegative().optional(),
+  spent: z.number().nonnegative().optional(),
+  gmvGenerated: z.number().nonnegative().optional(),
+  roi: z.number().optional(),
+  startDate: z.string(),
+  endDate: z.string(),
+  ownerId: z.string().optional(),       // staff phụ trách
+  sellerId: z.string().optional(),      // nếu campaign của 1 seller
+  storeId: z.string().optional(),
+  // Cấu hình giảm giá
+  discountType: z.enum(['percent', 'fixed', 'free_shipping']).optional(),
+  discountValue: z.number().nonnegative().optional(),
+  minOrderValue: z.number().nonnegative().optional(),
+  maxDiscount: z.number().nonnegative().optional(),
+  usageLimit: z.number().int().nonnegative().optional(),
+  usageCount: z.number().int().nonnegative().optional(),
+  productIds: z.array(z.string()).optional(), // áp dụng cho sản phẩm cụ thể
+  categories: z.array(z.string()).optional(),
+  createdAt: Timestamp.optional(),
+  updatedAt: Timestamp.optional(),
+});
+
+// ── Affiliate (KOL/KOC/Publisher) ───────────────────────────────────────────
+export const AffiliateType = z.enum(['kol', 'koc', 'publisher', 'agent']);
+export const AffiliateStatus = z.enum(['pending', 'active', 'suspended', 'closed']);
+
+export const AffiliateSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2).max(200),
+  type: AffiliateType,
+  status: AffiliateStatus,
+  email: z.string().email().optional().or(z.literal('')),
+  phone: z.string().optional(),
+  socialUrl: z.string().url().optional().or(z.literal('')),
+  follower: z.number().int().nonnegative().optional(),
+  niche: z.string().optional(),   // beauty/fashion/tech/...
+  // Cấu hình hoa hồng
+  commissionRate: z.number().min(0).max(1),   // default rate cho mọi đơn
+  tierCommissions: z.array(z.object({
+    minOrders: z.number().int(),
+    rate: z.number().min(0).max(1),
+  })).optional(),
+  // KPI
+  commissionEarned: z.number().nonnegative().optional(),
+  ordersCount: z.number().int().nonnegative().optional(),
+  clickThroughRate: z.number().optional(),
+  // Mã giới thiệu unique
+  refCode: z.string(),
+  joinedAt: Timestamp.optional(),
+});
+
+// ── Payout (seller rút tiền từ wallet) ─────────────────────────────────────
+export const PayoutStatus = z.enum([
+  'pending',        // Mới yêu cầu
+  'approved',       // Đã duyệt, chờ chuyển
+  'processing',     // Đang chuyển khoản
+  'completed',      // Đã chuyển xong
+  'rejected',       // Từ chối
+  'failed',         // Chuyển thất bại
+]);
+
+export const PayoutSchema = z.object({
+  id: z.string(),
+  sellerId: z.string(),
+  walletId: z.string(),
+  amount: z.number().positive(),
+  bankName: z.string(),
+  bankAccount: z.string(),
+  bankAccountName: z.string(),
+  status: PayoutStatus,
+  requestedBy: z.string(),  // uid nhân viên/seller request
+  approvedBy: z.string().optional(),
+  approvedAt: Timestamp.optional(),
+  processedBy: z.string().optional(),
+  processedAt: Timestamp.optional(),
+  completedAt: Timestamp.optional(),
+  rejectedReason: z.string().optional(),
+  bankReference: z.string().optional(),  // mã giao dịch ngân hàng
+  fee: z.number().nonnegative().optional(),
+  netAmount: z.number().nonnegative().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
@@ -301,3 +402,6 @@ export type TransactionInput = z.infer<typeof TransactionSchema>;
 export type InvoiceInput = z.infer<typeof InvoiceSchema>;
 export type InvoiceLineItem = z.infer<typeof InvoiceLineItemSchema>;
 export type SellerTaxReportInput = z.infer<typeof SellerTaxReportSchema>;
+export type CampaignInput = z.infer<typeof CampaignSchema>;
+export type AffiliateInput = z.infer<typeof AffiliateSchema>;
+export type PayoutInput = z.infer<typeof PayoutSchema>;

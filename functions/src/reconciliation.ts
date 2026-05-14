@@ -25,8 +25,11 @@ interface SepayPayload {
 
 function extractOrderRef(content: string | undefined): string | null {
   if (!content) return null;
-  // Convention: nội dung CK chứa mã đơn dạng ORD_XXXX hoặc ORDXXXX
-  const m = content.match(/(ORD[_-]?[A-Z0-9_]+)/i);
+  // Priority 1: ORD_xxx hoặc ORDxxx (convention production)
+  let m = content.match(/(ORD[_-]?[A-Z0-9_]+)/i);
+  if (m) return m[1].toUpperCase();
+  // Priority 2: token uppercase với underscore tối thiểu 3 char (E2E_O1, INV_XXX, ...)
+  m = content.match(/\b([A-Z][A-Z0-9]{1,}_[A-Z0-9_]+)\b/);
   return m ? m[1].toUpperCase() : null;
 }
 

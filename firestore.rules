@@ -234,6 +234,59 @@ service cloud.firestore {
       allow create, update, delete: if false; // Sinh tự động hàng tháng
     }
 
+    // ── Campaigns (marketing/voucher/flash_sale/ads) ─────────────────────────
+    match /campaigns/{campaignId} {
+      allow get: if isStaff();
+      // Public read cho campaigns active (vd voucher campaign cho khách hàng xem)
+      allow list: if isStaff() || (resource.data.status == 'active');
+      allow create, update: if isManager() && isValidCampaign(incoming());
+      allow delete: if isAdmin();
+
+      function isValidCampaign(d) {
+        return d.name is string && d.name.size() >= 2 &&
+               d.type in ['flash_sale', 'voucher', 'group_buy', 'landing_page', 'ad_facebook', 'ad_google', 'ad_tiktok'] &&
+               d.status in ['draft', 'upcoming', 'active', 'paused', 'expired', 'cancelled'] &&
+               d.startDate is string && d.endDate is string;
+      }
+    }
+
+    // ── Affiliates (KOL/KOC/Publisher) ──────────────────────────────────────
+    match /affiliates/{affiliateId} {
+      allow get, list: if isStaff();
+      allow create, update: if isManager() && isValidAffiliate(incoming());
+      allow delete: if isAdmin();
+
+      function isValidAffiliate(d) {
+        return d.name is string && d.name.size() >= 2 &&
+               d.type in ['kol', 'koc', 'publisher', 'agent'] &&
+               d.status in ['pending', 'active', 'suspended', 'closed'] &&
+               d.commissionRate is number && d.commissionRate >= 0 && d.commissionRate <= 1 &&
+               d.refCode is string && d.refCode.size() >= 3;
+      }
+    }
+
+    // ── Payouts (seller rút tiền) ───────────────────────────────────────────
+    match /payouts/{payoutId} {
+      allow get, list: if isStaff();
+      // Seller có thể tạo yêu cầu rút; manager+ duyệt; admin xử lý
+      allow create: if isStaff() && isValidPayout(incoming()) &&
+        incoming().status == 'pending' &&
+        incoming().requestedBy == request.auth.uid;
+      allow update: if isManager() && hasOnlyChanged([
+        'status', 'approvedBy', 'approvedAt', 'processedBy', 'processedAt',
+        'completedAt', 'rejectedReason', 'bankReference', 'fee', 'netAmount', 'updatedAt'
+      ]);
+      allow delete: if false;
+
+      function isValidPayout(d) {
+        return d.sellerId is string && d.sellerId.size() > 0 &&
+               d.amount is number && d.amount > 0 &&
+               d.bankName is string && d.bankAccount is string && d.bankAccountName is string &&
+               d.status in ['pending', 'approved', 'processing', 'completed', 'rejected', 'failed'] &&
+               d.requestedBy is string;
+      }
+    }
+
     // ── Audit log (immutable) ───────────────────────────────────────────────
     match /audit_logs/{id} {
       allow get, list: if isAdmin();

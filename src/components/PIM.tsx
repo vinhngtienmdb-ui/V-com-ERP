@@ -35,6 +35,7 @@ import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { db, serverTimestamp, handleFirestoreError } from '../lib/firebase';
+import { productsRepo } from '../services/repositories';
 import { 
  collection, 
  onSnapshot, 
@@ -55,12 +56,12 @@ export function PIM() {
  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
  
  useEffect(() => {
- const unsub = onSnapshot(collection(db, 'products'), (snap) => {
- let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
- data = data.filter(p => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category));
- setProducts(data);
- if (data.length === 0) seedDemoPimProducts();
- setLoading(false);
+ // Migrate sang productsRepo.subscribe để có zod validation + error tập trung.
+ // Filter các category F&B (chúng thuộc iPos, không phải PIM TMĐT).
+ const unsub = productsRepo.subscribe([], (items) => {
+   const data = items.filter((p: any) => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category)) as any[];
+   setProducts(data);
+   setLoading(false);
  });
  return () => unsub();
  }, []);

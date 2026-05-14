@@ -63,7 +63,9 @@ import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, limit } from 'firebase/firestore';
 
-const data = [
+// Mock 6 tháng (fallback khi Firestore chưa đủ data). Sẽ override bằng live data
+// trong DashboardModule khi orders ≥ 1.
+const fallbackRevenueData = [
  { name: 'T1', gmv: 4.5, traffic: 120000 },
  { name: 'T2', gmv: 5.2, traffic: 145000 },
  { name: 'T3', gmv: 4.8, traffic: 132000 },
@@ -71,6 +73,7 @@ const data = [
  { name: 'T5', gmv: 5.5, traffic: 155000 },
  { name: 'T6', gmv: 6.7, traffic: 192000 },
 ];
+const data = fallbackRevenueData;
 
 const categoryData = [
  { name: 'Thời trang', value: 35 },

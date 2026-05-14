@@ -3,9 +3,11 @@ import {
   ProductSchema, OrderSchema, CustomerSchema, InventoryMovementSchema,
   SellerSchema, WalletSchema, WalletTxSchema,
   TransactionSchema, InvoiceSchema, SellerTaxReportSchema,
+  CampaignSchema, AffiliateSchema, PayoutSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
+  type CampaignInput, type AffiliateInput, type PayoutInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -56,6 +58,21 @@ export const invoicesRepo = makeRepository<InvoiceInput>({
 export const sellerTaxReportsRepo = makeRepository<SellerTaxReportInput>({
   collectionName: 'seller_tax_reports',
   schema: SellerTaxReportSchema,
+});
+
+export const campaignsRepo = makeRepository<CampaignInput>({
+  collectionName: 'campaigns',
+  schema: CampaignSchema,
+});
+
+export const affiliatesRepo = makeRepository<AffiliateInput>({
+  collectionName: 'affiliates',
+  schema: AffiliateSchema,
+});
+
+export const payoutsRepo = makeRepository<PayoutInput>({
+  collectionName: 'payouts',
+  schema: PayoutSchema,
 });
 
 export * from './schemas';

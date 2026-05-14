@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { sellersRepo, verifyKyc, type SellerInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Users, 
  ShieldCheck, 
@@ -171,8 +173,49 @@ export const MOCK_SELLERS: PartnerData[] = [
  }
 ];
 
+/** Map từ SellerInput (Firestore schema) sang PartnerData (UI legacy). */
+function adaptSeller(s: SellerInput): PartnerData {
+ const statusMap: Record<string, PartnerData['status']> = {
+   active: 'active',
+   verified: 'active',
+   suspended: 'suspended',
+   rejected: 'suspended',
+   pending_docs: 'pending',
+   pending_verification: 'pending',
+   closed: 'suspended',
+ };
+ return {
+   id: s.id,
+   name: s.name,
+   totalProducts: s.totalProducts ?? 0,
+   rating: s.rating ?? 0,
+   gmv: s.totalGmv ?? 0,
+   status: statusMap[s.status] ?? 'pending',
+   taxCode: s.taxCode ?? '',
+   identityCard: s.identityCard ?? '',
+   address: s.address,
+   representative: s.representative,
+   commissionRate: s.commissionRate ?? 0,
+   joinDate: '',
+   onboardingStep: s.status === 'verified' || s.status === 'active' ? 'completed' : 'documents',
+   partnerType: s.entityType === 'company' ? 'factory' : (s.entityType === 'household' ? 'dealer' : 'seller'),
+   activeModules: [],
+ };
+}
+
 export function SellerManagement() {
- const [sellers, setSellers] = useState<PartnerData[]>(MOCK_SELLERS);
+ const [dbSellers, setDbSellers] = useState<PartnerData[]>([]);
+ const sellers = dbSellers.length > 0 ? dbSellers : MOCK_SELLERS;
+ const setSellers = (next: PartnerData[]) => { setDbSellers(next); };
+
+ useEffect(() => {
+   // Subscribe Firestore /sellers — nếu rỗng vẫn fallback hiển thị MOCK_SELLERS.
+   const unsub = sellersRepo.subscribe(
+     [orderBy('joinedAt', 'desc')],
+     (items) => setDbSellers(items.map(adaptSeller)),
+   );
+   return () => unsub();
+ }, []);
  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer' | 'factory'>('all');
  const [showConfig, setShowConfig] = useState(false);
  const [selectedSeller, setSelectedSeller] = useState<PartnerData | null>(null);
@@ -1113,14 +1156,32 @@ export function SellerManagement() {
  </div>
 
  <div className="flex gap-4">
- <button 
- onClick={() => setApprovingSeller(null)}
+ <button
+ onClick={async () => {
+   if (!approvingSeller) return;
+   const reason = prompt('Lý do từ chối?');
+   if (!reason?.trim()) return;
+   try {
+     await verifyKyc(approvingSeller.id, false, reason);
+     setApprovingSeller(null);
+   } catch (err: any) {
+     alert('Lỗi: ' + (err.message ?? 'Không xác định'));
+   }
+ }}
  className="flex-1 py-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-sm transition-all"
  >
  Từ chối Hồ sơ
  </button>
- <button 
- onClick={() => setApprovingSeller(null)}
+ <button
+ onClick={async () => {
+   if (!approvingSeller) return;
+   try {
+     await verifyKyc(approvingSeller.id, true);
+     setApprovingSeller(null);
+   } catch (err: any) {
+     alert('Lỗi: ' + (err.message ?? 'Không xác định'));
+   }
+ }}
  className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm hover:-translate-y-0.5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt
