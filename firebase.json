@@ -3,17 +3,34 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+    }
+  ],
   "hosting": {
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
-      { "source": "/api/**", "destination": "/index.html" },
-      { "source": "**", "destination": "/index.html" }
+      { "source": "/api/ai/chat",            "function": { "functionId": "aiChat",            "region": "asia-southeast1" } },
+      { "source": "/api/ai/rma",             "function": { "functionId": "aiRma",             "region": "asia-southeast1" } },
+      { "source": "/api/ai/care",            "function": { "functionId": "aiCare",            "region": "asia-southeast1" } },
+      { "source": "/api/sepay/transactions", "function": { "functionId": "sepayTransactions", "region": "asia-southeast1" } },
+      { "source": "/api/sepay/virtual-account","function": { "functionId": "sepayVirtualAccount","region": "asia-southeast1" } },
+      { "source": "/api/sepay/soundbox",     "function": { "functionId": "sepaySoundbox",     "region": "asia-southeast1" } },
+      { "source": "/api/sepay/invoice",      "function": { "functionId": "sepayInvoice",      "region": "asia-southeast1" } },
+      { "source": "/api/sepay-webhook",      "function": { "functionId": "sepayWebhook",      "region": "asia-southeast1" } },
+      { "source": "/api/health",             "function": { "functionId": "health",            "region": "asia-southeast1" } },
+      { "source": "**",                      "destination": "/index.html" }
     ]
   },
   "emulators": {
     "auth":      { "port": 9099 },
     "firestore": { "port": 8080 },
+    "functions": { "port": 5001 },
     "hosting":   { "port": 5000 },
     "ui":        { "enabled": true }
   }
