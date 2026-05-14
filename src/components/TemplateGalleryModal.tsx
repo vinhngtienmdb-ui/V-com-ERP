@@ -4,8 +4,11 @@ import { cn } from '../lib/utils';
 
 interface TemplateGalleryModalProps {
   onClose: () => void;
-  onSelectTemplate: (template: any) => void;
-  onCreateNew: () => void;
+  // Caller có thể truyền `onSelectTemplate` (legacy) hoặc `onSelect` (RequestHub).
+  onSelectTemplate?: (template: any) => void;
+  onSelect?: (template: any) => void;
+  onCreateNew?: () => void;
+  action?: 'create_config' | 'submit_request';
 }
 
 const CATEGORIES = [
@@ -31,7 +34,11 @@ const TEMPLATES = [
   { id: 't10', title: 'Đề xuất tuyển dụng mới', category: 'nhan_su', icon: CheckSquare, color: 'text-lime-600', bg: 'bg-lime-100' }
 ];
 
-export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }: TemplateGalleryModalProps) {
+export function TemplateGalleryModal({ onClose, onSelectTemplate, onSelect, onCreateNew, action }: TemplateGalleryModalProps) {
+  const handleSelect = onSelect ?? onSelectTemplate ?? (() => {});
+  const handleCreateNew = onCreateNew ?? (() => {});
+  // `action` chưa được dùng để render khác biệt — giữ ở đây để các caller mới (RequestHub) truyền vào mà không lỗi type, và để mở rộng UI sau.
+  void action;
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -79,7 +86,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
         {/* Create new bar */}
         <div className="bg-white border-b border-slate-300 px-6 py-3 flex justify-center">
           <button 
-            onClick={onCreateNew}
+            onClick={handleCreateNew}
             className="flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
           >
             <PlusCircle className="w-5 h-5" />
@@ -116,7 +123,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
                   {group.items.map((t: any) => (
                     <button
                       key={t.id}
-                      onClick={() => onSelectTemplate(t)}
+                      onClick={() => handleSelect(t)}
                       className="bg-white p-4 rounded-xl border border-slate-300 hover:shadow-md hover:border-emerald-200 transition-all flex items-center gap-4 text-left group"
                     >
                       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", t.bg, t.color)}>

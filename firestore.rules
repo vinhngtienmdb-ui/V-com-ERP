@@ -1,182 +1,183 @@
 rules_version = '2';
 
+// VComm ERP — production rules (v1, GĐ 0)
+// Nguyên tắc:
+//   * Mọi vai trò đọc từ custom claims trên Firebase ID token (request.auth.token.role).
+//   * Không hardcode email. Tài khoản admin bootstrap qua CLI bằng Firebase Admin SDK.
+//   * Default deny. Mỗi collection liệt kê quyền tường minh.
+//   * Public read chỉ áp dụng cho collection `public_menu` (đã được denormalize, không có cost/margin).
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 0. Global Safety Net
+
+    // ── Primitives ──────────────────────────────────────────────────────────
+    function isSignedIn()       { return request.auth != null; }
+    function role()             { return isSignedIn() ? request.auth.token.role : ''; }
+    function isStaff()          { return role() in ['staff', 'manager', 'director', 'admin']; }
+    function isManager()        { return role() in ['manager', 'director', 'admin']; }
+    function isAdmin()          { return role() == 'admin'; }
+    function isValidId(id)      { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming()         { return request.resource.data; }
+    function existing()         { return resource.data; }
+    function changedKeys()      { return incoming().diff(existing()).affectedKeys(); }
+    function hasOnlyChanged(ks) { return changedKeys().hasOnly(ks); }
+    function isStoreMember(storeId) {
+      // Staff chỉ thao tác được dữ liệu store mà họ thuộc về.
+      return isSignedIn() && (
+        isAdmin() ||
+        (storeId is string && (request.auth.token.storeIds is list) && (storeId in request.auth.token.storeIds))
+      );
+    }
+
+    // ── Default deny ────────────────────────────────────────────────────────
     match /{document=**} {
-      allow read: if isStaff();
-      allow read, write: if false; // Deny all others
+      allow read, write: if false;
     }
 
-    // --- Helper Primitives ---
-    function isSignedIn() { return request.auth != null; }
-    function isEmailVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
-    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
-    function incoming() { return request.resource.data; }
-    function existing() { return resource.data; }
-    
-    // Auth tokens never contain custom claims. Roles must be looked up.
-    function getStaffDoc() {
-      return get(/databases/$(database)/documents/staff/$(request.auth.uid));
-    }
-    
-    function isStaff() {
-      return isSignedIn() && (
-        exists(/databases/$(database)/documents/staff/$(request.auth.uid)) ||
-        request.auth.token.email == 'admin@v-erp.com' ||
-        request.auth.token.email == 'vinh.ngtienmdb@gmail.com' ||
-        // Check if user is in ipos_staff (requires a way to check without knowing docId, or specific rules per collection)
-        true // Allow read for basic staff check if signed in, but refine per-collection
-      );
-    }
-    
-    function isAdmin() {
-      return isSignedIn() && (
-        (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && getStaffDoc().data.role == 'admin') ||
-        request.auth.token.email == 'admin@v-erp.com' ||
-        request.auth.token.email == 'vinh.ngtienmdb@gmail.com'
-      );
+    // ── Public menu (eMenu) ─────────────────────────────────────────────────
+    // CHỈ field cần thiết để render menu công khai (id, name, price, image, category, available).
+    // KHÔNG có costPrice/hiddenCosts/margin — những field đó nằm ở /products.
+    match /public_menu/{itemId} {
+      allow get, list: if true;
+      allow create, update, delete: if isManager();
     }
 
-    // --- Helper for iPOS Store-based RBAC ---
-    function getIPosStaff(storeId) {
-       // Note: This is an expensive get() if called in a loop, but useful for single doc access
-       // However, we don't know the docId of the staff record.
-       // We'll rely on the user having a staff record in the store.
-       return true; 
-    }
-
-    // --- Enterprise Collections ---
-    
-    // 0.1 Internal / System
-    match /_internal/{docId} {
-      allow read: if isSignedIn();
-    }
-
-    // iPOS Management
-    match /ipos_staff/{docId} {
-       allow get: if isSignedIn();
-       allow list: if isSignedIn() && (
-         isAdmin() || 
-         resource.data.email == request.auth.token.email ||
-         resource.data.assignedStoreId == request.headers.get('x-store-id', '') // Optional header if user implements it, but for now:
-       );
-       // Allow querying by email for RBAC check
-       allow list: if isSignedIn() && resource.data.email == request.auth.token.email;
-
-       allow create, update, delete: if isSignedIn() && (
-         isAdmin() ||
-         // Simplified: admins/managers of the store can manage staff
-         // In a real app, we'd lookup the role of the person making the request
-         request.auth.token.email == 'vinh.ngtienmdb@gmail.com'
-       );
-    }
-
-    match /ipos_stores/{storeId} {
-       allow read: if isSignedIn();
-       allow write: if isAdmin() || request.auth.token.email == 'vinh.ngtienmdb@gmail.com';
-    }
-
-    // 1. Products
+    // ── Products (internal) ─────────────────────────────────────────────────
     match /products/{productId} {
-      allow read: if true; // Publicly readable for eMenu
-      allow create: if isStaff();
+      allow get, list: if isStaff();
+      allow create: if isManager() && isValidId(productId) && isValidProduct(incoming());
+      // Staff thường chỉ được cập nhật stock.
       allow update: if isStaff() && isValidProduct(incoming()) && (
-        (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'price', 'name', 'category', 'updatedAt', 'sku'])) ||
-        (isStaff() && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'updatedAt']))
+        (isManager() && hasOnlyChanged(['stock', 'price', 'costPrice', 'hiddenCosts', 'name', 'category', 'sku', 'image', 'status', 'updatedAt'])) ||
+        (!isManager() && hasOnlyChanged(['stock', 'updatedAt']))
       );
       allow delete: if isAdmin();
 
       function isValidProduct(data) {
         return data.name is string && data.name.size() >= 2 && data.name.size() <= 200 &&
                data.price is number && data.price >= 0 &&
-               // Optional fields for flexibility during seeding
-               (data.stock == null || data.stock is number) &&
-               (data.sku == null || (data.sku is string && data.sku.size() > 0));
+               (!('costPrice' in data) || (data.costPrice is number && data.costPrice >= 0)) &&
+               (!('stock' in data) || (data.stock is number && data.stock >= 0)) &&
+               (!('sku' in data) || (data.sku is string && data.sku.size() > 0));
       }
     }
 
-    // 2. Orders
+    // ── Orders ──────────────────────────────────────────────────────────────
     match /orders/{orderId} {
-      allow get: if isStaff();
-      allow list: if isStaff();
-      
-      // Allow customers to create eMenu orders
-      allow create: if (isStaff() || (incoming().source == 'emenu' && incoming().status == 'pending')) && 
-                    isValidId(orderId) && isValidOrder(incoming()) && (
-                      (isStaff() && incoming().staffId == request.auth.uid) || 
-                      (incoming().source == 'emenu')
-                    ) &&
-                    incoming().createdAt is timestamp;
-      
-      allow update: if isStaff() && isValidOrder(incoming()) && (
-        // Staff can complete their own orders, Admins can do anything
-        (existing().staffId == request.auth.uid || isAdmin()) &&
+      allow get, list: if isStaff();
+
+      // Khách hàng eMenu tạo đơn không cần đăng nhập staff — đi qua app eMenu;
+      // nhưng vẫn phải đúng schema và status = pending.
+      allow create: if (
+        (isStaff() && incoming().staffId == request.auth.uid) ||
+        (!isSignedIn() && incoming().source == 'emenu' && incoming().status == 'pending')
+      ) && isValidId(orderId) && isValidOrder(incoming()) && incoming().createdAt is timestamp;
+
+      allow update: if isStaff() && isValidOrder(incoming()) &&
         incoming().staffId == existing().staffId &&
         incoming().createdAt == existing().createdAt &&
-        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) &&
-        incoming().updatedAt is timestamp
-      );
+        hasOnlyChanged(['status', 'updatedAt', 'shippingLogs']) &&
+        incoming().updatedAt is timestamp;
+
+      allow delete: if isAdmin();
 
       function isValidOrder(data) {
         return data.total is number && data.total >= 0 &&
-               data.items is list && data.items.size() > 0 &&
+               data.items is list && data.items.size() > 0 && data.items.size() <= 200 &&
                data.status in ['pending', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returning', 'returned'] &&
-               (data.paymentMethod == null || data.paymentMethod in ['cash', 'qr', 'pos', 'loyalty', 'loyalty_full', 'cod', 'bank_transfer', 'e_wallet', 'virtual_account', 'promo_qr']);
+               (!('paymentMethod' in data) || data.paymentMethod in ['cash', 'qr', 'pos', 'loyalty', 'loyalty_full', 'cod', 'bank_transfer', 'e_wallet', 'virtual_account', 'promo_qr']);
       }
     }
 
-    // 3. Customers
+    // ── Customers ───────────────────────────────────────────────────────────
     match /customers/{customerId} {
-      allow get: if isStaff();
-      allow list: if isStaff();
-      
+      allow get, list: if isStaff();
       allow create: if isStaff() && isValidId(customerId) && isValidCustomer(incoming());
-      allow update: if isStaff() && isValidCustomer(incoming()) && (
-        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'tier', 'points', 'aiInsight', 'lastPurchase'])
-      );
+      allow update: if isStaff() && isValidCustomer(incoming()) &&
+        hasOnlyChanged(['name', 'phone', 'email', 'tier', 'points', 'aiInsight', 'lastPurchase', 'totalSpent', 'orderCount', 'channels', 'updatedAt']);
+      allow delete: if isAdmin();
 
       function isValidCustomer(data) {
-        return data.name is string && data.name.size() > 0 &&
-               data.phone is string && data.phone.size() >= 10 &&
-               (data.points == null || data.points is number) &&
-               (data.email == null || data.email is string) &&
-               (data.status == null || data.status is string) &&
-               (data.totalSpent == null || data.totalSpent is number) &&
-               (data.orderCount == null || data.orderCount is number) &&
-               (data.channels == null || data.channels is list);
+        return data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+               data.phone is string && data.phone.size() >= 9 && data.phone.size() <= 15 &&
+               (!('email' in data) || data.email is string) &&
+               (!('points' in data) || data.points is number) &&
+               (!('status' in data) || data.status in ['active', 'inactive', 'locked']) &&
+               (!('totalSpent' in data) || data.totalSpent is number) &&
+               (!('orderCount' in data) || data.orderCount is number) &&
+               (!('channels' in data) || data.channels is list);
       }
     }
 
-    // 4. Staff Profiles
+    // ── Staff (profiles, không chứa role — role nằm trên custom claims) ─────
     match /staff/{staffId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin() || (isSignedIn() && request.auth.token.email == 'admin@v-erp.com' && staffId == request.auth.uid);
+      allow get: if isSignedIn() && (request.auth.uid == staffId || isManager());
+      allow list: if isManager();
+      // Self-update giới hạn field cá nhân; cấp role/admin phải qua CLI bootstrap.
+      allow update: if isSignedIn() && request.auth.uid == staffId &&
+        hasOnlyChanged(['name', 'phone', 'avatar', 'preferences', 'updatedAt']);
+      // Admin tạo/sửa staff cho người khác; role thực vẫn được set qua custom claims.
+      allow create, update, delete: if isAdmin();
     }
-    
-    // 4a. Shifts
+
+    // ── Stores (multi-tenant) ───────────────────────────────────────────────
+    match /stores/{storeId} {
+      allow get: if isStaff() && isStoreMember(storeId);
+      allow list: if isManager();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Shifts ──────────────────────────────────────────────────────────────
     match /shifts/{shiftId} {
-      allow read: if isStaff();
-      allow create: if isStaff();
+      allow get, list: if isStaff();
+      allow create, update: if isStaff();
+      allow delete: if isManager();
     }
 
-    // 5. Finance Transactions
+    // ── Transactions (finance) ──────────────────────────────────────────────
     match /transactions/{txId} {
-      allow read: if isAdmin() || isStaff();
-      allow create: if isStaff() && (
-        incoming().createdAt is timestamp
-      );
+      allow get, list: if isManager();
+      allow create: if isStaff() && incoming().createdAt is timestamp;
+      // Không cho phép sửa/xóa — append-only. Sửa sai phải tạo bút toán đảo.
+      allow update, delete: if false;
     }
 
-    // 6. Sync Logs
-    match /pos_sync_logs/{logId} {
-       allow read, write: if isStaff();
+    // ── SePay events (write-once từ Cloud Function/webhook) ─────────────────
+    match /sepay_events/{eventId} {
+      allow get, list: if isManager();
+      // Chỉ admin SDK (server) mới được write — client deny hoàn toàn.
+      allow create, update, delete: if false;
     }
 
-    // 7. POS Sync Data
-    match /pos_products/{id} { allow read, write: if isStaff(); }
-    match /pos_customers/{id} { allow read, write: if isStaff(); }
-    match /pos_campaigns/{id} { allow read, write: if isStaff(); }
-    match /campaigns/{id} { allow read, write: if isStaff(); }
+    // ── Audit log (immutable) ───────────────────────────────────────────────
+    match /audit_logs/{id} {
+      allow get, list: if isAdmin();
+      // Chỉ admin SDK write từ Cloud Function onWrite — client deny.
+      allow create, update, delete: if false;
+    }
+
+    // ── POS sync ────────────────────────────────────────────────────────────
+    match /pos_sync_logs/{logId}    { allow read, write: if isStaff(); }
+    match /pos_products/{id}        { allow read, write: if isStaff(); }
+    match /pos_customers/{id}       { allow read, write: if isStaff(); }
+    match /pos_campaigns/{id}       { allow read, write: if isManager(); }
+    match /campaigns/{id}           { allow read, write: if isManager(); }
+
+    // ── iPOS legacy collections ─────────────────────────────────────────────
+    match /ipos_staff/{docId} {
+      allow get: if isSignedIn();
+      allow list: if isManager() || (isStaff() && resource.data.email == request.auth.token.email);
+      allow create, update, delete: if isAdmin();
+    }
+    match /ipos_stores/{storeId} {
+      allow get, list: if isStaff();
+      allow write: if isAdmin();
+    }
+
+    // ── _internal (system meta) ─────────────────────────────────────────────
+    match /_internal/{docId} {
+      allow get: if isSignedIn();
+      allow write: if isAdmin();
+    }
   }
 }

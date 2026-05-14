@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "vcomm-erp-prod",
+    "sandbox": "multichat-1f8da"
+  }
+}
