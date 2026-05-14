@@ -18,6 +18,9 @@ export {
 // ── Reconciliation (đối soát SePay) ──────────────────────────────────────
 export { reconcileSepayEvent } from './reconciliation.js';
 
+// ── Sellers (KYC, Wallet) ────────────────────────────────────────────────
+export { sellerVerifyKyc, sellerEnsureWallet, walletAdjust } from './sellerHandlers.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,

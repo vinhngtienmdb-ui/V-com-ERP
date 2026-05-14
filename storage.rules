@@ -1,0 +1,60 @@
+rules_version = '2';
+
+// VComm ERP — Cloud Storage rules
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── Default deny ────────────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // ── Public assets (logo, banner, ảnh sản phẩm public eMenu) ─────────────
+    // Read tự do; write yêu cầu staff.
+    match /public/{path=**} {
+      allow read: if true;
+      allow write: if isStaff() && isImage() && isUnder(5);
+    }
+
+    // ── Avatar nhân viên ────────────────────────────────────────────────────
+    match /staff/{uid}/avatar/{file} {
+      allow read: if isSignedIn();
+      // User tự upload avatar mình
+      allow write: if isSignedIn() && request.auth.uid == uid && isImage() && isUnder(2);
+    }
+
+    // ── KYC documents của seller ────────────────────────────────────────────
+    // Owner upload tài liệu; manager+ và admin đọc/xóa để duyệt KYC.
+    match /sellers/{sellerId}/kyc/{file} {
+      allow read: if isManager();
+      allow create: if isSignedIn() && (isImage() || isPdf()) && isUnder(10);
+      allow update, delete: if isManager();
+    }
+
+    // ── Ảnh sản phẩm (PIM) ──────────────────────────────────────────────────
+    match /products/{productId}/{file} {
+      allow read: if isStaff();
+      allow write: if isManager() && isImage() && isUnder(5);
+    }
+
+    // ── Hợp đồng / công văn / chữ ký ────────────────────────────────────────
+    match /contracts/{path=**} {
+      allow read: if isManager();
+      allow write: if isManager() && isUnder(20);
+    }
+    match /documents/{path=**} {
+      allow read: if isManager();
+      allow write: if isManager() && isUnder(20);
+    }
+
+    // ── Helper functions ────────────────────────────────────────────────────
+    function isSignedIn() { return request.auth != null; }
+    function role()      { return isSignedIn() ? request.auth.token.role : ''; }
+    function isStaff()   { return role() in ['staff', 'manager', 'director', 'admin']; }
+    function isManager() { return role() in ['manager', 'director', 'admin']; }
+    function isAdmin()   { return role() == 'admin'; }
+    function isImage()   { return request.resource.contentType.matches('image/.*'); }
+    function isPdf()     { return request.resource.contentType == 'application/pdf'; }
+    function isUnder(mb) { return request.resource.size <= mb * 1024 * 1024; }
+  }
+}

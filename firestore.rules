@@ -134,6 +134,53 @@ service cloud.firestore {
       allow delete: if isManager();
     }
 
+    // ── Sellers (nhà bán hàng) ──────────────────────────────────────────────
+    match /sellers/{sellerId} {
+      allow get, list: if isStaff();
+      // Manager+ tạo seller; status mặc định 'pending_docs'.
+      allow create: if isManager() && isValidId(sellerId) && isValidSeller(incoming());
+      // Update tách: KYC team (manager+) đổi status; admin set commission/suspended.
+      allow update: if isStaff() && (
+        // Staff thường chỉ chỉnh field profile non-sensitive
+        (!isManager() && hasOnlyChanged(['ownerName', 'ownerEmail', 'ownerPhone', 'address', 'kycDocs', 'updatedAt'])) ||
+        // Manager+ chỉnh KYC + commercial
+        (isManager() && hasOnlyChanged([
+          'name', 'ownerName', 'ownerEmail', 'ownerPhone', 'address', 'representative',
+          'taxCode', 'identityCard', 'businessLicense', 'bankAccount', 'bankName',
+          'kycDocs', 'commissionRate', 'status', 'verifiedAt',
+          'totalProducts', 'totalGmv', 'rating', 'updatedAt',
+        ])) ||
+        // Admin có thể suspended/rejected
+        (isAdmin() && hasOnlyChanged(['status', 'suspendedAt', 'suspendedReason', 'updatedAt']))
+      );
+      allow delete: if isAdmin();
+
+      function isValidSeller(d) {
+        return d.name is string && d.name.size() >= 2 && d.name.size() <= 200 &&
+               d.entityType in ['individual', 'household', 'company'] &&
+               d.status in ['pending_docs', 'pending_verification', 'verified', 'active', 'suspended', 'rejected', 'closed'] &&
+               d.ownerName is string && d.ownerName.size() >= 2 &&
+               d.ownerPhone is string && d.ownerPhone.size() >= 9 &&
+               (!('commissionRate' in d) || (d.commissionRate is number && d.commissionRate >= 0 && d.commissionRate <= 1));
+      }
+    }
+
+    // ── Wallets ─────────────────────────────────────────────────────────────
+    match /wallets/{walletId} {
+      // Seller xem ví của mình; staff xem tất cả; admin xem tất cả.
+      allow get, list: if isStaff();
+      // Tạo/update CHỈ qua Cloud Function (Admin SDK). Client không write trực
+      // tiếp vào balance để tránh race condition và gian lận.
+      allow create, update, delete: if false;
+    }
+
+    // ── Wallet transactions (sổ phụ, append-only) ───────────────────────────
+    match /wallet_transactions/{txId} {
+      allow get, list: if isStaff();
+      // Append-only từ Cloud Function. Client thử ghi → deny.
+      allow create, update, delete: if false;
+    }
+
     // ── Inventory movements (append-only sổ kho) ────────────────────────────
     match /inventory_movements/{movId} {
       allow get, list: if isStaff();

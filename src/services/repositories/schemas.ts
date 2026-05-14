@@ -102,7 +102,94 @@ export const InventoryMovementSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Seller (nhà bán hàng) ──────────────────────────────────────────────────
+export const SellerEntityType = z.enum(['individual', 'household', 'company']);
+export const SellerStatus = z.enum([
+  'pending_docs',         // Mới đăng ký, chưa upload đủ tài liệu
+  'pending_verification', // Đã upload, chờ KYC team duyệt
+  'verified',             // KYC pass, chưa active sản phẩm
+  'active',               // Đang kinh doanh
+  'suspended',            // Tạm ngưng (vi phạm chính sách)
+  'rejected',             // KYC fail
+  'closed',               // Đóng shop tự nguyện
+]);
+
+export const KycDocSchema = z.object({
+  type: z.enum(['cccd_front', 'cccd_back', 'passport', 'gpkd', 'mst', 'bank_proof', 'other']),
+  url: z.string().url(),
+  uploadedAt: Timestamp.optional(),
+  verifiedAt: Timestamp.optional(),
+  verifiedBy: z.string().optional(),
+});
+
+export const SellerSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2).max(200),
+  entityType: SellerEntityType,
+  status: SellerStatus,
+  ownerName: z.string().min(2),
+  ownerEmail: z.string().email().optional().or(z.literal('')),
+  ownerPhone: z.string().min(9).max(15),
+  taxCode: z.string().optional(),          // MST cá nhân/hộ KD/DN
+  identityCard: z.string().optional(),     // CCCD 12 số (cá nhân)
+  businessLicense: z.string().optional(),  // GPKD số (hộ KD/DN)
+  address: z.string().optional(),
+  representative: z.string().optional(),
+  bankAccount: z.string().optional(),
+  bankName: z.string().optional(),
+  commissionRate: z.number().min(0).max(1).optional(), // 0.0-1.0 (5% = 0.05)
+  joinedAt: Timestamp.optional(),
+  verifiedAt: Timestamp.optional(),
+  suspendedAt: Timestamp.optional(),
+  suspendedReason: z.string().optional(),
+  kycDocs: z.array(KycDocSchema).optional(),
+  // KPI snapshots (denormalized — update từ Cloud Function khi đơn complete)
+  totalProducts: z.number().int().optional(),
+  totalGmv: z.number().nonnegative().optional(),
+  rating: z.number().min(0).max(5).optional(),
+});
+
+// ── Wallet (số dư seller / khách) ──────────────────────────────────────────
+export const WalletOwnerType = z.enum(['seller', 'customer', 'staff', 'system']);
+
+export const WalletSchema = z.object({
+  id: z.string(), // format: "{ownerType}_{ownerId}"
+  ownerType: WalletOwnerType,
+  ownerId: z.string(),
+  balance: z.number(),               // Có thể âm (công nợ)
+  pendingBalance: z.number().optional(), // Số dư đang chờ release (escrow)
+  currency: z.string().default('VND'),
+  updatedAt: Timestamp.optional(),
+});
+
+// ── Wallet transaction (sổ phụ, append-only) ───────────────────────────────
+export const WalletTxType = z.enum([
+  'topup',          // Nạp tiền
+  'withdraw',       // Rút tiền (chờ duyệt)
+  'order_credit',   // Sàn ghi nhận thanh toán đơn vào ví seller (sau settlement)
+  'order_debit',    // Sàn trừ tiền seller (chargeback, hoàn tiền khách)
+  'commission',     // Sàn trừ hoa hồng
+  'transfer',       // Giữa các ví
+  'adjustment',     // Hiệu chỉnh thủ công (cần lý do)
+]);
+
+export const WalletTxSchema = z.object({
+  id: z.string(),
+  walletId: z.string(),
+  type: WalletTxType,
+  amount: z.number(),     // dương = vào ví, âm = ra ví
+  refOrderId: z.string().optional(),
+  refSettlementId: z.string().optional(),
+  description: z.string(),
+  staffId: z.string(),
+  createdAt: Timestamp.optional(),
+});
+
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
 export type InventoryMovementInput = z.infer<typeof InventoryMovementSchema>;
+export type SellerInput = z.infer<typeof SellerSchema>;
+export type KycDoc = z.infer<typeof KycDocSchema>;
+export type WalletInput = z.infer<typeof WalletSchema>;
+export type WalletTxInput = z.infer<typeof WalletTxSchema>;
