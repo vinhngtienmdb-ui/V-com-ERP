@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Sentry from '@sentry/react';
 
 interface Props {
   children: React.ReactNode;
@@ -19,6 +20,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error('ErrorBoundary caught:', error, info.componentStack);
+    // Forward sang Sentry (chỉ active khi VITE_SENTRY_DSN có giá trị + PROD).
+    Sentry.captureException(error, { extra: { componentStack: info.componentStack ?? '' } });
   }
 
   render() {

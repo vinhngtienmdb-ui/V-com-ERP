@@ -24,6 +24,9 @@ export { sellerVerifyKyc, sellerEnsureWallet, walletAdjust } from './sellerHandl
 // ── Invoices (e-Invoice TT 78/2021) + Tax reports (NĐ 117/2025) ──────────
 export { issueInvoice, monthlySellerTaxAggregation } from './invoiceHandlers.js';
 
+// ── Backup ───────────────────────────────────────────────────────────────
+export { dailyBackup } from './backupHandlers.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,
