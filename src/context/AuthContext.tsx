@@ -38,8 +38,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setStaffInfo(null);
       return;
     }
-    // Lấy role từ custom claims (set bởi Firebase Admin SDK, không từ Firestore).
-    const tokenResult = await u.getIdTokenResult();
+    // Force refresh ID token để pick up custom claims mới nhất (vd: vừa được
+    // bootstrap-admin set role server-side). Bỏ qua cache vì cache có thể là
+    // token cũ chưa có claim. Trade-off: +1 round-trip server, nhưng chỉ chạy
+    // trên auth state change, không phải mỗi render.
+    const tokenResult = await u.getIdTokenResult(true);
     setRole(extractRole(tokenResult));
 
     // Lấy profile từ /staff/{uid}; nếu không có thì giữ null.

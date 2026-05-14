@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Firebase service account keys — KHÔNG được commit
+secrets/
+!secrets/.gitkeep
+*-service-account*.json
+service-account*.json
+firebase-adminsdk-*.json
+
