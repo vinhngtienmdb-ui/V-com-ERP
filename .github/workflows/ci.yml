@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.skip-check.outputs.should-deploy }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,8 +18,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install
+      - name: Install (root)
         run: npm ci
+
+      - name: Install (functions)
+        run: npm --prefix functions ci
 
       - name: Type-check
         run: npm run lint
@@ -25,5 +30,121 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Build
+      - name: Build client
+        env:
+          # Inject Sentry DSN cho production bundle (chỉ khi secret được set).
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_RELEASE: ${{ github.sha }}
         run: npm run build
+
+      - name: Build functions
+        run: npm --prefix functions run build
+
+      - name: Skip-deploy check
+        id: skip-check
+        run: |
+          MSG="${{ github.event.head_commit.message }}"
+          if [[ "$MSG" == *"[skip deploy]"* ]] || [[ "$MSG" == *"[skip-deploy]"* ]]; then
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "::notice::Commit message contains [skip deploy] — không deploy."
+          else
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+          fi
+
+  deploy-prod:
+    needs: build
+    if: |
+      github.event_name == 'push'
+      && github.ref == 'refs/heads/main'
+      && needs.build.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://vcomm-erp-prod.web.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install (root + functions)
+        run: |
+          npm ci
+          npm --prefix functions ci
+
+      - name: Build client
+        env:
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_RELEASE: ${{ github.sha }}
+        run: npm run build
+
+      - name: Build functions
+        run: npm --prefix functions run build
+
+      - name: Deploy to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -z "$FIREBASE_TOKEN" ]; then
+            echo "::error::FIREBASE_TOKEN secret chưa set. Sinh bằng 'firebase login:ci' và add vào repo secrets."
+            exit 1
+          fi
+          npx firebase-tools deploy \
+            --only hosting,functions,firestore:rules,firestore:indexes \
+            --project vcomm-erp-prod \
+            --token "$FIREBASE_TOKEN" \
+            --non-interactive \
+            --force
+
+  deploy-pr-preview:
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install + build
+        env:
+          VITE_RELEASE: pr-${{ github.event.number }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy preview channel
+        id: deploy-preview
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -z "$FIREBASE_TOKEN" ]; then
+            echo "::warning::FIREBASE_TOKEN chưa set — skip preview deploy."
+            echo "preview-url=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          CHANNEL="pr-${{ github.event.number }}"
+          npx firebase-tools hosting:channel:deploy "$CHANNEL" \
+            --project vcomm-erp-prod \
+            --token "$FIREBASE_TOKEN" \
+            --expires 7d \
+            --non-interactive 2>&1 | tee preview.log
+          URL=$(grep -oE 'https://vcomm-erp-prod--pr-[0-9]+-[a-z0-9]+\.web\.app' preview.log | head -1 || true)
+          echo "preview-url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Comment preview URL on PR
+        if: steps.deploy-preview.outputs.preview-url != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy-preview.outputs.preview-url }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Preview deployed: ${url}\nExpires in 7 days.`
+            })

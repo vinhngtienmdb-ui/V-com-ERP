@@ -1,6 +1,120 @@
 # VComm ERP — Runbook vận hành
 
-Tham chiếu nhanh cho 5 sự cố phổ biến.
+Tham chiếu nhanh cho setup ban đầu + 5 sự cố phổ biến.
+
+---
+
+## Setup production lần đầu
+
+### 0. Pre-flight check
+
+```sh
+firebase --version            # cần >= 15.x
+firebase projects:list        # phải thấy vcomm-erp-prod
+firebase use vcomm-erp-prod
+gsutil --version              # nếu chưa có: cài Google Cloud SDK
+gcloud auth login             # đăng nhập Google Cloud (1 lần)
+gcloud config set project vcomm-erp-prod
+```
+
+### 1. CI auto-deploy — sinh FIREBASE_TOKEN
+
+```sh
+firebase login:ci             # mở browser, login → copy token in ra
+```
+
+Sau đó add vào GitHub repo secrets:
+
+- Mở https://github.com/vinhngtienmdb-ui/V-com-ERP/settings/secrets/actions
+- Bấm "New repository secret"
+- Name: `FIREBASE_TOKEN`, Value: paste token vừa lấy
+- (Optional) thêm `VITE_SENTRY_DSN` nếu đã setup Sentry
+
+Sau khi set: push commit bất kỳ vào `main` → GitHub Actions tự deploy.
+Để skip deploy 1 commit: `git commit -m "doc: ... [skip deploy]"`.
+
+### 2. Set 3 secrets thật cho Cloud Functions
+
+```sh
+firebase functions:secrets:set GEMINI_API_KEY         # paste API key từ AI Studio
+firebase functions:secrets:set SEPAY_API_TOKEN        # từ SePay portal
+firebase functions:secrets:set SEPAY_WEBHOOK_SECRET   # từ SePay portal (HMAC secret)
+
+# Redeploy để functions pick up secret mới:
+firebase deploy --only "functions:aiChat,functions:aiRma,functions:aiCare,functions:sepayTransactions,functions:sepayVirtualAccount,functions:sepaySoundbox,functions:sepayInvoice,functions:sepayWebhook"
+```
+
+Verify secret đã active:
+
+```sh
+firebase functions:secrets:access GEMINI_API_KEY   # cảnh báo: in plaintext
+```
+
+### 3. Enable Firebase Storage
+
+Console: https://console.firebase.google.com/project/vcomm-erp-prod/storage
+→ Bấm "Get started" → chọn rules production (mặc định) → region `asia-southeast1`.
+
+Sau đó:
+
+```sh
+firebase deploy --only storage
+```
+
+(Rules đã có sẵn ở `storage.rules`.)
+
+### 4. Tạo GCS bucket backup + IAM + lifecycle
+
+```sh
+# Tạo bucket
+gsutil mb -l asia-southeast1 -c standard gs://vcomm-erp-prod-backups
+
+# Grant IAM cho service account Cloud Functions (App Engine default SA)
+gcloud projects add-iam-policy-binding vcomm-erp-prod \
+  --member="serviceAccount:vcomm-erp-prod@appspot.gserviceaccount.com" \
+  --role="roles/datastore.importExportAdmin"
+
+# Cho service account quyền ghi vào bucket
+gsutil iam ch \
+  serviceAccount:vcomm-erp-prod@appspot.gserviceaccount.com:objectAdmin \
+  gs://vcomm-erp-prod-backups
+
+# Set lifecycle 30 ngày (file đã có sẵn ở infra/lifecycle.json)
+gsutil lifecycle set infra/lifecycle.json gs://vcomm-erp-prod-backups
+
+# Verify
+gsutil lifecycle get gs://vcomm-erp-prod-backups
+```
+
+### 5. Setup Sentry (frontend error tracking)
+
+1. Mở https://sentry.io → New Project → React → đặt tên `vcomm-erp`
+2. Copy DSN dạng `https://abc@sentry.io/123`
+3. Add vào GitHub repo secret `VITE_SENTRY_DSN` (mục 1 trên)
+4. Push commit → CI rebuild với DSN → Sentry bắt đầu nhận error từ production
+
+### 6. Bootstrap admin user
+
+User đầu tiên cần đăng ký qua Firebase Console (Authentication → Users → Add user), sau đó:
+
+```sh
+GOOGLE_APPLICATION_CREDENTIALS=secrets/service-account.json \
+  npx tsx scripts/set-admin-claim.ts --email <admin-email> --role admin
+```
+
+User phải đăng xuất + đăng nhập lại để custom claim có hiệu lực (hoặc client gọi `refreshClaims()`).
+
+### 7. Smoke test sau setup
+
+```sh
+curl https://vcomm-erp-prod.web.app/api/health
+# Expect: {"status":"ok","service":"vcomm-erp-functions","timestamp":...}
+
+firebase functions:log --since 5m
+# Không có error ERROR/FATAL
+```
+
+---
 
 ## Quick commands
 
