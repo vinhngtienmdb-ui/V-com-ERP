@@ -221,6 +221,19 @@ service cloud.firestore {
       allow create, update, delete: if false; // Chỉ Admin SDK
     }
 
+    // ── Invoices (HĐ điện tử TT 78/2021) ────────────────────────────────────
+    match /invoices/{invoiceId} {
+      allow get, list: if isStaff();
+      // Tạo qua Cloud Function (issueInvoice) để có số tuần tự an toàn.
+      allow create, update, delete: if false;
+    }
+
+    // ── Seller tax reports (NĐ 117/2025) ────────────────────────────────────
+    match /seller_tax_reports/{reportId} {
+      allow get, list: if isManager();
+      allow create, update, delete: if false; // Sinh tự động hàng tháng
+    }
+
     // ── Audit log (immutable) ───────────────────────────────────────────────
     match /audit_logs/{id} {
       allow get, list: if isAdmin();

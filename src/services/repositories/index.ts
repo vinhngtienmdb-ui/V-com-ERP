@@ -2,8 +2,10 @@ import { makeRepository } from './base';
 import {
   ProductSchema, OrderSchema, CustomerSchema, InventoryMovementSchema,
   SellerSchema, WalletSchema, WalletTxSchema,
+  TransactionSchema, InvoiceSchema, SellerTaxReportSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
+  type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -39,6 +41,21 @@ export const walletsRepo = makeRepository<WalletInput>({
 export const walletTxRepo = makeRepository<WalletTxInput>({
   collectionName: 'wallet_transactions',
   schema: WalletTxSchema,
+});
+
+export const transactionsRepo = makeRepository<TransactionInput>({
+  collectionName: 'transactions',
+  schema: TransactionSchema,
+});
+
+export const invoicesRepo = makeRepository<InvoiceInput>({
+  collectionName: 'invoices',
+  schema: InvoiceSchema,
+});
+
+export const sellerTaxReportsRepo = makeRepository<SellerTaxReportInput>({
+  collectionName: 'seller_tax_reports',
+  schema: SellerTaxReportSchema,
 });
 
 export * from './schemas';

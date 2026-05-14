@@ -185,6 +185,110 @@ export const WalletTxSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Transaction (sổ cái tài chính, append-only) ────────────────────────────
+export const TransactionType = z.enum([
+  'income',         // Thu (doanh thu, lãi, khác)
+  'expense',        // Chi (chi phí vận hành)
+  'commission',     // Hoa hồng sàn thu
+  'shipping_cost',  // Phí ship trả carrier
+  'refund',         // Hoàn tiền khách
+  'payout',         // Trả tiền seller (settlement T+N)
+  'tax',            // Thuế nộp ngân sách (VAT, TNCN)
+  'adjustment',     // Bút toán đảo
+]);
+
+export const TransactionSchema = z.object({
+  id: z.string(),
+  description: z.string().min(1).max(500),
+  amount: z.number(),               // dương = thu, âm = chi
+  type: TransactionType,
+  category: z.string().optional(),
+  orderId: z.string().optional(),
+  sellerId: z.string().optional(),
+  walletId: z.string().optional(),
+  staffId: z.string(),
+  storeId: z.string().optional(),
+  // Bút toán đảo (nếu transaction này đảo 1 transaction trước đó)
+  reverseOf: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── Invoice (hóa đơn điện tử theo TT 78/2021, NĐ 123/2020) ─────────────────
+export const InvoiceStatus = z.enum([
+  'draft',          // Nháp, chưa phát hành
+  'issued',         // Đã phát hành, có mã CQT
+  'sent',           // Đã gửi khách
+  'cancelled',      // Hủy (chỉ trước khi gửi CQT)
+  'replaced',       // Đã thay thế bằng HĐ điều chỉnh
+]);
+
+export const InvoiceLineItemSchema = z.object({
+  productCode: z.string().optional(),
+  description: z.string(),
+  unit: z.string().default('cái'),
+  quantity: z.number().positive(),
+  unitPrice: z.number().nonnegative(),
+  vatRate: z.number().min(0).max(1).default(0.1), // 10% VAT mặc định
+  amount: z.number(),       // quantity * unitPrice (chưa VAT)
+  vatAmount: z.number(),    // amount * vatRate
+});
+
+export const InvoiceSchema = z.object({
+  id: z.string(),
+  // Mã CQT cấp sau khi phát hành (NULL nếu draft)
+  taxAuthorityCode: z.string().optional(),
+  invoiceNumber: z.string(),       // Số hóa đơn (sequential)
+  templateNumber: z.string().default('1/001'),
+  serialNumber: z.string(),        // VD: K23TVC (K=ký hiệu, 23=năm, T=loại, V=mặt hàng VC=tên DN)
+  // Bên bán
+  sellerTaxCode: z.string(),
+  sellerName: z.string(),
+  sellerAddress: z.string(),
+  // Bên mua
+  buyerTaxCode: z.string().optional(),
+  buyerName: z.string(),
+  buyerAddress: z.string().optional(),
+  buyerEmail: z.string().email().optional().or(z.literal('')),
+  // Nội dung
+  items: z.array(InvoiceLineItemSchema).min(1),
+  subtotal: z.number().nonnegative(),       // Tổng tiền chưa VAT
+  vatTotal: z.number().nonnegative(),       // Tổng VAT
+  total: z.number().nonnegative(),          // Tổng phải trả
+  paymentMethod: z.string().optional(),
+  status: InvoiceStatus,
+  issuedAt: Timestamp.optional(),
+  cancelledAt: Timestamp.optional(),
+  cancelReason: z.string().optional(),
+  // Link tới order gốc
+  orderId: z.string().optional(),
+  sellerId: z.string().optional(),
+  // Chữ ký số / signature info
+  signatureProvider: z.string().optional(), // 'VNPT-CA' | 'Viettel-CA' | 'FPT-CA'
+  signatureValue: z.string().optional(),
+  signedAt: Timestamp.optional(),
+});
+
+// ── Seller Tax Report (NĐ 117/2025) ─────────────────────────────────────────
+// Mỗi seller, mỗi tháng → 1 báo cáo doanh thu để khai thuế.
+export const SellerTaxReportSchema = z.object({
+  id: z.string(),                  // format: "{sellerId}_{YYYY-MM}"
+  sellerId: z.string(),
+  sellerTaxCode: z.string(),
+  sellerName: z.string(),
+  period: z.string(),              // 'YYYY-MM'
+  // Doanh thu trong kỳ
+  totalGmv: z.number().nonnegative(),
+  totalOrders: z.number().int().nonnegative(),
+  totalReturns: z.number().nonnegative(),
+  netRevenue: z.number().nonnegative(),
+  // Thuế ước tính (cá nhân kinh doanh: 1.5%/doanh thu; HKD: tùy)
+  estimatedTaxAmount: z.number().nonnegative(),
+  // Trạng thái nộp
+  submittedToTaxAuthority: z.boolean().default(false),
+  submittedAt: Timestamp.optional(),
+  generatedAt: Timestamp.optional(),
+});
+
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
@@ -193,3 +297,7 @@ export type SellerInput = z.infer<typeof SellerSchema>;
 export type KycDoc = z.infer<typeof KycDocSchema>;
 export type WalletInput = z.infer<typeof WalletSchema>;
 export type WalletTxInput = z.infer<typeof WalletTxSchema>;
+export type TransactionInput = z.infer<typeof TransactionSchema>;
+export type InvoiceInput = z.infer<typeof InvoiceSchema>;
+export type InvoiceLineItem = z.infer<typeof InvoiceLineItemSchema>;
+export type SellerTaxReportInput = z.infer<typeof SellerTaxReportSchema>;

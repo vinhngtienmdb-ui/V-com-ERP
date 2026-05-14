@@ -21,6 +21,9 @@ export { reconcileSepayEvent } from './reconciliation.js';
 // ── Sellers (KYC, Wallet) ────────────────────────────────────────────────
 export { sellerVerifyKyc, sellerEnsureWallet, walletAdjust } from './sellerHandlers.js';
 
+// ── Invoices (e-Invoice TT 78/2021) + Tax reports (NĐ 117/2025) ──────────
+export { issueInvoice, monthlySellerTaxAggregation } from './invoiceHandlers.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,
