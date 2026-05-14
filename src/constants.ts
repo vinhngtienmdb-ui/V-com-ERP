@@ -1,10 +1,10 @@
-import { 
- LayoutDashboard, 
- ShoppingBag, 
- Box, 
- Users, 
- BarChart3, 
- Settings, 
+import {
+ LayoutDashboard,
+ ShoppingBag,
+ Box,
+ Users,
+ BarChart3,
+ Settings,
  Store,
  Megaphone,
  Share2,
@@ -29,7 +29,10 @@ import {
  Monitor,
  Zap,
  Key,
- Home
+ Home,
+ Package,
+ Info,
+ FileText
 } from 'lucide-react';
 
 export const navGroups = [
@@ -118,4 +121,37 @@ export const navGroups = [
  { icon: Settings, label: 'Cấu hình hệ thống', path: '/settings', color: 'gray', description: 'Thiết lập tham số và vận hành hệ thống' },
  ]
  }
+];
+
+export const flatNavItems = [
+ { icon: Home,        label: 'Trang chủ',              path: '/' },
+ { icon: Briefcase,   label: 'Hành chính',              path: '/requests' },
+ { icon: Users,       label: 'Nhân sự',                 path: '/hr' },
+ { icon: Activity,    label: 'Vận hành',                path: '/workflow' },
+ { icon: BarChart3,   label: 'Kinh doanh',              path: '/dashboard' },
+ { icon: Megaphone,   label: 'Marketing',               path: '/marketing' },
+ { icon: Calculator,  label: 'Tài chính',               path: '/finance' },
+ { icon: ShoppingBag, label: 'Mua hàng',                path: '/scm' },
+ { icon: Package,     label: 'Sản xuất',                path: '/pim' },
+ { icon: Warehouse,   label: 'Kho vận',                 path: '/warehouse' },
+ { icon: PieChart,    label: 'Điều hành',               path: '/bi' },
+ { icon: Settings,    label: 'Hệ thống',                path: '/settings' },
+ { icon: Sparkles,    label: 'Trợ lý AI',               path: '/ai-ops' },
+ { icon: Info,        label: 'Thông tin bản quyền',     path: '/settings' },
+];
+
+export const HOME_MODULES = [
+ { icon: FileText,    label: 'Hành chính',             path: '/requests',  color: 'bg-orange-500',  desc: 'Công văn, hợp đồng, văn thư lưu trữ.' },
+ { icon: Users,       label: 'Nhân sự',                path: '/hr',         color: 'bg-emerald-500', desc: 'Tuyển dụng, đào tạo, chấm công, lương.' },
+ { icon: Activity,    label: 'Vận hành',               path: '/workflow',   color: 'bg-cyan-500',    desc: 'Quản lý vận hành, giám sát và quy trình. (Placeholder)' },
+ { icon: BarChart3,   label: 'Kinh doanh',             path: '/dashboard',  color: 'bg-blue-600',    desc: 'Bán hàng, khách hàng, cơ hội và báo cáo kinh doanh.' },
+ { icon: Megaphone,   label: 'Marketing',              path: '/marketing',  color: 'bg-pink-600',    desc: 'Chiến dịch, khách hàng, báo cáo marketing.' },
+ { icon: Calculator,  label: 'Tài chính',              path: '/finance',    color: 'bg-orange-600',  desc: 'Kế toán, ngân sách, báo cáo tài chính.' },
+ { icon: ShoppingBag, label: 'Mua hàng',               path: '/scm',        color: 'bg-red-500',     desc: 'Đề xuất vật tư, đơn đặt hàng, đối tác.' },
+ { icon: Package,     label: 'Sản xuất',               path: '/pim',        color: 'bg-green-600',   desc: 'Kế hoạch sản xuất, quản lý sản xuất.' },
+ { icon: Warehouse,   label: 'Kho vận',                path: '/warehouse',  color: 'bg-teal-600',    desc: 'Tồn kho, xuất nhập kho, vận chuyển.' },
+ { icon: PieChart,    label: 'Điều hành',              path: '/bi',         color: 'bg-indigo-500',  desc: 'Điều hành, giám sát và vận hành.' },
+ { icon: Settings,    label: 'Hệ thống',               path: '/settings',   color: 'bg-slate-700',   desc: 'Cấu hình, phân quyền và nhân sự.' },
+ { icon: Sparkles,    label: 'Trợ lý AI',              path: '/ai-ops',     color: 'bg-violet-600',  desc: 'Cấu hình, phân quyền và nhân sự.' },
+ { icon: Info,        label: 'Thông tin bản quyền',    path: '/settings',   color: 'bg-blue-500',    desc: 'Quản lý sở hữu trí tuệ và thông tin nhà phát triển.' },
 ];
