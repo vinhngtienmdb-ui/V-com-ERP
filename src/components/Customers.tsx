@@ -534,7 +534,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  {activeTab === 'points' && (
  <div className="space-y-6">
  <h3 className="font-bold text-slate-900">Cáº¥u hÃ¬nh TÃ­ch Ä‘iá»ƒm & TiÃªu Ä‘iá»ƒm</h3>
- <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
+ <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
  <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
  <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tá»‰ lá»‡ tÃ­ch Ä‘iá»ƒm</h4>
  <div>
@@ -925,29 +925,29 @@ export function Customers() {
 
  {activeView === 'list' ? (
  <>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-4" columns={4} gap={16}>
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tá»•ng khÃ¡ch hÃ ng</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.length}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Há»‡ thá»‘ng)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</span>
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiÃªu TB (CLV)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (VÃ ng+)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-amber-600">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</span>
@@ -957,8 +957,8 @@ export function Customers() {
  </DraggableGrid>
 
  {/* CRM Intelligence & RFM Segmentation */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-4" columns={3} gap={16}>
+ <div className="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
@@ -997,35 +997,34 @@ export function Customers() {
  </div>
  </div>
 
- <div className="bg-slate-900 p-8 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col justify-between">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <Trophy className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Loyalty Wallet Insight</h3>
+ </div>
+ <div className="p-5 flex flex-col flex-1 justify-between">
  <div className="relative z-10">
- <div className="flex items-center gap-3 mb-6">
- <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
- <Trophy className="w-6 h-6 text-amber-400" />
- </div>
- <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
- </div>
  <div className="space-y-6">
- <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
  <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tá»•ng Ä‘iá»ƒm kháº£ dá»¥ng</div>
- <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
+ <div className="text-3xl font-black text-slate-900 leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
  </div>
  <div className="flex gap-4">
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="flex-1 bg-slate-50 border border-slate-200 p-4 rounded-xl">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Sá»‘ dÆ° VÃ­ khÃ¡ch</p>
  <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
  </div>
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="flex-1 bg-slate-50 border border-slate-200 p-4 rounded-xl">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Háº¡ng Kim CÆ°Æ¡ng</p>
- <p className="text-lg font-bold text-sky-400">08 KH</p>
+ <p className="text-lg font-bold text-sky-600">08 KH</p>
  </div>
  </div>
  </div>
  </div>
- <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+ <button className="w-full mt-4 py-3 bg-slate-900 text-[#FAF9F5] rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
  <Settings className="w-4 h-4" /> Quáº£n lÃ½ chÃ­nh sÃ¡ch Loyalty
  </button>
- <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+ </div>
  </div>
  </DraggableGrid>
 
