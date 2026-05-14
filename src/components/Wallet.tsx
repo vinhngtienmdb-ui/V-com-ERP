@@ -611,7 +611,7 @@ export function WalletHub() {
  </DraggableGrid>
  </div>
 
- <div className="bg-white border border-slate-200 rounded-lg overflow-hidden overflow-x-auto min-w-0">
+ <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-stone-50">

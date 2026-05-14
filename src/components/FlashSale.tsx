@@ -421,7 +421,7 @@ export function FlashSale() {
  <div className="text-[11px] text-slate-600 italic mb-3">ThÃªm 1 hoáº·c nhiá»u sáº£n pháº©m vá»›i má»©c giáº£m giÃ¡ khÃ¡c nhau...</div>
  
  {/* Table preview for added flash sale products */}
- <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
+ <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
  <tr>

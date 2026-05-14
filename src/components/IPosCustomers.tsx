@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { Users, Search, Plus, UserCircle2, Star, Download, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -46,7 +46,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
              </div>
          </DraggableGrid>
 
-         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-w-0">
+         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-x-auto min-w-0">
              <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                     <tr>

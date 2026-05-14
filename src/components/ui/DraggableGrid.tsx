@@ -6,17 +6,17 @@ import "react-resizable/css/styles.css";
 import { cn } from "../../lib/utils";
 import { GripHorizontal, Save, RotateCcw } from "lucide-react";
 
-export function DraggableGrid({ 
-  children, 
-  columns = 4, 
-  rowHeight = 120, 
+export function DraggableGrid({
+  children,
+  columns = 4,
+  rowHeight = 160,
   gap = 24,
   className = "",
   id
-}: { 
-  children: React.ReactNode, 
-  columns?: number, 
-  rowHeight?: number, 
+}: {
+  children: React.ReactNode,
+  columns?: number,
+  rowHeight?: number,
   gap?: number,
   className?: string,
   id?: string
@@ -42,14 +42,26 @@ export function DraggableGrid({
   useEffect(() => {
     const defaultLayout = items.map((child: any, i: number) => {
       let w = 1;
-      let h = 2; // Default height
+      // Tự động chọn h theo số cột:
+      //   ≥4 cột → stat card nhỏ → h=1 (160px)
+      //   3 cột  → card trung → h=2 (320px)
+      //   ≤2 cột → chart/bảng lớn → h=3 (480px)
+      let h = columns >= 4 ? 1 : columns === 3 ? 2 : 3;
 
       if (child.props.className) {
         const spanMatch = child.props.className.match(/col-span-(\d+)/);
         if (spanMatch) w = parseInt(spanMatch[1], 10);
-        
-        if (child.props.className.includes("h-full") || child.props.className.includes("min-h-")) {
-            h = 3;
+
+        const cls = child.props.className as string;
+        if (
+          cls.includes('min-h-[600') ||
+          cls.includes('min-h-[500') ||
+          cls.includes('min-h-[400') ||
+          cls.includes('h-full')
+        ) {
+          h = Math.max(h, 4); // ít nhất 4 × 160 = 640px
+        } else if (cls.includes('min-h-')) {
+          h = Math.max(h, 3);
         }
       }
       if (child.props['data-col-span']) w = parseInt(child.props['data-col-span'], 10);
@@ -151,7 +163,7 @@ export function DraggableGrid({
                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-50 cursor-move custom-drag-handle p-1.5 bg-slate-900/80 backdrop-blur-sm text-white rounded-md shadow-sm border border-slate-700">
                     <GripHorizontal className="w-4 h-4" />
                  </div>
-                 <div className="h-full w-full overflow-hidden [&>div]:h-full [&>div]:w-full">
+                 <div className="h-full w-full overflow-auto [&>div]:min-h-full [&>div]:w-full">
                     {child}
                  </div>
               </div>

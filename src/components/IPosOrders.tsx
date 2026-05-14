@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ShoppingBag, Search, Filter, AlertCircle, FileText, Truck } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 
@@ -42,7 +42,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto">
-         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-h-[400px] min-w-0">
+         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-x-auto min-h-[400px] min-w-0">
              {tab === 'issues' ? (
                 <div className="p-8 text-center text-slate-600">
                    <AlertCircle className="w-12 h-12 text-rose-200 mx-auto mb-4" />

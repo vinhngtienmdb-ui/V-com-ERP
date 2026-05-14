@@ -690,7 +690,7 @@ export function CustomerService() {
  <button className="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold hover:bg-slate-200 transition-all">Äá»“ng bá»™ OmiCall API</button>
  </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden overflow-x-auto min-w-0">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
@@ -935,7 +935,7 @@ export function CustomerService() {
  </DraggableGrid>
 
  {/* Staff List */}
- <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
+ <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-50 border-b border-slate-200">
  <tr>
