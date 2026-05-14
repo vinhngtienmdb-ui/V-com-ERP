@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  MessageSquare, 
@@ -28,23 +28,23 @@ const MOCK_POSTS: SocialPost[] = [
  id: 'POST-001', 
  authorId: 'USR-772', 
  authorName: 'Minh Anh Review', 
- content: 'Vá»«a unbox chiáº¿c mÃ¡y pha cÃ  phÃª mini nÃ y siÃªu mÃª! Tiá»‡n cho ai hay Ä‘i lÃ m vÄƒn phÃ²ng nhÆ° mÃ¬nh. Click link xem shop nha mn.', 
+ content: 'Vừa unbox chiếc máy pha cà phê mini này siêu mê! Tiện cho ai hay đi làm văn phòng như mình. Click link xem shop nha mn.', 
  media: ['coffee.jpg'], 
  likes: 1245, 
  comments: 242, 
  tags: ['Tech', 'CoffeeLovers'], 
- timestamp: '2 giá» trÆ°á»›c' 
+ timestamp: '2 giờ trước' 
  },
  { 
  id: 'POST-002', 
  authorId: 'SEL-005', 
  authorName: 'Uniqlo VN Official', 
- content: 'Preview BST mÃ¹a hÃ¨ sáº¯p ra máº¯t trÃªn SÃ n vÃ o ngÃ y 20/03. Ai hÃ³ng khÃ´ng nÃ o? Like Ä‘á»ƒ nháº­n coupon bÃ­ máº­t!', 
+ content: 'Preview BST mùa hè sắp ra mắt trên Sàn vào ngày 20/03. Ai hóng không nào? Like để nhận coupon bí mật!', 
  media: ['summer-fashion.mp4'], 
  likes: 8500, 
  comments: 1200, 
  tags: ['Uniqlo', 'NewArrival'], 
- timestamp: '5 giá» trÆ°á»›c' 
+ timestamp: '5 giờ trước' 
  },
 ];
 
@@ -55,17 +55,17 @@ export function SocialCommerce() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Cá»™ng Ä‘á»“ng & Máº¡ng xÃ£ há»™i TMÄT</h1>
- <p className="text-sm text-[#6B7280] mt-1">KhÃ´ng gian chia sáº» ná»™i dung UGC, táº¡o xu hÆ°á»›ng mua sáº¯m vÃ  káº¿t ná»‘i cá»™ng Ä‘á»“ng ngÆ°á»i dÃ¹ng.</p>
+ <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Cộng đồng & Mạng xã hội TMĐT</h1>
+ <p className="text-sm text-[#6B7280] mt-1">Không gian chia sẻ nội dung UGC, tạo xu hướng mua sắm và kết nối cộng đồng người dùng.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <Globe className="w-4 h-4" />
- Quáº£n lÃ½ Hashtag
+ Quản lý Hashtag
  </button>
  <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
- Táº¡o Chiáº¿n dá»‹ch Social
+ Tạo Chiến dịch Social
  </button>
  </div>
  </div>
@@ -73,27 +73,27 @@ export function SocialCommerce() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tá»•ng bÃ i viáº¿t (Kho bÃ i viáº¿t)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng bài viết (Kho bài viết)</span>
  <MessageSquare className="w-4 h-4 text-[#2563EB]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">12.5k</div>
- <p className="text-[10px] text-[#10B981] font-medium mt-1">+1.2k bÃ i má»›i hÃ´m qua</p>
+ <p className="text-[10px] text-[#10B981] font-medium mt-1">+1.2k bài mới hôm qua</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tá»•ng lÆ°á»£t tÆ°Æ¡ng tÃ¡c</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng lượt tương tác</span>
  <Heart className="w-4 h-4 text-red-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">1.2M</div>
- <p className="text-[10px] text-[#6B7280] mt-1">ThÃ­ch, BÃ¬nh luáº­n & Chia sáº»</p>
+ <p className="text-[10px] text-[#6B7280] mt-1">Thích, Bình luận & Chia sẻ</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cá»™ng Ä‘á»“ng (NhÃ³m)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cộng đồng (Nhóm)</span>
  <Users className="w-4 h-4 text-[#8B5CF6]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">420</div>
- <p className="text-[10px] text-[#10B981] font-medium mt-1">85 nhÃ³m tÄƒng trÆ°á»Ÿng nhanh</p>
+ <p className="text-[10px] text-[#10B981] font-medium mt-1">85 nhóm tăng trưởng nhanh</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
@@ -101,7 +101,7 @@ export function SocialCommerce() {
  <TrendingUp className="w-4 h-4 text-[#10B981]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">4.8%</div>
- <p className="text-[10px] text-slate-500 mt-1">Tá»· lá»‡ mua hÃ ng tá»« Social Feed</p>
+ <p className="text-[10px] text-slate-500 mt-1">Tỷ lệ mua hàng từ Social Feed</p>
  </div>
  </DraggableGrid>
 
@@ -110,9 +110,9 @@ export function SocialCommerce() {
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-[#F3F4F6]">
  {[
- { id: 'feed', label: 'Báº£ng tin (Social Feed)', icon: MessageCircle },
- { id: 'communities', label: 'Cá»™ng Ä‘á»“ng & NhÃ³m', icon: Users },
- { id: 'moderation', label: 'Kiá»ƒm duyá»‡t ná»™i dung', icon: Hash }
+ { id: 'feed', label: 'Bảng tin (Social Feed)', icon: MessageCircle },
+ { id: 'communities', label: 'Cộng đồng & Nhóm', icon: Users },
+ { id: 'moderation', label: 'Kiểm duyệt nội dung', icon: Hash }
  ].map((tab) => (
  <button 
  key={tab.id}
@@ -141,7 +141,7 @@ export function SocialCommerce() {
  <h4 className="text-sm font-bold text-[#111827] flex items-center gap-2">
  {post.authorName}
  <span className="w-1 h-1 bg-slate-300 rounded-full" />
- <button className="text-[10px] text-[#2563EB] font-bold hover:underline italic">Theo dÃµi</button>
+ <button className="text-[10px] text-[#2563EB] font-bold hover:underline italic">Theo dõi</button>
  </h4>
  <p className="text-[10px] text-[#6B7280]">{post.timestamp}</p>
  </div>
@@ -167,10 +167,10 @@ export function SocialCommerce() {
  <MessageSquare className="w-4 h-4" /> {post.comments.toLocaleString()}
  </button>
  <button className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-emerald-500">
- <Share2 className="w-4 h-4" /> Chia sáº»
+ <Share2 className="w-4 h-4" /> Chia sẻ
  </button>
  </div>
- <button className="bg-[#F9FAFB] px-4 py-2 rounded-lg text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition-all uppercase tracking-widest">Ghim sáº£n pháº©m trong bÃ i</button>
+ <button className="bg-[#F9FAFB] px-4 py-2 rounded-lg text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition-all uppercase tracking-widest">Ghim sản phẩm trong bài</button>
  </div>
  </div>
  ))}
@@ -183,7 +183,7 @@ export function SocialCommerce() {
  <div className="space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2">
- <Flame className="w-5 h-5 text-orange-500" /> Hashtag thá»‹nh hÃ nh
+ <Flame className="w-5 h-5 text-orange-500" /> Hashtag thịnh hành
  </h3>
  <div className="space-y-4">
  {[
@@ -199,7 +199,7 @@ export function SocialCommerce() {
  </div>
  <div>
  <p className="text-xs font-bold text-[#111827]">#{h.tag}</p>
- <p className="text-[10px] text-slate-600">{h.posts} bÃ i viáº¿t</p>
+ <p className="text-[10px] text-slate-600">{h.posts} bài viết</p>
  </div>
  </div>
  {h.trend === 'up' ? <TrendingUp className="w-4 h-4 text-emerald-500" /> : <TrendingUp className="w-4 h-4 text-slate-500 rotate-180" />}
@@ -214,9 +214,9 @@ export function SocialCommerce() {
  <Smile className="w-5 h-5 text-yellow-500 fill-current" /> Social-to-Shop Engine
  </h3>
  <p className="text-slate-500 text-xs leading-relaxed">
- Há»‡ thá»‘ng tá»± Ä‘á»™ng nháº­n diá»‡n sáº£n pháº©m trong áº£nh bÃ i viáº¿t qua AI Vision. Gáº¯n link mua hÃ ng trá»±c tiáº¿p vÃ o bÃ i viáº¿t UGC Ä‘á»ƒ rÃºt ngáº¯n hÃ nh trÃ¬nh mua sáº¯m tá»« "Xem ná»™i dung" sang "Mua hÃ ng".
+ Hệ thống tự động nhận diện sản phẩm trong ảnh bài viết qua AI Vision. Gắn link mua hàng trực tiếp vào bài viết UGC để rút ngắn hành trình mua sắm từ "Xem nội dung" sang "Mua hàng".
  </p>
- <button className="w-full py-3 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg text-xs hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm shadow-slate-900/5">Cáº¥u hÃ¬nh AI Vision</button>
+ <button className="w-full py-3 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg text-xs hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm shadow-slate-900/5">Cấu hình AI Vision</button>
  </div>
  <Users className="absolute -bottom-10 -right-10 w-48 h-48 text-[#FAF9F5]/5 -rotate-12" />
  </div>

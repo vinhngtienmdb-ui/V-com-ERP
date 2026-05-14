@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, Send, AlertTriangle, UserPlus, Plus, Trash2, Save } from 'lucide-react';

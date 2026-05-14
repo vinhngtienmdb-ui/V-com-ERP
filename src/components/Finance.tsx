@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
  DollarSign, 

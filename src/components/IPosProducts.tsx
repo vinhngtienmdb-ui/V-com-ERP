@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Tag, Plus, Search, Filter, Box } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCurrency } from '../lib/utils';

@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import { useState } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 

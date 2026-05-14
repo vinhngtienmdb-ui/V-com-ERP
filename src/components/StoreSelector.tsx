@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Store, Building2, MapPin, ChevronRight, Home, CheckCircle2, Lock, ArrowRight, UserCircle2, ShieldCheck, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';

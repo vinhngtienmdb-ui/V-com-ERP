@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
  Shield, 
  Settings, 
@@ -16,60 +16,60 @@ import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 const DEFAULT_ROLES = [
- { id: 'admin', name: 'Admin', description: 'ToÃ n quyá»n truy cáº­p vÃ  quáº£n trá»‹ há»‡ thá»‘ng' },
- { id: 'manager', name: 'Quáº£n lÃ½ cá»­a hÃ ng', description: 'Quáº£n lÃ½ nhÃ¢n viÃªn, doanh thu, kho bÃ¡o cÃ¡o' },
- { id: 'cashier', name: 'NhÃ¢n viÃªn bÃ¡n hÃ ng', description: 'Táº¡o Ä‘Æ¡n, nháº­n thanh toÃ¡n, xem lá»‹ch sá»­' },
- { id: 'accountant', name: 'Káº¿ toÃ¡n', description: 'Xem bÃ¡o cÃ¡o doanh thu, cÃ´ng ná»£, Ä‘á»‘i soÃ¡t' },
+ { id: 'admin', name: 'Admin', description: 'Toàn quyền truy cập và quản trị hệ thống' },
+ { id: 'manager', name: 'Quản lý cửa hàng', description: 'Quản lý nhân viên, doanh thu, kho báo cáo' },
+ { id: 'cashier', name: 'Nhân viên bán hàng', description: 'Tạo đơn, nhận thanh toán, xem lịch sử' },
+ { id: 'accountant', name: 'Kế toán', description: 'Xem báo cáo doanh thu, công nợ, đối soát' },
 ];
 
 const IPOS_MODULES = [
  { 
  id: 'sales', 
- name: 'BÃ¡n hÃ ng (POS)', 
+ name: 'Bán hàng (POS)', 
  features: [
- { id: 'create_order', name: 'Táº¡o Ä‘Æ¡n hÃ ng má»›i' },
- { id: 'apply_discount', name: 'Ãp dá»¥ng giáº£m giÃ¡/Voucher' },
- { id: 'void_item', name: 'Há»§y mÃ³n trong Ä‘Æ¡n' },
- { id: 'void_order', name: 'Há»§y toÃ n bá»™ Ä‘Æ¡n' },
- { id: 'change_price', name: 'Sá»­a giÃ¡ bÃ¡n trá»±c tiáº¿p' },
+ { id: 'create_order', name: 'Tạo đơn hàng mới' },
+ { id: 'apply_discount', name: 'Áp dụng giảm giá/Voucher' },
+ { id: 'void_item', name: 'Hủy món trong đơn' },
+ { id: 'void_order', name: 'Hủy toàn bộ đơn' },
+ { id: 'change_price', name: 'Sửa giá bán trực tiếp' },
  ]
  },
  { 
  id: 'orders', 
- name: 'Quáº£n lÃ½ ÄÆ¡n hÃ ng', 
+ name: 'Quản lý Đơn hàng', 
  features: [
- { id: 'view_history', name: 'Xem lá»‹ch sá»­ Ä‘Æ¡n hÃ ng' },
- { id: 'refund_order', name: 'HoÃ n tráº£/Äá»•i tráº£ hÃ ng' },
- { id: 'manage_delivery', name: 'Quáº£n lÃ½ Ä‘Æ¡n giao hÃ ng/Grab/ShopeeFood' },
+ { id: 'view_history', name: 'Xem lịch sử đơn hàng' },
+ { id: 'refund_order', name: 'Hoàn trả/Đổi trả hàng' },
+ { id: 'manage_delivery', name: 'Quản lý đơn giao hàng/Grab/ShopeeFood' },
  ]
  },
  {
  id: 'inventory',
- name: 'Kho & Sáº£n pháº©m',
+ name: 'Kho & Sản phẩm',
  features: [
- { id: 'view_inventory', name: 'Xem tá»“n kho' },
- { id: 'edit_product', name: 'ThÃªm/Sá»­a/XÃ³a sáº£n pháº©m' },
- { id: 'stock_take', name: 'Kiá»ƒm kho' },
- { id: 'import_export', name: 'Nháº­p/Xuáº¥t kho' },
+ { id: 'view_inventory', name: 'Xem tồn kho' },
+ { id: 'edit_product', name: 'Thêm/Sửa/Xóa sản phẩm' },
+ { id: 'stock_take', name: 'Kiểm kho' },
+ { id: 'import_export', name: 'Nhập/Xuất kho' },
  ]
  },
  {
  id: 'report',
- name: 'BÃ¡o cÃ¡o & TÃ i chÃ­nh',
+ name: 'Báo cáo & Tài chính',
  features: [
- { id: 'view_revenue', name: 'Xem bÃ¡o cÃ¡o doanh thu' },
- { id: 'view_profit', name: 'Xem lá»£i nhuáº­n' },
- { id: 'end_shift', name: 'Chá»‘t ca/BÃ n giao tiá»n' },
- { id: 'export_report', name: 'Xuáº¥t file bÃ¡o cÃ¡o (Excel/PDF)' }
+ { id: 'view_revenue', name: 'Xem báo cáo doanh thu' },
+ { id: 'view_profit', name: 'Xem lợi nhuận' },
+ { id: 'end_shift', name: 'Chốt ca/Bàn giao tiền' },
+ { id: 'export_report', name: 'Xuất file báo cáo (Excel/PDF)' }
  ]
  },
  {
  id: 'setup',
- name: 'Thiáº¿t láº­p há»‡ thá»‘ng',
+ name: 'Thiết lập hệ thống',
  features: [
- { id: 'manage_staff', name: 'Quáº£n lÃ½ nhÃ¢n viÃªn & PhÃ¢n quyá»n' },
- { id: 'manage_store', name: 'ThÃ´ng tin cá»­a hÃ ng & Cáº¥u hÃ¬nh' },
- { id: 'manage_payment', name: 'Cáº¥u hÃ¬nh phÆ°Æ¡ng thá»©c thanh toÃ¡n' }
+ { id: 'manage_staff', name: 'Quản lý nhân viên & Phân quyền' },
+ { id: 'manage_store', name: 'Thông tin cửa hàng & Cấu hình' },
+ { id: 'manage_payment', name: 'Cấu hình phương thức thanh toán' }
  ]
  }
 ];
@@ -125,7 +125,7 @@ export function IPosSettings() {
  const currentRole = roles.find(r => r.id === activeRole);
 
  const handleSave = () => {
- alert('ÄÃ£ lÆ°u cáº¥u hÃ¬nh phÃ¢n quyá»n iPOS thÃ nh cÃ´ng!');
+ alert('Đã lưu cấu hình phân quyền iPOS thành công!');
  };
 
  return (
@@ -136,17 +136,17 @@ export function IPosSettings() {
  <MonitorSmartphone className="w-6 h-6" />
  </div>
  <div>
- <h1 className="font-serif tracking-tight text-xl font-bold text-slate-900">CÃ i Ä‘áº·t iPOS & PhÃ¢n quyá»n</h1>
- <p className="text-sm text-slate-600 mt-1">Thiáº¿t láº­p vai trÃ² nÃ¢ng cao vÃ  giá»›i háº¡n quyá»n truy cáº­p tá»«ng module iPOS.</p>
+ <h1 className="font-serif tracking-tight text-xl font-bold text-slate-900">Cài đặt iPOS & Phân quyền</h1>
+ <p className="text-sm text-slate-600 mt-1">Thiết lập vai trò nâng cao và giới hạn quyền truy cập từng module iPOS.</p>
  </div>
  </div>
  <div className="flex gap-3">
  <button onClick={() => navigate('/ipos')} className="px-4 py-2 border border-slate-300 text-slate-800 bg-white rounded-lg text-sm font-semibold hover:bg-slate-50 shadow-sm">
- Quay láº¡i iPOS
+ Quay lại iPOS
  </button>
  <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-semibold hover:bg-primary-700 shadow-sm flex items-center gap-2">
  <Save className="w-4 h-4" />
- LÆ°u thay Ä‘á»•i
+ Lưu thay đổi
  </button>
  </div>
  </div>
@@ -158,7 +158,7 @@ export function IPosSettings() {
  <div className="flex items-center justify-between mb-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Users className="w-4 h-4 text-primary-600" />
- Vai trÃ² (Roles)
+ Vai trò (Roles)
  </h3>
  <button className="p-1 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded">
  <Plus className="w-4 h-4" />
@@ -197,14 +197,14 @@ export function IPosSettings() {
  <div>
  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
  <Shield className="w-5 h-5 text-emerald-600" />
- Quyá»n háº¡n: {currentRole?.name}
+ Quyền hạn: {currentRole?.name}
  </h2>
- <p className="text-sm text-slate-600 mt-1">Gáº¡t cÃ´ng táº¯c Ä‘á»ƒ cáº¥p hoáº·c thu há»“i quyá»n truy cáº­p tÃ­nh nÄƒng.</p>
+ <p className="text-sm text-slate-600 mt-1">Gạt công tắc để cấp hoặc thu hồi quyền truy cập tính năng.</p>
  </div>
  {activeRole === 'admin' && (
  <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold border border-amber-100">
  <Lock className="w-3.5 h-3.5" />
- Vai trÃ² Admin khÃ´ng thá»ƒ giá»›i háº¡n má»™t sá»‘ quyá»n cá»‘t lÃµi
+ Vai trò Admin không thể giới hạn một số quyền cốt lõi
  </span>
  )}
  </div>
@@ -255,7 +255,7 @@ export function IPosSettings() {
  "text-sm font-semibold",
  isGranted ? "text-slate-900" : "text-slate-700"
  )}>{feature.name}</p>
- <p className="text-[10px] text-slate-500 mt-0.5">MÃ£ quyá»n: {permKey}</p>
+ <p className="text-[10px] text-slate-500 mt-0.5">Mã quyền: {permKey}</p>
  </div>
  </label>
  );

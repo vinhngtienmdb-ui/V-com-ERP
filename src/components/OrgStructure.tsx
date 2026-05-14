@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Building2, Users, Briefcase, Plus, Search, Edit2, Trash2, X, ChevronRight, ChevronDown, AlignLeft, GitMerge } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';

@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { Users, Search, Plus, UserCircle2, Star, Download, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';

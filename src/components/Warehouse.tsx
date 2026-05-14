@@ -1,4 +1,4 @@
-﻿import { DraggableGrid } from './ui/DraggableGrid';
+import { DraggableGrid } from './ui/DraggableGrid';
 import { useState, useEffect } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
@@ -13,37 +13,37 @@ import { useStore } from '../context/StoreContext';
 
 const WAREHOUSE_MODULE_GROUPS = [
  {
- title: 'Nháº­p/xuáº¥t kho',
+ title: 'Nhập/xuất kho',
  items: [
- { id: 'wh_in_out', label: 'Phiáº¿u kho', desc: 'Nháº­p kho, xuáº¥t kho, Ä‘iá»u chuyá»ƒn.', icon: FileInput, color: 'blue' },
- { id: 'wh_req_purchase', label: 'Phiáº¿u Ä‘á» xuáº¥t mua hÃ ng', desc: 'Äá» xuáº¥t hÃ ng thiáº¿u.', icon: GitBranch, color: 'indigo' },
- { id: 'wh_inventory', label: 'Kiá»ƒm kÃª kho', desc: 'Thá»±c hiá»‡n kiá»ƒm kÃª Ä‘á»‹nh ká»³.', icon: ClipboardList, color: 'emerald' },
+ { id: 'wh_in_out', label: 'Phiếu kho', desc: 'Nhập kho, xuất kho, điều chuyển.', icon: FileInput, color: 'blue' },
+ { id: 'wh_req_purchase', label: 'Phiếu đề xuất mua hàng', desc: 'Đề xuất hàng thiếu.', icon: GitBranch, color: 'indigo' },
+ { id: 'wh_inventory', label: 'Kiểm kê kho', desc: 'Thực hiện kiểm kê định kỳ.', icon: ClipboardList, color: 'emerald' },
  ]
  },
  {
- title: 'Váº­n hÃ nh & Tá»‘i Æ°u AI',
+ title: 'Vận hành & Tối ưu AI',
  items: [
- { id: 'wh_ff_orders', label: 'Quáº£n lÃ½ váº­n chuyá»ƒn', desc: 'Theo dÃµi Ä‘Æ¡n hÃ ng Ä‘ang giao.', icon: ListTodo, color: 'indigo' },
- { id: 'wh_ff_predict', label: 'Dá»± bÃ¡o nhu cáº§u AI', desc: 'Dá»± bÃ¡o hÃ ng tá»“n cáº§n nháº­p.', icon: Sparkles, color: 'purple' },
- { id: 'wh_ff_heatmap', label: 'Báº£n Ä‘á»“ nhiá»‡t kho', desc: 'Tá»‘i Æ°u hÃ³a vá»‹ trÃ­ lÆ°u kho.', icon: Zap, color: 'orange' },
- { id: 'wh_ff_tracking', label: 'Theo dÃµi lá»™ trÃ¬nh', desc: 'Real-time tracking váº­n chuyá»ƒn.', icon: Navigation, color: 'blue' },
+ { id: 'wh_ff_orders', label: 'Quản lý vận chuyển', desc: 'Theo dõi đơn hàng đang giao.', icon: ListTodo, color: 'indigo' },
+ { id: 'wh_ff_predict', label: 'Dự báo nhu cầu AI', desc: 'Dự báo hàng tồn cần nhập.', icon: Sparkles, color: 'purple' },
+ { id: 'wh_ff_heatmap', label: 'Bản đồ nhiệt kho', desc: 'Tối ưu hóa vị trí lưu kho.', icon: Zap, color: 'orange' },
+ { id: 'wh_ff_tracking', label: 'Theo dõi lộ trình', desc: 'Real-time tracking vận chuyển.', icon: Navigation, color: 'blue' },
  ]
  },
  {
- title: 'BÃ¡o cÃ¡o',
+ title: 'Báo cáo',
  items: [
- { id: 'wh_stock', label: 'Tá»“n kho', desc: 'Danh sÃ¡ch tá»“n kho hiá»‡n táº¡i.', icon: Package, color: 'orange' },
- { id: 'wh_in_out_report', label: 'BÃ¡o cÃ¡o nháº­p xuáº¥t tá»“n', desc: 'Thá»‘ng kÃª luÃ¢n chuyá»ƒn.', icon: BarChart2, color: 'purple' },
+ { id: 'wh_stock', label: 'Tồn kho', desc: 'Danh sách tồn kho hiện tại.', icon: Package, color: 'orange' },
+ { id: 'wh_in_out_report', label: 'Báo cáo nhập xuất tồn', desc: 'Thống kê luân chuyển.', icon: BarChart2, color: 'purple' },
  ]
  },
  {
- title: 'Thiáº¿t láº­p vÃ  danh má»¥c',
+ title: 'Thiết lập và danh mục',
  items: [
- { id: 'wh_cat', label: 'Danh má»¥c hÃ ng hÃ³a', desc: 'PhÃ¢n loáº¡i hÃ ng hÃ³a.', icon: FileSignature, color: 'rose' },
- { id: 'wh_items', label: 'Danh sÃ¡ch hÃ ng hÃ³a', desc: 'Quáº£n lÃ½ mÃ£ hÃ ng, SKU.', icon: Package, color: 'fuchsia' },
- { id: 'wh_list', label: 'Danh sÃ¡ch kho', desc: 'Quáº£n lÃ½ cÃ¡c vá»‹ trÃ­ kho.', icon: Warehouse, color: 'blue' },
- { id: 'wh_partners', label: 'Danh sÃ¡ch Ä‘á»‘i tÃ¡c', desc: 'Äá»‘i tÃ¡c kho váº­n.', icon: Users, color: 'slate' },
- { id: 'wh_settings', label: 'Thiáº¿t láº­p kho', desc: 'Config quy táº¯c kho.', icon: Settings, color: 'slate' }
+ { id: 'wh_cat', label: 'Danh mục hàng hóa', desc: 'Phân loại hàng hóa.', icon: FileSignature, color: 'rose' },
+ { id: 'wh_items', label: 'Danh sách hàng hóa', desc: 'Quản lý mã hàng, SKU.', icon: Package, color: 'fuchsia' },
+ { id: 'wh_list', label: 'Danh sách kho', desc: 'Quản lý các vị trí kho.', icon: Warehouse, color: 'blue' },
+ { id: 'wh_partners', label: 'Danh sách đối tác', desc: 'Đối tác kho vận.', icon: Users, color: 'slate' },
+ { id: 'wh_settings', label: 'Thiết lập kho', desc: 'Config quy tắc kho.', icon: Settings, color: 'slate' }
  ]
  }
 ];
@@ -51,33 +51,33 @@ const WAREHOUSE_MODULE_GROUPS = [
 const LOGISTICS_PARTNERS = [
  { 
  id: 'LP001', 
- name: 'Giao HÃ ng Nhanh (GHN)', 
+ name: 'Giao Hàng Nhanh (GHN)', 
  contact: '1900 636683', 
  email: 'cskh@ghn.vn', 
- policy: 'Chiáº¿t kháº¥u 10% cho Ä‘Æ¡n trÃªn 100tr/thÃ¡ng', 
+ policy: 'Chiết khấu 10% cho đơn trên 100tr/tháng', 
  status: 'Active',
  website: 'ghn.vn',
- coverage: 'ToÃ n quá»‘c'
+ coverage: 'Toàn quốc'
  },
  { 
  id: 'LP002', 
  name: 'Viettel Post', 
  contact: '1900 8095', 
  email: 'support@viettelpost.com.vn', 
- policy: 'Äá»“ng giÃ¡ 22k ná»™i tá»‰nh', 
+ policy: 'Đồng giá 22k nội tỉnh', 
  status: 'Active',
  website: 'viettelpost.com.vn',
- coverage: 'ToÃ n quá»‘c'
+ coverage: 'Toàn quốc'
  },
  { 
  id: 'LP003', 
  name: 'Ninja Van', 
  contact: '1900 888685', 
  email: 'support_vn@ninjavan.co', 
- policy: 'Giáº£m 15% cho shop má»›i', 
+ policy: 'Giảm 15% cho shop mới', 
  status: 'Maintenance',
  website: 'ninjavan.co',
- coverage: 'ToÃ n quá»‘c'
+ coverage: 'Toàn quốc'
  }
 ];
 
@@ -86,9 +86,9 @@ const LOGISTICS_FEES: Record<string, any[]> = {
 };
 
 const MOCK_SHIPMENTS = [
- { id: 'SHIP-001', orderId: 'ORD-5521', partner: 'GHN', status: 'In Transit', driver: 'Nguyá»…n VÄƒn Nam', eta: '15:30 Today' },
- { id: 'SHIP-002', orderId: 'ORD-5525', partner: 'Viettel Post', status: 'Delivered', driver: 'Tráº§n VÄƒn TÃº', eta: 'Success' },
- { id: 'SHIP-003', orderId: 'ORD-5528', partner: 'Ninja Van', status: 'Chá» xá»­ lÃ½', driver: 'ChÆ°a Ä‘iá»u phá»‘i', eta: 'NgÃ y mai' },
+ { id: 'SHIP-001', orderId: 'ORD-5521', partner: 'GHN', status: 'In Transit', driver: 'Nguyễn Văn Nam', eta: '15:30 Today' },
+ { id: 'SHIP-002', orderId: 'ORD-5525', partner: 'Viettel Post', status: 'Delivered', driver: 'Trần Văn Tú', eta: 'Success' },
+ { id: 'SHIP-003', orderId: 'ORD-5528', partner: 'Ninja Van', status: 'Chờ xử lý', driver: 'Chưa điều phối', eta: 'Ngày mai' },
 ];
 
 function getColorClasses(color: string) {
@@ -133,16 +133,16 @@ export function WarehouseModule() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quáº£n trá»‹ Kho váº­n</h1>
+ <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Kho vận</h1>
  </div>
- <p className="text-sm text-[#6B7280]">Quáº£n lÃ½ nháº­p xuáº¥t kho, kiá»ƒm kÃª vÃ  váº­n hÃ nh Fulfillment.</p>
+ <p className="text-sm text-[#6B7280]">Quản lý nhập xuất kho, kiểm kê và vận hành Fulfillment.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <Filter className="w-4 h-4" /> Báº£n Ä‘á»“ kho
+ <Filter className="w-4 h-4" /> Bản đồ kho
  </button>
  <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Plus className="w-4 h-4" /> Táº¡o phiáº¿u kho
+ <Plus className="w-4 h-4" /> Tạo phiếu kho
  </button>
  </div>
  </div>
@@ -153,7 +153,7 @@ export function WarehouseModule() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
  <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GiÃ¡ trá»‹ tá»“n kho</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Giá trị tồn kho</span>
  <DollarSign className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
@@ -163,27 +163,27 @@ export function WarehouseModule() {
  </div>
  <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">ÄÆ¡n Fulfillment</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đơn Fulfillment</span>
  <Truck className="w-4 h-4 text-orange-700" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">1,248</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">85 Äang giao</span>
+ <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">85 Đang giao</span>
  </div>
  </div>
  <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">HÃ ng sáº¯p háº¿t (Alt)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Hàng sắp hết (Alt)</span>
  <AlertCircle className="w-4 h-4 text-orange-600" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">42 SKUs</span>
- <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">Cáº§n nháº­p</span>
+ <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">Cần nhập</span>
  </div>
  </div>
  <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Uptime Kho váº­n</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Uptime Kho vận</span>
  <Clock className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
@@ -234,10 +234,10 @@ export function WarehouseModule() {
  onClick={() => setActiveTab('overview')} 
  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
  >
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i Giao diá»‡n chung
+ <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
  </button>
  <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5">
- <Plus className="w-4 h-4" /> ThÃªm Ä‘Æ¡n vá»‹ váº­n chuyá»ƒn
+ <Plus className="w-4 h-4" /> Thêm đơn vị vận chuyển
  </button>
  </div>
  
@@ -246,10 +246,10 @@ export function WarehouseModule() {
  <div className="flex justify-between items-center mb-8">
  <div className="relative w-96">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
- <input type="text" placeholder="TÃ¬m kiáº¿m Ä‘Æ¡n vá»‹ váº­n chuyá»ƒn..." className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-slate-900" />
+ <input type="text" placeholder="Tìm kiếm đơn vị vận chuyển..." className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-slate-900" />
  </div>
  <button className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-slate-50 border border-slate-300 px-4 py-2 rounded-lg">
- <Filter className="w-4 h-4" /> Lá»c
+ <Filter className="w-4 h-4" /> Lọc
  </button>
  </div>
 
@@ -265,7 +265,7 @@ export function WarehouseModule() {
  </button>
  </div>
  <h3 className="text-lg font-bold text-slate-900 mb-1">{partner.name}</h3>
- <p className="text-xs text-slate-600 mb-4">{partner.id} â€¢ {partner.coverage}</p>
+ <p className="text-xs text-slate-600 mb-4">{partner.id} • {partner.coverage}</p>
  
  <div className="space-y-3 mb-6">
  <div className="flex items-center gap-3 text-xs text-slate-700">
@@ -282,7 +282,7 @@ export function WarehouseModule() {
  <div className="bg-slate-100 border border-slate-300 rounded-lg p-4">
  <div className="flex items-center gap-2 mb-1">
  <Percent className="w-3.5 h-3.5 text-orange-700" />
- <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wider">ChÃ­nh sÃ¡ch chiáº¿t kháº¥u</span>
+ <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wider">Chính sách chiết khấu</span>
  </div>
  <p className="text-xs text-slate-800 leading-relaxed font-medium">
  {partner.policy}
@@ -301,7 +301,7 @@ export function WarehouseModule() {
  onClick={() => setSelectedPartnerForFees(partner.id)}
  className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
  >
- <Receipt className="w-3.5 h-3.5" /> Biá»ƒu phÃ­
+ <Receipt className="w-3.5 h-3.5" /> Biểu phí
  </button>
  <button className="text-xs font-bold text-slate-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg transition-colors">API</button>
  </div>
@@ -319,18 +319,18 @@ export function WarehouseModule() {
  onClick={() => setSelectedPartnerForFees(null)}
  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors"
  >
- <ArrowLeft className="w-4 h-4" /> Danh sÃ¡ch Ä‘á»‘i tÃ¡c
+ <ArrowLeft className="w-4 h-4" /> Danh sách đối tác
  </button>
  <div className="flex items-center gap-3">
  <h3 className="text-lg font-bold text-slate-900">
- Biá»ƒu phÃ­ dá»‹ch vá»¥: {LOGISTICS_PARTNERS.find(p => p.id === selectedPartnerForFees)?.name}
+ Biểu phí dịch vụ: {LOGISTICS_PARTNERS.find(p => p.id === selectedPartnerForFees)?.name}
  </h3>
  <span className="text-[10px] bg-[#EAE7DF] text-orange-800 font-bold px-2 py-0.5 rounded uppercase tracking-wider">
  {selectedPartnerForFees}
  </span>
  </div>
  <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5">
- <Plus className="w-4 h-4" /> ThÃªm khoáº£n phÃ­ má»›i
+ <Plus className="w-4 h-4" /> Thêm khoản phí mới
  </button>
  </div>
 
@@ -339,11 +339,11 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">TÃªn khoáº£n phÃ­</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loáº¡i phÃ­</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">GiÃ¡ trá»‹</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tráº¡ng thÃ¡i</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tÃ¡c</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên khoản phí</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loại phí</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Giá trị</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -391,7 +391,7 @@ export function WarehouseModule() {
  {(!LOGISTICS_FEES[selectedPartnerForFees] || LOGISTICS_FEES[selectedPartnerForFees].length === 0) && (
  <div className="py-20 flex flex-col items-center justify-center text-center opacity-50">
  <Receipt className="w-12 h-12 mb-4 text-slate-500" />
- <p className="text-sm font-medium text-slate-600">ChÆ°a cÃ³ dá»¯ liá»‡u biá»ƒu phÃ­ cho Ä‘á»‘i tÃ¡c nÃ y</p>
+ <p className="text-sm font-medium text-slate-600">Chưa có dữ liệu biểu phí cho đối tác này</p>
  </div>
  )}
  </div>
@@ -407,12 +407,12 @@ export function WarehouseModule() {
  onClick={() => setActiveTab('overview')} 
  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
  >
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i Giao diá»‡n chung
+ <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
  </button>
  <div className="flex gap-3">
- <button className="bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-300">Xuáº¥t bÃ¡o cÃ¡o</button>
+ <button className="bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-300">Xuất báo cáo</button>
  <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5">
- <Plus className="w-4 h-4" /> Táº¡o Ä‘Æ¡n váº­n má»›i
+ <Plus className="w-4 h-4" /> Tạo đơn vận mới
  </button>
  </div>
  </div>
@@ -421,13 +421,13 @@ export function WarehouseModule() {
  <div className="flex gap-4 mb-8">
  <div className="flex-1 relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
- <input type="text" placeholder="MÃ£ váº­n Ä‘Æ¡n, mÃ£ Ä‘Æ¡n hÃ ng, shipper..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-slate-900" />
+ <input type="text" placeholder="Mã vận đơn, mã đơn hàng, shipper..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-slate-900" />
  </div>
  <select className="bg-slate-50 border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium outline-none">
- <option>Táº¥t cáº£ tráº¡ng thÃ¡i</option>
- <option>Äang giao</option>
- <option>ÄÃ£ giao</option>
- <option>Chá» láº¥y hÃ ng</option>
+ <option>Tất cả trạng thái</option>
+ <option>Đang giao</option>
+ <option>Đã giao</option>
+ <option>Chờ lấy hàng</option>
  </select>
  </div>
 
@@ -436,12 +436,12 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
- <th className="px-3 py-2.5">Váº­n Ä‘Æ¡n</th>
- <th className="px-3 py-2.5">Äá»‘i tÃ¡c</th>
- <th className="px-3 py-2.5">TÃ i xáº¿/Shipper</th>
- <th className="px-3 py-2.5">Dá»± kiáº¿n</th>
- <th className="px-6 py-4 text-center">Tráº¡ng thÃ¡i</th>
- <th className="px-6 py-4 text-right">Thao tÃ¡c</th>
+ <th className="px-3 py-2.5">Vận đơn</th>
+ <th className="px-3 py-2.5">Đối tác</th>
+ <th className="px-3 py-2.5">Tài xế/Shipper</th>
+ <th className="px-3 py-2.5">Dự kiến</th>
+ <th className="px-6 py-4 text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -497,7 +497,7 @@ export function WarehouseModule() {
  onClick={() => setActiveTab('overview')} 
  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg"
  >
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i
+ <ArrowLeft className="w-4 h-4" /> Quay lại
  </button>
  <div className="flex items-center gap-2 text-primary-600 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-100 animate-pulse">
  <Sparkles className="w-4 h-4" />
@@ -510,10 +510,10 @@ export function WarehouseModule() {
  <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden h-[400px] flex flex-col">
  <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
  <Sparkles className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Dá»± bÃ¡o Nhu cáº§u SKUs (ThÃ¡ng 5/2026)</h3>
+ <h3 className="text-sm font-bold text-slate-900">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
  </div>
  <div className="p-5 flex-1 flex flex-col">
- <p className="text-slate-500 text-xs mb-4">Dá»±a trÃªn dá»¯ liá»‡u lá»‹ch sá»­ bÃ¡n hÃ ng vÃ  biáº¿n Ä‘á»™ng thá»‹ trÆ°á»ng.</p>
+ <p className="text-slate-500 text-xs mb-4">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
  <div className="flex items-end gap-3 flex-1">
  {[45, 65, 35, 85, 55, 95, 75, 45, 65, 80, 70, 90].map((val, i) => (
  <div key={i} className="flex-1 flex flex-col items-center gap-2">
@@ -537,8 +537,8 @@ export function WarehouseModule() {
  <AlertCircle className="w-5 h-5" />
  </div>
  <div>
- <p className="text-sm font-bold text-slate-900">Nháº­p hÃ ng gáº¥p: SKU-552</p>
- <p className="text-[11px] text-slate-600 leading-relaxed">Dá»± kiáº¿n háº¿t kho trong 3 ngÃ y tá»›i do chiáº¿n dá»‹ch Flash Sale 5/5.</p>
+ <p className="text-sm font-bold text-slate-900">Nhập hàng gấp: SKU-552</p>
+ <p className="text-[11px] text-slate-600 leading-relaxed">Dự kiến hết kho trong 3 ngày tới do chiến dịch Flash Sale 5/5.</p>
  </div>
  </div>
  <div className="flex gap-3">
@@ -546,25 +546,25 @@ export function WarehouseModule() {
  <TrendingUp className="w-5 h-5" />
  </div>
  <div>
- <p className="text-sm font-bold text-slate-900">Giáº£m nháº­p: SKU-991</p>
- <p className="text-[11px] text-slate-600 leading-relaxed">Tá»‘c Ä‘á»™ tiÃªu thá»¥ giáº£m 25% trong 2 tuáº§n qua. TrÃ¡nh tá»“n Ä‘á»ng vá»‘n.</p>
+ <p className="text-sm font-bold text-slate-900">Giảm nhập: SKU-991</p>
+ <p className="text-[11px] text-slate-600 leading-relaxed">Tốc độ tiêu thụ giảm 25% trong 2 tuần qua. Tránh tồn đọng vốn.</p>
  </div>
  </div>
  </div>
  <button className="w-full mt-6 py-3 bg-primary-600 text-[#FAF9F5] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-indigo-200">
- Táº¡o Ä‘á» xuáº¥t mua hÃ ng tá»± Ä‘á»™ng
+ Tạo đề xuất mua hàng tự động
  </button>
  </div>
 
  <div className="bg-slate-50 border border-slate-300 rounded-xl p-6">
- <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Äá»™ chÃ­nh xÃ¡c mÃ´ hÃ¬nh</h4>
+ <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Độ chính xác mô hình</h4>
  <div className="flex items-center gap-4">
  <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin flex items-center justify-center">
  <span className="text-xs font-black text-slate-900 animate-none">94.2%</span>
  </div>
  <div>
- <p className="text-xs font-bold text-slate-900">MÃ´ hÃ¬nh LSTM v4.2</p>
- <p className="text-[10px] text-slate-600 font-medium">Cáº­p nháº­t: 04:52 AM HÃ´m nay</p>
+ <p className="text-xs font-bold text-slate-900">Mô hình LSTM v4.2</p>
+ <p className="text-[10px] text-slate-600 font-medium">Cập nhật: 04:52 AM Hôm nay</p>
  </div>
  </div>
  </div>
@@ -578,10 +578,10 @@ export function WarehouseModule() {
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
  <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
  <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg">
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i
+ <ArrowLeft className="w-4 h-4" /> Quay lại
  </button>
  <div className="flex items-center gap-6">
- {['Lá»‘i Ä‘i A', 'Lá»‘i Ä‘i B', 'Lá»‘i Ä‘i C', 'Khu vá»±c Pick-Pack'].map(zone => (
+ {['Lối đi A', 'Lối đi B', 'Lối đi C', 'Khu vực Pick-Pack'].map(zone => (
  <span key={zone} className="text-[10px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer hover:text-orange-700 transition-colors">
  {zone}
  </span>
@@ -592,8 +592,8 @@ export function WarehouseModule() {
  <div className="p-8">
  <div className="flex justify-between items-center mb-8">
  <div>
- <h3 className="text-lg font-bold text-slate-900">Báº£n Ä‘á»“ nhiá»‡t LÆ°u trá»¯ (Storage Heatmap)</h3>
- <p className="text-xs text-slate-600">Trá»±c quan hÃ³a máº­t Ä‘á»™ hÃ ng hÃ³a vÃ  hiá»‡u suáº¥t láº¥y hÃ ng (Pick efficiency).</p>
+ <h3 className="text-lg font-bold text-slate-900">Bản đồ nhiệt Lưu trữ (Storage Heatmap)</h3>
+ <p className="text-xs text-slate-600">Trực quan hóa mật độ hàng hóa và hiệu suất lấy hàng (Pick efficiency).</p>
  </div>
  <div className="flex items-center gap-4">
  <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-bold border border-rose-100">
@@ -622,9 +622,9 @@ export function WarehouseModule() {
  <LayoutGrid className={cn("w-3 h-3", i % 7 === 0 || i % 5 === 0 ? "text-[#FAF9F5]/50" : "text-slate-400")} />
  
  <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-900 text-[#FAF9F5] p-3 rounded-lg text-[10px] opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-sm">
- <p className="font-black mb-1">MÃ£ ká»‡: A-{i+101}</p>
- <p className="opacity-70">Sá»©c chá»©a: {i % 7 === 0 ? '98%' : '45%'}</p>
- <p className="opacity-70">Táº§n suáº¥t Pick: {i % 7 === 0 ? 'High' : 'Normal'}</p>
+ <p className="font-black mb-1">Mã kệ: A-{i+101}</p>
+ <p className="opacity-70">Sức chứa: {i % 7 === 0 ? '98%' : '45%'}</p>
+ <p className="opacity-70">Tần suất Pick: {i % 7 === 0 ? 'High' : 'Normal'}</p>
  </div>
  </div>
  ))}
@@ -636,21 +636,21 @@ export function WarehouseModule() {
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
  <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
  <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700">
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i
+ <ArrowLeft className="w-4 h-4" /> Quay lại
  </button>
  </div>
  <div className="flex-1 flex">
  <div className="w-80 border-r border-slate-200 p-6 space-y-4 overflow-y-auto">
- <h3 className="font-bold text-slate-900 border-b pb-4 mb-4">ÄÆ¡n Ä‘ang giao (2)</h3>
+ <h3 className="font-bold text-slate-900 border-b pb-4 mb-4">Đơn đang giao (2)</h3>
  {MOCK_SHIPMENTS.filter(s => s.status === 'In Transit').map(s => (
  <div key={s.id} className="p-4 bg-slate-50 rounded-lg border border-orange-200 cursor-pointer hover:bg-white transition-all">
  <div className="flex justify-between items-start mb-2">
  <span className="font-bold text-sm text-orange-700">{s.id}</span>
- <span className="text-[10px] font-bold text-slate-500">Äang cháº¡y</span>
+ <span className="text-[10px] font-bold text-slate-500">Đang chạy</span>
  </div>
  <p className="text-xs text-slate-700 mb-2">{s.driver}</p>
  <div className="flex items-center gap-1 text-[10px] font-bold text-slate-600">
- <Clock className="w-3 h-3" /> Cáº­p nháº­t: 2 phÃºt trÆ°á»›c
+ <Clock className="w-3 h-3" /> Cập nhật: 2 phút trước
  </div>
  </div>
  ))}
@@ -659,21 +659,21 @@ export function WarehouseModule() {
  <div className="absolute inset-0 flex items-center justify-center">
  <div className="text-center opacity-40">
  <Navigation className="w-16 h-16 mx-auto mb-4" />
- <p className="font-bold">Báº¢N Äá»’ Lá»˜ TRÃŒNH REAL-TIME</p>
- <p className="text-xs">Äang táº£i dá»¯ liá»‡u vá»‡ tinh GPS...</p>
+ <p className="font-bold">BẢN ĐỒ LỘ TRÌNH REAL-TIME</p>
+ <p className="text-xs">Đang tải dữ liệu vệ tinh GPS...</p>
  </div>
  </div>
  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur p-4 rounded-lg shadow-sm space-y-3 w-48">
  <div className="flex items-center justify-between text-xs font-bold text-slate-700 border-b pb-2">
- <span>Tá»•ng sá»‘ xe</span>
+ <span>Tổng số xe</span>
  <span className="text-orange-700">12</span>
  </div>
  <div className="flex items-center justify-between text-[10px] font-bold text-slate-600">
- <span>Äang giao hÃ ng</span>
+ <span>Đang giao hàng</span>
  <span className="text-emerald-500">8</span>
  </div>
  <div className="flex items-center justify-between text-[10px] font-bold text-slate-600">
- <span>Dá»«ng nghá»‰</span>
+ <span>Dừng nghỉ</span>
  <span className="text-orange-500">4</span>
  </div>
  </div>
@@ -687,17 +687,17 @@ export function WarehouseModule() {
  <div className="w-20 h-20 bg-emerald-50 rounded-lg flex items-center justify-center mb-6 animate-bounce">
  <MapPin className="w-10 h-10 text-emerald-600" />
  </div>
- <h2 className="text-2xl font-bold text-slate-900 mb-4">Tá»‘i Æ°u Tuyáº¿n Ä‘Æ°á»ng Giao hÃ ng</h2>
+ <h2 className="text-2xl font-bold text-slate-900 mb-4">Tối ưu Tuyến đường Giao hàng</h2>
  <p className="text-slate-600 max-w-lg mx-auto leading-relaxed mb-8">
- Sá»­ dá»¥ng thuáº­t toÃ¡n AI Ä‘á»ƒ sáº¯p xáº¿p thá»© tá»± cÃ¡c Ä‘iá»ƒm giao hÃ ng, giáº£m 20% quÃ£ng Ä‘Æ°á»ng di chuyá»ƒn vÃ  tá»‘i Æ°u hÃ³a thá»i gian nháº­n hÃ ng cá»§a khÃ¡ch hÃ ng.
+ Sử dụng thuật toán AI để sắp xếp thứ tự các điểm giao hàng, giảm 20% quãng đường di chuyển và tối ưu hóa thời gian nhận hàng của khách hàng.
  </p>
  <div className="flex gap-4">
- <button className="bg-emerald-600 text-[#FAF9F5] px-8 py-3 rounded-lg font-bold shadow-sm shadow-emerald-600/20">Cháº¡y Optimization ngay</button>
+ <button className="bg-emerald-600 text-[#FAF9F5] px-8 py-3 rounded-lg font-bold shadow-sm shadow-emerald-600/20">Chạy Optimization ngay</button>
  <button 
  onClick={() => setActiveTab('overview')}
  className="bg-slate-100 text-slate-700 px-8 py-3 rounded-lg font-bold"
  >
- Há»§y bá»
+ Hủy bỏ
  </button>
  </div>
  </div>
@@ -714,12 +714,12 @@ export function WarehouseModule() {
  <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-orange-700" />
  </button>
  <div>
- <h3 className="text-sm font-bold text-slate-900 leading-none mb-1">Tá»“n kho nguyÃªn váº­t liá»‡u</h3>
+ <h3 className="text-sm font-bold text-slate-900 leading-none mb-1">Tồn kho nguyên vật liệu</h3>
  <p className="text-[10px] text-slate-600 font-medium">Kho: <span className="text-orange-700 uppercase">{activeStore?.name}</span></p>
  </div>
  </div>
  <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5">
- <Plus className="w-4 h-4" /> Nháº­p tá»“n Ä‘áº§u ká»³
+ <Plus className="w-4 h-4" /> Nhập tồn đầu kỳ
  </button>
  </div>
  
@@ -743,11 +743,11 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
- <th className="px-3 py-2.5">MÃ£ NguyÃªn liá»‡u</th>
- <th className="px-6 py-4 text-center">Tá»“n kho thá»±c táº¿</th>
- <th className="px-6 py-4 text-center">ÄÆ¡n vá»‹</th>
- <th className="px-3 py-2.5">Cáº­p nháº­t láº§n cuá»‘i</th>
- <th className="px-6 py-4 text-right">Thao tÃ¡c</th>
+ <th className="px-3 py-2.5">Mã Nguyên liệu</th>
+ <th className="px-6 py-4 text-center">Tồn kho thực tế</th>
+ <th className="px-6 py-4 text-center">Đơn vị</th>
+ <th className="px-3 py-2.5">Cập nhật lần cuối</th>
+ <th className="px-6 py-4 text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -756,7 +756,7 @@ export function WarehouseModule() {
  <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <span className="text-sm font-bold text-slate-900">{item.materialId}</span>
- {item.quantity < 20 && <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">Sáº¯p háº¿t</span>}
+ {item.quantity < 20 && <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">Sắp hết</span>}
  </div>
  </td>
  <td className="px-6 py-4 text-center">
@@ -768,10 +768,10 @@ export function WarehouseModule() {
  {item.materialId.includes('MAT-001') ? 'KG' : item.materialId.includes('MAT-004') ? 'BOX' : 'LIT'}
  </td>
  <td className="px-6 py-4 text-xs font-medium text-slate-600">
- {item.updatedAt?.toDate().toLocaleString('vi-VN') || 'Vá»«a cáº­p nháº­t'}
+ {item.updatedAt?.toDate().toLocaleString('vi-VN') || 'Vừa cập nhật'}
  </td>
  <td className="px-6 py-4 text-right">
- <button className="text-orange-700 text-xs font-bold hover:underline">Chi tiáº¿t</button>
+ <button className="text-orange-700 text-xs font-bold hover:underline">Chi tiết</button>
  </td>
  </tr>
  ))}
@@ -790,7 +790,7 @@ export function WarehouseModule() {
  onClick={() => setActiveTab('overview')} 
  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
  >
- <ArrowLeft className="w-4 h-4" /> Quay láº¡i Giao diá»‡n chung
+ <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
  </button>
  </div>
  
@@ -798,9 +798,9 @@ export function WarehouseModule() {
  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
  <Warehouse className="w-10 h-10 text-orange-600" />
  </div>
- <h3 className="text-xl font-bold text-slate-900 mb-2">PhÃ¢n há»‡: {activeTab}</h3>
+ <h3 className="text-xl font-bold text-slate-900 mb-2">Phân hệ: {activeTab}</h3>
  <p className="text-slate-600 max-w-md mx-auto leading-relaxed">
- TÃ­nh nÄƒng nÃ y Ä‘ang trong quÃ¡ trÃ¬nh phÃ¡t triá»ƒn chi tiáº¿t cho phÃ¢n há»‡ Kho váº­n.
+ Tính năng này đang trong quá trình phát triển chi tiết cho phân hệ Kho vận.
  </p>
  </div>
  </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ShoppingBag, Search, Filter, AlertCircle, FileText, Truck } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 
