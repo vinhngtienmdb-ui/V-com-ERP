@@ -1,5 +1,8 @@
 import { makeRepository } from './base';
-import { ProductSchema, OrderSchema, CustomerSchema, type ProductInput, type OrderInput, type CustomerInput } from './schemas';
+import {
+  ProductSchema, OrderSchema, CustomerSchema, InventoryMovementSchema,
+  type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
+} from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
   collectionName: 'products',
@@ -16,4 +19,10 @@ export const customersRepo = makeRepository<CustomerInput>({
   schema: CustomerSchema,
 });
 
+export const inventoryRepo = makeRepository<InventoryMovementInput>({
+  collectionName: 'inventory_movements',
+  schema: InventoryMovementSchema,
+});
+
 export * from './schemas';
+export * from './orders';

@@ -25,8 +25,8 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ordersRepo } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
  const [isGenerating, setIsGenerating] = useState(false);
@@ -298,23 +298,26 @@ export function Orders() {
  const [dbOrders, setDbOrders] = useState<any[]>([]);
 
  useEffect(() => {
- const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
- const unsub = onSnapshot(q, (snap) => {
- const data = snap.docs.map(doc => {
- const d = doc.data();
- return {
- id: doc.id,
+ // Subscribe qua repository (zod schema validation + error handling tập trung).
+ const unsub = ordersRepo.subscribe(
+ [orderBy('createdAt', 'desc'), limit(50)],
+ (items) => {
+ const formatted = items.map((d: any) => ({
  ...d,
- date: d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')
- };
- });
- setDbOrders(data);
- });
+ date: d.createdAt?.toDate
+ ? d.createdAt.toDate().toLocaleString('vi-VN')
+ : (d.date ?? new Date().toLocaleString('vi-VN')),
+ }));
+ setDbOrders(formatted);
+ },
+ );
  return () => unsub();
  }, []);
 
+ // Khi Firestore rỗng (môi trường mới), fallback hiện MOCK_ORDERS để có UI demo.
+ // Khi có dữ liệu thật, KHÔNG trộn — tránh nhầm lẫn.
  const allOrders = useMemo(() => {
- return [...MOCK_ORDERS, ...dbOrders];
+ return dbOrders.length > 0 ? dbOrders : MOCK_ORDERS;
  }, [dbOrders]);
 
  const filteredOrders = useMemo(() => {
@@ -340,50 +343,9 @@ export function Orders() {
  setIsGenerating(false);
  };
 
- const addDemoOrders = async () => {
- // Note: status must be one of: 'pending', 'completed', 'cancelled', 'returned' according to firestore rules
- // paymentMethod must be 'cash', 'qr', 'pos', 'loyalty', 'loyalty_full', or null
- const demo = [
- {
- customerName: 'Nguyễn Văn A',
- total: 2500000,
- status: 'delivered',
- paymentMethod: 'cod',
- items: [{name: 'Bàn phím cơ', price: 2500000}],
- carrier: 'GHTK',
- tracking: 'GHTK123456789',
- shippingCost: 35000,
- source: 'erp'
- },
- {
- customerName: 'Trần Thị B',
- total: 1200000,
- status: 'pending',
- paymentMethod: 'bank_transfer',
- items: [{name: 'Chuột không dây', price: 1200000}],
- carrier: 'GHN',
- tracking: 'GHN987654321',
- shippingCost: 28000,
- source: 'erp'
- }
- ];
-
- const { getAuth } = await import('firebase/auth');
- const auth = getAuth();
- const currentUser = auth.currentUser;
- if (!currentUser) {
- alert("Bạn cần đăng nhập để thêm demo orders!");
- return;
- }
-
- for (const o of demo) {
- await addDoc(collection(db, 'orders'), {
- ...o,
- staffId: currentUser.uid,
- createdAt: serverTimestamp()
- });
- }
- };
+ // Demo data hiện đã chuyển sang scripts/seed-dev-data.ts (chạy bằng
+ // service account). Nút "Thêm dữ liệu mẫu" trong UI đã bị bỏ — dữ liệu
+ // thật được seed từ CLI, hoặc tạo qua workflow business.
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -393,9 +355,10 @@ export function Orders() {
  <p className="text-sm text-[#6B7280] mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
  </div>
  <div className="flex gap-3">
- <button 
- onClick={addDemoOrders}
- className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
+ <button
+ className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm opacity-50 cursor-not-allowed"
+ title="Sắp ra mắt — voucher tập trung trong /marketing"
+ disabled
  >
  <Sparkles className="w-4 h-4" />
  Mã giảm giá

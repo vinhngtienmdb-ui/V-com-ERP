@@ -79,6 +79,30 @@ export const CustomerSchema = z.object({
   walletBalance: z.number().optional(),
 });
 
+export const InventoryMovementType = z.enum([
+  'stock_in',       // Nhập kho (mua/sản xuất)
+  'stock_out',      // Xuất kho (bán/giao đơn)
+  'transfer',       // Chuyển kho giữa stores
+  'adjustment',     // Hiệu chỉnh (kiểm kê, hao hụt)
+  'return',         // Nhận lại từ khách
+]);
+
+export const InventoryMovementSchema = z.object({
+  id: z.string(),
+  productId: z.string(),
+  productName: z.string().optional(),
+  storeId: z.string().optional(),
+  type: InventoryMovementType,
+  quantity: z.number().int(), // dương = vào kho, âm = ra kho
+  costPriceAtMove: z.number().nonnegative().optional(),
+  reason: z.string().optional(),
+  refOrderId: z.string().optional(),
+  refTransferId: z.string().optional(),
+  staffId: z.string(),
+  createdAt: Timestamp.optional(),
+});
+
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
+export type InventoryMovementInput = z.infer<typeof InventoryMovementSchema>;

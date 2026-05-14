@@ -134,6 +134,25 @@ service cloud.firestore {
       allow delete: if isManager();
     }
 
+    // ── Inventory movements (append-only sổ kho) ────────────────────────────
+    match /inventory_movements/{movId} {
+      allow get, list: if isStaff();
+      // Tạo từ client (qua transaction shipOrder/adjust). Validate schema chặt.
+      allow create: if isStaff() && isValidMovement(incoming()) &&
+        incoming().staffId == request.auth.uid &&
+        incoming().createdAt is timestamp;
+      // Append-only: không update/delete để giữ sổ kho minh bạch.
+      allow update, delete: if false;
+
+      function isValidMovement(d) {
+        return d.productId is string && d.productId.size() > 0 &&
+               d.quantity is number &&
+               d.type in ['stock_in', 'stock_out', 'transfer', 'adjustment', 'return'] &&
+               (!('refOrderId' in d) || d.refOrderId is string) &&
+               (!('storeId' in d) || d.storeId == null || d.storeId is string);
+      }
+    }
+
     // ── Transactions (finance) ──────────────────────────────────────────────
     match /transactions/{txId} {
       allow get, list: if isManager();
