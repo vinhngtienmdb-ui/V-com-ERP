@@ -95,11 +95,11 @@ export function AIOperations() {
  </div>
 
  <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-stone-950 text-[#FAF9F5] p-4 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
+ <div className="bg-stone-950 text-[#FAF9F5] p-3 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
- <div className="flex justify-between items-start mb-6">
- <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5 group-hover:scale-110 transition-transform duration-500">
- <Cpu className="w-6 h-6" />
+ <div className="flex justify-between items-start mb-2">
+ <div className="p-1.5 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5 group-hover:scale-110 transition-transform duration-500">
+ <Cpu className="w-4 h-4" />
  </div>
  <div className="flex flex-col items-end">
  <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">System Health</span>
@@ -107,8 +107,8 @@ export function AIOperations() {
  </div>
  </div>
  <div>
- <div className="text-xl font-black tracking-tight">12 Tác nhân</div>
- <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
+ <div className="text-base font-black tracking-tight">12 Tác nhân</div>
+ <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
  </div>
  </div>
  <div className="absolute top-0 right-0 w-32 h-32 bg-slate-900/5 rounded-full blur-3xl" />
@@ -120,19 +120,19 @@ export function AIOperations() {
  { label: 'Cảnh báo rủi ro', value: '12', sub: 'Detected today', icon: AlertTriangle, color: 'rose', alert: true },
  { label: 'Độ trễ suy luận', value: '140ms', sub: 'Avg Response', icon: Activity, color: 'blue' },
  ].map((stat) => (
- <div key={stat.label} className="bg-white p-4 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
+ <div key={stat.label} className="bg-white p-3 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-3 group hover:shadow-slate-900/5 transition-all">
  <div className={cn(
- "p-4 rounded-none transition-transform group-hover:scale-110 duration-500",
+ "p-2 rounded-none transition-transform group-hover:scale-110 duration-500",
  stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-orange-700"
  )}>
- <stat.icon className="w-6 h-6" />
+ <stat.icon className="w-4 h-4" />
  </div>
  <div>
- <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{stat.label}</p>
- <div className={cn("text-2xl font-black tracking-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
+ <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-0.5">{stat.label}</p>
+ <div className={cn("text-lg font-black tracking-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
  {stat.value}
  </div>
- <p className="text-[10px] text-slate-600 font-bold mt-0.5">{stat.sub}</p>
+ <p className="text-[10px] text-slate-600 font-bold">{stat.sub}</p>
  </div>
  </div>
  ))}
@@ -165,15 +165,15 @@ export function AIOperations() {
  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
  <div className="flex gap-4 w-full md:w-auto">
  <div className="relative flex-1 md:flex-initial">
- <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
- <input 
- type="text" 
- placeholder="Tìm ID xử lý của AI..." 
- className="bg-slate-50 border border-slate-300 rounded-xl pl-12 pr-6 py-3 text-sm focus:outline-none w-full md:w-80 ring-orange-600/10 focus:ring-4 transition-all"
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+ <input
+ type="text"
+ placeholder="Tìm ID xử lý của AI..."
+ className="bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 text-sm focus:outline-none w-full md:w-56 ring-orange-600/10 focus:ring-4 transition-all"
  />
  </div>
- <button className="bg-white border border-slate-300 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all">
- <Filter className="w-4 h-4" /> Filter Confidence
+ <button className="bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all">
+ <Filter className="w-3.5 h-3.5" /> Filter
  </button>
  </div>
  <div className="flex items-center gap-3 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
@@ -184,49 +184,49 @@ export function AIOperations() {
  <div className="space-y-4">
  {activeModel === 'review' ? (
  MOCK_HUMAN_QUEUE.map((item) => (
- <div key={item.id} className="p-8 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-8 group">
- <div className="p-5 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100 group-hover:scale-105 transition-transform">
- <UserCheck className="w-8 h-8" />
+ <div key={item.id} className="p-3 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-3 group">
+ <div className="p-2 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100 group-hover:scale-105 transition-transform shrink-0">
+ <UserCheck className="w-4 h-4" />
  </div>
- <div className="flex-1 space-y-4">
- <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+ <div className="flex-1 space-y-2">
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
  <div>
- <h4 className="text-lg font-black text-slate-900 flex items-center gap-3">
+ <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
  {item.id}
- <span className="text-[10px] bg-amber-600 text-[#FAF9F5] px-3 py-1 rounded-full uppercase tracking-[0.1em] font-black shadow-sm shadow-amber-600/20">Chờ người duyệt</span>
+ <span className="text-[10px] bg-amber-600 text-[#FAF9F5] px-2 py-0.5 rounded-full uppercase tracking-[0.1em] font-black shadow-sm shadow-amber-600/20">Chờ duyệt</span>
  </h4>
- <div className="flex items-center gap-3 mt-1.5">
- <span className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5">
- <Clock className="w-3.5 h-3.5" /> {item.timestamp}
+ <div className="flex items-center gap-2 mt-1">
+ <span className="text-[10px] text-slate-600 font-bold flex items-center gap-1">
+ <Clock className="w-3 h-3" /> {item.timestamp}
  </span>
  <div className="w-px h-3 bg-slate-300" />
- <span className="text-[11px] text-slate-600 font-bold uppercase tracking-widest">Confidence: {(item.confidence * 100).toFixed(0)}%</span>
+ <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Confidence: {(item.confidence * 100).toFixed(0)}%</span>
  </div>
  </div>
- <div className="flex gap-3">
- <button className="px-6 py-3 bg-white border border-slate-300 text-rose-600 font-black rounded-xl text-[10px] uppercase tracking-[0.1em] hover:bg-rose-50 transition-all border-b-2 active:translate-y-0.5">Reject Action</button>
- <button className="px-6 py-3 bg-slate-900 text-[#FAF9F5] font-black rounded-xl text-[10px] uppercase tracking-[0.1em] hover:bg-emerald-600 transition-all shadow-sm shadow-slate-900/20 active:translate-y-0.5">Approve Model</button>
+ <div className="flex gap-1.5">
+ <button className="px-3 py-1 bg-white border border-slate-300 text-rose-600 font-black rounded-lg text-[10px] uppercase tracking-[0.1em] hover:bg-rose-50 transition-all border-b-2 active:translate-y-0.5">Reject</button>
+ <button className="px-3 py-1 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-[10px] uppercase tracking-[0.1em] hover:bg-emerald-600 transition-all shadow-sm shadow-slate-900/20 active:translate-y-0.5">Approve</button>
  </div>
  </div>
- <div className="p-4 bg-white/80 rounded-lg border border-amber-200/50 shadow-inner">
- <p className="text-sm font-bold text-amber-900/80 leading-relaxed italic">"{item.reason}"</p>
+ <div className="p-2 bg-white/80 rounded-lg border border-amber-200/50 shadow-inner">
+ <p className="text-xs font-bold text-amber-900/80 leading-relaxed italic">"{item.reason}"</p>
  </div>
  </div>
  </div>
  ))
  ) : (
  MOCK_AI_LOGS.filter(l => l.type === activeModel || activeModel === 'moderation').map((log) => (
- <div key={log.id} className="p-8 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-8 border-b-2">
+ <div key={log.id} className="p-3 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-3 border-b-2">
  <div className={cn(
- "p-5 rounded-lg shadow-sm transition-all group-hover:scale-105",
+ "p-2 rounded-lg shadow-sm transition-all group-hover:scale-105 shrink-0",
  log.status === 'flagged' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : "bg-emerald-50 text-emerald-500 shadow-emerald-200/30"
  )}>
- {log.status === 'flagged' ? <AlertTriangle className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
+ {log.status === 'flagged' ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
  </div>
- <div className="flex-1 space-y-4">
- <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+ <div className="flex-1 space-y-2">
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
  <div>
- <h4 className="text-lg font-black text-slate-900 flex items-center gap-3 italic">
+ <h4 className="text-sm font-black text-slate-900 flex items-center gap-2 italic">
  {log.id} 
  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full" />
  <span className={cn(
@@ -234,19 +234,19 @@ export function AIOperations() {
  log.status === 'flagged' ? "bg-rose-100 text-rose-600" : "bg-emerald-100 text-emerald-600"
  )}>Confidence: {(log.confidence * 100).toFixed(0)}%</span>
  </h4>
- <div className="flex items-center gap-3 mt-1.5">
- <span className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {log.timestamp}</span>
+ <div className="flex items-center gap-2 mt-1">
+ <span className="text-[10px] text-slate-600 font-bold flex items-center gap-1"><Clock className="w-3 h-3" /> {log.timestamp}</span>
  <div className="w-px h-3 bg-slate-300" />
- <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-60">Target: {log.targetId}</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-60">Target: {log.targetId}</span>
  </div>
  </div>
- <div className="flex gap-2">
- <button className="px-5 py-2.5 bg-slate-100 text-slate-900 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border-b-2 active:translate-y-0.5">Override</button>
- <button className="px-5 py-2.5 bg-slate-900 text-[#FAF9F5] font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 active:translate-y-0.5">Telemetry</button>
+ <div className="flex gap-1.5">
+ <button className="px-3 py-1 bg-slate-100 text-slate-900 font-black rounded-lg text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border-b-2 active:translate-y-0.5">Override</button>
+ <button className="px-3 py-1 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 active:translate-y-0.5">Telemetry</button>
  </div>
  </div>
- <div className="p-5 bg-slate-50 rounded-lg border border-slate-200/50 shadow-inner group-hover:bg-slate-100/50 transition-colors">
- <p className="text-sm font-bold text-slate-800 leading-relaxed">
+ <div className="p-2 bg-slate-50 rounded-lg border border-slate-200/50 shadow-inner group-hover:bg-slate-100/50 transition-colors">
+ <p className="text-xs font-bold text-slate-800 leading-relaxed">
  <span className="text-orange-700 uppercase tracking-widest text-[10px] font-black mr-2">Action Report:</span> {renderResult(log)}
  </p>
  </div>
@@ -272,10 +272,10 @@ export function AIOperations() {
  <p className="text-xl font-black">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-slate-900/10 rounded-full blur-xl group-hover:bg-slate-900/20 transition-all" />
  </div>
- <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
+ <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group relative overflow-hidden">
  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
- <p className="text-3xl font-black text-emerald-700 tracking-tight tracking-tighter">32.4%</p>
- <TrendingUp className="absolute top-4 right-4 w-10 h-10 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
+ <p className="text-base font-black text-emerald-700 tracking-tight">32.4%</p>
+ <TrendingUp className="absolute top-3 right-3 w-6 h-6 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
  </div>
  </DraggableGrid>
  <div className="space-y-4">
@@ -310,9 +310,9 @@ export function AIOperations() {
  <table className="w-full text-left">
  <thead>
  <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-slate-200">
- <th className="pb-5">Neural Model</th>
- <th className="pb-5">Latency</th>
- <th className="pb-5 text-right">Accuracy</th>
+ <th className="pb-2">Neural Model</th>
+ <th className="pb-2">Latency</th>
+ <th className="pb-2 text-right">Accuracy</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -322,9 +322,9 @@ export function AIOperations() {
  { name: 'Claude 3.5 Sonnet', latency: '650ms', accuracy: '95.8%', highlight: false },
  ].map((m, idx) => (
  <tr key={idx} className="group hover:bg-slate-50/80 transition-colors">
- <td className="py-5 font-black text-slate-900 text-sm">{m.name} {m.highlight && <span className="ml-2 px-2 py-0.5 bg-slate-900 text-[#FAF9F5] text-[8px] rounded uppercase tracking-widest">Selected</span>}</td>
- <td className="py-5 text-slate-600 font-bold text-xs"><Clock className="w-3.5 h-3.5 inline mr-1 text-slate-500" /> {m.latency}</td>
- <td className="py-5 text-right font-mono font-black text-sm text-emerald-600">{m.accuracy}</td>
+ <td className="py-2 font-black text-slate-900 text-xs">{m.name} {m.highlight && <span className="ml-2 px-2 py-0.5 bg-slate-900 text-[#FAF9F5] text-[8px] rounded uppercase tracking-widest">Selected</span>}</td>
+ <td className="py-2 text-slate-600 font-bold text-xs"><Clock className="w-3.5 h-3.5 inline mr-1 text-slate-500" /> {m.latency}</td>
+ <td className="py-2 text-right font-mono font-black text-xs text-emerald-600">{m.accuracy}</td>
  </tr>
  ))}
  </tbody>
@@ -337,19 +337,19 @@ export function AIOperations() {
  <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-slate-900/20 transition-all duration-1000" />
  
- <div className="relative z-10 space-y-4">
- <div className="flex items-center gap-6">
- <div className="p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
- <BarChart4 className="w-10 h-10 text-orange-500" />
+ <div className="relative z-10 space-y-3">
+ <div className="flex items-center gap-3">
+ <div className="p-2 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
+ <BarChart4 className="w-5 h-5 text-orange-500" />
  </div>
- <h3 className="text-2xl font-black italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
+ <h3 className="text-base font-black italic font-serif">MoE Intelligence <span className="text-orange-600">Router</span></h3>
  </div>
- <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-md">
+ <p className="text-slate-500 text-xs font-medium leading-relaxed max-w-md">
  Tự động phân bổ tác vụ cho các cụm mô hình tối ưu nhất. Giảm thiểu chi phí lên tới 40% bằng cách sử dụng Small Model cho các tác vụ cơ bản.
  </p>
- <div className="flex flex-wrap gap-4 pt-4">
- <button className="px-5 py-2.5 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 hover:-translate-y-1">Inference Logs</button>
- <button className="px-5 py-2.5 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
+ <div className="flex flex-wrap gap-2 pt-2">
+ <button className="px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 hover:-translate-y-1">Inference Logs</button>
+ <button className="px-3 py-1.5 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
  </div>
  </div>
  <Layers className="absolute -bottom-16 -right-16 w-80 h-80 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
@@ -359,17 +359,17 @@ export function AIOperations() {
  <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
  <Activity className="w-7 h-7 text-orange-700" /> Phân tích Độ lệch & Tình trạng Model
  </h3>
- <div className="space-y-4">
+ <div className="space-y-2">
  {[
  { name: 'Fraud Detection v4.2', drift: 1.2, health: 'Optimized', statusColor: 'bg-emerald-50 text-emerald-600' },
  { name: 'Vector Search Encoder', drift: -4.5, health: 'Degraded', statusColor: 'bg-rose-50 text-rose-600' },
  { name: 'Dynamic Pricing Agent', drift: 0.1, health: 'Stable', statusColor: 'bg-slate-100 text-orange-700' }
  ].map((m, i) => (
- <div key={i} className="space-y-4 group">
+ <div key={i} className="space-y-1.5 group">
  <div className="flex justify-between items-center">
- <span className="font-black text-slate-900 text-base">{m.name}</span>
+ <span className="font-black text-slate-900 text-xs">{m.name}</span>
  <span className={cn(
- "text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm",
+ "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm",
  m.statusColor
  )}>{m.health}</span>
  </div>
@@ -400,14 +400,14 @@ export function AIOperations() {
  
  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-5 relative z-10">
  <div>
- <h3 className="text-base font-black flex items-center gap-3 text-slate-900">
- <span className="p-3 bg-emerald-50 rounded-lg text-emerald-600 shadow-sm shadow-emerald-500/10 inline-block"><Server className="w-7 h-7" /></span>
+ <h3 className="text-base font-black flex items-center gap-2 text-slate-900">
+ <span className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600 shadow-sm shadow-emerald-500/10 inline-block"><Server className="w-4 h-4" /></span>
  Hardware Cluster Telemetry
  </h3>
- <p className="text-slate-600 font-medium mt-2">Giám sát tải của các cụm GPU NVIDIA dành cho Inference & Fine-tuning.</p>
+ <p className="text-slate-600 text-xs font-medium mt-1">Giám sát tải của các cụm GPU NVIDIA dành cho Inference & Fine-tuning.</p>
  </div>
- <button className="px-6 py-3 border border-emerald-200 text-emerald-700 font-black text-[11px] uppercase tracking-widest rounded-xl hover:bg-emerald-50 transition-all flex items-center gap-3 shadow-sm shadow-emerald-700/5 bg-white border-b-4 active:translate-y-1">
- <RefreshCw className="w-4 h-4" /> Sync Cluster State
+ <button className="px-3 py-1.5 border border-emerald-200 text-emerald-700 font-black text-[11px] uppercase tracking-widest rounded-xl hover:bg-emerald-50 transition-all flex items-center gap-2 shadow-sm shadow-emerald-700/5 bg-white border-b-4 active:translate-y-1">
+ <RefreshCw className="w-3.5 h-3.5" /> Sync Cluster
  </button>
  </div>
 
@@ -476,12 +476,12 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border-2 border-slate-200 border-dashed rounded-xl p-8 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
- <div className="p-5 bg-white rounded-full shadow-sm group-hover/add:scale-110 transition-transform mb-4 border border-slate-200">
- <Plus className="w-10 h-10 text-slate-500 group-hover/add:text-orange-600" />
+ <div className="border-2 border-slate-200 border-dashed rounded-xl p-4 bg-slate-50/50 flex flex-col items-center justify-center min-h-[150px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
+ <div className="p-3 bg-white rounded-full shadow-sm group-hover/add:scale-110 transition-transform mb-2 border border-slate-200">
+ <Plus className="w-5 h-5 text-slate-500 group-hover/add:text-orange-600" />
  </div>
  <span className="font-black text-xs uppercase tracking-[0.2em] text-slate-500 group-hover/add:text-orange-700">Deploy New Node</span>
- <span className="text-[10px] font-bold text-slate-500 mt-2">Azure / AWS / GCP Cluster</span>
+ <span className="text-[10px] font-bold text-slate-500 mt-1">Azure / AWS / GCP Cluster</span>
  </div>
  </DraggableGrid>
  </div>
