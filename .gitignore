@@ -3,6 +3,9 @@ build/
 dist/
 coverage/
 functions/lib/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
 .DS_Store
 *.log
 .env*
