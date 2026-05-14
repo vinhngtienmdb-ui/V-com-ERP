@@ -8,7 +8,7 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <Tag className="w-5 h-5 text-primary-600" /> Quản lý Sản Phẩm
           </h2>
           <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">{activeStore?.name}</p>
@@ -28,7 +28,7 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
          <div className="bg-white border border-slate-300 rounded-sm shadow-sm md:flex min-h-[500px]">
              {/* Sidebar */}
              <div className="w-full md:w-48 xl:w-56 border-r border-slate-300 p-4 space-y-1">
-                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Phân loại & Quản lý</p>
+                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Phân loại & Quản lý</p>
                  {['Tất cả Sản phẩm', 'Lô Sản phẩm / HSD', 'Thương hiệu', 'Thời gian Lưu kho', 'Tồn kho thấp', 'Danh mục', 'Thuộc tính', 'Nhà cung cấp'].map((item, i) => (
                     <button key={item} className={cn("w-full text-left px-3 py-2 text-xs font-bold rounded-sm transition-colors", i===0 ? "bg-primary-50 text-primary-700" : "text-slate-700 hover:bg-slate-50")}>
                         {item}
@@ -40,15 +40,15 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
                 <div className="flex items-center gap-2 mb-4 text-slate-600 font-medium text-sm">
                    <Box className="w-4 h-4" /> Danh sách sản phẩm (Mô phỏng)
                 </div>
-                <div className="border border-slate-300 rounded-sm overflow-hidden overflow-x-auto min-w-0 custom-scrollbar-x">
-                    <table className="min-w-[540px] w-full text-left text-sm border-collapse">
+                <div className="border border-slate-300 rounded-sm overflow-hidden overflow-x-auto min-w-0">
+                    <table className="w-full text-left text-sm">
                         <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                             <tr>
-                                <th className="px-4 py-3 w-24 whitespace-nowrap">SKU</th>
+                                <th className="px-4 py-3">SKU</th>
                                 <th className="px-4 py-3">Tên Sản Phẩm</th>
-                                <th className="px-4 py-3 w-32 whitespace-nowrap">Lô/HSD</th>
-                                <th className="px-4 py-3 w-28 whitespace-nowrap">Thương hiệu</th>
-                                <th className="px-4 py-3 w-28 whitespace-nowrap text-right">Tồn Kho</th>
+                                <th className="px-4 py-3">Lô/HSD</th>
+                                <th className="px-4 py-3">Thương hiệu</th>
+                                <th className="px-4 py-3 text-right">Tồn Kho</th>
                             </tr>
                         </thead>
                         <tbody>

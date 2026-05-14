@@ -761,7 +761,7 @@ export function SettingsPage() {
           <div key={wallet.name} className="border border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                <span className={`w-3 h-3 rounded-full bg-${wallet.color}-500`}></span>
+                <span className={cn("w-3 h-3 rounded-full", wallet.color === "emerald" ? "bg-emerald-500" : wallet.color === "blue" ? "bg-blue-500" : wallet.color === "indigo" ? "bg-indigo-500" : "bg-slate-500")}></span>
                 {wallet.name}
               </h4>
               <p className="text-sm text-slate-600 mt-1">{wallet.desc}</p>

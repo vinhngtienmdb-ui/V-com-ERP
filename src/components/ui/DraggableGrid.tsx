@@ -162,7 +162,7 @@ export function DraggableGrid({
 
       {isDirty && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 backdrop-blur-md rounded-full px-6 py-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-700/50 flex items-center gap-4 animate-in slide-in-from-bottom-5">
-           <p className="text-white text-sm font-semibold tracking-wide m-0">
+           <p className="text-[#FAF9F5] text-sm font-semibold tracking-wide m-0">
              Giao diện đã thay đổi
            </p>
            <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ export function DraggableGrid({
              </button>
              <button
                onClick={handleSave}
-               className="px-4 py-1.5 rounded-full bg-primary-600 text-white hover:bg-primary-500 transition-all shadow-sm shadow-primary-500/20 text-xs font-bold flex items-center gap-2 m-0"
+               className="px-4 py-1.5 rounded-full bg-primary-600 text-[#FAF9F5] hover:bg-primary-500 transition-all shadow-sm shadow-primary-500/20 text-xs font-bold flex items-center gap-2 m-0"
              >
                <Save className="w-3.5 h-3.5" /> Lưu giao diện
              </button>

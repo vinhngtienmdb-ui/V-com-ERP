@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark' | 'nature';
 type Language = 'vi' | 'en';
@@ -6,80 +6,83 @@ type PrimaryColor = 'indigo' | 'blue' | 'emerald' | 'rose' | 'amber' | 'slate';
 type BorderRadius = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none';
 type HolidayTheme = 'none' | 'tet' | 'christmas' | 'mid-autumn' | 'halloween';
 
-const VALID_THEMES: Theme[] = ['light', 'dark', 'nature'];
-const VALID_LANGUAGES: Language[] = ['vi', 'en'];
-const VALID_COLORS: PrimaryColor[] = ['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate'];
-const VALID_RADII: BorderRadius[] = ['sm', 'md', 'lg', 'xl', '2xl', 'none'];
-const VALID_HOLIDAYS: HolidayTheme[] = ['none', 'tet', 'christmas', 'mid-autumn', 'halloween'];
-
-function safeGet<T>(key: string, valid: T[], fallback: T): T {
-  const v = localStorage.getItem(key) as T;
-  return valid.includes(v) ? v : fallback;
-}
-
 interface PreferencesContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  primaryColor: PrimaryColor;
-  setPrimaryColor: (color: PrimaryColor) => void;
-  borderRadius: BorderRadius;
-  setBorderRadius: (radius: BorderRadius) => void;
-  holidayTheme: HolidayTheme;
-  setHolidayTheme: (theme: HolidayTheme) => void;
+ theme: Theme;
+ setTheme: (theme: Theme) => void;
+ language: Language;
+ setLanguage: (lang: Language) => void;
+ primaryColor: PrimaryColor;
+ setPrimaryColor: (color: PrimaryColor) => void;
+ borderRadius: BorderRadius;
+ setBorderRadius: (radius: BorderRadius) => void;
+ holidayTheme: HolidayTheme;
+ setHolidayTheme: (theme: HolidayTheme) => void;
 }
 
 const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);
 
 export function PreferencesProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => safeGet('app_theme', VALID_THEMES, 'light'));
-  const [language, setLanguage] = useState<Language>(() => safeGet('app_language', VALID_LANGUAGES, 'vi'));
-  const [primaryColor, setPrimaryColor] = useState<PrimaryColor>(() => safeGet('app_primary_color', VALID_COLORS, 'indigo'));
-  const [borderRadius, setBorderRadius] = useState<BorderRadius>(() => safeGet('app_border_radius', VALID_RADII, 'lg'));
-  const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => safeGet('app_holiday_theme', VALID_HOLIDAYS, 'none'));
+ const [theme, setTheme] = useState<Theme>(() => {
+ return (localStorage.getItem('app_theme') as Theme) || 'light';
+ });
+ 
+ const [language, setLanguage] = useState<Language>(() => {
+ return (localStorage.getItem('app_language') as Language) || 'vi';
+ });
 
-  useEffect(() => {
-    localStorage.setItem('app_theme', theme);
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+ const [primaryColor, setPrimaryColor] = useState<PrimaryColor>(() => {
+ return (localStorage.getItem('app_primary_color') as PrimaryColor) || 'indigo';
+ });
 
-  useEffect(() => {
-    localStorage.setItem('app_language', language);
-  }, [language]);
+ const [borderRadius, setBorderRadius] = useState<BorderRadius>(() => {
+ return (localStorage.getItem('app_border_radius') as BorderRadius) || 'lg'; // default to lg for slight curve
+ });
 
-  useEffect(() => {
-    localStorage.setItem('app_primary_color', primaryColor);
-    document.documentElement.setAttribute('data-primary-color', primaryColor);
-  }, [primaryColor]);
+ const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => {
+ return (localStorage.getItem('app_holiday_theme') as HolidayTheme) || 'none';
+ });
 
-  useEffect(() => {
-    localStorage.setItem('app_border_radius', borderRadius);
-    document.documentElement.setAttribute('data-border-radius', borderRadius);
-  }, [borderRadius]);
+ useEffect(() => {
+ localStorage.setItem('app_theme', theme);
+ document.documentElement.setAttribute('data-theme', theme);
+ }, [theme]);
 
-  useEffect(() => {
-    localStorage.setItem('app_holiday_theme', holidayTheme);
-    document.documentElement.setAttribute('data-holiday-theme', holidayTheme);
-  }, [holidayTheme]);
+ useEffect(() => {
+ localStorage.setItem('app_language', language);
+ }, [language]);
 
-  const value = useMemo(() => ({
-    theme, setTheme,
-    language, setLanguage,
-    primaryColor, setPrimaryColor,
-    borderRadius, setBorderRadius,
-    holidayTheme, setHolidayTheme,
-  }), [theme, language, primaryColor, borderRadius, holidayTheme]);
+ useEffect(() => {
+ localStorage.setItem('app_primary_color', primaryColor);
+ document.documentElement.setAttribute('data-primary-color', primaryColor);
+ }, [primaryColor]);
 
-  return (
-    <PreferencesContext.Provider value={value}>
-      {children}
-    </PreferencesContext.Provider>
-  );
+ useEffect(() => {
+ localStorage.setItem('app_border_radius', borderRadius);
+ document.documentElement.setAttribute('data-border-radius', borderRadius);
+ }, [borderRadius]);
+
+ useEffect(() => {
+ localStorage.setItem('app_holiday_theme', holidayTheme);
+ document.documentElement.setAttribute('data-holiday-theme', holidayTheme);
+ }, [holidayTheme]);
+
+ return (
+ <PreferencesContext.Provider value={{
+  theme, setTheme,
+  language, setLanguage,
+  primaryColor, setPrimaryColor,
+  borderRadius, setBorderRadius,
+  holidayTheme, setHolidayTheme
+ }}>
+  {children}
+ </PreferencesContext.Provider>
+ );
 }
 
 export function usePreferences() {
-  const context = useContext(PreferencesContext);
-  if (!context) throw new Error('usePreferences must be used within a PreferencesProvider');
-  return context;
+ const context = useContext(PreferencesContext);
+ if (!context) {
+ throw new Error('usePreferences must be used within a PreferencesProvider');
+ }
+ return context;
 }
