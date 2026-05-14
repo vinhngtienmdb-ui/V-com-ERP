@@ -168,6 +168,12 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // ── Reconciliations (ghi từ reconcileSepayEvent function) ────────────────
+    match /reconciliations/{id} {
+      allow get, list: if isManager();
+      allow create, update, delete: if false; // Chỉ Admin SDK
+    }
+
     // ── Audit log (immutable) ───────────────────────────────────────────────
     match /audit_logs/{id} {
       allow get, list: if isAdmin();

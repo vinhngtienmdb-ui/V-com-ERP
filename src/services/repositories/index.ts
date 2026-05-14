@@ -26,3 +26,4 @@ export const inventoryRepo = makeRepository<InventoryMovementInput>({
 
 export * from './schemas';
 export * from './orders';
+export * from './inventory';

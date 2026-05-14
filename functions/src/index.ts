@@ -15,6 +15,9 @@ export {
   sepayWebhook,
 } from './sepayHandlers.js';
 
+// ── Reconciliation (đối soát SePay) ──────────────────────────────────────
+export { reconcileSepayEvent } from './reconciliation.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,
