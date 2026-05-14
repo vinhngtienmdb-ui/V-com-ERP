@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
   FileText, 
@@ -597,11 +597,11 @@ export function DocumentManager() {
                             onClick={() => handleDocClick(doc)}
                             className="hover:bg-slate-50 transition-colors cursor-pointer group"
                           >
-                            <td className="px-6 py-4">
+                            <td className="px-3 py-2.5">
                               <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">{doc.id}</p>
                               <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-3 py-2.5">
                               <p className="text-sm font-medium text-slate-900 line-clamp-2">{doc.title}</p>
                               {doc.urgency === 'critical' && (
                                 <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1 bg-red-50 px-1.5 py-0.5 rounded">
@@ -609,7 +609,7 @@ export function DocumentManager() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-3 py-2.5">
                               <span className={cn(
                                 "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight",
                                 doc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
@@ -618,7 +618,7 @@ export function DocumentManager() {
                                 {doc.category || 'Văn bản'}
                               </span>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-3 py-2.5">
                                {/* Preview of routing to show it handles direct specific deps */}
                                <div className="flex items-center gap-2">
                                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded truncate max-w-[120px]">{doc.department}</span>

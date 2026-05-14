@@ -948,7 +948,7 @@ export function SettingsPage() {
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {categoryFees.map((cf) => (
  <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-5 py-4 text-sm font-bold text-slate-900">{cf.name}</td>
+ <td className="px-3 py-2 text-sm font-bold text-slate-900">{cf.name}</td>
  <td className="px-5 py-4 border-l border-slate-200 bg-slate-100/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
@@ -1508,21 +1508,21 @@ export function SettingsPage() {
  <table className="w-full text-left">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-100">
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">TÃªn Vai trÃ²</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Sá»‘ quyá»n háº¡n</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tÃ¡c</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">TÃªn Vai trÃ²</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Sá»‘ quyá»n háº¡n</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tÃ¡c</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {roles.map(role => (
  <tr key={role.id} className="hover:bg-slate-50 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-slate-900">{role.name}</span>
  <span className="text-[10px] text-slate-500 font-mono">ID: {role.id}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="px-2 py-0.5 bg-slate-100 text-blue-600 text-[10px] font-bold rounded-full border border-slate-300">
  {role.permissions.includes('all') ? 'ToÃ n quyá»n' : `${role.permissions.length} quyá»n chi tiáº¿t`}
  </span>

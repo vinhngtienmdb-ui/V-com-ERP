@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  FileText, 
@@ -212,7 +212,7 @@ export function SettlementManagement() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {activeTab === 'settlement' && MOCK_SETTLEMENTS.map((stl) => (
  <tr key={stl.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-[#111827]">{stl.sellerName}</p>
  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{stl.sellerId}</p>
  </td>
@@ -222,7 +222,7 @@ export function SettlementManagement() {
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(stl.netPayout)}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
@@ -236,11 +236,11 @@ export function SettlementManagement() {
  ))}
  {activeTab === 'withdrawal' && MOCK_WITHDRAWALS.map((wdr) => (
  <tr key={wdr.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-[#111827]">{wdr.userName}</p>
  <span className="text-[10px] text-[#6B7280] uppercase font-semibold bg-slate-100 px-1.5 py-0.5 rounded">{wdr.userType}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-xs font-bold text-[#111827]">{wdr.bankAccount.bankName}</p>
  <p className="text-[10px] font-mono text-[#6B7280]">{wdr.bankAccount.accountNo} - {wdr.bankAccount.accountName}</p>
  </td>
@@ -264,11 +264,11 @@ export function SettlementManagement() {
  ))}
  {activeTab === 'cod' && MOCK_COD_SETTLEMENTS.map((cod) => (
  <tr key={cod.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-[#111827]">{cod.carrier}</p>
  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{cod.id}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-xs font-bold text-[#4B5563]">{cod.period}</p>
  <p className="text-[10px] text-[#6B7280]">Tổng {cod.totalOrders} đơn</p>
  </td>
@@ -281,7 +281,7 @@ export function SettlementManagement() {
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(cod.transferredCod)}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  {cod.status === 'matched' ? (
  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 flex items-center gap-1">

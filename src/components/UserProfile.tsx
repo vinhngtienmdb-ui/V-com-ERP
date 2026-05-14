@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  User, 
@@ -122,7 +122,7 @@ export function UserProfile() {
  type="text" 
  readOnly 
  value={staffInfo?.id || 'STAFF-999'}
- className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 font-mono italic"
+ className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 font-mono italic"
  />
  </div>
  <div className="space-y-2">
@@ -177,7 +177,7 @@ export function UserProfile() {
  <div className="relative">
  <input 
  type={showCurrentPassword ? "text" : "password"} 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  <button 
  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
@@ -192,7 +192,7 @@ export function UserProfile() {
  <div className="relative">
  <input 
  type={showNewPassword ? "text" : "password"} 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  <button 
  onClick={() => setShowNewPassword(!showNewPassword)}
@@ -206,7 +206,7 @@ export function UserProfile() {
  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Xác nhận mật khẩu mới</label>
  <input 
  type="password" 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  </div>
  <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-xl text-sm font-bold mt-2 hover:bg-slate-800 transition-all">Cập nhật mật khẩu</button>

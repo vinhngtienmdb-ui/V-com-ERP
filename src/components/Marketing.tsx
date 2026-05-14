@@ -340,18 +340,18 @@ export function Marketing() {
 <table className="w-full text-left text-sm">
  <thead>
  <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
- <th className="px-6 py-3">TÃªn chiáº¿n dá»‹ch</th>
- <th className="px-6 py-3">Loáº¡i mÃ£</th>
- <th className="px-6 py-3">Má»©c giáº£m</th>
- <th className="px-6 py-3">Ãp dá»¥ng cho</th>
+ <th className="px-3 py-2">TÃªn chiáº¿n dá»‹ch</th>
+ <th className="px-3 py-2">Loáº¡i mÃ£</th>
+ <th className="px-3 py-2">Má»©c giáº£m</th>
+ <th className="px-3 py-2">Ãp dá»¥ng cho</th>
  <th className="px-6 py-3 text-right">Thao tÃ¡c</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  <tr className="hover:bg-slate-50">
  <td className="px-6 py-4 font-bold text-slate-900">Flash Sale 15/3</td>
- <td className="px-6 py-4">Giáº£m %</td>
- <td className="px-6 py-4">10%</td>
+ <td className="px-3 py-2.5">Giáº£m %</td>
+ <td className="px-3 py-2.5">10%</td>
  <td className="px-6 py-4 text-xs text-slate-700">Äiá»‡n tá»­, Thá»i trang</td>
  <td className="px-6 py-4 text-right">
  <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sá»­a</button>
@@ -359,8 +359,8 @@ export function Marketing() {
  </tr>
  <tr className="hover:bg-slate-50">
  <td className="px-6 py-4 font-bold text-slate-900">ÄÆ¡n hÃ ng Ä‘áº§u tiÃªn</td>
- <td className="px-6 py-4">Miá»…n phÃ­ váº­n chuyá»ƒn</td>
- <td className="px-6 py-4">Tá»‘i Ä‘a 30k</td>
+ <td className="px-3 py-2.5">Miá»…n phÃ­ váº­n chuyá»ƒn</td>
+ <td className="px-3 py-2.5">Tá»‘i Ä‘a 30k</td>
  <td className="px-6 py-4 text-xs text-slate-700">Táº¥t cáº£ sáº£n pháº©m</td>
  <td className="px-6 py-4 text-right">
  <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sá»­a</button>
@@ -414,7 +414,7 @@ export function Marketing() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_CAMPAIGNS.map((campaign) => (
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="p-3 rounded-lg bg-slate-100 text-orange-700">
  <Megaphone className="w-5 h-5" />
@@ -425,7 +425,7 @@ export function Marketing() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-1.5 text-xs text-[#4B5563]">
  <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
  {campaign.startDate} - {campaign.endDate}
@@ -435,7 +435,7 @@ export function Marketing() {
  <p className="text-sm font-bold text-[#111827]">{formatCurrency(campaign.budget)}</p>
  <p className="text-[10px] text-[#6B7280]">Chi: {formatCurrency(campaign.spent)}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1.5">
  <span className="text-sm font-bold text-emerald-600">{campaign.roi > 0 ? campaign.roi + 'x' : '--'}</span>
@@ -444,7 +444,7 @@ export function Marketing() {
  <p className="text-[10px] text-[#6B7280]">Doanh thu: {formatCurrency(campaign.gmvGenerated)}</p>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :

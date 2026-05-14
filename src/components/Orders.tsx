@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
  ShoppingBag, 
@@ -534,7 +534,7 @@ export function Orders() {
     )}
     itemContent={(index, order) => (
       <>
-        <td className="px-6 py-4">
+        <td className="px-3 py-2.5">
           <div className="flex items-center gap-2">
             <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
             {isDelayed(order.date, order.status) && (
@@ -544,7 +544,7 @@ export function Orders() {
           <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
           <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-2.5">
           {order.carrier ? (
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-orange-200 transition-colors">
@@ -562,14 +562,14 @@ export function Orders() {
             <span className="text-[10px] text-[#9CA3AF] italic">Chưa đẩy đơn</span>
           )}
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-2.5">
           <p className="text-sm font-semibold text-[#111827]">{formatCurrency(order.total)}</p>
           <p className="text-[10px] text-[#6B7280]">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-2.5">
           <p className="text-sm font-semibold text-[#111827]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-3 py-2.5">
           <div className="flex justify-center">
             <span className={cn(
               "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",

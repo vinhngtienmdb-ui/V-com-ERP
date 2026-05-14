@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Users, 
@@ -1691,12 +1691,12 @@ export function HumanResources() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Ca làm</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">In/Out</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Verify</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Lương ca</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Ca làm</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">In/Out</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Verify</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Lương ca</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -2123,7 +2123,7 @@ export function HumanResources() {
  <tbody className="divide-y divide-slate-100">
  {payrollList.map((pay) => (
  <tr key={pay.id} className="hover:bg-slate-100/30 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-slate-900">{pay.employeeName}</p>
  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{pay.employeeId}</p>
  </td>
@@ -2138,7 +2138,7 @@ export function HumanResources() {
  <td className="px-6 py-4 text-right">
  <p className="text-[15px] font-bold text-[#2563EB] font-mono bg-slate-100 px-3 py-1 rounded-lg inline-block">{formatCurrency(pay.netSalary)}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  <span className={cn(
  "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
@@ -2681,7 +2681,7 @@ export function HumanResources() {
  onChange={(e) => setCopilotInput(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendCopilotMessage()}
  placeholder="Hỏi AI về nhân sự..."
- className="flex-1 bg-transparent px-4 py-3 text-sm focus:outline-none"
+ className="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none"
  />
  <button 
  onClick={handleSendCopilotMessage}

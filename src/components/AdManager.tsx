@@ -169,11 +169,11 @@ export function AdManager() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_BIDS.map(bid => (
  <tr key={bid.id} className="hover:bg-slate-50 transition-colors text-xs">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="font-bold text-[#111827]">{bid.id}</p>
  <p className="text-[10px] text-slate-600 font-mono">Seller ID: {bid.sellerId}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="space-y-1">
  <span className={cn(
  "px-2 py-0.5 rounded text-[9px] font-bold uppercase",
@@ -189,7 +189,7 @@ export function AdManager() {
  <p className="font-bold text-[#111827]">{formatCurrency(bid.bidAmount)}</p>
  <p className="text-[10px] text-slate-500">trÃªn {bid.type === 'keyword' ? 'Click' : '1000 Imp'}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="max-w-[120px] space-y-1.5">
  <div className="flex justify-between text-[10px] font-bold text-[#6B7280]">
  <span>{((bid.spent / bid.budget) * 100).toFixed(0)}%</span>
@@ -208,7 +208,7 @@ export function AdManager() {
  <p className="font-bold text-[#111827]">{bid.clicks.toLocaleString()}</p>
  <p className="text-[10px] text-slate-500">{bid.impressions.toLocaleString()} views</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1",

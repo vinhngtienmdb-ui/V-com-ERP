@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 // @ts-ignore
 import { Responsive as ResponsiveGridLayoutNative, useContainerWidth } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -9,7 +9,7 @@ import { GripHorizontal, Save, RotateCcw } from "lucide-react";
 export function DraggableGrid({
   children,
   columns = 4,
-  rowHeight = 160,
+  rowHeight = 130,
   gap = 24,
   className = "",
   id

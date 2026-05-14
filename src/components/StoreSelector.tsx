@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Store, Building2, MapPin, ChevronRight, Home, CheckCircle2, Lock, ArrowRight, UserCircle2, ShieldCheck, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -172,7 +172,7 @@ export function StoreSelector() {
                   <select
                     value={selectedCompanyId}
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
-                    className="w-full appearance-none bg-slate-50 border border-slate-300 rounded-sm px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all cursor-pointer"
+                    className="w-full appearance-none bg-slate-50 border border-slate-300 rounded-sm px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all cursor-pointer"
                   >
                     {companies.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>

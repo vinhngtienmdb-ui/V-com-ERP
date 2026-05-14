@@ -475,7 +475,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-6 py-4 text-sm font-bold border-b-2 transition-all",
+ "px-3 py-2 text-sm font-bold border-b-2 transition-all",
  activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
  )}
  >
@@ -1077,13 +1077,13 @@ export function Customers() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">KhÃ¡ch hÃ ng</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">LiÃªn há»‡</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">KÃªnh</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiÃªu</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">VÃ­ / Loyalty</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Tráº¡ng thÃ¡i</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">KhÃ¡ch hÃ ng</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">LiÃªn há»‡</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">KÃªnh</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiÃªu</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">VÃ­ / Loyalty</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Tráº¡ng thÃ¡i</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1292,7 +1292,7 @@ export function Customers() {
  <select 
  value={adjustType}
  onChange={(e) => setAdjustType(e.target.value as any)}
- className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
  >
  <option value="wallet">VÃ­ Äiá»‡n Tá»­ (VNÄ)</option>
  <option value="points">Äiá»ƒm ThÆ°á»Ÿng (Points)</option>
@@ -1316,7 +1316,7 @@ export function Customers() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cá»™ng) hoáº·c -1000 (trá»«)"
- className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
  <p className="text-[11px] text-slate-600 mt-2">DÃ¹ng sá»‘ Ã¢m Ä‘á»ƒ trá»« Ä‘iá»ƒm/tiá»n. Viáº¿t liá»n khÃ´ng khoáº£ng tráº¯ng.</p>
  </div>

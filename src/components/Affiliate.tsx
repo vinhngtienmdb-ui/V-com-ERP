@@ -161,7 +161,7 @@ export function AffiliateManagement() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_AFFILIATES.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
  <tr key={affiliate.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#2563EB] font-bold text-xs border border-slate-300 shrink-0">
  {affiliate.name.charAt(0)}
@@ -177,7 +177,7 @@ export function AffiliateManagement() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  {affiliate.type === 'kol' ? (
  <div className="space-y-1">
  <div className="flex items-center gap-1">
@@ -194,7 +194,7 @@ export function AffiliateManagement() {
  <span className="text-xs text-slate-500 italic">Máº¡ng lÆ°á»›i / Äáº¡i lÃ½</span>
  )}
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="space-y-1">
  <p className="text-xs font-bold text-[#111827]">{affiliate.ordersCount} Ä‘Æ¡n hÃ ng</p>
  <p className="text-[10px] text-[#6B7280]">CTR: {affiliate.clickThroughRate}%</p>
@@ -206,7 +206,7 @@ export function AffiliateManagement() {
  <p className="text-[10px] text-slate-600 mt-1">Booking: {formatCurrency(affiliate.bookingPrice)}</p>
  )}
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",

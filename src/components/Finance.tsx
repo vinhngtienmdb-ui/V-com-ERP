@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
  DollarSign, 
@@ -410,25 +410,25 @@ export function Finance() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
  {transactions.map((tx) => (
  <tr key={tx.id} className="hover:bg-[#F9FAFB] transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
  <span className="text-sm text-[#111827] font-medium">{tx.date}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-full uppercase">
  {tx.category}
  </span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, FileText, Settings, User } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -94,7 +94,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   value={config.description || ''}
                   onChange={(e) => setConfig({...config, description: e.target.value})}
                   placeholder="Nhập mô tả cho yêu cầu"
-                  className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
+                  className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
                 />
               </div>
 

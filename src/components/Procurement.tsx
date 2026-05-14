@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import { useState } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
@@ -129,18 +129,18 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
  {filteredSuppliers.map((supplier) => (
  <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-lg bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm shrink-0">
  {supplier.name.charAt(0)}
@@ -151,12 +151,12 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="inline-flex items-center px-2 py-1 rounded bg-slate-100 text-slate-700 text-[11px] font-semibold">
  {supplier.category}
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="space-y-1">
  <div className="flex items-center gap-2 text-xs text-slate-700">
  <Phone className="w-3 h-3 text-slate-500" />
@@ -168,7 +168,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-start gap-2 max-w-[200px]">
  <FileText className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
  <p className="text-xs text-slate-700 leading-snug">{supplier.policies}</p>
@@ -285,21 +285,21 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
  {filteredRequests.map((req) => (
  <tr key={req.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">{req.id}</p>
  <span className="mt-1 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">{req.department}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-orange-700 transition-colors">{req.title}</p>
  <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
  </td>

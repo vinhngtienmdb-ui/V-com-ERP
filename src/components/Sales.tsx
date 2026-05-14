@@ -269,7 +269,7 @@ export function SalesManagement() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_SALES.map((sale, idx) => (
  <tr key={sale.id} className="hover:bg-[#F9FAFB] group transition-colors text-sm">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-[#2563EB] border border-slate-300 text-xs">
  {sale.name.charAt(0)}
@@ -280,7 +280,7 @@ export function SalesManagement() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="space-y-1">
  <span className={cn(
  "px-2 py-0.5 rounded text-[10px] font-bold border",
@@ -292,7 +292,7 @@ export function SalesManagement() {
  <p className="text-[10px] text-[#6B7280] font-medium">Rate: {sale.commissionRate}% Doanh sá»‘</p>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="max-w-[150px] space-y-1.5">
  <div className="flex justify-between text-[10px] font-bold">
  <span>{((sale.achieved / sale.target) * 100).toFixed(0)}%</span>

@@ -119,11 +119,11 @@ export function SellerFinance() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_CREDITS.map(credit => (
  <tr key={credit.sellerId} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-[#111827]">{credit.sellerId}</p>
  <p className="text-[10px] text-[#6B7280]">Hiá»‡u suáº¥t thÃ¡ng: 9.2/10</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center gap-2">
  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden max-w-[100px]">
  <div 
@@ -136,7 +136,7 @@ export function SellerFinance() {
  <span className="text-[11px] font-bold text-slate-800">{credit.score}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className={cn(
  "px-3 py-1 rounded-lg text-[10px] font-bold italic tracking-widest",
  credit.tier === 'AAA' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-100 text-orange-700 border border-slate-300"
@@ -144,7 +144,7 @@ export function SellerFinance() {
  </td>
  <td className="px-6 py-4 text-right font-bold text-[#111827]">{formatCurrency(credit.maxCreditLimit)}</td>
  <td className="px-6 py-4 text-right font-bold text-[#2563EB]">{formatCurrency(credit.availableCredit)}</td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <button className="text-[10px] font-bold text-[#2563EB] bg-slate-100 px-3 py-1.5 rounded-lg hover:bg-[#EAE7DF] transition-colors uppercase tracking-wider">Cáº¥p tÃ­n dá»¥ng</button>
  </td>
  </tr>

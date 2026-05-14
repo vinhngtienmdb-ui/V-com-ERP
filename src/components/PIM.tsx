@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
  Package, 
@@ -536,7 +536,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
  <input 
  type="text" required placeholder="Ví dụ: iPhone 16 Pro Max..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
  value={newProduct.name}
  onChange={e => setNewProduct({...newProduct, name: e.target.value})}
  />
@@ -545,7 +545,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Thương hiệu</label>
  <input 
  type="text" required placeholder="Apple, Samsung, Sony..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
  value={newProduct.brand}
  onChange={e => setNewProduct({...newProduct, brand: e.target.value})}
  />
@@ -556,7 +556,7 @@ export function PIM() {
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ngành hàng</label>
  <select 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-bold appearance-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-bold appearance-none"
  value={newProduct.category}
  onChange={e => setNewProduct({...newProduct, category: e.target.value})}
  >
@@ -592,7 +592,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá niêm yết (VNĐ)</label>
  <input 
  type="number" required placeholder="30.000.000" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.price}
  onChange={e => setNewProduct({...newProduct, price: e.target.value})}
  />
@@ -601,7 +601,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tồn kho ban đầu</label>
  <input 
  type="number" required placeholder="Số lượng nhập kho..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.stock}
  onChange={e => setNewProduct({...newProduct, stock: e.target.value})}
  />
@@ -613,7 +613,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá vốn (VNĐ)</label>
  <input 
  type="number" placeholder="Mặc định: 70% giá niêm yết" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.costPrice}
  onChange={e => setNewProduct({...newProduct, costPrice: e.target.value})}
  />
@@ -622,7 +622,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Chi phí ẩn (VC, Đóng gói... VNĐ)</label>
  <input 
  type="number" placeholder="Ví dụ: 15.000" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.hiddenCosts}
  onChange={e => setNewProduct({...newProduct, hiddenCosts: e.target.value})}
  />
@@ -634,7 +634,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mô tả sản phẩm chi tiết</label>
  <textarea 
  rows={3} placeholder="Mô tả công năng, đặc điểm nổi bật..."
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
  value={newProduct.description}
  onChange={e => setNewProduct({...newProduct, description: e.target.value})}
  ></textarea>
@@ -645,7 +645,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Trọng lượng (Gram)</label>
  <input 
  type="number" placeholder="Ví dụ: 500" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.weight}
  onChange={e => setNewProduct({...newProduct, weight: e.target.value})}
  />
@@ -654,7 +654,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Kích thước (DxRxC) (cm)</label>
  <input 
  type="text" placeholder="Ví dụ: 15x10x5" 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:bg-white font-mono font-bold"
  value={newProduct.dimensions}
  onChange={e => setNewProduct({...newProduct, dimensions: e.target.value})}
  />
@@ -838,7 +838,7 @@ export function PIM() {
  value={currentSku}
  onChange={(e) => setCurrentSku(e.target.value)}
  placeholder="Nhập mã SKU/Barcode..."
- className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold"
+ className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono font-bold"
  onKeyDown={(e) => {
  if (e.key === 'Enter') {
  handleScannedResult(currentSku);
@@ -1367,7 +1367,7 @@ export function PIM() {
  type="number"
  value={pnlPrice}
  onChange={(e) => setPnlPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
@@ -1378,7 +1378,7 @@ export function PIM() {
  type="number"
  value={pnlCostPrice}
  onChange={(e) => setPnlCostPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
@@ -1390,7 +1390,7 @@ export function PIM() {
  type="number"
  value={pnlHiddenCosts}
  onChange={(e) => setPnlHiddenCosts(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
  />
  </div>
  </div>

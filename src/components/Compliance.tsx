@@ -147,13 +147,13 @@ export function Compliance() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {activeTab === 'brand' && MOCK_BRANDS.map(brand => (
  <tr key={brand.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-[#111827]">{brand.brandName}</p>
  <p className="text-[10px] text-slate-600 font-mono">Owner: {brand.ownerId}</p>
  </td>
  <td className="px-6 py-4 text-xs font-mono text-slate-700">{brand.id}</td>
  <td className="px-6 py-4 text-xs text-slate-600">{brand.registrationDate}</td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex gap-2">
  {brand.documents.map((doc, idx) => (
  <span key={idx} className="px-2 py-0.5 bg-slate-100 text-[#6B7280] text-[9px] font-bold rounded flex items-center gap-1 cursor-pointer hover:bg-slate-200">
@@ -162,7 +162,7 @@ export function Compliance() {
  ))}
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1",
@@ -179,7 +179,7 @@ export function Compliance() {
  <tr key={dispute.id} className="hover:bg-slate-50 transition-colors text-xs">
  <td className="px-6 py-4 font-bold text-[#111827] font-mono">{dispute.id}</td>
  <td className="px-6 py-4 uppercase font-bold text-red-600">{dispute.type}</td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="font-bold">Order: {dispute.orderId}</p>
  <p className="text-[10px] text-slate-600">NgÆ°á»i bÃ¡o: {dispute.reporterId}</p>
  </td>

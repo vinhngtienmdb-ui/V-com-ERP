@@ -648,7 +648,7 @@ export function FlashSale() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_FLASH_SALES.filter(c => c.type === activeTab).map((campaign) => (
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-3 rounded-lg flex items-center justify-center shrink-0",
@@ -672,7 +672,7 @@ export function FlashSale() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  {campaign.type === 'group_buy' && campaign.requiredParticipants ? (
  <div className="space-y-1.5 w-48">
  <div className="flex justify-between text-[10px] font-medium">
@@ -700,7 +700,7 @@ export function FlashSale() {
  <p className="text-sm font-bold text-slate-900">Cá»‘ Ä‘á»‹nh / Khung giá»</p>
  )}
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1.5">
  <span className="text-sm font-bold text-emerald-600">{campaign.roi > 0 ? '+' + formatCurrency(campaign.gmvGenerated * 0.185) : '--'}</span>
@@ -708,7 +708,7 @@ export function FlashSale() {
  <p className="text-[10px] text-[#6B7280]">GMV: {formatCurrency(campaign.gmvGenerated)}</p>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :
@@ -761,7 +761,7 @@ export function FlashSale() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_VOUCHERS.map(voucher => (
  <tr key={voucher.id} className="hover:bg-[#F9FAFB] transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-2.5 rounded-lg border border-dashed border-2",
@@ -775,7 +775,7 @@ export function FlashSale() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  {voucher.creatorType === 'admin' ? (
  <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -798,7 +798,7 @@ export function FlashSale() {
  </p>
  <p className="text-[10px] text-slate-600">ÄÆ¡n tá»« {formatCurrency(voucher.minOrderValue || 0)}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="w-32 mb-1.5">
  <div className="flex justify-between text-[10px] font-medium mb-1">
  <span className="text-slate-700">{voucher.usedCount} lÆ°á»£t Ä‘Ã£ dÃ¹ng</span>

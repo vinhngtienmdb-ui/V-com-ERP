@@ -562,7 +562,7 @@ export function SellerManagement() {
  return true;
  }).map((seller) => (
  <tr key={seller.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-4">
  <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-slate-300">
  {seller.name.charAt(0)}
@@ -585,7 +585,7 @@ export function SellerManagement() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
  <div className={cn(
@@ -603,7 +603,7 @@ export function SellerManagement() {
  <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-slate-600">Wallet</span></p>
  <p className="text-[10px] text-[#2563EB] font-medium mt-0.5">Hoa há»“ng: {seller.commissionRate}%</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1">
  <Star className={cn("w-3.5 h-3.5 fill-current", seller.rating > 0 ? "text-[#F59E0B]" : "text-[#E5E7EB]")} />
@@ -612,7 +612,7 @@ export function SellerManagement() {
  <span className="text-[10px] text-[#9CA3AF] mt-1">{seller.totalProducts} SP</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex gap-2 justify-center">
  {seller.status === 'pending' ? (
  <button 
@@ -1216,7 +1216,7 @@ export function SellerManagement() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cá»™ng) hoáº·c -500000 (trá»«)"
- className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
  <p className="text-[11px] text-slate-600 mt-2">DÃ¹ng sá»‘ Ã¢m Ä‘á»ƒ trá»« tiá»n. Viáº¿t liá»n khÃ´ng dáº¥u pháº©y.</p>
  </div>

@@ -339,17 +339,17 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">TÃªn khoáº£n phÃ­</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loáº¡i phÃ­</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">GiÃ¡ trá»‹</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tráº¡ng thÃ¡i</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tÃ¡c</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">TÃªn khoáº£n phÃ­</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loáº¡i phÃ­</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">GiÃ¡ trá»‹</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tráº¡ng thÃ¡i</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tÃ¡c</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {LOGISTICS_FEES[selectedPartnerForFees]?.map(fee => (
  <tr key={fee.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center group-hover:bg-slate-100 group-hover:text-orange-700 transition-colors">
  <DollarSign className="w-4 h-4" />
@@ -357,13 +357,13 @@ export function WarehouseModule() {
  <span className="text-sm font-bold text-slate-900">{fee.name}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="text-xs font-medium text-slate-600">{fee.type}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="text-sm font-black text-orange-700">{fee.value}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  {fee.status === 'Active' ? (
  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -436,10 +436,10 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
- <th className="px-6 py-4">Váº­n Ä‘Æ¡n</th>
- <th className="px-6 py-4">Äá»‘i tÃ¡c</th>
- <th className="px-6 py-4">TÃ i xáº¿/Shipper</th>
- <th className="px-6 py-4">Dá»± kiáº¿n</th>
+ <th className="px-3 py-2.5">Váº­n Ä‘Æ¡n</th>
+ <th className="px-3 py-2.5">Äá»‘i tÃ¡c</th>
+ <th className="px-3 py-2.5">TÃ i xáº¿/Shipper</th>
+ <th className="px-3 py-2.5">Dá»± kiáº¿n</th>
  <th className="px-6 py-4 text-center">Tráº¡ng thÃ¡i</th>
  <th className="px-6 py-4 text-right">Thao tÃ¡c</th>
  </tr>
@@ -447,14 +447,14 @@ export function WarehouseModule() {
  <tbody className="divide-y divide-slate-100">
  {MOCK_SHIPMENTS.map(ship => (
  <tr key={ship.id} className="hover:bg-slate-50/50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-slate-900">{ship.id}</span>
  <span className="text-[10px] text-slate-600 font-medium">{ship.orderId}</span>
  </div>
  </td>
  <td className="px-6 py-4 font-bold text-sm text-slate-800">{ship.partner}</td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <div className="w-6 h-6 bg-[#EAE7DF] rounded-full flex items-center justify-center text-[10px] font-bold text-orange-700">
  {ship.driver.charAt(0)}
@@ -462,7 +462,7 @@ export function WarehouseModule() {
  <span className="text-sm text-slate-700 font-medium">{ship.driver}</span>
  </div>
  </td>
- <td className="px-6 py-4 text-sm font-medium text-slate-700">{ship.eta}</td>
+ <td className="px-3 py-2 text-sm font-medium text-slate-700">{ship.eta}</td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
  "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight",
@@ -743,17 +743,17 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
- <th className="px-6 py-4">MÃ£ NguyÃªn liá»‡u</th>
+ <th className="px-3 py-2.5">MÃ£ NguyÃªn liá»‡u</th>
  <th className="px-6 py-4 text-center">Tá»“n kho thá»±c táº¿</th>
  <th className="px-6 py-4 text-center">ÄÆ¡n vá»‹</th>
- <th className="px-6 py-4">Cáº­p nháº­t láº§n cuá»‘i</th>
+ <th className="px-3 py-2.5">Cáº­p nháº­t láº§n cuá»‘i</th>
  <th className="px-6 py-4 text-right">Thao tÃ¡c</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {stockItems.map(item => (
  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <span className="text-sm font-bold text-slate-900">{item.materialId}</span>
  {item.quantity < 20 && <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">Sáº¯p háº¿t</span>}

@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, Send, AlertTriangle, UserPlus, Plus, Trash2, Save } from 'lucide-react';
@@ -123,7 +123,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               value={content}
               required
               onChange={(e) => setContent(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium min-h-[100px]"
               placeholder="Nhập chi tiết nội dung đề xuất..."
             />
           </div>

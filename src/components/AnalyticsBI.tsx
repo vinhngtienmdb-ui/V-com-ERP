@@ -130,7 +130,7 @@ export function AnalyticsBI() {
  <option>Theo giá trị quy đổi</option>
  </select>
  </div>
- <div style={{height:320}}>
+ <div style={{height:260}}>
  <ResponsiveContainer width="100%" height="100%">
  <BarChart data={RFM_DATA} layout="vertical" margin={{ left: 20 }}>
  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
@@ -180,7 +180,7 @@ export function AnalyticsBI() {
  </div>
  </div>
  </div>
- <div style={{height:320}}>
+ <div style={{height:260}}>
  <ResponsiveContainer width="100%" height="100%">
  <AreaChart data={ANALYTICS_TRENDS}>
  <defs>

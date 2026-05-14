@@ -120,7 +120,7 @@ export function LoyaltyManagement() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "flex-1 px-4 py-3 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
+ "flex-1 px-3 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
  activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
  )}
  >

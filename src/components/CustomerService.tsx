@@ -317,11 +317,11 @@ export function CustomerService() {
  onClick={() => setSelectedTicket(ticket)}
  className={cn("hover:bg-slate-100/50 cursor-pointer transition-colors group", ticket.status === 'open' ? 'bg-white' : 'bg-slate-50/30')}
  >
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-xs font-mono font-bold text-slate-700 mb-0.5">{ticket.id}</p>
  <p className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition-colors">{ticket.customerName}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  {ticket.sentiment === 'critical' ? <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> : 
  ticket.sentiment === 'negative' ? <span className="w-2 h-2 rounded-full bg-orange-500" /> : 
@@ -374,18 +374,18 @@ export function CustomerService() {
  <tbody className="divide-y divide-slate-100">
  {MOCK_CAMPAIGNS.map(camp => (
  <tr key={camp.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-slate-900">{camp.name}</p>
  <p className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">{camp.id}</p>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-xs font-bold uppercase tracking-widest text-orange-700 mb-0.5">{camp.type}</p>
  <p className="text-xs text-slate-600">{camp.target}</p>
  </td>
  <td className="px-6 py-4 text-center font-mono font-bold text-slate-800">
  {camp.sent.toLocaleString()}
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col items-center gap-1">
  <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
  <div className="h-full bg-emerald-500" style={{ width: `${camp.openRate}%` }} />
@@ -709,7 +709,7 @@ export function CustomerService() {
  { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Le Van C', hasAudio: true }
  ].map((log, i) => (
  <tr key={i} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <p className="text-sm font-bold text-slate-900">{log.name}</p>
  <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.caller}</p>
  </td>
@@ -948,7 +948,7 @@ export function CustomerService() {
  </thead>
  <tbody className="divide-y divide-slate-100">
  <tr className="hover:bg-slate-50">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Ngoc+Trinh&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -964,7 +964,7 @@ export function CustomerService() {
  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Sáºµn sÃ ng
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.9</span>
@@ -983,7 +983,7 @@ export function CustomerService() {
  </td>
  </tr>
  <tr className="hover:bg-slate-50">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Minh+Tuan&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -999,7 +999,7 @@ export function CustomerService() {
  <PhoneCall className="w-3 h-3" /> Äang nghe mÃ¡y
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.7</span>
@@ -1018,7 +1018,7 @@ export function CustomerService() {
  </td>
  </tr>
  <tr className="hover:bg-slate-50 opacity-60 grayscale">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Van+A&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -1034,7 +1034,7 @@ export function CustomerService() {
  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" /> Táº¡m nghá»‰
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.5</span>
