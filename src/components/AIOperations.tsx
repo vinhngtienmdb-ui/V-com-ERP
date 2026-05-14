@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  Bot, 
@@ -72,7 +72,7 @@ export function AIOperations() {
  const [activeModel, setActiveModel] = useState<'moderation' | 'pricing' | 'fraud' | 'recommendation' | 'chatbot' | 'review'>('moderation');
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-700 pb-12">
+ <div className="space-y-4 animate-in fade-in slide-in- duration-700 pb-12">
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-2">
@@ -95,7 +95,7 @@ export function AIOperations() {
  </div>
 
  <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-stone-950 text-[#FAF9F5] p-7 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
+ <div className="bg-stone-950 text-[#FAF9F5] p-4 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-6">
  <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5 group-hover:scale-110 transition-transform duration-500">
@@ -107,7 +107,7 @@ export function AIOperations() {
  </div>
  </div>
  <div>
- <div className="text-3xl font-black tracking-tight">12 Tác nhân</div>
+ <div className="text-xl font-black tracking-tight">12 Tác nhân</div>
  <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
  </div>
  </div>
@@ -120,7 +120,7 @@ export function AIOperations() {
  { label: 'Cảnh báo rủi ro', value: '12', sub: 'Detected today', icon: AlertTriangle, color: 'rose', alert: true },
  { label: 'Độ trễ suy luận', value: '140ms', sub: 'Avg Response', icon: Activity, color: 'blue' },
  ].map((stat) => (
- <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
+ <div key={stat.label} className="bg-white p-4 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
  <div className={cn(
  "p-4 rounded-none transition-transform group-hover:scale-110 duration-500",
  stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-orange-700"
@@ -152,7 +152,7 @@ export function AIOperations() {
  key={tab.id}
  onClick={() => setActiveModel(tab.id as any)}
  className={cn(
- "px-6 py-4 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 rounded-none",
+ "px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 rounded-none",
  activeModel === tab.id ? "bg-slate-900 text-[#FAF9F5] shadow-sm shadow-slate-900/5" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
  )}
  >
@@ -161,8 +161,8 @@ export function AIOperations() {
  ))}
  </div>
 
- <div className="p-8">
- <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+ <div className="p-5">
+ <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
  <div className="flex gap-4 w-full md:w-auto">
  <div className="relative flex-1 md:flex-initial">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -258,21 +258,21 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
- <div className="flex justify-between items-center mb-10">
- <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-4" columns={2} gap={32}>
+ <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="flex justify-between items-center mb-4">
+ <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
  <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
  </h3>
  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Ngân sách Hàng tháng</span>
  </div>
- <DraggableGrid className="grid grid-cols-2 gap-6 mb-10" columns={2} gap={24}>
- <div className="p-6 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+ <DraggableGrid className="grid grid-cols-2 gap-6 mb-4" columns={2} gap={24}>
+ <div className="p-4 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group p-4">
  <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Chi phí Thời gian thực</p>
- <p className="text-3xl font-black tracking-tight tracking-tighter">31,012,500đ</p>
+ <p className="text-xl font-black">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-slate-900/10 rounded-full blur-xl group-hover:bg-slate-900/20 transition-all" />
  </div>
- <div className="p-6 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
+ <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
  <p className="text-3xl font-black text-emerald-700 tracking-tight tracking-tighter">32.4%</p>
  <TrendingUp className="absolute top-4 right-4 w-10 h-10 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
@@ -299,9 +299,9 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
- <div className="flex justify-between items-center mb-10">
- <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
+ <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="flex justify-between items-center mb-4">
+ <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
  <LineChart className="w-6 h-6 text-orange-700" /> Multi-Model Arena Performance
  </h3>
  <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
@@ -334,32 +334,32 @@ export function AIOperations() {
  </DraggableGrid>
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-12 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
+ <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-slate-900/20 transition-all duration-1000" />
  
- <div className="relative z-10 space-y-8">
+ <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-6">
- <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
+ <div className="p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
  <BarChart4 className="w-10 h-10 text-orange-500" />
  </div>
- <h3 className="text-4xl font-black tracking-tight leading-tight italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
+ <h3 className="text-2xl font-black italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
  </div>
  <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-md">
  Tự động phân bổ tác vụ cho các cụm mô hình tối ưu nhất. Giảm thiểu chi phí lên tới 40% bằng cách sử dụng Small Model cho các tác vụ cơ bản.
  </p>
  <div className="flex flex-wrap gap-4 pt-4">
- <button className="px-8 py-4 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 hover:-translate-y-1">Inference Logs</button>
- <button className="px-8 py-4 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
+ <button className="px-5 py-2.5 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 hover:-translate-y-1">Inference Logs</button>
+ <button className="px-5 py-2.5 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
  </div>
  </div>
  <Layers className="absolute -bottom-16 -right-16 w-80 h-80 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-12 border border-slate-200 rounded-xl shadow-sm shadow-slate-200/40 space-y-10">
- <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
+ <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-sm shadow-slate-200/40 space-y-5">
+ <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
  <Activity className="w-7 h-7 text-orange-700" /> Phân tích Độ lệch & Tình trạng Model
  </h3>
- <div className="space-y-8">
+ <div className="space-y-4">
  {[
  { name: 'Fraud Detection v4.2', drift: 1.2, health: 'Optimized', statusColor: 'bg-emerald-50 text-emerald-600' },
  { name: 'Vector Search Encoder', drift: -4.5, health: 'Degraded', statusColor: 'bg-rose-50 text-rose-600' },
@@ -387,20 +387,20 @@ export function AIOperations() {
  </div>
  </div>
  ))}
- <button className="w-full py-5 bg-slate-50 text-slate-600 text-xs font-black rounded-[1.5rem] border border-slate-200 hover:text-orange-700 hover:bg-slate-100 transition-all uppercase tracking-widest border-b-4 active:translate-y-1">View Full Neural Architecture</button>
+ <button className="w-full py-2.5 bg-slate-50 text-slate-600 text-xs font-black rounded-[1.5rem] border border-slate-200 hover:text-orange-700 hover:bg-slate-100 transition-all uppercase tracking-widest border-b-4 active:translate-y-1">View Full Neural Architecture</button>
  </div>
  </div>
  </DraggableGrid>
 
  {/* Hardware & Resource Grid */}
- <div className="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm p-12 relative overflow-hidden group">
+ <div className="mt-4 bg-white rounded-xl border border-slate-200 shadow-sm p-5 relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
  <Server className="w-64 h-64 rotate-12" />
  </div>
  
- <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 relative z-10">
+ <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-5 relative z-10">
  <div>
- <h3 className="text-2xl font-black flex items-center gap-4 text-slate-900">
+ <h3 className="text-base font-black flex items-center gap-3 text-slate-900">
  <span className="p-3 bg-emerald-50 rounded-lg text-emerald-600 shadow-sm shadow-emerald-500/10 inline-block"><Server className="w-7 h-7" /></span>
  Hardware Cluster Telemetry
  </h3>
@@ -412,18 +412,18 @@ export function AIOperations() {
  </div>
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10" columns={3} gap={32}>
- <div className="border border-slate-200 rounded-xl p-8 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
- <div className="flex justify-between items-center mb-8">
- <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: A100-80GB</h4>
+ <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
+ <div className="flex justify-between items-center mb-4">
+ <h4 className="font-black text-slate-900 text-sm uppercase tracking-tight">Node: A100-80GB</h4>
  <span className="text-[9px] bg-emerald-600 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-emerald-600/20">Training Pool</span>
  </div>
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="space-y-2">
  <div className="flex justify-between text-[10px] font-black text-slate-600 uppercase tracking-[0.1em]">
  <span>VRAM Utilization</span>
  <span className="text-rose-600">92% Critical</span>
  </div>
- <div className="h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner flex">
+ <div className="h-2 bg-slate-200 rounded-full overflow-hidden shadow-inner flex">
  <div className="h-full bg-rose-500 w-[92%] rounded-full shadow-[0_0_8px_rgba(244,63,94,0.5)]"></div>
  </div>
  </div>
@@ -432,7 +432,7 @@ export function AIOperations() {
  <span>GPU Compute Load</span>
  <span className="text-orange-500">85% High</span>
  </div>
- <div className="h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner flex">
+ <div className="h-2 bg-slate-200 rounded-full overflow-hidden shadow-inner flex">
  <div className="h-full bg-orange-500 w-[85%] rounded-full"></div>
  </div>
  </div>
@@ -444,18 +444,18 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border border-slate-300 rounded-xl p-8 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
- <div className="flex justify-between items-center mb-8">
- <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: L4-24GB</h4>
+ <div className="border border-slate-300 rounded-xl p-4 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
+ <div className="flex justify-between items-center mb-4">
+ <h4 className="font-black text-slate-900 text-sm uppercase tracking-tight">Node: L4-24GB</h4>
  <span className="text-[9px] bg-slate-900 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-slate-900/5">Inference Pool</span>
  </div>
- <div className="space-y-6">
+ <div className="space-y-3">
  <div className="space-y-2">
  <div className="flex justify-between text-[10px] font-black text-slate-600 uppercase tracking-[0.1em]">
  <span>VRAM Utilization</span>
  <span className="text-orange-700">45% Optimal</span>
  </div>
- <div className="h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner flex">
+ <div className="h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner flex">
  <div className="h-full bg-slate-800 w-[45%] rounded-full"></div>
  </div>
  </div>
@@ -464,7 +464,7 @@ export function AIOperations() {
  <span>Throughput (RPS)</span>
  <span className="text-emerald-600">2,400 rps</span>
  </div>
- <div className="h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner flex">
+ <div className="h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner flex">
  <div className="h-full bg-emerald-500 w-[60%] rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]"></div>
  </div>
  </div>

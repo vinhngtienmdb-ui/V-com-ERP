@@ -46,7 +46,7 @@ export function DraggableGrid({
       //   ≥4 cột → stat card nhỏ → h=1 (160px)
       //   3 cột  → card trung → h=2 (320px)
       //   ≤2 cột → chart/bảng lớn → h=3 (480px)
-      let h = columns >= 4 ? 1 : columns === 3 ? 2 : 3;
+      let h = columns >= 4 ? 2 : columns === 3 ? 2 : 3;
 
       if (child.props.className) {
         const spanMatch = child.props.className.match(/col-span-(\d+)/);
