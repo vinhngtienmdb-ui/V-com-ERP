@@ -94,7 +94,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" columns={4} gap={16} rowHeight={70}>
  <div className="bg-stone-950 text-[#FAF9F5] p-3 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-2">
@@ -258,7 +258,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-4" columns={2} gap={32}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-4" columns={2} gap={16} rowHeight={110}>
  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-4">
  <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
@@ -266,16 +266,16 @@ export function AIOperations() {
  </h3>
  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Ngân sách Hàng tháng</span>
  </div>
- <DraggableGrid className="grid grid-cols-2 gap-6 mb-4" columns={2} gap={24}>
- <div className="p-4 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group p-4">
- <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Chi phí Thời gian thực</p>
- <p className="text-xl font-black">31,012,500đ</p>
+ <DraggableGrid className="grid grid-cols-2 gap-3 mb-3" columns={2} gap={12} rowHeight={50}>
+ <div data-row-span="2" className="p-3 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+ <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-1">Chi phí Thời gian thực</p>
+ <p className="text-base font-black">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-slate-900/10 rounded-full blur-xl group-hover:bg-slate-900/20 transition-all" />
  </div>
- <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group relative overflow-hidden">
- <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
+ <div data-row-span="2" className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group relative overflow-hidden">
+ <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-1">Cache Hit Rate</p>
  <p className="text-base font-black text-emerald-700 tracking-tight">32.4%</p>
- <TrendingUp className="absolute top-3 right-3 w-6 h-6 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
+ <TrendingUp className="absolute top-3 right-3 w-5 h-5 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
  </div>
  </DraggableGrid>
  <div className="space-y-4">
@@ -333,7 +333,7 @@ export function AIOperations() {
  </div>
  </DraggableGrid>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4" columns={2} gap={32}>
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4" columns={2} gap={16} rowHeight={110}>
  <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-slate-900/20 transition-all duration-1000" />
  
@@ -411,7 +411,7 @@ export function AIOperations() {
  </button>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10" columns={3} gap={32}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10" columns={3} gap={16} rowHeight={90}>
  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
  <div className="flex justify-between items-center mb-4">
  <h4 className="font-black text-slate-900 text-sm uppercase tracking-tight">Node: A100-80GB</h4>
