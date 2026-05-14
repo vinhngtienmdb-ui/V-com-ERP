@@ -35,7 +35,8 @@ import {
  Zap
 } from 'lucide-react';
 import { db, auth } from '../lib/firebase';
-import { collection, onSnapshot, query, addDoc, serverTimestamp, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, addDoc, serverTimestamp, limit, orderBy } from 'firebase/firestore';
+import { transactionsRepo, invoicesRepo, type InvoiceInput } from '../services/repositories';
 import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
 
@@ -79,25 +80,48 @@ function getColorClasses(color: string) {
 
 export function Finance() {
  const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
- const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports' | 'ocr'>('overview');
+ const [invoices, setInvoices] = useState<InvoiceInput[]>([]);
+ const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports' | 'ocr' | 'invoices'>('overview');
  const [loading, setLoading] = useState(true);
  const [ocrFile, setOcrFile] = useState<File | null>(null);
  const [isScanning, setIsScanning] = useState(false);
  const [scanResult, setScanResult] = useState<any>(null);
 
  useEffect(() => {
- const q = query(collection(db, 'finance_transactions'), limit(50));
- const unsubscribe = onSnapshot(q, (snapshot) => {
+ // Subscribe sổ cái /transactions qua repository (zod validate, error tập trung).
+ const unsubTx = transactionsRepo.subscribe(
+ [orderBy('createdAt', 'desc'), limit(50)],
+ (items) => {
+ const formatted = items.map((d: any) => ({
+ ...d,
+ date: d.createdAt?.toDate?.()?.toLocaleDateString('vi-VN') ?? d.dateStr ?? '',
+ })) as FinanceTransaction[];
+ setTransactions(formatted);
+ setLoading(false);
+ },
+ );
+ // Subscribe /invoices
+ const unsubInv = invoicesRepo.subscribe(
+ [orderBy('issuedAt', 'desc'), limit(50)],
+ (items) => setInvoices(items),
+ );
+ // Fallback: legacy collection /finance_transactions cho dữ liệu cũ
+ const qLegacy = query(collection(db, 'finance_transactions'), limit(50));
+ const unsubLegacy = onSnapshot(qLegacy, (snapshot) => {
+ if (snapshot.empty) return;
  const docs = snapshot.docs.map(doc => ({
  id: doc.id,
  ...doc.data(),
- date: doc.data().date?.toDate()?.toLocaleDateString('vi-VN') || doc.data().dateStr || ''
+ date: doc.data().date?.toDate()?.toLocaleDateString('vi-VN') || doc.data().dateStr || '',
  })) as FinanceTransaction[];
- setTransactions(docs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
- setLoading(false);
+ // Merge với transactions chính, dedupe theo id
+ setTransactions((prev) => {
+ const ids = new Set(prev.map((t) => t.id));
+ return [...prev, ...docs.filter((d) => !ids.has(d.id))];
+ });
  });
 
- return () => unsubscribe();
+ return () => { unsubTx(); unsubInv(); unsubLegacy(); };
  }, []);
 
  const addDemoTransactions = async () => {
@@ -238,6 +262,7 @@ export function Finance() {
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
+ { id: 'invoices', label: 'Hóa đơn điện tử', icon: FileText },
  { id: 'ledger', label: 'Sổ cái & Chứng từ', icon: FileText },
  { id: 'ocr', label: 'Smart OCR', icon: Scan },
  { id: 'reports', label: 'Báo cáo QT', icon: PieChart }
@@ -446,6 +471,61 @@ export function Finance() {
  </tbody>
  </table>
  </div>
+ </div>
+ </div>
+ )}
+
+ {activeTab === 'invoices' && (
+ <div className="animate-in fade-in duration-300 p-6">
+ <div className="flex items-center justify-between mb-4">
+ <div>
+ <h3 className="text-lg font-bold text-[#111827]">Hóa đơn điện tử (TT 78/2021)</h3>
+ <p className="text-sm text-[#6B7280] mt-0.5">Tổng số: {invoices.length} hóa đơn</p>
+ </div>
+ </div>
+ <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
+ <table className="w-full text-left border-collapse">
+ <thead>
+ <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Số HĐ</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ký hiệu</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Bên mua</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tiền hàng</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">VAT</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng cộng</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Trạng thái</th>
+ </tr>
+ </thead>
+ <tbody className="divide-y divide-[#F3F4F6]">
+ {invoices.map((inv) => (
+ <tr key={inv.id} className="hover:bg-[#F9FAFB] transition-colors">
+ <td className="px-3 py-2.5 text-sm font-mono font-semibold text-[#111827]">{inv.invoiceNumber}</td>
+ <td className="px-3 py-2.5 text-xs font-mono text-slate-600">{inv.serialNumber}</td>
+ <td className="px-3 py-2.5 text-sm text-[#111827]">{inv.buyerName}</td>
+ <td className="px-3 py-2.5 text-sm text-right text-[#111827]">{formatCurrency(inv.subtotal)}</td>
+ <td className="px-3 py-2.5 text-sm text-right text-slate-600">{formatCurrency(inv.vatTotal)}</td>
+ <td className="px-3 py-2.5 text-sm text-right font-bold text-[#111827]">{formatCurrency(inv.total)}</td>
+ <td className="px-3 py-2.5">
+ <span className={cn(
+ "px-2 py-0.5 text-[10px] font-bold rounded-full uppercase",
+ inv.status === 'issued' && "bg-emerald-100 text-emerald-800",
+ inv.status === 'sent' && "bg-blue-100 text-blue-800",
+ inv.status === 'cancelled' && "bg-rose-100 text-rose-800",
+ inv.status === 'draft' && "bg-slate-100 text-slate-700",
+ inv.status === 'replaced' && "bg-amber-100 text-amber-800",
+ )}>{inv.status}</span>
+ </td>
+ </tr>
+ ))}
+ {invoices.length === 0 && (
+ <tr>
+ <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-500 italic">
+ Chưa có hóa đơn. Vào /orders → đơn delivered → bấm "Xuất hóa đơn điện tử".
+ </td>
+ </tr>
+ )}
+ </tbody>
+ </table>
  </div>
  </div>
  )}

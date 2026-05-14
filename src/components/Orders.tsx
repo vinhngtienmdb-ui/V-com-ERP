@@ -19,18 +19,21 @@ import {
  Download,
  BrainCircuit,
  PieChart as PieIcon,
+ FileText,
  Sparkles
 } from 'lucide-react';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { ordersRepo } from '../services/repositories';
+import { ordersRepo, issueInvoice } from '../services/repositories';
 import { orderBy, limit } from 'firebase/firestore';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
  const [isGenerating, setIsGenerating] = useState(false);
  const [aiResponse, setAiResponse] = useState<string | null>(null);
+ const [isIssuing, setIsIssuing] = useState(false);
+ const [invoiceResult, setInvoiceResult] = useState<{ id: string; total: number } | string | null>(null);
 
  const handleDraftRma = async (order: any) => {
  setIsGenerating(true);
@@ -43,6 +46,29 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  setIsGenerating(false);
  }
  };
+
+ const handleIssueInvoice = async () => {
+ setIsIssuing(true);
+ setInvoiceResult(null);
+ try {
+ // TODO: Lấy sellerTaxCode/sellerName/sellerAddress từ /sellers/{order.sellerId}
+ // hoặc cấu hình store thay vì hardcode. Hardcode tạm cho mục đích test.
+ const r = await issueInvoice({
+ orderId: order.id,
+ sellerTaxCode: '0123456789',
+ sellerName: 'VComm Việt Nam',
+ sellerAddress: '123 Lê Lợi, Q.1, TP.HCM',
+ });
+ setInvoiceResult({ id: r.invoiceId, total: r.total });
+ } catch (err: any) {
+ console.error(err);
+ setInvoiceResult(`Lỗi: ${err.message ?? 'Không xác định'}`);
+ } finally {
+ setIsIssuing(false);
+ }
+ };
+
+ const canIssueInvoice = order.status === 'delivered' || order.status === 'completed';
 
  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -159,6 +185,31 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  <button className="w-full bg-slate-100 text-slate-500 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
  <Clock className="w-5 h-5" /> Chờ giao để thu COD
  </button>
+ )}
+ {canIssueInvoice && (
+ <button
+ onClick={handleIssueInvoice}
+ disabled={isIssuing}
+ className="w-full bg-slate-900 text-[#FAF9F5] px-4 py-3 rounded-lg text-sm font-bold hover:bg-slate-800 disabled:bg-slate-400 shadow-sm flex items-center justify-center gap-2"
+ >
+ <FileText className="w-5 h-5" /> {isIssuing ? 'Đang xuất hóa đơn...' : 'Xuất hóa đơn điện tử'}
+ </button>
+ )}
+ {!canIssueInvoice && (
+ <p className="text-xs text-slate-500 italic text-center">
+ Chỉ xuất hóa đơn được khi đơn ở trạng thái <code className="bg-slate-100 px-1 rounded">delivered</code> hoặc <code className="bg-slate-100 px-1 rounded">completed</code>.
+ </p>
+ )}
+ {invoiceResult && typeof invoiceResult === 'object' && (
+ <div className="bg-emerald-50 border border-emerald-200 px-3 py-2 rounded text-xs text-emerald-800">
+ ✓ Đã xuất HĐ <code className="bg-white px-1 py-0.5 rounded font-mono">{invoiceResult.id}</code>
+ · Tổng (bao gồm VAT 10%): <strong>{formatCurrency(invoiceResult.total)}</strong>
+ </div>
+ )}
+ {invoiceResult && typeof invoiceResult === 'string' && (
+ <div className="bg-rose-50 border border-rose-200 px-3 py-2 rounded text-xs text-rose-800">
+ {invoiceResult}
+ </div>
  )}
  </div>
  </div>
