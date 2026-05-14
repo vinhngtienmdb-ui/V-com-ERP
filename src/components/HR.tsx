@@ -599,8 +599,8 @@ export function HumanResources() {
 
  {activeTab === 'overview' && (
  <div className="space-y-8 animate-in fade-in duration-700">
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng nhân sự</span>
  <Users className="w-4 h-4 text-orange-700" />
@@ -610,7 +610,7 @@ export function HumanResources() {
  <Building2 className="w-3.5 h-3.5" /> 05 Phòng ban
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang Onboarding</span>
  <Rocket className="w-4 h-4 text-emerald-600" />
@@ -618,7 +618,7 @@ export function HumanResources() {
  <div className="text-3xl font-black text-emerald-600">12</div>
  <p className="text-[10px] text-[#6B7280] mt-3 font-bold uppercase">Bổ sung 4 nhân sự Kho</p>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Quỹ lương tháng</span>
  <Wallet className="w-4 h-4 text-slate-500" />
@@ -626,23 +626,20 @@ export function HumanResources() {
  <div className="text-2xl font-black text-[#111827] truncate">{formatCurrency(1850000000)}</div>
  <p className="text-[10px] text-slate-500 mt-3 font-bold italic uppercase tracking-tighter">Tăng 5.2% so với T2</p>
  </div>
- <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Skill Health</span>
- <Target className="w-4 h-4 text-orange-600" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <Target className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Skill Health</h3>
  </div>
- <div>
- <div className="text-3xl font-black text-[#FAF9F5] tracking-tighter">88.5%</div>
- <p className="text-[10px] text-orange-500 font-bold mt-1 uppercase">Top: Marketing Dept</p>
+ <div className="p-5">
+ <div className="text-3xl font-black text-slate-900 tracking-tighter">88.5%</div>
+ <p className="text-[10px] text-orange-600 font-bold mt-1 uppercase">Top: Marketing Dept</p>
  </div>
- </div>
- <BrainCircuit className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
  </DraggableGrid>
 
  {/* HR Analytics Dashboard (Upgraded) */}
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm mb-6">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm mb-6">
  <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
  <Activity className="w-5 h-5 text-orange-700" /> HR Dashboard Insight
  </h3>
@@ -707,7 +704,7 @@ export function HumanResources() {
  <div className="w-1.5 h-6 bg-slate-900 rounded-full" />
  <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
  {group.items.map(item => (
  <button 
  key={item.id}
@@ -786,7 +783,7 @@ export function HumanResources() {
  </div>
  </DraggableGrid>
  
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6 relative mt-6" columns={2} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-4 relative mt-6" columns={2} gap={16}>
  <div className="absolute inset-0 bg-white /50 to-transparent pointer-events-none rounded-lg" />
  <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg border border-slate-300 shadow-sm">
  <h3 className="text-sm font-bold text-[#111827] mb-4 flex items-center gap-2">
@@ -802,13 +799,14 @@ export function HumanResources() {
  </div>
  <p className="text-[10px] text-[#6B7280] mt-3">Tích hợp GPS App để chấm công tự động cho nhân viên vận chuyển và Sale hiện trường khi vào vùng kho/cửa hàng.</p>
  </div>
- <div className="bg-slate-900 text-[#FAF9F5] p-8 rounded-lg flex flex-col justify-between">
- <div>
- <h3 className="text-xl font-bold italic mb-2">Dynamic Salary Engine</h3>
- <p className="text-slate-500 text-sm leading-relaxed">Cấu hình công thức tính lương động theo từng vị trí (Kinh doanh: Lương cứng + % Hoa hồng; Kho: Lương theo sản lượng). Tự động kết nối dữ liệu từ module Seller & Đơn hàng để tính thưởng nóng.</p>
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <Briefcase className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Dynamic Salary Engine</h3>
  </div>
- <div className="pt-6">
- <button className="w-full bg-white text-slate-900 font-bold py-3 rounded-lg text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+ <div className="p-5 flex flex-col gap-4">
+ <p className="text-slate-600 text-sm leading-relaxed">Cấu hình công thức tính lương động theo từng vị trí (Kinh doanh: Lương cứng + % Hoa hồng; Kho: Lương theo sản lượng). Tự động kết nối dữ liệu từ module Seller & Đơn hàng để tính thưởng nóng.</p>
+ <button className="w-full bg-slate-900 text-[#FAF9F5] font-bold py-3 rounded-lg text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
  <Briefcase className="w-4 h-4" /> Cấu hình công thức tính lương
  </button>
  </div>
@@ -1559,7 +1557,7 @@ export function HumanResources() {
 
  {activeTab === 'attendance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500 p-6 bg-slate-50 min-h-[600px]">
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-300 shadow-sm mb-6">
+ <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl border border-slate-300 shadow-sm mb-6">
  <div>
  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
  <Clock className="w-6 h-6 text-orange-500" /> Quản lý Chấm công & Hiện diện
@@ -1616,7 +1614,7 @@ export function HumanResources() {
  </div>
 
  <div className="space-y-6">
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm h-full">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm h-full">
  <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
  <Activity className="w-4 h-4 text-emerald-500" /> Ghi nhận gần đây
  </h3>
@@ -1664,7 +1662,7 @@ export function HumanResources() {
  </div>
  </div>
  ) : (
- <DraggableGrid className="grid grid-cols-12 gap-6" columns={12} gap={24}>
+ <DraggableGrid className="grid grid-cols-12 gap-4" columns={12} gap={16}>
  <div className="col-span-12 lg:col-span-8 bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden flex flex-col">
  <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex gap-4">
@@ -1765,7 +1763,7 @@ export function HumanResources() {
  </div>
 
  <div className="col-span-12 lg:col-span-4 space-y-6">
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <h3 className="font-bold text-slate-900 text-sm mb-6 flex items-center gap-2 uppercase tracking-widest">
  <Target className="w-4 h-4 text-rose-500" /> Phân tích Chuyên cần
  </h3>
@@ -1811,7 +1809,7 @@ export function HumanResources() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="relative z-10">
  <h3 className="font-bold text-slate-900 text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
  <QrCode className="w-4 h-4 text-primary-600" /> Mã QR Động (Anti-Fake)
@@ -1853,7 +1851,7 @@ export function HumanResources() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-4" columns={3} gap={16}>
  <div className="bg-primary-50 border border-primary-100 p-6 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
  <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">Average Completion</p>
@@ -1966,37 +1964,39 @@ export function HumanResources() {
  </div>
 
  <div className="col-span-12 lg:col-span-4 space-y-8">
- <div className="bg-slate-900 rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm">
- <div className="absolute top-0 right-0 p-4">
- <Trophy className="w-12 h-12 text-[#FAF9F5]/10 rotate-12" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <Trophy className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">PERFORMANCE LEADERBOARD</h3>
  </div>
- <h3 className="text-lg font-black italic tracking-widest mb-8 border-l-4 border-amber-400 pl-4">PERFORMANCE LEADERBOARD</h3>
- <div className="space-y-6">
+ <div className="p-5">
+ <div className="space-y-4">
  {[
- { name: 'Hoàng Minh', score: 98, rank: 1, color: 'text-amber-400' },
+ { name: 'Hoàng Minh', score: 98, rank: 1, color: 'text-amber-500' },
  { name: 'Thu Thủy', score: 94, rank: 2, color: 'text-slate-500' },
- { name: 'Diệu Nhi', score: 91, rank: 3, color: 'text-orange-400' }
+ { name: 'Diệu Nhi', score: 91, rank: 3, color: 'text-orange-500' }
  ].map((p, i) => (
- <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-3 rounded-lg transition-all">
+ <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-all">
  <div className="flex items-center gap-4">
  <span className={cn("text-xl font-black w-6", p.color)}>{p.rank}</span>
  <div>
- <p className="text-sm font-bold tracking-tight">{p.name}</p>
- <div className="h-1 w-12 bg-white/10 rounded-full mt-1.5 overflow-hidden">
- <div className="h-full bg-white/40" style={{ width: `${p.score}%` }} />
+ <p className="text-sm font-bold text-slate-900 tracking-tight">{p.name}</p>
+ <div className="h-1 w-12 bg-slate-200 rounded-full mt-1.5 overflow-hidden">
+ <div className="h-full bg-slate-700" style={{ width: `${p.score}%` }} />
  </div>
  </div>
  </div>
  <div className="text-right">
- <p className="text-lg font-black tabular-nums">{p.score}</p>
- <p className="text-[9px] text-slate-600 font-bold uppercase">Points</p>
+ <p className="text-lg font-black tabular-nums text-slate-900">{p.score}</p>
+ <p className="text-[9px] text-slate-500 font-bold uppercase">Points</p>
  </div>
  </div>
  ))}
  </div>
- <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+ <button className="w-full mt-6 py-3 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
  Xem tất cả bảng xếp hạng
  </button>
+ </div>
  </div>
 
  <div className="bg-white border border-slate-300 rounded-xl p-8 shadow-sm group">
@@ -2726,7 +2726,7 @@ export function HumanResources() {
  </div>
  <div className="min-h-[500px]">
  {activeATSView === 'candidates' && (
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
  {(['sourced', 'interview', 'offered', 'hired'] as const).map(status => (
  <div key={status} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, status)} className="bg-slate-50/80 rounded-lg p-5 border border-slate-300 flex flex-col h-[500px]">
  <div className="flex justify-between items-center mb-5">

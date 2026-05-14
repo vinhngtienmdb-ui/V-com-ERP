@@ -72,7 +72,7 @@ export function Home() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6 pb-10">
+    <div className="flex flex-col gap-6 pb-10">
       {/* Greeting */}
       <div>
         <h1 className="text-xl font-bold text-slate-800">
@@ -103,7 +103,7 @@ export function Home() {
 
       {/* Cards grid */}
       {displayedModules.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
           {displayedModules.map((mod) => {
             const favKey = `${mod.label}::${mod.path}`;
             const favorited = favorites.has(favKey);
@@ -114,13 +114,13 @@ export function Home() {
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && navigate(mod.path)}
-                className="group relative bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all duration-200 p-4 text-left flex flex-col items-start cursor-pointer"
+                className="group relative bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-200 p-6 text-left flex flex-col items-start cursor-pointer"
               >
                 {/* Favorite star */}
                 <button
                   onClick={(e) => toggleFavorite(e, mod.path, mod.label)}
                   className={cn(
-                    'absolute top-3 right-3 p-0.5 rounded transition-opacity',
+                    'absolute top-3.5 right-3.5 p-1 rounded-full transition-opacity',
                     favorited
                       ? 'opacity-100 text-yellow-400'
                       : 'opacity-0 group-hover:opacity-100 text-slate-300 hover:text-yellow-400'
@@ -128,7 +128,7 @@ export function Home() {
                   aria-label={favorited ? 'Bỏ đánh dấu' : 'Đánh dấu'}
                 >
                   <Star
-                    className="w-3.5 h-3.5"
+                    className="w-4 h-4"
                     fill={favorited ? 'currentColor' : 'none'}
                   />
                 </button>
@@ -136,20 +136,20 @@ export function Home() {
                 {/* Icon */}
                 <div
                   className={cn(
-                    'w-14 h-14 rounded-2xl shadow-sm mb-3 flex items-center justify-center',
+                    'w-16 h-16 rounded-2xl shadow-sm mb-4 flex items-center justify-center shrink-0',
                     mod.color
                   )}
                 >
-                  <mod.icon className="w-7 h-7 text-white" />
+                  <mod.icon className="w-8 h-8 text-white" />
                 </div>
 
                 {/* Module name */}
-                <div className="text-sm font-bold text-slate-900 leading-snug mb-1">
+                <div className="text-base font-bold text-slate-900 leading-snug mb-1.5">
                   {mod.label}
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
                   {mod.desc}
                 </p>
               </div>

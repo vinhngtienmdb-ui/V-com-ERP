@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
  Clock, 
  ClipboardList, 
@@ -54,43 +54,43 @@ function getColorClasses(color: string) {
 
 const MODULE_GROUPS = [
  {
- title: 'Lịch & Tiện ích (Mới & Đề xuất)',
+ title: 'Lá»‹ch & Tiá»‡n Ã­ch (Má»›i & Äá» xuáº¥t)',
  items: [
- { id: 'calendar', label: 'Lịch công tác', desc: 'Lịch tuần ban lãnh đạo', icon: CalendarIcon, color: 'indigo' },
- { id: 'meeting_rooms', label: 'Đặt phòng họp', desc: 'Lịch trống phòng họp', icon: Building2, color: 'rose' },
- { id: 'vehicles', label: 'Điều xe công tác', desc: 'Đăng ký xe ô tô cơ quan', icon: Car, color: 'blue' },
+ { id: 'calendar', label: 'Lá»‹ch cÃ´ng tÃ¡c', desc: 'Lá»‹ch tuáº§n ban lÃ£nh Ä‘áº¡o', icon: CalendarIcon, color: 'indigo' },
+ { id: 'meeting_rooms', label: 'Äáº·t phÃ²ng há»p', desc: 'Lá»‹ch trá»‘ng phÃ²ng há»p', icon: Building2, color: 'rose' },
+ { id: 'vehicles', label: 'Äiá»u xe cÃ´ng tÃ¡c', desc: 'ÄÄƒng kÃ½ xe Ã´ tÃ´ cÆ¡ quan', icon: Car, color: 'blue' },
  ]
  },
  {
- title: 'Công việc & Quy trình (Nâng cấp)',
+ title: 'CÃ´ng viá»‡c & Quy trÃ¬nh (NÃ¢ng cáº¥p)',
  items: [
- { id: 'work_project', label: 'Quản lý Dự án (Kanban)', desc: 'Tiến độ dự án', icon: FolderOpen, color: 'blue' },
- { id: 'work_mine', label: 'Công việc của tôi', desc: 'Danh sách việc cần làm.', icon: ClipboardCheck, color: 'emerald' },
- { id: 'work_manage', label: 'Giao việc & Giám sát', desc: 'Giao việc cho cấp dưới.', icon: ClipboardList, color: 'purple' },
- { id: 'work_report', label: 'Báo cáo hiệu suất', desc: 'Thống kê lượng việc.', icon: BarChart2, color: 'cyan' },
+ { id: 'work_project', label: 'Quáº£n lÃ½ Dá»± Ã¡n (Kanban)', desc: 'Tiáº¿n Ä‘á»™ dá»± Ã¡n', icon: FolderOpen, color: 'blue' },
+ { id: 'work_mine', label: 'CÃ´ng viá»‡c cá»§a tÃ´i', desc: 'Danh sÃ¡ch viá»‡c cáº§n lÃ m.', icon: ClipboardCheck, color: 'emerald' },
+ { id: 'work_manage', label: 'Giao viá»‡c & GiÃ¡m sÃ¡t', desc: 'Giao viá»‡c cho cáº¥p dÆ°á»›i.', icon: ClipboardList, color: 'purple' },
+ { id: 'work_report', label: 'BÃ¡o cÃ¡o hiá»‡u suáº¥t', desc: 'Thá»‘ng kÃª lÆ°á»£ng viá»‡c.', icon: BarChart2, color: 'cyan' },
  ]
  },
  {
- title: 'Tài liệu & Hồ sơ',
+ title: 'TÃ i liá»‡u & Há»“ sÆ¡',
  items: [
- { id: 'doc_list', label: 'Tài liệu chuyên môn', desc: 'Kho lưu trữ dùng chung', icon: FolderOpen, color: 'blue' },
- { id: 'doc_archive', label: 'Kho Lưu trữ Cơ quan', desc: 'Số hóa tài liệu cũ', icon: FileText, color: 'emerald' },
+ { id: 'doc_list', label: 'TÃ i liá»‡u chuyÃªn mÃ´n', desc: 'Kho lÆ°u trá»¯ dÃ¹ng chung', icon: FolderOpen, color: 'blue' },
+ { id: 'doc_archive', label: 'Kho LÆ°u trá»¯ CÆ¡ quan', desc: 'Sá»‘ hÃ³a tÃ i liá»‡u cÅ©', icon: FileText, color: 'emerald' },
  ]
  },
  {
- title: 'Tài sản Cơ quan',
+ title: 'TÃ i sáº£n CÆ¡ quan',
  items: [
- { id: 'asset_list', label: 'Danh sách tài sản', desc: 'Quản lý kho tài sản.', icon: Monitor, color: 'blue' },
- { id: 'asset_assign', label: 'Cấp phát & Bàn giao', desc: 'Luân chuyển tài sản.', icon: ArrowRightLeft, color: 'emerald' },
- { id: 'asset_maintenance', label: 'Bảo trì sửa chữa', desc: 'Lịch sử bảo dưỡng.', icon: Wrench, color: 'orange' },
+ { id: 'asset_list', label: 'Danh sÃ¡ch tÃ i sáº£n', desc: 'Quáº£n lÃ½ kho tÃ i sáº£n.', icon: Monitor, color: 'blue' },
+ { id: 'asset_assign', label: 'Cáº¥p phÃ¡t & BÃ n giao', desc: 'LuÃ¢n chuyá»ƒn tÃ i sáº£n.', icon: ArrowRightLeft, color: 'emerald' },
+ { id: 'asset_maintenance', label: 'Báº£o trÃ¬ sá»­a chá»¯a', desc: 'Lá»‹ch sá»­ báº£o dÆ°á»¡ng.', icon: Wrench, color: 'orange' },
  ]
  }
 ];
 
 const INTERNAL_NEWS = [
- { id: 1, title: 'Thông báo v/v Nghỉ lễ Chiến thắng 30/4 và Quốc tế lao động 1/5', date: '18/04/2026', type: 'Announcement', priority: 'high' },
- { id: 2, title: 'Chiến dịch \"Xanh hóa văn phòng\" - Kick-off quý 2/2026', date: '15/04/2026', type: 'Event', priority: 'medium' },
- { id: 3, title: 'Thư chúc mừng của Ban Giám đốc nhân dịp đạt KPI quý 1', date: '12/04/2026', type: 'News', priority: 'low' },
+ { id: 1, title: 'ThÃ´ng bÃ¡o v/v Nghá»‰ lá»… Chiáº¿n tháº¯ng 30/4 vÃ  Quá»‘c táº¿ lao Ä‘á»™ng 1/5', date: '18/04/2026', type: 'Announcement', priority: 'high' },
+ { id: 2, title: 'Chiáº¿n dá»‹ch \"Xanh hÃ³a vÄƒn phÃ²ng\" - Kick-off quÃ½ 2/2026', date: '15/04/2026', type: 'Event', priority: 'medium' },
+ { id: 3, title: 'ThÆ° chÃºc má»«ng cá»§a Ban GiÃ¡m Ä‘á»‘c nhÃ¢n dá»‹p Ä‘áº¡t KPI quÃ½ 1', date: '12/04/2026', type: 'News', priority: 'low' },
 ];
 
 export function Workspace() {
@@ -98,10 +98,10 @@ export function Workspace() {
 
  // Kanban Tasks State
  const [tasks, setTasks] = useState([
- { id: 't1', title: 'Lập KH Triển khai eOffice', date: '18/04/2026', priority: 'Gấp', status: 'todo', progress: 0 },
- { id: 't2', title: 'Thiết kế Mockup UI', date: '19/04/2026', priority: 'Bình thường', status: 'todo', progress: 0 },
- { id: 't3', title: 'Báo cáo Quý 1/2026', date: '20/04/2026', priority: 'Dự án', status: 'in_progress', progress: 45, desc: 'Tổng hợp số liệu doanh thu từ các bộ phận kinh doanh và lập báo cáo.' },
- { id: 't4', title: 'Chuẩn bị hồ sơ đấu thầu', date: '15/04/2026', priority: 'Quan trọng', status: 'done', progress: 100 },
+ { id: 't1', title: 'Láº­p KH Triá»ƒn khai eOffice', date: '18/04/2026', priority: 'Gáº¥p', status: 'todo', progress: 0 },
+ { id: 't2', title: 'Thiáº¿t káº¿ Mockup UI', date: '19/04/2026', priority: 'BÃ¬nh thÆ°á»ng', status: 'todo', progress: 0 },
+ { id: 't3', title: 'BÃ¡o cÃ¡o QuÃ½ 1/2026', date: '20/04/2026', priority: 'Dá»± Ã¡n', status: 'in_progress', progress: 45, desc: 'Tá»•ng há»£p sá»‘ liá»‡u doanh thu tá»« cÃ¡c bá»™ pháº­n kinh doanh vÃ  láº­p bÃ¡o cÃ¡o.' },
+ { id: 't4', title: 'Chuáº©n bá»‹ há»“ sÆ¡ Ä‘áº¥u tháº§u', date: '15/04/2026', priority: 'Quan trá»ng', status: 'done', progress: 100 },
  ]);
 
  const handleDragStart = (e: React.DragEvent, id: string) => {
@@ -127,16 +127,16 @@ export function Workspace() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Không gian làm việc (eOffice)</h1>
+ <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">KhÃ´ng gian lÃ m viá»‡c (eOffice)</h1>
  </div>
- <p className="text-sm text-[#6B7280]">Trung tâm điều hành công việc, quy trình và tiện ích nội bộ.</p>
+ <p className="text-sm text-[#6B7280]">Trung tÃ¢m Ä‘iá»u hÃ nh cÃ´ng viá»‡c, quy trÃ¬nh vÃ  tiá»‡n Ã­ch ná»™i bá»™.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <CalendarIcon className="w-4 h-4 text-primary-600" /> Lịch tuần
+ <CalendarIcon className="w-4 h-4 text-primary-600" /> Lá»‹ch tuáº§n
  </button>
  <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Plus className="w-4 h-4" /> Tạo mới
+ <Plus className="w-4 h-4" /> Táº¡o má»›i
  </button>
  </div>
  </div>
@@ -151,7 +151,7 @@ export function Workspace() {
  <div className="bg-slate-800/20 text-orange-500 p-2 rounded-lg border border-slate-900/30">
  <Zap className="w-5 h-5 fill-current" />
  </div>
- <h2 className="text-xl font-bold tracking-tight">Tin tức & Thông báo nội bộ</h2>
+ <h2 className="text-xl font-bold tracking-tight">Tin tá»©c & ThÃ´ng bÃ¡o ná»™i bá»™</h2>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
  {INTERNAL_NEWS.map(news => (
@@ -215,7 +215,7 @@ export function Workspace() {
 
  {activeModule === 'work_project' && (
  <div className="space-y-6">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  {['todo', 'in_progress', 'done'].map((status) => (
  <div 
  key={status}
@@ -226,7 +226,7 @@ export function Workspace() {
  <div className="p-4 border-b border-slate-300 flex items-center justify-between">
  <div className="flex items-center gap-2">
  <h3 className="font-bold text-sm text-slate-900 uppercase tracking-wider">
- {status === 'todo' ? 'Cần làm' : status === 'in_progress' ? 'Đang thực hiện' : 'Hoàn thành'}
+ {status === 'todo' ? 'Cáº§n lÃ m' : status === 'in_progress' ? 'Äang thá»±c hiá»‡n' : 'HoÃ n thÃ nh'}
  </h3>
  <span className="bg-white border border-slate-300 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
  {tasks.filter(t => t.status === status).length}
@@ -245,7 +245,7 @@ export function Workspace() {
  <div className="flex justify-between items-start mb-2">
  <span className={cn(
  "text-[9px] font-bold px-1.5 py-0.5 rounded uppercase",
- task.priority === 'Gấp' ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-orange-700"
+ task.priority === 'Gáº¥p' ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-orange-700"
  )}>
  {task.priority}
  </span>
@@ -274,3 +274,4 @@ export function Workspace() {
  </div>
  );
 }
+

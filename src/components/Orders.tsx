@@ -406,8 +406,8 @@ export function Orders() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
  <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
@@ -417,7 +417,7 @@ export function Orders() {
  </div>
  <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Cần đóng gói</span>
  <PackageCheck className="w-4 h-4 text-orange-600" />
@@ -425,7 +425,7 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">42</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">12 đơn đóng muộn ({">"}24h)</div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang vận chuyển</span>
  <Truck className="w-4 h-4 text-purple-500" />
@@ -433,18 +433,15 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">156</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
  </div>
- <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full text-[#FAF9F5]">
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
- <RotateCcw className="w-4 h-4 text-orange-400" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <RotateCcw className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Yêu cầu Đổi trả (RMA)</h3>
  </div>
- <div>
- <div className="text-3xl font-black tracking-tighter">08</div>
- <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
+ <div className="p-5">
+ <div className="text-3xl font-black tracking-tighter text-slate-900">08</div>
+ <p className="text-[10px] text-orange-600 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
  </div>
- </div>
- <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
  </DraggableGrid>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">

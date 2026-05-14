@@ -184,7 +184,7 @@ export function CustomerService() {
  </div>
 
  {/* Overview Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
  <div className="flex justify-between items-start relative z-10 mb-2">
@@ -1336,4 +1336,5 @@ export function CustomerService() {
  </div>
  );
 }
+
 

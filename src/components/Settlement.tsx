@@ -111,7 +111,7 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
@@ -301,27 +301,24 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-8 overflow-hidden relative">
- <div className="relative z-10 space-y-4">
- <div className="flex items-center gap-3">
- <div className="p-2 bg-slate-800 rounded-lg">
- <CreditCard className="w-6 h-6 text-[#FAF9F5]" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <CreditCard className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Giải ngân tự động qua Cổng Payout</h3>
  </div>
- <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
+ <div className="p-5">
+ <p className="text-slate-600 text-sm max-w-xl leading-relaxed mb-4">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
+ <div className="flex gap-4">
+ <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 flex flex-col">
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Hạn mức Payout Ngày</span>
+ <span className="text-base font-bold text-slate-900 leading-none mt-1">2,000,000,000đ</span>
  </div>
- <p className="text-slate-500 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
- <div className="flex gap-4 pt-2">
- <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
- <span className="text-[10px] text-slate-600 font-bold uppercase">Hạn mức Payout Ngày</span>
- <span className="text-base font-bold text-[#FAF9F5] leading-none mt-1">2,000,000,000đ</span>
- </div>
- <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
- <span className="text-[10px] text-slate-600 font-bold uppercase">Phí Payout Trung bình</span>
- <span className="text-base font-bold text-orange-500 leading-none mt-1">1,200đ / Giao dịch</span>
+ <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 flex flex-col">
+ <span className="text-[10px] text-slate-500 font-bold uppercase">Phí Payout Trung bình</span>
+ <span className="text-base font-bold text-orange-600 leading-none mt-1">1,200đ / Giao dịch</span>
  </div>
  </div>
  </div>
- <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/50 -rotate-12" />
  </div>
  </div>
  );

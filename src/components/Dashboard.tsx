@@ -284,7 +284,7 @@ export function Dashboard() {
  return (
  <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
  {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
+ <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-5 md:p-8 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
  {/* Decorative background glass circles */}
  <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
  <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
@@ -561,22 +561,17 @@ export function Dashboard() {
   )}
 
   {config.showCommunity && (
-  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
-  <div className="drag-handle cursor-move px-8 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
-  <div className="flex items-center gap-4 mb-6 pointer-events-none">
-  <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5 shadow-inner border border-slate-700">
-  <Users className="w-6 h-6 text-[#FAF9F5]" />
+  <div key="community" className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col justify-between h-full w-full">
+  <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2 drag-handle cursor-move hover:bg-slate-100 transition-colors">
+  <Users className="w-4 h-4 text-blue-600" />
+  <h3 className="text-sm font-bold text-slate-900 pointer-events-none">Cộng đồng Seller</h3>
   </div>
-  <div>
-  <h3 className="text-lg font-bold tracking-tight">Cộng đồng Seller</h3>
-  </div>
-  </div>
+  <div className="p-5 flex flex-col flex-1 justify-between">
   <p className="text-slate-500 text-xs leading-relaxed max-w-sm pointer-events-none mb-6">Hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.</p>
-  <div className="relative z-10 w-full mt-auto">
-  <button className="px-5 w-fit py-2 pointer-events-auto bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all shadow-sm">Duyệt Seller mới</button>
+  <div className="relative z-10 w-full">
+  <button className="px-5 w-fit py-2 pointer-events-auto bg-slate-900 text-[#FAF9F5] font-bold rounded-lg text-xs hover:bg-slate-800 transition-all shadow-sm">Duyệt Seller mới</button>
   </div>
   </div>
-  <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F5] opacity-[0.02] pointer-events-none" />
   </div>
   )}
 
@@ -644,41 +639,39 @@ export function Dashboard() {
   margin={[24, 24]}
  >
   {config.showSLA && (
-  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
-  <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
-  <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2 pointer-events-none">
-  <Activity className="w-5 h-5 text-orange-500" />
-  Báo cáo Vận hành
-  </h3>
-  <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
+  <div key="sla" className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full w-full">
+  <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2 drag-handle cursor-move hover:bg-slate-100 transition-colors">
+  <Activity className="w-4 h-4 text-blue-600" />
+  <h3 className="text-sm font-bold text-slate-900 pointer-events-none">Báo cáo Vận hành</h3>
+  <div className="ml-auto px-2.5 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-200 uppercase tracking-widest flex items-center gap-1.5 pointer-events-none">
   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
   Live
   </div>
   </div>
-  
-  <div className="px-6 flex-1 flex flex-col justify-end relative z-10 pb-6 pointer-events-none">
+
+  <div className="p-5 flex-1 flex flex-col justify-end relative z-10 pointer-events-none">
   <div className="grid grid-cols-2 gap-4 mb-8">
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
   <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Giao đúng hạn</div>
-  <div className="text-2xl font-bold flex items-baseline gap-1">
+  <div className="text-2xl font-bold text-slate-900 flex items-baseline gap-1">
   98.5<span className="text-sm font-normal text-slate-500">%</span>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
+  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1">+1.2% <TrendingUp className="w-3 h-3"/></div>
   </div>
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
   <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Lỗi / Sự cố</div>
-  <div className="text-2xl font-bold flex items-baseline gap-1">
+  <div className="text-2xl font-bold text-slate-900 flex items-baseline gap-1">
   1.2<span className="text-sm font-normal text-slate-500">%</span>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
+  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1">-0.4% <TrendingDown className="w-3 h-3"/></div>
   </div>
-  <div className="bg-white/5 border border-white/10 rounded-lg p-4 col-span-2 flex justify-between items-center">
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 col-span-2 flex justify-between items-center">
   <div>
   <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Xử lý Đơn (TB)</div>
   <div className="text-2xl font-bold flex items-baseline gap-1">
   2.4<span className="text-sm font-normal text-slate-500">giờ</span>
   </div>
-  <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
+  <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
   </div>
   <div className="w-24 h-12 opacity-80">
   <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
@@ -697,16 +690,15 @@ export function Dashboard() {
   <div key={item.label} className="group">
   <div className="flex justify-between items-end mb-2">
   <span className="text-xs font-bold text-slate-500">{item.label}</span>
-  <span className="text-sm font-black text-[#FAF9F5]">{item.value}{item.unit}</span>
+  <span className="text-sm font-black text-slate-900">{item.value}{item.unit}</span>
   </div>
-  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+  <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
   <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${item.value}%` }}></div>
   </div>
   </div>
   ))}
   </div>
   </div>
-  <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-800/20 blur-3xl rounded-full pointer-events-none"></div>
   </div>
   )}
 
@@ -745,7 +737,7 @@ export function Dashboard() {
   margin={[24, 24]}
  >
   {config.showFinanceStats && (
-  <div key="financeStats" className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full w-full drag-handle cursor-move">
+  <div key="financeStats" className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full w-full drag-handle cursor-move">
   <StatCard title="Tổng Doanh thu" value="1,250,000,000" change="12.5" icon={Banknote} trend="up" />
   <StatCard title="Tổng Chi phí" value="980,000,000" change="-5.2" icon={Wallet} trend="down" />
   <StatCard title="Lợi nhuận gộp" value="270,000,000" change="8.4" icon={LineChartIcon} trend="up" />
