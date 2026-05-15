@@ -390,6 +390,93 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── HR — Employee ───────────────────────────────────────────────────────────
+export const EmploymentStatus = z.enum(['probation', 'active', 'leave', 'terminated', 'retired']);
+export const EmployeeSchema = z.object({
+  id: z.string(),
+  uid: z.string().optional(),         // link Firebase Auth user (nếu employee có login)
+  fullName: z.string().min(2).max(200),
+  email: z.string().email().optional().or(z.literal('')),
+  phone: z.string().min(9).max(15).optional(),
+  identityCard: z.string().optional(),
+  dob: z.string().optional(),         // YYYY-MM-DD
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  address: z.string().optional(),
+  department: z.string().optional(),
+  position: z.string().optional(),
+  managerId: z.string().optional(),
+  storeId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  baseSalary: z.number().nonnegative().optional(),
+  employmentStatus: EmploymentStatus,
+  bankAccount: z.string().optional(),
+  bankName: z.string().optional(),
+  taxCode: z.string().optional(),
+  socialInsurance: z.string().optional(),
+  updatedAt: Timestamp.optional(),
+});
+
+// ── HR — Attendance ─────────────────────────────────────────────────────────
+export const AttendanceType = z.enum(['check_in', 'check_out', 'leave', 'absent', 'overtime']);
+export const AttendanceSchema = z.object({
+  id: z.string(),
+  employeeId: z.string(),
+  storeId: z.string().optional(),
+  date: z.string(),                  // YYYY-MM-DD
+  type: AttendanceType,
+  timestamp: Timestamp.optional(),
+  hours: z.number().nonnegative().optional(),
+  note: z.string().optional(),
+  approvedBy: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── HR — Payroll (bảng lương theo kỳ) ───────────────────────────────────────
+export const PayrollStatus = z.enum(['draft', 'pending_approval', 'approved', 'paid', 'cancelled']);
+export const PayrollSchema = z.object({
+  id: z.string(),                    // format: {employeeId}_{YYYY-MM}
+  employeeId: z.string(),
+  employeeName: z.string(),
+  period: z.string(),                // YYYY-MM
+  baseSalary: z.number().nonnegative(),
+  workDays: z.number().nonnegative().optional(),
+  overtimeHours: z.number().nonnegative().optional(),
+  overtimePay: z.number().nonnegative().optional(),
+  bonus: z.number().nonnegative().optional(),
+  allowance: z.number().nonnegative().optional(),
+  deductions: z.number().nonnegative().optional(),
+  insurance: z.number().nonnegative().optional(),
+  personalIncomeTax: z.number().nonnegative().optional(),
+  netPay: z.number().nonnegative(),
+  status: PayrollStatus,
+  approvedBy: z.string().optional(),
+  approvedAt: Timestamp.optional(),
+  paidAt: Timestamp.optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── HR — KPI ────────────────────────────────────────────────────────────────
+export const KPIStatus = z.enum(['draft', 'in_progress', 'completed', 'evaluated']);
+export const KPISchema = z.object({
+  id: z.string(),
+  employeeId: z.string(),
+  period: z.string(),                // YYYY-Qn hoặc YYYY-MM
+  metrics: z.array(z.object({
+    name: z.string(),
+    target: z.number(),
+    actual: z.number(),
+    weight: z.number().min(0).max(1),
+    unit: z.string().optional(),
+  })),
+  score: z.number().min(0).max(100).optional(),
+  status: KPIStatus,
+  evaluatedBy: z.string().optional(),
+  evaluatedAt: Timestamp.optional(),
+  feedback: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
@@ -405,3 +492,7 @@ export type SellerTaxReportInput = z.infer<typeof SellerTaxReportSchema>;
 export type CampaignInput = z.infer<typeof CampaignSchema>;
 export type AffiliateInput = z.infer<typeof AffiliateSchema>;
 export type PayoutInput = z.infer<typeof PayoutSchema>;
+export type EmployeeInput = z.infer<typeof EmployeeSchema>;
+export type AttendanceInput = z.infer<typeof AttendanceSchema>;
+export type PayrollInput = z.infer<typeof PayrollSchema>;
+export type KPIInput = z.infer<typeof KPISchema>;

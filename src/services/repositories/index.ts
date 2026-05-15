@@ -4,10 +4,12 @@ import {
   SellerSchema, WalletSchema, WalletTxSchema,
   TransactionSchema, InvoiceSchema, SellerTaxReportSchema,
   CampaignSchema, AffiliateSchema, PayoutSchema,
+  EmployeeSchema, AttendanceSchema, PayrollSchema, KPISchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
   type CampaignInput, type AffiliateInput, type PayoutInput,
+  type EmployeeInput, type AttendanceInput, type PayrollInput, type KPIInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -73,6 +75,26 @@ export const affiliatesRepo = makeRepository<AffiliateInput>({
 export const payoutsRepo = makeRepository<PayoutInput>({
   collectionName: 'payouts',
   schema: PayoutSchema,
+});
+
+export const employeesRepo = makeRepository<EmployeeInput>({
+  collectionName: 'employees',
+  schema: EmployeeSchema,
+});
+
+export const attendanceRepo = makeRepository<AttendanceInput>({
+  collectionName: 'attendance',
+  schema: AttendanceSchema,
+});
+
+export const payrollRepo = makeRepository<PayrollInput>({
+  collectionName: 'payroll',
+  schema: PayrollSchema,
+});
+
+export const kpiRepo = makeRepository<KPIInput>({
+  collectionName: 'kpi',
+  schema: KPISchema,
 });
 
 export * from './schemas';

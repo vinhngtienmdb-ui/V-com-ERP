@@ -27,6 +27,9 @@ export { issueInvoice, monthlySellerTaxAggregation } from './invoiceHandlers.js'
 // ── Backup ───────────────────────────────────────────────────────────────
 export { dailyBackup } from './backupHandlers.js';
 
+// ── Public menu sync (products → public_menu) ────────────────────────────
+export { syncProductToPublicMenu } from './publicMenuSync.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,

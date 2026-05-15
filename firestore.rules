@@ -265,6 +265,49 @@ service cloud.firestore {
       }
     }
 
+    // ── HR — Employees ──────────────────────────────────────────────────────
+    match /employees/{empId} {
+      // Manager+ thấy danh sách; employee tự xem hồ sơ qua uid match.
+      allow get: if isManager() || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow list: if isManager();
+      allow create, update: if (isAdmin() || hasRole('director')) && isValidEmployee(incoming());
+      allow delete: if isAdmin();
+
+      function hasRole(r) { return role() == r; }
+      function isValidEmployee(d) {
+        return d.fullName is string && d.fullName.size() >= 2 &&
+               d.employmentStatus in ['probation', 'active', 'leave', 'terminated', 'retired'];
+      }
+    }
+
+    // ── HR — Attendance ─────────────────────────────────────────────────────
+    match /attendance/{recId} {
+      allow get: if isManager() || (isSignedIn() && resource.data.employeeId == request.auth.uid);
+      allow list: if isManager();
+      allow create: if isStaff() && incoming().createdAt is timestamp;
+      allow update: if isManager() && hasOnlyChanged(['type', 'hours', 'note', 'approvedBy', 'updatedAt']);
+      allow delete: if isAdmin();
+    }
+
+    // ── HR — Payroll ────────────────────────────────────────────────────────
+    match /payroll/{payrollId} {
+      // Employee chỉ thấy bảng lương của mình; HR/Admin thấy tất cả.
+      allow get: if isAdmin() || role() == 'director' ||
+        (isSignedIn() && resource.data.employeeId == request.auth.uid);
+      allow list: if isAdmin() || role() == 'director';
+      allow create, update: if isAdmin() || role() == 'director';
+      allow delete: if false; // append-only (sửa sai phải tạo bảng đảo)
+    }
+
+    // ── HR — KPI ────────────────────────────────────────────────────────────
+    match /kpi/{kpiId} {
+      allow get: if isManager() ||
+        (isSignedIn() && resource.data.employeeId == request.auth.uid);
+      allow list: if isManager();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+
     // ── Payouts (seller rút tiền) ───────────────────────────────────────────
     match /payouts/{payoutId} {
       allow get, list: if isStaff();
