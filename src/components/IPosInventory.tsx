@@ -1,10 +1,23 @@
- import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, ArrowDownToLine, ArrowUpFromLine, RefreshCw, ClipboardList, Boxes, AlertTriangle, Play, Settings2, Plus, Search, Filter, Layers, MapPin } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCurrency } from '../lib/utils';
+import { inventoryRepo, productsRepo, type InventoryMovementInput, type ProductInput } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
 
 export function IPosInventory({ activeStore }: { activeStore: any }) {
   const [invTab, setInvTab] = useState<'nhap' | 'xuat' | 'kiem' | 'chuyen' | 'goi' | 'canhbao' | 'vitri' | 'kiemke_thang'>('kiem');
+  const [movements, setMovements] = useState<InventoryMovementInput[]>([]);
+  const [products, setProducts] = useState<ProductInput[]>([]);
+
+  useEffect(() => {
+    const u1 = inventoryRepo.subscribe([orderBy('createdAt', 'desc'), limit(50)], setMovements);
+    const u2 = productsRepo.subscribe([orderBy('updatedAt', 'desc'), limit(100)], setProducts);
+    return () => { u1(); u2(); };
+  }, []);
+
+  const lowStockCount = products.filter(p => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= 5).length;
+  const outOfStockCount = products.filter(p => (p.stock ?? 0) === 0).length;
 
   const FNB_MODE = activeStore?.industry === "F&B" || activeStore?.industry === "Nhà hàng, quán ăn, quán cafe";
 

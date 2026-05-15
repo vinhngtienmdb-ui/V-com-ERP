@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tag, Plus, Search, Filter, Box } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCurrency } from '../lib/utils';
+import { productsRepo, type ProductInput } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
+import { EmptyState } from './ui/EmptyState';
 
 export function IPosProducts({ activeStore }: { activeStore: any }) {
+  const [products, setProducts] = useState<ProductInput[]>([]);
+  useEffect(() => {
+    const unsub = productsRepo.subscribe([orderBy('updatedAt', 'desc'), limit(50)], setProducts);
+    return () => unsub();
+  }, []);
+
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -52,18 +61,21 @@ export function IPosProducts({ activeStore }: { activeStore: any }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {[1,2,3,4,5].map(i => (
-                                <tr key={i} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
-                                    <td className="px-4 py-3 font-mono text-slate-600">SP00{i}</td>
+                            {products.length === 0 && (
+                              <tr><td colSpan={5}><EmptyState title="Chưa có sản phẩm" description="Thêm SP qua /pim hoặc nút trên" /></td></tr>
+                            )}
+                            {products.map(p => (
+                                <tr key={p.id} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
+                                    <td className="px-4 py-3 font-mono text-slate-600">{p.sku ?? p.id.slice(0, 8)}</td>
                                     <td className="px-4 py-3">
-                                       <p className="font-semibold text-slate-900">Sản phẩm mẫu {i}</p>
-                                       <p className="text-[10px] text-slate-600">Giá: {formatCurrency(150000 * i)} • NCC {i}</p>
+                                       <p className="font-semibold text-slate-900">{p.name}</p>
+                                       <p className="text-[10px] text-slate-600">Giá: {formatCurrency(p.price)} {p.sellerName ? `• ${p.sellerName}` : ''}</p>
                                     </td>
-                                    <td className="px-4 py-3 text-xs text-slate-700">Lô {2026+i} • 12/2027</td>
-                                    <td className="px-4 py-3 font-medium text-slate-700">Brand {i}</td>
+                                    <td className="px-4 py-3 text-xs text-slate-700">—</td>
+                                    <td className="px-4 py-3 font-medium text-slate-700">{p.brand ?? '—'}</td>
                                     <td className="px-4 py-3 text-right">
-                                       <p className="font-bold text-emerald-600">{i * 12}</p>
-                                       <p className="text-[10px] text-slate-500">Lưu kho: {10 * i} ngày</p>
+                                       <p className={cn("font-bold", (p.stock ?? 0) > 0 ? "text-emerald-600" : "text-rose-600")}>{p.stock ?? 0}</p>
+                                       <p className="text-[10px] text-slate-500">{p.status ?? '—'}</p>
                                     </td>
                                 </tr>
                             ))}

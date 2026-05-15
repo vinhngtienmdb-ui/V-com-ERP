@@ -1,10 +1,21 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Search, Plus, UserCircle2, Star, Download, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCurrency } from '../lib/utils';
+import { customersRepo, type CustomerInput } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
+import { EmptyState } from './ui/EmptyState';
 
 export function IPosCustomers({ activeStore }: { activeStore: any }) {
+  const [customers, setCustomers] = useState<CustomerInput[]>([]);
+  useEffect(() => {
+    const unsub = customersRepo.subscribe([orderBy('totalSpent', 'desc'), limit(50)], setCustomers);
+    return () => unsub();
+  }, []);
+  const totalCustomers = customers.length;
+  const vipCount = customers.filter(c => (c.totalSpent ?? 0) >= 5_000_000).length;
+
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -33,15 +44,15 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
              <div className="bg-white p-5 rounded-sm border border-slate-300 shadow-sm flex items-center gap-4">
                  <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center"><Users className="w-6 h-6" /></div>
                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Tổng KH Chi Nhánh</p>
-                    <p className="text-2xl font-black text-slate-900">1,248</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Tổng KH</p>
+                    <p className="text-2xl font-black text-slate-900">{totalCustomers.toLocaleString('vi-VN')}</p>
                  </div>
              </div>
              <div className="bg-white p-5 rounded-sm border border-slate-300 shadow-sm flex items-center gap-4">
                  <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center"><Star className="w-6 h-6" /></div>
                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">KH VIP (Tích cực)</p>
-                    <p className="text-2xl font-black text-slate-900">42</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">KH VIP (≥5M chi tiêu)</p>
+                    <p className="text-2xl font-black text-slate-900">{vipCount}</p>
                  </div>
              </div>
          </DraggableGrid>
@@ -58,27 +69,33 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {[1,2,3,4,5].map(i => (
-                        <tr key={i} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
+                    {customers.length === 0 && (
+                      <tr><td colSpan={5}><EmptyState title="Chưa có khách hàng" description="Khách sẽ tự thêm khi đặt đơn lần đầu" /></td></tr>
+                    )}
+                    {customers.map(c => {
+                      const isVip = (c.totalSpent ?? 0) >= 5_000_000;
+                      return (
+                        <tr key={c.id} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
                             <td className="px-4 py-4 flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><UserCircle2 className="w-5 h-5"/></div>
                                 <div>
-                                    <p className="font-bold text-slate-900">Nguyễn Văn Khách {i}</p>
-                                    <p className="text-xs text-slate-600 mt-0.5">090123456{i}</p>
+                                    <p className="font-bold text-slate-900">{c.name}</p>
+                                    <p className="text-xs text-slate-600 mt-0.5">{c.phoneMasked ?? c.phone}</p>
                                 </div>
                             </td>
                             <td className="px-4 py-4">
-                                <span className={cn("px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider", i%2===0 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700")}>
-                                    {i%2===0 ? 'VIP' : 'Thường'}
+                                <span className={cn("px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider", isVip ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700")}>
+                                    {isVip ? 'VIP' : c.tier ?? 'Thường'}
                                 </span>
                             </td>
-                            <td className="px-4 py-4 text-right font-medium text-slate-700">{formatCurrency(1500000 * i)}</td>
-                            <td className="px-4 py-4 text-right font-black text-emerald-600">{100 * i}</td>
+                            <td className="px-4 py-4 text-right font-medium text-slate-700">{formatCurrency(c.totalSpent ?? 0)}</td>
+                            <td className="px-4 py-4 text-right font-black text-emerald-600">{c.points ?? 0}</td>
                             <td className="px-4 py-4 text-center">
                                 <span className="text-[10px] font-bold text-emerald-600 flex items-center justify-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"/> Đã đồng bộ</span>
                             </td>
                         </tr>
-                    ))}
+                      );
+                    })}
                 </tbody>
             </table>
          </div>
