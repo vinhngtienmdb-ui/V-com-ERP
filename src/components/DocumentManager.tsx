@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { documentsRepo, type DocumentInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
   FileText, 
   Send, 
@@ -60,8 +62,39 @@ const MOCK_CATEGORIES = [
   { id: 'cat-3', name: 'Thông báo', code: 'TB', type: 'Nội bộ/Đi', status: 'active', desc: 'Văn bản truyền đạt thông tin' }
 ];
 
+/** Map DocumentInput → UI shape */
+function adaptDocument(d: DocumentInput): any {
+  const dirMap: Record<string, string> = {
+    incoming: 'inbound', outgoing: 'outbound', internal: 'internal',
+  };
+  return {
+    id: d.id,
+    title: d.title,
+    type: dirMap[d.direction] ?? 'internal',
+    status: d.status,
+    date: '',
+    signer: d.fromOrg ?? d.processedBy ?? '',
+    category: d.category ?? 'Khác',
+    aiSummary: '',
+    department: d.assignedTo ?? '',
+    urgency: 'normal',
+    fileType: 'pdf',
+  };
+}
+
 export function DocumentManager() {
   const [activeTab, setActiveTab] = useState('inbound');
+  const [dbDocs, setDbDocs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const unsub = documentsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+      setDbDocs(items.map(adaptDocument));
+    });
+    return () => unsub();
+  }, []);
+
+  // Fallback MOCK khi DB rỗng
+  const docs = dbDocs.length > 0 ? dbDocs : MOCK_DOCS;
   const [isCreatingBook, setIsCreatingBook] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   
@@ -591,7 +624,7 @@ export function DocumentManager() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F3F4F6]">
-                        {MOCK_DOCS.filter(doc => doc.type === activeTab).map(doc => (
+                        {docs.filter(doc => doc.type === activeTab).map(doc => (
                           <tr 
                             key={doc.id} 
                             onClick={() => handleDocClick(doc)}
@@ -645,7 +678,7 @@ export function DocumentManager() {
                             </td>
                           </tr>
                         ))}
-                        {MOCK_DOCS.filter(doc => doc.type === activeTab).length === 0 && (
+                        {docs.filter(doc => doc.type === activeTab).length === 0 && (
                           <tr>
                             <td colSpan={5} className="px-6 py-16 text-center text-slate-600">
                               <div className="flex flex-col items-center gap-3">

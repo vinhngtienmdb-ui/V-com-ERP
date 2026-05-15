@@ -390,6 +390,80 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Contract (Hợp đồng) ────────────────────────────────────────────────────
+export const ContractStatus = z.enum([
+  'draft',          // Nháp
+  'pending_review', // Chờ pháp chế review
+  'pending_sign',   // Chờ ký
+  'signed',         // Đã ký
+  'active',         // Đang hiệu lực
+  'expired',        // Hết hạn
+  'terminated',     // Chấm dứt sớm
+]);
+export const ContractType = z.enum([
+  'seller',         // HĐ với seller
+  'employment',     // HĐ lao động
+  'partnership',    // HĐ hợp tác
+  'service',        // HĐ dịch vụ
+  'nda',            // Bảo mật
+  'other',
+]);
+export const ContractSchema = z.object({
+  id: z.string(),
+  contractNumber: z.string(),
+  title: z.string().min(2).max(300),
+  type: ContractType,
+  status: ContractStatus,
+  partyAName: z.string(),
+  partyATaxCode: z.string().optional(),
+  partyBName: z.string(),
+  partyBTaxCode: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  signedAt: Timestamp.optional(),
+  amount: z.number().nonnegative().optional(),
+  documentUrl: z.string().url().optional().or(z.literal('')),
+  signatureUrls: z.array(z.string().url()).optional(),
+  ownerStaffId: z.string().optional(),
+  signedBy: z.array(z.string()).optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── Document (Công văn / file lưu trữ) ─────────────────────────────────────
+export const DocumentDirection = z.enum(['incoming', 'outgoing', 'internal']);
+export const DocumentStatus = z.enum(['draft', 'pending', 'processed', 'archived']);
+export const DocumentSchema = z.object({
+  id: z.string(),
+  documentNumber: z.string(),   // Số văn bản
+  title: z.string().min(2).max(500),
+  direction: DocumentDirection,
+  fromOrg: z.string().optional(),
+  toOrg: z.string().optional(),
+  status: DocumentStatus,
+  category: z.string().optional(),
+  fileUrls: z.array(z.string().url()).optional(),
+  receivedAt: Timestamp.optional(),
+  processedBy: z.string().optional(),
+  assignedTo: z.string().optional(),
+  notes: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── Digital signature (CA cert) ────────────────────────────────────────────
+export const SignatureCertSchema = z.object({
+  id: z.string(),
+  ownerName: z.string(),
+  ownerTaxCode: z.string(),
+  provider: z.enum(['VNPT-CA', 'Viettel-CA', 'FPT-CA', 'BKAV-CA', 'Other']),
+  serialNumber: z.string(),
+  issuedAt: Timestamp.optional(),
+  expiresAt: Timestamp.optional(),
+  status: z.enum(['active', 'expired', 'revoked']),
+  publicKeyFingerprint: z.string().optional(),
+  notes: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 // ── OmniChat — Chat thread + message ───────────────────────────────────────
 export const ChatChannel = z.enum(['zalo', 'facebook', 'instagram', 'tiktok', 'webchat', 'hotline', 'email']);
 export const ChatThreadStatus = z.enum(['open', 'pending', 'resolved', 'spam']);
@@ -577,3 +651,6 @@ export type LoyaltyProgramInput = z.infer<typeof LoyaltyProgramSchema>;
 export type PointTransactionInput = z.infer<typeof PointTransactionSchema>;
 export type ChatThreadInput = z.infer<typeof ChatThreadSchema>;
 export type ChatMessageInput = z.infer<typeof ChatMessageSchema>;
+export type ContractInput = z.infer<typeof ContractSchema>;
+export type DocumentInput = z.infer<typeof DocumentSchema>;
+export type SignatureCertInput = z.infer<typeof SignatureCertSchema>;

@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { 
  ShieldCheck, 
  Scale, 
@@ -29,8 +31,29 @@ const MOCK_DISPUTES: DisputeRequest[] = [
  { id: 'DSP-103', orderId: 'ORD-8821', type: 'ip_infringement', reporterId: 'BRAND-OWNER-02', evidence: ['proof.pdf'], status: 'open' },
 ];
 
+interface ModerationLog {
+  id: string;
+  productId: string;
+  productName: string;
+  imageUrl: string;
+  result: { flagged: boolean; reasons: string[]; severity: 'low' | 'medium' | 'high' };
+  reviewed: boolean;
+}
+
 export function Compliance() {
- const [activeTab, setActiveTab] = useState<'brand' | 'dispute' | 'policy'>('brand');
+ const [activeTab, setActiveTab] = useState<'brand' | 'dispute' | 'policy' | 'moderation'>('brand');
+ const [moderationLogs, setModerationLogs] = useState<ModerationLog[]>([]);
+
+ useEffect(() => {
+   // AI moderation flagged products (từ moderateProductImage Cloud Function)
+   const q = query(collection(db, 'moderation_logs'), orderBy('createdAt', 'desc'), limit(50));
+   const unsub = onSnapshot(q, (snap) => {
+     setModerationLogs(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as ModerationLog[]);
+   });
+   return () => unsub();
+ }, []);
+
+ const flaggedCount = moderationLogs.filter(l => l.result?.flagged).length;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">

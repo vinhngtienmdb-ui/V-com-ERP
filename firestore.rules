@@ -279,6 +279,33 @@ service cloud.firestore {
       }
     }
 
+    // ── Contracts (Hợp đồng) ─────────────────────────────────────────────────
+    match /contracts/{contractId} {
+      allow get, list: if isManager();
+      allow create, update: if isManager() && isValidContract(incoming());
+      allow delete: if isAdmin();
+
+      function isValidContract(d) {
+        return d.title is string && d.title.size() >= 2 &&
+               d.type in ['seller', 'employment', 'partnership', 'service', 'nda', 'other'] &&
+               d.status in ['draft', 'pending_review', 'pending_sign', 'signed', 'active', 'expired', 'terminated'];
+      }
+    }
+
+    // ── Documents (Công văn) ─────────────────────────────────────────────────
+    match /documents/{docId} {
+      allow get, list: if isManager();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+
+    // ── Signature certs (Chứng thư số) ───────────────────────────────────────
+    match /signature_certs/{id} {
+      allow get, list: if isManager();
+      allow create, update: if isAdmin();
+      allow delete: if false; // Lưu vĩnh viễn cho audit
+    }
+
     // ── OmniChat — chat_threads ──────────────────────────────────────────────
     match /chat_threads/{threadId} {
       allow get, list: if isStaff();

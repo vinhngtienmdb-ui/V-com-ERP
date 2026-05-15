@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { signatureCertsRepo, type SignatureCertInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import {
   FileSignature,
   Key,
@@ -390,6 +392,14 @@ function SigningModal({
 
 export function SignatureHub() {
   const [activeTab, setActiveTab] = useState('pending');
+  const [dbCerts, setDbCerts] = useState<SignatureCertInput[]>([]);
+
+  useEffect(() => {
+    const unsub = signatureCertsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+      setDbCerts(items);
+    });
+    return () => unsub();
+  }, []);
   const [signatures, setSignatures] = useState(INITIAL_SIGNATURES);
   const [signingModalOpen, setSigningModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);

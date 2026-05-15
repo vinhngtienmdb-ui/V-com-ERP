@@ -7,6 +7,7 @@ import {
   EmployeeSchema, AttendanceSchema, PayrollSchema, KPISchema,
   LoyaltyProgramSchema, PointTransactionSchema,
   ChatThreadSchema, ChatMessageSchema,
+  ContractSchema, DocumentSchema, SignatureCertSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
@@ -14,6 +15,7 @@ import {
   type EmployeeInput, type AttendanceInput, type PayrollInput, type KPIInput,
   type LoyaltyProgramInput, type PointTransactionInput,
   type ChatThreadInput, type ChatMessageInput,
+  type ContractInput, type DocumentInput, type SignatureCertInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -119,6 +121,21 @@ export const chatThreadsRepo = makeRepository<ChatThreadInput>({
 export const chatMessagesRepo = makeRepository<ChatMessageInput>({
   collectionName: 'chat_messages',
   schema: ChatMessageSchema,
+});
+
+export const contractsRepo = makeRepository<ContractInput>({
+  collectionName: 'contracts',
+  schema: ContractSchema,
+});
+
+export const documentsRepo = makeRepository<DocumentInput>({
+  collectionName: 'documents',
+  schema: DocumentSchema,
+});
+
+export const signatureCertsRepo = makeRepository<SignatureCertInput>({
+  collectionName: 'signature_certs',
+  schema: SignatureCertSchema,
 });
 
 export * from './schemas';
