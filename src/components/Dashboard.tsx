@@ -61,7 +61,7 @@ function ResponsiveGridLayout({ children, ...props }: any) {
 }
 import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, limit, orderBy } from 'firebase/firestore';
 
 // Mock 6 tháng (fallback khi Firestore chưa đủ data). Sẽ override bằng live data
 // trong DashboardModule khi orders ≥ 1.
@@ -246,6 +246,33 @@ export function Dashboard() {
  };
 
  const [delayedOrdersCount, setDelayedOrdersCount] = useState(0);
+ const [dashboardStats, setDashboardStats] = useState<any[]>([]);
+
+ useEffect(() => {
+   // Subscribe /dashboard_stats 30 ngày gần nhất từ Cloud Function aggregation
+   const q = query(collection(db, 'dashboard_stats'), orderBy('date', 'desc'), limit(30));
+   const unsub = onSnapshot(q, (snap) => {
+     setDashboardStats(snap.docs.map(d => ({ id: d.id, ...d.data() })).reverse());
+   });
+   return () => unsub();
+ }, []);
+
+ // Live revenue history: nếu có ≥ 2 ngày stats thì dùng live, không thì fallback
+ const liveRevenueData = dashboardStats.length >= 2
+   ? dashboardStats.map(s => ({
+       name: s.date?.slice(5) ?? '', // MM-DD
+       gmv: (s.totalGmv ?? 0) / 1_000_000, // triệu VND
+       traffic: 0, // chưa track
+     }))
+   : null;
+ const revenueData = liveRevenueData ?? fallbackRevenueData;
+
+ // Live category distribution (ngày gần nhất)
+ const latestStat = dashboardStats[dashboardStats.length - 1];
+ const liveCategoryData = latestStat?.categoryDistribution?.length
+   ? latestStat.categoryDistribution.map((c: any) => ({ name: c.name, value: c.value }))
+   : null;
+ const categoryDistribution = liveCategoryData ?? categoryData;
 
  useEffect(() => {
  // Listen to real orders from Firebase
@@ -542,7 +569,7 @@ export function Dashboard() {
   </div>
   <div className="p-6 flex-1 h-full min-h-0">
   <ResponsiveContainer width="100%" height="100%">
-  <AreaChart data={data}>
+  <AreaChart data={revenueData}>
   <defs>
   <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
   <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
@@ -586,7 +613,7 @@ export function Dashboard() {
   <div className="p-4 flex-1 h-full min-h-0">
   <ResponsiveContainer width="100%" height="100%">
   <PieChart>
-  <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value">
+  <Pie data={categoryDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value">
   {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
   </Pie>
   <Tooltip />
