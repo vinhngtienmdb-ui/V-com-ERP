@@ -12,6 +12,7 @@ service cloud.firestore {
 
     // ── Primitives ──────────────────────────────────────────────────────────
     function isSignedIn()       { return request.auth != null; }
+    function isEmailVerified()  { return isSignedIn() && request.auth.token.email_verified == true; }
     function role()             { return isSignedIn() ? request.auth.token.role : ''; }
     function isStaff()          { return role() in ['staff', 'manager', 'director', 'admin']; }
     function isManager()        { return role() in ['manager', 'director', 'admin']; }
@@ -203,7 +204,8 @@ service cloud.firestore {
     // ── Transactions (finance) ──────────────────────────────────────────────
     match /transactions/{txId} {
       allow get, list: if isManager();
-      allow create: if isStaff() && incoming().createdAt is timestamp;
+      // Yêu cầu email_verified cho ops tài chính (chống tài khoản giả).
+      allow create: if isStaff() && isEmailVerified() && incoming().createdAt is timestamp;
       // Không cho phép sửa/xóa — append-only. Sửa sai phải tạo bút toán đảo.
       allow update, delete: if false;
     }
@@ -326,11 +328,12 @@ service cloud.firestore {
     // ── Payouts (seller rút tiền) ───────────────────────────────────────────
     match /payouts/{payoutId} {
       allow get, list: if isStaff();
-      // Seller có thể tạo yêu cầu rút; manager+ duyệt; admin xử lý
-      allow create: if isStaff() && isValidPayout(incoming()) &&
+      // Seller có thể tạo yêu cầu rút; manager+ duyệt; admin xử lý.
+      // Yêu cầu email_verified vì là ops tài chính.
+      allow create: if isStaff() && isEmailVerified() && isValidPayout(incoming()) &&
         incoming().status == 'pending' &&
         incoming().requestedBy == request.auth.uid;
-      allow update: if isManager() && hasOnlyChanged([
+      allow update: if isManager() && isEmailVerified() && hasOnlyChanged([
         'status', 'approvedBy', 'approvedAt', 'processedBy', 'processedAt',
         'completedAt', 'rejectedReason', 'bankReference', 'fee', 'netAmount', 'updatedAt'
       ]);

@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { 
  FileText, 
  CreditCard, 
@@ -89,8 +91,33 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  }
 ];
 
+interface ReconciliationRow {
+  id: string;
+  eventId: string;
+  orderId: string | null;
+  status: 'matched' | 'mismatch' | 'orphan';
+  expectedAmount: number | null;
+  actualAmount: number;
+  transactionContent: string | null;
+  referenceNumber: string | null;
+  transactionDate: string | null;
+}
+
 export function SettlementManagement() {
- const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
+ const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod' | 'reconcile'>('settlement');
+ const [reconciliations, setReconciliations] = useState<ReconciliationRow[]>([]);
+
+ useEffect(() => {
+   const q = query(collection(db, 'reconciliations'), orderBy('createdAt', 'desc'), limit(50));
+   const unsub = onSnapshot(q, (snap) => {
+     setReconciliations(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as ReconciliationRow[]);
+   });
+   return () => unsub();
+ }, []);
+
+ const matchedCount = reconciliations.filter(r => r.status === 'matched').length;
+ const mismatchCount = reconciliations.filter(r => r.status === 'mismatch').length;
+ const orphanCount = reconciliations.filter(r => r.status === 'orphan').length;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -140,6 +167,7 @@ export function SettlementManagement() {
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
+ { id: 'reconcile', label: `SePay Reconciliation (${reconciliations.length})`, icon: CheckCircle2 },
  { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
  { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
  { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
@@ -176,6 +204,61 @@ export function SettlementManagement() {
  </button>
  </div>
 
+ {activeTab === 'reconcile' && (
+   <div className="p-6 bg-slate-50/50 border-t border-slate-200">
+     <div className="flex items-center gap-6 mb-4">
+       <div>
+         <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Matched</div>
+         <div className="text-2xl font-black text-slate-900">{matchedCount}</div>
+       </div>
+       <div>
+         <div className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Mismatch</div>
+         <div className="text-2xl font-black text-slate-900">{mismatchCount}</div>
+       </div>
+       <div>
+         <div className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Orphan</div>
+         <div className="text-2xl font-black text-slate-900">{orphanCount}</div>
+       </div>
+     </div>
+     <div className="bg-white rounded-lg border border-slate-300 overflow-hidden">
+       <table className="w-full text-sm">
+         <thead className="bg-slate-50 border-b border-slate-200">
+           <tr>
+             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Event</th>
+             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Order</th>
+             <th className="px-3 py-2 text-right text-[10px] font-bold text-slate-600 uppercase tracking-widest">Expect</th>
+             <th className="px-3 py-2 text-right text-[10px] font-bold text-slate-600 uppercase tracking-widest">Actual</th>
+             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Status</th>
+             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ref</th>
+           </tr>
+         </thead>
+         <tbody className="divide-y divide-slate-100">
+           {reconciliations.map(r => (
+             <tr key={r.id} className="hover:bg-slate-50">
+               <td className="px-3 py-2 font-mono text-xs">{r.eventId}</td>
+               <td className="px-3 py-2 font-mono text-xs">{r.orderId ?? '—'}</td>
+               <td className="px-3 py-2 text-right">{r.expectedAmount != null ? formatCurrency(r.expectedAmount) : '—'}</td>
+               <td className="px-3 py-2 text-right font-semibold">{formatCurrency(r.actualAmount)}</td>
+               <td className="px-3 py-2">
+                 <span className={cn("px-2 py-0.5 text-[10px] font-bold rounded-full uppercase",
+                   r.status === 'matched' && 'bg-emerald-100 text-emerald-800',
+                   r.status === 'mismatch' && 'bg-amber-100 text-amber-800',
+                   r.status === 'orphan' && 'bg-rose-100 text-rose-800',
+                 )}>{r.status}</span>
+               </td>
+               <td className="px-3 py-2 text-xs text-slate-600 truncate max-w-[200px]">{r.transactionContent ?? r.referenceNumber ?? '—'}</td>
+             </tr>
+           ))}
+           {reconciliations.length === 0 && (
+             <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 italic">Chưa có giao dịch SePay nào được đối soát.</td></tr>
+           )}
+         </tbody>
+       </table>
+     </div>
+   </div>
+ )}
+
+ {activeTab !== 'reconcile' && (
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
@@ -299,6 +382,7 @@ export function SettlementManagement() {
  </tbody>
  </table>
  </div>
+ )}
  </div>
 
  <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">

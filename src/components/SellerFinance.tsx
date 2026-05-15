@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { payoutsRepo, type PayoutInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  BadgeDollarSign, 
  TrendingUp, 
@@ -30,8 +32,31 @@ const MOCK_PAYOUTS: EarlyPayoutRequest[] = [
  { id: 'EPR-02', sellerId: 'SEL-012', amount: 15400000, discountFee: 154000, requestDate: '16/03/2024', status: 'approved' },
 ];
 
+/** Map PayoutInput từ Firestore → EarlyPayoutRequest UI shape. */
+function adaptPayout(p: PayoutInput): EarlyPayoutRequest {
+ return {
+   id: p.id,
+   sellerId: p.sellerId,
+   amount: p.amount,
+   discountFee: p.fee ?? 0,
+   requestDate: '',
+   status: p.status as EarlyPayoutRequest['status'],
+ };
+}
+
 export function SellerFinance() {
  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout'>('credit');
+ const [dbPayouts, setDbPayouts] = useState<EarlyPayoutRequest[]>([]);
+
+ useEffect(() => {
+   const unsub = payoutsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+     setDbPayouts(items.map(adaptPayout));
+   });
+   return () => unsub();
+ }, []);
+
+ // Fallback MOCK_PAYOUTS khi DB rỗng (UX demo)
+ const payouts = dbPayouts.length > 0 ? dbPayouts : MOCK_PAYOUTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -156,7 +181,7 @@ export function SellerFinance() {
 
  {activeTab === 'early_payout' && (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
- {MOCK_PAYOUTS.map(payout => (
+ {payouts.map(payout => (
  <div key={payout.id} className="p-6 bg-white border border-slate-300 rounded-lg shadow-sm space-y-4 hover:border-[#2563EB] transition-all group">
  <div className="flex justify-between items-start">
  <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-900 transition-colors">
