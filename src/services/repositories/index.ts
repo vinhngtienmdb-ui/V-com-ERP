@@ -5,11 +5,13 @@ import {
   TransactionSchema, InvoiceSchema, SellerTaxReportSchema,
   CampaignSchema, AffiliateSchema, PayoutSchema,
   EmployeeSchema, AttendanceSchema, PayrollSchema, KPISchema,
+  LoyaltyProgramSchema, PointTransactionSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
   type CampaignInput, type AffiliateInput, type PayoutInput,
   type EmployeeInput, type AttendanceInput, type PayrollInput, type KPIInput,
+  type LoyaltyProgramInput, type PointTransactionInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -95,6 +97,16 @@ export const payrollRepo = makeRepository<PayrollInput>({
 export const kpiRepo = makeRepository<KPIInput>({
   collectionName: 'kpi',
   schema: KPISchema,
+});
+
+export const loyaltyProgramsRepo = makeRepository<LoyaltyProgramInput>({
+  collectionName: 'loyalty_programs',
+  schema: LoyaltyProgramSchema,
+});
+
+export const pointTransactionsRepo = makeRepository<PointTransactionInput>({
+  collectionName: 'point_transactions',
+  schema: PointTransactionSchema,
 });
 
 export * from './schemas';

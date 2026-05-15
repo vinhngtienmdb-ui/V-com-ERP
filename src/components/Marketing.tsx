@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { campaignsRepo, type CampaignInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Megaphone, 
  Layout, 
@@ -92,9 +94,46 @@ function getColorClasses(color: string) {
  }
 }
 
+/** Map CampaignInput (Firestore) → Campaign legacy UI shape. */
+function adaptCampaign(c: CampaignInput): Campaign {
+ const statusMap: Record<string, Campaign['status']> = {
+   active: 'active', upcoming: 'upcoming', expired: 'expired',
+   draft: 'upcoming', paused: 'expired', cancelled: 'expired',
+ };
+ const typeMap: Record<string, Campaign['type']> = {
+   voucher: 'voucher', flash_sale: 'flash_sale', group_buy: 'group_buy', landing_page: 'landing_page',
+   ad_facebook: 'voucher', ad_google: 'voucher', ad_tiktok: 'voucher',
+ };
+ return {
+   id: c.id,
+   name: c.name,
+   type: typeMap[c.type] ?? 'voucher',
+   status: statusMap[c.status] ?? 'upcoming',
+   budget: c.budget ?? 0,
+   spent: c.spent ?? 0,
+   gmvGenerated: c.gmvGenerated ?? 0,
+   roi: c.roi ?? 0,
+   startDate: c.startDate,
+   endDate: c.endDate,
+ };
+}
+
 export function Marketing() {
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
+ const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
+
+ useEffect(() => {
+   // Subscribe campaigns ngoại trừ Ads (do AdManager hiển thị).
+   const unsub = campaignsRepo.subscribe([orderBy('startDate', 'desc')], (items) => {
+     const filtered = items.filter((c: any) => !c.type?.startsWith('ad_')).map(adaptCampaign);
+     setDbCampaigns(filtered);
+   });
+   return () => unsub();
+ }, []);
+
+ // Khi Firestore rỗng → fallback MOCK_CAMPAIGNS để có UI demo.
+ const campaigns = dbCampaigns.length > 0 ? dbCampaigns : MOCK_CAMPAIGNS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -412,7 +451,7 @@ export function Marketing() {
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {MOCK_CAMPAIGNS.map((campaign) => (
+ {campaigns.map((campaign) => (
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">

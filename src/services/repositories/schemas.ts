@@ -390,6 +390,47 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Loyalty — Program config ───────────────────────────────────────────────
+export const LoyaltyProgramSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  enabled: z.boolean(),
+  // Quy đổi: 1 điểm = N VND chi tiêu
+  vndPerPoint: z.number().positive().default(1000),
+  // Khi đổi điểm: 1 điểm = M VND giá trị giảm
+  pointValueVnd: z.number().positive().default(100),
+  // Tiers theo total spent
+  tiers: z.array(z.object({
+    name: z.string(),       // Bronze/Silver/Gold/Platinum
+    minTotalSpent: z.number().nonnegative(),
+    multiplier: z.number().positive().default(1), // điểm x multiplier theo tier
+    perks: z.array(z.string()).optional(),
+  })).optional(),
+  updatedAt: Timestamp.optional(),
+});
+
+// ── Loyalty — Point transaction (append-only) ──────────────────────────────
+export const PointTxType = z.enum([
+  'earn_order',     // Tích từ đơn hàng
+  'earn_bonus',     // Bonus đặc biệt
+  'redeem',         // Đổi điểm thành discount
+  'expire',         // Hết hạn (cron quét hàng tháng)
+  'adjustment',     // Hiệu chỉnh thủ công
+]);
+
+export const PointTransactionSchema = z.object({
+  id: z.string(),
+  customerId: z.string(),
+  type: PointTxType,
+  points: z.number(),                  // dương = cộng, âm = trừ
+  refOrderId: z.string().optional(),
+  description: z.string(),
+  balanceAfter: z.number().int().optional(),
+  staffId: z.string(),
+  createdAt: Timestamp.optional(),
+  expiresAt: Timestamp.optional(),     // điểm có thể hết hạn 12 tháng
+});
+
 // ── HR — Employee ───────────────────────────────────────────────────────────
 export const EmploymentStatus = z.enum(['probation', 'active', 'leave', 'terminated', 'retired']);
 export const EmployeeSchema = z.object({
@@ -496,3 +537,5 @@ export type EmployeeInput = z.infer<typeof EmployeeSchema>;
 export type AttendanceInput = z.infer<typeof AttendanceSchema>;
 export type PayrollInput = z.infer<typeof PayrollSchema>;
 export type KPIInput = z.infer<typeof KPISchema>;
+export type LoyaltyProgramInput = z.infer<typeof LoyaltyProgramSchema>;
+export type PointTransactionInput = z.infer<typeof PointTransactionSchema>;

@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { campaignsRepo, type CampaignInput } from '../services/repositories';
+import { orderBy, where } from 'firebase/firestore';
 import { 
  Zap, 
  Users2, 
@@ -122,6 +124,19 @@ const MOCK_PRODUCTS = [
 export function FlashSale() {
  const [activeTab, setActiveTab] = useState<'group_buy' | 'flash_sale' | 'voucher'>('group_buy');
  const [isModalOpen, setIsModalOpen] = useState(false);
+ const [dbCampaigns, setDbCampaigns] = useState<CampaignInput[]>([]);
+
+ useEffect(() => {
+   // Subscribe campaigns type='flash_sale' OR 'group_buy' OR 'voucher' (3 tab tương ứng).
+   const unsub = campaignsRepo.subscribe(
+     [where('type', 'in', ['flash_sale', 'group_buy', 'voucher']), orderBy('startDate', 'desc')],
+     (items) => setDbCampaigns(items),
+   );
+   return () => unsub();
+ }, []);
+
+ // Filter theo tab hiện tại
+ const tabCampaigns = dbCampaigns.filter((c) => c.type === activeTab);
  
  // Voucher states
  const [voucherType, setVoucherType] = useState<'admin' | 'seller' | 'shipping'>('admin');

@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { affiliatesRepo, type AffiliateInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Users, 
  Link2, 
@@ -70,8 +72,41 @@ export const MOCK_AFFILIATES: Affiliate[] = [
  }
 ];
 
+/** Random 6-char alphanumeric refCode (bỏ O/0/I/1). Server validate uniqueness. */
+export function generateRefCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+/** Map AffiliateInput → Affiliate UI shape. */
+function adaptAffiliate(a: AffiliateInput): Affiliate {
+  return {
+    id: a.id,
+    name: a.name,
+    type: (a.type as Affiliate['type']) ?? 'kol',
+    commissionEarned: a.commissionEarned ?? 0,
+    ordersCount: a.ordersCount ?? 0,
+    clickThroughRate: a.clickThroughRate ?? 0,
+    status: (a.status as Affiliate['status']) ?? 'pending',
+    platforms: undefined,
+    followers: a.follower,
+    bookingPrice: undefined,
+    categoryTags: a.niche ? [a.niche] : undefined,
+  } as Affiliate;
+}
+
 export function AffiliateManagement() {
  const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
+ const [dbAffiliates, setDbAffiliates] = useState<Affiliate[]>([]);
+
+ useEffect(() => {
+   const unsub = affiliatesRepo.subscribe([orderBy('joinedAt', 'desc')], (items) => {
+     setDbAffiliates(items.map(adaptAffiliate));
+   });
+   return () => unsub();
+ }, []);
+
+ const affiliates = dbAffiliates.length > 0 ? dbAffiliates : MOCK_AFFILIATES;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -159,7 +194,7 @@ export function AffiliateManagement() {
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {MOCK_AFFILIATES.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
+ {affiliates.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
  <tr key={affiliate.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-3 py-2.5">
  <div className="flex items-center gap-3">

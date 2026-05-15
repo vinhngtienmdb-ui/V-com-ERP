@@ -265,6 +265,21 @@ service cloud.firestore {
       }
     }
 
+    // ── Loyalty — Program config ────────────────────────────────────────────
+    match /loyalty_programs/{id} {
+      allow get, list: if isSignedIn();  // ai cũng đọc được để hiểu rate
+      allow create, update: if isAdmin() || role() == 'director';
+      allow delete: if false;
+    }
+
+    // ── Loyalty — Point transactions (append-only) ──────────────────────────
+    match /point_transactions/{id} {
+      allow get, list: if isStaff() ||
+        (isSignedIn() && resource.data.customerId == request.auth.uid);
+      // Cloud Function ghi qua Admin SDK; client deny.
+      allow create, update, delete: if false;
+    }
+
     // ── HR — Employees ──────────────────────────────────────────────────────
     match /employees/{empId} {
       // Manager+ thấy danh sách; employee tự xem hồ sơ qua uid match.

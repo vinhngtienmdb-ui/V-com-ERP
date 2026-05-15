@@ -30,6 +30,12 @@ export { dailyBackup } from './backupHandlers.js';
 // ── Public menu sync (products → public_menu) ────────────────────────────
 export { syncProductToPublicMenu } from './publicMenuSync.js';
 
+// ── Affiliate commission (onUpdate orders → pay affiliate) ───────────────
+export { onOrderDelivered_payAffiliate } from './affiliateCommission.js';
+
+// ── Loyalty points (onUpdate orders → credit customer points) ────────────
+export { onOrderDelivered_creditLoyaltyPoints } from './loyaltyTriggers.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,
