@@ -60,22 +60,23 @@ function adaptContract(c: ContractInput): any {
 export function ContractManager() {
  const [activeTab, setActiveTab] = useState('labor');
  const [dbContracts, setDbContracts] = useState<any[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = contractsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
      setDbContracts(items.map(adaptContract));
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- // Fallback MOCK khi DB rỗng
- const initialContracts = dbContracts.length > 0 ? dbContracts : MOCK_CONTRACTS;
+ // dbLoaded → hiện list thật (empty OK); MOCK chỉ trong loading.
+ const initialContracts = dbLoaded ? dbContracts : MOCK_CONTRACTS;
  const [contracts, setContracts] = useState<any[]>(initialContracts);
 
  useEffect(() => {
-   // Sync khi DB cập nhật (nếu user chưa local modify)
-   if (dbContracts.length > 0) setContracts(dbContracts);
- }, [dbContracts]);
+   if (dbLoaded) setContracts(dbContracts);
+ }, [dbContracts, dbLoaded]);
  const [selectedContract, setSelectedContract] = useState<any>(null);
  const [signingModalOpen, setSigningModalOpen] = useState(false);
  const [showCreateModal, setShowCreateModal] = useState(false);

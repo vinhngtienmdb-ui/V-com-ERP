@@ -85,16 +85,18 @@ function adaptDocument(d: DocumentInput): any {
 export function DocumentManager() {
   const [activeTab, setActiveTab] = useState('inbound');
   const [dbDocs, setDbDocs] = useState<any[]>([]);
+  const [dbLoaded, setDbLoaded] = useState(false);
 
   useEffect(() => {
     const unsub = documentsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
       setDbDocs(items.map(adaptDocument));
+      setDbLoaded(true);
     });
     return () => unsub();
   }, []);
 
-  // Fallback MOCK khi DB rỗng
-  const docs = dbDocs.length > 0 ? dbDocs : MOCK_DOCS;
+  // dbLoaded → hiện list thật (empty OK); MOCK chỉ trong loading.
+  const docs = dbLoaded ? dbDocs : MOCK_DOCS;
   const [isCreatingBook, setIsCreatingBook] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   

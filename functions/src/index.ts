@@ -45,6 +45,12 @@ export { hourlyDashboardAggregation } from './dashboardHandlers.js';
 // ── AI moderation PIM (Gemini Vision) ────────────────────────────────────
 export { moderateProductImage } from './moderateProductImage.js';
 
+// ── Low-stock alert (daily 7h ICT) ───────────────────────────────────────
+export { dailyLowStockAlert } from './lowStockAlert.js';
+
+// ── Customer tier auto-promotion ─────────────────────────────────────────
+export { onCustomerSpentChange_promoteTier } from './tierPromotion.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,

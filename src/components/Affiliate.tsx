@@ -98,15 +98,18 @@ function adaptAffiliate(a: AffiliateInput): Affiliate {
 export function AffiliateManagement() {
  const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
  const [dbAffiliates, setDbAffiliates] = useState<Affiliate[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = affiliatesRepo.subscribe([orderBy('joinedAt', 'desc')], (items) => {
      setDbAffiliates(items.map(adaptAffiliate));
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- const affiliates = dbAffiliates.length > 0 ? dbAffiliates : MOCK_AFFILIATES;
+ // dbLoaded → hiện list thật (kể cả empty); MOCK chỉ trong loading state.
+ const affiliates = dbLoaded ? dbAffiliates : MOCK_AFFILIATES;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">

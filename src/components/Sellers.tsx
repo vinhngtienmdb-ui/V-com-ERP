@@ -205,14 +205,17 @@ function adaptSeller(s: SellerInput): PartnerData {
 
 export function SellerManagement() {
  const [dbSellers, setDbSellers] = useState<PartnerData[]>([]);
- const sellers = dbSellers.length > 0 ? dbSellers : MOCK_SELLERS;
+ const [dbLoaded, setDbLoaded] = useState(false);
+ // Empty production sẽ thấy danh sách rỗng (qua EmptyState trong table).
+ // MOCK chỉ dùng khi chưa load xong (skeleton mode).
+ const sellers = dbLoaded ? dbSellers : MOCK_SELLERS;
  const setSellers = (next: PartnerData[]) => { setDbSellers(next); };
 
  useEffect(() => {
    // Subscribe Firestore /sellers — nếu rỗng vẫn fallback hiển thị MOCK_SELLERS.
    const unsub = sellersRepo.subscribe(
      [orderBy('joinedAt', 'desc')],
-     (items) => setDbSellers(items.map(adaptSeller)),
+     (items) => { setDbSellers(items.map(adaptSeller)); setDbLoaded(true); },
    );
    return () => unsub();
  }, []);

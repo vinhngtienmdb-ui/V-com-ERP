@@ -122,18 +122,19 @@ export function Marketing() {
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
  const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
-   // Subscribe campaigns ngoại trừ Ads (do AdManager hiển thị).
    const unsub = campaignsRepo.subscribe([orderBy('startDate', 'desc')], (items) => {
      const filtered = items.filter((c: any) => !c.type?.startsWith('ad_')).map(adaptCampaign);
      setDbCampaigns(filtered);
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- // Khi Firestore rỗng → fallback MOCK_CAMPAIGNS để có UI demo.
- const campaigns = dbCampaigns.length > 0 ? dbCampaigns : MOCK_CAMPAIGNS;
+ // Khi đã load DB: hiện list thật (kể cả empty); chỉ hiện MOCK khi đang loading.
+ const campaigns = dbLoaded ? dbCampaigns : MOCK_CAMPAIGNS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
