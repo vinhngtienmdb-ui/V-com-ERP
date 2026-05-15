@@ -238,6 +238,18 @@ service cloud.firestore {
       allow create, update, delete: if false; // Chỉ Cloud Function
     }
 
+    // ── Weekly summaries (write từ Cloud Function Monday 9h) ────────────────
+    match /weekly_summaries/{weekKey} {
+      allow get, list: if isStaff();
+      allow create, update, delete: if false;
+    }
+
+    // ── Low stock alerts (write từ Cloud Function daily 7h) ─────────────────
+    match /low_stock_alerts/{date} {
+      allow get, list: if isStaff();
+      allow create, update, delete: if false;
+    }
+
     // ── Moderation logs (AI flag PIM) ───────────────────────────────────────
     match /moderation_logs/{id} {
       allow get, list: if isManager();

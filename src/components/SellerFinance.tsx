@@ -47,16 +47,18 @@ function adaptPayout(p: PayoutInput): EarlyPayoutRequest {
 export function SellerFinance() {
  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout'>('credit');
  const [dbPayouts, setDbPayouts] = useState<EarlyPayoutRequest[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = payoutsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
      setDbPayouts(items.map(adaptPayout));
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- // Fallback MOCK_PAYOUTS khi DB rỗng (UX demo)
- const payouts = dbPayouts.length > 0 ? dbPayouts : MOCK_PAYOUTS;
+ // dbLoaded → hiện list thật (empty OK); MOCK chỉ trong loading state.
+ const payouts = dbLoaded ? dbPayouts : MOCK_PAYOUTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">

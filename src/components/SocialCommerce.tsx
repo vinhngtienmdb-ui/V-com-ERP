@@ -53,6 +53,7 @@ const MOCK_POSTS: SocialPost[] = [
 export function SocialCommerce() {
  const [activeTab, setActiveTab] = useState<'feed' | 'communities' | 'trending'>('feed');
  const [dbPosts, setDbPosts] = useState<SocialPost[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = socialPostsRepo.subscribe([orderBy('publishedAt', 'desc')], (items) => {
@@ -68,11 +69,12 @@ export function SocialCommerce() {
        timestamp: '',
      }));
      setDbPosts(adapted);
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- const postsToShow = dbPosts.length > 0 ? dbPosts : MOCK_POSTS;
+ const postsToShow = dbLoaded ? dbPosts : MOCK_POSTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">

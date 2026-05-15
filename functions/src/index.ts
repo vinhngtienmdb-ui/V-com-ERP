@@ -51,6 +51,9 @@ export { dailyLowStockAlert } from './lowStockAlert.js';
 // ── Customer tier auto-promotion ─────────────────────────────────────────
 export { onCustomerSpentChange_promoteTier } from './tierPromotion.js';
 
+// ── Weekly summary (Monday 9h ICT) ───────────────────────────────────────
+export { weeklySummary } from './weeklySummary.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,

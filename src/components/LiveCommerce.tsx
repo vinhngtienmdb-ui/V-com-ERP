@@ -53,6 +53,7 @@ const MOCK_LIVES: LiveSession[] = [
 export function LiveCommerce() {
  const [activeTab, setActiveTab] = useState<'sessions' | 'analytics' | 'schedule'>('sessions');
  const [dbLives, setDbLives] = useState<LiveSession[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = liveSessionsRepo.subscribe([orderBy('scheduledStart', 'desc')], (items) => {
@@ -69,11 +70,12 @@ export function LiveCommerce() {
        platform: (l.platform === 'in_app' ? 'tiktok' : l.platform) as any,
      }) as any);
      setDbLives(adapted);
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
 
- const livesToShow = dbLives.length > 0 ? dbLives : MOCK_LIVES;
+ const livesToShow = dbLoaded ? dbLives : MOCK_LIVES;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">

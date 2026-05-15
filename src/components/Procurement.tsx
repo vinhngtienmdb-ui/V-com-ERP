@@ -72,10 +72,12 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [categoryFilter, setCategoryFilter] = useState('all');
  const [dbSuppliers, setDbSuppliers] = useState<SupplierInput[]>([]);
+ const [dbLoaded, setDbLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = suppliersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
      setDbSuppliers(items);
+     setDbLoaded(true);
    });
    return () => unsub();
  }, []);
@@ -88,7 +90,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
    contact: s.contactName ?? '', phone: s.phone ?? '',
    email: s.email ?? '', policies: '',
  }));
- const suppliersToShow = dbSuppliersUI.length > 0 ? dbSuppliersUI : MOCK_SUPPLIERS;
+ const suppliersToShow = dbLoaded ? dbSuppliersUI : MOCK_SUPPLIERS;
 
  const filteredSuppliers = suppliersToShow.filter((sup: any) => {
  const matchesSearch = sup.name.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -229,10 +231,12 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
  const [dbPOs, setDbPOs] = useState<PurchaseOrderInput[]>([]);
+ const [poLoaded, setPoLoaded] = useState(false);
 
  useEffect(() => {
    const unsub = purchaseOrdersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
      setDbPOs(items);
+     setPoLoaded(true);
    });
    return () => unsub();
  }, []);
@@ -243,7 +247,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
    requester: po.approvedBy ?? '', value: po.total ?? 0, status: po.status,
    date: po.orderDate, itemsCount: po.items.length,
  }));
- const requestsToShow = dbPOsUI.length > 0 ? dbPOsUI : MOCK_PURCHASE_REQUESTS;
+ const requestsToShow = poLoaded ? dbPOsUI : MOCK_PURCHASE_REQUESTS;
 
  const filteredRequests = requestsToShow.filter((req: any) => {
  const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
