@@ -61,8 +61,12 @@ export const OrderSchema = z.object({
 export const CustomerSchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(200),
+  // NOTE: `phone` mask hiển thị (4 số cuối) thay vì full PII. Full phone trong
+  // sub-collection customers/{id}/pii (chỉ admin/director đọc).
+  phone: z.string().min(4).max(15),       // có thể là 4-char mask
+  phoneMasked: z.string().optional(),     // '*****6789'
   email: z.string().email().optional().or(z.literal('')),
-  phone: z.string().min(9).max(15),
+  emailMasked: z.string().optional(),     // 'a*****@example.com'
   totalSpent: z.number().optional(),
   orderCount: z.number().int().optional(),
   lastOrderDate: z.string().optional(),
@@ -77,6 +81,27 @@ export const CustomerSchema = z.object({
   points: z.number().optional(),
   aiInsight: z.string().optional(),
   walletBalance: z.number().optional(),
+});
+
+/**
+ * PII đầy đủ — chỉ admin/director đọc. Lưu tại customers/{id}/pii/main.
+ * Sub-collection để tách quyền theo Firestore rules.
+ */
+export const CustomerPIISchema = z.object({
+  customerId: z.string(),
+  fullName: z.string(),
+  fullPhone: z.string().min(9).max(15),
+  fullEmail: z.string().email().optional().or(z.literal('')),
+  identityCard: z.string().optional(),       // CCCD/CMND 9-12 số
+  dob: z.string().optional(),                 // YYYY-MM-DD
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  fullAddress: z.string().optional(),
+  ward: z.string().optional(),
+  district: z.string().optional(),
+  city: z.string().optional(),
+  taxCode: z.string().optional(),
+  notes: z.string().optional(),
+  updatedAt: Timestamp.optional(),
 });
 
 export const InventoryMovementType = z.enum([
@@ -789,6 +814,7 @@ export const KPISchema = z.object({
 export type ProductInput = z.infer<typeof ProductSchema>;
 export type OrderInput = z.infer<typeof OrderSchema>;
 export type CustomerInput = z.infer<typeof CustomerSchema>;
+export type CustomerPIIInput = z.infer<typeof CustomerPIISchema>;
 export type InventoryMovementInput = z.infer<typeof InventoryMovementSchema>;
 export type SellerInput = z.infer<typeof SellerSchema>;
 export type KycDoc = z.infer<typeof KycDocSchema>;

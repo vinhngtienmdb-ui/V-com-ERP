@@ -90,23 +90,32 @@ service cloud.firestore {
       }
     }
 
-    // ── Customers ───────────────────────────────────────────────────────────
+    // ── Customers (parent doc — chứa data + mask fields) ────────────────────
     match /customers/{customerId} {
       allow get, list: if isStaff();
       allow create: if isStaff() && isValidId(customerId) && isValidCustomer(incoming());
       allow update: if isStaff() && isValidCustomer(incoming()) &&
-        hasOnlyChanged(['name', 'phone', 'email', 'tier', 'points', 'aiInsight', 'lastPurchase', 'totalSpent', 'orderCount', 'channels', 'updatedAt']);
+        hasOnlyChanged(['name', 'phone', 'phoneMasked', 'email', 'emailMasked', 'tier', 'points', 'aiInsight', 'lastPurchase', 'totalSpent', 'orderCount', 'channels', 'updatedAt']);
       allow delete: if isAdmin();
 
       function isValidCustomer(data) {
         return data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
-               data.phone is string && data.phone.size() >= 9 && data.phone.size() <= 15 &&
+               // phone có thể là mask (4-15 chars) hoặc full
+               data.phone is string && data.phone.size() >= 4 && data.phone.size() <= 15 &&
                (!('email' in data) || data.email is string) &&
                (!('points' in data) || data.points is number) &&
                (!('status' in data) || data.status in ['active', 'inactive', 'locked']) &&
                (!('totalSpent' in data) || data.totalSpent is number) &&
                (!('orderCount' in data) || data.orderCount is number) &&
                (!('channels' in data) || data.channels is list);
+      }
+
+      // ── PII sub-collection — chỉ admin/director (audit fix #9) ─────────
+      // CCCD, full phone, full email, identity card, dob, full address.
+      match /pii/{piiId} {
+        allow get, list: if isAdmin() || role() == 'director';
+        allow create, update: if isAdmin() || role() == 'director';
+        allow delete: if isAdmin();
       }
     }
 
