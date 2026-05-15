@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { socialPostsRepo, type SocialPostInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  MessageSquare, 
  Heart, 
@@ -50,6 +52,27 @@ const MOCK_POSTS: SocialPost[] = [
 
 export function SocialCommerce() {
  const [activeTab, setActiveTab] = useState<'feed' | 'communities' | 'trending'>('feed');
+ const [dbPosts, setDbPosts] = useState<SocialPost[]>([]);
+
+ useEffect(() => {
+   const unsub = socialPostsRepo.subscribe([orderBy('publishedAt', 'desc')], (items) => {
+     const adapted: SocialPost[] = items.map((p: SocialPostInput) => ({
+       id: p.id,
+       authorId: p.authorId ?? '',
+       authorName: p.authorName,
+       content: p.content,
+       media: p.mediaUrls ?? [],
+       likes: p.engagement ?? 0,
+       comments: 0,
+       tags: [],
+       timestamp: '',
+     }));
+     setDbPosts(adapted);
+   });
+   return () => unsub();
+ }, []);
+
+ const postsToShow = dbPosts.length > 0 ? dbPosts : MOCK_POSTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -130,7 +153,7 @@ export function SocialCommerce() {
  <div className="p-6">
  {activeTab === 'feed' && (
  <div className="space-y-8 animate-in fade-in duration-300">
- {MOCK_POSTS.map(post => (
+ {postsToShow.map(post => (
  <div key={post.id} className="bg-white border border-[#F3F4F6] rounded-lg p-6 hover:shadow-sm transition-all space-y-4">
  <div className="flex justify-between items-start">
  <div className="flex items-center gap-3">

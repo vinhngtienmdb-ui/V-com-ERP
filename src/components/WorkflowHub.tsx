@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { workflowTasksRepo, type WorkflowTaskInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import ReactFlow, { Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
@@ -61,6 +63,24 @@ export function WorkflowHub() {
  const [nodes, setNodes] = useState(initialNodes);
  const [edges, setEdges] = useState(initialEdges);
  const [tasks, setTasks] = useState(MOCK_TASKS);
+
+ useEffect(() => {
+   // Subscribe workflow_tasks live; overlay với MOCK khi DB rỗng
+   const unsub = workflowTasksRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+     if (items.length === 0) return; // giữ MOCK
+     const adapted = items.map((t: WorkflowTaskInput) => ({
+       id: t.id,
+       module: t.refType ?? 'General',
+       title: t.title,
+       priority: t.priority as 'critical' | 'high' | 'medium',
+       status: t.status === 'completed' ? 'completed' : t.status === 'in_progress' ? 'in_progress' : 'pending',
+       deadline: t.dueDate ?? '',
+       link: t.refType === 'order' ? '/orders' : t.refType === 'request' ? '/requests' : '/workflow',
+     })) as WorkflowTask[];
+     setTasks(adapted);
+   });
+   return () => unsub();
+ }, []);
  
  const [signingTaskId, setSigningTaskId] = useState<string | null>(null);
  const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');

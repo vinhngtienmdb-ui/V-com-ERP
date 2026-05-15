@@ -390,6 +390,107 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Request (Đề xuất / Approval workflow) ──────────────────────────────────
+export const RequestStatus = z.enum([
+  'draft',
+  'pending',         // Chờ duyệt cấp 1
+  'in_review',       // Đang xem xét
+  'approved',
+  'rejected',
+  'cancelled',
+  'completed',
+]);
+
+export const RequestSchema = z.object({
+  id: z.string(),
+  requestNumber: z.string(),
+  type: z.string(),                // 'leave', 'overtime', 'expense', 'advance', 'office_supply', ...
+  subtype: z.string().optional(),
+  title: z.string().min(2).max(500),
+  requesterId: z.string(),
+  requesterName: z.string(),
+  department: z.string().optional(),
+  status: RequestStatus,
+  amount: z.number().nonnegative().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  fields: z.record(z.string(), z.any()).optional(),         // dynamic form fields
+  attachments: z.array(z.string().url()).optional(),
+  // Approval chain
+  approvers: z.array(z.object({
+    uid: z.string(),
+    name: z.string(),
+    role: z.string(),
+    status: z.enum(['pending', 'approved', 'rejected']),
+    comment: z.string().optional(),
+    decidedAt: Timestamp.optional(),
+  })).optional(),
+  currentApproverIndex: z.number().int().nonnegative().optional(),
+  approvedAt: Timestamp.optional(),
+  rejectedReason: z.string().optional(),
+  formConfigId: z.string().optional(),   // link tới form_configs (template)
+  createdAt: Timestamp.optional(),
+});
+
+// ── WorkflowTask (task trong workflow) ─────────────────────────────────────
+export const WorkflowTaskStatus = z.enum(['pending', 'in_progress', 'completed', 'cancelled', 'blocked']);
+export const WorkflowTaskSchema = z.object({
+  id: z.string(),
+  title: z.string().min(2).max(500),
+  description: z.string().optional(),
+  status: WorkflowTaskStatus,
+  priority: z.enum(['low', 'medium', 'high', 'critical']),
+  assignedTo: z.string().optional(),
+  assignedToName: z.string().optional(),
+  dueDate: z.string().optional(),
+  parentId: z.string().optional(),     // sub-task
+  refType: z.string().optional(),       // 'order', 'request', 'contract', ...
+  refId: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  completedAt: Timestamp.optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── LiveCommerce — Live session ────────────────────────────────────────────
+export const LiveSessionStatus = z.enum(['scheduled', 'live', 'ended', 'cancelled']);
+export const LiveSessionSchema = z.object({
+  id: z.string(),
+  title: z.string().min(2).max(300),
+  hostName: z.string(),
+  hostType: z.enum(['seller', 'kol', 'staff']),
+  status: LiveSessionStatus,
+  platform: z.enum(['facebook', 'tiktok', 'youtube', 'shopee_live', 'in_app']),
+  scheduledStart: z.string().optional(),
+  actualStart: Timestamp.optional(),
+  actualEnd: Timestamp.optional(),
+  productIds: z.array(z.string()).optional(),
+  viewerCount: z.number().int().nonnegative().optional(),
+  peakViewers: z.number().int().nonnegative().optional(),
+  ordersCount: z.number().int().nonnegative().optional(),
+  gmv: z.number().nonnegative().optional(),
+  videoUrl: z.string().url().optional().or(z.literal('')),
+  createdAt: Timestamp.optional(),
+});
+
+// ── SocialCommerce — Social post ────────────────────────────────────────────
+export const SocialPostSchema = z.object({
+  id: z.string(),
+  platform: z.enum(['facebook', 'tiktok', 'instagram', 'youtube', 'zalo']),
+  postUrl: z.string().url().optional().or(z.literal('')),
+  authorName: z.string(),
+  authorId: z.string().optional(),
+  content: z.string(),
+  mediaUrls: z.array(z.string().url()).optional(),
+  status: z.enum(['draft', 'scheduled', 'published', 'failed', 'deleted']),
+  scheduledAt: z.string().optional(),
+  publishedAt: Timestamp.optional(),
+  reach: z.number().int().nonnegative().optional(),
+  engagement: z.number().int().nonnegative().optional(),
+  productIds: z.array(z.string()).optional(),
+  campaignId: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 // ── Procurement — Supplier ─────────────────────────────────────────────────
 export const SupplierSchema = z.object({
   id: z.string(),
@@ -713,3 +814,7 @@ export type DocumentInput = z.infer<typeof DocumentSchema>;
 export type SignatureCertInput = z.infer<typeof SignatureCertSchema>;
 export type SupplierInput = z.infer<typeof SupplierSchema>;
 export type PurchaseOrderInput = z.infer<typeof PurchaseOrderSchema>;
+export type RequestInput = z.infer<typeof RequestSchema>;
+export type WorkflowTaskInput = z.infer<typeof WorkflowTaskSchema>;
+export type LiveSessionInput = z.infer<typeof LiveSessionSchema>;
+export type SocialPostInput = z.infer<typeof SocialPostSchema>;

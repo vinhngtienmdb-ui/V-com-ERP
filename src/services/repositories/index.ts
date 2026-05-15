@@ -9,6 +9,7 @@ import {
   ChatThreadSchema, ChatMessageSchema,
   ContractSchema, DocumentSchema, SignatureCertSchema,
   SupplierSchema, PurchaseOrderSchema,
+  RequestSchema, WorkflowTaskSchema, LiveSessionSchema, SocialPostSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
@@ -18,6 +19,7 @@ import {
   type ChatThreadInput, type ChatMessageInput,
   type ContractInput, type DocumentInput, type SignatureCertInput,
   type SupplierInput, type PurchaseOrderInput,
+  type RequestInput, type WorkflowTaskInput, type LiveSessionInput, type SocialPostInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -148,6 +150,26 @@ export const suppliersRepo = makeRepository<SupplierInput>({
 export const purchaseOrdersRepo = makeRepository<PurchaseOrderInput>({
   collectionName: 'purchase_orders',
   schema: PurchaseOrderSchema,
+});
+
+export const requestsRepo = makeRepository<RequestInput>({
+  collectionName: 'requests',
+  schema: RequestSchema,
+});
+
+export const workflowTasksRepo = makeRepository<WorkflowTaskInput>({
+  collectionName: 'workflow_tasks',
+  schema: WorkflowTaskSchema,
+});
+
+export const liveSessionsRepo = makeRepository<LiveSessionInput>({
+  collectionName: 'live_sessions',
+  schema: LiveSessionSchema,
+});
+
+export const socialPostsRepo = makeRepository<SocialPostInput>({
+  collectionName: 'social_posts',
+  schema: SocialPostSchema,
 });
 
 export * from './schemas';

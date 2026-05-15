@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { liveSessionsRepo, type LiveSessionInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Video, 
  Tv, 
@@ -50,6 +52,28 @@ const MOCK_LIVES: LiveSession[] = [
 
 export function LiveCommerce() {
  const [activeTab, setActiveTab] = useState<'sessions' | 'analytics' | 'schedule'>('sessions');
+ const [dbLives, setDbLives] = useState<LiveSession[]>([]);
+
+ useEffect(() => {
+   const unsub = liveSessionsRepo.subscribe([orderBy('scheduledStart', 'desc')], (items) => {
+     const adapted: LiveSession[] = items.map((l: LiveSessionInput) => ({
+       id: l.id, title: l.title, hostName: l.hostName,
+       status: l.status as LiveSession['status'],
+       startTime: l.scheduledStart ?? '',
+       endTime: '',
+       viewerCount: l.viewerCount ?? 0,
+       gmv: l.gmv ?? 0,
+       ordersCount: l.ordersCount ?? 0,
+       products: (l.productIds ?? []).length,
+       coverImageUrl: '',
+       platform: (l.platform === 'in_app' ? 'tiktok' : l.platform) as any,
+     }) as any);
+     setDbLives(adapted);
+   });
+   return () => unsub();
+ }, []);
+
+ const livesToShow = dbLives.length > 0 ? dbLives : MOCK_LIVES;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -142,7 +166,7 @@ export function LiveCommerce() {
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
- {activeTab === 'sessions' && MOCK_LIVES.map(live => (
+ {activeTab === 'sessions' && livesToShow.map(live => (
  <div key={live.id} className="bg-white border border-slate-300 rounded-lg overflow-hidden group hover:border-[#2563EB] transition-all shadow-sm">
  <div className="relative h-48 bg-slate-100 flex items-center justify-center">
  {live.status === 'live' ? (

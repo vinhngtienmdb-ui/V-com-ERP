@@ -279,6 +279,46 @@ service cloud.firestore {
       }
     }
 
+    // ── Requests (Đề xuất / Approval) ────────────────────────────────────────
+    match /requests/{reqId} {
+      // Staff đọc all (limited PII tối thiểu trong request schema). Có thể siết
+      // lại sau bằng cách denormalize approverUids: list trong doc, dùng `in`.
+      allow get, list: if isStaff();
+      // Staff tạo request của mình
+      allow create: if isStaff() && incoming().requesterId == request.auth.uid &&
+        incoming().status in ['draft', 'pending'] && incoming().createdAt is timestamp;
+      // Update: requester có thể chỉnh draft; manager+ duyệt; admin override
+      allow update: if isStaff() && (
+        (existing().status == 'draft' && existing().requesterId == request.auth.uid &&
+          hasOnlyChanged(['title', 'subtype', 'amount', 'startDate', 'endDate', 'fields', 'attachments', 'status', 'updatedAt'])) ||
+        // Manager+ duyệt (cập nhật approvers + status)
+        isManager()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ── Workflow tasks ───────────────────────────────────────────────────────
+    match /workflow_tasks/{taskId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff();
+      allow delete: if isManager();
+    }
+
+    // ── Live sessions ────────────────────────────────────────────────────────
+    match /live_sessions/{sessionId} {
+      allow get: if isSignedIn();   // public-ish: customer cũng xem được
+      allow list: if isStaff();
+      allow create, update: if isStaff();
+      allow delete: if isManager();
+    }
+
+    // ── Social posts ─────────────────────────────────────────────────────────
+    match /social_posts/{postId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff();
+      allow delete: if isManager();
+    }
+
     // ── Procurement — Suppliers ──────────────────────────────────────────────
     match /suppliers/{supplierId} {
       allow get, list: if isStaff();
