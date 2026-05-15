@@ -27,6 +27,7 @@
       { "source": "/api/sellers/verify-kyc", "function": { "functionId": "sellerVerifyKyc",   "region": "asia-southeast1" } },
       { "source": "/api/wallet/adjust",      "function": { "functionId": "walletAdjust",      "region": "asia-southeast1" } },
       { "source": "/api/invoices/issue",     "function": { "functionId": "issueInvoice",      "region": "asia-southeast1" } },
+      { "source": "/api/orders/process-return","function": { "functionId": "processReturn",   "region": "asia-southeast1" } },
       { "source": "/api/health",             "function": { "functionId": "health",            "region": "asia-southeast1" } },
       { "source": "**",                      "destination": "/index.html" }
     ]

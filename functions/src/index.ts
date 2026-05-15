@@ -36,6 +36,15 @@ export { onOrderDelivered_payAffiliate } from './affiliateCommission.js';
 // ── Loyalty points (onUpdate orders → credit customer points) ────────────
 export { onOrderDelivered_creditLoyaltyPoints } from './loyaltyTriggers.js';
 
+// ── RMA (process return: approve refund + restore stock, OR reject) ───────
+export { processReturn } from './rmaHandlers.js';
+
+// ── Dashboard live aggregation (hourly) ───────────────────────────────────
+export { hourlyDashboardAggregation } from './dashboardHandlers.js';
+
+// ── AI moderation PIM (Gemini Vision) ────────────────────────────────────
+export { moderateProductImage } from './moderateProductImage.js';
+
 // ── Audit logs (Firestore triggers) ──────────────────────────────────────
 export {
   auditProducts,

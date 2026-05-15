@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { loyaltyProgramsRepo, type LoyaltyProgramInput } from '../services/repositories';
 import { 
  Trophy, 
  Gift, 
@@ -68,6 +69,12 @@ const REWARDS = [
 
 export function LoyaltyManagement() {
  const [activeTab, setActiveTab] = useState<'tiers' | 'missions' | 'rewards' | 'gamification'>('tiers');
+ const [program, setProgram] = useState<LoyaltyProgramInput | null>(null);
+
+ useEffect(() => {
+   // Subscribe loyalty_programs/default — cấu hình realtime
+   loyaltyProgramsRepo.getById('default').then((p) => setProgram(p));
+ }, []);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -132,7 +139,24 @@ export function LoyaltyManagement() {
  <div className="p-8">
  <AnimatePresence mode="wait">
  {activeTab === 'tiers' && (
- <motion.div 
+ <>
+ {program?.enabled && (
+   <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+     <div className="flex items-center gap-4 text-sm">
+       <span className="font-bold text-emerald-900">Chương trình "{program.name}" đang hoạt động</span>
+       <span className="text-emerald-700">·</span>
+       <span className="text-emerald-700">Quy đổi: <strong>{program.vndPerPoint?.toLocaleString('vi-VN')}đ = 1 điểm</strong></span>
+       <span className="text-emerald-700">·</span>
+       <span className="text-emerald-700">1 điểm = <strong>{program.pointValueVnd?.toLocaleString('vi-VN')}đ</strong></span>
+     </div>
+   </div>
+ )}
+ {program?.enabled === false && (
+   <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800">
+     Chương trình loyalty hiện đang TẮT. Vào Settings → Loyalty để bật.
+   </div>
+ )}
+ <motion.div
  initial={{ opacity: 0, scale: 0.95 }}
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 1.05 }}
@@ -199,6 +223,7 @@ export function LoyaltyManagement() {
  </div>
  ))}
  </motion.div>
+ </>
  )}
 
  {activeTab === 'missions' && (

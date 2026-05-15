@@ -6,12 +6,14 @@ import {
   CampaignSchema, AffiliateSchema, PayoutSchema,
   EmployeeSchema, AttendanceSchema, PayrollSchema, KPISchema,
   LoyaltyProgramSchema, PointTransactionSchema,
+  ChatThreadSchema, ChatMessageSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
   type CampaignInput, type AffiliateInput, type PayoutInput,
   type EmployeeInput, type AttendanceInput, type PayrollInput, type KPIInput,
   type LoyaltyProgramInput, type PointTransactionInput,
+  type ChatThreadInput, type ChatMessageInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -109,8 +111,19 @@ export const pointTransactionsRepo = makeRepository<PointTransactionInput>({
   schema: PointTransactionSchema,
 });
 
+export const chatThreadsRepo = makeRepository<ChatThreadInput>({
+  collectionName: 'chat_threads',
+  schema: ChatThreadSchema,
+});
+
+export const chatMessagesRepo = makeRepository<ChatMessageInput>({
+  collectionName: 'chat_messages',
+  schema: ChatMessageSchema,
+});
+
 export * from './schemas';
 export * from './orders';
 export * from './inventory';
 export * from './sellers';
 export * from './invoices';
+export * from './rma';

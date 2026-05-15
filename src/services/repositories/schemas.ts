@@ -390,6 +390,42 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── OmniChat — Chat thread + message ───────────────────────────────────────
+export const ChatChannel = z.enum(['zalo', 'facebook', 'instagram', 'tiktok', 'webchat', 'hotline', 'email']);
+export const ChatThreadStatus = z.enum(['open', 'pending', 'resolved', 'spam']);
+
+export const ChatThreadSchema = z.object({
+  id: z.string(),
+  channel: ChatChannel,
+  externalId: z.string().optional(),    // ID phía Zalo/FB (để dedupe inbound)
+  customerName: z.string(),
+  customerId: z.string().optional(),
+  customerAvatar: z.string().optional(),
+  lastMessage: z.string().optional(),
+  lastMessageAt: Timestamp.optional(),
+  unreadCount: z.number().int().nonnegative().default(0),
+  assignedTo: z.string().optional(),    // staff uid
+  status: ChatThreadStatus,
+  tags: z.array(z.string()).optional(),
+  createdAt: Timestamp.optional(),
+});
+
+export const ChatMessageDirection = z.enum(['inbound', 'outbound']);
+export const ChatMessageSchema = z.object({
+  id: z.string(),
+  threadId: z.string(),
+  direction: ChatMessageDirection,
+  content: z.string(),
+  contentType: z.enum(['text', 'image', 'video', 'file', 'template']).default('text'),
+  mediaUrl: z.string().url().optional().or(z.literal('')),
+  senderId: z.string(),                 // staff uid hoặc customer external id
+  senderName: z.string().optional(),
+  // Trạng thái gửi outbound (chỉ áp dụng outbound)
+  deliveryStatus: z.enum(['queued', 'sent', 'delivered', 'read', 'failed']).optional(),
+  errorMessage: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 // ── Loyalty — Program config ───────────────────────────────────────────────
 export const LoyaltyProgramSchema = z.object({
   id: z.string(),
@@ -539,3 +575,5 @@ export type PayrollInput = z.infer<typeof PayrollSchema>;
 export type KPIInput = z.infer<typeof KPISchema>;
 export type LoyaltyProgramInput = z.infer<typeof LoyaltyProgramSchema>;
 export type PointTransactionInput = z.infer<typeof PointTransactionSchema>;
+export type ChatThreadInput = z.infer<typeof ChatThreadSchema>;
+export type ChatMessageInput = z.infer<typeof ChatMessageSchema>;

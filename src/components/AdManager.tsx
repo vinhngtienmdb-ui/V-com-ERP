@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { campaignsRepo, type CampaignInput } from '../services/repositories';
+import { where, orderBy } from 'firebase/firestore';
 import { 
  Megaphone, 
  BarChart3, 
@@ -63,6 +65,21 @@ const SELLER_PERFORMANCE = [
 
 export function AdManager() {
  const [activeTab, setActiveTab] = useState<'bidding' | 'analytics' | 'revenue'>('bidding');
+ const [adCampaigns, setAdCampaigns] = useState<CampaignInput[]>([]);
+
+ useEffect(() => {
+   // Subscribe campaigns type starts with 'ad_' (Facebook, Google, TikTok ads)
+   const unsub = campaignsRepo.subscribe(
+     [where('type', 'in', ['ad_facebook', 'ad_google', 'ad_tiktok']), orderBy('startDate', 'desc')],
+     (items) => setAdCampaigns(items),
+   );
+   return () => unsub();
+ }, []);
+
+ // Tổng spend + GMV từ campaigns thật
+ const totalAdSpend = adCampaigns.reduce((s, c) => s + (c.spent ?? 0), 0);
+ const totalAdGmv = adCampaigns.reduce((s, c) => s + (c.gmvGenerated ?? 0), 0);
+ const totalRoas = totalAdSpend > 0 ? (totalAdGmv / totalAdSpend) : 0;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
