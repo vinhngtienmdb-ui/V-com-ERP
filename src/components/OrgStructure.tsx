@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { orgNodesRepo, type OrgNodeInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { Building2, Users, Briefcase, Plus, Search, Edit2, Trash2, X, ChevronRight, ChevronDown, AlignLeft, GitMerge } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -48,6 +50,14 @@ const INITIAL_JOB_RANKS: JobRank[] = [
 
 export function OrgStructure() {
   const [activeTab, setActiveTab] = useState<'departments' | 'titles' | 'ranks' | 'org_chart'>('departments');
+  const [dbNodes, setDbNodes] = useState<OrgNodeInput[]>([]);
+
+  useEffect(() => {
+    const unsub = orgNodesRepo.subscribe([orderBy('orderIndex', 'asc')], (items) => {
+      setDbNodes(items);
+    });
+    return () => unsub();
+  }, []);
   const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
   const [jobTitles, setJobTitles] = useState<JobTitle[]>(INITIAL_JOB_TITLES);
   const [jobRanks, setJobRanks] = useState<JobRank[]>(INITIAL_JOB_RANKS);

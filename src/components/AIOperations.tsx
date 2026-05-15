@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { aiTasksRepo, type AITaskInput } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
 import { 
  Bot, 
  Cpu, 
@@ -70,6 +72,20 @@ const MOCK_HUMAN_QUEUE = [
 
 export function AIOperations() {
  const [activeModel, setActiveModel] = useState<'moderation' | 'pricing' | 'fraud' | 'recommendation' | 'chatbot' | 'review'>('moderation');
+ const [recentTasks, setRecentTasks] = useState<AITaskInput[]>([]);
+
+ useEffect(() => {
+   const unsub = aiTasksRepo.subscribe([orderBy('createdAt', 'desc'), limit(20)], (items) => {
+     setRecentTasks(items);
+   });
+   return () => unsub();
+ }, []);
+
+ const taskStats = {
+   completed: recentTasks.filter(t => t.status === 'completed').length,
+   running: recentTasks.filter(t => t.status === 'running').length,
+   failed: recentTasks.filter(t => t.status === 'failed').length,
+ };
 
  return (
  <div className="space-y-4 animate-in fade-in slide-in- duration-700 pb-12">

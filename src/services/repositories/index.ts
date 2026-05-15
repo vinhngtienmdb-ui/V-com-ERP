@@ -10,6 +10,7 @@ import {
   ContractSchema, DocumentSchema, SignatureCertSchema,
   SupplierSchema, PurchaseOrderSchema,
   RequestSchema, WorkflowTaskSchema, LiveSessionSchema, SocialPostSchema,
+  SalesRepSchema, AITaskSchema, OfficeAssetSchema, WorkspaceBookingSchema, OrgNodeSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
@@ -20,6 +21,7 @@ import {
   type ContractInput, type DocumentInput, type SignatureCertInput,
   type SupplierInput, type PurchaseOrderInput,
   type RequestInput, type WorkflowTaskInput, type LiveSessionInput, type SocialPostInput,
+  type SalesRepInput, type AITaskInput, type OfficeAssetInput, type WorkspaceBookingInput, type OrgNodeInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -170,6 +172,31 @@ export const liveSessionsRepo = makeRepository<LiveSessionInput>({
 export const socialPostsRepo = makeRepository<SocialPostInput>({
   collectionName: 'social_posts',
   schema: SocialPostSchema,
+});
+
+export const salesRepsRepo = makeRepository<SalesRepInput>({
+  collectionName: 'sales_reps',
+  schema: SalesRepSchema,
+});
+
+export const aiTasksRepo = makeRepository<AITaskInput>({
+  collectionName: 'ai_tasks',
+  schema: AITaskSchema,
+});
+
+export const officeAssetsRepo = makeRepository<OfficeAssetInput>({
+  collectionName: 'office_assets',
+  schema: OfficeAssetSchema,
+});
+
+export const workspaceBookingsRepo = makeRepository<WorkspaceBookingInput>({
+  collectionName: 'workspace_bookings',
+  schema: WorkspaceBookingSchema,
+});
+
+export const orgNodesRepo = makeRepository<OrgNodeInput>({
+  collectionName: 'org_nodes',
+  schema: OrgNodeSchema,
 });
 
 export * from './schemas';

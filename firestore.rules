@@ -288,6 +288,43 @@ service cloud.firestore {
       }
     }
 
+    // ── Sales reps ───────────────────────────────────────────────────────────
+    match /sales_reps/{repId} {
+      allow get, list: if isStaff();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+
+    // ── AI tasks (audit AI Operations) ───────────────────────────────────────
+    match /ai_tasks/{taskId} {
+      allow get, list: if isStaff();
+      allow create: if isStaff() && incoming().triggeredBy == request.auth.uid;
+      allow update: if false; // Update từ Cloud Function (Admin SDK)
+      allow delete: if isAdmin();
+    }
+
+    // ── Office assets / Workspace bookings ───────────────────────────────────
+    match /office_assets/{assetId} {
+      allow get, list: if isStaff();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+    match /workspace_bookings/{bookingId} {
+      allow get, list: if isStaff();
+      allow create: if isStaff() && incoming().bookerId == request.auth.uid;
+      allow update: if isStaff() && (
+        existing().bookerId == request.auth.uid || isManager()
+      );
+      allow delete: if isManager();
+    }
+
+    // ── Org nodes (sơ đồ tổ chức) ────────────────────────────────────────────
+    match /org_nodes/{nodeId} {
+      allow get, list: if isStaff();
+      allow create, update: if isAdmin() || role() == 'director';
+      allow delete: if isAdmin();
+    }
+
     // ── Requests (Đề xuất / Approval) ────────────────────────────────────────
     match /requests/{reqId} {
       // Staff đọc all (limited PII tối thiểu trong request schema). Có thể siết

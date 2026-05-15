@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { salesRepsRepo, type SalesRepInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Users, 
  Target, 
@@ -64,6 +66,14 @@ function getColorClasses(color: string) {
 export function SalesManagement() {
  const [activeTab, setActiveTab] = useState<'overview' | 'dashboard' | 'reps' | 'settings' | 'pipeline' | 'commissions' | 'rewards'>('overview');
  const [settingSection, setSettingSection] = useState<'commission' | 'routing' | 'gamification'>('commission');
+ const [reps, setReps] = useState<SalesRepInput[]>([]);
+
+ useEffect(() => {
+   const unsub = salesRepsRepo.subscribe([orderBy('monthlyAchieved', 'desc')], (items) => {
+     setReps(items);
+   });
+   return () => unsub();
+ }, []);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">

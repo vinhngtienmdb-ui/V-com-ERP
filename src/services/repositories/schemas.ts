@@ -415,6 +415,76 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Sales rep / Sales target ───────────────────────────────────────────────
+export const SalesRepSchema = z.object({
+  id: z.string(),
+  uid: z.string().optional(),
+  fullName: z.string().min(2),
+  region: z.string().optional(),
+  team: z.string().optional(),
+  level: z.enum(['junior', 'senior', 'lead', 'manager']).optional(),
+  monthlyTarget: z.number().nonnegative().optional(),
+  monthlyAchieved: z.number().nonnegative().optional(),
+  commissionRate: z.number().min(0).max(1).optional(),
+  status: z.enum(['active', 'inactive']).optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── AI task result (AIOperations module) ───────────────────────────────────
+export const AITaskSchema = z.object({
+  id: z.string(),
+  type: z.enum(['rfm_segment', 'churn_predict', 'price_recommend', 'inventory_alert', 'fraud_detect', 'product_moderation', 'other']),
+  status: z.enum(['queued', 'running', 'completed', 'failed']),
+  inputSummary: z.string().optional(),
+  resultSummary: z.string().optional(),
+  resultUrl: z.string().url().optional().or(z.literal('')),
+  errorMessage: z.string().optional(),
+  triggeredBy: z.string(),
+  durationMs: z.number().int().nonnegative().optional(),
+  createdAt: Timestamp.optional(),
+  completedAt: Timestamp.optional(),
+});
+
+// ── Workspace asset + booking ──────────────────────────────────────────────
+export const OfficeAssetSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2),
+  type: z.enum(['room', 'desk', 'equipment', 'vehicle', 'parking', 'other']),
+  location: z.string().optional(),
+  capacity: z.number().int().nonnegative().optional(),
+  status: z.enum(['available', 'in_use', 'maintenance', 'retired']),
+  bookable: z.boolean().default(true),
+  description: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
+export const WorkspaceBookingSchema = z.object({
+  id: z.string(),
+  assetId: z.string(),
+  assetName: z.string().optional(),
+  bookerId: z.string(),
+  bookerName: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  purpose: z.string().optional(),
+  status: z.enum(['booked', 'in_progress', 'completed', 'cancelled']),
+  createdAt: Timestamp.optional(),
+});
+
+// ── Org node (sơ đồ tổ chức) ───────────────────────────────────────────────
+export const OrgNodeSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2),
+  type: z.enum(['company', 'block', 'department', 'team', 'role']),
+  parentId: z.string().optional(),
+  headEmployeeId: z.string().optional(),
+  headName: z.string().optional(),
+  memberCount: z.number().int().nonnegative().optional(),
+  description: z.string().optional(),
+  orderIndex: z.number().int().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 // ── Request (Đề xuất / Approval workflow) ──────────────────────────────────
 export const RequestStatus = z.enum([
   'draft',
@@ -844,3 +914,8 @@ export type RequestInput = z.infer<typeof RequestSchema>;
 export type WorkflowTaskInput = z.infer<typeof WorkflowTaskSchema>;
 export type LiveSessionInput = z.infer<typeof LiveSessionSchema>;
 export type SocialPostInput = z.infer<typeof SocialPostSchema>;
+export type SalesRepInput = z.infer<typeof SalesRepSchema>;
+export type AITaskInput = z.infer<typeof AITaskSchema>;
+export type OfficeAssetInput = z.infer<typeof OfficeAssetSchema>;
+export type WorkspaceBookingInput = z.infer<typeof WorkspaceBookingSchema>;
+export type OrgNodeInput = z.infer<typeof OrgNodeSchema>;
