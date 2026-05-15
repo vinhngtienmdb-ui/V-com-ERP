@@ -390,6 +390,63 @@ export const PayoutSchema = z.object({
   createdAt: Timestamp.optional(),
 });
 
+// ── Procurement — Supplier ─────────────────────────────────────────────────
+export const SupplierSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2).max(200),
+  taxCode: z.string().optional(),
+  contactName: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional().or(z.literal('')),
+  address: z.string().optional(),
+  bankName: z.string().optional(),
+  bankAccount: z.string().optional(),
+  paymentTerm: z.number().int().nonnegative().optional(), // N ngày sau giao
+  rating: z.number().min(0).max(5).optional(),
+  status: z.enum(['active', 'inactive', 'blacklisted']),
+  totalOrders: z.number().int().nonnegative().optional(),
+  totalSpent: z.number().nonnegative().optional(),
+  notes: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
+// ── Procurement — Purchase order ───────────────────────────────────────────
+export const PurchaseOrderStatus = z.enum([
+  'draft',          // Nháp
+  'pending_approval', // Chờ duyệt
+  'approved',       // Đã duyệt
+  'sent',           // Đã gửi NCC
+  'partial_received', // Nhận một phần
+  'received',       // Nhận đủ
+  'cancelled',
+]);
+
+export const PurchaseOrderSchema = z.object({
+  id: z.string(),
+  poNumber: z.string(),
+  supplierId: z.string(),
+  supplierName: z.string(),
+  status: PurchaseOrderStatus,
+  items: z.array(z.object({
+    productId: z.string().optional(),
+    description: z.string(),
+    quantity: z.number().int().positive(),
+    unitPrice: z.number().nonnegative(),
+    receivedQuantity: z.number().int().nonnegative().default(0),
+  })).min(1),
+  subtotal: z.number().nonnegative(),
+  vatTotal: z.number().nonnegative().optional(),
+  total: z.number().nonnegative(),
+  orderDate: z.string(),
+  expectedDate: z.string().optional(),
+  receivedDate: z.string().optional(),
+  approvedBy: z.string().optional(),
+  approvedAt: Timestamp.optional(),
+  storeId: z.string().optional(),
+  notes: z.string().optional(),
+  createdAt: Timestamp.optional(),
+});
+
 // ── Contract (Hợp đồng) ────────────────────────────────────────────────────
 export const ContractStatus = z.enum([
   'draft',          // Nháp
@@ -654,3 +711,5 @@ export type ChatMessageInput = z.infer<typeof ChatMessageSchema>;
 export type ContractInput = z.infer<typeof ContractSchema>;
 export type DocumentInput = z.infer<typeof DocumentSchema>;
 export type SignatureCertInput = z.infer<typeof SignatureCertSchema>;
+export type SupplierInput = z.infer<typeof SupplierSchema>;
+export type PurchaseOrderInput = z.infer<typeof PurchaseOrderSchema>;

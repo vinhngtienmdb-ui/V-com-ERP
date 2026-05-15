@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { suppliersRepo, purchaseOrdersRepo, type SupplierInput, type PurchaseOrderInput } from '../services/repositories';
+import { orderBy } from 'firebase/firestore';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
  Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
@@ -69,14 +71,32 @@ const MOCK_PURCHASE_REQUESTS = [
 function SupplierManagement({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [categoryFilter, setCategoryFilter] = useState('all');
+ const [dbSuppliers, setDbSuppliers] = useState<SupplierInput[]>([]);
 
- const filteredSuppliers = MOCK_SUPPLIERS.filter(sup => {
+ useEffect(() => {
+   const unsub = suppliersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+     setDbSuppliers(items);
+   });
+   return () => unsub();
+ }, []);
+
+ // Map DB shape sang UI legacy (id, name, category)
+ const dbSuppliersUI: any[] = dbSuppliers.map(s => ({
+   id: s.id, name: s.name, category: s.notes ?? 'Khác',
+   rating: s.rating ?? 0, totalOrders: s.totalOrders ?? 0,
+   totalSpent: s.totalSpent ?? 0, status: s.status,
+   contact: s.contactName ?? '', phone: s.phone ?? '',
+   email: s.email ?? '', policies: '',
+ }));
+ const suppliersToShow = dbSuppliersUI.length > 0 ? dbSuppliersUI : MOCK_SUPPLIERS;
+
+ const filteredSuppliers = suppliersToShow.filter((sup: any) => {
  const matchesSearch = sup.name.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id.toLowerCase().includes(searchTerm.toLowerCase());
  const matchesCategory = categoryFilter === 'all' || sup.category === categoryFilter;
  return matchesSearch && matchesCategory;
  });
 
- const categories = Array.from(new Set(MOCK_SUPPLIERS.map(s => s.category)));
+ const categories = Array.from(new Set(suppliersToShow.map((s: any) => s.category)));
 
  return (
  <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
@@ -208,8 +228,24 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
 function PurchaseRequests({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
+ const [dbPOs, setDbPOs] = useState<PurchaseOrderInput[]>([]);
 
- const filteredRequests = MOCK_PURCHASE_REQUESTS.filter(req => {
+ useEffect(() => {
+   const unsub = purchaseOrdersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
+     setDbPOs(items);
+   });
+   return () => unsub();
+ }, []);
+
+ // Map PurchaseOrderInput → UI legacy shape
+ const dbPOsUI = dbPOs.map(po => ({
+   id: po.id, department: '', title: `PO ${po.poNumber} — ${po.supplierName}`,
+   requester: po.approvedBy ?? '', value: po.total ?? 0, status: po.status,
+   date: po.orderDate, itemsCount: po.items.length,
+ }));
+ const requestsToShow = dbPOsUI.length > 0 ? dbPOsUI : MOCK_PURCHASE_REQUESTS;
+
+ const filteredRequests = requestsToShow.filter((req: any) => {
  const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
  const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
  return matchesSearch && matchesStatus;

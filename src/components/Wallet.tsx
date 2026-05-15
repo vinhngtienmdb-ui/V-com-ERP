@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { walletsRepo, walletTxRepo, type WalletInput, type WalletTxInput } from '../services/repositories';
+import { orderBy, limit } from 'firebase/firestore';
 import { 
  Users,
  Coins,
@@ -82,6 +84,24 @@ const MOCK_GATEWAYS: PaymentGateway[] = [
 
 export function WalletHub() {
  const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking' | 'crm_wallet'>('history');
+ const [walletsData, setWalletsData] = useState<WalletInput[]>([]);
+ const [walletTransactions, setWalletTransactions] = useState<WalletTxInput[]>([]);
+
+ useEffect(() => {
+   // Subscribe wallets + transactions realtime
+   const unsubWallets = walletsRepo.subscribe([orderBy('updatedAt', 'desc')], (items) => {
+     setWalletsData(items);
+   });
+   const unsubTx = walletTxRepo.subscribe([orderBy('createdAt', 'desc'), limit(100)], (items) => {
+     setWalletTransactions(items);
+   });
+   return () => { unsubWallets(); unsubTx(); };
+ }, []);
+
+ // Tổng hợp số dư (tất cả wallets)
+ const totalBalance = walletsData.reduce((s, w) => s + (w.balance ?? 0), 0);
+ const totalPending = walletsData.reduce((s, w) => s + (w.pendingBalance ?? 0), 0);
+ const sellerWalletCount = walletsData.filter(w => w.ownerType === 'seller').length;
  const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
  const [isSyncing, setIsSyncing] = useState(false);
  const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);

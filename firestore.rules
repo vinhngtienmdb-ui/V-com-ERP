@@ -279,6 +279,37 @@ service cloud.firestore {
       }
     }
 
+    // ── Procurement — Suppliers ──────────────────────────────────────────────
+    match /suppliers/{supplierId} {
+      allow get, list: if isStaff();
+      allow create, update: if isManager() && isValidSupplier(incoming());
+      allow delete: if isAdmin();
+      function isValidSupplier(d) {
+        return d.name is string && d.name.size() >= 2 &&
+               d.status in ['active', 'inactive', 'blacklisted'];
+      }
+    }
+
+    // ── Procurement — Purchase orders ────────────────────────────────────────
+    match /purchase_orders/{poId} {
+      allow get, list: if isStaff();
+      // Staff tạo PO draft, manager+ duyệt
+      allow create: if isStaff() && isEmailVerified() && isValidPO(incoming()) &&
+        incoming().status in ['draft', 'pending_approval'];
+      allow update: if isManager() && isEmailVerified() && hasOnlyChanged([
+        'status', 'approvedBy', 'approvedAt', 'expectedDate', 'receivedDate',
+        'notes', 'items', 'updatedAt'
+      ]);
+      allow delete: if isAdmin();
+      function isValidPO(d) {
+        return d.poNumber is string && d.poNumber.size() > 0 &&
+               d.supplierId is string &&
+               d.status in ['draft', 'pending_approval', 'approved', 'sent', 'partial_received', 'received', 'cancelled'] &&
+               d.items is list && d.items.size() > 0 &&
+               d.total is number && d.total >= 0;
+      }
+    }
+
     // ── Contracts (Hợp đồng) ─────────────────────────────────────────────────
     match /contracts/{contractId} {
       allow get, list: if isManager();

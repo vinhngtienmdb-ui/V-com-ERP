@@ -8,6 +8,7 @@ import {
   LoyaltyProgramSchema, PointTransactionSchema,
   ChatThreadSchema, ChatMessageSchema,
   ContractSchema, DocumentSchema, SignatureCertSchema,
+  SupplierSchema, PurchaseOrderSchema,
   type ProductInput, type OrderInput, type CustomerInput, type InventoryMovementInput,
   type SellerInput, type WalletInput, type WalletTxInput,
   type TransactionInput, type InvoiceInput, type SellerTaxReportInput,
@@ -16,6 +17,7 @@ import {
   type LoyaltyProgramInput, type PointTransactionInput,
   type ChatThreadInput, type ChatMessageInput,
   type ContractInput, type DocumentInput, type SignatureCertInput,
+  type SupplierInput, type PurchaseOrderInput,
 } from './schemas';
 
 export const productsRepo = makeRepository<ProductInput>({
@@ -136,6 +138,16 @@ export const documentsRepo = makeRepository<DocumentInput>({
 export const signatureCertsRepo = makeRepository<SignatureCertInput>({
   collectionName: 'signature_certs',
   schema: SignatureCertSchema,
+});
+
+export const suppliersRepo = makeRepository<SupplierInput>({
+  collectionName: 'suppliers',
+  schema: SupplierSchema,
+});
+
+export const purchaseOrdersRepo = makeRepository<PurchaseOrderInput>({
+  collectionName: 'purchase_orders',
+  schema: PurchaseOrderSchema,
 });
 
 export * from './schemas';
