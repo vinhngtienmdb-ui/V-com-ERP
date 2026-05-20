@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import { useState, useEffect } from 'react';
-import { suppliersRepo, purchaseOrdersRepo, type SupplierInput, type PurchaseOrderInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import { useState } from 'react';
 import { 
  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
  Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
@@ -71,34 +69,14 @@ const MOCK_PURCHASE_REQUESTS = [
 function SupplierManagement({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [categoryFilter, setCategoryFilter] = useState('all');
- const [dbSuppliers, setDbSuppliers] = useState<SupplierInput[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
 
- useEffect(() => {
-   const unsub = suppliersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
-     setDbSuppliers(items);
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // Map DB shape sang UI legacy (id, name, category)
- const dbSuppliersUI: any[] = dbSuppliers.map(s => ({
-   id: s.id, name: s.name, category: s.notes ?? 'Khác',
-   rating: s.rating ?? 0, totalOrders: s.totalOrders ?? 0,
-   totalSpent: s.totalSpent ?? 0, status: s.status,
-   contact: s.contactName ?? '', phone: s.phone ?? '',
-   email: s.email ?? '', policies: '',
- }));
- const suppliersToShow = dbLoaded ? dbSuppliersUI : MOCK_SUPPLIERS;
-
- const filteredSuppliers = suppliersToShow.filter((sup: any) => {
+ const filteredSuppliers = MOCK_SUPPLIERS.filter(sup => {
  const matchesSearch = sup.name.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id.toLowerCase().includes(searchTerm.toLowerCase());
  const matchesCategory = categoryFilter === 'all' || sup.category === categoryFilter;
  return matchesSearch && matchesCategory;
  });
 
- const categories = Array.from(new Set(suppliersToShow.map((s: any) => s.category)));
+ const categories = Array.from(new Set(MOCK_SUPPLIERS.map(s => s.category)));
 
  return (
  <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
@@ -151,18 +129,18 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
  {filteredSuppliers.map((supplier) => (
  <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-lg bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm shrink-0">
  {supplier.name.charAt(0)}
@@ -173,12 +151,12 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className="inline-flex items-center px-2 py-1 rounded bg-slate-100 text-slate-700 text-[11px] font-semibold">
  {supplier.category}
  </span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="space-y-1">
  <div className="flex items-center gap-2 text-xs text-slate-700">
  <Phone className="w-3 h-3 text-slate-500" />
@@ -190,7 +168,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-start gap-2 max-w-[200px]">
  <FileText className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
  <p className="text-xs text-slate-700 leading-snug">{supplier.policies}</p>
@@ -230,26 +208,8 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
 function PurchaseRequests({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
- const [dbPOs, setDbPOs] = useState<PurchaseOrderInput[]>([]);
- const [poLoaded, setPoLoaded] = useState(false);
 
- useEffect(() => {
-   const unsub = purchaseOrdersRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
-     setDbPOs(items);
-     setPoLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // Map PurchaseOrderInput → UI legacy shape
- const dbPOsUI = dbPOs.map(po => ({
-   id: po.id, department: '', title: `PO ${po.poNumber} — ${po.supplierName}`,
-   requester: po.approvedBy ?? '', value: po.total ?? 0, status: po.status,
-   date: po.orderDate, itemsCount: po.items.length,
- }));
- const requestsToShow = poLoaded ? dbPOsUI : MOCK_PURCHASE_REQUESTS;
-
- const filteredRequests = requestsToShow.filter((req: any) => {
+ const filteredRequests = MOCK_PURCHASE_REQUESTS.filter(req => {
  const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
  const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
  return matchesSearch && matchesStatus;
@@ -325,21 +285,21 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
  {filteredRequests.map((req) => (
  <tr key={req.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">{req.id}</p>
  <span className="mt-1 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">{req.department}</span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-orange-700 transition-colors">{req.title}</p>
  <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
  </td>
@@ -409,8 +369,8 @@ export function Procurement() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -420,7 +380,7 @@ export function Procurement() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
  <Clock className="w-4 h-4 text-orange-700" />
@@ -430,7 +390,7 @@ export function Procurement() {
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
  <Building2 className="w-4 h-4 text-orange-600" />
@@ -440,7 +400,7 @@ export function Procurement() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
  <Star className="w-4 h-4 text-primary-600" />

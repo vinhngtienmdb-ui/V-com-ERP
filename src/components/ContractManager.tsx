@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { contractsRepo, type ContractInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  MessageSquare, Send, File, Download, Reply,
   CornerDownRight, XCircle,
@@ -31,52 +29,9 @@ const MOCK_CONTRACTS = [
  { id: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'service', subtype: 'Dịch vụ', status: 'expired', signatureStatus: 'signed', party: 'AI Partner LLC', expiry: '01/02/2024', value: '120,000,000 ₫', signers: [{role: 'Bên thuê', name: 'Giám đốc', status: 'signed'}, {role: 'Bên tư vấn', name: 'AI Partner LLC', status: 'signed'}], file: { name: 'HDDV_AI_Partner.pptx', type: 'pptx' }, comments: [] }
 ];
 
-/** Map ContractInput → UI legacy shape (giữ tương thích). */
-function adaptContract(c: ContractInput): any {
- const typeMap: Record<string, string> = {
-   employment: 'labor', seller: 'partnership', partnership: 'partnership',
-   service: 'service', nda: 'service', other: 'service',
- };
- const statusMap: Record<string, string> = {
-   draft: 'pending', pending_review: 'pending', pending_sign: 'pending',
-   signed: 'active', active: 'active', expired: 'expired', terminated: 'expired',
- };
- return {
-   id: c.id,
-   title: c.title,
-   type: typeMap[c.type] ?? 'service',
-   subtype: c.type,
-   status: statusMap[c.status] ?? 'pending',
-   party: c.partyBName,
-   expiry: c.endDate ?? '-',
-   value: c.amount ? c.amount.toLocaleString('vi-VN') + ' ₫' : '-',
-   signatureStatus: c.status === 'signed' || c.status === 'active' ? 'signed' : 'pending',
-   signers: [],
-   file: c.documentUrl ? { name: 'document', type: 'pdf' } : null,
-   comments: [],
- };
-}
-
 export function ContractManager() {
  const [activeTab, setActiveTab] = useState('labor');
- const [dbContracts, setDbContracts] = useState<any[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
-
- useEffect(() => {
-   const unsub = contractsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
-     setDbContracts(items.map(adaptContract));
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // dbLoaded → hiện list thật (empty OK); MOCK chỉ trong loading.
- const initialContracts = dbLoaded ? dbContracts : MOCK_CONTRACTS;
- const [contracts, setContracts] = useState<any[]>(initialContracts);
-
- useEffect(() => {
-   if (dbLoaded) setContracts(dbContracts);
- }, [dbContracts, dbLoaded]);
+ const [contracts, setContracts] = useState(MOCK_CONTRACTS);
  const [selectedContract, setSelectedContract] = useState<any>(null);
  const [signingModalOpen, setSigningModalOpen] = useState(false);
  const [showCreateModal, setShowCreateModal] = useState(false);

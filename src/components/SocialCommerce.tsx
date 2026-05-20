@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { socialPostsRepo, type SocialPostInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  MessageSquare, 
  Heart, 
@@ -52,29 +50,6 @@ const MOCK_POSTS: SocialPost[] = [
 
 export function SocialCommerce() {
  const [activeTab, setActiveTab] = useState<'feed' | 'communities' | 'trending'>('feed');
- const [dbPosts, setDbPosts] = useState<SocialPost[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
-
- useEffect(() => {
-   const unsub = socialPostsRepo.subscribe([orderBy('publishedAt', 'desc')], (items) => {
-     const adapted: SocialPost[] = items.map((p: SocialPostInput) => ({
-       id: p.id,
-       authorId: p.authorId ?? '',
-       authorName: p.authorName,
-       content: p.content,
-       media: p.mediaUrls ?? [],
-       likes: p.engagement ?? 0,
-       comments: 0,
-       tags: [],
-       timestamp: '',
-     }));
-     setDbPosts(adapted);
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- const postsToShow = dbLoaded ? dbPosts : MOCK_POSTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -95,7 +70,7 @@ export function SocialCommerce() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng bài viết (Kho bài viết)</span>
@@ -155,7 +130,7 @@ export function SocialCommerce() {
  <div className="p-6">
  {activeTab === 'feed' && (
  <div className="space-y-8 animate-in fade-in duration-300">
- {postsToShow.map(post => (
+ {MOCK_POSTS.map(post => (
  <div key={post.id} className="bg-white border border-[#F3F4F6] rounded-lg p-6 hover:shadow-sm transition-all space-y-4">
  <div className="flex justify-between items-start">
  <div className="flex items-center gap-3">
@@ -250,4 +225,3 @@ export function SocialCommerce() {
  </div>
  );
 }
-

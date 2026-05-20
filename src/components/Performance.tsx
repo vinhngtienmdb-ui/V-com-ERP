@@ -53,7 +53,7 @@ export function Performance() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="p-2 bg-slate-100 text-orange-700 rounded-lg w-fit mb-3">
  <Target className="w-5 h-5" />
@@ -160,4 +160,3 @@ export function Performance() {
  </div>
  );
 }
-

@@ -1,10 +1,10 @@
 {
-  "projectId": "multichat-1f8da",
+  "projectId": "vcomm-erp-production",
   "appId": "1:144075211960:web:0f40485758673843fda04d",
   "apiKey": "AIzaSyA6KACmjKFQNiZJyMlIuYn2S_TssIM4TWo",
-  "authDomain": "multichat-1f8da.firebaseapp.com",
+  "authDomain": "vcomm-erp-production.firebaseapp.com",
   "firestoreDatabaseId": "ai-studio-7213adb0-cc75-4cfd-ad5e-d894d93603c9",
-  "storageBucket": "multichat-1f8da.firebasestorage.app",
+  "storageBucket": "vcomm-erp-production.firebasestorage.app",
   "messagingSenderId": "144075211960",
   "measurementId": ""
 }

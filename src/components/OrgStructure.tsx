@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { orgNodesRepo, type OrgNodeInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { Building2, Users, Briefcase, Plus, Search, Edit2, Trash2, X, ChevronRight, ChevronDown, AlignLeft, GitMerge } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -50,14 +48,6 @@ const INITIAL_JOB_RANKS: JobRank[] = [
 
 export function OrgStructure() {
   const [activeTab, setActiveTab] = useState<'departments' | 'titles' | 'ranks' | 'org_chart'>('departments');
-  const [dbNodes, setDbNodes] = useState<OrgNodeInput[]>([]);
-
-  useEffect(() => {
-    const unsub = orgNodesRepo.subscribe([orderBy('orderIndex', 'asc')], (items) => {
-      setDbNodes(items);
-    });
-    return () => unsub();
-  }, []);
   const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
   const [jobTitles, setJobTitles] = useState<JobTitle[]>(INITIAL_JOB_TITLES);
   const [jobRanks, setJobRanks] = useState<JobRank[]>(INITIAL_JOB_RANKS);
@@ -237,10 +227,10 @@ export function OrgStructure() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
-                <th className="px-3 py-2.5">Mã PB</th>
-                <th className="px-3 py-2.5">Tên Phòng Ban</th>
-                <th className="px-3 py-2.5">Quản Lý</th>
-                <th className="px-3 py-2.5">Trực Thuộc</th>
+                <th className="px-6 py-4">Mã PB</th>
+                <th className="px-6 py-4">Tên Phòng Ban</th>
+                <th className="px-6 py-4">Quản Lý</th>
+                <th className="px-6 py-4">Trực Thuộc</th>
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
@@ -254,8 +244,8 @@ export function OrgStructure() {
                   <tr key={dept.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{dept.id}</td>
                     <td className="px-6 py-4 font-bold text-slate-900">{dept.name}</td>
-                    <td className="px-3 py-2 text-sm text-slate-700">{dept.manager || 'Chưa có'}</td>
-                    <td className="px-3 py-2 text-sm text-slate-600">
+                    <td className="px-6 py-4 text-sm text-slate-700">{dept.manager || 'Chưa có'}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {departments.find(d => d.id === dept.parentId)?.name || '---'}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -276,9 +266,9 @@ export function OrgStructure() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
-                <th className="px-3 py-2.5">Mã CD</th>
-                <th className="px-3 py-2.5">Tên Chức Danh</th>
-                <th className="px-3 py-2.5">Phòng Ban Cấp Bộ</th>
+                <th className="px-6 py-4">Mã CD</th>
+                <th className="px-6 py-4">Tên Chức Danh</th>
+                <th className="px-6 py-4">Phòng Ban Cấp Bộ</th>
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
@@ -292,7 +282,7 @@ export function OrgStructure() {
                   <tr key={title.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{title.id}</td>
                     <td className="px-6 py-4 font-bold text-slate-900">{title.name}</td>
-                    <td className="px-3 py-2 text-sm text-slate-700">
+                    <td className="px-6 py-4 text-sm text-slate-700">
                       {departments.find(d => d.id === title.departmentId)?.name || '---'}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -314,9 +304,9 @@ export function OrgStructure() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
-                <th className="px-3 py-2.5">Mã CB</th>
-                <th className="px-3 py-2.5">Tên Cấp Bậc</th>
-                <th className="px-3 py-2.5">Level</th>
+                <th className="px-6 py-4">Mã CB</th>
+                <th className="px-6 py-4">Tên Cấp Bậc</th>
+                <th className="px-6 py-4">Level</th>
                 <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
@@ -330,7 +320,7 @@ export function OrgStructure() {
                   <tr key={rank.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{rank.id}</td>
                     <td className="px-6 py-4 font-bold text-slate-900">{rank.name}</td>
-                    <td className="px-3 py-2 text-sm text-slate-700 font-bold">Lvl {rank.level}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700 font-bold">Lvl {rank.level}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 text-slate-500">
                         <button onClick={() => handleOpenModal('rank', rank)} className="p-1 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"><Edit2 className="w-4 h-4" /></button>

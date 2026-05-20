@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
  Users, 
  MessageSquare, 
+ Facebook, 
  PhoneCall, 
  Globe, 
  Search, 
@@ -35,7 +36,6 @@ import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { customersRepo, ordersRepo } from '../services/repositories';
 
 const CopyButton = ({ value }: { value: string }) => {
  const [copied, setCopied] = useState(false);
@@ -476,7 +476,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-3 py-2 text-sm font-bold border-b-2 transition-all",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all",
  activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
  )}
  >
@@ -535,7 +535,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  {activeTab === 'points' && (
  <div className="space-y-6">
  <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+ <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
  <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
  <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
  <div>
@@ -799,13 +799,17 @@ export function Customers() {
  };
 
  useEffect(() => {
- // Subscribe qua repositories (zod validate + error tập trung).
- const unsubCustomers = customersRepo.subscribe([], (items) => {
-   setCustomers(items as any);
-   setLoading(false);
+ // Fetch customers
+ const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
+ const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+ setCustomers(data);
+ setLoading(false);
  });
- const unsubOrders = ordersRepo.subscribe([], (items) => {
-   setOrders((items as any[]).filter((o) => o.status === 'completed' && o.customerId));
+
+ // Fetch all completed orders to aggregate totalSpent per customer
+ const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
+ const ordersData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+ setOrders(ordersData.filter(o => o.status === 'completed' && o.customerId));
  });
 
  return () => {
@@ -922,29 +926,29 @@ export function Customers() {
 
  {activeView === 'list' ? (
  <>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-4" columns={4} gap={16}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.length}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</span>
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-amber-600">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</span>
@@ -954,8 +958,8 @@ export function Customers() {
  </DraggableGrid>
 
  {/* CRM Intelligence & RFM Segmentation */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-4" columns={3} gap={16}>
- <div className="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
@@ -994,34 +998,35 @@ export function Customers() {
  </div>
  </div>
 
- <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col justify-between">
- <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
- <Trophy className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Loyalty Wallet Insight</h3>
- </div>
- <div className="p-5 flex flex-col flex-1 justify-between">
+ <div className="bg-slate-900 p-8 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
  <div className="relative z-10">
+ <div className="flex items-center gap-3 mb-6">
+ <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
+ <Trophy className="w-6 h-6 text-amber-400" />
+ </div>
+ <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
+ </div>
  <div className="space-y-6">
- <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+ <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
  <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
- <div className="text-3xl font-black text-slate-900 leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
+ <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
  </div>
  <div className="flex gap-4">
- <div className="flex-1 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+ <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Số dư Ví khách</p>
  <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
  </div>
- <div className="flex-1 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+ <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Hạng Kim Cương</p>
- <p className="text-lg font-bold text-sky-600">08 KH</p>
+ <p className="text-lg font-bold text-sky-400">08 KH</p>
  </div>
  </div>
  </div>
  </div>
- <button className="w-full mt-4 py-3 bg-slate-900 text-[#FAF9F5] rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+ <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
  <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
  </button>
- </div>
+ <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
  </div>
  </DraggableGrid>
 
@@ -1055,7 +1060,7 @@ export function Customers() {
  onClick={() => setActiveChannel('facebook')}
  className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-slate-900 text-[#FAF9F5]" : "text-[#9CA3AF]")}
  >
- <Globe className="w-4 h-4" />
+ <Facebook className="w-4 h-4" />
  </button>
  <button 
  onClick={() => setActiveChannel('hotline')}
@@ -1074,13 +1079,13 @@ export function Customers() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Liên hệ</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Kênh</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Liên hệ</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Kênh</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1121,7 +1126,7 @@ export function Customers() {
  {customer.channels && customer.channels.slice(0, 3).map(channel => (
  <span key={channel} className="p-1 rounded bg-white border border-slate-200 shadow-sm" title={channel.toUpperCase()}>
  {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-orange-600" />}
- {channel === 'facebook' && <Globe className="w-3 h-3 text-orange-800" />}
+ {channel === 'facebook' && <Facebook className="w-3 h-3 text-orange-800" />}
  {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
  {channel === 'web' && <Globe className="w-3 h-3 text-slate-500" />}
  </span>
@@ -1289,7 +1294,7 @@ export function Customers() {
  <select 
  value={adjustType}
  onChange={(e) => setAdjustType(e.target.value as any)}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
  >
  <option value="wallet">Ví Điện Tử (VNĐ)</option>
  <option value="points">Điểm Thưởng (Points)</option>
@@ -1313,7 +1318,7 @@ export function Customers() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cộng) hoặc -1000 (trừ)"
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
  <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
  </div>
@@ -1340,4 +1345,3 @@ export function Customers() {
  </div>
  );
 }
-

@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { sellersRepo, verifyKyc, type SellerInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Users, 
  ShieldCheck, 
@@ -173,52 +171,8 @@ export const MOCK_SELLERS: PartnerData[] = [
  }
 ];
 
-/** Map từ SellerInput (Firestore schema) sang PartnerData (UI legacy). */
-function adaptSeller(s: SellerInput): PartnerData {
- const statusMap: Record<string, PartnerData['status']> = {
-   active: 'active',
-   verified: 'active',
-   suspended: 'suspended',
-   rejected: 'suspended',
-   pending_docs: 'pending',
-   pending_verification: 'pending',
-   closed: 'suspended',
- };
- return {
-   id: s.id,
-   name: s.name,
-   totalProducts: s.totalProducts ?? 0,
-   rating: s.rating ?? 0,
-   gmv: s.totalGmv ?? 0,
-   status: statusMap[s.status] ?? 'pending',
-   taxCode: s.taxCode ?? '',
-   identityCard: s.identityCard ?? '',
-   address: s.address,
-   representative: s.representative,
-   commissionRate: s.commissionRate ?? 0,
-   joinDate: '',
-   onboardingStep: s.status === 'verified' || s.status === 'active' ? 'completed' : 'documents',
-   partnerType: s.entityType === 'company' ? 'factory' : (s.entityType === 'household' ? 'dealer' : 'seller'),
-   activeModules: [],
- };
-}
-
 export function SellerManagement() {
- const [dbSellers, setDbSellers] = useState<PartnerData[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
- // Empty production sẽ thấy danh sách rỗng (qua EmptyState trong table).
- // MOCK chỉ dùng khi chưa load xong (skeleton mode).
- const sellers = dbLoaded ? dbSellers : MOCK_SELLERS;
- const setSellers = (next: PartnerData[]) => { setDbSellers(next); };
-
- useEffect(() => {
-   // Subscribe Firestore /sellers — nếu rỗng vẫn fallback hiển thị MOCK_SELLERS.
-   const unsub = sellersRepo.subscribe(
-     [orderBy('joinedAt', 'desc')],
-     (items) => { setDbSellers(items.map(adaptSeller)); setDbLoaded(true); },
-   );
-   return () => unsub();
- }, []);
+ const [sellers, setSellers] = useState<PartnerData[]>(MOCK_SELLERS);
  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer' | 'factory'>('all');
  const [showConfig, setShowConfig] = useState(false);
  const [selectedSeller, setSelectedSeller] = useState<PartnerData | null>(null);
@@ -511,7 +465,7 @@ export function SellerManagement() {
  </div>
  ) : (
  <>
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-4" columns={3} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-3 mb-4">
  <div className="p-2 bg-slate-100 text-orange-700 rounded-lg">
@@ -608,7 +562,7 @@ export function SellerManagement() {
  return true;
  }).map((seller) => (
  <tr key={seller.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-4">
  <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-slate-300">
  {seller.name.charAt(0)}
@@ -631,7 +585,7 @@ export function SellerManagement() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
  <div className={cn(
@@ -649,7 +603,7 @@ export function SellerManagement() {
  <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-slate-600">Wallet</span></p>
  <p className="text-[10px] text-[#2563EB] font-medium mt-0.5">Hoa hồng: {seller.commissionRate}%</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1">
  <Star className={cn("w-3.5 h-3.5 fill-current", seller.rating > 0 ? "text-[#F59E0B]" : "text-[#E5E7EB]")} />
@@ -658,7 +612,7 @@ export function SellerManagement() {
  <span className="text-[10px] text-[#9CA3AF] mt-1">{seller.totalProducts} SP</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex gap-2 justify-center">
  {seller.status === 'pending' ? (
  <button 
@@ -1159,32 +1113,14 @@ export function SellerManagement() {
  </div>
 
  <div className="flex gap-4">
- <button
- onClick={async () => {
-   if (!approvingSeller) return;
-   const reason = prompt('Lý do từ chối?');
-   if (!reason?.trim()) return;
-   try {
-     await verifyKyc(approvingSeller.id, false, reason);
-     setApprovingSeller(null);
-   } catch (err: any) {
-     alert('Lỗi: ' + (err.message ?? 'Không xác định'));
-   }
- }}
+ <button 
+ onClick={() => setApprovingSeller(null)}
  className="flex-1 py-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-sm transition-all"
  >
  Từ chối Hồ sơ
  </button>
- <button
- onClick={async () => {
-   if (!approvingSeller) return;
-   try {
-     await verifyKyc(approvingSeller.id, true);
-     setApprovingSeller(null);
-   } catch (err: any) {
-     alert('Lỗi: ' + (err.message ?? 'Không xác định'));
-   }
- }}
+ <button 
+ onClick={() => setApprovingSeller(null)}
  className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm hover:-translate-y-0.5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt
@@ -1280,7 +1216,7 @@ export function SellerManagement() {
  value={adjustAmount}
  onChange={(e) => setAdjustAmount(e.target.value)}
  placeholder="VD: 500000 (cộng) hoặc -500000 (trừ)"
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
+ className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
  />
  <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ tiền. Viết liền không dấu phẩy.</p>
  </div>
@@ -1309,4 +1245,3 @@ export function SellerManagement() {
  </div>
  );
 }
-

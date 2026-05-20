@@ -1,9 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BarChart, Search, Gift, Copy, Calendar, MoreHorizontal } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
-import { ordersRepo, type OrderInput } from '../services/repositories';
-import { orderBy, where, limit } from 'firebase/firestore';
 
 export function IPosPromotions({ activeStore }: { activeStore: any }) {
   return (
@@ -49,26 +47,6 @@ export function IPosPromotions({ activeStore }: { activeStore: any }) {
 }
 
 export function IPosReports({ activeStore }: { activeStore: any }) {
-  const [orders, setOrders] = useState<OrderInput[]>([]);
-  useEffect(() => {
-    if (!activeStore?.id) return;
-    const unsub = ordersRepo.subscribe(
-      [where('storeId', '==', activeStore.id), orderBy('createdAt', 'desc'), limit(200)],
-      setOrders,
-    );
-    return () => unsub();
-  }, [activeStore?.id]);
-
-  // Tổng hợp doanh thu hôm nay (timezone Asia/Ho_Chi_Minh đơn giản hóa)
-  const todayStr = new Date().toISOString().split('T')[0];
-  const todayOrders = orders.filter(o => {
-    const d = (o as any).createdAt?.toDate?.()?.toISOString?.()?.split('T')[0];
-    return d === todayStr && (o.status === 'delivered' || o.status === 'completed');
-  });
-  const todayGmv = todayOrders.reduce((s, o) => s + (o.total ?? 0), 0);
-  const todayOrderCount = todayOrders.length;
-  const avgOrderValue = todayOrderCount > 0 ? Math.round(todayGmv / todayOrderCount) : 0;
-
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
       <div className="bg-white border-b border-slate-300 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -91,7 +69,7 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto space-y-6">
-         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[{ label: 'Doanh thu thuần', val: formatCurrency(25000000), trend: '+15%' },
               { label: 'Số đơn hàng', val: '124', trend: '+5%' },
               { label: 'Giá trị TB / Đơn', val: formatCurrency(201000), trend: '+2%' },
@@ -125,4 +103,3 @@ export function IPosReports({ activeStore }: { activeStore: any }) {
     </div>
   );
 }
-

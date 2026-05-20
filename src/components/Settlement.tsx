@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  FileText, 
  CreditCard, 
@@ -91,33 +89,8 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  }
 ];
 
-interface ReconciliationRow {
-  id: string;
-  eventId: string;
-  orderId: string | null;
-  status: 'matched' | 'mismatch' | 'orphan';
-  expectedAmount: number | null;
-  actualAmount: number;
-  transactionContent: string | null;
-  referenceNumber: string | null;
-  transactionDate: string | null;
-}
-
 export function SettlementManagement() {
- const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod' | 'reconcile'>('settlement');
- const [reconciliations, setReconciliations] = useState<ReconciliationRow[]>([]);
-
- useEffect(() => {
-   const q = query(collection(db, 'reconciliations'), orderBy('createdAt', 'desc'), limit(50));
-   const unsub = onSnapshot(q, (snap) => {
-     setReconciliations(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as ReconciliationRow[]);
-   });
-   return () => unsub();
- }, []);
-
- const matchedCount = reconciliations.filter(r => r.status === 'matched').length;
- const mismatchCount = reconciliations.filter(r => r.status === 'mismatch').length;
- const orphanCount = reconciliations.filter(r => r.status === 'orphan').length;
+ const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -138,7 +111,7 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
@@ -167,7 +140,6 @@ export function SettlementManagement() {
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
- { id: 'reconcile', label: `SePay Reconciliation (${reconciliations.length})`, icon: CheckCircle2 },
  { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
  { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
  { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
@@ -204,61 +176,6 @@ export function SettlementManagement() {
  </button>
  </div>
 
- {activeTab === 'reconcile' && (
-   <div className="p-6 bg-slate-50/50 border-t border-slate-200">
-     <div className="flex items-center gap-6 mb-4">
-       <div>
-         <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Matched</div>
-         <div className="text-2xl font-black text-slate-900">{matchedCount}</div>
-       </div>
-       <div>
-         <div className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Mismatch</div>
-         <div className="text-2xl font-black text-slate-900">{mismatchCount}</div>
-       </div>
-       <div>
-         <div className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Orphan</div>
-         <div className="text-2xl font-black text-slate-900">{orphanCount}</div>
-       </div>
-     </div>
-     <div className="bg-white rounded-lg border border-slate-300 overflow-hidden">
-       <table className="w-full text-sm">
-         <thead className="bg-slate-50 border-b border-slate-200">
-           <tr>
-             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Event</th>
-             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Order</th>
-             <th className="px-3 py-2 text-right text-[10px] font-bold text-slate-600 uppercase tracking-widest">Expect</th>
-             <th className="px-3 py-2 text-right text-[10px] font-bold text-slate-600 uppercase tracking-widest">Actual</th>
-             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Status</th>
-             <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ref</th>
-           </tr>
-         </thead>
-         <tbody className="divide-y divide-slate-100">
-           {reconciliations.map(r => (
-             <tr key={r.id} className="hover:bg-slate-50">
-               <td className="px-3 py-2 font-mono text-xs">{r.eventId}</td>
-               <td className="px-3 py-2 font-mono text-xs">{r.orderId ?? '—'}</td>
-               <td className="px-3 py-2 text-right">{r.expectedAmount != null ? formatCurrency(r.expectedAmount) : '—'}</td>
-               <td className="px-3 py-2 text-right font-semibold">{formatCurrency(r.actualAmount)}</td>
-               <td className="px-3 py-2">
-                 <span className={cn("px-2 py-0.5 text-[10px] font-bold rounded-full uppercase",
-                   r.status === 'matched' && 'bg-emerald-100 text-emerald-800',
-                   r.status === 'mismatch' && 'bg-amber-100 text-amber-800',
-                   r.status === 'orphan' && 'bg-rose-100 text-rose-800',
-                 )}>{r.status}</span>
-               </td>
-               <td className="px-3 py-2 text-xs text-slate-600 truncate max-w-[200px]">{r.transactionContent ?? r.referenceNumber ?? '—'}</td>
-             </tr>
-           ))}
-           {reconciliations.length === 0 && (
-             <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 italic">Chưa có giao dịch SePay nào được đối soát.</td></tr>
-           )}
-         </tbody>
-       </table>
-     </div>
-   </div>
- )}
-
- {activeTab !== 'reconcile' && (
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
@@ -295,7 +212,7 @@ export function SettlementManagement() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {activeTab === 'settlement' && MOCK_SETTLEMENTS.map((stl) => (
  <tr key={stl.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{stl.sellerName}</p>
  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{stl.sellerId}</p>
  </td>
@@ -305,7 +222,7 @@ export function SettlementManagement() {
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(stl.netPayout)}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
@@ -319,11 +236,11 @@ export function SettlementManagement() {
  ))}
  {activeTab === 'withdrawal' && MOCK_WITHDRAWALS.map((wdr) => (
  <tr key={wdr.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{wdr.userName}</p>
  <span className="text-[10px] text-[#6B7280] uppercase font-semibold bg-slate-100 px-1.5 py-0.5 rounded">{wdr.userType}</span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-xs font-bold text-[#111827]">{wdr.bankAccount.bankName}</p>
  <p className="text-[10px] font-mono text-[#6B7280]">{wdr.bankAccount.accountNo} - {wdr.bankAccount.accountName}</p>
  </td>
@@ -347,11 +264,11 @@ export function SettlementManagement() {
  ))}
  {activeTab === 'cod' && MOCK_COD_SETTLEMENTS.map((cod) => (
  <tr key={cod.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{cod.carrier}</p>
  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{cod.id}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-xs font-bold text-[#4B5563]">{cod.period}</p>
  <p className="text-[10px] text-[#6B7280]">Tổng {cod.totalOrders} đơn</p>
  </td>
@@ -364,7 +281,7 @@ export function SettlementManagement() {
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(cod.transferredCod)}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex justify-center">
  {cod.status === 'matched' ? (
  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 flex items-center gap-1">
@@ -382,27 +299,29 @@ export function SettlementManagement() {
  </tbody>
  </table>
  </div>
- )}
  </div>
 
- <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
- <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
- <CreditCard className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Giải ngân tự động qua Cổng Payout</h3>
+ <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-8 overflow-hidden relative">
+ <div className="relative z-10 space-y-4">
+ <div className="flex items-center gap-3">
+ <div className="p-2 bg-slate-800 rounded-lg">
+ <CreditCard className="w-6 h-6 text-[#FAF9F5]" />
  </div>
- <div className="p-5">
- <p className="text-slate-600 text-sm max-w-xl leading-relaxed mb-4">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
- <div className="flex gap-4">
- <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 flex flex-col">
- <span className="text-[10px] text-slate-500 font-bold uppercase">Hạn mức Payout Ngày</span>
- <span className="text-base font-bold text-slate-900 leading-none mt-1">2,000,000,000đ</span>
+ <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
  </div>
- <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 flex flex-col">
- <span className="text-[10px] text-slate-500 font-bold uppercase">Phí Payout Trung bình</span>
- <span className="text-base font-bold text-orange-600 leading-none mt-1">1,200đ / Giao dịch</span>
+ <p className="text-slate-500 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
+ <div className="flex gap-4 pt-2">
+ <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+ <span className="text-[10px] text-slate-600 font-bold uppercase">Hạn mức Payout Ngày</span>
+ <span className="text-base font-bold text-[#FAF9F5] leading-none mt-1">2,000,000,000đ</span>
+ </div>
+ <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+ <span className="text-[10px] text-slate-600 font-bold uppercase">Phí Payout Trung bình</span>
+ <span className="text-base font-bold text-orange-500 leading-none mt-1">1,200đ / Giao dịch</span>
  </div>
  </div>
  </div>
+ <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/50 -rotate-12" />
  </div>
  </div>
  );

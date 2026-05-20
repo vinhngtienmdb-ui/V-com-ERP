@@ -2,23 +2,7 @@ node_modules/
 build/
 dist/
 coverage/
-functions/lib/
-.firebase/
-firebase-debug.log
-firebase-debug.*.log
 .DS_Store
 *.log
 .env*
 !.env.example
-# Cấu hình non-secret cho Cloud Functions theo project Firebase — bắt buộc commit
-# (theo doc: https://firebase.google.com/docs/functions/config-env).
-# Secrets thực sự đi qua Secret Manager (`firebase functions:secrets:set`).
-!functions/.env.*
-
-# Firebase service account keys — KHÔNG được commit
-secrets/
-!secrets/.gitkeep
-*-service-account*.json
-service-account*.json
-firebase-adminsdk-*.json
-

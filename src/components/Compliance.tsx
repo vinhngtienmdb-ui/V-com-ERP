@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  ShieldCheck, 
  Scale, 
@@ -31,29 +29,8 @@ const MOCK_DISPUTES: DisputeRequest[] = [
  { id: 'DSP-103', orderId: 'ORD-8821', type: 'ip_infringement', reporterId: 'BRAND-OWNER-02', evidence: ['proof.pdf'], status: 'open' },
 ];
 
-interface ModerationLog {
-  id: string;
-  productId: string;
-  productName: string;
-  imageUrl: string;
-  result: { flagged: boolean; reasons: string[]; severity: 'low' | 'medium' | 'high' };
-  reviewed: boolean;
-}
-
 export function Compliance() {
- const [activeTab, setActiveTab] = useState<'brand' | 'dispute' | 'policy' | 'moderation'>('brand');
- const [moderationLogs, setModerationLogs] = useState<ModerationLog[]>([]);
-
- useEffect(() => {
-   // AI moderation flagged products (từ moderateProductImage Cloud Function)
-   const q = query(collection(db, 'moderation_logs'), orderBy('createdAt', 'desc'), limit(50));
-   const unsub = onSnapshot(q, (snap) => {
-     setModerationLogs(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as ModerationLog[]);
-   });
-   return () => unsub();
- }, []);
-
- const flaggedCount = moderationLogs.filter(l => l.result?.flagged).length;
+ const [activeTab, setActiveTab] = useState<'brand' | 'dispute' | 'policy'>('brand');
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -74,7 +51,7 @@ export function Compliance() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase">Thương hiệu đã bảo quyền</span>
@@ -170,13 +147,13 @@ export function Compliance() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {activeTab === 'brand' && MOCK_BRANDS.map(brand => (
  <tr key={brand.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{brand.brandName}</p>
  <p className="text-[10px] text-slate-600 font-mono">Owner: {brand.ownerId}</p>
  </td>
  <td className="px-6 py-4 text-xs font-mono text-slate-700">{brand.id}</td>
  <td className="px-6 py-4 text-xs text-slate-600">{brand.registrationDate}</td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex gap-2">
  {brand.documents.map((doc, idx) => (
  <span key={idx} className="px-2 py-0.5 bg-slate-100 text-[#6B7280] text-[9px] font-bold rounded flex items-center gap-1 cursor-pointer hover:bg-slate-200">
@@ -185,7 +162,7 @@ export function Compliance() {
  ))}
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1",
@@ -202,7 +179,7 @@ export function Compliance() {
  <tr key={dispute.id} className="hover:bg-slate-50 transition-colors text-xs">
  <td className="px-6 py-4 font-bold text-[#111827] font-mono">{dispute.id}</td>
  <td className="px-6 py-4 uppercase font-bold text-red-600">{dispute.type}</td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="font-bold">Order: {dispute.orderId}</p>
  <p className="text-[10px] text-slate-600">Người báo: {dispute.reporterId}</p>
  </td>
@@ -263,4 +240,3 @@ export function Compliance() {
  </div>
  );
 }
-

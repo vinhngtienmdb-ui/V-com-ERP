@@ -645,7 +645,7 @@ export function SettingsPage() {
  )}
  {activeTab === 'appearance' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
   <Sparkles className="w-5 h-5 text-rose-500" />
   Giao diện & Theme
@@ -702,7 +702,7 @@ export function SettingsPage() {
 
  {activeTab === 'general' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900">Cấu hình ví & Payout</h3>
  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200">
  <div className="space-y-1">
@@ -728,7 +728,7 @@ export function SettingsPage() {
 
   {activeTab === 'wallet_crm' && (
   <div className="animate-in fade-in duration-300 space-y-6">
-    <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+    <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-slate-900 flex items-center gap-2">
           <Wallet className="w-5 h-5 text-primary-600" /> Cấu hình Ví CSKH & Khuyến mại
@@ -806,7 +806,7 @@ export function SettingsPage() {
  {activeTab === 'fees' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {/* Section 1: Dynamic System Fees */}
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
@@ -883,7 +883,7 @@ export function SettingsPage() {
  </div>
 
  {/* Section 2: Platform Commission (Existing) */}
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between mb-4">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
@@ -948,7 +948,7 @@ export function SettingsPage() {
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {categoryFees.map((cf) => (
  <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-3 py-2 text-sm font-bold text-slate-900">{cf.name}</td>
+ <td className="px-5 py-4 text-sm font-bold text-slate-900">{cf.name}</td>
  <td className="px-5 py-4 border-l border-slate-200 bg-slate-100/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
@@ -1003,7 +1003,7 @@ export function SettingsPage() {
 
  {activeTab === 'website' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <Globe className="w-4 h-4 text-blue-600" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
  </h3>
@@ -1393,7 +1393,7 @@ export function SettingsPage() {
                    <span className="ml-2 text-xs text-slate-400 font-mono">Footer Preview — {siteConfig.companyInfo.brandName}</span>
                  </div>
                  <div className="p-6 bg-white">
-                   <div className="grid grid-cols-4 gap-4 pb-6 border-b border-slate-200">
+                   <div className="grid grid-cols-4 gap-6 pb-6 border-b border-slate-200">
                      {/* Col 0: Company */}
                      <div className="space-y-2">
                        <div className="font-bold text-lg text-blue-600">{siteConfig.companyInfo.brandName}</div>
@@ -1508,21 +1508,21 @@ export function SettingsPage() {
  <table className="w-full text-left">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-100">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Tên Vai trò</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Số quyền hạn</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tác</th>
+ <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Tên Vai trò</th>
+ <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Số quyền hạn</th>
+ <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {roles.map(role => (
  <tr key={role.id} className="hover:bg-slate-50 transition-colors group">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-slate-900">{role.name}</span>
  <span className="text-[10px] text-slate-500 font-mono">ID: {role.id}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className="px-2 py-0.5 bg-slate-100 text-blue-600 text-[10px] font-bold rounded-full border border-slate-300">
  {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
  </span>
@@ -1683,7 +1683,7 @@ export function SettingsPage() {
  {activeTab === 'api' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
  </h3>
@@ -1694,7 +1694,7 @@ export function SettingsPage() {
  </div>
  <button className="w-full py-2 border border-slate-200 rounded-2xl text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
  </div>
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <AppWindow className="w-4 h-4 text-blue-600" /> Webhook Settings
  </h3>
@@ -1760,13 +1760,13 @@ export function SettingsPage() {
 
  {activeTab === 'org' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
  </h3>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
  <h4 className="font-bold text-slate-900 mb-4">Phòng ban</h4>
  {MOCK_DEPARTMENTS.map((dept) => (
@@ -1837,7 +1837,7 @@ export function SettingsPage() {
 
  {activeTab === 'stores' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
@@ -1896,7 +1896,7 @@ export function SettingsPage() {
  )}
  {activeTab === 'comms' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <MessageSquare className="w-5 h-5 text-blue-600" /> Tích hợp SMS OTP & Zalo ZNS
@@ -2013,7 +2013,7 @@ export function SettingsPage() {
 
  {activeTab === 'popup' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <Send className="w-4 h-4 text-blue-600" /> Trung tâm Gửi thông báo (Push Notification)
  </h3>
@@ -2075,7 +2075,7 @@ export function SettingsPage() {
  </div>
  </div>
 
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <AppWindow className="w-4 h-4 text-blue-600" /> Quản lý Popup Website
  </h3>
@@ -2187,7 +2187,7 @@ export function SettingsPage() {
 
  {activeTab === 'inventory' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
  </h3>
@@ -2492,5 +2492,3 @@ export function SettingsPage() {
  </>
  );
 }
-
-

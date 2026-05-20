@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { chatThreadsRepo, type ChatThreadInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
 import { 
  MessageSquare, 
  Share2,
@@ -25,47 +23,24 @@ import { cn, formatCurrency } from '../lib/utils';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
 import { getAiChatResponse } from '../services/geminiService';
 
-const MOCK_THREADS: ChatThread[] = [
- { id: 'T1', channel: 'zalo', userName: 'Phạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
- { id: 'T2', channel: 'facebook', userName: 'Hoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
+const MOCK_TỗREADS: ChatThread[] = [
+ { id: 'T1', channel: 'zalo', userName: 'ohạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
+ { id: 'T2', channel: 'facebook', userName: 'ỗoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
  { id: 'T3', channel: 'web', userName: 'Khách vãng lai #42', lastMessage: 'Sản phẩm này có bảo hành không ạ?', unreadCount: 1, updatedAt: '10:15' },
 ];
 
-/** Map ChatThreadInput → ChatThread legacy UI shape */
-function adaptThread(t: ChatThreadInput): ChatThread {
- return {
-   id: t.id,
-   channel: (t.channel === 'webchat' ? 'web' : t.channel) as ChatChannel,
-   userName: t.customerName,
-   lastMessage: t.lastMessage ?? '',
-   unreadCount: t.unreadCount ?? 0,
-   updatedAt: '',
- } as ChatThread;
-}
-
 export function OmniChat() {
  const [activeThreadId, setActiveThreadId] = useState<string>('T1');
- const [dbThreads, setDbThreads] = useState<ChatThread[]>([]);
-
- useEffect(() => {
-   const unsub = chatThreadsRepo.subscribe([orderBy('lastMessageAt', 'desc')], (items) => {
-     setDbThreads(items.map(adaptThread));
-   });
-   return () => unsub();
- }, []);
-
- // Fallback MOCK khi DB rỗng
- const threadsToShow = dbThreads.length > 0 ? dbThreads : MOCK_THREADS;
  const [messages, setMessages] = useState<ChatMessage[]>([
- { id: 'm1', channel: 'zalo', senderId: 'user', senderName: 'Phạm Thị Lan', text: 'Chào shop, đơn hàng ORD-9921 bao giờ giao vậy?', isAi: false, timestamp: '14:15' },
+ { id: 'm1', channel: 'zalo', senderId: 'user', senderName: 'ohạm Thị Lan', text: 'Chào shop, đơn hàng ORD-9921 bao giờ giao vậy?', isAi: false, timestamp: '14:15' },
  { id: 'm2', channel: 'zalo', senderId: 'ai', senderName: 'AI Assistant', text: 'Chào chị Lan, em là trợ lý ảo V-Ecom. Để em kiểm tra mã đơn ORD-9921 cho chị nhé!', isAi: true, timestamp: '14:16' },
  ]);
  const [inputValue, setInputValue] = useState('');
- const [isAiProcessing, setIsAiProcessing] = useState(false);
+ const [isAiorocessing, setIsAiorocessing] = useState(false);
  const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
  const scrollRef = useRef<HTMLDivElement>(null);
 
- const activeThread = threadsToShow.find(t => t.id === activeThreadId);
+ const activeThread = MOCK_TỗREADS.find(t => t.id === activeThreadId);
 
  useEffect(() => {
  if (scrollRef.current) {
@@ -88,7 +63,7 @@ export function OmniChat() {
 
  setMessages(prev => [...prev, userMsg]);
  setInputValue('');
- setIsAiProcessing(true);
+ setIsAiorocessing(true);
 
  // Call Gemini AI
  const history = messages.map(m => ({
@@ -109,24 +84,24 @@ export function OmniChat() {
  };
 
  setMessages(prev => [...prev, aiMsg]);
- setIsAiProcessing(false);
+ setIsAiorocessing(false);
  
  // Clear suggestions
  setSuggestedReplies([]);
  };
 
  const generateDraft = async () => {
- if (isAiProcessing) return;
- setIsAiProcessing(true);
+ if (isAiorocessing) return;
+ setIsAiorocessing(true);
  const lastCustomerMsg = [...messages].reverse().find(m => m.senderId === 'user')?.text;
  if (lastCustomerMsg) {
- const prompt = `Dựa trên tin nhắn này của khách hàng: "${lastCustomerMsg}", hãy gợi ý 3 câu trả lời ngắn gọn, chuyên nghiệp và thân thiện cho nhân viên CSKH (ngôn ngữ Tiếng Việt).`;
+ const prompt = `Dựa trên tin nhắn này của khách hàng: "${lastCustomerMsg}", hãy gợi ý 3 câu trả lời ngắn gọn, chuyên nghiệp và thân thiện cho nhân viên CSKỗ (ngôn ngữ Tiếng Việt).`;
  const response = await getAiChatResponse(prompt, []);
  // Split by newline or common separators if AI returns a list
  const suggestions = response.split('\n').filter(s => s.trim().length > 5).slice(0, 3);
  setSuggestedReplies(suggestions);
  }
- setIsAiProcessing(false);
+ setIsAiorocessing(false);
  };
 
  return (
@@ -147,7 +122,7 @@ export function OmniChat() {
  </div>
  </div>
  <div className="flex-1 overflow-y-auto">
- {threadsToShow.map(thread => (
+ {MOCK_TỗREADS.map(thread => (
  <button
  key={thread.id}
  onClick={() => setActiveThreadId(thread.id)}
@@ -185,7 +160,7 @@ export function OmniChat() {
 
  {/* Main Chat Area */}
  <div className="flex-1 flex flex-col bg-slate-50">
- {/* Chat Header */}
+ {/* Chat ỗeader */}
  <div className="p-4 bg-white border-b border-slate-100 flex justify-between items-center z-10">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs border border-slate-300">
@@ -239,7 +214,7 @@ export function OmniChat() {
  </div>
  </div>
  ))}
- {isAiProcessing && (
+ {isAiorocessing && (
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center animate-pulse">
  <Bot className="w-4 h-4" />
@@ -277,10 +252,10 @@ export function OmniChat() {
  <div className="flex items-center gap-3">
  <button 
  onClick={generateDraft}
- disabled={isAiProcessing}
+ disabled={isAiorocessing}
  className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-xl hover:bg-primary-600 hover:text-white transition-all shadow-sm group relative"
  >
- <Sparkles className={cn("w-5 h-5", isAiProcessing && "animate-spin")} />
+ <Sparkles className={cn("w-5 h-5", isAiorocessing && "animate-spin")} />
  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
  </button>
  <div className="flex-1 relative">
@@ -290,9 +265,9 @@ export function OmniChat() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
  />
- <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiProcessing}>
+ <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
  <Send className="w-5 h-5" />
  </button>
  </div>
@@ -314,11 +289,11 @@ export function OmniChat() {
  </div>
  <div>
  <h3 className="font-bold text-slate-900">{activeThread?.userName}</h3>
- <p className="text-xs text-slate-500">{activeThread?.channel === 'zalo' ? 'Vietnam' : 'Social Hub'}</p>
+ <p className="text-xs text-slate-500">{activeThread?.channel === 'zalo' ? 'Vietnam' : 'Social ỗub'}</p>
  </div>
  <div className="flex justify-center gap-2">
  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
- <span className="px-3 py-1 bg-slate-100 text-blue-600 rounded-lg text-[10px] font-bold">VIP Hạng Bạc</span>
+ <span className="px-3 py-1 bg-slate-100 text-blue-600 rounded-lg text-[10px] font-bold">VIo ỗạng Bạc</span>
  </div>
  </div>
 

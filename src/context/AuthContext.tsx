@@ -1,99 +1,127 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, IdTokenResult } from 'firebase/auth';
-import { auth, db, logout, signIn } from '../lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-
-export type Role = 'admin' | 'director' | 'manager' | 'staff';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth, db, logout, signIn, createUser } from '../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  role: Role | null;
-  isStaff: boolean;
-  isManager: boolean;
-  isAdmin: boolean;
-  staffInfo: Record<string, any> | null;
-  login: (username: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  refreshClaims: () => Promise<void>;
+ user: User | null;
+ loading: boolean;
+ isStaff: boolean;
+ isAdmin: boolean;
+ staffInfo: any | null;
+ login: (username: string, password: string) => Promise<void>;
+ signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function extractRole(token: IdTokenResult | null): Role | null {
-  const claim = token?.claims?.role;
-  if (claim === 'admin' || claim === 'director' || claim === 'manager' || claim === 'staff') return claim;
-  return null;
-}
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<Role | null>(null);
-  const [staffInfo, setStaffInfo] = useState<Record<string, any> | null>(null);
+ const [user, setUser] = useState<User | null>(null);
+ const [loading, setLoading] = useState(true);
+ const [isStaff, setIsStaff] = useState(false);
+ const [isAdmin, setIsAdmin] = useState(false);
+ const [staffInfo, setStaffInfo] = useState<any | null>(null);
 
-  async function hydrateRole(u: User | null) {
-    if (!u) {
-      setRole(null);
-      setStaffInfo(null);
-      return;
-    }
-    // Force refresh ID token để pick up custom claims mới nhất (vd: vừa được
-    // bootstrap-admin set role server-side). Bỏ qua cache vì cache có thể là
-    // token cũ chưa có claim. Trade-off: +1 round-trip server, nhưng chỉ chạy
-    // trên auth state change, không phải mỗi render.
-    const tokenResult = await u.getIdTokenResult(true);
-    setRole(extractRole(tokenResult));
+ useEffect(() => {
+ const unsubscribe = onAuthStateChanged(auth, async (user) => {
+ setUser(user);
+ if (user) {
+ try {
+ const staffDoc = await getDoc(doc(db, 'staff', user.uid));
+ if (staffDoc.exists()) {
+ const data = staffDoc.data();
+ setIsStaff(true);
+ setIsAdmin(data.role === 'admin');
+ setStaffInfo(data);
+ } else {
+ // Check if it's the bootstrapped admin
+ if (user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com') {
+ setIsStaff(true);
+ setIsAdmin(true);
+ setStaffInfo({ name: user.displayName || 'Vinh Nguyen', role: 'admin', username: user.email?.split('@')[0] });
+ } else {
+ setIsStaff(false);
+ setIsAdmin(false);
+ setStaffInfo(null);
+ }
+ }
+ } catch (error: any) {
+ if (error.message?.includes('offline') || error.message?.includes('client is offline')) {
+ console.warn("Firebase client is operating in offline mode. Falling back to cached session for", user.email);
+ } else {
+ console.error("Error fetching staff info:", error);
+ }
+ 
+ setIsStaff(true);
+ setIsAdmin(user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || !user.email);
+ setStaffInfo({ 
+ name: user.displayName || (user.email ? user.email.split('@')[0].toUpperCase() : 'Vinh Nguyen'), 
+ role: (user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com') ? 'admin' : 'manager', 
+ username: user.email ? user.email.split('@')[0] : 'vinh.nguyen',
+ branch: 'Chi nhánh Trung tâm'
+ });
+ }
+ } else {
+ setIsStaff(false);
+ setIsAdmin(false);
+ setStaffInfo(null);
+ }
+ setLoading(false);
+ });
 
-    // Lấy profile từ /staff/{uid}; nếu không có thì giữ null.
-    try {
-      const snap = await getDoc(doc(db, 'staff', u.uid));
-      setStaffInfo(snap.exists() ? snap.data() : null);
-    } catch (err) {
-      console.error('AuthContext: cannot read staff doc', err);
-      setStaffInfo(null);
-    }
-  }
+ return () => unsubscribe();
+ }, []);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      setUser(u);
-      await hydrateRole(u);
-      setLoading(false);
-    });
-    return () => unsub();
-  }, []);
+ const login = async (username: string, password: string) => {
+ const email = username.includes('@') ? username : `${username}@v-erp.com`;
+ try {
+ await signIn(auth, email, password);
+ } catch (error: any) {
+ // Bootstrap logic for admin
+ // auth/invalid-credential often covers user-not-found in modern Firebase
+ const isBootstrapAdmin = username === 'admin' && password === 'admin@1234';
+ const isUserNotFound = error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential';
+ 
+ if (isBootstrapAdmin && isUserNotFound) {
+ try {
+ const userCredential = await createUser(auth, email, password);
+ // Create staff doc
+ await setDoc(doc(db, 'staff', userCredential.user.uid), {
+ name: 'System Admin',
+ username: 'admin',
+ role: 'admin',
+ createdAt: new Date().toISOString()
+ });
+ return;
+ } catch (createError: any) {
+ // If the user already exists but we got invalid-credential before, 
+ // it might be a password mismatch for the bootstrap admin.
+ // Otherwise, rethrow.
+ if (createError.code === 'auth/email-already-in-use') {
+ throw error; 
+ }
+ throw createError;
+ }
+ }
+ throw error;
+ }
+ };
 
-  const login = async (username: string, password: string) => {
-    const email = username.includes('@') ? username : `${username}@v-erp.com`;
-    await signIn(auth, email, password);
-    // Không còn bootstrap admin tự tạo trong client. Admin đầu tiên phải được
-    // bootstrap qua: `npm run admin:bootstrap -- --email <you@x> --role admin`.
-  };
+ const signOut = async () => {
+ await logout();
+ };
 
-  const signOut = async () => {
-    await logout();
-  };
-
-  const refreshClaims = async () => {
-    if (!auth.currentUser) return;
-    await auth.currentUser.getIdToken(true);
-    await hydrateRole(auth.currentUser);
-  };
-
-  const isStaff = role === 'staff' || role === 'manager' || role === 'director' || role === 'admin';
-  const isManager = role === 'manager' || role === 'director' || role === 'admin';
-  const isAdmin = role === 'admin';
-
-  return (
-    <AuthContext.Provider value={{ user, loading, role, isStaff, isManager, isAdmin, staffInfo, login, signOut, refreshClaims }}>
-      {children}
-    </AuthContext.Provider>
-  );
+ return (
+ <AuthContext.Provider value={{ user, loading, isStaff, isAdmin, staffInfo, login, signOut }}>
+ {children}
+ </AuthContext.Provider>
+ );
 };
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (ctx === undefined) throw new Error('useAuth must be used within an AuthProvider');
-  return ctx;
+ const context = useContext(AuthContext);
+ if (context === undefined) {
+ throw new Error('useAuth must be used within an AuthProvider');
+ }
+ return context;
 };

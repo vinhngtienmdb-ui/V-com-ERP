@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect, useRef } from 'react';
-import { ordersRepo, processReturn } from '../services/repositories';
-import { where, orderBy } from 'firebase/firestore';
 import { 
  Headphones, 
  Ticket, 
@@ -24,6 +22,7 @@ import {
  Loader2,
  Send,
  History,
+ Facebook,
  Globe,
  Bot,
  Zap,
@@ -76,46 +75,7 @@ const MOCK_CAMPAIGNS = [
 
 // --- COMPONENT ---
 export function CustomerService() {
- const [activeTab, setActiveTab] = useState<'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents' | 'rma'>('tickets');
- const [rmaOrders, setRmaOrders] = useState<any[]>([]);
- const [processingRma, setProcessingRma] = useState<string | null>(null);
- const [rmaResult, setRmaResult] = useState<{ orderId: string; ok: boolean; message: string } | null>(null);
-
- useEffect(() => {
-   // Subscribe orders với status returning/returned cho tab RMA
-   const unsub = ordersRepo.subscribe(
-     [where('status', 'in', ['returning', 'returned']), orderBy('createdAt', 'desc')],
-     (items) => setRmaOrders(items as any[]),
-   );
-   return () => unsub();
- }, []);
-
- const handleApproveRma = async (orderId: string) => {
-   setProcessingRma(orderId);
-   setRmaResult(null);
-   try {
-     const r = await processReturn({ orderId, action: 'approve' });
-     setRmaResult({ orderId, ok: true, message: `Đã hoàn ${r.refundAmount.toLocaleString('vi-VN')}đ, trả lại kho ${r.itemsReturned} item.` });
-   } catch (err: any) {
-     setRmaResult({ orderId, ok: false, message: err.message ?? 'Lỗi không xác định' });
-   } finally {
-     setProcessingRma(null);
-   }
- };
-
- const handleRejectRma = async (orderId: string) => {
-   const reason = prompt('Lý do từ chối hoàn trả?');
-   if (!reason?.trim()) return;
-   setProcessingRma(orderId);
-   try {
-     await processReturn({ orderId, action: 'reject', reason });
-     setRmaResult({ orderId, ok: true, message: 'Đã từ chối yêu cầu, đơn revert về delivered.' });
-   } catch (err: any) {
-     setRmaResult({ orderId, ok: false, message: err.message ?? 'Lỗi' });
-   } finally {
-     setProcessingRma(null);
-   }
- };
+ const [activeTab, setActiveTab] = useState<'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents'>('tickets');
  const [roleScope, setRoleScope] = useState<'platform' | 'seller'>('platform');
  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
  const [aiDrafting, setAiDrafting] = useState(false);
@@ -225,7 +185,7 @@ export function CustomerService() {
  </div>
 
  {/* Overview Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
  <div className="flex justify-between items-start relative z-10 mb-2">
@@ -283,22 +243,11 @@ export function CustomerService() {
  >
  <Mail className="w-4 h-4" /> Chiến dịch Chăm sóc (Loyalty)
  </button>
- <button
+ <button 
  onClick={() => setActiveTab('feedback')}
  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
  >
  <Star className="w-4 h-4" /> Phản hồi & Đánh giá
- </button>
- <button
- onClick={() => setActiveTab('rma')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 relative", activeTab === 'rma' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <AlertCircle className="w-4 h-4" /> RMA / Hoàn trả
- {rmaOrders.filter(o => o.status === 'returning').length > 0 && (
-   <span className="ml-1 px-1.5 py-0.5 bg-rose-500 text-white text-[10px] rounded-full font-bold">
-     {rmaOrders.filter(o => o.status === 'returning').length}
-   </span>
- )}
  </button>
  <button 
  onClick={() => setActiveTab('chat')}
@@ -369,11 +318,11 @@ export function CustomerService() {
  onClick={() => setSelectedTicket(ticket)}
  className={cn("hover:bg-slate-100/50 cursor-pointer transition-colors group", ticket.status === 'open' ? 'bg-white' : 'bg-slate-50/30')}
  >
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-xs font-mono font-bold text-slate-700 mb-0.5">{ticket.id}</p>
  <p className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition-colors">{ticket.customerName}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  {ticket.sentiment === 'critical' ? <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> : 
  ticket.sentiment === 'negative' ? <span className="w-2 h-2 rounded-full bg-orange-500" /> : 
@@ -426,18 +375,18 @@ export function CustomerService() {
  <tbody className="divide-y divide-slate-100">
  {MOCK_CAMPAIGNS.map(camp => (
  <tr key={camp.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900">{camp.name}</p>
  <p className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">{camp.id}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-xs font-bold uppercase tracking-widest text-orange-700 mb-0.5">{camp.type}</p>
  <p className="text-xs text-slate-600">{camp.target}</p>
  </td>
  <td className="px-6 py-4 text-center font-mono font-bold text-slate-800">
  {camp.sent.toLocaleString()}
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center gap-1">
  <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
  <div className="h-full bg-emerald-500" style={{ width: `${camp.openRate}%` }} />
@@ -457,80 +406,6 @@ export function CustomerService() {
  ))}
  </tbody>
  </table>
- </div>
- )}
-
- {activeTab === 'rma' && (
- <div className="p-6">
-   <div className="flex items-center justify-between mb-4">
-     <div>
-       <h3 className="text-lg font-bold text-slate-900">Yêu cầu hoàn trả (RMA)</h3>
-       <p className="text-sm text-slate-600 mt-0.5">
-         Returning: <strong className="text-rose-600">{rmaOrders.filter(o => o.status === 'returning').length}</strong>
-         {' · '}
-         Returned: <strong className="text-slate-700">{rmaOrders.filter(o => o.status === 'returned').length}</strong>
-       </p>
-     </div>
-   </div>
-   {rmaResult && (
-     <div className={cn("mb-4 px-4 py-3 rounded-lg text-sm",
-       rmaResult.ok ? "bg-emerald-50 border border-emerald-200 text-emerald-800" : "bg-rose-50 border border-rose-200 text-rose-800"
-     )}>
-       <strong>{rmaResult.orderId}:</strong> {rmaResult.message}
-     </div>
-   )}
-   <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
-     <table className="w-full text-left">
-       <thead>
-         <tr className="bg-slate-50 border-b border-slate-200">
-           <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Order ID</th>
-           <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Khách hàng</th>
-           <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Số tiền</th>
-           <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Trạng thái</th>
-           <th className="px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Hành động</th>
-         </tr>
-       </thead>
-       <tbody className="divide-y divide-slate-100">
-         {rmaOrders.map(o => (
-           <tr key={o.id} className="hover:bg-slate-50">
-             <td className="px-3 py-2.5 font-mono text-xs">{o.id}</td>
-             <td className="px-3 py-2.5 text-sm">{o.customerName}</td>
-             <td className="px-3 py-2.5 text-right text-sm font-bold">{(o.total ?? 0).toLocaleString('vi-VN')}đ</td>
-             <td className="px-3 py-2.5">
-               <span className={cn("px-2 py-0.5 text-[10px] font-bold rounded-full uppercase",
-                 o.status === 'returning' ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-700",
-               )}>{o.status}</span>
-             </td>
-             <td className="px-3 py-2.5">
-               {o.status === 'returning' ? (
-                 <div className="flex gap-2">
-                   <button
-                     onClick={() => handleApproveRma(o.id)}
-                     disabled={processingRma === o.id}
-                     className="px-3 py-1 text-xs font-bold bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-50"
-                   >
-                     {processingRma === o.id ? '...' : 'Approve'}
-                   </button>
-                   <button
-                     onClick={() => handleRejectRma(o.id)}
-                     disabled={processingRma === o.id}
-                     className="px-3 py-1 text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded hover:bg-rose-100 disabled:opacity-50"
-                   >
-                     Reject
-                   </button>
-                 </div>
-               ) : (
-                 <span className="text-xs text-slate-500 italic">Đã xử lý</span>
-               )}
-             </td>
-           </tr>
-         ))}
-         {rmaOrders.length === 0 && (
-           <tr><td colSpan={5} className="px-6 py-12 text-center text-slate-500 italic">Chưa có yêu cầu RMA nào.</td></tr>
-         )}
-       </tbody>
-     </table>
-   </div>
  </div>
  )}
 
@@ -816,7 +691,7 @@ export function CustomerService() {
  <button className="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold hover:bg-slate-200 transition-all">Đồng bộ OmiCall API</button>
  </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-x-auto min-w-0">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
@@ -835,7 +710,7 @@ export function CustomerService() {
  { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Le Van C', hasAudio: true }
  ].map((log, i) => (
  <tr key={i} className="hover:bg-slate-50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900">{log.name}</p>
  <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.caller}</p>
  </td>
@@ -1061,7 +936,7 @@ export function CustomerService() {
  </DraggableGrid>
 
  {/* Staff List */}
- <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-x-auto min-w-0">
+ <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-50 border-b border-slate-200">
  <tr>
@@ -1074,7 +949,7 @@ export function CustomerService() {
  </thead>
  <tbody className="divide-y divide-slate-100">
  <tr className="hover:bg-slate-50">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Ngoc+Trinh&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -1090,7 +965,7 @@ export function CustomerService() {
  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Sẵn sàng
  </span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.9</span>
@@ -1109,7 +984,7 @@ export function CustomerService() {
  </td>
  </tr>
  <tr className="hover:bg-slate-50">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Minh+Tuan&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -1125,7 +1000,7 @@ export function CustomerService() {
  <PhoneCall className="w-3 h-3" /> Đang nghe máy
  </span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.7</span>
@@ -1144,7 +1019,7 @@ export function CustomerService() {
  </td>
  </tr>
  <tr className="hover:bg-slate-50 opacity-60 grayscale">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
  <img src="https://ui-avatars.com/api/?name=Van+A&background=f4f4f5&color=3f3f46" alt="avatar" />
@@ -1160,7 +1035,7 @@ export function CustomerService() {
  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" /> Tạm nghỉ
  </span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <Star className="w-4 h-4 text-amber-400" />
  <span className="text-sm font-bold text-slate-900">4.5</span>
@@ -1250,7 +1125,7 @@ export function CustomerService() {
  <div className="flex justify-between items-start mb-6">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-[#EAE7DF] rounded-xl flex items-center justify-center text-orange-700">
- <Globe className="w-6 h-6" />
+ <Facebook className="w-6 h-6" />
  </div>
  <div>
  <h4 className="font-bold text-slate-900 text-lg">Facebook Fanpage</h4>
@@ -1462,5 +1337,3 @@ export function CustomerService() {
  </div>
  );
 }
-
-

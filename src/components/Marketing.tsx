@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { campaignsRepo, type CampaignInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Megaphone, 
  Layout, 
@@ -13,8 +11,9 @@ import {
  BarChart2,
  X,
  Share2,
- Camera,
- AtSign,
+ Instagram,
+ Facebook,
+ Twitter,
  Plus,
  Music2,
  Smartphone,
@@ -57,10 +56,10 @@ const MOCK_CAMPAIGNS: Campaign[] = [
 ];
 
 const SOCIAL_ACCOUNTS = [
- { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-slate-900', icon: Globe },
+ { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-slate-900', icon: Facebook },
  { id: 'tt', platform: 'TikTok', name: '@vcomm_shop_vn', status: 'connected', followers: '850k', color: 'bg-stone-950', icon: Music2 },
- { id: 'ig', platform: 'Instagram', name: 'vcomm.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Camera },
- { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: AtSign },
+ { id: 'ig', platform: 'Instagram', name: 'vcomm.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Instagram },
+ { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
 ];
 
 const MARKETING_MODULE_GROUPS = [
@@ -75,7 +74,7 @@ const MARKETING_MODULE_GROUPS = [
  {
  title: 'Đa kênh & Tự động hóa',
  items: [
- { id: 'omnichannel', label: 'Social Sync', desc: 'Đồng bộ Facebook, TikTok, IG.', icon: Globe, color: 'blue' },
+ { id: 'omnichannel', label: 'Social Sync', desc: 'Đồng bộ Facebook, TikTok, IG.', icon: Facebook, color: 'blue' },
  { id: 'ads', label: 'Ads Manager', desc: 'Quét tracking và tối ưu ngân sách.', icon: TrendingUp, color: 'purple' },
  { id: 'automation', label: 'Marketing Auto', desc: 'Kịch bản chăm sóc tự động.', icon: Cpu, color: 'rose' },
  ]
@@ -94,47 +93,9 @@ function getColorClasses(color: string) {
  }
 }
 
-/** Map CampaignInput (Firestore) → Campaign legacy UI shape. */
-function adaptCampaign(c: CampaignInput): Campaign {
- const statusMap: Record<string, Campaign['status']> = {
-   active: 'active', upcoming: 'upcoming', expired: 'expired',
-   draft: 'upcoming', paused: 'expired', cancelled: 'expired',
- };
- const typeMap: Record<string, Campaign['type']> = {
-   voucher: 'voucher', flash_sale: 'flash_sale', group_buy: 'group_buy', landing_page: 'landing_page',
-   ad_facebook: 'voucher', ad_google: 'voucher', ad_tiktok: 'voucher',
- };
- return {
-   id: c.id,
-   name: c.name,
-   type: typeMap[c.type] ?? 'voucher',
-   status: statusMap[c.status] ?? 'upcoming',
-   budget: c.budget ?? 0,
-   spent: c.spent ?? 0,
-   gmvGenerated: c.gmvGenerated ?? 0,
-   roi: c.roi ?? 0,
-   startDate: c.startDate,
-   endDate: c.endDate,
- };
-}
-
 export function Marketing() {
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
- const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
-
- useEffect(() => {
-   const unsub = campaignsRepo.subscribe([orderBy('startDate', 'desc')], (items) => {
-     const filtered = items.filter((c: any) => !c.type?.startsWith('ad_')).map(adaptCampaign);
-     setDbCampaigns(filtered);
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // Khi đã load DB: hiện list thật (kể cả empty); chỉ hiện MOCK khi đang loading.
- const campaigns = dbLoaded ? dbCampaigns : MOCK_CAMPAIGNS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -167,8 +128,8 @@ export function Marketing() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GMV từ Marketing</span>
  <BarChart2 className="w-4 h-4 text-emerald-600" />
@@ -178,7 +139,7 @@ export function Marketing() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
  <Smartphone className="w-4 h-4 text-orange-700" />
@@ -188,7 +149,7 @@ export function Marketing() {
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
  <TrendingUp className="w-4 h-4 text-orange-600" />
@@ -198,7 +159,7 @@ export function Marketing() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
  <Megaphone className="w-4 h-4 text-primary-600" />
@@ -380,18 +341,18 @@ export function Marketing() {
 <table className="w-full text-left text-sm">
  <thead>
  <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
- <th className="px-3 py-2">Tên chiến dịch</th>
- <th className="px-3 py-2">Loại mã</th>
- <th className="px-3 py-2">Mức giảm</th>
- <th className="px-3 py-2">Áp dụng cho</th>
+ <th className="px-6 py-3">Tên chiến dịch</th>
+ <th className="px-6 py-3">Loại mã</th>
+ <th className="px-6 py-3">Mức giảm</th>
+ <th className="px-6 py-3">Áp dụng cho</th>
  <th className="px-6 py-3 text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  <tr className="hover:bg-slate-50">
  <td className="px-6 py-4 font-bold text-slate-900">Flash Sale 15/3</td>
- <td className="px-3 py-2.5">Giảm %</td>
- <td className="px-3 py-2.5">10%</td>
+ <td className="px-6 py-4">Giảm %</td>
+ <td className="px-6 py-4">10%</td>
  <td className="px-6 py-4 text-xs text-slate-700">Điện tử, Thời trang</td>
  <td className="px-6 py-4 text-right">
  <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sửa</button>
@@ -399,8 +360,8 @@ export function Marketing() {
  </tr>
  <tr className="hover:bg-slate-50">
  <td className="px-6 py-4 font-bold text-slate-900">Đơn hàng đầu tiên</td>
- <td className="px-3 py-2.5">Miễn phí vận chuyển</td>
- <td className="px-3 py-2.5">Tối đa 30k</td>
+ <td className="px-6 py-4">Miễn phí vận chuyển</td>
+ <td className="px-6 py-4">Tối đa 30k</td>
  <td className="px-6 py-4 text-xs text-slate-700">Tất cả sản phẩm</td>
  <td className="px-6 py-4 text-right">
  <button className="text-xs font-bold text-slate-600 hover:text-orange-700">Sửa</button>
@@ -452,9 +413,9 @@ export function Marketing() {
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {campaigns.map((campaign) => (
+ {MOCK_CAMPAIGNS.map((campaign) => (
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="p-3 rounded-lg bg-slate-100 text-orange-700">
  <Megaphone className="w-5 h-5" />
@@ -465,7 +426,7 @@ export function Marketing() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-1.5 text-xs text-[#4B5563]">
  <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
  {campaign.startDate} - {campaign.endDate}
@@ -475,7 +436,7 @@ export function Marketing() {
  <p className="text-sm font-bold text-[#111827]">{formatCurrency(campaign.budget)}</p>
  <p className="text-[10px] text-[#6B7280]">Chi: {formatCurrency(campaign.spent)}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1.5">
  <span className="text-sm font-bold text-emerald-600">{campaign.roi > 0 ? campaign.roi + 'x' : '--'}</span>
@@ -484,7 +445,7 @@ export function Marketing() {
  <p className="text-[10px] text-[#6B7280]">Doanh thu: {formatCurrency(campaign.gmvGenerated)}</p>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :
@@ -559,6 +520,3 @@ export function Marketing() {
  </div>
  );
 }
-
-
-

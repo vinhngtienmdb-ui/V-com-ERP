@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { salesRepsRepo, type SalesRepInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Users, 
  Target, 
@@ -66,14 +64,6 @@ function getColorClasses(color: string) {
 export function SalesManagement() {
  const [activeTab, setActiveTab] = useState<'overview' | 'dashboard' | 'reps' | 'settings' | 'pipeline' | 'commissions' | 'rewards'>('overview');
  const [settingSection, setSettingSection] = useState<'commission' | 'routing' | 'gamification'>('commission');
- const [reps, setReps] = useState<SalesRepInput[]>([]);
-
- useEffect(() => {
-   const unsub = salesRepsRepo.subscribe([orderBy('monthlyAchieved', 'desc')], (items) => {
-     setReps(items);
-   });
-   return () => unsub();
- }, []);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -102,29 +92,29 @@ export function SalesManagement() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng GMV chốt (T3)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(12500000000)}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+15.8%</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tỉ lệ Hoàn thành KPI</p>
  <div className="flex items-end justify-between mt-3">
  <span className="text-2xl font-black text-[#111827]">88.5%</span>
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">On Track</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Deal đang Open</p>
  <div className="flex items-end justify-between mt-3">
  <span className="text-2xl font-black text-[#111827]">45 Leads</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Hoa hồng tạm tính</p>
  <div className="flex items-end justify-between mt-3">
  <span className="text-2xl font-black text-amber-600">{formatCurrency(320000000)}</span>
@@ -279,7 +269,7 @@ export function SalesManagement() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_SALES.map((sale, idx) => (
  <tr key={sale.id} className="hover:bg-[#F9FAFB] group transition-colors text-sm">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-[#2563EB] border border-slate-300 text-xs">
  {sale.name.charAt(0)}
@@ -290,7 +280,7 @@ export function SalesManagement() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="space-y-1">
  <span className={cn(
  "px-2 py-0.5 rounded text-[10px] font-bold border",
@@ -302,7 +292,7 @@ export function SalesManagement() {
  <p className="text-[10px] text-[#6B7280] font-medium">Rate: {sale.commissionRate}% Doanh số</p>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="max-w-[150px] space-y-1.5">
  <div className="flex justify-between text-[10px] font-bold">
  <span>{((sale.achieved / sale.target) * 100).toFixed(0)}%</span>
@@ -419,5 +409,3 @@ export function SalesManagement() {
  </div>
  );
 }
-
-

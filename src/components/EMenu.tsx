@@ -32,10 +32,7 @@ export function EMenu() {
  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
  useEffect(() => {
- // Đọc /public_menu (public read theo firestore.rules) — KHÔNG đọc /products
- // vì rule chỉ cho staff. /public_menu được mirror tự động bằng Cloud
- // Function syncProductToPublicMenu (chỉ chứa field công khai).
- const unsub = onSnapshot(collection(db, 'public_menu'), (snap) => {
+ const unsub = onSnapshot(collection(db, 'products'), (snap) => {
  setProducts(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
  });
  return () => unsub();

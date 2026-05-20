@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { affiliatesRepo, type AffiliateInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Users, 
  Link2, 
@@ -72,44 +70,8 @@ export const MOCK_AFFILIATES: Affiliate[] = [
  }
 ];
 
-/** Random 6-char alphanumeric refCode (bỏ O/0/I/1). Server validate uniqueness. */
-export function generateRefCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-}
-
-/** Map AffiliateInput → Affiliate UI shape. */
-function adaptAffiliate(a: AffiliateInput): Affiliate {
-  return {
-    id: a.id,
-    name: a.name,
-    type: (a.type as Affiliate['type']) ?? 'kol',
-    commissionEarned: a.commissionEarned ?? 0,
-    ordersCount: a.ordersCount ?? 0,
-    clickThroughRate: a.clickThroughRate ?? 0,
-    status: (a.status as Affiliate['status']) ?? 'pending',
-    platforms: undefined,
-    followers: a.follower,
-    bookingPrice: undefined,
-    categoryTags: a.niche ? [a.niche] : undefined,
-  } as Affiliate;
-}
-
 export function AffiliateManagement() {
  const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
- const [dbAffiliates, setDbAffiliates] = useState<Affiliate[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
-
- useEffect(() => {
-   const unsub = affiliatesRepo.subscribe([orderBy('joinedAt', 'desc')], (items) => {
-     setDbAffiliates(items.map(adaptAffiliate));
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // dbLoaded → hiện list thật (kể cả empty); MOCK chỉ trong loading state.
- const affiliates = dbLoaded ? dbAffiliates : MOCK_AFFILIATES;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -134,7 +96,7 @@ export function AffiliateManagement() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng Publisher/KOL</p>
  <div className="text-2xl font-bold text-[#111827]">1,240</div>
@@ -197,9 +159,9 @@ export function AffiliateManagement() {
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {affiliates.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
+ {MOCK_AFFILIATES.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
  <tr key={affiliate.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#2563EB] font-bold text-xs border border-slate-300 shrink-0">
  {affiliate.name.charAt(0)}
@@ -215,7 +177,7 @@ export function AffiliateManagement() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  {affiliate.type === 'kol' ? (
  <div className="space-y-1">
  <div className="flex items-center gap-1">
@@ -232,7 +194,7 @@ export function AffiliateManagement() {
  <span className="text-xs text-slate-500 italic">Mạng lưới / Đại lý</span>
  )}
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="space-y-1">
  <p className="text-xs font-bold text-[#111827]">{affiliate.ordersCount} đơn hàng</p>
  <p className="text-[10px] text-[#6B7280]">CTR: {affiliate.clickThroughRate}%</p>
@@ -244,7 +206,7 @@ export function AffiliateManagement() {
  <p className="text-[10px] text-slate-600 mt-1">Booking: {formatCurrency(affiliate.bookingPrice)}</p>
  )}
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex justify-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
@@ -275,7 +237,7 @@ export function AffiliateManagement() {
  </div>
  <h3 className="font-semibold text-[#111827]">Thiết lập Hoa hồng Affiliate theo ngành hàng</h3>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  {[
  { cat: 'Thời trang', rate: '8%' },
  { cat: 'Điện tử', rate: '3%' },
@@ -294,4 +256,3 @@ export function AffiliateManagement() {
  </div>
  );
 }
-

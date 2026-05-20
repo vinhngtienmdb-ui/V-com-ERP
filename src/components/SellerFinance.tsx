@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { payoutsRepo, type PayoutInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  BadgeDollarSign, 
  TrendingUp, 
@@ -32,33 +30,8 @@ const MOCK_PAYOUTS: EarlyPayoutRequest[] = [
  { id: 'EPR-02', sellerId: 'SEL-012', amount: 15400000, discountFee: 154000, requestDate: '16/03/2024', status: 'approved' },
 ];
 
-/** Map PayoutInput từ Firestore → EarlyPayoutRequest UI shape. */
-function adaptPayout(p: PayoutInput): EarlyPayoutRequest {
- return {
-   id: p.id,
-   sellerId: p.sellerId,
-   amount: p.amount,
-   discountFee: p.fee ?? 0,
-   requestDate: '',
-   status: p.status as EarlyPayoutRequest['status'],
- };
-}
-
 export function SellerFinance() {
  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout'>('credit');
- const [dbPayouts, setDbPayouts] = useState<EarlyPayoutRequest[]>([]);
- const [dbLoaded, setDbLoaded] = useState(false);
-
- useEffect(() => {
-   const unsub = payoutsRepo.subscribe([orderBy('createdAt', 'desc')], (items) => {
-     setDbPayouts(items.map(adaptPayout));
-     setDbLoaded(true);
-   });
-   return () => unsub();
- }, []);
-
- // dbLoaded → hiện list thật (empty OK); MOCK chỉ trong loading state.
- const payouts = dbLoaded ? dbPayouts : MOCK_PAYOUTS;
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -79,7 +52,7 @@ export function SellerFinance() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-[#111827] text-[#FAF9F5] p-6 rounded-lg shadow-sm shadow-slate-900/10">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-slate-800 rounded-lg">
@@ -146,11 +119,11 @@ export function SellerFinance() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_CREDITS.map(credit => (
  <tr key={credit.sellerId} className="hover:bg-slate-50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{credit.sellerId}</p>
  <p className="text-[10px] text-[#6B7280]">Hiệu suất tháng: 9.2/10</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center gap-2">
  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden max-w-[100px]">
  <div 
@@ -163,7 +136,7 @@ export function SellerFinance() {
  <span className="text-[11px] font-bold text-slate-800">{credit.score}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className={cn(
  "px-3 py-1 rounded-lg text-[10px] font-bold italic tracking-widest",
  credit.tier === 'AAA' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-100 text-orange-700 border border-slate-300"
@@ -171,7 +144,7 @@ export function SellerFinance() {
  </td>
  <td className="px-6 py-4 text-right font-bold text-[#111827]">{formatCurrency(credit.maxCreditLimit)}</td>
  <td className="px-6 py-4 text-right font-bold text-[#2563EB]">{formatCurrency(credit.availableCredit)}</td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <button className="text-[10px] font-bold text-[#2563EB] bg-slate-100 px-3 py-1.5 rounded-lg hover:bg-[#EAE7DF] transition-colors uppercase tracking-wider">Cấp tín dụng</button>
  </td>
  </tr>
@@ -183,7 +156,7 @@ export function SellerFinance() {
 
  {activeTab === 'early_payout' && (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
- {payouts.map(payout => (
+ {MOCK_PAYOUTS.map(payout => (
  <div key={payout.id} className="p-6 bg-white border border-slate-300 rounded-lg shadow-sm space-y-4 hover:border-[#2563EB] transition-all group">
  <div className="flex justify-between items-start">
  <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-900 transition-colors">
@@ -255,4 +228,3 @@ export function SellerFinance() {
  </div>
  );
 }
-

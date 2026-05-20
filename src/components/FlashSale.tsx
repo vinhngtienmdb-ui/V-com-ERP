@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { campaignsRepo, type CampaignInput } from '../services/repositories';
-import { orderBy, where } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Zap, 
  Users2, 
@@ -124,19 +122,6 @@ const MOCK_PRODUCTS = [
 export function FlashSale() {
  const [activeTab, setActiveTab] = useState<'group_buy' | 'flash_sale' | 'voucher'>('group_buy');
  const [isModalOpen, setIsModalOpen] = useState(false);
- const [dbCampaigns, setDbCampaigns] = useState<CampaignInput[]>([]);
-
- useEffect(() => {
-   // Subscribe campaigns type='flash_sale' OR 'group_buy' OR 'voucher' (3 tab tương ứng).
-   const unsub = campaignsRepo.subscribe(
-     [where('type', 'in', ['flash_sale', 'group_buy', 'voucher']), orderBy('startDate', 'desc')],
-     (items) => setDbCampaigns(items),
-   );
-   return () => unsub();
- }, []);
-
- // Filter theo tab hiện tại
- const tabCampaigns = dbCampaigns.filter((c) => c.type === activeTab);
  
  // Voucher states
  const [voucherType, setVoucherType] = useState<'admin' | 'seller' | 'shipping'>('admin');
@@ -436,7 +421,7 @@ export function FlashSale() {
  <div className="text-[11px] text-slate-600 italic mb-3">Thêm 1 hoặc nhiều sản phẩm với mức giảm giá khác nhau...</div>
  
  {/* Table preview for added flash sale products */}
- <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-x-auto min-w-0">
+ <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
  <tr>
@@ -582,7 +567,7 @@ export function FlashSale() {
 
  {/* Stats - Hide if Voucher Tab is active */}
  {activeTab !== 'voucher' && (
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-4">
  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
@@ -663,7 +648,7 @@ export function FlashSale() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_FLASH_SALES.filter(c => c.type === activeTab).map((campaign) => (
  <tr key={campaign.id} className="hover:bg-[#F9FAFB] group transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-3 rounded-lg flex items-center justify-center shrink-0",
@@ -687,7 +672,7 @@ export function FlashSale() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  {campaign.type === 'group_buy' && campaign.requiredParticipants ? (
  <div className="space-y-1.5 w-48">
  <div className="flex justify-between text-[10px] font-medium">
@@ -715,7 +700,7 @@ export function FlashSale() {
  <p className="text-sm font-bold text-slate-900">Cố định / Khung giờ</p>
  )}
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col items-center">
  <div className="flex items-center gap-1.5">
  <span className="text-sm font-bold text-emerald-600">{campaign.roi > 0 ? '+' + formatCurrency(campaign.gmvGenerated * 0.185) : '--'}</span>
@@ -723,7 +708,7 @@ export function FlashSale() {
  <p className="text-[10px] text-[#6B7280]">GMV: {formatCurrency(campaign.gmvGenerated)}</p>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap",
  campaign.status === 'active' ? "bg-emerald-50 text-emerald-600" :
@@ -776,7 +761,7 @@ export function FlashSale() {
  <tbody className="divide-y divide-[#F3F4F6]">
  {MOCK_VOUCHERS.map(voucher => (
  <tr key={voucher.id} className="hover:bg-[#F9FAFB] transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className={cn(
  "p-2.5 rounded-lg border border-dashed border-2",
@@ -790,7 +775,7 @@ export function FlashSale() {
  </div>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  {voucher.creatorType === 'admin' ? (
  <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -813,7 +798,7 @@ export function FlashSale() {
  </p>
  <p className="text-[10px] text-slate-600">Đơn từ {formatCurrency(voucher.minOrderValue || 0)}</p>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="w-32 mb-1.5">
  <div className="flex justify-between text-[10px] font-medium mb-1">
  <span className="text-slate-700">{voucher.usedCount} lượt đã dùng</span>
@@ -851,4 +836,3 @@ export function FlashSale() {
  </div>
  );
 }
-

@@ -130,7 +130,7 @@ export function IPosSettings() {
 
  return (
  <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in slide-in- duration-500">
- <div className="flex items-center justify-between bg-white p-5 rounded-xl border border-slate-300 shadow-sm">
+ <div className="flex items-center justify-between bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
  <MonitorSmartphone className="w-6 h-6" />
@@ -269,4 +269,3 @@ export function IPosSettings() {
  </div>
  );
 }
-

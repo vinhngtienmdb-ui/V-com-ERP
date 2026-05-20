@@ -130,7 +130,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto no-scrollbar">
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
              {[{ label: 'Tổng lương thực nhận', val: formatCurrency(stats.totalNetPay), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-primary-600', bg: 'bg-primary-50' },
                { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' }].map((stat, idx) => (
@@ -368,4 +368,3 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
     </div>
   );
 }
-

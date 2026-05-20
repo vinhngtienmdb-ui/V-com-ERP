@@ -1,98 +1,139 @@
-import { auth } from '../lib/firebase';
 
-const API_BASE = (import.meta as any).env.VITE_API_BASE_URL || '';
+import axios from 'axios';
+
+const SEPAY_BASE_URL = 'https://api.sepay.vn/v1';
 
 export interface SePayTransaction {
-  id: string;
-  bank_account_number: string;
-  amount_in: number;
-  amount_out: number;
-  accumulated_balance: number;
-  transaction_content: string;
-  reference_number: string;
-  transaction_date: string;
+ id: string;
+ bank_account_number: string;
+ amount_in: number;
+ amount_out: number;
+ accumulated_balance: number;
+ transaction_content: string;
+ reference_number: string;
+ transaction_date: string;
 }
 
 export interface SePayVirtualAccount {
-  account_number: string;
-  bank_name: string;
-  account_name: string;
-  qr_code_url: string;
-}
-
-async function authHeader(): Promise<Record<string, string>> {
-  const user = auth.currentUser;
-  if (!user) return {};
-  const token = await user.getIdToken();
-  return { Authorization: `Bearer ${token}` };
+ account_number: string;
+ bank_name: string;
+ account_name: string;
+ qr_code_url: string;
 }
 
 class SePayService {
-  /** Bank Hub: lịch sử giao dịch — proxy qua server, KHÔNG để token client. */
-  async getTransactions(): Promise<SePayTransaction[]> {
-    const res = await fetch(`${API_BASE}/api/sepay/transactions`, { headers: await authHeader() });
-    if (!res.ok) throw new Error(`getTransactions failed (${res.status})`);
-    const data = await res.json();
-    return (data?.transactions ?? []) as SePayTransaction[];
+  private get apiToken() {
+    return localStorage.getItem('api_sepay_api_token') || '';
   }
 
-  /** Tạo virtual account cho 1 đơn — proxy qua server. */
-  async createVirtualAccount(orderId: string, amount: number): Promise<SePayVirtualAccount> {
-    const res = await fetch(`${API_BASE}/api/sepay/virtual-account`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
-      body: JSON.stringify({ order_id: orderId, amount }),
-    });
-    if (!res.ok) throw new Error(`createVirtualAccount failed (${res.status})`);
-    return (await res.json()) as SePayVirtualAccount;
+  private get clientId() {
+    return localStorage.getItem('api_sepay_client_id') || '';
   }
 
-  /** SoundBox: trigger qua server (giữ token ở server). */
-  async triggerSoundBox(amount: number, content: string, boxId: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/api/sepay/soundbox`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
-      body: JSON.stringify({ amount, content, box_id: boxId }),
-    });
-    if (!res.ok) throw new Error(`triggerSoundBox failed (${res.status})`);
+  private get clientSecret() {
+    return localStorage.getItem('api_sepay_client_secret') || '';
   }
 
-  /** eInvoice: tạo hóa đơn điện tử qua server. */
-  async createInvoice(invoiceData: Record<string, unknown>): Promise<any> {
-    const res = await fetch(`${API_BASE}/api/sepay/invoice`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
-      body: JSON.stringify(invoiceData),
-    });
-    if (!res.ok) throw new Error(`createInvoice failed (${res.status})`);
-    return res.json();
+  private get headers() {
+    return {
+      'Authorization': `Bearer ${this.apiToken}`,
+      'Content-Type': 'application/json',
+    };
   }
 
-  /**
-   * QR thanh toán: dùng VietQR public — không cần secret.
-   * Bank ID & account phải lấy từ cấu hình store/tenant (sẽ wire ở GĐ 1.5 multi-tenant).
-   * Cho phép gọi 2-arg (legacy) hoặc 4-arg để không vỡ caller cũ; nhưng nên migrate sang 4-arg.
-   */
-  createPaymentQR(arg1: number | string, arg2: string | number, arg3?: number, arg4?: string): string {
-    let bankId: string;
-    let accountNo: string;
-    let amount: number;
-    let description: string;
-    if (typeof arg1 === 'number') {
-      // Legacy: createPaymentQR(amount, description)
-      bankId = (import.meta as any).env.VITE_DEFAULT_BANK_ID || '970436';
-      accountNo = (import.meta as any).env.VITE_DEFAULT_BANK_ACCOUNT || '0000000000';
-      amount = arg1;
-      description = String(arg2);
-    } else {
-      bankId = arg1;
-      accountNo = String(arg2);
-      amount = arg3 ?? 0;
-      description = arg4 ?? '';
-    }
-    const safeDesc = description.replace(/[^a-zA-Z0-9]/g, '');
-    return `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(safeDesc)}&accountName=VComm`;
-  }
+ /**
+ * Bank Hub: Get transaction history
+ */
+ async getTransactions(params?: { limit?: number; page?: number; bank_account?: string }) {
+ try {
+ const response = await axios.get(`${SEPAY_BASE_URL}/bank/transactions`, {
+ headers: this.headers,
+ params,
+ });
+ return response.data.transactions as SePayTransaction[];
+ } catch (error) {
+ console.error('SePay getTransactions error:', error);
+ throw error;
+ }
+ }
+
+ /**
+ * SoundBox API: Trigger a notification sound
+ */
+ async triggerSoundBox(amount: number, content: string, boxId: string) {
+ try {
+ const response = await axios.post(`${SEPAY_BASE_URL}/soundbox/trigger`, {
+ amount,
+ content,
+ box_id: boxId,
+ }, { headers: this.headers });
+ return response.data;
+ } catch (error) {
+ console.error('SePay triggerSoundBox error:', error);
+ throw error;
+ }
+ }
+
+ /**
+ * eInvoice API: Create a new invoice
+ */
+ async createInvoice(invoiceData: any) {
+ try {
+ const response = await axios.post(`${SEPAY_BASE_URL}/einvoice/create`, invoiceData, {
+ headers: this.headers,
+ });
+ return response.data;
+ } catch (error) {
+ console.error('SePay createInvoice error:', error);
+ throw error;
+ }
+ }
+
+ /**
+ * Virtual Account: Create a virtual account for a specific order
+ */
+ async createVirtualAccount(orderId: string, amount: number) {
+ try {
+ const response = await axios.post(`${SEPAY_BASE_URL}/virtual-account/create`, {
+ order_id: orderId,
+ amount,
+ }, { headers: this.headers });
+ return response.data as SePayVirtualAccount;
+ } catch (error) {
+ console.error('SePay createVirtualAccount error:', error);
+ throw error;
+ }
+ }
+
+ /**
+ * Create Payment URL / QR
+ */
+ createPaymentQR(amount: number, description: string) {
+ // This is often a client-side generation using VietQR standard or SePay helper
+ const bankId = '970436'; // Example Bank ID (VCB)
+ const accountNo = '123456789';
+ return `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description.replace(/[^a-zA-Z0-9]/g, ''))}&accountName=Khach`;
+ }
+
+ /**
+ * OAuth2: Handling token exchange (Client-side part)
+ */
+ async exchangeOAuthToken(code: string) {
+ // This should ideally happen on the server to protect client_secret
+ // But providing the structure here
+ try {
+ const response = await axios.post(`${SEPAY_BASE_URL}/oauth/token`, {
+ grant_type: 'authorization_code',
+ code,
+ client_id: this.clientId,
+ client_secret: this.clientSecret,
+ });
+ return response.data;
+ } catch (error) {
+ console.error('SePay OAuth Error:', error);
+ throw error;
+ }
+ }
 }
 
 export const sePayService = new SePayService();

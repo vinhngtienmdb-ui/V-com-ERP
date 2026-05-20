@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { loyaltyProgramsRepo, type LoyaltyProgramInput } from '../services/repositories';
+import React, { useState } from 'react';
 import { 
  Trophy, 
  Gift, 
@@ -69,12 +68,6 @@ const REWARDS = [
 
 export function LoyaltyManagement() {
  const [activeTab, setActiveTab] = useState<'tiers' | 'missions' | 'rewards' | 'gamification'>('tiers');
- const [program, setProgram] = useState<LoyaltyProgramInput | null>(null);
-
- useEffect(() => {
-   // Subscribe loyalty_programs/default — cấu hình realtime
-   loyaltyProgramsRepo.getById('default').then((p) => setProgram(p));
- }, []);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -127,7 +120,7 @@ export function LoyaltyManagement() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "flex-1 px-3 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
+ "flex-1 px-4 py-3 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
  activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
  )}
  >
@@ -139,24 +132,7 @@ export function LoyaltyManagement() {
  <div className="p-8">
  <AnimatePresence mode="wait">
  {activeTab === 'tiers' && (
- <>
- {program?.enabled && (
-   <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-     <div className="flex items-center gap-4 text-sm">
-       <span className="font-bold text-emerald-900">Chương trình "{program.name}" đang hoạt động</span>
-       <span className="text-emerald-700">·</span>
-       <span className="text-emerald-700">Quy đổi: <strong>{program.vndPerPoint?.toLocaleString('vi-VN')}đ = 1 điểm</strong></span>
-       <span className="text-emerald-700">·</span>
-       <span className="text-emerald-700">1 điểm = <strong>{program.pointValueVnd?.toLocaleString('vi-VN')}đ</strong></span>
-     </div>
-   </div>
- )}
- {program?.enabled === false && (
-   <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800">
-     Chương trình loyalty hiện đang TẮT. Vào Settings → Loyalty để bật.
-   </div>
- )}
- <motion.div
+ <motion.div 
  initial={{ opacity: 0, scale: 0.95 }}
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 1.05 }}
@@ -223,7 +199,6 @@ export function LoyaltyManagement() {
  </div>
  ))}
  </motion.div>
- </>
  )}
 
  {activeTab === 'missions' && (
@@ -290,7 +265,7 @@ export function LoyaltyManagement() {
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  {REWARDS.map(reward => (
  <div key={reward.id} className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-sm transition-all">
  <div className="h-40 bg-slate-50 flex items-center justify-center relative">
@@ -376,34 +351,35 @@ export function LoyaltyManagement() {
  </div>
 
  {/* Retention Marketing Engine Footer */}
- <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
- <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
- <Sparkles className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Retention AI Engine</h3>
+ <div className="bg-slate-900 rounded-lg p-10 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
+ <div className="absolute inset-0 opacity-10">
+ <div className="grid grid-cols-12 gap-1 h-full w-full">
+ {Array.from({ length: 48 }).map((_, i) => (
+ <div key={i} className="h-full bg-slate-800/20" />
+ ))}
  </div>
- <div className="p-5 flex flex-col items-center text-center space-y-5">
- <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
+ </div>
+ 
+ <div className="p-4 bg-white/5 rounded-lg border border-white/10 relative z-10 backdrop-blur-sm">
  <Sparkles className="w-10 h-10 text-orange-500" />
  </div>
-
- <div className="space-y-2">
- <h3 className="text-xl font-black italic text-slate-900 uppercase tracking-wider">Retention AI Engine</h3>
- <p className="text-slate-600 text-sm max-w-2xl leading-relaxed">
+ 
+ <div className="space-y-2 relative z-10">
+ <h3 className="text-2xl font-black italic text-[#FAF9F5] uppercase tracking-wider">Retention AI Engine</h3>
+ <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
  Hệ thống tự động phát hiện người dùng có dấu hiệu "ngủ đông" (Churn Risk) và gửi mã Voucher đặc biệt qua Push Notification. Tăng tỷ lệ quay lại của khách hàng cũ lên đến 35%.
  </p>
  </div>
 
- <div className="flex flex-wrap justify-center gap-4">
- <button className="px-8 py-3 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm text-sm flex items-center gap-2">
+ <div className="flex flex-wrap justify-center gap-4 relative z-10">
+ <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-sm text-sm flex items-center gap-2">
  Phân tích Retention Report <ArrowRight className="w-4 h-4" />
  </button>
- <button className="px-8 py-3 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-sm flex items-center gap-2">
+ <button className="px-8 py-3 bg-white/5 text-[#FAF9F5] font-bold rounded-lg hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
  Quản lý Notification <Smartphone className="w-4 h-4" />
  </button>
  </div>
  </div>
  </div>
- </div>
  );
 }
-

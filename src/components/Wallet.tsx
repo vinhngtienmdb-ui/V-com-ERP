@@ -1,7 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { walletsRepo, walletTxRepo, type WalletInput, type WalletTxInput } from '../services/repositories';
-import { orderBy, limit } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Users,
  Coins,
@@ -84,24 +82,6 @@ const MOCK_GATEWAYS: PaymentGateway[] = [
 
 export function WalletHub() {
  const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking' | 'crm_wallet'>('history');
- const [walletsData, setWalletsData] = useState<WalletInput[]>([]);
- const [walletTransactions, setWalletTransactions] = useState<WalletTxInput[]>([]);
-
- useEffect(() => {
-   // Subscribe wallets + transactions realtime
-   const unsubWallets = walletsRepo.subscribe([orderBy('updatedAt', 'desc')], (items) => {
-     setWalletsData(items);
-   });
-   const unsubTx = walletTxRepo.subscribe([orderBy('createdAt', 'desc'), limit(100)], (items) => {
-     setWalletTransactions(items);
-   });
-   return () => { unsubWallets(); unsubTx(); };
- }, []);
-
- // Tổng hợp số dư (tất cả wallets)
- const totalBalance = walletsData.reduce((s, w) => s + (w.balance ?? 0), 0);
- const totalPending = walletsData.reduce((s, w) => s + (w.pendingBalance ?? 0), 0);
- const sellerWalletCount = walletsData.filter(w => w.ownerType === 'seller').length;
  const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
  const [isSyncing, setIsSyncing] = useState(false);
  const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);
@@ -435,12 +415,12 @@ export function WalletHub() {
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-slate-200">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã Giao dịch</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Loại giao dịch</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Số tiền (VNĐ)</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gateway</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã Giao dịch</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Loại giao dịch</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Số tiền (VNĐ)</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gateway</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -450,13 +430,13 @@ export function WalletHub() {
  </tr>
  ) : filteredTransactions.map(txn => (
  <tr key={txn.id} className="hover:bg-slate-50 transition-all group">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <div className={cn("w-1.5 h-1.5 rounded-full", txn.type === 'deposit' ? "bg-emerald-500" : "bg-slate-800")} />
  <span className="text-xs font-mono font-bold text-slate-900 group-hover:text-orange-700">{txn.id}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className={cn(
  "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight",
  txn.type === 'deposit' ? "bg-emerald-50 text-emerald-600" :
@@ -471,7 +451,7 @@ export function WalletHub() {
  )}>
  {txn.type === 'deposit' ? '+' : '-'}{formatCurrency(txn.amount)}
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <div className="w-6 h-6 bg-slate-100 rounded-md flex items-center justify-center">
  <Smartphone className="w-3.5 h-3.5 text-slate-500" />
@@ -479,7 +459,7 @@ export function WalletHub() {
  <span className="text-xs font-bold text-slate-600 uppercase">{txn.gateway}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex justify-center">
  <span className={cn(
  "px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5",
@@ -490,7 +470,7 @@ export function WalletHub() {
  </span>
  </div>
  </td>
- <td className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{txn.timestamp}</td>
+ <td className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{txn.timestamp}</td>
  </tr>
  ))}
  </tbody>
@@ -631,29 +611,29 @@ export function WalletHub() {
  </DraggableGrid>
  </div>
 
- <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto min-w-0">
+ <div className="bg-white border border-slate-200 rounded-lg overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="border-b border-stone-50">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã đơn hàng</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Số tiền Ký quỹ</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Các bên tham gia</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ngày giải ngân</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã đơn hàng</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Số tiền Ký quỹ</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Các bên tham gia</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ngày giải ngân</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
  {MOCK_ESCROWS.map(escrow => (
  <tr key={escrow.orderId} className="hover:bg-slate-50 transition-all">
- <td className="px-3 py-2 text-sm font-bold text-slate-900 group">{escrow.orderId}</td>
- <td className="px-3 py-2 text-sm font-black text-orange-700">{formatCurrency(escrow.amount)}</td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4 text-sm font-bold text-slate-900 group">{escrow.orderId}</td>
+ <td className="px-6 py-4 text-sm font-black text-orange-700">{formatCurrency(escrow.amount)}</td>
+ <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-[10px] font-bold text-slate-500 uppercase">Seller: {escrow.sellerId}</span>
  <span className="text-[10px] font-bold text-slate-500 uppercase">Người mua: {escrow.buyerId}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  {escrow.releaseStatus === 'locked' ? (
  <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold uppercase">
@@ -789,7 +769,7 @@ export function WalletHub() {
  animate={{ opacity: 1, y: 0 }}
  className="space-y-8"
  >
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-4" columns={3} gap={24}>
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
  {/* Points Earning Config */}
  <div className="bg-white p-6 rounded-lg border border-purple-100 shadow-sm relative overflow-hidden">
  <div className="absolute top-0 right-0 p-4 opacity-5">
@@ -938,12 +918,12 @@ export function WalletHub() {
  <table className="w-full">
  <thead>
  <tr className="bg-slate-50 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-left">
- <th className="px-3 py-2.5">Đối tượng</th>
- <th className="px-3 py-2.5">Loại Ví</th>
+ <th className="px-6 py-4">Đối tượng</th>
+ <th className="px-6 py-4">Loại Ví</th>
  <th className="px-6 py-4 w-full">Giao dịch / Chuyển đổi</th>
  <th className="px-6 py-4 text-right">Biến động</th>
  <th className="px-6 py-4 text-right">Số dư mới</th>
- <th className="px-3 py-2.5">Thời gian</th>
+ <th className="px-6 py-4">Thời gian</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -956,12 +936,12 @@ export function WalletHub() {
  { user: 'store_q7', role: 'Cửa hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Khách hàng áp dụng Ví Khuyến Mại', icon: Gift, amount: '-50,000', curr: 'VNĐ', class: 'text-slate-700', time: '09 thg 5, 2024 19:45' },
  ].filter(row => crmHistoryTab === 'all' || row.type === crmHistoryTab).map((row, i) => (
  <tr key={i} className="hover:bg-slate-50">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="font-bold text-slate-900 text-sm">{row.user}</div>
  <div className="text-[10px] text-slate-600 uppercase font-bold mt-0.5 tracking-wider">{row.role}</div>
  </td>
- <td className="px-3 py-2.5"><span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.type === 'cashback' ? 'bg-emerald-50 text-emerald-700' : row.type === 'promo' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>{row.typeLabel}</span></td>
- <td className="px-3 py-2 text-sm text-slate-700">
+ <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.type === 'cashback' ? 'bg-emerald-50 text-emerald-700' : row.type === 'promo' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>{row.typeLabel}</span></td>
+ <td className="px-6 py-4 text-sm text-slate-700">
  <div className="flex items-center gap-2">
  <row.icon className="w-3.5 h-3.5 text-slate-500" />
  <span>{row.action}</span>
@@ -1014,4 +994,3 @@ export function WalletHub() {
  </div>
  );
 }
-

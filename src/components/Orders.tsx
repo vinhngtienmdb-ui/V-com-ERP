@@ -19,21 +19,18 @@ import {
  Download,
  BrainCircuit,
  PieChart as PieIcon,
- FileText,
  Sparkles
 } from 'lucide-react';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { ordersRepo, issueInvoice } from '../services/repositories';
-import { orderBy, limit } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
  const [isGenerating, setIsGenerating] = useState(false);
  const [aiResponse, setAiResponse] = useState<string | null>(null);
- const [isIssuing, setIsIssuing] = useState(false);
- const [invoiceResult, setInvoiceResult] = useState<{ id: string; total: number } | string | null>(null);
 
  const handleDraftRma = async (order: any) => {
  setIsGenerating(true);
@@ -46,29 +43,6 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  setIsGenerating(false);
  }
  };
-
- const handleIssueInvoice = async () => {
- setIsIssuing(true);
- setInvoiceResult(null);
- try {
- // TODO: Lấy sellerTaxCode/sellerName/sellerAddress từ /sellers/{order.sellerId}
- // hoặc cấu hình store thay vì hardcode. Hardcode tạm cho mục đích test.
- const r = await issueInvoice({
- orderId: order.id,
- sellerTaxCode: '0123456789',
- sellerName: 'VComm Việt Nam',
- sellerAddress: '123 Lê Lợi, Q.1, TP.HCM',
- });
- setInvoiceResult({ id: r.invoiceId, total: r.total });
- } catch (err: any) {
- console.error(err);
- setInvoiceResult(`Lỗi: ${err.message ?? 'Không xác định'}`);
- } finally {
- setIsIssuing(false);
- }
- };
-
- const canIssueInvoice = order.status === 'delivered' || order.status === 'completed';
 
  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -185,31 +159,6 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  <button className="w-full bg-slate-100 text-slate-500 px-4 py-3 rounded-lg text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
  <Clock className="w-5 h-5" /> Chờ giao để thu COD
  </button>
- )}
- {canIssueInvoice && (
- <button
- onClick={handleIssueInvoice}
- disabled={isIssuing}
- className="w-full bg-slate-900 text-[#FAF9F5] px-4 py-3 rounded-lg text-sm font-bold hover:bg-slate-800 disabled:bg-slate-400 shadow-sm flex items-center justify-center gap-2"
- >
- <FileText className="w-5 h-5" /> {isIssuing ? 'Đang xuất hóa đơn...' : 'Xuất hóa đơn điện tử'}
- </button>
- )}
- {!canIssueInvoice && (
- <p className="text-xs text-slate-500 italic text-center">
- Chỉ xuất hóa đơn được khi đơn ở trạng thái <code className="bg-slate-100 px-1 rounded">delivered</code> hoặc <code className="bg-slate-100 px-1 rounded">completed</code>.
- </p>
- )}
- {invoiceResult && typeof invoiceResult === 'object' && (
- <div className="bg-emerald-50 border border-emerald-200 px-3 py-2 rounded text-xs text-emerald-800">
- ✓ Đã xuất HĐ <code className="bg-white px-1 py-0.5 rounded font-mono">{invoiceResult.id}</code>
- · Tổng (bao gồm VAT 10%): <strong>{formatCurrency(invoiceResult.total)}</strong>
- </div>
- )}
- {invoiceResult && typeof invoiceResult === 'string' && (
- <div className="bg-rose-50 border border-rose-200 px-3 py-2 rounded text-xs text-rose-800">
- {invoiceResult}
- </div>
  )}
  </div>
  </div>
@@ -349,26 +298,23 @@ export function Orders() {
  const [dbOrders, setDbOrders] = useState<any[]>([]);
 
  useEffect(() => {
- // Subscribe qua repository (zod schema validation + error handling tập trung).
- const unsub = ordersRepo.subscribe(
- [orderBy('createdAt', 'desc'), limit(50)],
- (items) => {
- const formatted = items.map((d: any) => ({
+ const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
+ const unsub = onSnapshot(q, (snap) => {
+ const data = snap.docs.map(doc => {
+ const d = doc.data();
+ return {
+ id: doc.id,
  ...d,
- date: d.createdAt?.toDate
- ? d.createdAt.toDate().toLocaleString('vi-VN')
- : (d.date ?? new Date().toLocaleString('vi-VN')),
- }));
- setDbOrders(formatted);
- },
- );
+ date: d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')
+ };
+ });
+ setDbOrders(data);
+ });
  return () => unsub();
  }, []);
 
- // Khi Firestore rỗng (môi trường mới), fallback hiện MOCK_ORDERS để có UI demo.
- // Khi có dữ liệu thật, KHÔNG trộn — tránh nhầm lẫn.
  const allOrders = useMemo(() => {
- return dbOrders.length > 0 ? dbOrders : MOCK_ORDERS;
+ return [...MOCK_ORDERS, ...dbOrders];
  }, [dbOrders]);
 
  const filteredOrders = useMemo(() => {
@@ -394,9 +340,50 @@ export function Orders() {
  setIsGenerating(false);
  };
 
- // Demo data hiện đã chuyển sang scripts/seed-dev-data.ts (chạy bằng
- // service account). Nút "Thêm dữ liệu mẫu" trong UI đã bị bỏ — dữ liệu
- // thật được seed từ CLI, hoặc tạo qua workflow business.
+ const addDemoOrders = async () => {
+ // Note: status must be one of: 'pending', 'completed', 'cancelled', 'returned' according to firestore rules
+ // paymentMethod must be 'cash', 'qr', 'pos', 'loyalty', 'loyalty_full', or null
+ const demo = [
+ {
+ customerName: 'Nguyễn Văn A',
+ total: 2500000,
+ status: 'delivered',
+ paymentMethod: 'cod',
+ items: [{name: 'Bàn phím cơ', price: 2500000}],
+ carrier: 'GHTK',
+ tracking: 'GHTK123456789',
+ shippingCost: 35000,
+ source: 'erp'
+ },
+ {
+ customerName: 'Trần Thị B',
+ total: 1200000,
+ status: 'pending',
+ paymentMethod: 'bank_transfer',
+ items: [{name: 'Chuột không dây', price: 1200000}],
+ carrier: 'GHN',
+ tracking: 'GHN987654321',
+ shippingCost: 28000,
+ source: 'erp'
+ }
+ ];
+
+ const { getAuth } = await import('firebase/auth');
+ const auth = getAuth();
+ const currentUser = auth.currentUser;
+ if (!currentUser) {
+ alert("Bạn cần đăng nhập để thêm demo orders!");
+ return;
+ }
+
+ for (const o of demo) {
+ await addDoc(collection(db, 'orders'), {
+ ...o,
+ staffId: currentUser.uid,
+ createdAt: serverTimestamp()
+ });
+ }
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -406,10 +393,9 @@ export function Orders() {
  <p className="text-sm text-[#6B7280] mt-1">Điều phối giao vận, xử lý đổi trả (RMA) và quản lý cước phí thực tế.</p>
  </div>
  <div className="flex gap-3">
- <button
- className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm opacity-50 cursor-not-allowed"
- title="Sắp ra mắt — voucher tập trung trong /marketing"
- disabled
+ <button 
+ onClick={addDemoOrders}
+ className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-[#4B5563] hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
  >
  <Sparkles className="w-4 h-4" />
  Mã giảm giá
@@ -420,8 +406,8 @@ export function Orders() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">Cảnh báo chậm trễ</span>
  <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />
@@ -431,7 +417,7 @@ export function Orders() {
  </div>
  <div className="mt-3 text-[10px] text-red-400 font-bold uppercase tracking-tight">Đơn {">"}24h chưa xử lý</div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Cần đóng gói</span>
  <PackageCheck className="w-4 h-4 text-orange-600" />
@@ -439,7 +425,7 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">42</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">12 đơn đóng muộn ({">"}24h)</div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang vận chuyển</span>
  <Truck className="w-4 h-4 text-purple-500" />
@@ -447,15 +433,18 @@ export function Orders() {
  <div className="text-3xl font-black text-[#111827]">156</div>
  <div className="mt-3 text-[10px] text-[#6B7280] font-bold uppercase tracking-tighter">Chủ yếu: GHTK (65%)</div>
  </div>
- <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
- <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
- <RotateCcw className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Yêu cầu Đổi trả (RMA)</h3>
+ <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
+ <div className="relative z-10 flex flex-col justify-between h-full text-[#FAF9F5]">
+ <div className="flex justify-between items-start mb-4">
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yêu cầu Đổi trả (RMA)</span>
+ <RotateCcw className="w-4 h-4 text-orange-400" />
  </div>
- <div className="p-5">
- <div className="text-3xl font-black tracking-tighter text-slate-900">08</div>
- <p className="text-[10px] text-orange-600 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
+ <div>
+ <div className="text-3xl font-black tracking-tighter">08</div>
+ <p className="text-[10px] text-orange-400 font-bold mt-1 uppercase tracking-tighter">3 đơn cần xử lý gấp</p>
  </div>
+ </div>
+ <RotateCcw className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
  </div>
  </DraggableGrid>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
@@ -548,7 +537,7 @@ export function Orders() {
     )}
     itemContent={(index, order) => (
       <>
-        <td className="px-3 py-2.5">
+        <td className="px-6 py-4">
           <div className="flex items-center gap-2">
             <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
             {isDelayed(order.date, order.status) && (
@@ -558,7 +547,7 @@ export function Orders() {
           <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>
           <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
         </td>
-        <td className="px-3 py-2.5">
+        <td className="px-6 py-4">
           {order.carrier ? (
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-orange-200 transition-colors">
@@ -576,14 +565,14 @@ export function Orders() {
             <span className="text-[10px] text-[#9CA3AF] italic">Chưa đẩy đơn</span>
           )}
         </td>
-        <td className="px-3 py-2.5">
+        <td className="px-6 py-4">
           <p className="text-sm font-semibold text-[#111827]">{formatCurrency(order.total)}</p>
           <p className="text-[10px] text-[#6B7280]">Cước: {order.shippingCost ? formatCurrency(order.shippingCost) : '--'}</p>
         </td>
-        <td className="px-3 py-2.5">
+        <td className="px-6 py-4">
           <p className="text-sm font-semibold text-[#111827]">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
         </td>
-        <td className="px-3 py-2.5">
+        <td className="px-6 py-4">
           <div className="flex justify-center">
             <span className={cn(
               "px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-transparent flex items-center gap-1.5",

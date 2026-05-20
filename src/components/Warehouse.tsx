@@ -150,8 +150,8 @@ export function WarehouseModule() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Giá trị tồn kho</span>
  <DollarSign className="w-4 h-4 text-emerald-600" />
@@ -161,7 +161,7 @@ export function WarehouseModule() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đơn Fulfillment</span>
  <Truck className="w-4 h-4 text-orange-700" />
@@ -171,7 +171,7 @@ export function WarehouseModule() {
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">85 Đang giao</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Hàng sắp hết (Alt)</span>
  <AlertCircle className="w-4 h-4 text-orange-600" />
@@ -181,7 +181,7 @@ export function WarehouseModule() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">Cần nhập</span>
  </div>
  </div>
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Uptime Kho vận</span>
  <Clock className="w-4 h-4 text-primary-600" />
@@ -339,17 +339,17 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên khoản phí</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loại phí</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Giá trị</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
- <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên khoản phí</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Loại phí</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Giá trị</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {LOGISTICS_FEES[selectedPartnerForFees]?.map(fee => (
  <tr key={fee.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center group-hover:bg-slate-100 group-hover:text-orange-700 transition-colors">
  <DollarSign className="w-4 h-4" />
@@ -357,13 +357,13 @@ export function WarehouseModule() {
  <span className="text-sm font-bold text-slate-900">{fee.name}</span>
  </div>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className="text-xs font-medium text-slate-600">{fee.type}</span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <span className="text-sm font-black text-orange-700">{fee.value}</span>
  </td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  {fee.status === 'Active' ? (
  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -436,10 +436,10 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
- <th className="px-3 py-2.5">Vận đơn</th>
- <th className="px-3 py-2.5">Đối tác</th>
- <th className="px-3 py-2.5">Tài xế/Shipper</th>
- <th className="px-3 py-2.5">Dự kiến</th>
+ <th className="px-6 py-4">Vận đơn</th>
+ <th className="px-6 py-4">Đối tác</th>
+ <th className="px-6 py-4">Tài xế/Shipper</th>
+ <th className="px-6 py-4">Dự kiến</th>
  <th className="px-6 py-4 text-center">Trạng thái</th>
  <th className="px-6 py-4 text-right">Thao tác</th>
  </tr>
@@ -447,14 +447,14 @@ export function WarehouseModule() {
  <tbody className="divide-y divide-slate-100">
  {MOCK_SHIPMENTS.map(ship => (
  <tr key={ship.id} className="hover:bg-slate-50/50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-slate-900">{ship.id}</span>
  <span className="text-[10px] text-slate-600 font-medium">{ship.orderId}</span>
  </div>
  </td>
  <td className="px-6 py-4 font-bold text-sm text-slate-800">{ship.partner}</td>
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <div className="w-6 h-6 bg-[#EAE7DF] rounded-full flex items-center justify-center text-[10px] font-bold text-orange-700">
  {ship.driver.charAt(0)}
@@ -462,7 +462,7 @@ export function WarehouseModule() {
  <span className="text-sm text-slate-700 font-medium">{ship.driver}</span>
  </div>
  </td>
- <td className="px-3 py-2 text-sm font-medium text-slate-700">{ship.eta}</td>
+ <td className="px-6 py-4 text-sm font-medium text-slate-700">{ship.eta}</td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
  "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight",
@@ -506,18 +506,16 @@ export function WarehouseModule() {
  </div>
  
  <div className="p-8 space-y-8">
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-4" columns={3} gap={16}>
- <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden h-[400px] flex flex-col">
- <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
- <Sparkles className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-900">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
- </div>
- <div className="p-5 flex-1 flex flex-col">
- <p className="text-slate-500 text-xs mb-4">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
- <div className="flex items-end gap-3 flex-1">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+ <div className="lg:col-span-2 bg-slate-900 rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden h-[400px]">
+ <div className="relative z-10">
+ <h3 className="text-xl font-bold mb-2">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
+ <p className="text-slate-500 text-sm mb-8">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
+ 
+ <div className="flex items-end gap-3 h-48">
  {[45, 65, 35, 85, 55, 95, 75, 45, 65, 80, 70, 90].map((val, i) => (
  <div key={i} className="flex-1 flex flex-col items-center gap-2">
- <div
+ <div 
  className="w-full bg-primary-500/30 border-t-2 border-primary-400 rounded-t-sm transition-all hover:bg-primary-400"
  style={{ height: `${val}%` }}
  />
@@ -526,6 +524,7 @@ export function WarehouseModule() {
  ))}
  </div>
  </div>
+ <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full -mr-32 -mt-32" />
  </div>
 
  <div className="space-y-6">
@@ -724,7 +723,7 @@ export function WarehouseModule() {
  </div>
  
  <div className="p-6">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
  {stockItems.slice(0, 3).map(item => (
  <div key={item.id} className="bg-slate-50 border border-slate-300 p-4 rounded-xl flex items-center gap-4">
  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
@@ -743,17 +742,17 @@ export function WarehouseModule() {
 <table className="w-full text-left border-collapse">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
- <th className="px-3 py-2.5">Mã Nguyên liệu</th>
+ <th className="px-6 py-4">Mã Nguyên liệu</th>
  <th className="px-6 py-4 text-center">Tồn kho thực tế</th>
  <th className="px-6 py-4 text-center">Đơn vị</th>
- <th className="px-3 py-2.5">Cập nhật lần cuối</th>
+ <th className="px-6 py-4">Cập nhật lần cuối</th>
  <th className="px-6 py-4 text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {stockItems.map(item => (
  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
- <td className="px-3 py-2.5">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <span className="text-sm font-bold text-slate-900">{item.materialId}</span>
  {item.quantity < 20 && <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">Sắp hết</span>}
@@ -808,4 +807,3 @@ export function WarehouseModule() {
  </div>
  );
 }
-

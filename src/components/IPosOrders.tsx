@@ -1,31 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ShoppingBag, Search, Filter, AlertCircle, FileText, Truck } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
-import { ordersRepo, type OrderInput } from '../services/repositories';
-import { orderBy, where, limit } from 'firebase/firestore';
-import { EmptyState } from './ui/EmptyState';
 
 export function IPosOrders({ activeStore }: { activeStore: any }) {
   const [tab, setTab] = useState<'all' | 'pending' | 'shipping' | 'completed' | 'issues' | 'history'>('all');
-  const [orders, setOrders] = useState<OrderInput[]>([]);
-
-  useEffect(() => {
-    if (!activeStore?.id) return;
-    // Subscribe orders thuộc store hiện tại
-    const unsub = ordersRepo.subscribe(
-      [where('storeId', '==', activeStore.id), orderBy('createdAt', 'desc'), limit(50)],
-      (items) => setOrders(items),
-    );
-    return () => unsub();
-  }, [activeStore?.id]);
-
-  // Filter theo tab
-  const filteredOrders = orders.filter(o => {
-    if (tab === 'pending') return o.status === 'pending' || o.status === 'processing';
-    if (tab === 'shipping') return o.status === 'shipped';
-    if (tab === 'completed') return o.status === 'delivered' || o.status === 'completed';
-    return tab === 'all';
-  });
   
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
@@ -64,7 +42,7 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       </div>
       
       <div className="flex-1 p-6 overflow-y-auto">
-         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-x-auto min-h-[400px] min-w-0">
+         <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-h-[400px] min-w-0">
              {tab === 'issues' ? (
                 <div className="p-8 text-center text-slate-600">
                    <AlertCircle className="w-12 h-12 text-rose-200 mx-auto mb-4" />
@@ -90,33 +68,25 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                        </tr>
                    </thead>
                    <tbody>
-                       {filteredOrders.length === 0 && (
-                         <tr><td colSpan={5}>
-                           <EmptyState title="Chưa có đơn hàng nào" description={`Cửa hàng ${activeStore?.name ?? ''} chưa có đơn ở trạng thái này.`} />
-                         </td></tr>
-                       )}
-                       {filteredOrders.map(o => (
-                           <tr key={o.id} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
+                       {[1,2,3,4,5].map(i => (
+                           <tr key={i} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
                                <td className="px-4 py-4">
-                                   <p className="font-bold text-slate-900">#{o.id}</p>
-                                   <p className="text-xs text-slate-600 mt-0.5">{(o as any).source ?? 'iPos'}</p>
+                                   <p className="font-bold text-slate-900">#ORD-00{i}</p>
+                                   <p className="text-xs text-slate-600 mt-0.5">{i%2===0 ? 'Lazada' : 'ShopeeFood'}</p>
                                </td>
                                <td className="px-4 py-4">
-                                   <p className="font-semibold text-slate-900">{o.customerName}</p>
-                                   <p className="text-[10px] bg-slate-100 px-2 py-0.5 rounded w-fit mt-1">{(o as any).paymentMethod ?? '—'}</p>
+                                   <p className="font-semibold text-slate-900">Khách hàng {i}</p>
+                                   <p className="text-[10px] bg-slate-100 px-2 py-0.5 rounded w-fit mt-1">SĐT: 091234567{i}</p>
                                </td>
                                <td className="px-4 py-4">
                                    <div className="flex flex-col gap-1">
-                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit",
-                                        o.status === 'delivered' || o.status === 'completed' ? "bg-emerald-100 text-emerald-700" :
-                                        o.status === 'shipped' ? "bg-blue-100 text-blue-700" :
-                                        o.status === 'cancelled' || o.status === 'returned' ? "bg-rose-100 text-rose-700" :
-                                        "bg-amber-100 text-amber-700"
-                                      )}>{o.status}</span>
-                                      {(o as any).paymentVerified && <span className="text-[10px] font-bold text-emerald-600">✓ Đã đối soát</span>}
+                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
+                                          {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
+                                      </span>
+                                      <span className="text-[10px] font-bold text-slate-500">COD: Đã đối soát</span>
                                    </div>
                                </td>
-                               <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(o.total)}</td>
+                               <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(150000 * i)}</td>
                                <td className="px-4 py-4 text-center space-x-2">
                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>

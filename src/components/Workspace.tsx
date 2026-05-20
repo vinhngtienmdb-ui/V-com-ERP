@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { workspaceBookingsRepo, officeAssetsRepo, type WorkspaceBookingInput, type OfficeAssetInput } from '../services/repositories';
-import { orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { 
  Clock, 
  ClipboardList, 
@@ -97,18 +95,6 @@ const INTERNAL_NEWS = [
 
 export function Workspace() {
  const [activeModule, setActiveModule] = useState<string>('overview');
- const [bookings, setBookings] = useState<WorkspaceBookingInput[]>([]);
- const [assets, setAssets] = useState<OfficeAssetInput[]>([]);
-
- useEffect(() => {
-   const u1 = workspaceBookingsRepo.subscribe([orderBy('startTime', 'desc')], setBookings);
-   const u2 = officeAssetsRepo.subscribe([orderBy('name', 'asc')], setAssets);
-   return () => { u1(); u2(); };
- }, []);
-
- // Bookings active hôm nay
- const todayBookings = bookings.filter(b => b.status === 'booked' || b.status === 'in_progress').length;
- const availableAssets = assets.filter(a => a.status === 'available' && a.bookable).length;
 
  // Kanban Tasks State
  const [tasks, setTasks] = useState([
@@ -229,7 +215,7 @@ export function Workspace() {
 
  {activeModule === 'work_project' && (
  <div className="space-y-6">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  {['todo', 'in_progress', 'done'].map((status) => (
  <div 
  key={status}
@@ -288,4 +274,3 @@ export function Workspace() {
  </div>
  );
 }
-
