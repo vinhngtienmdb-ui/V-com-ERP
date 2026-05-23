@@ -69,14 +69,14 @@ export function LoginPage() {
  <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
  <Zap className="w-6 h-6 text-amber-400" />
  </div>
- <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">AIOps Execution</h3>
+ <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">Tự động hóa AI</h3>
  <p className="text-slate-600 text-xs">Vận hành thông minh bằng AI, giảm 40% chi phí nhân sự.</p>
  </div>
  <div>
  <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
  <ShieldCheck className="w-6 h-6 text-emerald-400" />
  </div>
- <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">Enterprise Security</h3>
+ <h3 className="text-[#FAF9F5] font-bold text-sm mb-1 uppercase tracking-wider">Bảo mật Doanh nghiệp</h3>
  <p className="text-slate-600 text-xs">Bảo mật đa tầng theo tiêu chuẩn quốc tế cho doanh nghiệp.</p>
  </div>
  </div>
@@ -134,7 +134,7 @@ export function LoginPage() {
  <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
  <div className="text-xs font-medium text-red-600 leading-relaxed">
  {error} <br />
- <span className="opacity-70">Vui lòng kiểm tra lại Username hoặc Password.</span>
+ <span className="opacity-70">Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu.</span>
  </div>
  </div>
  )}
@@ -157,7 +157,7 @@ export function LoginPage() {
 
  <div className="pt-6 border-t border-[#F3F4F6]">
  <div className="flex items-center gap-4 justify-center grayscale opacity-40">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest whitespace-nowrap">Trusted Enterprise System</p>
+ <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest whitespace-nowrap">Hệ thống Doanh nghiệp Tin cậy</p>
  </div>
  </div>
  </div>

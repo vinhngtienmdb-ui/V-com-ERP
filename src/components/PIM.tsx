@@ -505,7 +505,7 @@ export function PIM() {
  </div>
  <div>
  <h2 className="text-2xl font-black text-[#111827] tracking-tight">Thêm sản phẩm mới</h2>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-[0.2em] mt-1">Automatic SKU & AI Validation flow</p>
+ <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-[0.2em] mt-1">Luồng xác thực SKU tự động bằng AI</p>
  </div>
  </div>
  
@@ -1029,12 +1029,12 @@ export function PIM() {
  <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Category AI</span>
+ <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Danh mục AI</span>
  <Zap className="w-5 h-5 text-orange-600" />
  </div>
  <div>
  <div className="text-3xl font-bold text-[#FAF9F5] tracking-tighter">99.2%</div>
- <p className="text-[10px] text-emerald-400 font-bold mt-1 uppercase">Accuracy Rate</p>
+ <p className="text-[10px] text-emerald-400 font-bold mt-1 uppercase">Tỉ lệ Chính xác</p>
  </div>
  </div>
  <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
@@ -1238,7 +1238,7 @@ export function PIM() {
  <Sparkles className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-3xl font-extrabold italic font-serif tracking-tight">AI Metadata Engine</h3>
+ <h3 className="text-3xl font-extrabold italic font-serif tracking-tight">Công cụ Metadata AI</h3>
  <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mt-1 pl-1">Data Governance v2.0</p>
  </div>
  </div>
@@ -1247,7 +1247,7 @@ export function PIM() {
  </p>
  </div>
  <div className="relative z-10 pt-8">
- <button className="px-10 py-4 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
+ <button className="px-10 py-4 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40">Khởi chạy Ma trận Dữ liệu AI</button>
  </div>
  <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
@@ -1272,7 +1272,7 @@ export function PIM() {
  </div>
  </div>
  <div className="space-y-4">
- <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-[0.2em] pl-2">Top Profit Categories</h4>
+ <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-[0.2em] pl-2">Danh mục Lợi nhuận hàng đầu</h4>
  <div className="space-y-3">
  {[
  { name: 'Thời trang', share: 45, color: 'bg-slate-800' },

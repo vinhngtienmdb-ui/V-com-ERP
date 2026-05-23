@@ -97,7 +97,7 @@ export function LiveCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Engagement Rate</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tỉ lệ Tương tác</span>
  <Heart className="w-4 h-4 text-emerald-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">18.5%</div>
@@ -194,7 +194,7 @@ export function LiveCommerce() {
  <div className="p-3 bg-slate-800 rounded-lg">
  <Tv className="w-8 h-8 text-[#FAF9F5]" />
  </div>
- <h3 className="text-2xl font-bold italic">Live Management Hub</h3>
+ <h3 className="text-2xl font-bold italic">Trung tâm Quản lý Livestream</h3>
  </div>
  <p className="text-slate-500 text-sm leading-relaxed max-w-xl">
  Hệ thống điều phối luồng Livestream chuyên nghiệp cho Sàn. Cho phép Admin theo dõi hành vi người dùng, lọc bình luận tiêu cực thời gian thực và tự động gửi Voucher "giảm sâu" ngay khi lượt xem đạt mốc (Goal Achievement).

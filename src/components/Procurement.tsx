@@ -387,7 +387,7 @@ export function Procurement() {
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">12 Phiếu</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
+ <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">Ưu tiên cao</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
@@ -407,7 +407,7 @@ export function Procurement() {
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">4.85/5</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Xuất sắc</span>
  </div>
  </div>
  </DraggableGrid>

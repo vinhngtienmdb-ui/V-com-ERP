@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React from 'react';
 import { 
  BarChart3, 
@@ -51,10 +51,10 @@ export function AnalyticsBI() {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Trung tâm Phân tích</span>
  <div className="w-1 h-1 bg-slate-900 rounded-full animate-pulse" />
  </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Business Intelligence</h1>
+ <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Phân tích Kinh doanh</h1>
  <p className="text-sm text-slate-600 font-medium mt-1">Hệ thống phân tích chuyên sâu RFM, LTV, CAC và Giám sát gian lận thời gian thực.</p>
  </div>
  <div className="flex flex-wrap gap-3">
@@ -69,7 +69,7 @@ export function AnalyticsBI() {
  </div>
  </div>
 
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
  {[
  { label: 'LTV (Giá trị vòng đời)', value: 3500000, trend: '+12%', sub: 'So với Q4/2023', icon: TrendingUp, color: 'blue' },
  { label: 'CAC (Chi phí thu hút)', value: 125000, trend: '-4.5%', sub: 'Tối ưu hóa Ads', icon: ArrowDownRight, color: 'emerald' },
@@ -77,7 +77,7 @@ export function AnalyticsBI() {
  { label: 'Gian lận (Cảnh báo)', value: 12, trend: 'Critical', sub: 'Cần xử lý ngay', icon: ShieldAlert, color: 'rose', alert: true },
  ].map((stat) => (
  <div key={stat.label} className={cn(
- "relative overflow-hidden p-6 rounded-none border transition-all duration-300 hover:shadow-sm group",
+ "relative overflow-hidden p-5 rounded-none border transition-all duration-300 hover:shadow-sm group",
  stat.alert ? "bg-rose-50 border-rose-200 shadow-rose-200/20" : "bg-white border-slate-200 shadow-slate-200/50 hover:shadow-slate-900/5"
  )}>
  <div className="relative z-10 flex flex-col justify-between h-full">
@@ -117,7 +117,7 @@ export function AnalyticsBI() {
  </div>
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-5 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
@@ -130,7 +130,7 @@ export function AnalyticsBI() {
  <option>Theo giá trị quy đổi</option>
  </select>
  </div>
- <div className="h-[320px]">
+ <div style={{height:260}}>
  <ResponsiveContainer width="100%" height="100%">
  <BarChart data={RFM_DATA} layout="vertical" margin={{ left: 20 }}>
  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
@@ -161,7 +161,7 @@ export function AnalyticsBI() {
  </div>
  </div>
 
- <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-5 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
@@ -180,7 +180,7 @@ export function AnalyticsBI() {
  </div>
  </div>
  </div>
- <div className="h-[320px]">
+ <div style={{height:260}}>
  <ResponsiveContainer width="100%" height="100%">
  <AreaChart data={ANALYTICS_TRENDS}>
  <defs>
@@ -214,55 +214,56 @@ export function AnalyticsBI() {
  </DraggableGrid>
 
  {/* Fraud Detection Command Console */}
- <div className="bg-slate-900 text-[#FAF9F5] p-10 rounded-none relative overflow-hidden shadow-sm shadow-blue-900/20">
- <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
- <Radar className="w-80 h-80 rotate-12" />
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <ShieldAlert className="w-4 h-4 text-blue-600" />
+ <h3 className="text-sm font-bold text-slate-900">Hệ thống Phát hiện Gian lận AI</h3>
+ <span className="ml-auto flex items-center gap-1.5 text-[10px] font-black text-rose-600 uppercase tracking-widest">
+ <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" /> Nút Bảo mật
+ </span>
  </div>
- 
- <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
- <div className="lg:col-span-2 space-y-6">
- <div className="flex items-center gap-4">
- <div className="p-4 bg-rose-600 rounded-none shadow-sm shadow-rose-600/30 group hover:rotate-12 transition-transform duration-500">
- <ShieldAlert className="w-7 h-7 text-[#FAF9F5]" />
+ <div className="p-5">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+ <div className="lg:col-span-2 space-y-5">
+ <div className="flex items-center gap-3">
+ <div className="p-3 bg-rose-50 border border-rose-100 rounded-lg">
+ <ShieldAlert className="w-6 h-6 text-rose-600" />
  </div>
  <div>
- <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400">Security Node</span>
- <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" />
- </div>
- <h3 className="text-2xl font-black tracking-tight">AI Fraud Detection Guardian</h3>
+ <h3 className="text-lg font-black text-slate-900 tracking-tight">Hệ thống Phát hiện Gian lận AI</h3>
  </div>
  </div>
- 
- <p className="text-slate-500 text-base font-medium leading-relaxed max-w-2xl bg-white/5 p-4 rounded-lg border border-white/5">
+
+ <p className="text-slate-600 text-sm font-medium leading-relaxed max-w-2xl bg-slate-50 p-4 rounded-lg border border-slate-200">
  Phân tích hành vi chuỗi cung ứng và thanh toán đa điểm. Tự động gắn cờ cho các tài khoản có dấu hiệu Sybil Attack hoặc can thiệp tham số Voucher hệ thống.
  </p>
- 
- <div className="flex flex-wrap gap-4 pt-2">
- <button className="px-6 py-3 bg-white text-slate-900 font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 hover:-translate-y-0.5">
- Open Security Console
+
+ <div className="flex flex-wrap gap-4">
+ <button className="px-6 py-3 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm">
+ Mở Bảng điều khiển Bảo mật
  </button>
- <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">
- Configure AI Policy
+ <button className="px-6 py-3 bg-white border border-slate-300 text-slate-700 font-black rounded-lg text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all">
+ Cấu hình Chính sách AI
  </button>
  </div>
  </div>
 
  <div className="space-y-4">
- <div className="p-6 bg-white/5 backdrop-blur-2xl rounded-none border border-white/10 space-y-4 shadow-sm">
+ <div className="p-5 bg-rose-50 rounded-xl border border-rose-200 space-y-4 shadow-sm">
  <div className="flex justify-between items-center">
- <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest flex items-center gap-2">
- <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> Incident Detected
+ <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-2">
+ <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" /> Sự cố Phát hiện
  </span>
- <span className="text-[10px] text-slate-600 font-bold font-mono">2 min ago</span>
+ <span className="text-[10px] text-slate-500 font-bold font-mono">2 phút trước</span>
  </div>
- <p className="text-xs font-bold text-slate-400 leading-relaxed italic">
+ <p className="text-xs font-bold text-slate-600 leading-relaxed italic">
  "Detecting 124 orders using Voucher SALE153 from same Fingerprint ID cluster."
  </p>
- <div className="pt-2 border-t border-white/5">
- <button className="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-[#FAF9F5] rounded-none text-[10px] font-black uppercase tracking-widest transition-all border border-rose-500/30">
- Immediate Block & Void
+ <div className="pt-2 border-t border-rose-200">
+ <button className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-[#FAF9F5] rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+ Khoá ngay & Huỷ lệnh
  </button>
+ </div>
  </div>
  </div>
  </div>

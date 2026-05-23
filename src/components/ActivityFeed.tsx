@@ -63,7 +63,7 @@ export function ActivityFeed({ onClose }: Props) {
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-blue-500" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">Audit Log</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">Nhật ký Kiểm toán</span>
             <span className="font-mono text-[9px] border border-emerald-200 bg-emerald-50 text-emerald-700 px-1.5 py-0.5">LIVE</span>
           </div>
           <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700 transition-colors">

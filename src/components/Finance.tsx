@@ -151,8 +151,8 @@ export function Finance() {
  {activeTab === 'overview' && (
  <div className="space-y-8">
  {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4" columns={4} gap={16}>
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-[#2563EB]">Doanh thu Hệ thống (G.M.V)</span>
  <TrendingUp className="w-4 h-4 text-emerald-600" />
@@ -162,17 +162,17 @@ export function Finance() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-rose-600">Tổng Chi phí & Quỹ lương</span>
  <TrendingDown className="w-4 h-4 text-rose-600" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(totalExpense)}</span>
- <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
+ <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Đồng bộ dữ liệu</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-teal-600">Lợi nhuận ròng (P&L)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -184,7 +184,7 @@ export function Finance() {
  <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
  </div>
  </div>
- <div className="bg-primary-600 p-6 rounded-xl border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
+ <div className="bg-primary-600 p-5 rounded-xl border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
  <div className="absolute right-0 bottom-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
  <Building2 className="w-16 h-16 text-[#FAF9F5]" />
  </div>
@@ -193,8 +193,8 @@ export function Finance() {
  <ShieldCheck className="w-4 h-4 text-[#FAF9F5]" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-xl font-bold text-[#FAF9F5]">Trust Score: 9.8</span>
- <span className="text-[10px] text-[#FAF9F5] font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
+ <span className="text-xl font-bold text-[#FAF9F5]">Điểm tin cậy: 9.8</span>
+ <span className="text-[10px] text-[#FAF9F5] font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Xác minh</span>
  </div>
  </div>
  </DraggableGrid>
@@ -286,17 +286,21 @@ export function Finance() {
  )}
  </div>
 
- <div className="bg-primary-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
+ <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+ <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+ <Sparkles className="w-4 h-4 text-blue-600" />
+ <h4 className="text-sm font-bold text-slate-900">Gợi ý AI</h4>
+ </div>
+ <div className="p-5">
  <div className="flex items-start gap-4">
- <div className="p-3 bg-white/10 rounded-lg">
- <Sparkles className="w-6 h-6 text-primary-300" />
+ <div className="p-3 bg-primary-50 rounded-lg">
+ <Sparkles className="w-6 h-6 text-primary-600" />
  </div>
  <div>
- <h4 className="text-sm font-bold uppercase tracking-widest mb-1 italic">AI Productivity Tip</h4>
- <p className="text-[11px] text-primary-100/70 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
+ <p className="text-[11px] text-slate-600 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
  </div>
  </div>
- <Zap className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 rotate-12" />
+ </div>
  </div>
  </div>
 
@@ -406,25 +410,25 @@ export function Finance() {
 <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
  {transactions.map((tx) => (
  <tr key={tx.id} className="hover:bg-[#F9FAFB] transition-colors">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex items-center gap-2">
  <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
  <span className="text-sm text-[#111827] font-medium">{tx.date}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-full uppercase">
  {tx.category}
  </span>

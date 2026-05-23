@@ -256,7 +256,7 @@ export function OmniChat() {
  className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-xl hover:bg-primary-600 hover:text-white transition-all shadow-sm group relative"
  >
  <Sparkles className={cn("w-5 h-5", isAiorocessing && "animate-spin")} />
- <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
+ <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Soạn thảo</span>
  </button>
  <div className="flex-1 relative">
  <input 
@@ -292,7 +292,7 @@ export function OmniChat() {
  <p className="text-xs text-slate-500">{activeThread?.channel === 'zalo' ? 'Vietnam' : 'Social ỗub'}</p>
  </div>
  <div className="flex justify-center gap-2">
- <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
+ <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">Khách mới</span>
  <span className="px-3 py-1 bg-slate-100 text-blue-600 rounded-lg text-[10px] font-bold">VIo ỗạng Bạc</span>
  </div>
  </div>

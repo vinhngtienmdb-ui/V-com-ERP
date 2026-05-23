@@ -541,7 +541,7 @@ export function Orders() {
           <div className="flex items-center gap-2">
             <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">#{order.id.split('-').pop()}</p>
             {isDelayed(order.date, order.status) && (
-              <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Delayed</span>
+              <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded animate-bounce">Trễ hạn</span>
             )}
           </div>
           <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">{order.customerName}</p>

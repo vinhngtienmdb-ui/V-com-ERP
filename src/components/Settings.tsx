@@ -69,26 +69,26 @@ interface SiteConfig {
 }
 
 const DEFAULT_SITE_CONFIG: SiteConfig = {
-  companyInfo: { brandName: 'VComm', tagline: 'Nền tảng thương mại điện tử toàn diện', address: 'Tầng 5, Tòa nhà Innovation, Công viên phần mềm Quang Trung, P. Tân Chánh Hiệp, Q.12, TP. Hồ Chí Minh', hotline: '1900 1234', email: 'support@vcomm.vn' },
+  companyInfo: { brandName: 'VComm', tagline: 'Ná»n táº£ng thÆ°Æ¡ng máº¡i Ä‘iá»‡n tá»­ toÃ n diá»‡n', address: 'Táº§ng 5, TÃ²a nhÃ  Innovation, CÃ´ng viÃªn pháº§n má»m Quang Trung, P. TÃ¢n ChÃ¡nh Hiá»‡p, Q.12, TP. Há»“ ChÃ­ Minh', hotline: '1900 1234', email: 'support@vcomm.vn' },
   footerLinks: {
-    col1Title: 'CHĂM SÓC KHÁCH HÀNG',
+    col1Title: 'CHÄ‚M SÃ“C KHÃCH HÃ€NG',
     col1Items: [
-      { label: 'Trung tâm trợ giúp', url: '/help' },
+      { label: 'Trung tÃ¢m trá»£ giÃºp', url: '/help' },
       { label: 'VComm Blog', url: '/blog' },
-      { label: 'Hướng dẫn mua sắm', url: '/guide/buy' },
-      { label: 'Hướng dẫn bán hàng', url: '/guide/sell' },
-      { label: 'Thanh toán', url: '/payment' },
-      { label: 'Vận chuyển', url: '/shipping' },
-      { label: 'Trả hàng & Hoàn tiền', url: '/returns' },
+      { label: 'HÆ°á»›ng dáº«n mua sáº¯m', url: '/guide/buy' },
+      { label: 'HÆ°á»›ng dáº«n bÃ¡n hÃ ng', url: '/guide/sell' },
+      { label: 'Thanh toÃ¡n', url: '/payment' },
+      { label: 'Váº­n chuyá»ƒn', url: '/shipping' },
+      { label: 'Tráº£ hÃ ng & HoÃ n tiá»n', url: '/returns' },
     ],
-    col2Title: 'VỀ VCOMM',
+    col2Title: 'Vá»€ VCOMM',
     col2Items: [
-      { label: 'Giới thiệu về VComm', url: '/about' },
-      { label: 'Tuyển dụng', url: '/careers' },
-      { label: 'Điều khoản VComm', url: '/terms' },
-      { label: 'Chính sách bảo mật', url: '/privacy' },
-      { label: 'Chính hãng', url: '/authentic' },
-      { label: 'Kênh người bán', url: '/sellers' },
+      { label: 'Giá»›i thiá»‡u vá» VComm', url: '/about' },
+      { label: 'Tuyá»ƒn dá»¥ng', url: '/careers' },
+      { label: 'Äiá»u khoáº£n VComm', url: '/terms' },
+      { label: 'ChÃ­nh sÃ¡ch báº£o máº­t', url: '/privacy' },
+      { label: 'ChÃ­nh hÃ£ng', url: '/authentic' },
+      { label: 'KÃªnh ngÆ°á»i bÃ¡n', url: '/sellers' },
       { label: 'Flash Sales', url: '/flash-sale' },
     ],
   },
@@ -101,8 +101,8 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
     { id: 'cod', label: 'COD', logo: '', active: false },
   ],
   socialLinks: { facebook: 'https://facebook.com/vcomm', instagram: 'https://instagram.com/vcomm', twitter: 'https://twitter.com/vcomm', youtube: 'https://youtube.com/@vcomm', tiktok: '' },
-  legalInfo: { companyName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VCOMM', legalAddress: 'Tầng 5, Tòa nhà Innovation, Công viên phần mềm Quang Trung, P. Tân Chánh Hiệp, Q.12, TP. Hồ Chí Minh', taxCode: '0101234567', representative: 'Nguyễn Văn Thương', businessReg: '0101234567', businessRegDate: '01/01/2024' },
-  copyrightText: '© 2026 - Bản quyền thuộc về CÔNG TY CỔ PHẦN CÔNG NGHỆ VCOMM',
+  legalInfo: { companyName: 'CÃ”NG TY Cá»” PHáº¦N CÃ”NG NGHá»† VCOMM', legalAddress: 'Táº§ng 5, TÃ²a nhÃ  Innovation, CÃ´ng viÃªn pháº§n má»m Quang Trung, P. TÃ¢n ChÃ¡nh Hiá»‡p, Q.12, TP. Há»“ ChÃ­ Minh', taxCode: '0101234567', representative: 'Nguyá»…n VÄƒn ThÆ°Æ¡ng', businessReg: '0101234567', businessRegDate: '01/01/2024' },
+  copyrightText: 'Â© 2026 - Báº£n quyá»n thuá»™c vá» CÃ”NG TY Cá»” PHáº¦N CÃ”NG NGHá»† VCOMM',
 };
 
 
@@ -122,97 +122,97 @@ interface SystemFee {
 const MOCK_SYSTEM_FEES: SystemFee[] = [
  { 
  id: 'f1', 
- name: 'Phí cố định theo đơn (Fixed Fee)', 
+ name: 'PhÃ­ cá»‘ Ä‘á»‹nh theo Ä‘Æ¡n (Fixed Fee)', 
  type: 'fixed', 
  value: 5000, 
- description: 'Phí xử lý đơn hàng cố định mỗi giao dịch thành công.', 
+ description: 'PhÃ­ xá»­ lÃ½ Ä‘Æ¡n hÃ ng cá»‘ Ä‘á»‹nh má»—i giao dá»‹ch thÃ nh cÃ´ng.', 
  isActive: true, 
  applyTo: { sellerTypes: ['mall', 'normal'], categories: ['all'] } 
  },
  { 
  id: 'f2', 
- name: 'Phí Marketing & Quảng cáo', 
+ name: 'PhÃ­ Marketing & Quáº£ng cÃ¡o', 
  type: 'percentage', 
  value: 2, 
- description: 'Phí hỗ trợ các chương trình truyền thông chung trên Sàn.', 
+ description: 'PhÃ­ há»— trá»£ cÃ¡c chÆ°Æ¡ng trÃ¬nh truyá»n thÃ´ng chung trÃªn SÃ n.', 
  isActive: false, 
  applyTo: { sellerTypes: ['mall'], categories: ['1', '4'] } 
  },
  { 
  id: 'f3', 
- name: 'Phí đóng gói hỗ trợ (Fulfill)', 
+ name: 'PhÃ­ Ä‘Ã³ng gÃ³i há»— trá»£ (Fulfill)', 
  type: 'fixed', 
  value: 12000, 
- description: 'Áp dụng cho các ngành hàng cồng kềnh cần đóng gói đặc biệt.', 
+ description: 'Ãp dá»¥ng cho cÃ¡c ngÃ nh hÃ ng cá»“ng ká»nh cáº§n Ä‘Ã³ng gÃ³i Ä‘áº·c biá»‡t.', 
  isActive: true, 
  applyTo: { sellerTypes: ['normal'], categories: ['3'] } 
  },
 ];
 
 const MOCK_DEPARTMENTS: Department[] = [
- { id: 'D-001', name: 'Vận hành Sàn', manager: 'Lê Hoàng Minh', staffCount: 45 },
- { id: 'D-003', name: 'Kho vận nhánh HN', manager: 'Trần Văn B', staffCount: 10, parentId: 'D-001' },
- { id: 'D-002', name: 'Marketing', manager: 'Nguyễn Diệu Nhi', staffCount: 22 },
+ { id: 'D-001', name: 'Váº­n hÃ nh SÃ n', manager: 'LÃª HoÃ ng Minh', staffCount: 45 },
+ { id: 'D-003', name: 'Kho váº­n nhÃ¡nh HN', manager: 'Tráº§n VÄƒn B', staffCount: 10, parentId: 'D-001' },
+ { id: 'D-002', name: 'Marketing', manager: 'Nguyá»…n Diá»‡u Nhi', staffCount: 22 },
 ];
 const MOCK_JOB_TITLES: JobTitle[] = [
- { id: 'T-001', name: 'Quản lý kho', department: 'D-001', description: 'Quản lý vận hành kho bãi, nhân sự kho.', rank: 'R-003' },
- { id: 'T-002', name: 'KOL Specialist', department: 'D-002', description: 'Tìm kiếm, làm việc và đàm phán với KOL/Influencer trên MXH.', rank: 'R-001' },
+ { id: 'T-001', name: 'Quáº£n lÃ½ kho', department: 'D-001', description: 'Quáº£n lÃ½ váº­n hÃ nh kho bÃ£i, nhÃ¢n sá»± kho.', rank: 'R-003' },
+ { id: 'T-002', name: 'KOL Specialist', department: 'D-002', description: 'TÃ¬m kiáº¿m, lÃ m viá»‡c vÃ  Ä‘Ã m phÃ¡n vá»›i KOL/Influencer trÃªn MXH.', rank: 'R-001' },
 ];
 const MOCK_JOB_RANKS: JobRank[] = [
- { id: 'R-001', name: 'Nhân viên', level: 1 },
- { id: 'R-002', name: 'Trưởng nhóm', level: 2 },
- { id: 'R-003', name: 'Quản lý', level: 3 },
+ { id: 'R-001', name: 'NhÃ¢n viÃªn', level: 1 },
+ { id: 'R-002', name: 'TrÆ°á»Ÿng nhÃ³m', level: 2 },
+ { id: 'R-003', name: 'Quáº£n lÃ½', level: 3 },
 ];
 
 const MOCK_AI_FEE_SUGGESTIONS: AiFeeSuggestion[] = [
- { category: 'Điện tử & Công nghệ', currentFee: 3, suggestedFee: 3.5, reasoning: 'Nhu cầu cao, biên lợi nhuận seller ổn định ở mức 18%.', competitorAvg: 4, impactOnGmv: '+2.1% Revenue' },
- { category: 'Thời trang & Phụ kiện', currentFee: 8, suggestedFee: 7.2, reasoning: 'Cạnh tranh gắt gao, giảm phí để hút Seller chất lượng cao.', competitorAvg: 6.5, impactOnGmv: '+15% Seller Growth' },
+ { category: 'Äiá»‡n tá»­ & CÃ´ng nghá»‡', currentFee: 3, suggestedFee: 3.5, reasoning: 'Nhu cáº§u cao, biÃªn lá»£i nhuáº­n seller á»•n Ä‘á»‹nh á»Ÿ má»©c 18%.', competitorAvg: 4, impactOnGmv: '+2.1% Revenue' },
+ { category: 'Thá»i trang & Phá»¥ kiá»‡n', currentFee: 8, suggestedFee: 7.2, reasoning: 'Cáº¡nh tranh gáº¯t gao, giáº£m phÃ­ Ä‘á»ƒ hÃºt Seller cháº¥t lÆ°á»£ng cao.', competitorAvg: 6.5, impactOnGmv: '+15% Seller Growth' },
 ];
 
 const MOCK_ROLES: PermissionRole[] = [
- { id: '1', name: 'Siêu quản trị (Super Admin)', permissions: ['all'] },
- { id: '2', name: 'Quản lý (Manager)', permissions: ['dashboard.view', 'pim.view', 'pim.edit', 'orders.view', 'orders.edit', 'orders.approve', 'finance.view', 'hr.view', 'hr.edit'] },
- { id: '3', name: 'Nhân viên bán hàng (Sales)', permissions: ['dashboard.view', 'orders.view', 'orders.create', 'pim.view', 'customers.view'] },
- { id: '4', name: 'Kế toán (Accountant)', permissions: ['finance.view', 'finance.create', 'finance.edit', 'finance.approve', 'settlement.view', 'settlement.approve'] },
- { id: '5', name: 'Chăm sóc Khách hàng', permissions: ['customers.view', 'customers.edit', 'wallet.view', 'wallet.edit', 'loyalty.view'] },
+ { id: '1', name: 'SiÃªu quáº£n trá»‹ (Super Admin)', permissions: ['all'] },
+ { id: '2', name: 'Quáº£n lÃ½ (Manager)', permissions: ['dashboard.view', 'pim.view', 'pim.edit', 'orders.view', 'orders.edit', 'orders.approve', 'finance.view', 'hr.view', 'hr.edit'] },
+ { id: '3', name: 'NhÃ¢n viÃªn bÃ¡n hÃ ng (Sales)', permissions: ['dashboard.view', 'orders.view', 'orders.create', 'pim.view', 'customers.view'] },
+ { id: '4', name: 'Káº¿ toÃ¡n (Accountant)', permissions: ['finance.view', 'finance.create', 'finance.edit', 'finance.approve', 'settlement.view', 'settlement.approve'] },
+ { id: '5', name: 'ChÄƒm sÃ³c KhÃ¡ch hÃ ng', permissions: ['customers.view', 'customers.edit', 'wallet.view', 'wallet.edit', 'loyalty.view'] },
 ];
 
 const MODULE_PERMISSIONS = [
  { 
  id: 'core', 
- label: 'Hệ thống cốt lõi', 
+ label: 'Há»‡ thá»‘ng cá»‘t lÃµi', 
  modules: [
- { id: 'dashboard', label: 'Dashboard & Báo cáo', actions: ['view'] },
- { id: 'bi', label: 'Phân tích dữ liệu (BI)', actions: ['view'] },
- { id: 'settings', label: 'Cấu hình hệ thống', actions: ['view', 'edit'] },
+ { id: 'dashboard', label: 'Dashboard & BÃ¡o cÃ¡o', actions: ['view'] },
+ { id: 'bi', label: 'PhÃ¢n tÃ­ch dá»¯ liá»‡u (BI)', actions: ['view'] },
+ { id: 'settings', label: 'Cáº¥u hÃ¬nh há»‡ thá»‘ng', actions: ['view', 'edit'] },
  ]
  },
  {
  id: 'commerce',
- label: 'Thưong mại & Bán hàng',
+ label: 'ThÆ°ong máº¡i & BÃ¡n hÃ ng',
  modules: [
- { id: 'pim', label: 'Sản phẩm (PIM)', actions: ['view', 'create', 'edit', 'delete'] },
- { id: 'orders', label: 'Quản lý Đơn hàng', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
+ { id: 'pim', label: 'Sáº£n pháº©m (PIM)', actions: ['view', 'create', 'edit', 'delete'] },
+ { id: 'orders', label: 'Quáº£n lÃ½ ÄÆ¡n hÃ ng', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
  { id: 'flash_sale', label: 'Flash Sale & Voucher', actions: ['view', 'create', 'edit', 'delete'] },
- { id: 'ipos', label: 'Phần mềm iPOS', actions: ['view', 'create', 'edit', 'delete'] },
+ { id: 'ipos', label: 'Pháº§n má»m iPOS', actions: ['view', 'create', 'edit', 'delete'] },
  ]
  },
  {
  id: 'finance',
- label: 'Tài chính & Thanh toán',
+ label: 'TÃ i chÃ­nh & Thanh toÃ¡n',
  modules: [
- { id: 'finance', label: 'Kế toán tổng hợp', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
- { id: 'settlement', label: 'Đối soát & Công nợ', actions: ['view', 'edit', 'approve'] },
- { id: 'wallet', label: 'Ví & Thanh toán', actions: ['view', 'edit'] },
+ { id: 'finance', label: 'Káº¿ toÃ¡n tá»•ng há»£p', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
+ { id: 'settlement', label: 'Äá»‘i soÃ¡t & CÃ´ng ná»£', actions: ['view', 'edit', 'approve'] },
+ { id: 'wallet', label: 'VÃ­ & Thanh toÃ¡n', actions: ['view', 'edit'] },
  ]
  },
  {
  id: 'hr',
- label: 'Nhân sự & Tổ chức',
+ label: 'NhÃ¢n sá»± & Tá»• chá»©c',
  modules: [
- { id: 'hr', label: 'Quản trị nhân sự (HR)', actions: ['view', 'create', 'edit', 'delete'] },
- { id: 'org', label: 'Sơ đồ tổ chức', actions: ['view', 'edit'] },
- { id: 'payroll', label: 'Quản lý lương', actions: ['view', 'edit', 'approve'] },
+ { id: 'hr', label: 'Quáº£n trá»‹ nhÃ¢n sá»± (HR)', actions: ['view', 'create', 'edit', 'delete'] },
+ { id: 'org', label: 'SÆ¡ Ä‘á»“ tá»• chá»©c', actions: ['view', 'edit'] },
+ { id: 'payroll', label: 'Quáº£n lÃ½ lÆ°Æ¡ng', actions: ['view', 'edit', 'approve'] },
  ]
  }
 ];
@@ -224,32 +224,32 @@ const MOCK_WEBHOOKS: WebhookConfig[] = [
 
 const SETTINGS_MODULE_GROUPS = [
  {
- title: 'Vận hành & Kinh doanh',
+ title: 'Váº­n hÃ nh & Kinh doanh',
  items: [
- { id: 'wallet_crm', label: 'Quản lý Ví CSKH', icon: Wallet, desc: 'Cấu hình các loại Ví Khuyến Mại & Tích điểm KH', color: 'primary' },
-  { id: 'general', label: 'Cấu hình chung', icon: Settings, desc: 'Cài đặt cơ bản hệ thống, Payout tự động', color: 'blue' },
- { id: 'appearance', label: 'Giao diện & Theme', icon: Sparkles, desc: 'Tùy chỉnh màu sắc, bo góc, Lễ tết', color: 'rose' },
- { id: 'fees', label: 'Phí sàn & Ngành hàng', icon: BadgeDollarSign, desc: 'Setup tỷ lệ hoa hồng theo từng ngành', color: 'emerald' },
- { id: 'website', label: 'Website & Menu', icon: Globe, desc: 'Quản lý biểu mẫu, tên miền và menu', color: 'indigo' },
- { id: 'storefront', label: 'Trang bán hàng', icon: AppWindow, desc: 'Footer, thông tin công ty, MXH & pháp lý', color: 'emerald' },
- { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package, desc: 'Phân loại mặt hàng và lưu kho', color: 'orange' },
+ { id: 'wallet_crm', label: 'Quáº£n lÃ½ VÃ­ CSKH', icon: Wallet, desc: 'Cáº¥u hÃ¬nh cÃ¡c loáº¡i VÃ­ Khuyáº¿n Máº¡i & TÃ­ch Ä‘iá»ƒm KH', color: 'primary' },
+  { id: 'general', label: 'Cáº¥u hÃ¬nh chung', icon: Settings, desc: 'CÃ i Ä‘áº·t cÆ¡ báº£n há»‡ thá»‘ng, Payout tá»± Ä‘á»™ng', color: 'blue' },
+ { id: 'appearance', label: 'Giao diá»‡n & Theme', icon: Sparkles, desc: 'TÃ¹y chá»‰nh mÃ u sáº¯c, bo gÃ³c, Lá»… táº¿t', color: 'rose' },
+ { id: 'fees', label: 'PhÃ­ sÃ n & NgÃ nh hÃ ng', icon: BadgeDollarSign, desc: 'Setup tá»· lá»‡ hoa há»“ng theo tá»«ng ngÃ nh', color: 'emerald' },
+ { id: 'website', label: 'Website & Menu', icon: Globe, desc: 'Quáº£n lÃ½ biá»ƒu máº«u, tÃªn miá»n vÃ  menu', color: 'indigo' },
+ { id: 'storefront', label: 'Trang bÃ¡n hÃ ng', icon: AppWindow, desc: 'Footer, thÃ´ng tin cÃ´ng ty, MXH & phÃ¡p lÃ½', color: 'emerald' },
+ { id: 'inventory', label: 'HÃ ng hÃ³a & Kho', icon: Package, desc: 'PhÃ¢n loáº¡i máº·t hÃ ng vÃ  lÆ°u kho', color: 'orange' },
  ]
  },
  {
- title: 'Hệ thống & Bảo mật',
+ title: 'Há»‡ thá»‘ng & Báº£o máº­t',
  items: [
- { id: 'rbac', label: 'Phân quyền (Roles)', icon: Lock, desc: 'Điều hướng truy cập và quản lý Matrix Roles', color: 'purple' },
- { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cấp API token và bắn sự kiện Server', color: 'rose' },
- { id: 'popup', label: 'Popup & Thông báo', icon: Bell, desc: 'Thiết lập Push notification trung tâm', color: 'blue' },
- { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare, desc: 'Cấu hình API gửi tin nhắn Zalo/SMS', color: 'cyan' },
+ { id: 'rbac', label: 'PhÃ¢n quyá»n (Roles)', icon: Lock, desc: 'Äiá»u hÆ°á»›ng truy cáº­p vÃ  quáº£n lÃ½ Matrix Roles', color: 'purple' },
+ { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cáº¥p API token vÃ  báº¯n sá»± kiá»‡n Server', color: 'rose' },
+ { id: 'popup', label: 'Popup & ThÃ´ng bÃ¡o', icon: Bell, desc: 'Thiáº¿t láº­p Push notification trung tÃ¢m', color: 'blue' },
+ { id: 'comms', label: 'TÃ­ch há»£p KÃªnh', icon: MessageSquare, desc: 'Cáº¥u hÃ¬nh API gá»­i tin nháº¯n Zalo/SMS', color: 'cyan' },
  ]
  },
  {
- title: 'Cấu trúc & Hạ tầng',
+ title: 'Cáº¥u trÃºc & Háº¡ táº§ng',
  items: [
- { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2, desc: 'Cây phòng ban và chức danh nhân sự', color: 'emerald' },
- { id: 'stores', label: 'Chuỗi cửa hàng', icon: Store, desc: 'Cấu hình chi nhánh và subdomain', color: 'indigo' },
- { id: 'address', label: 'Địa chỉ Hành chính', icon: MapPin, desc: 'Danh mục Tỉnh/Thành/Phường/Xã', color: 'slate' },
+ { id: 'org', label: 'CÆ¡ cáº¥u Tá»• chá»©c', icon: Building2, desc: 'CÃ¢y phÃ²ng ban vÃ  chá»©c danh nhÃ¢n sá»±', color: 'emerald' },
+ { id: 'stores', label: 'Chuá»—i cá»­a hÃ ng', icon: Store, desc: 'Cáº¥u hÃ¬nh chi nhÃ¡nh vÃ  subdomain', color: 'indigo' },
+ { id: 'address', label: 'Äá»‹a chá»‰ HÃ nh chÃ­nh', icon: MapPin, desc: 'Danh má»¥c Tá»‰nh/ThÃ nh/PhÆ°á»ng/XÃ£', color: 'slate' },
  ]
  }
 ];
@@ -279,11 +279,11 @@ function getIconBg(color: string) {
 }
 
 const MOCK_PROVINCES = [
- { id: '1', name: 'Hà Nội', code: 'HN', wards: 579, status: 'active' },
- { id: '2', name: 'Hồ Chí Minh', code: 'HCM', wards: 312, status: 'active' },
- { id: '3', name: 'Đà Nẵng', code: 'DN', wards: 56, status: 'active' },
- { id: '4', name: 'Hải Phòng', code: 'HP', wards: 217, status: 'active' },
- { id: '5', name: 'Cần Thơ', code: 'CT', wards: 83, status: 'active' },
+ { id: '1', name: 'HÃ  Ná»™i', code: 'HN', wards: 579, status: 'active' },
+ { id: '2', name: 'Há»“ ChÃ­ Minh', code: 'HCM', wards: 312, status: 'active' },
+ { id: '3', name: 'ÄÃ  Náºµng', code: 'DN', wards: 56, status: 'active' },
+ { id: '4', name: 'Háº£i PhÃ²ng', code: 'HP', wards: 217, status: 'active' },
+ { id: '5', name: 'Cáº§n ThÆ¡', code: 'CT', wards: 83, status: 'active' },
 ];
 
 import { usePreferences } from '../context/PreferencesContext';
@@ -298,10 +298,10 @@ export function SettingsPage() {
  const [notiStatus, setNotiStatus] = useState('');
  const { addNotification } = useNotifications();
  const [categoryFees, setCategoryFees] = useState<CategoryFee[]>([
- { id: '1', name: 'Điện tử & Công nghệ', sellerFee: 3, mallFee: 5, aiSuggestedSellerFee: 3.5, aiSuggestedMallFee: 5.5, aiReasoning: 'Nhu cầu cao, biên lợi nhuận seller ổn định ở mức 18%.' },
- { id: '2', name: 'Thời trang & Phụ kiện', sellerFee: 8, mallFee: 12, aiSuggestedSellerFee: 7.2, aiSuggestedMallFee: 10.5, aiReasoning: 'Cạnh tranh gắt gao, giảm phí để hút Seller chất lượng cao.' },
- { id: '3', name: 'Gia dụng & Đời sống', sellerFee: 5, mallFee: 8 },
- { id: '4', name: 'Sức khỏe & Sắc đẹp', sellerFee: 10, mallFee: 15 },
+ { id: '1', name: 'Äiá»‡n tá»­ & CÃ´ng nghá»‡', sellerFee: 3, mallFee: 5, aiSuggestedSellerFee: 3.5, aiSuggestedMallFee: 5.5, aiReasoning: 'Nhu cáº§u cao, biÃªn lá»£i nhuáº­n seller á»•n Ä‘á»‹nh á»Ÿ má»©c 18%.' },
+ { id: '2', name: 'Thá»i trang & Phá»¥ kiá»‡n', sellerFee: 8, mallFee: 12, aiSuggestedSellerFee: 7.2, aiSuggestedMallFee: 10.5, aiReasoning: 'Cáº¡nh tranh gáº¯t gao, giáº£m phÃ­ Ä‘á»ƒ hÃºt Seller cháº¥t lÆ°á»£ng cao.' },
+ { id: '3', name: 'Gia dá»¥ng & Äá»i sá»‘ng', sellerFee: 5, mallFee: 8 },
+ { id: '4', name: 'Sá»©c khá»e & Sáº¯c Ä‘áº¹p', sellerFee: 10, mallFee: 15 },
  ]);
  const [systemFees, setSystemFees] = useState<SystemFee[]>(MOCK_SYSTEM_FEES);
  const [showFeeModal, setShowFeeModal] = useState(false);
@@ -321,8 +321,8 @@ export function SettingsPage() {
 
  // Popup States
  const [isPopupActive, setIsPopupActive] = useState(false);
- const [popupTitle, setPopupTitle] = useState('Khuyến Mãi Hè 2024');
- const [popupDesc, setPopupDesc] = useState('Săn deal chớp nhoáng với rổ hàng giảm giá 50% cùng nhiều voucher độc quyền.');
+ const [popupTitle, setPopupTitle] = useState('Khuyáº¿n MÃ£i HÃ¨ 2024');
+ const [popupDesc, setPopupDesc] = useState('SÄƒn deal chá»›p nhoÃ¡ng vá»›i rá»• hÃ ng giáº£m giÃ¡ 50% cÃ¹ng nhiá»u voucher Ä‘á»™c quyá»n.');
  const [popupImage, setPopupImage] = useState('');
  const [popupCtaText, setPopupCtaText] = useState('Xem ngay');
  const [popupCtaLink, setPopupCtaLink] = useState('');
@@ -338,7 +338,7 @@ export function SettingsPage() {
  const [systemFavicon, setSystemFavicon] = useState<string>('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=32&h=32&fit=crop');
  const [isSavingWebsite, setIsSavingWebsite] = useState(false);
 
- // Site Config (Trang bán hàng) state
+ // Site Config (Trang bÃ¡n hÃ ng) state
  const [siteConfig, setSiteConfig] = useState<SiteConfig>(DEFAULT_SITE_CONFIG);
  const [isSavingSiteConfig, setIsSavingSiteConfig] = useState(false);
  const [siteConfigLoading, setSiteConfigLoading] = useState(false);
@@ -361,9 +361,9 @@ export function SettingsPage() {
    setIsSavingSiteConfig(true);
    try {
      await setDoc(doc(db, 'site_config', 'main'), siteConfig);
-     addNotification('Đã lưu cấu hình', 'Trang bán hàng đã được cập nhật thành công.');
+     addNotification('ÄÃ£ lÆ°u cáº¥u hÃ¬nh', 'Trang bÃ¡n hÃ ng Ä‘Ã£ Ä‘Æ°á»£c cáº­p nháº­t thÃ nh cÃ´ng.');
    } catch {
-     addNotification('Lỗi lưu cấu hình', 'Không thể lưu — vui lòng thử lại.');
+     addNotification('Lá»—i lÆ°u cáº¥u hÃ¬nh', 'KhÃ´ng thá»ƒ lÆ°u â€” vui lÃ²ng thá»­ láº¡i.');
    } finally {
      setIsSavingSiteConfig(false);
    }
@@ -394,7 +394,7 @@ export function SettingsPage() {
    setSiteConfig(c => ({ ...c, paymentMethods: c.paymentMethods.filter(p => p.id !== id) }));
 
  const addPaymentMethod = () =>
-   setSiteConfig(c => ({ ...c, paymentMethods: [...c.paymentMethods, { id: `pm-${Date.now()}`, label: 'Phương thức mới', logo: '', active: true }] }));
+   setSiteConfig(c => ({ ...c, paymentMethods: [...c.paymentMethods, { id: `pm-${Date.now()}`, label: 'PhÆ°Æ¡ng thá»©c má»›i', logo: '', active: true }] }));
 
  const handlePaymentLogoUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
    const file = e.target.files?.[0];
@@ -431,12 +431,12 @@ export function SettingsPage() {
     setTimeout(() => {
       setIsSavingWebsite(false);
       // Using a simple notification since I don't see a toast library easily available
-      alert('Cấu hình website đã được lưu thành công!');
+      alert('Cáº¥u hÃ¬nh website Ä‘Ã£ Ä‘Æ°á»£c lÆ°u thÃ nh cÃ´ng!');
     }, 800);
   } catch (error) {
     console.error('Error saving website config:', error);
     setIsSavingWebsite(false);
-    alert('Có lỗi xảy ra khi lưu cấu hình!');
+    alert('CÃ³ lá»—i xáº£y ra khi lÆ°u cáº¥u hÃ¬nh!');
   }
  };
 
@@ -479,7 +479,7 @@ export function SettingsPage() {
  setIsSaving(true);
  setTimeout(() => {
  setIsSaving(false);
- alert('Đã lưu các thay đổi cấu hình thành công!');
+ alert('ÄÃ£ lÆ°u cÃ¡c thay Ä‘á»•i cáº¥u hÃ¬nh thÃ nh cÃ´ng!');
  }, 1000);
  };
 
@@ -495,7 +495,7 @@ export function SettingsPage() {
  return cf;
  }));
  const category = categoryFees.find(c => c.id === id);
- alert(`Đã áp dụng đề xuất tối ưu AI cho ngành hàng ${category?.name}`);
+ alert(`ÄÃ£ Ã¡p dá»¥ng Ä‘á» xuáº¥t tá»‘i Æ°u AI cho ngÃ nh hÃ ng ${category?.name}`);
  };
 
  const handleAddCategory = () => {
@@ -517,22 +517,22 @@ export function SettingsPage() {
  const newItems = [
  {
  id: (categoryFees.length + 1).toString(),
- name: 'Mẹ & Bé',
+ name: 'Máº¹ & BÃ©',
  sellerFee: 4,
  mallFee: 6,
- aiReasoning: 'Phân tích từ AI: Số lượng tìm kiếm "Bỉm sữa" tăng mạnh. Biên lợi nhuận mảng này khá ổn định.'
+ aiReasoning: 'PhÃ¢n tÃ­ch tá»« AI: Sá»‘ lÆ°á»£ng tÃ¬m kiáº¿m "Bá»‰m sá»¯a" tÄƒng máº¡nh. BiÃªn lá»£i nhuáº­n máº£ng nÃ y khÃ¡ á»•n Ä‘á»‹nh.'
  },
  {
  id: (categoryFees.length + 2).toString(),
- name: 'Thể thao & Dã ngoại',
+ name: 'Thá»ƒ thao & DÃ£ ngoáº¡i',
  sellerFee: 6,
  mallFee: 9,
- aiReasoning: 'Phân tích từ AI: Nhu cầu du lịch và thể thao tăng cao mùa thu/đông. Dữ liệu cross-platform (social & sàn TMĐT) cho thấy tiềm năng.'
+ aiReasoning: 'PhÃ¢n tÃ­ch tá»« AI: Nhu cáº§u du lá»‹ch vÃ  thá»ƒ thao tÄƒng cao mÃ¹a thu/Ä‘Ã´ng. Dá»¯ liá»‡u cross-platform (social & sÃ n TMÄT) cho tháº¥y tiá»m nÄƒng.'
  }
  ];
  setCategoryFees(prev => [...prev, ...newItems]);
  setIsScanningAI(false);
- alert('AI đã phân tích dữ liệu thị trường và tự động đề xuất thêm 2 ngành hàng tiềm năng!');
+ alert('AI Ä‘Ã£ phÃ¢n tÃ­ch dá»¯ liá»‡u thá»‹ trÆ°á»ng vÃ  tá»± Ä‘á»™ng Ä‘á» xuáº¥t thÃªm 2 ngÃ nh hÃ ng tiá»m nÄƒng!');
  }, 2000);
  };
 
@@ -545,19 +545,19 @@ export function SettingsPage() {
       <Settings className="w-6 h-6 text-white" />
     </div>
     <div>
-      <h1 className="text-lg font-bold text-slate-900">Cấu hình & Tích hợp Hệ thống</h1>
-      <p className="text-sm text-slate-500 mt-0.5">Phân quyền roles, cấu hình phí sàn và quản lý OpenAPI/Webhook.</p>
+      <h1 className="text-lg font-bold text-slate-900">Cáº¥u hÃ¬nh & TÃ­ch há»£p Há»‡ thá»‘ng</h1>
+      <p className="text-sm text-slate-500 mt-0.5">PhÃ¢n quyá»n roles, cáº¥u hÃ¬nh phÃ­ sÃ n vÃ  quáº£n lÃ½ OpenAPI/Webhook.</p>
     </div>
   </div>
   <div className="flex items-center gap-2 shrink-0">
     <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors">
-      <RefreshCw className="w-4 h-4 text-emerald-500" /> Lịch sử
+      <RefreshCw className="w-4 h-4 text-emerald-500" /> Lá»‹ch sá»­
     </button>
     <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors">
       <Sparkles className="w-4 h-4 text-purple-500" /> AI Audit
     </button>
     <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 shadow-sm">
-      <Save className="w-4 h-4" />{isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+      <Save className="w-4 h-4" />{isSaving ? 'Äang lÆ°u...' : 'LÆ°u thay Ä‘á»•i'}
     </button>
   </div>
  </div>
@@ -567,21 +567,21 @@ export function SettingsPage() {
  {activeTab !== 'overview' && (
  <div className="flex items-center gap-3">
    <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 text-sm font-medium rounded-xl transition-colors shadow-sm">
-     <ChevronLeft className="w-4 h-4" /> Tổng quan
+     <ChevronLeft className="w-4 h-4" /> Tá»•ng quan
    </button>
    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
    {[
-   { id: 'general', label: 'Cấu hình chung', icon: Settings },
-   { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
-   { id: 'website', label: 'Cấu hình Website', icon: Globe },
-   { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
-   { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare },
-   { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
+   { id: 'general', label: 'Cáº¥u hÃ¬nh chung', icon: Settings },
+   { id: 'fees', label: 'Cáº¥u hÃ¬nh PhÃ­ sÃ n', icon: BadgeDollarSign },
+   { id: 'website', label: 'Cáº¥u hÃ¬nh Website', icon: Globe },
+   { id: 'popup', label: 'Cáº¥u hÃ¬nh Popup & ThÃ´ng bÃ¡o', icon: Bell },
+   { id: 'comms', label: 'TÃ­ch há»£p KÃªnh', icon: MessageSquare },
+   { id: 'rbac', label: 'PhÃ¢n quyá»n & Roles', icon: Lock },
    { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
-   { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
-   { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
-   { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
-   { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package },
+   { id: 'address', label: 'Cáº¥u hÃ¬nh Tá»‰nh/ThÃ nh', icon: MapPin },
+   { id: 'org', label: 'CÆ¡ cáº¥u Tá»• chá»©c', icon: Building2 },
+   { id: 'stores', label: 'Quáº£n lÃ½ Chuá»—i cá»­a hÃ ng', icon: Store },
+   { id: 'inventory', label: 'HÃ ng hÃ³a & Kho', icon: Package },
    ].filter(t => t.id === activeTab).map(t => (
    <React.Fragment key={t.id}>
    <t.icon className="w-5 h-5 text-blue-600" /> {t.label}
@@ -595,13 +595,13 @@ export function SettingsPage() {
  <div className="flex-1 space-y-4">
  {activeTab === 'overview' && (
  <div className="animate-in fade-in slide-in- duration-500 space-y-5">
- {/* Stat row — compact */}
+ {/* Stat row â€” compact */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
    {[
-     { label: 'Vai trò hệ thống', value: `${roles.length} Roles`,            badge: 'Bảo mật cao',  badgeCls: 'bg-emerald-100 text-emerald-700', icon: Lock,            iconBg: 'bg-purple-500' },
-     { label: 'Tên miền trỏ về',  value: `${customDomains.length} Domains`,  badge: 'Đã xác thực', badgeCls: 'bg-blue-100 text-blue-700',       icon: Globe,           iconBg: 'bg-blue-500' },
-     { label: 'Điểm Webhook',      value: `${MOCK_WEBHOOKS.length} Endpoints`,badge: '100% Uptime', badgeCls: 'bg-sky-100 text-sky-700',           icon: Webhook,         iconBg: 'bg-sky-500' },
-     { label: 'Ngành hàng',        value: `${categoryFees.length} Nhóm`,     badge: 'Tối ưu AI',   badgeCls: 'bg-violet-100 text-violet-700',     icon: BadgeDollarSign, iconBg: 'bg-emerald-500' },
+     { label: 'Vai trÃ² há»‡ thá»‘ng', value: `${roles.length} Roles`,            badge: 'Báº£o máº­t cao',  badgeCls: 'bg-emerald-100 text-emerald-700', icon: Lock,            iconBg: 'bg-purple-500' },
+     { label: 'TÃªn miá»n trá» vá»',  value: `${customDomains.length} Domains`,  badge: 'ÄÃ£ xÃ¡c thá»±c', badgeCls: 'bg-blue-100 text-blue-700',       icon: Globe,           iconBg: 'bg-blue-500' },
+     { label: 'Äiá»ƒm Webhook',      value: `${MOCK_WEBHOOKS.length} Endpoints`,badge: '100% Uptime', badgeCls: 'bg-sky-100 text-sky-700',           icon: Webhook,         iconBg: 'bg-sky-500' },
+     { label: 'NgÃ nh hÃ ng',        value: `${categoryFees.length} NhÃ³m`,     badge: 'Tá»‘i Æ°u AI',   badgeCls: 'bg-violet-100 text-violet-700',     icon: BadgeDollarSign, iconBg: 'bg-emerald-500' },
    ].map(item => (
      <div key={item.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all shadow-sm">
        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.iconBg}`}>
@@ -616,7 +616,7 @@ export function SettingsPage() {
    ))}
  </div>
 
- {/* Grouped module list — compact horizontal rows */}
+ {/* Grouped module list â€” compact horizontal rows */}
  <div className="space-y-4">
  {SETTINGS_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx}>
@@ -645,14 +645,14 @@ export function SettingsPage() {
  )}
  {activeTab === 'appearance' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
   <Sparkles className="w-5 h-5 text-rose-500" />
-  Giao diện & Theme
+  Giao diá»‡n & Theme
  </h3>
  
  <div className="space-y-4">
-  <h4 className="font-semibold text-slate-900">Màu sắc chủ đạo (Primary Color)</h4>
+  <h4 className="font-semibold text-slate-900">MÃ u sáº¯c chá»§ Ä‘áº¡o (Primary Color)</h4>
   <div className="flex gap-4">
   {(['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate'] as const).map(color => (
   <button
@@ -668,18 +668,18 @@ export function SettingsPage() {
  </div>
 
  <div className="space-y-4">
-  <h4 className="font-semibold text-slate-900">Bo góc bảng biểu (Border Radius)</h4>
+  <h4 className="font-semibold text-slate-900">Bo gÃ³c báº£ng biá»ƒu (Border Radius)</h4>
   <div className="flex gap-4">
-  <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
-  <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
-  <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
+  <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-none flex-1 font-medium`}>Sáº¯c cáº¡nh (none)</button>
+  <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-sm flex-1 font-medium`}>Nháº¹ (sm)</button>
+  <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Vá»«a (lg)</button>
   <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-xl flex-1 font-medium`}>Cong (xl)</button>
-  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-2xl flex-1 font-medium`}>Rất cong (2xl)</button>
+  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-2xl flex-1 font-medium`}>Ráº¥t cong (2xl)</button>
   </div>
  </div>
 
  <div className="space-y-4">
-  <h4 className="font-semibold text-slate-900 flex items-center gap-2">Theme Lễ Tết</h4>
+  <h4 className="font-semibold text-slate-900 flex items-center gap-2">Theme Lá»… Táº¿t</h4>
   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
   {(['none', 'tet', 'christmas', 'mid-autumn', 'halloween'] as const).map(theme => (
   <button
@@ -688,9 +688,9 @@ export function SettingsPage() {
   className={`p-4 border rounded-xl text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-slate-300 hover:border-slate-400'}`}
   >
   <span className="text-2xl">
-  {theme === 'tet' ? '🧧' : theme === 'christmas' ? '🎄' : theme === 'mid-autumn' ? '🌕' : theme === 'halloween' ? '🎃' : '✨'}
+  {theme === 'tet' ? 'ðŸ§§' : theme === 'christmas' ? 'ðŸŽ„' : theme === 'mid-autumn' ? 'ðŸŒ•' : theme === 'halloween' ? 'ðŸŽƒ' : 'âœ¨'}
   </span>
-  <span className="font-semibold capitalize">{theme === 'none' ? 'Mặc định' : theme}</span>
+  <span className="font-semibold capitalize">{theme === 'none' ? 'Máº·c Ä‘á»‹nh' : theme}</span>
   </button>
   ))}
   </div>
@@ -702,12 +702,12 @@ export function SettingsPage() {
 
  {activeTab === 'general' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
- <h3 className="font-bold text-slate-900">Cấu hình ví & Payout</h3>
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <h3 className="font-bold text-slate-900">Cáº¥u hÃ¬nh vÃ­ & Payout</h3>
  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200">
  <div className="space-y-1">
- <p className="text-sm font-bold text-slate-900">Tính năng Duyệt Payout tự động</p>
- <p className="text-[10px] text-slate-600 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
+ <p className="text-sm font-bold text-slate-900">TÃ­nh nÄƒng Duyá»‡t Payout tá»± Ä‘á»™ng</p>
+ <p className="text-[10px] text-slate-600 italic text-pretty max-w-md">Náº¿u Ä‘Æ°á»£c báº­t, há»‡ thá»‘ng sáº½ tá»± Ä‘á»™ng giáº£i ngÃ¢n cho Seller khi Ä‘Æ¡n hÃ ng chuyá»ƒn sang tráº¡ng thÃ¡i "ThÃ nh cÃ´ng" vÃ  qua thá»i gian khiáº¿u náº¡i (7 ngÃ y).</p>
  </div>
  <div className="w-12 h-6 bg-blue-600 rounded-full relative cursor-pointer">
  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
@@ -717,10 +717,10 @@ export function SettingsPage() {
 
  <div className="flex justify-end gap-3 pt-4">
  <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all border border-transparent">
- Hủy bỏ
+ Há»§y bá»
  </button>
  <button className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95">
- Lưu cấu hình
+ LÆ°u cáº¥u hÃ¬nh
  </button>
  </div>
  </div>
@@ -728,33 +728,33 @@ export function SettingsPage() {
 
   {activeTab === 'wallet_crm' && (
   <div className="animate-in fade-in duration-300 space-y-6">
-    <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+    <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-slate-900 flex items-center gap-2">
-          <Wallet className="w-5 h-5 text-primary-600" /> Cấu hình Ví CSKH & Khuyến mại
+          <Wallet className="w-5 h-5 text-primary-600" /> Cáº¥u hÃ¬nh VÃ­ CSKH & Khuyáº¿n máº¡i
         </h3>
         <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 transition flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Thêm loại Ví mới
+          <Plus className="w-4 h-4" /> ThÃªm loáº¡i VÃ­ má»›i
         </button>
       </div>
 
       <div className="space-y-4">
         {[{
-          name: 'Ví Khuyến Mại',
-          desc: 'Ví chứa tiền được tặng từ các chương trình khuyến mại, có thể giới hạn % thanh toán trên mỗi đơn hàng.',
-          usedFor: 'Thanh toán tối đa 50% giá trị đơn hàng',
+          name: 'VÃ­ Khuyáº¿n Máº¡i',
+          desc: 'VÃ­ chá»©a tiá»n Ä‘Æ°á»£c táº·ng tá»« cÃ¡c chÆ°Æ¡ng trÃ¬nh khuyáº¿n máº¡i, cÃ³ thá»ƒ giá»›i háº¡n % thanh toÃ¡n trÃªn má»—i Ä‘Æ¡n hÃ ng.',
+          usedFor: 'Thanh toÃ¡n tá»‘i Ä‘a 50% giÃ¡ trá»‹ Ä‘Æ¡n hÃ ng',
           canTransfer: false,
           color: 'blue'
         }, {
-          name: 'Ví Hoàn Tiền (Cashback)',
-          desc: 'Số tiền hoàn lại từ việc hủy đơn hoặc chương trình đối soát.',
-          usedFor: 'Thanh toán 100% hoặc Rút về tài khoản Bank',
+          name: 'VÃ­ HoÃ n Tiá»n (Cashback)',
+          desc: 'Sá»‘ tiá»n hoÃ n láº¡i tá»« viá»‡c há»§y Ä‘Æ¡n hoáº·c chÆ°Æ¡ng trÃ¬nh Ä‘á»‘i soÃ¡t.',
+          usedFor: 'Thanh toÃ¡n 100% hoáº·c RÃºt vá» tÃ i khoáº£n Bank',
           canTransfer: true,
           color: 'emerald'
         }, {
-          name: 'Ví Thành Viên (Loyalty)',
-          desc: 'Điểm thăng hạng (Không quy đổi ra tiền thật).',
-          usedFor: 'Giữ hạng & Tận hưởng đặc quyền',
+          name: 'VÃ­ ThÃ nh ViÃªn (Loyalty)',
+          desc: 'Äiá»ƒm thÄƒng háº¡ng (KhÃ´ng quy Ä‘á»•i ra tiá»n tháº­t).',
+          usedFor: 'Giá»¯ háº¡ng & Táº­n hÆ°á»Ÿng Ä‘áº·c quyá»n',
           canTransfer: false,
           color: 'purple'
         }].map(wallet => (
@@ -768,10 +768,10 @@ export function SettingsPage() {
             </div>
             
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">Quy tắc: {wallet.usedFor}</span>
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">Quy táº¯c: {wallet.usedFor}</span>
               <label className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
                 <input type="checkbox" checked={wallet.canTransfer} readOnly className="w-4 h-4 text-primary-600 rounded border-slate-400" />
-                Cho phép KH điều chuyển / Rút
+                Cho phÃ©p KH Ä‘iá»u chuyá»ƒn / RÃºt
               </label>
             </div>
           </div>
@@ -779,23 +779,23 @@ export function SettingsPage() {
       </div>
 
       <div className="pt-6 border-t border-slate-200">
-        <h4 className="font-bold text-slate-900 mb-4">Quy tắc điều chuyển số dư (Transfer Rules)</h4>
+        <h4 className="font-bold text-slate-900 mb-4">Quy táº¯c Ä‘iá»u chuyá»ƒn sá»‘ dÆ° (Transfer Rules)</h4>
         <div className="p-4 bg-orange-50 border border-orange-100 rounded-lg space-y-3">
            <div className="flex items-center justify-between text-sm font-medium text-slate-900">
              <div className="flex items-center gap-3">
-               <span className="w-40">Ví Hoàn Tiền</span>
+               <span className="w-40">VÃ­ HoÃ n Tiá»n</span>
                <ArrowRight className="w-4 h-4 text-slate-500" />
-               <span className="w-40">Ví Khuyến Mại</span>
+               <span className="w-40">VÃ­ Khuyáº¿n Máº¡i</span>
              </div>
-             <span className="text-right">Tỷ lệ quy đổi: 1 VNĐ = 1.1 Khuyến mại</span>
+             <span className="text-right">Tá»· lá»‡ quy Ä‘á»•i: 1 VNÄ = 1.1 Khuyáº¿n máº¡i</span>
            </div>
            <div className="flex items-center justify-between text-sm font-medium text-slate-900 opacity-60">
              <div className="flex items-center gap-3">
-               <span className="w-40">Ví Khuyến Mại</span>
+               <span className="w-40">VÃ­ Khuyáº¿n Máº¡i</span>
                <ArrowRight className="w-4 h-4 text-slate-500" />
-               <span className="w-40">Ví Hoàn Tiền</span>
+               <span className="w-40">VÃ­ HoÃ n Tiá»n</span>
              </div>
-             <span className="text-right text-rose-600 italic">Cấm (Không hỗ trợ)</span>
+             <span className="text-right text-rose-600 italic">Cáº¥m (KhÃ´ng há»— trá»£)</span>
            </div>
         </div>
       </div>
@@ -806,19 +806,19 @@ export function SettingsPage() {
  {activeTab === 'fees' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {/* Section 1: Dynamic System Fees */}
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <AlertCircle className="w-4 h-4 text-orange-500" /> Quản lý các loại Chi phí Hệ thống hỗ trợ
+ <AlertCircle className="w-4 h-4 text-orange-500" /> Quáº£n lÃ½ cÃ¡c loáº¡i Chi phÃ­ Há»‡ thá»‘ng há»— trá»£
  </h3>
- <p className="text-xs text-slate-600 mt-1">Cấu hình linh hoạt các loại phí phát sinh ngoài phí hoa hồng (Fixed hoặc %).</p>
+ <p className="text-xs text-slate-600 mt-1">Cáº¥u hÃ¬nh linh hoáº¡t cÃ¡c loáº¡i phÃ­ phÃ¡t sinh ngoÃ i phÃ­ hoa há»“ng (Fixed hoáº·c %).</p>
  </div>
  <button 
  onClick={() => { setEditingFee(null); setNewFee({ type: 'percentage', value: 0, isActive: true, applyTo: { sellerTypes: ['normal'], categories: ['all'] } }); setShowFeeModal(true); }}
  className="flex items-center gap-2 bg-[#111827] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm"
  >
- <Plus className="w-4 h-4" /> Thêm loại phí mới
+ <Plus className="w-4 h-4" /> ThÃªm loáº¡i phÃ­ má»›i
  </button>
  </div>
 
@@ -832,7 +832,7 @@ export function SettingsPage() {
  </div>
  <div>
  <h4 className="font-bold text-sm text-slate-900 line-clamp-1">{fee.name}</h4>
- <p className="text-[10px] text-slate-600">{fee.type === 'fixed' ? 'Số tiền cố định' : 'Tỷ lệ % doanh thu'}</p>
+ <p className="text-[10px] text-slate-600">{fee.type === 'fixed' ? 'Sá»‘ tiá»n cá»‘ Ä‘á»‹nh' : 'Tá»· lá»‡ % doanh thu'}</p>
  </div>
  </div>
  <div 
@@ -850,11 +850,11 @@ export function SettingsPage() {
  <div className="mt-2 space-y-1.5">
  <div className="flex items-center gap-1.5 text-[10px] text-slate-700">
  <Users className="w-3 h-3" />
- {fee.applyTo.sellerTypes.map(st => st === 'mall' ? 'Shop Mall' : 'Seller thường').join(', ')}
+ {fee.applyTo.sellerTypes.map(st => st === 'mall' ? 'Shop Mall' : 'Seller thÆ°á»ng').join(', ')}
  </div>
  <div className="flex items-center gap-1.5 text-[10px] text-slate-700">
  <Package className="w-3 h-3" />
- {fee.applyTo.categories.includes('all') ? 'Tất cả ngành hàng' : `Áp dụng ${fee.applyTo.categories.length} nhóm`}
+ {fee.applyTo.categories.includes('all') ? 'Táº¥t cáº£ ngÃ nh hÃ ng' : `Ãp dá»¥ng ${fee.applyTo.categories.length} nhÃ³m`}
  </div>
  </div>
  </div>
@@ -883,13 +883,13 @@ export function SettingsPage() {
  </div>
 
  {/* Section 2: Platform Commission (Existing) */}
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between mb-4">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
- <BadgeDollarSign className="w-4 h-4 text-blue-600" /> Phí hoa hồng theo Ngành hàng & Loại Nhà Bán
+ <BadgeDollarSign className="w-4 h-4 text-blue-600" /> PhÃ­ hoa há»“ng theo NgÃ nh hÃ ng & Loáº¡i NhÃ  BÃ¡n
  </h3>
- <p className="text-xs text-slate-600 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
+ <p className="text-xs text-slate-600 mt-1">Cáº¥u hÃ¬nh linh hoáº¡t má»©c phÃ­ SÃ n thu tá»« Seller thÆ°á»ng vÃ  Shop Mall (Ä‘á»‘i tÃ¡c chÃ­nh hÃ£ng).</p>
  </div>
  <div className="flex gap-2">
  <button 
@@ -898,30 +898,30 @@ export function SettingsPage() {
  className="flex items-center gap-1.5 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50"
  >
  <RefreshCw className={cn("w-4 h-4", isScanningAI ? "animate-spin" : "")} /> 
- {isScanningAI ? 'AI đang phân tích...' : 'AI đề xuất ngành hàng'}
+ {isScanningAI ? 'AI Ä‘ang phÃ¢n tÃ­ch...' : 'AI Ä‘á» xuáº¥t ngÃ nh hÃ ng'}
  </button>
  <button 
  onClick={() => setShowAddCategory(true)}
  className="flex items-center gap-1.5 text-xs bg-primary-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-primary-700 transition-colors shadow-sm"
  >
- <Plus className="w-4 h-4" /> Thêm ngành hàng
+ <Plus className="w-4 h-4" /> ThÃªm ngÃ nh hÃ ng
  </button>
  </div>
  </div>
 
  {showAddCategory && (
  <div className="mb-4 p-4 bg-slate-50 border border-slate-300 rounded-xl flex items-center gap-3 animate-in slide-in- duration-200">
- <label className="text-sm font-bold text-slate-800 whitespace-nowrap">Tên ngành hàng:</label>
+ <label className="text-sm font-bold text-slate-800 whitespace-nowrap">TÃªn ngÃ nh hÃ ng:</label>
  <input 
  type="text" 
- placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
+ placeholder="VD: Máº¹ & BÃ©, Äá»“ gia dá»¥ng..." 
  className="flex-1 p-2 bg-white border border-slate-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
  value={newCategoryName}
  onChange={(e) => setNewCategoryName(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
  />
- <button onClick={handleAddCategory} className="px-5 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700">Lưu</button>
- <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Hủy</button>
+ <button onClick={handleAddCategory} className="px-5 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700">LÆ°u</button>
+ <button onClick={() => setShowAddCategory(false)} className="px-5 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-300">Há»§y</button>
  </div>
  )}
 
@@ -929,26 +929,26 @@ export function SettingsPage() {
  <table className="w-full text-sm">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr>
- <th className="px-5 py-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
+ <th className="px-5 py-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider w-[30%]">NgÃ nh hÃ ng</th>
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-slate-100/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
- <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
- <span className="text-[9px] font-medium text-blue-600">Nhà bán cá nhân/nhỏ lẻ</span>
+ <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller ThÆ°á»ng</span>
+ <span className="text-[9px] font-medium text-blue-600">NhÃ  bÃ¡n cÃ¡ nhÃ¢n/nhá» láº»</span>
  </div>
  </th>
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-amber-50/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
  <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
- <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
+ <span className="text-[9px] font-medium text-amber-600">Äá»‘i tÃ¡c chÃ­nh hÃ£ng</span>
  </div>
  </th>
- <th className="px-5 py-4 text-right font-bold text-slate-500 text-[10px] uppercase tracking-wider w-[20%]">Tối ưu AI</th>
+ <th className="px-5 py-4 text-right font-bold text-slate-500 text-[10px] uppercase tracking-wider w-[20%]">Tá»‘i Æ°u AI</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {categoryFees.map((cf) => (
  <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-5 py-4 text-sm font-bold text-slate-900">{cf.name}</td>
+ <td className="px-3 py-2 text-sm font-bold text-slate-900">{cf.name}</td>
  <td className="px-5 py-4 border-l border-slate-200 bg-slate-100/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
@@ -961,7 +961,7 @@ export function SettingsPage() {
  <span className="text-xs font-bold text-orange-500">%</span>
  </div>
  {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
- <span className="text-[10px] text-blue-600 font-bold bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
+ <span className="text-[10px] text-blue-600 font-bold bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyÃªn dÃ¹ng: {cf.aiSuggestedSellerFee}%</span>
  )}
  </div>
  </td>
@@ -977,7 +977,7 @@ export function SettingsPage() {
  <span className="text-xs font-bold text-amber-400">%</span>
  </div>
  {cf.aiSuggestedMallFee && cf.aiSuggestedMallFee !== cf.mallFee && (
- <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
+ <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyÃªn dÃ¹ng: {cf.aiSuggestedMallFee}%</span>
  )}
  </div>
  </td>
@@ -986,9 +986,9 @@ export function SettingsPage() {
  <button 
  onClick={() => handleApplyAiSuggestion(cf.id)}
  className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
- title={`Gợi ý: ${cf.aiReasoning}`}
+ title={`Gá»£i Ã½: ${cf.aiReasoning}`}
  >
- <Sparkles className="w-4 h-4" /> Áp dụng
+ <Sparkles className="w-4 h-4" /> Ãp dá»¥ng
  </button>
  )}
  </td>
@@ -1003,15 +1003,15 @@ export function SettingsPage() {
 
  {activeTab === 'website' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <Globe className="w-4 h-4 text-blue-600" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
+ <Globe className="w-4 h-4 text-blue-600" /> Cáº¥u hÃ¬nh Website Tá»•ng (Há»‡ thá»‘ng ERP & Storefront)
  </h3>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Danh sách tên miền</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Danh sÃ¡ch tÃªn miá»n</label>
  <div className="space-y-2">
  {customDomains.map((domain, index) => (
  <div key={index} className="flex gap-2">
@@ -1019,7 +1019,7 @@ export function SettingsPage() {
  type="text" 
  value={domain} 
  onChange={(e) => updateDomain(index, e.target.value)}
- placeholder="ví dụ: store.domain.com" 
+ placeholder="vÃ­ dá»¥: store.domain.com" 
  className="flex-1 p-3 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
  />
  <button onClick={() => removeDomain(index)} className="p-3 text-red-500 hover:bg-red-50 rounded-lg">
@@ -1028,16 +1028,16 @@ export function SettingsPage() {
  </div>
  ))}
  <button onClick={addDomain} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-2">
- <Plus className="w-3 h-3" /> Thêm tên miền mới
+ <Plus className="w-3 h-3" /> ThÃªm tÃªn miá»n má»›i
  </button>
  </div>
- <p className="text-[10px] text-[#9CA3AF] mt-1.5 leading-relaxed">Tên miền trỏ về hệ thống VComm ERP.</p>
+ <p className="text-[10px] text-[#9CA3AF] mt-1.5 leading-relaxed">TÃªn miá»n trá» vá» há»‡ thá»‘ng VComm ERP.</p>
  </div>
  </div>
 
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Logo ToÃ n Há»‡ Thá»‘ng</label>
  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
  <input 
  type="file" 
@@ -1053,16 +1053,16 @@ export function SettingsPage() {
  <Image className="w-8 h-8 text-slate-400" />
  )}
  <span className="text-xs font-bold text-blue-600">
- Nhấn để tải lên hoặc kéo thả Logo
+ Nháº¥n Ä‘á»ƒ táº£i lÃªn hoáº·c kÃ©o tháº£ Logo
  </span>
- <p className="text-[10px] text-[#9CA3AF] mt-1">PNG, JPG tối đa 5MB</p>
+ <p className="text-[10px] text-[#9CA3AF] mt-1">PNG, JPG tá»‘i Ä‘a 5MB</p>
  </label>
  </div>
  </div>
  </div>
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Favicon Há»‡ Thá»‘ng</label>
  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
  <input 
  type="file" 
@@ -1078,7 +1078,7 @@ export function SettingsPage() {
  <Globe className="w-6 h-6 text-slate-400" />
  )}
  <span className="text-xs font-bold text-blue-600">
- Nhấn để tải lên hoặc kéo thả Favicon
+ Nháº¥n Ä‘á»ƒ táº£i lÃªn hoáº·c kÃ©o tháº£ Favicon
  </span>
  <p className="text-[10px] text-[#9CA3AF] mt-1">ICO, PNG (32x32px)</p>
  </label>
@@ -1096,12 +1096,12 @@ export function SettingsPage() {
    {isSavingWebsite ? (
      <>
        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-       Đang lưu...
+       Äang lÆ°u...
      </>
    ) : (
      <>
        <Save className="w-4 h-4" />
-       Lưu cấu hình website
+       LÆ°u cáº¥u hÃ¬nh website
      </>
    )}
  </button>
@@ -1116,14 +1116,14 @@ export function SettingsPage() {
      <div className="flex items-center justify-center h-40"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" /></div>
    ) : (
      <>
-     {/* ── Section helper ── */}
+     {/* â”€â”€ Section helper â”€â”€ */}
      {([
-       { key: 'companyInfo', title: 'Thông tin công ty', icon: Building2 },
-       { key: 'footerLinks', title: 'Cột liên kết Footer', icon: Globe },
-       { key: 'paymentMethods', title: 'Phương thức Thanh toán & Vận chuyển', icon: CreditCard },
-       { key: 'socialLinks', title: 'Mạng xã hội', icon: Link2 },
-       { key: 'legalInfo', title: 'Thông tin pháp lý', icon: ShieldCheck },
-       { key: 'preview', title: 'Xem trước Footer', icon: AppWindow },
+       { key: 'companyInfo', title: 'ThÃ´ng tin cÃ´ng ty', icon: Building2 },
+       { key: 'footerLinks', title: 'Cá»™t liÃªn káº¿t Footer', icon: Globe },
+       { key: 'paymentMethods', title: 'PhÆ°Æ¡ng thá»©c Thanh toÃ¡n & Váº­n chuyá»ƒn', icon: CreditCard },
+       { key: 'socialLinks', title: 'Máº¡ng xÃ£ há»™i', icon: Link2 },
+       { key: 'legalInfo', title: 'ThÃ´ng tin phÃ¡p lÃ½', icon: ShieldCheck },
+       { key: 'preview', title: 'Xem trÆ°á»›c Footer', icon: AppWindow },
      ] as const).map(({ key, title, icon: Icon }) => (
        <div key={key} className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
          <button
@@ -1143,10 +1143,10 @@ export function SettingsPage() {
              {key === 'companyInfo' && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  {([
-                   { field: 'brandName', label: 'Tên thương hiệu', placeholder: 'VComm' },
-                   { field: 'tagline', label: 'Slogan / Mô tả ngắn', placeholder: 'Nền tảng TMĐT toàn diện' },
+                   { field: 'brandName', label: 'TÃªn thÆ°Æ¡ng hiá»‡u', placeholder: 'VComm' },
+                   { field: 'tagline', label: 'Slogan / MÃ´ táº£ ngáº¯n', placeholder: 'Ná»n táº£ng TMÄT toÃ n diá»‡n' },
                    { field: 'hotline', label: 'Hotline', placeholder: '1900 1234' },
-                   { field: 'email', label: 'Email hỗ trợ', placeholder: 'support@vcomm.vn' },
+                   { field: 'email', label: 'Email há»— trá»£', placeholder: 'support@vcomm.vn' },
                  ] as const).map(({ field, label, placeholder }) => (
                    <div key={field}>
                      <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
@@ -1160,7 +1160,7 @@ export function SettingsPage() {
                    </div>
                  ))}
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Địa chỉ văn phòng</label>
+                   <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Äá»‹a chá»‰ vÄƒn phÃ²ng</label>
                    <VietnamAddressSelector
                      value={companyAddress}
                      onChange={addr => {
@@ -1181,7 +1181,7 @@ export function SettingsPage() {
                    return (
                      <div key={col} className="space-y-3">
                        <div>
-                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Tiêu đề cột</label>
+                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">TiÃªu Ä‘á» cá»™t</label>
                          <input
                            type="text"
                            value={siteConfig.footerLinks[titleKey]}
@@ -1190,14 +1190,14 @@ export function SettingsPage() {
                          />
                        </div>
                        <div className="space-y-2">
-                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Danh sách liên kết</label>
+                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Danh sÃ¡ch liÃªn káº¿t</label>
                          {siteConfig.footerLinks[colKey].map((item, idx) => (
                            <div key={idx} className="flex gap-2">
                              <input
                                type="text"
                                value={item.label}
                                onChange={e => updateFooterLink(colKey, idx, 'label', e.target.value)}
-                               placeholder="Nhãn hiển thị"
+                               placeholder="NhÃ£n hiá»ƒn thá»‹"
                                className="flex-1 p-2 rounded-2xl border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                              />
                              <input
@@ -1209,7 +1209,7 @@ export function SettingsPage() {
                              />
                              <button
                                onClick={() => item.url && setEditingPageUrl({ url: item.url, label: item.label })}
-                               title="Chỉnh sửa nội dung trang"
+                               title="Chá»‰nh sá»­a ná»™i dung trang"
                                disabled={!item.url}
                                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                              >
@@ -1221,7 +1221,7 @@ export function SettingsPage() {
                            </div>
                          ))}
                          <button onClick={() => addFooterLink(colKey)} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-1">
-                           <Plus className="w-3 h-3" /> Thêm liên kết
+                           <Plus className="w-3 h-3" /> ThÃªm liÃªn káº¿t
                          </button>
                        </div>
                      </div>
@@ -1233,7 +1233,7 @@ export function SettingsPage() {
              {/* PAYMENT METHODS */}
              {key === 'paymentMethods' && (
                <div className="space-y-3">
-                 <p className="text-xs text-slate-500">Quản lý danh sách phương thức thanh toán hiển thị ở footer — bật/tắt, đổi tên và upload logo riêng.</p>
+                 <p className="text-xs text-slate-500">Quáº£n lÃ½ danh sÃ¡ch phÆ°Æ¡ng thá»©c thanh toÃ¡n hiá»ƒn thá»‹ á»Ÿ footer â€” báº­t/táº¯t, Ä‘á»•i tÃªn vÃ  upload logo riÃªng.</p>
 
                  {/* List */}
                  <div className="space-y-2">
@@ -1259,7 +1259,7 @@ export function SettingsPage() {
                          <label
                            htmlFor={`logo-${pm.id}`}
                            className="flex items-center justify-center w-14 h-10 rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 cursor-pointer overflow-hidden bg-white transition-colors group"
-                           title="Click để upload logo"
+                           title="Click Ä‘á»ƒ upload logo"
                          >
                            {pm.logo ? (
                              <img src={pm.logo} alt={pm.label} className="w-full h-full object-contain p-1" />
@@ -1274,7 +1274,7 @@ export function SettingsPage() {
                            <button
                              onClick={() => updatePaymentMethod(pm.id, 'logo', '')}
                              className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-                             title="Xóa logo"
+                             title="XÃ³a logo"
                            >
                              <X className="w-2.5 h-2.5" />
                            </button>
@@ -1287,19 +1287,19 @@ export function SettingsPage() {
                          value={pm.label}
                          onChange={(e) => updatePaymentMethod(pm.id, 'label', e.target.value)}
                          className="flex-1 px-3 py-1.5 text-sm rounded-2xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
-                         placeholder="Tên phương thức..."
+                         placeholder="TÃªn phÆ°Æ¡ng thá»©c..."
                        />
 
                        {/* Status badge */}
                        <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0', pm.active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400')}>
-                         {pm.active ? 'Hiện' : 'Ẩn'}
+                         {pm.active ? 'Hiá»‡n' : 'áº¨n'}
                        </span>
 
                        {/* Delete */}
                        <button
                          onClick={() => removePaymentMethod(pm.id)}
                          className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors shrink-0"
-                         title="Xóa phương thức"
+                         title="XÃ³a phÆ°Æ¡ng thá»©c"
                        >
                          <Trash2 className="w-4 h-4" />
                        </button>
@@ -1312,11 +1312,11 @@ export function SettingsPage() {
                    onClick={addPaymentMethod}
                    className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-xl text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2"
                  >
-                   <Plus className="w-4 h-4" /> Thêm phương thức thanh toán
+                   <Plus className="w-4 h-4" /> ThÃªm phÆ°Æ¡ng thá»©c thanh toÃ¡n
                  </button>
 
                  <p className="text-[10px] text-slate-400 pt-1">
-                   Kéo để sắp xếp thứ tự hiển thị • Logo nên có kích thước 120×80px, nền trắng hoặc trong suốt
+                   KÃ©o Ä‘á»ƒ sáº¯p xáº¿p thá»© tá»± hiá»ƒn thá»‹ â€¢ Logo nÃªn cÃ³ kÃ­ch thÆ°á»›c 120Ã—80px, ná»n tráº¯ng hoáº·c trong suá»‘t
                  </p>
                </div>
              )}
@@ -1349,22 +1349,22 @@ export function SettingsPage() {
              {key === 'legalInfo' && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Tên công ty (đầy đủ theo pháp lý)</label>
+                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">TÃªn cÃ´ng ty (Ä‘áº§y Ä‘á»§ theo phÃ¡p lÃ½)</label>
                    <input type="text" value={siteConfig.legalInfo.companyName}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, companyName: e.target.value } }))}
                      className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                  </div>
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Địa chỉ pháp lý</label>
+                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Äá»‹a chá»‰ phÃ¡p lÃ½</label>
                    <textarea value={siteConfig.legalInfo.legalAddress}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, legalAddress: e.target.value } }))}
                      rows={2} className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" />
                  </div>
                  {([
-                   { field: 'taxCode' as const, label: 'Mã số thuế', placeholder: '' },
-                   { field: 'representative' as const, label: 'Người đại diện pháp luật', placeholder: '' },
-                   { field: 'businessReg' as const, label: 'Số GCNĐKDN', placeholder: '' },
-                   { field: 'businessRegDate' as const, label: 'Ngày cấp lần đầu', placeholder: 'DD/MM/YYYY' },
+                   { field: 'taxCode' as const, label: 'MÃ£ sá»‘ thuáº¿', placeholder: '' },
+                   { field: 'representative' as const, label: 'NgÆ°á»i Ä‘áº¡i diá»‡n phÃ¡p luáº­t', placeholder: '' },
+                   { field: 'businessReg' as const, label: 'Sá»‘ GCNÄKDN', placeholder: '' },
+                   { field: 'businessRegDate' as const, label: 'NgÃ y cáº¥p láº§n Ä‘áº§u', placeholder: 'DD/MM/YYYY' },
                  ]).map(({ field, label, placeholder }) => (
                    <div key={field}>
                      <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
@@ -1375,7 +1375,7 @@ export function SettingsPage() {
                    </div>
                  ))}
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Dòng bản quyền (Copyright)</label>
+                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">DÃ²ng báº£n quyá»n (Copyright)</label>
                    <input type="text" value={siteConfig.copyrightText}
                      onChange={e => setSiteConfig(c => ({ ...c, copyrightText: e.target.value }))}
                      className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
@@ -1390,10 +1390,10 @@ export function SettingsPage() {
                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                   <span className="ml-2 text-xs text-slate-400 font-mono">Footer Preview — {siteConfig.companyInfo.brandName}</span>
+                   <span className="ml-2 text-xs text-slate-400 font-mono">Footer Preview â€” {siteConfig.companyInfo.brandName}</span>
                  </div>
                  <div className="p-6 bg-white">
-                   <div className="grid grid-cols-4 gap-6 pb-6 border-b border-slate-200">
+                   <div className="grid grid-cols-4 gap-4 pb-6 border-b border-slate-200">
                      {/* Col 0: Company */}
                      <div className="space-y-2">
                        <div className="font-bold text-lg text-blue-600">{siteConfig.companyInfo.brandName}</div>
@@ -1419,7 +1419,7 @@ export function SettingsPage() {
                      <div className="space-y-4">
                        {siteConfig.paymentMethods.some(p => p.active) && (
                          <div className="space-y-1.5">
-                           <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THANH TOÁN</div>
+                           <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THANH TOÃN</div>
                            <div className="flex flex-wrap gap-1.5 items-center">
                              {siteConfig.paymentMethods.filter(p => p.active).map(p => (
                                <div key={p.id} className="flex items-center justify-center h-7 px-2 rounded border border-slate-200 bg-white">
@@ -1433,12 +1433,12 @@ export function SettingsPage() {
                          </div>
                        )}
                        <div className="space-y-1.5">
-                         <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THEO DÕI</div>
+                         <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THEO DÃ•I</div>
                          <div className="flex gap-2">
                            {siteConfig.socialLinks.facebook && <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[9px] font-bold">f</div>}
                            {siteConfig.socialLinks.instagram && <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-[9px] font-bold">in</div>}
                            {siteConfig.socialLinks.twitter && <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center text-white text-[9px] font-bold">X</div>}
-                           {siteConfig.socialLinks.youtube && <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white text-[9px] font-bold">▶</div>}
+                           {siteConfig.socialLinks.youtube && <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white text-[9px] font-bold">â–¶</div>}
                            {siteConfig.socialLinks.tiktok && <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center text-white text-[9px] font-bold">tt</div>}
                          </div>
                        </div>
@@ -1447,11 +1447,11 @@ export function SettingsPage() {
                    {/* Legal bottom bar */}
                    <div className="pt-4 text-center space-y-0.5">
                      <p className="text-[10px] font-bold text-slate-600">{siteConfig.legalInfo.companyName}</p>
-                     <p className="text-[10px] text-slate-400">Địa chỉ: {siteConfig.legalInfo.legalAddress}</p>
-                     <p className="text-[10px] text-slate-400">Mã số thuế: {siteConfig.legalInfo.taxCode} — Đại diện: {siteConfig.legalInfo.representative}</p>
+                     <p className="text-[10px] text-slate-400">Äá»‹a chá»‰: {siteConfig.legalInfo.legalAddress}</p>
+                     <p className="text-[10px] text-slate-400">MÃ£ sá»‘ thuáº¿: {siteConfig.legalInfo.taxCode} â€” Äáº¡i diá»‡n: {siteConfig.legalInfo.representative}</p>
                      {siteConfig.legalInfo.businessReg && (
                        <p className="text-[10px] text-slate-400">
-                         Giấy chứng nhận ĐKDN số {siteConfig.legalInfo.businessReg} do Sở Kế hoạch và Đầu tư TP.HCM cấp lần đầu ngày {siteConfig.legalInfo.businessRegDate}
+                         Giáº¥y chá»©ng nháº­n ÄKDN sá»‘ {siteConfig.legalInfo.businessReg} do Sá»Ÿ Káº¿ hoáº¡ch vÃ  Äáº§u tÆ° TP.HCM cáº¥p láº§n Ä‘áº§u ngÃ y {siteConfig.legalInfo.businessRegDate}
                        </p>
                      )}
                      <p className="text-[10px] text-slate-400 mt-2">{siteConfig.copyrightText}</p>
@@ -1473,9 +1473,9 @@ export function SettingsPage() {
          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
        >
          {isSavingSiteConfig ? (
-           <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Đang lưu...</>
+           <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Äang lÆ°u...</>
          ) : (
-           <><Save className="w-4 h-4" />Lưu cấu hình Trang bán hàng</>
+           <><Save className="w-4 h-4" />LÆ°u cáº¥u hÃ¬nh Trang bÃ¡n hÃ ng</>
          )}
        </button>
      </div>
@@ -1490,41 +1490,41 @@ export function SettingsPage() {
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
- <Lock className="w-4 h-4 text-blue-600" /> Quản lý Vai trò & Phân quyền
+ <Lock className="w-4 h-4 text-blue-600" /> Quáº£n lÃ½ Vai trÃ² & PhÃ¢n quyá»n
  </h3>
  <button 
  onClick={() => {
  const newId = (roles.length + 1).toString();
- const newRole: PermissionRole = { id: newId, name: 'Vai trò mới', permissions: [] };
+ const newRole: PermissionRole = { id: newId, name: 'Vai trÃ² má»›i', permissions: [] };
  setRoles([...roles, newRole]);
  setEditingRole(newRole);
  }}
  className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:underline"
  >
- <Plus className="w-3.5 h-3.5" /> Tạo Vai trò mới
+ <Plus className="w-3.5 h-3.5" /> Táº¡o Vai trÃ² má»›i
  </button>
  </div>
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-100">
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Tên Vai trò</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Số quyền hạn</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tác</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">TÃªn Vai trÃ²</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Sá»‘ quyá»n háº¡n</th>
+ <th className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tÃ¡c</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
  {roles.map(role => (
  <tr key={role.id} className="hover:bg-slate-50 transition-colors group">
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <div className="flex flex-col">
  <span className="text-sm font-bold text-slate-900">{role.name}</span>
  <span className="text-[10px] text-slate-500 font-mono">ID: {role.id}</span>
  </div>
  </td>
- <td className="px-6 py-4">
+ <td className="px-3 py-2.5">
  <span className="px-2 py-0.5 bg-slate-100 text-blue-600 text-[10px] font-bold rounded-full border border-slate-300">
- {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
+ {role.permissions.includes('all') ? 'ToÃ n quyá»n' : `${role.permissions.length} quyá»n chi tiáº¿t`}
  </span>
  </td>
  <td className="px-6 py-4 text-right">
@@ -1532,7 +1532,7 @@ export function SettingsPage() {
  onClick={() => setEditingRole(role)}
  className="text-xs font-bold text-blue-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all"
  >
- Thiết lập chi tiết
+ Thiáº¿t láº­p chi tiáº¿t
  </button>
  </td>
  </tr>
@@ -1561,7 +1561,7 @@ export function SettingsPage() {
  />
  <Edit2 className="w-4 h-4 text-slate-500" />
  </div>
- <p className="text-xs text-slate-600">Thiết lập ma trận quyền cho {editingRole.name}</p>
+ <p className="text-xs text-slate-600">Thiáº¿t láº­p ma tráº­n quyá»n cho {editingRole.name}</p>
  </div>
  </div>
  <div className="flex gap-2">
@@ -1569,24 +1569,24 @@ export function SettingsPage() {
  onClick={() => setEditingRole(null)}
  className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100 rounded-lg transition-all"
  >
- Hủy bỏ
+ Há»§y bá»
  </button>
  <button 
  onClick={() => {
  setRoles(roles.map(r => r.id === editingRole.id ? editingRole : r));
  setEditingRole(null);
- addNotification('Đã cập nhật phân quyền', `Vai trò ${editingRole.name} đã được lưu thành công.`);
+ addNotification('ÄÃ£ cáº­p nháº­t phÃ¢n quyá»n', `Vai trÃ² ${editingRole.name} Ä‘Ã£ Ä‘Æ°á»£c lÆ°u thÃ nh cÃ´ng.`);
  }}
  className="px-6 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
  >
- Lưu thay đổi
+ LÆ°u thay Ä‘á»•i
  </button>
  </div>
  </div>
 
  <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-slate-50 border-b border-slate-300 flex justify-between items-center">
- <h4 className="font-bold text-slate-900 text-sm">Ma trận Quyền hạn chi tiết</h4>
+ <h4 className="font-bold text-slate-900 text-sm">Ma tráº­n Quyá»n háº¡n chi tiáº¿t</h4>
  <label className="flex items-center gap-2 cursor-pointer">
  <input 
  type="checkbox" 
@@ -1600,7 +1600,7 @@ export function SettingsPage() {
  }}
  className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600"
  />
- <span className="text-xs font-bold text-slate-800">Gán Toàn quyền (Super Admin)</span>
+ <span className="text-xs font-bold text-slate-800">GÃ¡n ToÃ n quyá»n (Super Admin)</span>
  </label>
  </div>
  
@@ -1659,10 +1659,10 @@ export function SettingsPage() {
  />
  <span className="text-[10px] font-bold uppercase tracking-tight">
  {action === 'view' ? 'Xem' : 
- action === 'create' ? 'Tạo' : 
- action === 'edit' ? 'Sửa' : 
- action === 'delete' ? 'Xóa' : 
- action === 'approve' ? 'Duyệt' : action}
+ action === 'create' ? 'Táº¡o' : 
+ action === 'edit' ? 'Sá»­a' : 
+ action === 'delete' ? 'XÃ³a' : 
+ action === 'approve' ? 'Duyá»‡t' : action}
  </span>
  </label>
  );
@@ -1683,22 +1683,22 @@ export function SettingsPage() {
  {activeTab === 'api' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
  </h3>
- <p className="text-xs text-slate-500">Cấp quyền cho bên thứ 3 (Brand, Logistics) truy cập trực tiếp vào API sàn.</p>
+ <p className="text-xs text-slate-500">Cáº¥p quyá»n cho bÃªn thá»© 3 (Brand, Logistics) truy cáº­p trá»±c tiáº¿p vÃ o API sÃ n.</p>
  <div className="p-3 bg-slate-50 rounded-lg font-mono text-[10px] text-slate-600 flex justify-between items-center">
  <span>sk_live_vcomm_*********************</span>
- <button className="text-blue-600 font-bold">Sao chép</button>
+ <button className="text-blue-600 font-bold">Sao chÃ©p</button>
  </div>
- <button className="w-full py-2 border border-slate-200 rounded-2xl text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
+ <button className="w-full py-2 border border-slate-200 rounded-2xl text-xs font-bold hover:bg-slate-50">Táº¡o má»›i Secret Key</button>
  </div>
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <AppWindow className="w-4 h-4 text-blue-600" /> Webhook Settings
  </h3>
- <p className="text-xs text-slate-500">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
+ <p className="text-xs text-slate-500">Tá»± Ä‘á»™ng Ä‘áº©y thÃ´ng bÃ¡o sá»± kiá»‡n (ÄÆ¡n hÃ ng, Äá»‘i soÃ¡t) vá» Server Ä‘á»‘i tÃ¡c.</p>
  <div className="space-y-3">
  {MOCK_WEBHOOKS.map(wb => (
  <div key={wb.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
@@ -1710,7 +1710,7 @@ export function SettingsPage() {
  </div>
  ))}
  </div>
- <button className="w-full py-2 bg-[#111827] text-white rounded-lg text-xs font-bold hover:bg-slate-800">Cấu hình Webhook mới</button>
+ <button className="w-full py-2 bg-[#111827] text-white rounded-lg text-xs font-bold hover:bg-slate-800">Cáº¥u hÃ¬nh Webhook má»›i</button>
  </div>
  </div>
 
@@ -1719,10 +1719,10 @@ export function SettingsPage() {
  <Globe className="w-8 h-8 text-blue-600" />
  </div>
  <div>
- <h4 className="font-bold text-lg mb-1">OpenAPI Public Documentation</h4>
- <p className="text-slate-500 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
+ <h4 className="font-bold text-lg mb-1">Tài liệu API Công khai</h4>
+ <p className="text-slate-500 text-xs">Cung cáº¥p tÃ i liá»‡u tÃ­ch há»£p (Swagger/Postman) cho cá»™ng Ä‘á»“ng phÃ¡t triá»ƒn vÃ  Ä‘á»‘i tÃ¡c chiáº¿n lÆ°á»£c Ä‘á»ƒ káº¿t ná»‘i trá»±c tiáº¿p kho hÃ ng Brand vá»›i váº­n hÃ nh sÃ n.</p>
  <div className="flex gap-4 mt-3">
- <button className="text-xs font-bold text-blue-600 hover:underline">Download API Spec</button>
+ <button className="text-xs font-bold text-blue-600 hover:underline">Tải đặc tả API</button>
  <button className="text-xs font-bold text-blue-600 hover:underline">Xem Sandbox logs</button>
  </div>
  </div>
@@ -1737,8 +1737,8 @@ export function SettingsPage() {
  <div className="bg-white p-4 border border-slate-200">
  <div className="flex items-center gap-2 mb-3">
  <MapPin className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-800">Chọn địa chỉ nhanh</h3>
- <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Tỉnh → Huyện → Xã</span>
+ <h3 className="text-sm font-bold text-slate-800">Chá»n Ä‘á»‹a chá»‰ nhanh</h3>
+ <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Tá»‰nh â†’ Huyá»‡n â†’ XÃ£</span>
  </div>
  <VietnamAddressSelector
  value={companyAddress}
@@ -1750,8 +1750,8 @@ export function SettingsPage() {
  <div className="bg-white p-4 border border-slate-200">
  <div className="flex items-center gap-2 mb-3">
  <MapPin className="w-4 h-4 text-blue-600" />
- <h3 className="text-sm font-bold text-slate-800">Danh sách Tỉnh/Thành phố</h3>
- <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Nguồn: provinces.open-api.vn</span>
+ <h3 className="text-sm font-bold text-slate-800">Danh sÃ¡ch Tá»‰nh/ThÃ nh phá»‘</h3>
+ <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Nguá»“n: provinces.open-api.vn</span>
  </div>
  <VietnamProvinceBrowser />
  </div>
@@ -1760,30 +1760,30 @@ export function SettingsPage() {
 
  {activeTab === 'org' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
+ <Building2 className="w-5 h-5 text-blue-600" /> Quáº£n lÃ½ CÆ¡ cáº¥u Tá»• chá»©c
  </h3>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
- <h4 className="font-bold text-slate-900 mb-4">Phòng ban</h4>
+ <h4 className="font-bold text-slate-900 mb-4">PhÃ²ng ban</h4>
  {MOCK_DEPARTMENTS.map((dept) => (
  <div key={dept.id} className={cn("bg-white p-3 rounded-2xl border border-slate-200 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
  <span className="text-sm font-medium">{dept.name}</span>
- <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
+ <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sá»­a</button>
  </div>
  ))}
  </div>
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-slate-900">Chức danh</h4>
+ <h4 className="font-bold text-slate-900">Chá»©c danh</h4>
  <button 
  onClick={() => { setNewJobTitle({}); setEditingJobTitle(null); setShowAddJobTitleModal(true); }}
  className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-slate-800 transition"
  >
- <Plus className="w-3 h-3 inline" /> Thêm
+ <Plus className="w-3 h-3 inline" /> ThÃªm
  </button>
  </div>
  <div className="space-y-2 h-[400px] overflow-y-auto pr-1">
@@ -1794,16 +1794,16 @@ export function SettingsPage() {
  <button 
  onClick={() => { setEditingJobTitle(title); setNewJobTitle(title); setShowAddJobTitleModal(true); }}
  className="text-[10px] text-blue-600 hover:bg-slate-100 px-2 py-1 rounded"
- >Sửa</button>
+ >Sá»­a</button>
  </div>
- <div className="text-xs text-slate-600 mb-1 line-clamp-2" title={title.description}>{title.description || 'Chưa có mô tả'}</div>
+ <div className="text-xs text-slate-600 mb-1 line-clamp-2" title={title.description}>{title.description || 'ChÆ°a cÃ³ mÃ´ táº£'}</div>
  <div className="flex gap-2 text-[10px]">
  <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
- Phòng: {MOCK_DEPARTMENTS.find(d => d.id === title.department)?.name || title.department}
+ PhÃ²ng: {MOCK_DEPARTMENTS.find(d => d.id === title.department)?.name || title.department}
  </span>
  {title.rank && (
  <span className="bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">
- Cấp bậc: {MOCK_JOB_RANKS.find(r => r.id === title.rank)?.name || title.rank}
+ Cáº¥p báº­c: {MOCK_JOB_RANKS.find(r => r.id === title.rank)?.name || title.rank}
  </span>
  )}
  </div>
@@ -1813,9 +1813,9 @@ export function SettingsPage() {
  </div>
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-slate-900">Cấp bậc</h4>
+ <h4 className="font-bold text-slate-900">Cáº¥p báº­c</h4>
  <button className="text-xs bg-slate-200 text-slate-800 px-2 py-1 rounded hover:bg-slate-300 transition">
- <Plus className="w-3 h-3 inline" /> Thêm
+ <Plus className="w-3 h-3 inline" /> ThÃªm
  </button>
  </div>
  <div className="space-y-2">
@@ -1825,7 +1825,7 @@ export function SettingsPage() {
  <div className="text-sm font-medium">{item.name}</div>
  <div className="text-[10px] text-slate-500">Level: {item.level}</div>
  </div>
- <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
+ <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sá»­a</button>
  </div>
  ))}
  </div>
@@ -1837,51 +1837,51 @@ export function SettingsPage() {
 
  {activeTab === 'stores' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
+ <Building2 className="w-5 h-5 text-blue-600" /> Quáº£n lÃ½ Chuá»—i cá»­a hÃ ng / Chi nhÃ¡nh
  </h3>
  <button className="bg-slate-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#EAE7DF] flex items-center gap-2">
- <Plus className="w-4 h-4" /> Thêm Cửa hàng
+ <Plus className="w-4 h-4" /> ThÃªm Cá»­a hÃ ng
  </button>
  </div>
 
  <div className="bg-primary-50 border border-primary-100 rounded-lg p-5 mb-6">
- <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
- <p className="text-sm text-primary-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
+ <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cáº¥u hÃ¬nh TÃªn miá»n (Domain)</h4>
+ <p className="text-sm text-primary-700 mb-4">CÃ¡c chi nhÃ¡nh cÃ³ thá»ƒ cháº¡y trÃªn subdomain riÃªng biá»‡t, cung cáº¥p cho nhÃ¢n viÃªn thu ngÃ¢n Ä‘Æ°á»ng dáº«n Ä‘Äƒng nháº­p trá»±c tiáº¿p mÃ  khÃ´ng cáº§n vÃ o trang chá»§ ERP.</p>
  <div className="grid grid-cols-2 gap-4">
  <div className="bg-white p-3 rounded-2xl shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Quận 1</span>
+ <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhÃ¡nh Quáº­n 1</span>
  <p className="font-mono text-sm text-slate-900">sg1.v-erp.com</p>
  </div>
- <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+ <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ĐANG HOẠT ĐỘNG</span>
  </div>
  <div className="bg-white p-3 rounded-2xl shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Cầu Giấy</span>
+ <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhÃ¡nh Cáº§u Giáº¥y</span>
  <p className="font-mono text-sm text-slate-900">hn1.v-erp.com</p>
  </div>
- <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+ <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ĐANG HOẠT ĐỘNG</span>
  </div>
  </div>
  </div>
 
- <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Danh sách Cửa hàng & Nhân sự</h4>
+ <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Danh sÃ¡ch Cá»­a hÃ ng & NhÃ¢n sá»±</h4>
  
  <div className="space-y-4">
  {[
- { id: 'STORE_001', name: 'Chi nhánh Quận 1 - Sài Gòn', address: '123 Lê Lợi, Q.1, TP.HCM', staff: 5, manager: 'Nguyễn Văn A' },
- { id: 'STORE_002', name: 'Chi nhánh Cầu Giấy - Hà Nội', address: '45 Xuân Thủy, Cầu Giấy, HN', staff: 8, manager: 'Trần Thị B' },
+ { id: 'STORE_001', name: 'Chi nhÃ¡nh Quáº­n 1 - SÃ i GÃ²n', address: '123 LÃª Lá»£i, Q.1, TP.HCM', staff: 5, manager: 'Nguyá»…n VÄƒn A' },
+ { id: 'STORE_002', name: 'Chi nhÃ¡nh Cáº§u Giáº¥y - HÃ  Ná»™i', address: '45 XuÃ¢n Thá»§y, Cáº§u Giáº¥y, HN', staff: 8, manager: 'Tráº§n Thá»‹ B' },
  ].map(store => (
  <div key={store.id} className="border border-slate-200 rounded-2xl p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
  <div>
  <h5 className="font-bold text-slate-900 text-lg flex items-center gap-2">{store.name}</h5>
  <p className="text-sm text-slate-600 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
  <div className="flex gap-4 mt-3">
- <span className="text-xs bg-slate-200/50 text-slate-700 px-2 py-1 rounded-md font-medium">Quản lý: <span className="font-bold">{store.manager}</span></span>
- <span className="text-xs bg-slate-100 text-blue-600 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
+ <span className="text-xs bg-slate-200/50 text-slate-700 px-2 py-1 rounded-md font-medium">Quáº£n lÃ½: <span className="font-bold">{store.manager}</span></span>
+ <span className="text-xs bg-slate-100 text-blue-600 px-2 py-1 rounded-md font-medium">{store.staff} nhÃ¢n viÃªn</span>
  </div>
  </div>
  <div className="flex gap-2">
@@ -1896,10 +1896,10 @@ export function SettingsPage() {
  )}
  {activeTab === 'comms' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <MessageSquare className="w-5 h-5 text-blue-600" /> Tích hợp SMS OTP & Zalo ZNS
+ <MessageSquare className="w-5 h-5 text-blue-600" /> TÃ­ch há»£p SMS OTP & Zalo ZNS
  </h3>
  </div>
 
@@ -1911,7 +1911,7 @@ export function SettingsPage() {
  <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
  <div>
  <h4 className="font-bold text-slate-900">Zalo ZNS (Zalo Notification Service)</h4>
- <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1 border border-emerald-100">Đang hoạt động</p>
+ <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1 border border-emerald-100">Äang hoáº¡t Ä‘á»™ng</p>
  </div>
  </div>
  <div className="h-8 w-14 bg-[#EAE7DF] rounded-full p-1 cursor-pointer">
@@ -1931,13 +1931,13 @@ export function SettingsPage() {
  <label className="text-xs font-bold text-slate-700 block mb-1">Access Token</label>
  <div className="flex gap-2">
  <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
- <button className="px-3 bg-slate-100 border border-slate-200 rounded-2xl hover:bg-slate-200 text-sm font-bold text-slate-700">Đồng bộ</button>
+ <button className="px-3 bg-slate-100 border border-slate-200 rounded-2xl hover:bg-slate-200 text-sm font-bold text-slate-700">Äá»“ng bá»™</button>
  </div>
- <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sẽ hết hạn vào 20:00 25/04/2026. Bật auto-refresh để tự làm mới.</p>
+ <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sáº½ háº¿t háº¡n vÃ o 20:00 25/04/2026. Báº­t auto-refresh Ä‘á»ƒ tá»± lÃ m má»›i.</p>
  </div>
  </div>
  <button className="w-full mt-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
- Kiểm tra kết nối ZNS
+ Kiá»ƒm tra káº¿t ná»‘i ZNS
  </button>
  </div>
 
@@ -1948,7 +1948,7 @@ export function SettingsPage() {
  <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
  <div>
  <h4 className="font-bold text-slate-900">SMS OTP & Brandname</h4>
- <p className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">Chưa thiết lập</p>
+ <p className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">ChÆ°a thiáº¿t láº­p</p>
  </div>
  </div>
  <div className="h-8 w-14 bg-slate-200 rounded-full p-1 cursor-pointer">
@@ -1957,7 +1957,7 @@ export function SettingsPage() {
  </div>
  <div className="space-y-4 opacity-70">
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Nhà cung cấp (SMS Vendor)</label>
+ <label className="text-xs font-bold text-slate-700 block mb-1">NhÃ  cung cáº¥p (SMS Vendor)</label>
  <select className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
  <option>eSMS.vn</option>
  <option>VietGuys</option>
@@ -1966,44 +1966,44 @@ export function SettingsPage() {
  </select>
  </div>
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Brandname đăng ký</label>
- <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
+ <label className="text-xs font-bold text-slate-700 block mb-1">Brandname Ä‘Äƒng kÃ½</label>
+ <input type="text" placeholder="VÃ­ dá»¥: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">API Key</label>
- <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <input type="password" placeholder="Nháº­p API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Secret Key</label>
- <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <input type="password" placeholder="Nháº­p Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  </div>
  </div>
  <button className="w-full mt-6 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
- Lưu thiết lập SMS
+ LÆ°u thiáº¿t láº­p SMS
  </button>
  </div>
  </div>
  
  <div className="bg-slate-100 border border-slate-200 rounded-2xl p-5 mt-6">
- <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
- <p className="text-sm text-orange-800 mb-4">Cấu hình các sự kiện hệ thống tự động gọi API ZNS/SMS để thông báo chăm sóc khách hàng.</p>
+ <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Ká»‹ch báº£n Gá»­i tin (Triggers)</h4>
+ <p className="text-sm text-orange-800 mb-4">Cáº¥u hÃ¬nh cÃ¡c sá»± kiá»‡n há»‡ thá»‘ng tá»± Ä‘á»™ng gá»i API ZNS/SMS Ä‘á»ƒ thÃ´ng bÃ¡o chÄƒm sÃ³c khÃ¡ch hÃ ng.</p>
  <div className="space-y-3">
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
- <span className="text-sm font-medium text-slate-800 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
- <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
+ <span className="text-sm font-medium text-slate-800 flex-1">Nháº¯n mÃ£ OTP xÃ¡c thá»±c khi Ä‘Äƒng nháº­p/Ä‘á»•i máº­t kháº©u</span>
+ <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Æ¯u tiÃªn: SMS OTP</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
- <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
+ <span className="text-sm font-medium text-slate-800 flex-1">Gá»­i Zalo ZNS xÃ¡c nháº­n Äáº·t hÃ ng thÃ nh cÃ´ng</span>
  <span className="text-[10px] font-bold text-blue-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
  <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
- <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
- <button className="text-[10px] font-bold text-blue-600 hover:text-orange-800 underline">Cấu hình Mẫu tin</button>
+ <span className="text-sm font-medium text-slate-800 flex-1">Gá»­i Zalo ZNS chÃºc má»«ng Sinh nháº­t KhÃ¡ch hÃ ng (Loyalty)</span>
+ <button className="text-[10px] font-bold text-blue-600 hover:text-orange-800 underline">Cáº¥u hÃ¬nh Máº«u tin</button>
  </label>
  </div>
  </div>
@@ -2013,17 +2013,17 @@ export function SettingsPage() {
 
  {activeTab === 'popup' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <Send className="w-4 h-4 text-blue-600" /> Trung tâm Gửi thông báo (Push Notification)
+ <Send className="w-4 h-4 text-blue-600" /> Trung tÃ¢m Gá»­i thÃ´ng bÃ¡o (Push Notification)
  </h3>
 
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tiêu đề thông báo</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">TiÃªu Ä‘á» thÃ´ng bÃ¡o</label>
  <input 
  type="text" 
- placeholder="VD: Thông báo bảo trì hệ thống" 
+ placeholder="VD: ThÃ´ng bÃ¡o báº£o trÃ¬ há»‡ thá»‘ng" 
  value={notiTitle}
  onChange={(e) => setNotiTitle(e.target.value)}
  className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
@@ -2031,10 +2031,10 @@ export function SettingsPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Nội dung thông báo (hỗ trợ văn bản)</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Ná»™i dung thÃ´ng bÃ¡o (há»— trá»£ vÄƒn báº£n)</label>
  <textarea 
  rows={4} 
- placeholder="Chi tiết thông báo..." 
+ placeholder="Chi tiáº¿t thÃ´ng bÃ¡o..." 
  value={notiMessage}
  onChange={(e) => setNotiMessage(e.target.value)}
  className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
@@ -2042,13 +2042,13 @@ export function SettingsPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Äá»‘i tÆ°á»£ng nháº­n thÃ´ng bÃ¡o</label>
  <select className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
- <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
- <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
- <option value="customer">Tất cả Khách hàng (Storefront App)</option>
- <option value="dept_operations">Phòng Vận hành</option>
- <option value="dept_cskh">Phòng Chăm sóc Khách hàng</option>
+ <option value="all">Táº¥t cáº£ nhÃ¢n viÃªn (Há»‡ thá»‘ng ERP)</option>
+ <option value="seller">Táº¥t cáº£ NhÃ  bÃ¡n hÃ ng (Seller Center)</option>
+ <option value="customer">Táº¥t cáº£ KhÃ¡ch hÃ ng (Storefront App)</option>
+ <option value="dept_operations">PhÃ²ng Váº­n hÃ nh</option>
+ <option value="dept_cskh">PhÃ²ng ChÄƒm sÃ³c KhÃ¡ch hÃ ng</option>
  </select>
  </div>
 
@@ -2062,29 +2062,29 @@ export function SettingsPage() {
  onClick={() => {
  if (!notiTitle.trim() || !notiMessage.trim()) return;
  addNotification(notiTitle, notiMessage);
- setNotiStatus('Đã gửi thông báo thành công!');
+ setNotiStatus('ÄÃ£ gá»­i thÃ´ng bÃ¡o thÃ nh cÃ´ng!');
  setNotiTitle('');
  setNotiMessage('');
  setTimeout(() => setNotiStatus(''), 3000);
  }}
  className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
- <Send className="w-4 h-4" /> Bắn thông báo ngay
+ <Send className="w-4 h-4" /> Báº¯n thÃ´ng bÃ¡o ngay
  </button>
  </div>
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <AppWindow className="w-4 h-4 text-blue-600" /> Quản lý Popup Website
+ <AppWindow className="w-4 h-4 text-blue-600" /> Quáº£n lÃ½ Popup Website
  </h3>
  
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
+ <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tráº¡ng thÃ¡i Popup hiá»‡n váº­t / Quáº£ng cÃ¡o</label>
  <div className="flex items-center gap-2">
- <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-500 bg-slate-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
+ <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-500 bg-slate-100")}>{isPopupActive ? 'Äang má»Ÿ (Banner tá»± chÃ¨n)' : 'KhÃ´ng tá»± Ä‘á»™ng hiá»ƒn thá»‹'}</span>
  <div 
  onClick={() => setIsPopupActive(!isPopupActive)}
  className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", isPopupActive ? "bg-emerald-500" : "bg-slate-200")}
@@ -2097,19 +2097,19 @@ export function SettingsPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Tiêu đề Popup</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5">TiÃªu Ä‘á» Popup</label>
  <input 
  type="text" 
- placeholder="VD: Khuyến Mãi Hè 2024" 
+ placeholder="VD: Khuyáº¿n MÃ£i HÃ¨ 2024" 
  value={popupTitle}
  onChange={(e) => setPopupTitle(e.target.value)}
  className="w-full p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Nội dung / Mô tả</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5">Ná»™i dung / MÃ´ táº£</label>
  <textarea 
- placeholder="Nhập nội dung hiển thị trong popup..." 
+ placeholder="Nháº­p ná»™i dung hiá»ƒn thá»‹ trong popup..." 
  value={popupDesc}
  rows={2}
  onChange={(e) => setPopupDesc(e.target.value)}
@@ -2117,7 +2117,7 @@ export function SettingsPage() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Hình ảnh (URL hoặc upload)</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5">HÃ¬nh áº£nh (URL hoáº·c upload)</label>
  <input 
  type="text" 
  placeholder="https://example.com/banner.jpg" 
@@ -2127,11 +2127,11 @@ export function SettingsPage() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
+ <label className="block text-xs font-bold text-slate-500 mb-1.5">NÃºt Call-To-Action (NÃºt Ä‘iá»u hÆ°á»›ng)</label>
  <div className="flex gap-2">
  <input 
  type="text" 
- placeholder="Tên nút (VD: Xem ngay)" 
+ placeholder="TÃªn nÃºt (VD: Xem ngay)" 
  value={popupCtaText}
  onChange={(e) => setPopupCtaText(e.target.value)}
  className="w-1/3 p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
@@ -2148,7 +2148,7 @@ export function SettingsPage() {
  </div>
  
  <div className="bg-slate-50 border border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
- <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Xem trước</div>
+ <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Xem trÆ°á»›c</div>
  <div className="w-full max-w-[240px] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
  {popupImage ? (
  <div className="h-24 overflow-hidden relative">
@@ -2174,10 +2174,10 @@ export function SettingsPage() {
  
  <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
  <button 
- onClick={() => alert('Đã lưu cấu hình Popup!')}
+ onClick={() => alert('ÄÃ£ lÆ°u cáº¥u hÃ¬nh Popup!')}
  className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
  >
- Lưu thiết lập Popup
+ LÆ°u thiáº¿t láº­p Popup
  </button>
  </div>
  </div>
@@ -2187,19 +2187,19 @@ export function SettingsPage() {
 
  {activeTab === 'inventory' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
+ <Package className="w-5 h-5 text-blue-600" /> PhÃ¢n loáº¡i & Cáº¥u hÃ¬nh HÃ ng hÃ³a
  </h3>
- <p className="text-sm text-slate-600 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
+ <p className="text-sm text-slate-600 mb-4">Quáº£n lÃ½ cÃ¡c loáº¡i máº·t hÃ ng, Ä‘á»‹nh má»©c dá»± trá»¯, Ä‘Æ¡n vá»‹ tÃ­nh, vÃ  cÃ¡c thuá»™c tÃ­nh lÆ°u kho (SKU/Barcode).</p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
  <div className="flex justify-between items-center mb-4">
- <h4 className="font-bold text-slate-900">Danh mục Nhóm Hàng hóa</h4>
- <button className="text-xs text-blue-600 font-bold hover:underline">+ Thêm nhóm</button>
+ <h4 className="font-bold text-slate-900">Danh má»¥c NhÃ³m HÃ ng hÃ³a</h4>
+ <button className="text-xs text-blue-600 font-bold hover:underline">+ ThÃªm nhÃ³m</button>
  </div>
  <div className="space-y-2">
- {['Nguyên vật liệu (Raw Materials)', 'Thành phẩm (Finished Goods)', 'Bán thành phẩm (WIP)', 'Hàng hóa thương mại (Trading Goods)'].map((type, i) => (
+ {['NguyÃªn váº­t liá»‡u (Raw Materials)', 'ThÃ nh pháº©m (Finished Goods)', 'BÃ¡n thÃ nh pháº©m (WIP)', 'HÃ ng hÃ³a thÆ°Æ¡ng máº¡i (Trading Goods)'].map((type, i) => (
  <div key={i} className="flex justify-between items-center bg-white p-3 border border-slate-200 rounded-2xl">
  <span className="text-sm font-medium">{type}</span>
  <button className="text-slate-500 hover:text-slate-700"><Edit2 className="w-4 h-4" /></button>
@@ -2209,15 +2209,15 @@ export function SettingsPage() {
  </div>
 
  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
- <h4 className="font-bold text-slate-900 mb-4">Phương pháp Quản lý Kho</h4>
+ <h4 className="font-bold text-slate-900 mb-4">PhÆ°Æ¡ng phÃ¡p Quáº£n lÃ½ Kho</h4>
  <div className="space-y-3">
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100/50">
  <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" defaultChecked />
- <span className="text-sm font-medium">Bình quân gia quyền (Weighted Average)</span>
+ <span className="text-sm font-medium">BÃ¬nh quÃ¢n gia quyá»n (Weighted Average)</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100/50">
  <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" />
- <span className="text-sm font-medium">Nhập trước xuất trước (FIFO)</span>
+ <span className="text-sm font-medium">Nháº­p trÆ°á»›c xuáº¥t trÆ°á»›c (FIFO)</span>
  </label>
  </div>
  </div>
@@ -2233,7 +2233,7 @@ export function SettingsPage() {
  <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
  <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h3 className="font-bold text-slate-900">{editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}</h3>
+ <h3 className="font-bold text-slate-900">{editingJobTitle ? 'Chá»‰nh sá»­a Chá»©c danh' : 'ThÃªm Chá»©c danh má»›i'}</h3>
  <button 
  onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
  className="text-slate-500 hover:text-slate-700 font-bold text-lg leading-none"
@@ -2243,44 +2243,44 @@ export function SettingsPage() {
  </div>
  <div className="p-4 overflow-y-auto flex-1 space-y-4">
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">TÃªn chá»©c danh <span className="text-red-500">*</span></label>
  <input 
  type="text" 
  value={newJobTitle.name || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, name: e.target.value})}
  className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
- placeholder="VD: Trưởng phòng Marketing"
+ placeholder="VD: TrÆ°á»Ÿng phÃ²ng Marketing"
  />
  </div>
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">PhÃ²ng ban <span className="text-red-500">*</span></label>
  <select 
  value={newJobTitle.department || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
  className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
  >
- <option value="">Chọn phòng ban</option>
+ <option value="">Chá»n phÃ²ng ban</option>
  {MOCK_DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
  </select>
  </div>
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Cấp bậc</label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">Cáº¥p báº­c</label>
  <select 
  value={newJobTitle.rank || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
  className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
  >
- <option value="">Chọn cấp bậc</option>
+ <option value="">Chá»n cáº¥p báº­c</option>
  {MOCK_JOB_RANKS.map(r => <option key={r.id} value={r.id}>{r.name} (Level {r.level})</option>)}
  </select>
  </div>
  <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Mô tả công việc</label>
+ <label className="block text-sm font-bold text-slate-800 mb-1">MÃ´ táº£ cÃ´ng viá»‡c</label>
  <textarea 
  value={newJobTitle.description || ''} 
  onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
  className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm min-h-[100px]"
- placeholder="Mô tả ngắn gọn chức năng, nhiệm vụ..."
+ placeholder="MÃ´ táº£ ngáº¯n gá»n chá»©c nÄƒng, nhiá»‡m vá»¥..."
  />
  </div>
  </div>
@@ -2289,14 +2289,14 @@ export function SettingsPage() {
  onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
  className="px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-100"
  >
- Hủy
+ Há»§y
  </button>
  <button 
  onClick={handleSaveJobTitle}
  disabled={!newJobTitle.name || !newJobTitle.department}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 disabled:opacity-50"
  >
- Lưu Chức danh
+ LÆ°u Chá»©c danh
  </button>
  </div>
  </div>
@@ -2313,8 +2313,8 @@ export function SettingsPage() {
  <BadgeDollarSign className="w-6 h-6" />
  </div>
  <div>
- <h3 className="text-lg font-bold text-slate-900">{editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}</h3>
- <p className="text-xs text-slate-600">Thiết lập tham số và phạm vi áp dụng phí</p>
+ <h3 className="text-lg font-bold text-slate-900">{editingFee ? 'Chá»‰nh sá»­a loáº¡i phÃ­' : 'ThÃªm loáº¡i phÃ­ má»›i'}</h3>
+ <p className="text-xs text-slate-600">Thiáº¿t láº­p tham sá»‘ vÃ  pháº¡m vi Ã¡p dá»¥ng phÃ­</p>
  </div>
  </div>
  <button onClick={() => setShowFeeModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
@@ -2325,36 +2325,36 @@ export function SettingsPage() {
  <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
  {/* Fee Name */}
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tên loại phí</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">TÃªn loáº¡i phÃ­</label>
  <input 
  type="text" 
  value={newFee.name || ''}
  onChange={(e) => setNewFee({ ...newFee, name: e.target.value })}
- placeholder="VD: Phí vận hành kho, Phí thanh toán..."
+ placeholder="VD: PhÃ­ váº­n hÃ nh kho, PhÃ­ thanh toÃ¡n..."
  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
  />
  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loại phí</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loáº¡i phÃ­</label>
  <div className="flex bg-slate-100 p-1 rounded-xl">
  <button 
  onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'percentage' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
- Phần trăm (%)
+ Pháº§n trÄƒm (%)
  </button>
  <button 
  onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'fixed' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >
- Cố định (đ)
+ Cá»‘ Ä‘á»‹nh (Ä‘)
  </button>
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Giá trị</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">GiÃ¡ trá»‹</label>
  <div className="relative">
  <input 
  type="number" 
@@ -2363,7 +2363,7 @@ export function SettingsPage() {
  className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:border-slate-900 outline-none"
  />
  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">
- {newFee.type === 'percentage' ? '%' : 'đ'}
+ {newFee.type === 'percentage' ? '%' : 'Ä‘'}
  </span>
  </div>
  </div>
@@ -2371,7 +2371,7 @@ export function SettingsPage() {
 
  {/* Targeting: Seller Type */}
  <div className="space-y-3">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ãp dá»¥ng cho Loáº¡i NhÃ  BÃ¡n</label>
  <div className="flex gap-4">
  {['mall', 'normal'].map((type) => {
  const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
@@ -2392,7 +2392,7 @@ export function SettingsPage() {
  {isSelected && <Check className="w-3 h-3 text-white" />}
  </div>
  <span className={cn("text-xs font-bold", isSelected ? "text-orange-800" : "text-slate-700")}>
- {type === 'mall' ? 'Shop Mall' : 'Seller thường'}
+ {type === 'mall' ? 'Shop Mall' : 'Seller thÆ°á»ng'}
  </span>
  </div>
  );
@@ -2403,12 +2403,12 @@ export function SettingsPage() {
  {/* Targeting: Categories */}
  <div className="space-y-3">
  <div className="flex justify-between items-center">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">NgÃ nh hÃ ng Ã¡p dá»¥ng</label>
  <button 
  onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
  className="text-[10px] font-bold text-blue-600 hover:underline"
  >
- Tất cả ngành
+ Táº¥t cáº£ ngÃ nh
  </button>
  </div>
  <div className="flex flex-wrap gap-2">
@@ -2444,12 +2444,12 @@ export function SettingsPage() {
 
  {/* Description */}
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
+ <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">MÃ´ táº£ (Ghi chÃº)</label>
  <textarea 
  rows={2}
  value={newFee.description || ''}
  onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
- placeholder="Ghi chú về ý nghĩa loại phí này..."
+ placeholder="Ghi chÃº vá» Ã½ nghÄ©a loáº¡i phÃ­ nÃ y..."
  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 outline-none resize-none"
  />
  </div>
@@ -2460,7 +2460,7 @@ export function SettingsPage() {
  onClick={() => setShowFeeModal(false)}
  className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all"
  >
- Hủy bỏ
+ Há»§y bá»
  </button>
  <button 
  onClick={() => {
@@ -2470,11 +2470,11 @@ export function SettingsPage() {
  setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
  }
  setShowFeeModal(false);
- addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
+ addNotification('ÄÃ£ cáº­p nháº­t cáº¥u hÃ¬nh', `Loáº¡i phÃ­ ${newFee.name} Ä‘Ã£ Ä‘Æ°á»£c lÆ°u thÃ nh cÃ´ng.`);
  }}
  className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
  >
- {editingFee ? 'Cập nhật' : 'Xác nhận Thêm'}
+ {editingFee ? 'Cáº­p nháº­t' : 'XÃ¡c nháº­n ThÃªm'}
  </button>
  </div>
  </div>
@@ -2492,3 +2492,5 @@ export function SettingsPage() {
  </>
  );
 }
+
+

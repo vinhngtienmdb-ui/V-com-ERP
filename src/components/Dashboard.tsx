@@ -602,7 +602,7 @@ export function Dashboard() {
   {config.showTopSellers && (
   <div key="topSellers" className="bg-white rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90 backdrop-blur-sm rounded-t-xl">
-  <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
+  <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Nhà bán hàng xuất sắc</h3>
   <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
   </div>
   <div className="divide-y divide-slate-100 overflow-y-auto flex-1 custom-scrollbar">
