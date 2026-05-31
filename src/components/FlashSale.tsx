@@ -573,7 +573,7 @@ export function FlashSale() {
  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
  <Users2 className="w-5 h-5" />
  </div>
- <span className="text-[10px] text-rose-600 font-bold">MỚI NÓNG</span>
+ <span className="text-[10px] text-rose-600 font-bold">HOT NEW</span>
  </div>
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Trưởng nhóm KOL tham gia</p>
  <div className="text-2xl font-bold text-[#111827]">24</div>
@@ -584,7 +584,7 @@ export function FlashSale() {
  <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
  <Zap className="w-5 h-5" />
  </div>
- <span className="text-[10px] text-[#2563EB] font-bold">Deal Trực tiếp</span>
+ <span className="text-[10px] text-[#2563EB] font-bold">Live Deal</span>
  </div>
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Flash Sale Đang chạy</p>
  <div className="text-2xl font-bold text-[#111827]">03</div>

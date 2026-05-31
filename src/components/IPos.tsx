@@ -290,7 +290,13 @@ const CartItemEditingModal = ({
 
 export function IPosModule() {
   const { user } = useAuth();
-  const { activeStore } = useStore();
+  const { 
+    activeStore,
+    setIposCartCount,
+    setIposCartSubtotal,
+    setIposCartDiscount,
+    setIposCartTotal
+  } = useStore();
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>(() => {
@@ -823,11 +829,13 @@ export function IPosModule() {
   }, [activeStore, userRole]);
 
   useEffect(() => {
+    if (!activeStore) return;
     const unsub = onSnapshot(
       query(
         collection(db, "orders"),
         where("source", "==", "emenu"),
         where("status", "==", "pending"),
+        where("companyId", "==", activeStore.companyId),
       ),
       (snap) => {
         setPendingEMenuOrders(
@@ -836,7 +844,7 @@ export function IPosModule() {
       },
     );
     return () => unsub();
-  }, []);
+  }, [activeStore]);
 
   const calculateLoyaltyPayment = () => {
     if (!customer) return 0;
@@ -1111,6 +1119,15 @@ export function IPosModule() {
     subtotal - discount - promoWalletDiscount - loyaltyDiscount,
   );
 
+  useEffect(() => {
+    if (setIposCartCount && setIposCartSubtotal && setIposCartDiscount && setIposCartTotal) {
+      setIposCartCount(cart.reduce((sum: number, item: any) => sum + item.quantity, 0));
+      setIposCartSubtotal(subtotal);
+      setIposCartDiscount(discount + (loyaltyDiscount || 0) + (promoWalletDiscount || 0));
+      setIposCartTotal(total);
+    }
+  }, [cart, subtotal, discount, loyaltyDiscount, promoWalletDiscount, total, setIposCartCount, setIposCartSubtotal, setIposCartDiscount, setIposCartTotal]);
+
   const handleCheckout = () => {
     setShowPaymentModal(true);
   };
@@ -1315,6 +1332,7 @@ export function IPosModule() {
         staffId: user.uid,
         storeId: activeStore.id,
         companyId: activeStore.companyId,
+        tenantId: activeStore.companyId,
         source: "ipos",
         customerName: customer?.name || "Khách lẻ",
         customerId: finalCustomerId,

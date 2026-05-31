@@ -328,9 +328,9 @@ export function DocumentManager() {
                             <div className="flex gap-2 text-slate-600 font-medium">
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">File</span>
                               <span className="bg-white border text-orange-700 px-2 py-1 rounded shadow-sm border-slate-300 cursor-pointer font-bold">Home</span>
-                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Chèn</span>
+                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Insert</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Data</span>
-                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Xem lại</span>
+                              <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">Review</span>
                               <span className="hover:bg-slate-200 px-2 py-1 rounded cursor-pointer">View</span>
                             </div>
                           </div>

@@ -56,17 +56,16 @@ function AppLayout() {
  const isIPos = location.pathname === '/ipos';
 
  React.useEffect(() => {
-   const savedFavicon = localStorage.getItem('system-favicon');
-   if (savedFavicon) {
-     const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-     if (faviconLink) {
-       faviconLink.href = savedFavicon;
-     } else {
-       const link = document.createElement('link');
-       link.rel = 'icon';
-       link.href = savedFavicon;
-       document.head.appendChild(link);
-     }
+   const defaultFavicon = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='8' height='4' x='8' y='2' rx='1' ry='1'/><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><path d='M9 12h6'/><path d='M9 16h6'/></svg>`;
+   const savedFavicon = localStorage.getItem('system-favicon') || defaultFavicon;
+   const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+   if (faviconLink) {
+     faviconLink.href = savedFavicon;
+   } else {
+     const link = document.createElement('link');
+     link.rel = 'icon';
+     link.href = savedFavicon;
+     document.head.appendChild(link);
    }
  }, []);
 

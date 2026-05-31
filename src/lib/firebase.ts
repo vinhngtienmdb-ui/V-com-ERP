@@ -88,12 +88,16 @@ export const handleFirestoreError = (error: any, operationType: FirestoreErrorIn
 // Connection test
 async function testConnection() {
  try {
- // Attempt to read a dummy doc to verify connection
- await getDocFromServer(doc(db, '_internal', 'connection-test'));
- } catch (error: any) {
- if (error.message?.includes('the client is offline')) {
- console.warn("Please check your Firebase configuration or connection (operating in offline cache mode).");
- }
+  // Only check server if navigator is online, otherwise operate offline-first silently
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+   console.log("Operating in offline-first mode.");
+   return;
+  }
+  await getDocFromServer(doc(db, '_internal', 'connection-test')).catch(() => {
+   // Gracefully swallow connection failures during startup
+  });
+ } catch (error) {
+  // Gracefully bypass any error
  }
 }
 testConnection();

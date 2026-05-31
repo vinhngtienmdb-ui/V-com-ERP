@@ -97,7 +97,7 @@ export function SocialCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tỉ lệ Chuyển đổi UGC</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase">UGC Conversion Rate</span>
  <TrendingUp className="w-4 h-4 text-[#10B981]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">4.8%</div>
