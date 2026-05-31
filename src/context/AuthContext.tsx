@@ -64,7 +64,7 @@ const logAdminAudit = async (
   }
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
  const [user, setUser] = useState<User | null>(null);
  const [loading, setLoading] = useState(true);
  const [isStaff, setIsStaff] = useState(false);
@@ -124,7 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
      name: user.displayName || 'Vinh Nguyen', 
      role: 'admin', 
      username: user.email ? user.email.split('@')[0] : 'admin',
-     branch: 'Chi nhánh Trung tâm',
      tenantId: 'tenant-vcomm-prod-01'
    });
  } else {
@@ -144,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
  return () => unsubscribe();
  }, []);
+
 
  const login = async (username: string, password: string) => {
  const email = username.includes('@') ? username : `${username}@v-erp.com`;

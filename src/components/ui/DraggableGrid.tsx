@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../../lib/storage';
 import React, { useState, useEffect, useMemo } from 'react';
 // @ts-ignore
 import { Responsive as ResponsiveGridLayoutNative, useContainerWidth } from "react-grid-layout";
@@ -73,7 +74,7 @@ export function DraggableGrid({
     try {
       const savedPath = window.location.pathname;
       const savedKey = `rgl-${savedPath}-${gridId}`;
-      const saved = localStorage.getItem(savedKey);
+      const saved = safeLocalStorage.getItem(savedKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.lg) {
@@ -119,7 +120,7 @@ export function DraggableGrid({
     try {
       const savedPath = window.location.pathname;
       const savedKey = `rgl-${savedPath}-${gridId}`;
-      localStorage.setItem(savedKey, JSON.stringify(layouts));
+      safeLocalStorage.setItem(savedKey, JSON.stringify(layouts));
       setOriginalLayouts(JSON.parse(JSON.stringify(layouts))); // Deep clone to prevent reference issues
       setIsDirty(false);
     } catch(e) {}

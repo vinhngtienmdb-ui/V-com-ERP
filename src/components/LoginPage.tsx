@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import React from 'react';
 import { LogIn, Rocket, ShieldCheck, Zap, AlertCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +13,7 @@ export function LoginPage() {
  const [logo, setLogo] = React.useState<string | null>(null);
 
  React.useEffect(() => {
-   const savedLogo = localStorage.getItem('system-logo');
+   const savedLogo = safeLocalStorage.getItem('system-logo');
    if (savedLogo) setLogo(savedLogo);
  }, []);
 

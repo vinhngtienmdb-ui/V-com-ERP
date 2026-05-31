@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -104,8 +105,9 @@ import { IPosPayroll } from "./IPosPayroll";
 import { IPosOrders } from "./IPosOrders";
 import { IPosCustomers } from "./IPosCustomers";
 import { IPosReports, IPosPromotions } from "./IPosReports";
+import { IPosHandover } from "./IPosHandover";
 import { IPosStaff, IPosStore } from "../types/erp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const BOM_MAP: Record<string, { materialId: string; quantity: number }[]> = {
   "Cafe Phin Sữa Đá": [
@@ -118,6 +120,47 @@ const BOM_MAP: Record<string, { materialId: string; quantity: number }[]> = {
     { materialId: "MAT-005", quantity: 0.05 }, // 50ml Syrup
     { materialId: "MAT-006", quantity: 2 }, // 2 Peach slices
   ],
+};
+
+const injectK80PrintStyle = () => {
+  const styleId = "k80-print-override-style";
+  let styleEl = document.getElementById(styleId);
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    styleEl.innerHTML = `
+      @media print {
+        @page {
+          size: 80mm auto !important;
+          margin: 0 !important;
+        }
+        body * {
+          visibility: hidden !important;
+        }
+        #pos-print-document, #pos-print-document * {
+          visibility: visible !important;
+        }
+        #pos-print-document {
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 80mm !important;
+          margin: 0 !important;
+          padding: 4mm !important;
+          box-shadow: none !important;
+          border: none !important;
+          background: white !important;
+          color: black !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleEl);
+  }
+};
+
+const removeK80PrintStyle = () => {
+  const styleEl = document.getElementById("k80-print-override-style");
+  styleEl?.remove();
 };
 
 function getColorClasses(color: string) {
@@ -300,40 +343,67 @@ export function IPosModule() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>(() => {
-    const saved = localStorage.getItem("ipos_cart");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = safeLocalStorage.getItem("ipos_cart");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+      return [];
+    } catch (e) {
+      console.error("Error parsing ipos_cart from localStorage:", e);
+      return [];
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("ipos_cart", JSON.stringify(cart));
+    safeLocalStorage.setItem("ipos_cart", JSON.stringify(cart));
   }, [cart]);
   const [customer, setCustomer] = useState<any | null>(() => {
-    const saved = localStorage.getItem("ipos_customer");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = safeLocalStorage.getItem("ipos_customer");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+      return null;
+    } catch (e) {
+      console.error("Error parsing ipos_customer from localStorage:", e);
+      return null;
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("ipos_customer", JSON.stringify(customer));
+    safeLocalStorage.setItem("ipos_customer", JSON.stringify(customer));
   }, [customer]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isShiftActive, setIsShiftActive] = useState(() => {
-    const saved = localStorage.getItem("ipos_shift_active");
+    const saved = safeLocalStorage.getItem("ipos_shift_active");
     return saved === "true";
   });
   const [shiftData, setShiftData] = useState<any>(() => {
-    const saved = localStorage.getItem("ipos_shift_data");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = safeLocalStorage.getItem("ipos_shift_data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+      return null;
+    } catch (e) {
+      console.error("Error parsing ipos_shift_data from localStorage:", e);
+      return null;
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("ipos_shift_active", isShiftActive.toString());
+    safeLocalStorage.setItem("ipos_shift_active", isShiftActive.toString());
   }, [isShiftActive]);
 
   useEffect(() => {
     if (shiftData) {
-      localStorage.setItem("ipos_shift_data", JSON.stringify(shiftData));
+      safeLocalStorage.setItem("ipos_shift_data", JSON.stringify(shiftData));
     } else {
-      localStorage.removeItem("ipos_shift_data");
+      safeLocalStorage.removeItem("ipos_shift_data");
     }
   }, [shiftData]);
   const [discountCode, setDiscountCode] = useState("");
@@ -462,23 +532,11 @@ export function IPosModule() {
       },
     ];
   };
-  const [activeTab, setActiveTab] = useState<
-    | "sales"
-    | "history"
-    | "lookup"
-    | "management"
-    | "delivery"
-    | "dashboard"
-    | "tables"
-    | "handover"
-    | "inventory"
-    | "products"
-    | "payroll"
-    | "orders"
-    | "customers"
-    | "reports"
-    | "promotions"
-  >("dashboard");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get("tab") as any) || "dashboard";
+  const setActiveTab = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [orderHistory, setOrderHistory] = useState<any[]>([]);
   const [incomingExternalOrders, setIncomingExternalOrders] = useState<any[]>([
     {
@@ -555,7 +613,8 @@ export function IPosModule() {
     any | null
   >(null);
   const [showShiftSummary, setShowShiftSummary] = useState(false);
-  const [printMode, setPrintMode] = useState<"proforma" | "customer_bill" | "kitchen_bill">("customer_bill");
+  const [printMode, setPrintMode] = useState<"proforma" | "customer_bill" | "kitchen_bill" | "handover">("customer_bill");
+  const [handoverToPrint, setHandoverToPrint] = useState<any>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
   const [completedOrderData, setCompletedOrderData] = useState<any>(null);
@@ -1134,7 +1193,11 @@ export function IPosModule() {
 
   const handlePrintProforma = () => {
     setPrintMode("proforma");
-    setTimeout(() => window.print(), 100);
+    injectK80PrintStyle();
+    setTimeout(() => {
+      window.print();
+      removeK80PrintStyle();
+    }, 150);
   };
 
   const startListening = () => {
@@ -1770,7 +1833,7 @@ export function IPosModule() {
   return (
     <div
       className={cn(
-        "h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
+        "ipos-modernized h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
         isDarkMode && "dark bg-[#0f172a] text-slate-300",
       )}
     >
@@ -1778,97 +1841,190 @@ export function IPosModule() {
 
       {/* POS Print Document */}
       <div id="pos-print-document" className="hidden print:block bg-white text-black p-4 w-[80mm] mx-auto text-xs font-mono leading-tight">
-        <div className="text-center mb-4">
-          <h2 className="text-lg font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}</h2>
-          <p>{activeStore?.address || "Địa chỉ cửa hàng"}</p>
-          <p>SĐT: {activeStore?.phone || "0123.456.789"}</p>
-          <div className="my-2 border-b-2 border-dashed border-gray-400"></div>
-          <h3 className="text-base font-bold uppercase mt-2">
-            {printMode === "proforma" ? "PHIẾU TẠM TÍNH" : printMode === "kitchen_bill" ? "PHIẾU CHẾ BIẾN" : "HÓA ĐƠN THANH TOÁN"}
-          </h3>
-          {printMode === "kitchen_bill" && (
-            <p className="font-bold text-lg mt-1">BÀN: {selectedTableForQr || "Mang đi"}</p>
-          )}
-          {printMode !== "kitchen_bill" && (
-            <p className="text-left mt-2">Mã HĐ: {printMode === "proforma" ? "TMP-" + Date.now().toString().slice(-4) : completedOrderData?.orderId}</p>
-          )}
-          <p className="text-left">Ngày: {new Date().toLocaleString('vi-VN')}</p>
-          <p className="text-left">Thu ngân: {user?.displayName || "Admin"}</p>
-        </div>
+        {printMode === "handover" ? (
+          <div>
+            <div className="text-center mb-3">
+              <h2 className="text-sm font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}</h2>
+              <p className="text-[10px]">{activeStore?.address || "Địa chỉ cửa hàng"}</p>
+              <p className="text-[10px]">SĐT: {activeStore?.phone || "0123.456.789"}</p>
+              <div className="my-2 border-b border-dashed border-gray-400"></div>
+              <h2 className="text-xs font-bold uppercase tracking-tight mt-1 text-center">BIÊN BẢN BÀN GIAO CA</h2>
+              <p className="text-left mt-2 text-[11px]">Ca trực: <strong>{handoverToPrint?.shiftName}</strong></p>
+              <p className="text-left text-[11px]">Người giao: <strong>{handoverToPrint?.previousStaffName}</strong></p>
+              <p className="text-left text-[11px]">Bắt đầu: {handoverToPrint?.startTime ? new Date(handoverToPrint.startTime).toLocaleString('vi-VN') : ""}</p>
+              <p className="text-left text-[11px]">Kết thúc: {handoverToPrint?.endTime ? new Date(handoverToPrint.endTime).toLocaleString('vi-VN') : ""}</p>
+            </div>
 
-        <div className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0"></div>
+            <div className="my-2 border-b border-dashed border-gray-400"></div>
 
-        <table className="w-full text-left mb-2">
-          <thead>
-            <tr className="border-b border-dashed border-gray-400">
-              <th className="py-1">Tên món</th>
-              <th className="py-1 text-center w-12">SL</th>
-              {printMode !== "kitchen_bill" && <th className="py-1 text-right w-20">T.Tiền</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item: any, idx: number) => (
-              <tr key={idx} className="border-b border-dashed border-gray-200">
-                <td className="py-1 pr-1">
-                  {item.name} 
-                  {item.toppings?.length > 0 && <div className="text-[10px] italic">- Topping: {item.toppings.map((t: any) => t.name).join(', ')}</div>}
-                  {item.note && <div className="text-[10px] italic">- {item.note}</div>}
-                </td>
-                <td className="py-1 text-center font-bold">{item.quantity}</td>
-                {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(getItemTotalPrice(item))}</td>}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <div className="space-y-1 text-[11px]">
+              <div className="flex justify-between">
+                <span>Số hóa đơn:</span>
+                <span className="font-bold">{handoverToPrint?.totalOrders || 0} HĐ</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tiền mặt đầu ca:</span>
+                <span className="font-bold">{new Intl.NumberFormat('vi-VN').format(handoverToPrint?.startCash || 0)}đ</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tiền mặt thu thêm:</span>
+                <span className="font-bold">{new Intl.NumberFormat('vi-VN').format(handoverToPrint?.cashRevenue || 0)}đ</span>
+              </div>
+              <div className="flex justify-between font-bold">
+                <span>Lý thuyết chốt:</span>
+                <span>{new Intl.NumberFormat('vi-VN').format(handoverToPrint?.expectedCash || 0)}đ</span>
+              </div>
+              <div className="flex justify-between font-bold">
+                <span>Thực tế trong két:</span>
+                <span>{new Intl.NumberFormat('vi-VN').format(handoverToPrint?.actualCash || 0)}đ</span>
+              </div>
+              <div className="my-1 border-b border-dashed border-gray-300"></div>
+              <div className="flex justify-between font-bold">
+                <span>Chênh lệch chốt:</span>
+                <span className={handoverToPrint?.discrepancy < 0 ? "text-red-750 font-black" : "font-black"}>
+                  {handoverToPrint?.discrepancy > 0 ? "+" : ""}
+                  {new Intl.NumberFormat('vi-VN').format(handoverToPrint?.discrepancy || 0)}đ
+                </span>
+              </div>
+            </div>
 
-        {printMode !== "kitchen_bill" && (
-            <div className="space-y-1">
-                <div className="flex justify-between font-bold">
-                    <span>Tổng cộng:</span>
-                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? subtotal : completedOrderData?.subtotal || 0)}</span>
+            {handoverToPrint?.denomBreakdown && (
+              <>
+                <div className="my-2 border-b border-dashed border-gray-400"></div>
+                <p className="font-bold text-center uppercase text-[10px] mb-1">Chi tiết mệnh giá</p>
+                <div className="space-y-0.5 text-[10px]">
+                  {Object.entries(handoverToPrint.denomBreakdown).map(([denom, count]) => {
+                    const countVal = parseInt(count as string) || 0;
+                    if (countVal === 0) return null;
+                    return (
+                      <div key={denom} className="flex justify-between">
+                        <span>{new Intl.NumberFormat('vi-VN').format(parseInt(denom))}đ x {countVal}</span>
+                        <span>{new Intl.NumberFormat('vi-VN').format(parseInt(denom) * countVal)}đ</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                {(printMode === "proforma" ? discount : completedOrderData?.discount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>Giảm giá:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? discount : completedOrderData?.discount || 0)}</span>
+              </>
+            )}
+
+            {handoverToPrint?.notes && (
+              <>
+                <div className="my-2 border-b border-dashed border-gray-400"></div>
+                <p className="font-bold text-left text-[11px] mb-0.5">Giải trình:</p>
+                <p className="italic text-left leading-relaxed text-[10px]">{handoverToPrint.notes}</p>
+              </>
+            )}
+
+            <div className="my-2 border-b border-dashed border-gray-400"></div>
+
+            <div className="mt-4 flex justify-between text-center text-[9px] gap-2">
+              <div>
+                <p className="font-bold">Người chốt</p>
+                <p className="mt-8">(Ký, họ tên)</p>
+              </div>
+              <div>
+                <p className="font-bold">Người nhận / QL</p>
+                <p className="mt-8">(Ký, họ tên)</p>
+              </div>
+            </div>
+            
+            <p className="text-center text-[8px] text-gray-500 mt-6">Hệ thống chốt ca iPOS - VComm ERP</p>
+          </div>
+        ) : (
+          <div>
+            <div className="text-center mb-4">
+              <h2 className="text-lg font-bold uppercase">{activeStore?.name || "CỬA HÀNG"}</h2>
+              <p>{activeStore?.address || "Địa chỉ cửa hàng"}</p>
+              <p>SĐT: {activeStore?.phone || "0123.456.789"}</p>
+              <div className="my-2 border-b-2 border-dashed border-gray-400"></div>
+              <h3 className="text-base font-bold uppercase mt-2">
+                {printMode === "proforma" ? "PHIẾU TẠM TÍNH" : printMode === "kitchen_bill" ? "PHIẾU CHẾ BIẾN" : "HÓD ĐƠN THANH TOÁN"}
+              </h3>
+              {printMode === "kitchen_bill" && (
+                <p className="font-bold text-lg mt-1">BÀN: {selectedTableForQr || "Mang đi"}</p>
+              )}
+              {printMode !== "kitchen_bill" && (
+                <p className="text-left mt-2">Mã HĐ: {printMode === "proforma" ? "TMP-" + Date.now().toString().slice(-4) : completedOrderData?.orderId}</p>
+              )}
+              <p className="text-left">Ngày: {new Date().toLocaleString('vi-VN')}</p>
+              <p className="text-left">Thu ngân: {user?.displayName || "Admin"}</p>
+            </div>
+
+            <div className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0"></div>
+
+            <table className="w-full text-left mb-2">
+              <thead>
+                <tr className="border-b border-dashed border-gray-400">
+                  <th className="py-1">Tên món</th>
+                  <th className="py-1 text-center w-12">SL</th>
+                  {printMode !== "kitchen_bill" && <th className="py-1 text-right w-20">T.Tiền</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {(printMode === "proforma" ? cart : completedOrderData?.cartItems || []).map((item: any, idx: number) => (
+                  <tr key={idx} className="border-b border-dashed border-gray-200">
+                    <td className="py-1 pr-1">
+                      {item.name} 
+                      {item.toppings?.length > 0 && <div className="text-[10px] italic">- Topping: {item.toppings.map((t: any) => t.name).join(', ')}</div>}
+                      {item.note && <div className="text-[10px] italic">- {item.note}</div>}
+                    </td>
+                    <td className="py-1 text-center font-bold">{item.quantity}</td>
+                    {printMode !== "kitchen_bill" && <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(getItemTotalPrice(item))}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {printMode !== "kitchen_bill" && (
+                <div className="space-y-1">
+                    <div className="flex justify-between font-bold">
+                        <span>Tổng cộng:</span>
+                        <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? subtotal : completedOrderData?.subtotal || 0)}</span>
                     </div>
-                )}
-                {(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>KM sàn:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0)}</span>
+                    {(printMode === "proforma" ? discount : completedOrderData?.discount || 0) > 0 && (
+                        <div className="flex justify-between">
+                            <span>Giảm giá:</span>
+                            <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? discount : completedOrderData?.discount || 0)}</span>
+                        </div>
+                    )}
+                    {(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0) > 0 && (
+                        <div className="flex justify-between">
+                            <span>KM sàn:</span>
+                            <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? promoWalletDiscount : completedOrderData?.promoWalletDiscount || 0)}</span>
+                        </div>
+                    )}
+                    {(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0) > 0 && (
+                        <div className="flex justify-between">
+                            <span>Trừ điểm thẻ:</span>
+                            <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0)}</span>
+                        </div>
+                    )}
+                    <div className="my-1 border-b border-dashed border-gray-400"></div>
+                    <div className="flex justify-between font-bold text-sm">
+                        <span>Thanh toán:</span>
+                        <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? total : completedOrderData?.total || 0)}</span>
                     </div>
-                )}
-                {(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0) > 0 && (
-                    <div className="flex justify-between">
-                        <span>Trừ điểm thẻ:</span>
-                        <span>-{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? loyaltyDiscount : completedOrderData?.loyaltyDiscount || 0)}</span>
-                    </div>
-                )}
-                <div className="my-1 border-b border-dashed border-gray-400"></div>
-                <div className="flex justify-between font-bold text-sm">
-                    <span>Thanh toán:</span>
-                    <span>{new Intl.NumberFormat('vi-VN').format(printMode === "proforma" ? total : completedOrderData?.total || 0)}</span>
+                    {printMode === "customer_bill" && (
+                        <div className="flex justify-between italic text-[10px] mt-1">
+                            <span>PTTT:</span>
+                            <span className="uppercase">{completedOrderData?.paymentMethod}</span>
+                        </div>
+                    )}
                 </div>
-                {printMode === "customer_bill" && (
-                    <div className="flex justify-between italic text-[10px] mt-1">
-                        <span>PTTT:</span>
-                        <span className="uppercase">{completedOrderData?.paymentMethod}</span>
-                    </div>
+            )}
+
+            <div className="mt-6 text-center text-[10px] space-y-1">
+                {printMode === "kitchen_bill" ? (
+                    <p>*** P. Bếp vui lòng kiểm tra kỹ ***</p>
+                ) : (
+                    <>
+                        <p>Cảm ơn quý khách và hẹn gặp lại!</p>
+                        <p>Powered by Matrix ERP / iPOS</p>
+                    </>
                 )}
             </div>
+          </div>
         )}
-
-        <div className="mt-6 text-center text-[10px] space-y-1">
-            {printMode === "kitchen_bill" ? (
-                <p>*** P. Bếp vui lòng kiểm tra kỹ ***</p>
-            ) : (
-                <>
-                    <p>Cảm ơn quý khách và hẹn gặp lại!</p>
-                    <p>Powered by Matrix ERP / iPOS</p>
-                </>
-            )}
-        </div>
       </div>
 
 
@@ -2996,11 +3152,11 @@ export function IPosModule() {
             
             <div className="p-6 space-y-6 bg-slate-50/50">
                 <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => { setPrintMode("customer_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                    <button onClick={() => { setPrintMode("customer_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
                         <div className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100 group-hover:scale-105 transition-all"><Printer className="w-5 h-5" /></div>
                         <span className="font-bold text-slate-800 text-sm">In phiếu tính tiền</span>
                     </button>
-                    <button onClick={() => { setPrintMode("kitchen_bill"); setTimeout(() => window.print(), 100); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
+                    <button onClick={() => { setPrintMode("kitchen_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
                         <div className="p-3 bg-orange-50 text-orange-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all"><ChefHat className="w-5 h-5" /></div>
                         <span className="font-bold text-slate-800 text-sm">In bill chế biến</span>
                     </button>
@@ -3108,289 +3264,63 @@ export function IPosModule() {
         </div>
       )}
 
-      {/* Header - Refined with better depth and hierarchy */}
-      <div className="flex justify-between items-center bg-white p-3 rounded-sm border border-slate-300 shadow-sm sticky top-0 z-50">
+      {/* Sleek Utilities & Operations Controls bar */}
+      <div className="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm mb-6 flex-wrap gap-4">
+        {/* Left Side: Active Status & Staff */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => (window.location.href = "/")}
-            className="w-10 h-10 bg-slate-50 rounded-sm flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-primary-600 transition-all border border-slate-200 group"
-            title="Trở về Trung tâm ERP"
-          >
-            <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
-          </button>
-
-          <div className="flex items-center gap-3.5 border-r border-slate-200 pr-5">
-            <div className="w-11 h-11 bg-slate-900 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm relative overflow-hidden group">
-              <Store className="w-5 h-5 relative z-10" />
-              <div className="absolute inset-0 bg-white /50 to-transparent group-hover:scale-110 transition-transform" />
-              <div
-                className={cn(
-                  "absolute -top-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full shadow-sm z-20",
-                  isOffline ? "bg-rose-500 animate-pulse" : "bg-emerald-500",
-                )}
-              />
-            </div>
-            <div
-              onClick={() => setActiveTab("dashboard")}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-              title="Về trang tổng quan"
-            >
-              <h1 className="font-serif tracking-tight text-base font-bold text-slate-900 leading-none tracking-tight">
-                iPOS Terminal
-              </h1>
-              <p className="text-[10px] text-slate-600 font-medium mt-1 uppercase tracking-wider flex items-center gap-1.5">
-                {activeStore?.name} <span className="opacity-30">•</span>{" "}
-                <span
-                  className={
-                    isOffline
-                      ? "text-rose-500 font-bold"
-                      : "text-emerald-500 font-bold"
-                  }
-                >
-                  {isOffline ? "OFFLINE (LƯU TẠM)" : "LIVE SYNC"}
-                </span>
-              </p>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+              iPOS TERMINAL OPERATION
+            </span>
           </div>
-
-          <div className="hidden xl:flex gap-8 pl-3">
-            <div className="space-y-1">
-              <p className="text-[10px] text-slate-600 font-medium ml-1">
-                Thu ngân vận hành
-              </p>
-              <div className="flex items-center gap-2.5 group">
-                <div className="w-7 h-7 bg-slate-100 rounded-sm flex items-center justify-center text-xs font-bold text-primary-600 border border-slate-300 shadow-sm transition-transform group-hover:scale-105">
-                  {(
-                    selectedStaff?.name ||
-                    user?.displayName ||
-                    user?.email ||
-                    "N"
-                  )
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
-                <select
-                  className="text-sm font-bold text-slate-800 bg-transparent outline-none cursor-pointer hover:text-primary-600 transition-colors"
-                  value={selectedStaff?.id || user?.uid}
-                  onChange={(e) =>
-                    setSelectedStaff({
-                      id: e.target.value,
-                      name: e.target.options[e.target.selectedIndex].text,
-                    })
-                  }
-                >
-                  <option value={user?.uid || "default"}>
-                    {user?.displayName || user?.email || "Nhân viên hiện tại"}
-                  </option>
-                </select>
-              </div>
+          <span className="text-slate-300 hidden sm:inline">|</span>
+          <div className="flex items-center gap-2.5 group">
+            <div className="w-7 h-7 bg-indigo-50 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold border border-indigo-100 shadow-sm transition-transform group-hover:scale-105">
+              {(
+                selectedStaff?.name ||
+                user?.displayName ||
+                user?.email ||
+                "N"
+              )
+                .charAt(0)
+                .toUpperCase()}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none">Thu ngân vận hành</span>
+              <select
+                className="text-xs font-bold text-slate-700 bg-transparent outline-none cursor-pointer hover:text-indigo-600 transition-colors mt-0.5"
+                value={selectedStaff?.id || user?.uid}
+                onChange={(e) =>
+                  setSelectedStaff({
+                    id: e.target.value,
+                    name: e.target.options[e.target.selectedIndex].text,
+                  })
+                }
+              >
+                <option value={user?.uid || "default"}>
+                  {user?.displayName || user?.email || "Nhân viên hiện tại"}
+                </option>
+              </select>
             </div>
           </div>
         </div>
 
-        {activeTab !== "dashboard" && (
-          <div className="flex bg-slate-50/80 p-1.5 rounded-sm mx-4 self-stretch border border-slate-200 hidden xl:flex overflow-x-auto no-scrollbar whitespace-nowrap min-w-0">
-            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className="px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100"
-            >
-              <LayoutDashboard className="w-4 h-4" /> Tổng quan
-            </button>
-            <button
-              onClick={() => setActiveTab("sales")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "sales"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <ShoppingCart className="w-4 h-4" /> Bán hàng
-            </button>
-            {activeStoreConfig?.industry !== "Bán buôn, bán lẻ" && (
-              <button
-                onClick={() => setActiveTab("tables")}
-                className={cn(
-                  "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                  activeTab === "tables"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-                )}
-              >
-                <Grid3x3 className="w-4 h-4" />{" "}
-                {activeStoreConfig?.industry === "Lưu trú, làm đẹp"
-                  ? "Sơ đồ phòng"
-                  : "Sơ đồ bàn"}
-              </button>
-            )}
-            {["admin", "manager"].includes(userRole) && (
-              <button
-                onClick={() => setActiveTab("management")}
-                className={cn(
-                  "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                  activeTab === "management"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-                )}
-              >
-                <ShieldCheck className="w-4 h-4" /> Quản trị
-              </button>
-            )}
-            {activeStoreConfig?.industry !== "Lưu trú, làm đẹp" && (
-              <button
-                onClick={() => setActiveTab("delivery")}
-                className={cn(
-                  "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2 relative",
-                  activeTab === "delivery"
-                    ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-                )}
-              >
-                <Building2 className="w-4 h-4" /> Đối tác Giao hàng
-                {incomingExternalOrders.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-[#FAF9F5] text-[9px] font-bold flex items-center justify-center rounded-full animate-pulse">
-                    {incomingExternalOrders.length}
-                  </span>
-                )}
-              </button>
-            )}
-            <button
-              onClick={() => setActiveTab("lookup")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "lookup"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <Search className="w-4 h-4" /> Tra cứu
-            </button>
-
-            <button
-              onClick={() => setActiveTab("inventory")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "inventory"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <Boxes className="w-4 h-4" /> Kho
-            </button>
-            <button
-              onClick={() => setActiveTab("products")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "products"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <Tag className="w-4 h-4" /> Sản phẩm
-            </button>
-            <button
-              onClick={() => setActiveTab("payroll")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "payroll"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <DollarSign className="w-4 h-4" /> Tính lương
-            </button>
-            <button
-              onClick={() => setActiveTab("orders")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "orders"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <ShoppingBag className="w-4 h-4" /> Đơn hàng
-            </button>
-            <button
-              onClick={() => setActiveTab("customers")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "customers"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <Users className="w-4 h-4" /> Khách hàng
-            </button>
-            <button
-              onClick={() => setActiveTab("reports")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "reports"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <BarChart4 className="w-4 h-4" /> Báo cáo
-            </button>
-            <button
-              onClick={() => setActiveTab("promotions")}
-              className={cn(
-                "px-5 py-2 rounded-sm text-xs font-semibold transition-all flex items-center gap-2",
-                activeTab === "promotions"
-                  ? "bg-white text-primary-700 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
-              )}
-            >
-              <Gift className="w-4 h-4" /> Khuyến mại
-            </button>
-          </div>
-        )}
-
-        <div className="flex gap-3 items-center">
-          <div className="flex gap-1.5 px-1.5 py-1.5 bg-slate-50 rounded-sm border border-slate-200 mr-2">
-            <button
-              onClick={startListening}
-              className={cn(
-                "w-9 h-9 rounded-sm transition-all flex items-center justify-center relative",
-                isListening
-                  ? "bg-rose-500 text-[#FAF9F5] shadow-sm animate-pulse ring-2 ring-rose-100"
-                  : "bg-white text-slate-600 hover:text-primary-600 hover:shadow-sm border border-slate-300",
-              )}
-            >
-              <Mic className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-9 h-9 bg-white text-slate-600 rounded-sm hover:text-amber-500 hover:shadow-sm transition-all border border-slate-300 flex items-center justify-center"
-            >
-              {isDarkMode ? (
-                <Sparkles className="w-4 h-4 text-amber-500" />
-              ) : (
-                <Monitor className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-
+        {/* Right Side: Quick Action Handover & Tools */}
+        <div className="flex items-center gap-3">
           <button
-            onClick={() =>
-              setActiveTab(activeTab === "sales" ? "history" : "sales")
-            }
+            onClick={() => setActiveTab(activeTab === "sales" ? "history" : "sales")}
             className={cn(
-              "px-4 py-2.5 rounded-sm text-sm font-bold transition-all flex items-center gap-2",
+              "px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm border",
               activeTab === "history"
-                ? "bg-slate-900 text-[#FAF9F5] shadow-sm"
-                : "bg-white text-slate-700 hover:border-primary-200 border border-slate-300 hover:text-primary-600",
+                ? "bg-slate-900 text-white border-slate-900"
+                : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200"
             )}
           >
-            {activeTab === "history" ? (
-              <ShoppingCart className="w-4 h-4" />
-            ) : (
-              <History className="w-4 h-4" />
-            )}
-            {activeTab === "history" ? "Bán hàng" : "Lịch sử"}
+            {activeTab === "history" ? <ShoppingCart className="w-3.5 h-3.5" /> : <History className="w-3.5 h-3.5" />}
+            {activeTab === "history" ? "Giao dịch Bán hàng" : "Lịch sử Giao dịch"}
             {pendingEMenuOrders.length > 0 && activeTab !== "history" && (
-              <span className="ml-1 w-5 h-5 bg-rose-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+              <span className="w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-bounce">
                 {pendingEMenuOrders.length}
               </span>
             )}
@@ -3398,10 +3328,35 @@ export function IPosModule() {
 
           <button
             onClick={toggleShift}
-            className="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2.5 rounded-sm text-sm font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2"
+            className="bg-rose-50 border border-rose-200 text-rose-600 px-3.5 py-2 rounded-lg text-xs font-bold hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center gap-2 shadow-sm"
           >
-            <Clock className="w-4 h-4" /> Chốt ca
+            <Clock className="w-3.5 h-3.5" /> Chốt ca làm việc
           </button>
+
+          <span className="text-slate-300">|</span>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={startListening}
+              className={cn(
+                "p-2 rounded-lg transition-all flex items-center justify-center relative border",
+                isListening
+                  ? "bg-rose-500 text-white shadow-sm animate-pulse ring-2 ring-rose-100 border-rose-500"
+                  : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700",
+              )}
+              title="Tìm kiếm giọng nói AI"
+            >
+              <Mic className="w-3.5 h-3.5" />
+            </button>
+            
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-2 bg-white text-slate-500 rounded-lg border border-slate-200 hover:bg-slate-50 hover:text-slate-700 flex items-center justify-center"
+              title="Đổi chủ đề Giao diện"
+            >
+              {isDarkMode ? <Sparkles className="w-3.5 h-3.5 text-amber-500" /> : <Monitor className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -5485,6 +5440,27 @@ export function IPosModule() {
               </DraggableGrid>
             )}
           </div>
+        ) : activeTab === "handover" ? (
+          <IPosHandover
+            activeStore={activeStore}
+            user={user}
+            selectedStaff={selectedStaff}
+            isShiftActive={isShiftActive}
+            shiftData={shiftData}
+            setIsShiftActive={setIsShiftActive}
+            setShiftData={setShiftData}
+            setActualCashInput={setActualCashInput}
+            setHandoverNote={setHandoverNote}
+            setPrintMode={setPrintMode}
+            setHandoverToPrint={setHandoverToPrint}
+            triggerPrint={() => {
+              injectK80PrintStyle();
+              setTimeout(() => {
+                window.print();
+                removeK80PrintStyle();
+              }, 150);
+            }}
+          />
         ) : activeTab === "inventory" ? (
           <IPosInventory activeStore={activeStore} />
         ) : activeTab === "products" ? (
@@ -6026,7 +6002,7 @@ export function IPosModule() {
                   <Download className="w-4 h-4" /> Lưu ảnh
                 </button>
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => { injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }}
                   className="flex items-center justify-center gap-2 py-4 bg-primary-600 text-[#FAF9F5] font-black text-[10px] uppercase tracking-widest rounded-sm shadow-sm shadow-indigo-200 hover:bg-primary-700 active:scale-95 transition-all"
                 >
                   <Printer className="w-4 h-4" /> In hóa đơn

@@ -33,11 +33,20 @@ export const auth = getAuth(app);
 
 // Initialize Firestore with local cache persistence capability 
 const dbId = (firebaseConfig as any).firestoreDatabaseId || "(default)";
-export const db = initializeFirestore(app, {
- localCache: persistentLocalCache({
- tabManager: persistentMultipleTabManager()
- })
-}, dbId);
+
+let firestoreInstance;
+try {
+  firestoreInstance = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    })
+  }, dbId);
+} catch (e) {
+  console.warn("Failed to initialize Firestore with persistent local cache. Falling back to memory cache.", e);
+  firestoreInstance = getFirestore(app, dbId);
+}
+
+export const db = firestoreInstance;
 
 const googleProvider = new GoogleAuthProvider();
 

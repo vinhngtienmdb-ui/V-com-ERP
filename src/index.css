@@ -342,3 +342,173 @@ table th, table td {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ==========================================================
+   IPOS PREMIUM VISUAL MODERNIZATION OVERHAUL OVERRIDES
+   ========================================================== */
+
+/* 1. Global Scale & Border Radius Modernization */
+.ipos-modernized {
+  --radius-scale: 1.25; /* Fluid rounded corners */
+}
+
+/* Elevate legacy boxy rounded corners to modern standard sizes */
+.ipos-modernized .rounded-sm {
+  border-radius: 12px !important;
+}
+
+.ipos-modernized .rounded-md {
+  border-radius: 14px !important;
+}
+
+.ipos-modernized .rounded-lg,
+.ipos-modernized .rounded-xl {
+  border-radius: 18px !important;
+}
+
+.ipos-modernized .rounded-2xl {
+  border-radius: 24px !important;
+}
+
+/* Smooth margins and premium negative space transitions */
+.ipos-modernized {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* 2. Soften and Restyle Harsh Layout Borders and Dividers */
+.ipos-modernized .border-slate-300 {
+  border-color: rgba(226, 232, 240, 0.75) !important; /* Soft slate border replacement */
+}
+
+.ipos-modernized .border-slate-400 {
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+.ipos-modernized .border-stone-200 {
+  border-color: rgba(226, 232, 240, 0.75) !important;
+}
+
+/* Perfecting tabular lines */
+.ipos-modernized .divide-slate-200 > * {
+  border-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+/* 3. Deep Shadows and Lifted Card Elevation */
+.ipos-modernized .shadow-sm {
+  box-shadow: 0 4px 15px -1px rgba(15, 23, 42, 0.03), 0 2px 6px -2px rgba(15, 23, 42, 0.02) !important;
+}
+
+.ipos-modernized .shadow-md {
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.05), 0 6px 12px -3px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Modern Hover Effects & Button Responsiveness */
+.ipos-modernized button {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ipos-modernized button:hover {
+  filter: brightness(1.03) contrast(1.01);
+}
+
+.ipos-modernized button:active {
+  transform: scale(0.97);
+}
+
+/* 4. Elegant Glassmorphism Content Panels */
+.ipos-modernized .bg-slate-50\/50,
+.ipos-modernized .bg-slate-50\/80 {
+  background-color: rgba(248, 250, 252, 0.65) !important;
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.ipos-modernized .bg-white\/50,
+.ipos-modernized .bg-white\/80 {
+  background-color: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
+/* 5. Fluid Navigation Overhaul (Make Active Tab Pop Premiumly) */
+.ipos-modernized .xl\:flex .bg-white.text-primary-700.shadow-sm.ring-1.ring-slate-200 {
+  background-color: var(--app-primary-600) !important;
+  color: #FAF9F5 !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.18) !important;
+  border-color: var(--app-primary-600) !important;
+  font-weight: 700 !important;
+}
+
+.ipos-modernized .xl\:flex button {
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  border-radius: 12px !important;
+  margin: 0 3px !important;
+  font-weight: 600 !important;
+}
+
+/* 6. Dynamic Responsive Product Card Grid Upgrades */
+.ipos-modernized .group.relative.flex.flex-col {
+  border-radius: 20px !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.02) !important;
+  border-color: rgba(226, 232, 240, 0.55) !important;
+  background-color: #ffffff;
+}
+
+.ipos-modernized .group.relative.flex.flex-col:hover {
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06) !important;
+  border-color: var(--app-primary-300) !important;
+  transform: translateY(-3px);
+}
+
+/* 7. Enhanced Form Fields & Focus Rings */
+.ipos-modernized input,
+.ipos-modernized select,
+.ipos-modernized textarea {
+  border-radius: 12px !important;
+  border-color: rgba(226, 232, 240, 0.9) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ipos-modernized input:focus,
+.ipos-modernized select:focus,
+.ipos-modernized textarea:focus {
+  border-color: var(--app-primary-500) !important;
+  box-shadow: 0 0 0 4px var(--app-primary-100) !important;
+  background-color: #ffffff !important;
+}
+
+/* 8. Table Aesthetics Restyled */
+.ipos-modernized th {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #64748B !important;
+  padding: 14px 16px !important;
+  background-color: #f8fafc !important;
+  border-bottom: 2px solid #edf2f7 !important;
+}
+
+.ipos-modernized td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  font-size: 13.5px !important;
+  color: #334155 !important;
+}
+
+.ipos-modernized tr:hover td {
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+/* 9. Scrollbar Custom Stylings */
+.ipos-modernized .custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.ipos-modernized .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--app-primary-200, #CBD5E1);
+  border-radius: 9999px;
+}
+.ipos-modernized .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--app-primary-300, #94A3B8);
+}
+

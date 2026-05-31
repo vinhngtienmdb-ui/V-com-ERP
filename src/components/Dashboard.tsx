@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import React, { useState, useEffect } from 'react';
 import { 
  Bar, 
@@ -218,9 +219,16 @@ export function Dashboard() {
  const [dbCustomersLength, setDbCustomersLength] = useState(0);
  
  const [config, setConfig] = useState<Record<string, boolean>>(() => {
- const saved = localStorage.getItem('dashboard_config');
- if (saved) return JSON.parse(saved);
- return {
+  try {
+    const saved = safeLocalStorage.getItem('dashboard_config');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') return parsed;
+    }
+  } catch (e) {
+    console.error("Error parsing dashboard_config from localStorage:", e);
+  }
+  return {
  showStats: true,
  showMainChart: true,
  showCategorySplit: true,
@@ -239,7 +247,7 @@ export function Dashboard() {
  const handleConfigChange = (key: string) => {
  const newConfig = { ...config, [key]: !config[key] };
  setConfig(newConfig);
- localStorage.setItem('dashboard_config', JSON.stringify(newConfig));
+ safeLocalStorage.setItem('dashboard_config', JSON.stringify(newConfig));
  };
 
  const [delayedOrdersCount, setDelayedOrdersCount] = useState(0);

@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -161,7 +162,7 @@ export function Home() {
   
   // Bookmarks local storage handling
   const [bookmarkedPaths, setBookmarkedPaths] = useState<string[]>(() => {
-    const saved = localStorage.getItem('bookmarked_modules');
+    const saved = safeLocalStorage.getItem('bookmarked_modules');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { return ['/dashboard', '/requests', '/orders', '/hr', '/settings']; }
     }
@@ -170,7 +171,7 @@ export function Home() {
   });
 
   useEffect(() => {
-    localStorage.setItem('bookmarked_modules', JSON.stringify(bookmarkedPaths));
+    safeLocalStorage.setItem('bookmarked_modules', JSON.stringify(bookmarkedPaths));
   }, [bookmarkedPaths]);
 
   const toggleBookmark = (path: string, e: React.MouseEvent) => {

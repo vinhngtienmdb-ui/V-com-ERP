@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import { safeLocalStorage } from '../lib/storage';
 
 const SEPAY_BASE_URL = 'https://api.sepay.vn/v1';
 
@@ -23,15 +24,15 @@ export interface SePayVirtualAccount {
 
 class SePayService {
   private get apiToken() {
-    return localStorage.getItem('api_sepay_api_token') || '';
+    return safeLocalStorage.getItem('api_sepay_api_token') || '';
   }
 
   private get clientId() {
-    return localStorage.getItem('api_sepay_client_id') || '';
+    return safeLocalStorage.getItem('api_sepay_client_id') || '';
   }
 
   private get clientSecret() {
-    return localStorage.getItem('api_sepay_client_secret') || '';
+    return safeLocalStorage.getItem('api_sepay_client_secret') || '';
   }
 
   private get headers() {

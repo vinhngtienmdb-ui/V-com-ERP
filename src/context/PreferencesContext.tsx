@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { safeLocalStorage } from '../lib/storage';
 
 type Theme = 'light' | 'dark' | 'nature';
 type Language = 'vi' | 'en';
@@ -23,46 +24,46 @@ const PreferencesContext = createContext<PreferencesContextType | undefined>(und
 
 export function PreferencesProvider({ children }: { children: React.ReactNode }) {
  const [theme, setTheme] = useState<Theme>(() => {
- return (localStorage.getItem('app_theme') as Theme) || 'light';
+ return (safeLocalStorage.getItem('app_theme') as Theme) || 'light';
  });
  
  const [language, setLanguage] = useState<Language>(() => {
- return (localStorage.getItem('app_language') as Language) || 'vi';
+ return (safeLocalStorage.getItem('app_language') as Language) || 'vi';
  });
 
  const [primaryColor, setPrimaryColor] = useState<PrimaryColor>(() => {
- return (localStorage.getItem('app_primary_color') as PrimaryColor) || 'indigo';
+ return (safeLocalStorage.getItem('app_primary_color') as PrimaryColor) || 'indigo';
  });
 
  const [borderRadius, setBorderRadius] = useState<BorderRadius>(() => {
- return (localStorage.getItem('app_border_radius') as BorderRadius) || 'lg'; // default to lg for slight curve
+ return (safeLocalStorage.getItem('app_border_radius') as BorderRadius) || 'lg'; // default to lg for slight curve
  });
 
  const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => {
- return (localStorage.getItem('app_holiday_theme') as HolidayTheme) || 'none';
+ return (safeLocalStorage.getItem('app_holiday_theme') as HolidayTheme) || 'none';
  });
 
  useEffect(() => {
- localStorage.setItem('app_theme', theme);
+ safeLocalStorage.setItem('app_theme', theme);
  document.documentElement.setAttribute('data-theme', theme);
  }, [theme]);
 
  useEffect(() => {
- localStorage.setItem('app_language', language);
+ safeLocalStorage.setItem('app_language', language);
  }, [language]);
 
  useEffect(() => {
- localStorage.setItem('app_primary_color', primaryColor);
+ safeLocalStorage.setItem('app_primary_color', primaryColor);
  document.documentElement.setAttribute('data-primary-color', primaryColor);
  }, [primaryColor]);
 
  useEffect(() => {
- localStorage.setItem('app_border_radius', borderRadius);
+ safeLocalStorage.setItem('app_border_radius', borderRadius);
  document.documentElement.setAttribute('data-border-radius', borderRadius);
  }, [borderRadius]);
 
  useEffect(() => {
- localStorage.setItem('app_holiday_theme', holidayTheme);
+ safeLocalStorage.setItem('app_holiday_theme', holidayTheme);
  document.documentElement.setAttribute('data-holiday-theme', holidayTheme);
  }, [holidayTheme]);
 

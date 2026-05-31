@@ -1,9 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
+import { safeLocalStorage } from "../lib/storage";
 
 let aiModel: GoogleGenAI | null = null;
 
 function getAI() {
-  const key = localStorage.getItem('api_gemini_api_key') || '';
+  const key = safeLocalStorage.getItem('api_gemini_api_key') || '';
   if (!key || key === 'undefined') {
     console.warn("api_gemini_api_key is not set in local storage. Generating mock response.");
     return null;

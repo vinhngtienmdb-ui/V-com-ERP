@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface AppNotification {
@@ -27,12 +28,17 @@ const MOCK_NOTIFICATIONS: AppNotification[] = [
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
- const saved = localStorage.getItem('app_notifications');
- return saved ? JSON.parse(saved) : MOCK_NOTIFICATIONS;
+  try {
+   const saved = safeLocalStorage.getItem('app_notifications');
+   return saved ? JSON.parse(saved) : MOCK_NOTIFICATIONS;
+  } catch (e) {
+   console.error("Error parsing app_notifications from localStorage:", e);
+   return MOCK_NOTIFICATIONS;
+  }
  });
 
  useEffect(() => {
- localStorage.setItem('app_notifications', JSON.stringify(notifications));
+ safeLocalStorage.setItem('app_notifications', JSON.stringify(notifications));
  }, [notifications]);
 
  const addNotification = (title: string, message: string) => {

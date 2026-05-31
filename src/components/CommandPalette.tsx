@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../lib/storage';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowRight, Hash, Package, Users, ShoppingCart, X, Clock, Keyboard } from 'lucide-react';
@@ -28,11 +29,11 @@ const NAV_RESULTS: Result[] = navGroups.flatMap(g =>
 
 const RECENTS_KEY = 'cmd-palette-recents';
 function getRecents(): Result[] {
-  try { return JSON.parse(localStorage.getItem(RECENTS_KEY) ?? '[]'); } catch { return []; }
+  try { return JSON.parse(safeLocalStorage.getItem(RECENTS_KEY) ?? '[]'); } catch { return []; }
 }
 function saveRecent(r: Result) {
   const prev = getRecents().filter(x => x.id !== r.id);
-  localStorage.setItem(RECENTS_KEY, JSON.stringify([r, ...prev].slice(0, 6)));
+  safeLocalStorage.setItem(RECENTS_KEY, JSON.stringify([r, ...prev].slice(0, 6)));
 }
 
 interface Props { onClose: () => void; }

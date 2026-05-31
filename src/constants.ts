@@ -61,6 +61,7 @@ export const navGroups = [
  title: 'Kinh doanh Đa kênh',
  items: [
  { icon: Monitor, label: 'iPOS Phần mềm bán hàng', path: '/ipos', color: 'sky', description: 'Hệ thống bán hàng tại quầy và thiết bị' },
+ { icon: Store, label: 'Siêu thị VComm (Offline)', path: '/vcomm-supermarket', color: 'emerald', description: 'Quản lý bán hàng offline và tồn kho siêu thị VComm' },
  { icon: ShoppingBag, label: 'Quản lý Đơn hàng', path: '/orders', color: 'rose', description: 'Xử lý đơn hàng đa nền tảng tập trung' },
  { icon: Video, label: 'Quản lý Livestream', path: '/live', color: 'pink', description: 'Giải pháp bán hàng qua video trực tiếp' },
  { icon: MessageCircle, label: 'Mạng xã hội người dùng', path: '/social', color: 'indigo', description: 'Tương tác cộng đồng và Social Commerce' },
@@ -92,6 +93,7 @@ export const navGroups = [
  { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát và quản lý công nợ' },
  { icon: Smartphone, label: 'Ví & Thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch và cổng thanh toán' },
  { icon: Banknote, label: 'Hỗ trợ Tài chính Nhà bán', path: '/seller-finance', color: 'blue', description: 'Gói vay và hỗ trợ vốn cho nhà bán' },
+ { icon: Smartphone, label: 'Cho thuê thiết bị (Trả góp)', path: '/device-leasing', color: 'blue', description: 'Quản lý đơn xin duyệt trả góp dưới danh nghĩa thuê thiết bị' },
  ]
  },
  {

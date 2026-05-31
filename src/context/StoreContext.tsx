@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, where, setDoc, doc } from 'firebase/firestore';
+import { safeLocalStorage } from '../lib/storage';
 
 export interface StoreNode {
  id: string;
@@ -100,7 +101,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
        // Set active store to previously or first available
        if (stores.length > 0) {
-         const savedActiveId = localStorage.getItem('ipos_active_store_id');
+         const savedActiveId = safeLocalStorage.getItem('ipos_active_store_id');
          const matched = stores.find(s => s.id === savedActiveId);
          setActiveStore(matched || stores[0]);
        } else {
@@ -123,9 +124,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
  const handleSetActiveStore = (store: StoreNode | null) => {
    setActiveStore(store);
    if (store) {
-     localStorage.setItem('ipos_active_store_id', store.id);
+     safeLocalStorage.setItem('ipos_active_store_id', store.id);
    } else {
-     localStorage.removeItem('ipos_active_store_id');
+     safeLocalStorage.removeItem('ipos_active_store_id');
    }
  };
 
