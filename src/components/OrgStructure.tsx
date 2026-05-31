@@ -134,7 +134,7 @@ export function OrgStructure() {
       <div className="flex flex-col relative w-full pt-4">
         <div className="flex justify-center items-center relative z-10 w-full">
           <div className="${level > 0 ? 'mt-4 border-t-2 border-slate-400 w-px h-4 top-0 absolute' : ''}"></div>
-          <div className="bg-white border-2 border-primary-500 rounded-lg p-4 shadow-sm w-64 text-center hover:shadow-md transition-shadow cursor-default flex flex-col items-center">
+          <div className="bg-white border-2 border-primary-500 rounded-lg p-4 shadow-sm w-64 text-center hover:shadow-sm transition-shadow cursor-default flex flex-col items-center">
              <div className="font-bold text-slate-900 line-clamp-1" title={node.name}>{node.name}</div>
              <div className="text-xs text-slate-600 mt-1 line-clamp-1" title={node.manager}>Quản lý: {node.manager || 'Chưa cập nhật'}</div>
              {hasChildren && (
@@ -154,7 +154,7 @@ export function OrgStructure() {
                initial={{ opacity: 0, height: 0 }}
                animate={{ opacity: 1, height: 'auto' }}
                exit={{ opacity: 0, height: 0 }}
-               className="flex relative justify-center gap-8 mt-6 pt-6"
+               className="flex relative justify-center gap-6 mt-6 pt-6"
             >
               {/* Connecting vertical line down from parent */}
               <div className="absolute top-0 w-px h-6 bg-slate-300 z-0"></div>
@@ -224,7 +224,7 @@ export function OrgStructure() {
 
       <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px] overflow-x-auto min-w-0">
         {activeTab === 'departments' && (
-          <table className="w-full text-left">
+          <table className="w-full text-left whitespace-nowrap">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã PB</th>
@@ -237,7 +237,7 @@ export function OrgStructure() {
             <tbody className="divide-y divide-slate-100">
               {departments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
+                  <td colSpan={5} className="py-6 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 departments.map(dept => (
@@ -263,7 +263,7 @@ export function OrgStructure() {
 
         {activeTab === 'titles' && (
           <div className="overflow-x-auto min-w-0">
-          <table className="w-full text-left">
+          <table className="w-full text-left whitespace-nowrap">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã CD</th>
@@ -275,7 +275,7 @@ export function OrgStructure() {
             <tbody className="divide-y divide-slate-100">
               {jobTitles.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
+                  <td colSpan={4} className="py-6 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 jobTitles.map(title => (
@@ -301,7 +301,7 @@ export function OrgStructure() {
 
         {activeTab === 'ranks' && (
           <div className="overflow-x-auto min-w-0">
-          <table className="w-full text-left">
+          <table className="w-full text-left whitespace-nowrap">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-300 text-xs font-bold text-slate-600 uppercase tracking-widest">
                 <th className="px-6 py-4">Mã CB</th>
@@ -313,7 +313,7 @@ export function OrgStructure() {
             <tbody className="divide-y divide-slate-100">
               {jobRanks.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
+                  <td colSpan={4} className="py-6 text-center text-sm text-slate-600">Chưa có dữ liệu.</td>
                 </tr>
               ) : (
                 jobRanks.sort((a,b) => a.level - b.level).map(rank => (
@@ -336,11 +336,11 @@ export function OrgStructure() {
         )}
 
         {activeTab === 'org_chart' && (
-          <div className="p-8 overflow-auto min-h-[500px] w-full flex justify-center bg-slate-50/50">
+          <div className="p-6 overflow-auto min-h-[500px] w-full flex justify-center bg-slate-50/50">
              {rootDepartments.length === 0 ? (
                 <div className="text-slate-600 text-sm mt-8">Chưa có sơ đồ tổ chức</div>
              ) : (
-                <div className="inline-flex gap-16 pb-12 w-full justify-center">
+                <div className="inline-flex gap-6 pb-12 w-full justify-center">
                   {rootDepartments.map(root => (
                     <OrgChartNode key={root.id} node={root} />
                   ))}
@@ -358,7 +358,7 @@ export function OrgStructure() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden border border-slate-300"
+              className="bg-white rounded-lg shadow-sm w-full max-w-lg overflow-hidden border border-slate-300"
             >
               <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
                 <h3 className="font-bold text-slate-900">

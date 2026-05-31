@@ -326,7 +326,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  {idx < customer.activities!.length - 1 && (
  <div className="absolute left-[13px] top-7 w-[1px] h-full bg-slate-200 group-hover:bg-blue-300 transition-colors"></div>
  )}
- <div className={cn("w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10 border shadow-sm transition-transform group-hover:scale-110", getColor())}>
+ <div className={cn("w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10 border shadow-sm transition-transform ", getColor())}>
  {getIcon()}
  </div>
  <div className="flex-1 bg-white p-3 rounded-lg border border-transparent group-hover:border-slate-300 group-hover:shadow-sm transition-all">
@@ -353,7 +353,7 @@ const CustomerDetailModal = ({ customer, onClose }: { customer: Customer; onClos
  );
  })
  ) : (
- <div className="text-center py-12 bg-white rounded-lg border border-dashed border-slate-300">
+ <div className="text-center py-6 bg-white rounded-lg border border-dashed border-slate-300">
  <History className="w-8 h-8 text-slate-400 mx-auto mb-2" />
  <p className="text-xs text-slate-500 italic">Chưa có dữ liệu hoạt động cho khách hàng này.</p>
  </div>
@@ -384,7 +384,7 @@ const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClos
 
  return (
  <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
- <div className="bg-white rounded-lg p-8 w-full max-w-lg shadow-sm animate-in zoom-in-95 duration-200">
+ <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-sm animate-in zoom-in-95 duration-200">
  <div className="flex justify-between items-start mb-6">
  <div>
  <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
@@ -485,7 +485,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  ))}
  </div>
 
- <div className="p-8 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
+ <div className="p-6 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
  {activeTab === 'tier' && (
  <div className="space-y-6">
  <div className="flex justify-between items-center">
@@ -959,7 +959,7 @@ export function Customers() {
 
  {/* CRM Intelligence & RFM Segmentation */}
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
+ <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
@@ -998,7 +998,7 @@ export function Customers() {
  </div>
  </div>
 
- <div className="bg-slate-900 p-8 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
+ <div className="bg-slate-900 p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
  <div className="relative z-10">
  <div className="flex items-center gap-3 mb-6">
  <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -1076,7 +1076,7 @@ export function Customers() {
  </div>
 
  <div className="overflow-x-auto bg-white border-t border-slate-200 min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
  <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
@@ -1091,7 +1091,7 @@ export function Customers() {
  <tbody className="divide-y divide-slate-50">
  {loading ? (
  <tr>
- <td colSpan={7} className="px-6 py-12 text-center bg-white">
+ <td colSpan={7} className="px-6 py-6 text-center bg-white">
  <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-1" />
  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
  </td>
@@ -1100,7 +1100,7 @@ export function Customers() {
  <tr key={customer.id} className="hover:bg-primary-50/30 group transition-all duration-200">
  <td className="px-4 py-4">
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px] shrink-0 border border-primary-100 group-hover:scale-110 transition-transform">
+ <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px] shrink-0 border border-primary-100  transition-transform">
  {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
  </div>
  <div className="min-w-0">

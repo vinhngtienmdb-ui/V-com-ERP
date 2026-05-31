@@ -185,7 +185,7 @@ export function Finance() {
  </div>
  </div>
  <div className="bg-primary-600 p-6 rounded-xl border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
- <div className="absolute right-0 bottom-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
+ <div className="absolute right-0 bottom-0 p-2 opacity-10  transition-transform">
  <Building2 className="w-16 h-16 text-[#FAF9F5]" />
  </div>
  <div className="flex justify-between items-start mb-3">
@@ -217,7 +217,7 @@ export function Finance() {
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
@@ -246,7 +246,7 @@ export function Finance() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -257,11 +257,11 @@ export function Finance() {
 
  <div className="p-0">
  {activeTab === 'ocr' && (
- <div className="p-8 animate-in fade-in slide-in- duration-500 bg-slate-50 min-h-[600px]">
- <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+ <div className="p-6 animate-in fade-in slide-in- duration-500 bg-slate-50 min-h-[600px]">
+ <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
  <div className="space-y-6">
- <div className="bg-white p-8 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-slate-100/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
- <div className="p-6 bg-slate-100 text-orange-700 rounded-full group-hover:scale-110 transition-transform">
+ <div className="bg-white p-6 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-center space-y-4 hover:border-blue-400 hover:bg-slate-100/50 transition-all cursor-pointer group relative overflow-hidden h-[400px]">
+ <div className="p-6 bg-slate-100 text-orange-700 rounded-full  transition-transform">
  <Upload className="w-10 h-10" />
  </div>
  <div>
@@ -302,7 +302,7 @@ export function Finance() {
 
  <div className="space-y-6">
  <div className={cn(
- "bg-white p-8 rounded-xl border border-slate-300 shadow-sm transition-all min-h-[400px]",
+ "bg-white p-6 rounded-xl border border-slate-300 shadow-sm transition-all min-h-[400px]",
  !scanResult && "opacity-50 grayscale flex flex-col items-center justify-center text-center"
  )}>
  {!scanResult ? (
@@ -357,7 +357,7 @@ export function Finance() {
  <p className="text-[10px] font-bold text-blue-100 uppercase mb-1 tracking-widest">Tổng tiền cần thanh toán</p>
  <p className="text-2xl font-black text-[#FAF9F5]">{formatCurrency(5335000)}</p>
  </div>
- <button className="px-6 py-3 bg-white text-orange-700 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform active:scale-95 shadow-sm">
+ <button className="px-6 py-3 bg-white text-orange-700 rounded-xl font-black text-xs uppercase tracking-widest  transition-transform active:scale-95 shadow-sm">
  Tạo bút toán Chi
  </button>
  </div>
@@ -403,7 +403,7 @@ export function Finance() {
  </div>
  <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
@@ -447,7 +447,7 @@ export function Finance() {
  )}
 
  {activeTab === 'reports' && (
- <div className="p-8 space-y-8 animate-in fade-in duration-300">
+ <div className="p-6 space-y-8 animate-in fade-in duration-300">
  <div className="max-w-4xl mx-auto space-y-6">
  {[
  { title: 'Bảng Cân đối Kế toán', desc: 'Phản ánh tình hình tài sản, nợ phải trả và vốn chủ sở hữu tại một thời điểm.' },

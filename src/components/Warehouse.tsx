@@ -211,7 +211,7 @@ export function WarehouseModule() {
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
@@ -242,7 +242,7 @@ export function WarehouseModule() {
  </div>
  
  {!selectedPartnerForFees && (
- <div className="p-8">
+ <div className="p-6">
  <div className="flex justify-between items-center mb-8">
  <div className="relative w-96">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -313,7 +313,7 @@ export function WarehouseModule() {
  )}
 
  {selectedPartnerForFees && (
- <div className="p-8 animate-in fade-in slide-in- duration-300">
+ <div className="p-6 animate-in fade-in slide-in- duration-300">
  <div className="flex items-center justify-between mb-8">
  <button 
  onClick={() => setSelectedPartnerForFees(null)}
@@ -336,7 +336,7 @@ export function WarehouseModule() {
 
  <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên khoản phí</th>
@@ -417,7 +417,7 @@ export function WarehouseModule() {
  </div>
  </div>
  
- <div className="p-8">
+ <div className="p-6">
  <div className="flex gap-4 mb-8">
  <div className="flex-1 relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -433,7 +433,7 @@ export function WarehouseModule() {
 
  <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
  <th className="px-6 py-4">Vận đơn</th>
@@ -505,9 +505,9 @@ export function WarehouseModule() {
  </div>
  </div>
  
- <div className="p-8 space-y-8">
+ <div className="p-6 space-y-8">
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-slate-900 rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden h-[400px]">
+ <div className="lg:col-span-2 bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden h-[400px]">
  <div className="relative z-10">
  <h3 className="text-xl font-bold mb-2">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
  <p className="text-slate-500 text-sm mb-8">Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.</p>
@@ -588,7 +588,7 @@ export function WarehouseModule() {
  </div>
  </div>
  
- <div className="p-8">
+ <div className="p-6">
  <div className="flex justify-between items-center mb-8">
  <div>
  <h3 className="text-lg font-bold text-slate-900">Bản đồ nhiệt Lưu trữ (Storage Heatmap)</h3>
@@ -604,12 +604,12 @@ export function WarehouseModule() {
  </div>
  </div>
 
- <div className="grid grid-cols-10 gap-3 border border-slate-200 p-8 rounded-xl bg-slate-50/50">
+ <div className="grid grid-cols-10 gap-3 border border-slate-200 p-6 rounded-xl bg-slate-50/50">
  {Array.from({ length: 40 }).map((_, i) => (
  <div 
  key={i} 
  className={cn(
- "aspect-square rounded-xl border flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 cursor-help group",
+ "aspect-square rounded-xl border flex flex-col items-center justify-center gap-1 transition-all  cursor-help group",
  i % 7 === 0 ? "bg-rose-500 border-rose-600 shadow-sm shadow-rose-100" :
  i % 5 === 0 ? "bg-amber-400 border-amber-500 shadow-sm shadow-amber-100" :
  "bg-white border-slate-300 hover:border-blue-400"
@@ -682,7 +682,7 @@ export function WarehouseModule() {
  )}
 
  {activeTab === 'wh_ff_optimize' && (
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4 p-12 items-center justify-center text-center">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4 p-6 items-center justify-center text-center">
  <div className="w-20 h-20 bg-emerald-50 rounded-lg flex items-center justify-center mb-6 animate-bounce">
  <MapPin className="w-10 h-10 text-emerald-600" />
  </div>
@@ -691,10 +691,10 @@ export function WarehouseModule() {
  Sử dụng thuật toán AI để sắp xếp thứ tự các điểm giao hàng, giảm 20% quãng đường di chuyển và tối ưu hóa thời gian nhận hàng của khách hàng.
  </p>
  <div className="flex gap-4">
- <button className="bg-emerald-600 text-[#FAF9F5] px-8 py-3 rounded-lg font-bold shadow-sm shadow-emerald-600/20">Chạy Optimization ngay</button>
+ <button className="bg-emerald-600 text-[#FAF9F5] px-6 py-3 rounded-lg font-bold shadow-sm shadow-emerald-600/20">Chạy Optimization ngay</button>
  <button 
  onClick={() => setActiveTab('overview')}
- className="bg-slate-100 text-slate-700 px-8 py-3 rounded-lg font-bold"
+ className="bg-slate-100 text-slate-700 px-6 py-3 rounded-lg font-bold"
  >
  Hủy bỏ
  </button>
@@ -739,7 +739,7 @@ export function WarehouseModule() {
 
  <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
  <th className="px-6 py-4">Mã Nguyên liệu</th>
@@ -793,7 +793,7 @@ export function WarehouseModule() {
  </button>
  </div>
  
- <div className="p-16 flex flex-col items-center justify-center text-center">
+ <div className="p-6 flex flex-col items-center justify-center text-center">
  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
  <Warehouse className="w-10 h-10 text-orange-600" />
  </div>

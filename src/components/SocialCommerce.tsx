@@ -105,7 +105,7 @@ export function SocialCommerce() {
  </div>
  </DraggableGrid>
 
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-2 space-y-6">
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="flex border-b border-[#F3F4F6]">
@@ -118,7 +118,7 @@ export function SocialCommerce() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/20" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -150,7 +150,7 @@ export function SocialCommerce() {
  </div>
  <p className="text-sm text-[#374151] leading-relaxed">{post.content}</p>
  <div className="h-48 bg-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden group">
- <ImageIcon className="w-8 h-8 text-slate-500 group-hover:scale-110 transition-transform" />
+ <ImageIcon className="w-8 h-8 text-slate-500  transition-transform" />
  <div className="absolute inset-0 bg-black/5" />
  </div>
  <div className="flex gap-4">

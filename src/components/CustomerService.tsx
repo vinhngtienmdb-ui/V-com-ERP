@@ -187,7 +187,7 @@ export function CustomerService() {
  {/* Overview Cards */}
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiếp nhận mới (Mở)</p>
  <AlertCircle className="w-4 h-4 text-red-500" />
@@ -197,7 +197,7 @@ export function CustomerService() {
  </div>
  
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian P/hồi TB (SLA)</p>
  <Clock className="w-4 h-4 text-orange-600" />
@@ -207,7 +207,7 @@ export function CustomerService() {
  </div>
 
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đánh giá chung (CSAT)</p>
  <Star className="w-4 h-4 text-yellow-500" />
@@ -217,7 +217,7 @@ export function CustomerService() {
  </div>
 
  <div className="bg-white p-5 rounded-lg border border-slate-800 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Autofill / Auto-reply</p>
  <Sparkles className="w-4 h-4 text-primary-400" />
@@ -301,7 +301,7 @@ export function CustomerService() {
  {/* Content by Tab */}
  <div className="flex-1 overflow-x-auto min-w-0">
  {activeTab === 'tickets' && (
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Ticket ID & KH</th>
@@ -362,7 +362,7 @@ export function CustomerService() {
 
  {activeTab === 'campaigns' && (
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Tên Chiến dịch</th>
@@ -646,7 +646,7 @@ export function CustomerService() {
  </div>
 
  <div className="bg-primary-50 p-4 rounded-lg space-y-2 border border-primary-100 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-16 h-16 bg-white/40 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-16 h-16 bg-white/40 rounded-bl-full -z-0 transition-transform " />
  <h4 className="text-[10px] font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2 relative z-10">
  <Sparkles className="w-3 h-3 text-primary-500" /> Nhận định AI
  </h4>
@@ -692,7 +692,7 @@ export function CustomerService() {
  </div>
 
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Khách hàng</th>
@@ -937,7 +937,7 @@ export function CustomerService() {
 
  {/* Staff List */}
  <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-200">
  <tr>
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest">Nhân viên</th>
@@ -1204,7 +1204,7 @@ export function CustomerService() {
  <ToggleRight className="w-8 h-8 text-primary-600 shrink-0 cursor-pointer" />
  </div>
  
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Tùy chỉnh giao diện</h5>
  <div className="space-y-4">

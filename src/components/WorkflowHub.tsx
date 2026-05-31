@@ -137,7 +137,7 @@ export function WorkflowHub() {
  ].map((stat) => (
  <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
  <div className={cn(
- "p-4 rounded-none shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-6 duration-500",
+ "p-4 rounded-none shadow-sm transition-transform  group-hover:rotate-6 duration-500",
  stat.color === 'rose' ? "bg-rose-50 text-rose-600 shadow-rose-100" :
  stat.color === 'blue' ? "bg-slate-100 text-orange-700 shadow-blue-100" :
  stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600 shadow-emerald-100" :
@@ -161,7 +161,7 @@ export function WorkflowHub() {
  <button 
  onClick={() => setViewMode('tasks')}
  className={cn(
- "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
+ "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
  viewMode === 'tasks' ? "bg-white text-orange-700 shadow-sm shadow-slate-900/5 border border-slate-300" : "text-slate-600 hover:text-slate-900"
  )}
  >
@@ -170,7 +170,7 @@ export function WorkflowHub() {
  <button 
  onClick={() => setViewMode('builder')}
  className={cn(
- "px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
+ "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
  viewMode === 'builder' ? "bg-white text-emerald-600 shadow-sm shadow-emerald-600/10 border border-emerald-100" : "text-slate-600 hover:text-slate-900"
  )}
  >
@@ -178,9 +178,9 @@ export function WorkflowHub() {
  </button>
  </div>
 
- <div className="p-8 flex-1 flex flex-col">
+ <div className="p-6 flex-1 flex flex-col">
  {viewMode === 'tasks' ? (
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-2 space-y-6">
  <div className="flex justify-between items-center mb-6">
  <div className="relative flex-1 max-w-sm">
@@ -211,7 +211,7 @@ export function WorkflowHub() {
  {tasks.filter(t => filter === 'all' || t.priority === filter).map((task) => (
  <div key={task.id} className="p-6 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-wrap items-center gap-6 border-b-2">
  <div className={cn(
- "p-4 rounded-lg shadow-sm transition-all group-hover:scale-105",
+ "p-4 rounded-lg shadow-sm transition-all ",
  task.priority === 'critical' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : 
  task.priority === 'high' ? "bg-orange-50 text-orange-500 shadow-orange-200/30" :
  "bg-slate-100 text-orange-600 shadow-blue-200/30"
@@ -238,7 +238,7 @@ export function WorkflowHub() {
  <button onClick={() => handleSignRequest(task.id)} className="p-3 bg-slate-100 text-orange-700 rounded-xl hover:bg-[#EAE7DF] transition-all opacity-0 group-hover:opacity-100 border border-slate-300">
  <FileSignature className="w-5 h-5" />
  </button>
- <button onClick={() => navigate(task.link)} className="p-3 bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm shadow-slate-900/20 hover:scale-110 active:scale-95 transition-all">
+ <button onClick={() => navigate(task.link)} className="p-3 bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm shadow-slate-900/20  active:scale-95 transition-all">
  <ArrowUpRight className="w-5 h-5" />
  </button>
  </div>
@@ -249,9 +249,9 @@ export function WorkflowHub() {
  </div>
 
  <div className="space-y-8">
- <div className="bg-stone-950 text-[#FAF9F5] p-10 rounded-xl relative overflow-hidden shadow-sm border border-slate-800 group">
+ <div className="bg-stone-950 text-[#FAF9F5] p-6 rounded-xl relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="relative z-10 space-y-6">
- <div className="p-4 bg-slate-900 rounded-lg shadow-sm shadow-slate-900/5 w-fit group-hover:scale-110 transition-transform">
+ <div className="p-4 bg-slate-900 rounded-lg shadow-sm shadow-slate-900/5 w-fit  transition-transform">
  <Zap className="w-6 h-6" />
  </div>
  <h3 className="text-2xl font-black italic tracking-tight">AI Process <br/> <span className="text-orange-500">Accelerator</span></h3>
@@ -261,7 +261,7 @@ export function WorkflowHub() {
  <Layers className="absolute -bottom-10 -right-10 w-48 h-48 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-8 flex items-center gap-3">
  <Users2 className="w-5 h-5 text-primary-500" /> Team Availability
  </h4>
@@ -332,7 +332,7 @@ export function WorkflowHub() {
  <X className="w-5 h-5 text-slate-500 group-hover:text-slate-900" />
  </button>
 
- <div className="p-12 space-y-10">
+ <div className="p-6 space-y-10">
  <div className="space-y-4">
  <div className="flex items-center gap-5">
  <div className="p-5 bg-emerald-600 rounded-xl shadow-sm shadow-emerald-500/40 relative group overflow-hidden">
@@ -396,7 +396,7 @@ export function WorkflowHub() {
  onClick={executeSignature}
  disabled={isSigningInProcess}
  className={cn(
- "px-10 py-5 font-black rounded-lg text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex items-center gap-3 w-full sm:w-auto justify-center active:translate-y-1",
+ "px-6 py-5 font-black rounded-lg text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex items-center gap-3 w-full sm:w-auto justify-center active:translate-y-1",
  isSigningInProcess ? "bg-slate-100 text-slate-600 cursor-not-allowed" : "bg-emerald-600 text-[#FAF9F5] shadow-emerald-600/30 hover:bg-emerald-500"
  )}
  >

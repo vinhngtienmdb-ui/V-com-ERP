@@ -185,7 +185,7 @@ export function CommandPalette({ onClose }: Props) {
         {/* Results list */}
         <div ref={listRef} className="max-h-[400px] overflow-y-auto custom-scrollbar">
           {displayed.length === 0 && (
-            <div className="flex flex-col items-center gap-2 py-10 text-slate-400">
+            <div className="flex flex-col items-center gap-2 py-6 text-slate-400">
               {q ? (
                 <>
                   <Search className="w-7 h-7 opacity-25" />

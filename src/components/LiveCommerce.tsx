@@ -116,7 +116,7 @@ export function LiveCommerce() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -154,7 +154,7 @@ export function LiveCommerce() {
  <Clock className="w-3.5 h-3.5" /> SẮP DIỄN RA
  </div>
  )}
- <PlayCircle className="w-12 h-12 text-slate-500 opacity-50 group-hover:scale-110 group-hover:text-[#2563EB] group-hover:opacity-100 transition-all" />
+ <PlayCircle className="w-12 h-12 text-slate-500 opacity-50  group-hover:text-[#2563EB] group-hover:opacity-100 transition-all" />
  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-black/40 backdrop-blur-md rounded-lg p-2 z-10">
  <div className="flex items-center gap-2">
  <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white" />
@@ -187,8 +187,8 @@ export function LiveCommerce() {
  </div>
  </div>
 
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden">
- <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden">
+ <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
  <div className="flex-1 space-y-4 text-center md:text-left">
  <div className="flex items-center justify-center md:justify-start gap-4">
  <div className="p-3 bg-slate-800 rounded-lg">
@@ -200,10 +200,10 @@ export function LiveCommerce() {
  Hệ thống điều phối luồng Livestream chuyên nghiệp cho Sàn. Cho phép Admin theo dõi hành vi người dùng, lọc bình luận tiêu cực thời gian thực và tự động gửi Voucher "giảm sâu" ngay khi lượt xem đạt mốc (Goal Achievement).
  </p>
  <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
- <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all text-sm flex items-center gap-2">
+ <button className="px-6 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all text-sm flex items-center gap-2">
  Báo cáo doanh thu LIVE <ArrowRight className="w-4 h-4" />
  </button>
- <button className="px-8 py-3 bg-slate-800 border border-slate-700 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-700 transition-all text-sm">Cấu hình API RTMP/Stream</button>
+ <button className="px-6 py-3 bg-slate-800 border border-slate-700 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-700 transition-all text-sm">Cấu hình API RTMP/Stream</button>
  </div>
  </div>
  <div className="hidden lg:block w-72 h-48 bg-slate-800/50 rounded-lg border border-slate-700 relative overflow-hidden">

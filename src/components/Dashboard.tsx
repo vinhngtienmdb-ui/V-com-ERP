@@ -120,8 +120,8 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: any) => (
- <div className={cn("bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:shadow-slate-200/40 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden", color)}>
- <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 group-hover:scale-110 pointer-events-none">
+ <div className={cn("bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:shadow-slate-200/40 transition-all duration-300 group  relative overflow-hidden", color)}>
+ <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500  pointer-events-none">
  <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
  </div>
  <div className="relative z-10">
@@ -159,7 +159,7 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
  >
  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
  <div className="relative z-10 flex flex-col h-full">
- <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
+ <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md  group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
  <Icon className="w-5 h-5 text-[#FAF9F5]" />
  </div>
  <div className="mt-auto relative z-10">
@@ -290,18 +290,18 @@ export function Dashboard() {
  }, []);
 
  return (
- <div className="flex flex-col h-full gap-8 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
+ <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
  {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-10 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
+ <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-6 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
  {/* Decorative background glass circles */}
  <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
  <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
  
- <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
+ <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none  group-hover:rotate-6 transition-transform duration-700">
  <BrainCircuit className="w-64 h-64" />
  </div>
  
- <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 h-full">
+ <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 h-full">
  <div className="space-y-4">
  <div className="flex items-center gap-4">
  <div className="bg-white/15 p-3 rounded-lg backdrop-blur-xl border border-white/20 shadow-sm group-hover:rotate-12 transition-transform duration-500">
@@ -394,15 +394,15 @@ export function Dashboard() {
  {config.showQuickNav && (
  <div className="flex flex-wrap items-center gap-3">
  <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
- <Package className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform" />
+ <Package className="w-4 h-4 text-orange-600  transition-transform" />
  Hệ thống PIM
  </button>
  <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
- <ListOrdered className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+ <ListOrdered className="w-4 h-4 text-emerald-500  transition-transform" />
  Quản lý Đơn hàng
  </button>
  <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
- <Users className="w-4 h-4 text-slate-800 group-hover:scale-110 transition-transform" />
+ <Users className="w-4 h-4 text-slate-800  transition-transform" />
  Trung tâm Đối tác
  </button>
  </div>
@@ -570,7 +570,7 @@ export function Dashboard() {
 
   {config.showCommunity && (
   <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
-  <div className="drag-handle cursor-move px-8 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
+  <div className="drag-handle cursor-move px-6 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
   <div className="flex items-center gap-4 mb-6 pointer-events-none">
   <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5 shadow-inner border border-slate-700">
   <Users className="w-6 h-6 text-[#FAF9F5]" />

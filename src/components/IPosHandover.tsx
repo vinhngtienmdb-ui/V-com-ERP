@@ -281,7 +281,7 @@ export function IPosHandover({
           /* Active Handover View */
           !isShiftActive ? (
             /* Shift is inactive, show Start Shift screen */
-            <div className="max-w-md mx-auto bg-white border border-slate-300 rounded-2xl shadow-sm p-8 md:p-10 text-center space-y-6 mt-10">
+            <div className="max-w-md mx-auto bg-white border border-slate-300 rounded-2xl shadow-sm p-6 md:p-6 text-center space-y-6 mt-10">
               <div className="w-16 h-16 bg-blue-50 text-[#2563EB] rounded-2xl flex items-center justify-center mx-auto border border-blue-100 shadow-inner">
                 <Clock className="w-8 h-8" />
               </div>
@@ -316,7 +316,7 @@ export function IPosHandover({
 
               <button
                 onClick={handleOpenNewShift}
-                className="w-full py-4 bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-100 active:scale-95 duration-200"
+                className="w-full py-4 bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-sm shadow-blue-100 active:scale-95 duration-200"
               >
                 Khai báo và Bắt đầu ca
               </button>
@@ -543,7 +543,7 @@ export function IPosHandover({
                   
                   <button
                     onClick={handleCloseAndHandover}
-                    className="flex-1 py-3 bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-100 flex items-center justify-center gap-2 text-xs whitespace-nowrap"
+                    className="flex-1 py-3 bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-sm shadow-blue-100 flex items-center justify-center gap-2 text-xs whitespace-nowrap"
                   >
                     <Save className="w-4 h-4" /> Bàn Giao & Chốt Ca
                   </button>
@@ -582,7 +582,7 @@ export function IPosHandover({
                 <p className="text-sm font-bold">Đang tải lịch sử bàn giao...</p>
               </div>
             ) : filteredHistory.length === 0 ? (
-              <div className="bg-white border border-slate-300 rounded-2xl p-16 text-center text-slate-500">
+              <div className="bg-white border border-slate-300 rounded-2xl p-6 text-center text-slate-500">
                 <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                 <p className="text-base font-bold text-slate-700">Chưa có bản ghi bàn giao ca nào</p>
                 <p className="text-xs text-slate-400 mt-1">Các phiên làm sau khi chốt sẽ hiển thị tự động tại đây.</p>
@@ -600,7 +600,7 @@ export function IPosHandover({
                         key={rec.id}
                         onClick={() => setSelectedHistoryItem(rec)}
                         className={cn(
-                          "bg-white border rounded-xl p-4 cursor-pointer transition-all hover:shadow-md block text-left",
+                          "bg-white border rounded-xl p-4 cursor-pointer transition-all hover:shadow-sm block text-left",
                           isSelected 
                             ? "border-[#2563EB] ring-1 ring-blue-100 bg-blue-50/10" 
                             : "border-slate-300 hover:border-slate-400"

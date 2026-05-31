@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
       return (
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div className="flex flex-col items-center justify-center h-full p-6 text-center">
           <div className="text-4xl mb-4">⚠️</div>
           <h2 className="text-lg font-semibold text-slate-800 mb-2">Đã xảy ra lỗi</h2>
           <p className="text-sm text-slate-500 mb-4 max-w-md">

@@ -298,6 +298,26 @@ export function SettingsPage() {
  const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription'>('overview');
  const [adminAuditLogs, setAdminAuditLogs] = useState<any[]>([]);
  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
+  const [apiKeys, setApiKeys] = useState<{
+    gemini: string;
+    sepayToken: string;
+    sepayId: string;
+    sepaySecret: string;
+  }>({
+    gemini: safeLocalStorage.getItem('api_gemini_api_key') || '',
+    sepayToken: safeLocalStorage.getItem('api_sepay_api_token') || '',
+    sepayId: safeLocalStorage.getItem('api_sepay_client_id') || '',
+    sepaySecret: safeLocalStorage.getItem('api_sepay_client_secret') || '',
+  });
+
+  const saveApiKeys = () => {
+    safeLocalStorage.setItem('api_gemini_api_key', apiKeys.gemini);
+    safeLocalStorage.setItem('api_sepay_api_token', apiKeys.sepayToken);
+    safeLocalStorage.setItem('api_sepay_client_id', apiKeys.sepayId);
+    safeLocalStorage.setItem('api_sepay_client_secret', apiKeys.sepaySecret);
+    addNotification('Cập nhật API', 'Đã lưu cấu hình API tích hợp thành công.');
+  };
+
 
  useEffect(() => {
    if (activeTab === 'saas_subscription') {
@@ -639,7 +659,7 @@ export function SettingsPage() {
      { label: 'Điểm Webhook',      value: `${MOCK_WEBHOOKS.length} Endpoints`,badge: '100% Uptime', badgeCls: 'bg-sky-100 text-sky-700',           icon: Webhook,         iconBg: 'bg-sky-500' },
      { label: 'Ngành hàng',        value: `${categoryFees.length} Nhóm`,     badge: 'Tối ưu AI',   badgeCls: 'bg-violet-100 text-violet-700',     icon: BadgeDollarSign, iconBg: 'bg-emerald-500' },
    ].map(item => (
-     <div key={item.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all shadow-sm">
+     <div key={item.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 hover:shadow-sm .5 transition-all shadow-sm">
        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.iconBg}`}>
          <item.icon className="w-5 h-5 text-white" />
        </div>
@@ -662,9 +682,9 @@ export function SettingsPage() {
      <button
        key={mod.id}
        onClick={() => setActiveTab(mod.id as any)}
-       className="group bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200 min-h-[160px] justify-between"
+       className="group bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-sm hover:border-slate-300 .5 transition-all duration-200 min-h-[160px] justify-between"
      >
-       <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-200", getIconBg(mod.color))}>
+       <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform  duration-200", getIconBg(mod.color))}>
          <mod.icon className="w-6 h-6 text-white" />
        </div>
        <div>
@@ -910,7 +930,7 @@ export function SettingsPage() {
  </button>
  </div>
  
- <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform">
+ <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12  transition-transform">
  {fee.type === 'fixed' ? <BadgeDollarSign className="w-24 h-24" /> : <Zap className="w-24 h-24" />}
  </div>
  </div>
@@ -962,7 +982,7 @@ export function SettingsPage() {
  )}
 
  <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm overflow-x-auto min-w-0">
- <table className="w-full text-sm">
+ <table className="w-full text-sm whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr>
  <th className="px-5 py-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
@@ -1021,7 +1041,7 @@ export function SettingsPage() {
  {cf.aiSuggestedSellerFee && (
  <button 
  onClick={() => handleApplyAiSuggestion(cf.id)}
- className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
+ className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 "
  title={`Gợi ý: ${cf.aiReasoning}`}
  >
  <Sparkles className="w-4 h-4" /> Áp dụng
@@ -1541,7 +1561,7 @@ export function SettingsPage() {
  </button>
  </div>
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-100">
  <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Tên Vai trò</th>
@@ -1717,54 +1737,100 @@ export function SettingsPage() {
  )}
 
  {activeTab === 'api' && (
- <div className="animate-in fade-in duration-300 space-y-6">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
- <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Key className="w-4 h-4 text-orange-500" /> API Keys & Access Tokens
- </h3>
- <p className="text-xs text-slate-500">Cấp quyền cho bên thứ 3 (Brand, Logistics) truy cập trực tiếp vào API sàn.</p>
- <div className="p-3 bg-slate-50 rounded-lg font-mono text-[10px] text-slate-600 flex justify-between items-center">
- <span>sk_live_vcomm_*********************</span>
- <button className="text-blue-600 font-bold">Sao chép</button>
- </div>
- <button className="w-full py-2 border border-slate-200 rounded-2xl text-xs font-bold hover:bg-slate-50">Tạo mới Secret Key</button>
- </div>
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
- <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <AppWindow className="w-4 h-4 text-blue-600" /> Webhook Settings
- </h3>
- <p className="text-xs text-slate-500">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
- <div className="space-y-3">
- {MOCK_WEBHOOKS.map(wb => (
- <div key={wb.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
- <div className="space-y-1">
- <p className="text-[10px] font-bold text-slate-900">{wb.name}</p>
- <p className="text-[9px] text-slate-500 font-mono truncate max-w-[150px]">{wb.url}</p>
- </div>
- <button className="p-1.5 hover:bg-red-50 text-red-500 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
- </div>
- ))}
- </div>
- <button className="w-full py-2 bg-[#111827] text-white rounded-lg text-xs font-bold hover:bg-slate-800">Cấu hình Webhook mới</button>
- </div>
- </div>
+  <div className="animate-in fade-in duration-300 space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+          <Key className="w-4 h-4 text-orange-500" /> Hệ thống nội bộ (Third-party)
+        </h3>
+        <p className="text-xs text-slate-500">Cấu hình các Access Token và API Key dùng cho hoạt động cốt lõi của VComm (AI, Thanh toán).</p>
+        
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700">Gemini (Google AI) API Key</label>
+            <input 
+              type="password"
+              placeholder="AIzaSy..."
+              className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
+              value={apiKeys.gemini}
+              onChange={e => setApiKeys(prev => ({...prev, gemini: e.target.value}))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700">SePay API Token</label>
+            <input 
+              type="password"
+              placeholder="JWT Token..."
+              className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
+              value={apiKeys.sepayToken}
+              onChange={e => setApiKeys(prev => ({...prev, sepayToken: e.target.value}))}
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className="space-y-1.5 w-1/2">
+              <label className="text-xs font-bold text-slate-700">SePay Client ID</label>
+              <input 
+                type="text"
+                placeholder="Client ID"
+                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
+                value={apiKeys.sepayId}
+                onChange={e => setApiKeys(prev => ({...prev, sepayId: e.target.value}))}
+              />
+            </div>
+            <div className="space-y-1.5 w-1/2">
+              <label className="text-xs font-bold text-slate-700">SePay Client Secret</label>
+              <input 
+                type="password"
+                placeholder="Client Secret"
+                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
+                value={apiKeys.sepaySecret}
+                onChange={e => setApiKeys(prev => ({...prev, sepaySecret: e.target.value}))}
+              />
+            </div>
+          </div>
+        </div>
 
- <div className="bg-blue-900 text-white p-6 rounded-lg flex items-center gap-6">
- <div className="p-4 bg-white/10 rounded-2xl border border-white/20">
- <Globe className="w-8 h-8 text-blue-600" />
- </div>
- <div>
- <h4 className="font-bold text-lg mb-1">OpenAPI Public Documentation</h4>
- <p className="text-slate-500 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
- <div className="flex gap-4 mt-3">
- <button className="text-xs font-bold text-blue-600 hover:underline">Download API Spec</button>
- <button className="text-xs font-bold text-blue-600 hover:underline">Xem Sandbox logs</button>
- </div>
- </div>
- </div>
- </div>
- )}
+        <button onClick={saveApiKeys} className="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+          Cập nhật cấu hình tích hợp
+        </button>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+          <AppWindow className="w-4 h-4 text-blue-600" /> Webhook Settings
+        </h3>
+        <p className="text-xs text-slate-500">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
+        <div className="space-y-3">
+          {MOCK_WEBHOOKS.map(wb => (
+            <div key={wb.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-900">{wb.name}</p>
+                <p className="text-[9px] text-slate-500 font-mono truncate max-w-[150px]">{wb.url}</p>
+              </div>
+              <button className="p-1.5 hover:bg-red-50 text-red-500 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
+            </div>
+          ))}
+        </div>
+        <button className="w-full py-2 border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-50">Cấu hình Webhook mới</button>
+      </div>
+    </div>
+
+    <div className="bg-blue-900 text-white p-6 rounded-lg flex items-center gap-6">
+      <div className="p-4 bg-white/10 rounded-2xl border border-white/20">
+        <Globe className="w-8 h-8 text-blue-600" />
+      </div>
+      <div>
+        <h4 className="font-bold text-lg mb-1">OpenAPI Public Documentation</h4>
+        <p className="text-slate-500 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
+        <div className="flex gap-4 mt-3">
+          <button className="text-xs font-bold text-blue-600 hover:underline">Download API Spec</button>
+          <button className="text-xs font-bold text-blue-600 hover:underline">Xem Sandbox logs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
  {activeTab === 'address' && (
  <div className="animate-in fade-in duration-300 space-y-4">
@@ -2265,7 +2331,7 @@ export function SettingsPage() {
 	{activeTab === 'saas_subscription' && (
 		<div className="animate-in fade-in duration-350 space-y-7">
 			{/* Gói hiện tại và thông báo chúc mừng */}
-			<div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg">
+			<div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-6 text-white relative overflow-hidden shadow-sm">
 				<div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
 				<div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
 
@@ -2420,7 +2486,7 @@ export function SettingsPage() {
 							highlight: true,
 							tag: 'BÁN CHẠY NHẤT',
 							borderColor: 'group-hover:border-blue-400',
-							gradient: 'from-blue-50/20 via-white to-white border border-blue-200 shadow-md shadow-blue-50/50'
+							gradient: 'from-blue-50/20 via-white to-white border border-blue-200 shadow-sm shadow-blue-50/50'
 						},
 						{ 
 							name: 'Enterprise ERP', 
@@ -2435,7 +2501,7 @@ export function SettingsPage() {
 							highlight: false,
 							tag: 'GÓI DOANH NGHIỆP',
 							borderColor: 'group-hover:border-emerald-500',
-							gradient: 'from-emerald-50/25 via-white to-white border-2 border-emerald-500 shadow-lg shadow-emerald-100/30'
+							gradient: 'from-emerald-50/25 via-white to-white border-2 border-emerald-500 shadow-sm shadow-emerald-100/30'
 						},
 						{ 
 							name: 'Custom Corporate', 
@@ -2455,7 +2521,7 @@ export function SettingsPage() {
 					].map((plan, idx) => (
 						<div 
 							key={idx} 
-							className={`group relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 ${plan.gradient} hover:-translate-y-2 hover:shadow-xl`}
+							className={`group relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 ${plan.gradient}  hover:shadow-sm`}
 						>
 							{/* Badge tags */}
 							{plan.active ? (
@@ -2529,7 +2595,7 @@ export function SettingsPage() {
 
 							{/* Button CTA with micro interactions */}
 							<button 
-								className={`w-full mt-8 py-3 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-md cursor-pointer ${
+								className={`w-full mt-8 py-3 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-sm cursor-pointer ${
 									plan.active 
 										? 'bg-emerald-500/10 text-emerald-700 border border-dashed border-emerald-300 hover:bg-emerald-500/15 cursor-default' 
 										: plan.highlight
@@ -2573,7 +2639,7 @@ export function SettingsPage() {
 					</div>
 
 					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
-						<table className="w-full text-left text-xs border-collapse">
+						<table className="w-full text-left text-xs border-collapse whitespace-nowrap">
 							<thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
 								<tr>
 									<th className="p-3">Mã hoá đơn</th>
@@ -2656,12 +2722,12 @@ export function SettingsPage() {
 				</div>
 
 				{loadingAuditLogs ? (
-					<div className="py-8 flex flex-col items-center justify-center gap-2 text-slate-500 text-xs">
+					<div className="py-6 flex flex-col items-center justify-center gap-2 text-slate-500 text-xs">
 						<span className="w-5 h-5 rounded-full border-2 border-slate-300 border-t-emerald-600 animate-spin"></span>
 						Đang truy xuất nhật ký truy cập...
 					</div>
 				) : adminAuditLogs.length === 0 ? (
-					<div className="py-8 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-xs leading-relaxed">
+					<div className="py-6 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-xs leading-relaxed">
 						Chưa ghi nhận sự kiện truy cập hành động nào của tài khoản Admin tại tenant này.
 					</div>
 				) : (

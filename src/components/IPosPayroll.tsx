@@ -134,7 +134,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
              {[{ label: 'Tổng lương thực nhận', val: formatCurrency(stats.totalNetPay), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                { label: 'Số nhân sự hiện tại', val: stats.totalEmployees.toString(), icon: Users, color: 'text-primary-600', bg: 'bg-primary-50' },
                { label: 'Tổng giờ tăng ca (OT)', val: `${stats.totalOT} giờ`, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' }].map((stat, idx) => (
-                 <div key={idx} className="bg-white border text-center md:text-left border-slate-300 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
+                 <div key={idx} className="bg-white border text-center md:text-left border-slate-300 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start gap-4 shadow-sm hover:shadow-sm transition-shadow">
                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", stat.bg, stat.color)}>
                          <stat.icon className="w-6 h-6" />
                      </div>
@@ -161,7 +161,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
              </div>
              
              <div className="overflow-x-auto min-w-0">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="bg-[#F9FAFB] border-b border-slate-300 text-slate-600">
                         <tr>
                             <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Nhân viên</th>
@@ -248,7 +248,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
       {/* Employee Details Sidebar/Modal (Simulated) */}
       {selectedEmployee && (
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-end animate-in fade-in">
-              <div className="w-full md:w-[480px] bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-8">
+              <div className="w-full md:w-[480px] bg-white h-full shadow-sm flex flex-col animate-in slide-in-from-right-8">
                   <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
                       <div>
                           <h3 className="font-black text-slate-900 text-lg">Phiếu Lương Chi Tiết</h3>
@@ -331,7 +331,7 @@ export function IPosPayroll({ activeStore }: { activeStore: any }) {
                       </div>
 
                       {/* Thực nhận */}
-                      <div className="bg-gradient-to-r from-primary-900 to-primary-800 rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
+                      <div className="bg-gradient-to-r from-primary-900 to-primary-800 rounded-xl p-6 text-white shadow-sm relative overflow-hidden group">
                           <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />
                           <p className="text-[10px] text-primary-200 font-black uppercase tracking-widest mb-1 relative z-10">
                               3. Lương Thực Nhận (Net Pay)

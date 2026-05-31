@@ -162,7 +162,7 @@ export function WalletHub() {
  <X className="w-6 h-6 text-slate-500" />
  </button>
  </div>
- <div className="p-8 space-y-6">
+ <div className="p-6 space-y-6">
  <div className="space-y-2">
  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Số tiền (VNĐ)</label>
  <input 
@@ -248,8 +248,8 @@ export function WalletHub() {
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
  {/* Main Wallet Card */}
- <div className="lg:col-span-2 relative h-[240px] rounded-lg bg-slate-900 p-8 text-[#FAF9F5] shadow-sm shadow-slate-900/5 overflow-hidden group">
- <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-opacity">
+ <div className="lg:col-span-2 relative h-[240px] rounded-lg bg-slate-900 p-6 text-[#FAF9F5] shadow-sm shadow-slate-900/5 overflow-hidden group">
+ <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
  <QrCode className="w-64 h-64 rotate-12" />
  </div>
  
@@ -270,7 +270,7 @@ export function WalletHub() {
  </div>
 
  <div className="flex justify-between items-end border-t border-white/10 pt-6">
- <div className="flex gap-8">
+ <div className="flex gap-6">
  <div>
  <p className="text-[10px] font-bold text-blue-200/60 uppercase">Dòng tiền Thu</p>
  <p className="font-bold">+125.4M</p>
@@ -349,7 +349,7 @@ export function WalletHub() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "flex-1 px-8 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 w-full",
+ "flex-1 px-6 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 w-full",
  activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
  )}
  >
@@ -358,7 +358,7 @@ export function WalletHub() {
  ))}
  </div>
 
- <div className="p-8">
+ <div className="p-6">
  <AnimatePresence mode="wait">
  {activeTab === 'history' && (
  <motion.div 
@@ -412,7 +412,7 @@ export function WalletHub() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="border-b border-slate-200">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã Giao dịch</th>
@@ -426,7 +426,7 @@ export function WalletHub() {
  <tbody className="divide-y divide-slate-50">
  {filteredTransactions.length === 0 ? (
  <tr>
- <td colSpan={6} className="py-8 text-center text-sm text-slate-600 font-medium">Không tìm thấy giao dịch nào phù hợp.</td>
+ <td colSpan={6} className="py-6 text-center text-sm text-slate-600 font-medium">Không tìm thấy giao dịch nào phù hợp.</td>
  </tr>
  ) : filteredTransactions.map(txn => (
  <tr key={txn.id} className="hover:bg-slate-50 transition-all group">
@@ -487,8 +487,8 @@ export function WalletHub() {
  >
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
  {MOCK_BANK_ACCOUNTS.map(bank => (
- <div key={bank.id} className="bg-white border border-slate-200 rounded-lg p-8 shadow-sm relative overflow-hidden group">
- <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+ <div key={bank.id} className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm relative overflow-hidden group">
+ <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
  <Landmark className="w-32 h-32 rotate-12" />
  </div>
  
@@ -537,8 +537,8 @@ export function WalletHub() {
  </div>
  ))}
  
- <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg p-8 flex flex-col items-center justify-center text-center space-y-4 hover:bg-slate-100 transition-all cursor-pointer group">
- <div className="w-16 h-16 bg-white rounded-lg shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+ <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center text-center space-y-4 hover:bg-slate-100 transition-all cursor-pointer group">
+ <div className="w-16 h-16 bg-white rounded-lg shadow-sm flex items-center justify-center  transition-transform">
  <Plus className="w-8 h-8 text-slate-500" />
  </div>
  <div>
@@ -548,8 +548,8 @@ export function WalletHub() {
  </div>
  </DraggableGrid>
 
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] flex flex-col md:flex-row justify-between items-center gap-8 shadow-sm shadow-blue-200 overflow-hidden relative">
- <div className="absolute top-0 right-0 p-12 opacity-10">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm shadow-blue-200 overflow-hidden relative">
+ <div className="absolute top-0 right-0 p-6 opacity-10">
  <Globe className="w-48 h-48" />
  </div>
  <div className="relative z-10 max-w-lg space-y-4">
@@ -560,7 +560,7 @@ export function WalletHub() {
  <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">Instant Settlement Protocol</h3>
  <p className="text-sm text-blue-100/80 leading-relaxed uppercase font-bold tracking-tight">Rút tiền về ngay lập tức 24/7 kể cả ngày lễ và cuối tuần qua hệ thống Napas 247. Phí giao dịch cố định chỉ 1.100đ.</p>
  </div>
- <button className="relative z-10 px-8 py-5 bg-white text-orange-700 rounded-lg font-black text-sm uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">
+ <button className="relative z-10 px-6 py-5 bg-white text-orange-700 rounded-lg font-black text-sm uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">
  Cấu hình Rút tiền nhanh
  </button>
  </div>
@@ -573,7 +573,7 @@ export function WalletHub() {
  animate={{ opacity: 1, scale: 1 }}
  className="space-y-8"
  >
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden flex flex-col md:flex-row gap-6 items-center">
  <div className="relative z-10 space-y-4 max-w-md">
  <div className="flex items-center gap-2 px-3 py-1 bg-slate-800/20 rounded-full w-fit">
  <ShieldCheck className="w-4 h-4 text-orange-500" />
@@ -612,7 +612,7 @@ export function WalletHub() {
  </div>
 
  <div className="bg-white border border-slate-200 rounded-lg overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="border-b border-stone-50">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã đơn hàng</th>
@@ -915,7 +915,7 @@ export function WalletHub() {
  </div>
  </div>
  <div className="overflow-x-auto min-w-0">
- <table className="w-full">
+ <table className="w-full whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-left">
  <th className="px-6 py-4">Đối tượng</th>
@@ -964,7 +964,7 @@ export function WalletHub() {
  </div>
  
  {/* Footer / AI Monitoring */}
- <div className="bg-slate-900 rounded-lg p-10 flex flex-col md:flex-row gap-12 items-center justify-between relative overflow-hidden">
+ <div className="bg-slate-900 rounded-lg p-6 flex flex-col md:flex-row gap-6 items-center justify-between relative overflow-hidden">
  <div className="absolute right-0 top-0 opacity-10">
  <Lock className="w-64 h-64 -rotate-12 translate-x-32" />
  </div>

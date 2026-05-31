@@ -127,7 +127,7 @@ export function AdManager() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-3",
+ "px-6 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-3",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -155,7 +155,7 @@ export function AdManager() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Tên thầu / Seller</th>
@@ -228,7 +228,7 @@ export function AdManager() {
  )}
 
  {activeTab === 'analytics' && (
- <div className="animate-in fade-in duration-500 p-8 space-y-10">
+ <div className="animate-in fade-in duration-500 p-6 space-y-10">
  {/* Marketplace Revenue Analytics */}
  <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
  <div className="flex justify-between items-center mb-6">
@@ -240,7 +240,7 @@ export function AdManager() {
  <span className="px-3 py-1 bg-white border border-slate-300 rounded-lg text-[10px] font-bold">Tháng 4, 2024</span>
  </div>
  </div>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={32}>
  <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <div className="h-[300px] w-full">
  <ResponsiveContainer width="100%" height="100%">
@@ -289,7 +289,7 @@ export function AdManager() {
  </div>
 
  {/* Seller ROI & performance */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
  <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
  <TrendingUp className="w-5 h-5 text-emerald-500" /> Top Seller ROAS (Return on Ad Spend)
@@ -350,7 +350,7 @@ export function AdManager() {
  )}
  </div>
 
- <div className="bg-primary-900 text-[#FAF9F5] p-8 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+ <div className="bg-primary-900 text-[#FAF9F5] p-6 rounded-lg mt-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
  <div className="flex-1 space-y-4">
  <div className="flex items-center gap-3">
  <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5">
@@ -360,8 +360,8 @@ export function AdManager() {
  </div>
  <p className="text-slate-500 text-sm leading-relaxed max-w-lg">Thuật toán đấu thầu tự động dựa trên mức độ liên quan (Relevance Score) và Giá thầu. Đảm bảo trải nghiệm người dùng không bị "spam" quảng cáo rác, đồng thời tối ưu hóa ROAS cho những Nhà bán hàng thực lực.</p>
  <div className="flex gap-4 pt-4">
- <button className="px-8 py-3 bg-white text-primary-900 font-bold rounded-lg text-sm hover:bg-slate-100 transition-all">Phân tích ROAS Sàn</button>
- <button className="px-8 py-3 border border-primary-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-primary-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
+ <button className="px-6 py-3 bg-white text-primary-900 font-bold rounded-lg text-sm hover:bg-slate-100 transition-all">Phân tích ROAS Sàn</button>
+ <button className="px-6 py-3 border border-primary-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-primary-800 transition-all">Lịch sử Đấu thầu Vị trí</button>
  </div>
  </div>
  <Megaphone className="absolute -bottom-10 -right-10 w-64 h-64 text-primary-800/30 -rotate-12" />

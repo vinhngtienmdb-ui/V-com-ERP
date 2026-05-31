@@ -322,7 +322,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto flex justify-center bg-[#f5f5f0] min-h-0">
-            <div className="w-full max-w-4xl py-8 px-6">
+            <div className="w-full max-w-4xl py-6 px-6">
 
               {/* Page meta */}
               <div className="mb-6 space-y-3">
@@ -361,7 +361,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                     [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:text-sm [&_pre]:overflow-x-auto [&_pre]:my-4
                     [&_a]:text-blue-600 [&_a]:underline [&_a]:cursor-pointer
                     [&_hr]:border-slate-200 [&_hr]:my-6
-                    [&_img]:rounded-xl [&_img]:max-w-full [&_img]:shadow-md
+                    [&_img]:rounded-xl [&_img]:max-w-full [&_img]:shadow-sm
                     focus:ring-0"
                   data-placeholder="Bắt đầu soạn thảo nội dung trang tại đây..."
                   style={{ '--tw-prose-body': '#1e293b' } as React.CSSProperties}
@@ -381,7 +381,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
 
               {/* Preview */}
               {viewMode === 'preview' && (
-                <div className="bg-white rounded-2xl shadow-lg p-8 min-h-[60vh]">
+                <div className="bg-white rounded-2xl shadow-sm p-6 min-h-[60vh]">
                   <div className="mb-4 pb-4 border-b border-slate-100">
                     <h1 className="text-3xl font-bold text-slate-800">{title || 'Chưa có tiêu đề'}</h1>
                     {seoDesc && <p className="text-sm text-slate-400 mt-1">{seoDesc}</p>}
@@ -424,7 +424,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
       {/* ── Link dialog ── */}
       {showLinkDialog && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-96 space-y-4">
+          <div className="bg-white rounded-2xl shadow-sm p-6 w-96 space-y-4">
             <h3 className="font-bold text-slate-800 flex items-center gap-2"><Link className="w-4 h-4 text-blue-500" />Chèn liên kết</h3>
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">URL</label>
@@ -449,7 +449,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
       {/* ── Image dialog ── */}
       {showImageDialog && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-96 space-y-4">
+          <div className="bg-white rounded-2xl shadow-sm p-6 w-96 space-y-4">
             <h3 className="font-bold text-slate-800 flex items-center gap-2"><Image className="w-4 h-4 text-blue-500" />Chèn hình ảnh</h3>
 
             {/* Upload file */}

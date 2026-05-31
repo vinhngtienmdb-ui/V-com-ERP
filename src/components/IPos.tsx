@@ -257,7 +257,7 @@ const CartItemEditingModal = ({
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">{item.name}</h3>
@@ -1724,8 +1724,8 @@ export function IPosModule() {
   ) {
     if (pendingHandover) {
       return (
-        <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
-          <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 space-y-6">
+        <div className="h-full flex items-center justify-center p-6 bg-slate-50/50">
+          <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-6 space-y-6">
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-primary-50 text-primary-600 rounded-sm flex items-center justify-center mx-auto mb-4">
                 <UserCheck className="w-10 h-10" />
@@ -1794,8 +1794,8 @@ export function IPosModule() {
     }
 
     return (
-      <div className="h-full flex items-center justify-center p-8 bg-slate-50/50">
-        <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-10 text-center space-y-6">
+      <div className="h-full flex items-center justify-center p-6 bg-slate-50/50">
+        <div className="max-w-md w-full bg-white rounded-sm border border-slate-300 shadow-sm p-6 text-center space-y-6">
           <div className="w-20 h-20 bg-slate-100 text-primary-600 rounded-sm flex items-center justify-center mx-auto">
             <Clock className="w-10 h-10" />
           </div>
@@ -1952,7 +1952,7 @@ export function IPosModule() {
 
             <div className="my-2 border-b border-dashed border-gray-400 overflow-x-auto min-w-0"></div>
 
-            <table className="w-full text-left mb-2">
+            <table className="w-full text-left mb-2 whitespace-nowrap">
               <thead>
                 <tr className="border-b border-dashed border-gray-400">
                   <th className="py-1">Tên món</th>
@@ -2042,7 +2042,7 @@ export function IPosModule() {
       )}
 
       {voiceHint && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 text-[#FAF9F5] px-8 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-slate-900/95 text-[#FAF9F5] px-6 py-4 rounded-sm flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl">
           <p className="text-[9px] text-primary-400 font-black uppercase tracking-[0.3em]">
             Hệ thống nhận diện
           </p>
@@ -2054,7 +2054,7 @@ export function IPosModule() {
       {/* Customer Promo QR Modal */}
       {showCustomerPromoQR && (
         <div className="fixed inset-0 z-[170] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-8 text-center">
+          <div className="bg-white rounded-sm w-full max-w-sm shadow-sm animate-in zoom-in-95 duration-300 p-6 text-center">
             <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight mb-2">
               Quét Mã Từ Sàn TMĐT
             </h3>
@@ -2063,7 +2063,7 @@ export function IPosModule() {
               áp dụng khuyến mãi / thanh toán bằng ví Sàn.
             </p>
 
-            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-xl ring-1 ring-slate-200">
+            <div className="w-48 h-48 mx-auto bg-white rounded-sm mb-6 flex items-center justify-center border-4 border-primary-50 shadow-sm ring-1 ring-slate-200">
               <img 
                 src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/promo-wallet-fake-url" 
                 alt="Promo QR" 
@@ -2100,8 +2100,8 @@ export function IPosModule() {
       )}
 
       {showShiftSummary && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-white rounded-sm p-10 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md">
+          <div className="bg-white rounded-sm p-6 w-full max-w-lg space-y-8 animate-in zoom-in-95 duration-300">
             <div className="flex justify-between items-center border-b border-slate-200 pb-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-sm flex items-center justify-center font-bold">
@@ -2264,7 +2264,7 @@ export function IPosModule() {
       {/* Promo Input Modal */}
       {showPromoInputModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl w-full max-w-sm shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">Mức Áp Dụng</h3>
@@ -2323,7 +2323,7 @@ export function IPosModule() {
       {/* Custom Item Modal */}
       {showCustomItemModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">Thêm Món Tuỳ Chọn</h3>
@@ -2398,10 +2398,10 @@ export function IPosModule() {
 
       {/* Checkout/Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/90 backdrop-blur-md">
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-6 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white rounded-sm w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-sm animate-in zoom-in-95 duration-300 border border-white/20">
             {/* Left side: Order Summary */}
-            <div className="w-full md:w-1/3 bg-slate-50 p-6 sm:p-10 border-b md:border-b-0 md:border-r border-slate-300 overflow-y-auto">
+            <div className="w-full md:w-1/3 bg-slate-50 p-6 sm:p-6 border-b md:border-b-0 md:border-r border-slate-300 overflow-y-auto">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-white rounded-sm shadow-sm flex items-center justify-center border border-slate-200">
                   <ShoppingCart className="w-5 h-5 text-primary-600" />
@@ -2511,7 +2511,7 @@ export function IPosModule() {
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Mã thanh toán</span>
                   </div>
                   
-                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-slate-100 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                  <div className="bg-white p-2 rounded-lg shadow-inner ring-1 ring-slate-100 relative z-10  transition-transform duration-500">
                     <img
                       src={sePayService.createPaymentQR(
                         total,
@@ -2532,7 +2532,7 @@ export function IPosModule() {
             </div>
 
             {/* Right side: Payment Methods */}
-            <div className="flex-1 p-6 sm:p-10 flex flex-col gap-8 bg-white overflow-y-auto">
+            <div className="flex-1 p-6 sm:p-6 flex flex-col gap-6 bg-white overflow-y-auto">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -2915,9 +2915,9 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
+                      className="flex flex-col items-center justify-center gap-4 p-6 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
+                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 relative">
                         <Monitor className="w-12 h-12 text-primary-600" />
                         <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
                       </div>
@@ -2941,9 +2941,9 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col items-center justify-center gap-4 p-12 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
+                      className="flex flex-col items-center justify-center gap-4 p-6 bg-slate-50 rounded-sm border border-slate-300 shadow-inner text-center"
                     >
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200 relative">
+                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 relative">
                         <Building2 className="w-12 h-12 text-primary-600" />
                         {isProcessing && (
                           <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white animate-pulse" />
@@ -2969,12 +2969,12 @@ export function IPosModule() {
                       initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                      className="flex flex-col sm:flex-row items-center gap-8 p-12 bg-orange-50 rounded-sm border border-orange-200 shadow-inner overflow-hidden relative"
+                      className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-orange-50 rounded-sm border border-orange-200 shadow-inner overflow-hidden relative"
                     >
                       <div className="absolute top-0 right-0 p-3 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-bl-sm">
                         TMĐT Integration
                       </div>
-                      <div className="w-48 h-48 bg-white rounded-xl shadow-lg border border-orange-100 flex items-center justify-center relative overflow-hidden group border-dashed">
+                      <div className="w-48 h-48 bg-white rounded-xl shadow-sm border border-orange-100 flex items-center justify-center relative overflow-hidden group border-dashed">
                         <div className="absolute inset-0 bg-slate-900/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none" />
                         <div className="text-center p-4">
                           <QrCode className="w-16 h-16 text-orange-400 mx-auto mb-3" />
@@ -3038,7 +3038,7 @@ export function IPosModule() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="bg-slate-50 p-8 rounded-sm border border-slate-300 shadow-inner space-y-6"
+                      className="bg-slate-50 p-6 rounded-sm border border-slate-300 shadow-inner space-y-6"
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
@@ -3109,7 +3109,7 @@ export function IPosModule() {
                   onClick={completeOrder}
                   disabled={isProcessing}
                   className={cn(
-                    "flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-sm font-semibold text-xs uppercase tracking-wide shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group border border-emerald-400/30",
+                    "flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-sm font-semibold text-xs uppercase tracking-wide shadow-sm hover:shadow-sm hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group border border-emerald-400/30",
                     isProcessing && "opacity-70 cursor-not-allowed",
                   )}
                 >
@@ -3121,7 +3121,7 @@ export function IPosModule() {
                   ) : (
                     <>
                       <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="relative z-10 flex items-center gap-3 drop-shadow-md">
+                      <span className="relative z-10 flex items-center gap-3 drop-shadow-sm">
                         Hoàn tất thanh toán
                         <CheckCircle2 className="w-6 h-6 animate-pulse" />
                       </span>
@@ -3137,12 +3137,12 @@ export function IPosModule() {
       
       {/* Payment Success & Printing / E-Invoice Modal */}
       {showPaymentSuccessModal && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-8 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-xl animate-in zoom-in-95 duration-300 border border-slate-300/50">
-            <div className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-8 text-center space-y-3 relative overflow-hidden">
+        <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300 border border-slate-300/50">
+            <div className="bg-gradient-to-b from-emerald-50 to-white pt-8 pb-6 px-6 text-center space-y-3 relative overflow-hidden">
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:2rem_2rem]" />
               <div className="relative z-10">
-                <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-emerald-500/30 mb-2">
+                <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm shadow-emerald-500/30 mb-2">
                   <CheckCircle2 className="w-7 h-7 text-white" />
                 </div>
                 <h2 className="text-xl font-bold text-emerald-900 tracking-tight">Thanh toán thành công!</h2>
@@ -3152,12 +3152,12 @@ export function IPosModule() {
             
             <div className="p-6 space-y-6 bg-slate-50/50">
                 <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => { setPrintMode("customer_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-md rounded-xl transition-all duration-300 group">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100 group-hover:scale-105 transition-all"><Printer className="w-5 h-5" /></div>
+                    <button onClick={() => { setPrintMode("customer_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-primary-300 hover:shadow-sm rounded-xl transition-all duration-300 group">
+                        <div className="p-3 bg-primary-50 text-primary-600 rounded-full group-hover:bg-primary-100  transition-all"><Printer className="w-5 h-5" /></div>
                         <span className="font-bold text-slate-800 text-sm">In phiếu tính tiền</span>
                     </button>
-                    <button onClick={() => { setPrintMode("kitchen_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-md rounded-xl transition-all duration-300 group">
-                        <div className="p-3 bg-orange-50 text-orange-600 rounded-full group-hover:bg-orange-100 group-hover:scale-105 transition-all"><ChefHat className="w-5 h-5" /></div>
+                    <button onClick={() => { setPrintMode("kitchen_bill"); injectK80PrintStyle(); setTimeout(() => { window.print(); removeK80PrintStyle(); }, 150); }} className="flex flex-col items-center justify-center gap-2 p-5 bg-white border border-slate-300 hover:border-orange-300 hover:shadow-sm rounded-xl transition-all duration-300 group">
+                        <div className="p-3 bg-orange-50 text-orange-600 rounded-full group-hover:bg-orange-100  transition-all"><ChefHat className="w-5 h-5" /></div>
                         <span className="font-bold text-slate-800 text-sm">In bill chế biến</span>
                     </button>
                 </div>
@@ -3242,8 +3242,8 @@ export function IPosModule() {
 
       {/* Scanner Modal */}
       {isScannerOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-white rounded-sm p-8 w-full max-w-lg space-y-6">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md">
+          <div className="bg-white rounded-sm p-6 w-full max-w-lg space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">Quét mã sản phẩm</h2>
               <button
@@ -3276,7 +3276,7 @@ export function IPosModule() {
           </div>
           <span className="text-slate-300 hidden sm:inline">|</span>
           <div className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 bg-indigo-50 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold border border-indigo-100 shadow-sm transition-transform group-hover:scale-105">
+            <div className="w-7 h-7 bg-indigo-50 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold border border-indigo-100 shadow-sm transition-transform ">
               {(
                 selectedStaff?.name ||
                 user?.displayName ||
@@ -3360,7 +3360,7 @@ export function IPosModule() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-8 flex-1 overflow-hidden">
+      <div className="grid grid-cols-12 gap-6 flex-1 overflow-hidden">
         {activeTab === "dashboard" ? (
           <div className="col-span-12 space-y-8 animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar pb-20 scrollbar-hide">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -3376,7 +3376,7 @@ export function IPosModule() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setActiveTab("sales")}
-                  className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-[#FAF9F5] rounded-sm font-bold text-sm shadow-sm hover:scale-105 transition-all active:scale-95"
+                  className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-[#FAF9F5] rounded-sm font-bold text-sm shadow-sm  transition-all active:scale-95"
                 >
                   <Plus className="w-4 h-4" /> Bán hàng ngay
                 </button>
@@ -3420,7 +3420,7 @@ export function IPosModule() {
               ].map((card, i) => (
                 <div
                   key={card.label}
-                  className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 group"
+                  className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-sm hover:border-primary-100 transition-all duration-300 group"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div
@@ -3455,7 +3455,7 @@ export function IPosModule() {
               ).map((group, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-lg border border-slate-300 shadow-sm p-6 sm:p-8"
+                  className="bg-white rounded-lg border border-slate-300 shadow-sm p-6 sm:p-6"
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-1.5 h-6 bg-slate-900 rounded-full" />
@@ -3472,7 +3472,7 @@ export function IPosModule() {
                       >
                         <div
                           className={cn(
-                            "p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105",
+                            "p-3 rounded-lg shrink-0 transition-transform ",
                             getColorClasses(item.color),
                           )}
                         >
@@ -3494,7 +3494,7 @@ export function IPosModule() {
             </div>
 
             {/* Delivery Channel Live Monitor */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-6 hover:shadow-sm transition-all">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
                   <Monitor className="w-5 h-5 text-emerald-600" /> Giám sát Kênh
@@ -3533,12 +3533,12 @@ export function IPosModule() {
                 ].map((ch) => (
                   <div
                     key={ch.id}
-                    className="p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between group hover:bg-white hover:shadow-md hover:border-primary-100 transition-all duration-300"
+                    className="p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between group hover:bg-white hover:shadow-sm hover:border-primary-100 transition-all duration-300"
                   >
                     <div className="flex items-center gap-4">
                       <div
                         className={cn(
-                          "w-12 h-12 rounded-full flex items-center justify-center text-[#FAF9F5] font-black text-sm shadow-md transition-transform group-hover:scale-110",
+                          "w-12 h-12 rounded-full flex items-center justify-center text-[#FAF9F5] font-black text-sm shadow-sm transition-transform ",
                           ch.color,
                         )}
                       >
@@ -3570,8 +3570,8 @@ export function IPosModule() {
               </div>
             </div>
 
-            <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-8" columns={3} gap={32}>
-              <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 hover:shadow-md transition-all">
+            <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={32}>
+              <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-6 hover:shadow-sm transition-all">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="font-bold text-slate-900 flex items-center gap-3 text-lg">
                     <Zap className="w-5 h-5 text-orange-600" /> Hoạt động Bán
@@ -3651,7 +3651,7 @@ export function IPosModule() {
               </div>
 
               <div className="space-y-6 flex flex-col">
-                <div className="bg-gradient-to-br from-primary-900 to-slate-900 rounded-xl p-8 text-white relative overflow-hidden shadow-lg group">
+                <div className="bg-gradient-to-br from-primary-900 to-slate-900 rounded-xl p-6 text-white relative overflow-hidden shadow-sm group">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full translate-y-16 -translate-x-16 blur-xl" />
                   <div className="relative z-10 space-y-6">
@@ -3683,14 +3683,14 @@ export function IPosModule() {
                         setActiveTab("management");
                         setMgmtSubTab("revenue");
                       }}
-                      className="w-full py-3 bg-white text-primary-900 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-md"
+                      className="w-full py-3 bg-white text-primary-900 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
                     >
                       Xem báo cáo CA
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5 flex-1 hover:shadow-md transition-all">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-6 space-y-5 flex-1 hover:shadow-sm transition-all">
                   <h4 className="font-black text-slate-900 text-base flex items-center gap-2">
                     <span className="w-2 h-2 bg-rose-500 rounded-full animate-ping inline-block" />{" "}
                     Tips vận hành AI
@@ -3759,9 +3759,9 @@ export function IPosModule() {
 
                     <button
                       onClick={() => setIsScannerOpen(true)}
-                      className="h-[52px] bg-primary-600 text-white px-6 rounded-lg flex items-center gap-3 hover:bg-primary-700 transition-all shadow-md shadow-indigo-600/20 active:scale-95 group w-full sm:w-auto justify-center shrink-0"
+                      className="h-[52px] bg-primary-600 text-white px-6 rounded-lg flex items-center gap-3 hover:bg-primary-700 transition-all shadow-sm shadow-indigo-600/20 active:scale-95 group w-full sm:w-auto justify-center shrink-0"
                     >
-                      <ScanLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      <ScanLine className="w-5 h-5  transition-transform" />
                       <span className="text-sm font-bold tracking-wide">
                         Quét mã
                       </span>
@@ -3800,7 +3800,7 @@ export function IPosModule() {
                         className={cn(
                           "px-5 py-2.5 whitespace-nowrap rounded-full text-xs font-bold transition-all active:scale-95 border",
                           activeCategory === cat
-                            ? "bg-primary-600 text-white border-primary-600 shadow-md shadow-indigo-200"
+                            ? "bg-primary-600 text-white border-primary-600 shadow-sm shadow-indigo-200"
                             : "bg-slate-50 text-slate-700 hover:text-primary-600 hover:bg-primary-50 border-slate-300 hover:border-primary-200",
                         )}
                       >
@@ -3812,7 +3812,7 @@ export function IPosModule() {
               </div>
 
               {/* Product Grid - Refined with better rhythm and card design */}
-              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+              <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6">
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                   {products
                     .filter((p) =>
@@ -3837,7 +3837,7 @@ export function IPosModule() {
                             <img
                               src={product.image}
                               alt={product.name}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 "
                               referrerPolicy="no-referrer"
                             />
                           ) : (
@@ -3858,7 +3858,7 @@ export function IPosModule() {
                           )}
 
                           <div className="absolute bottom-3 right-3 flex items-center justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20 pointer-events-none">
-                            <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-md">
+                            <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-sm">
                               <Plus className="w-4 h-4" />
                             </div>
                           </div>
@@ -3870,7 +3870,7 @@ export function IPosModule() {
                                 setSelectedProductLookup(product);
                                 setActiveTab("lookup");
                               }}
-                              className="w-8 h-8 bg-white/95 backdrop-blur text-slate-700 hover:text-primary-600 rounded-full flex items-center justify-center shadow-md"
+                              className="w-8 h-8 bg-white/95 backdrop-blur text-slate-700 hover:text-primary-600 rounded-full flex items-center justify-center shadow-sm"
                             >
                               <Search className="w-3.5 h-3.5" />
                             </button>
@@ -3966,11 +3966,11 @@ export function IPosModule() {
               )}
 
               {/* Customer Selection - Modern unified bar */}
-              <div className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-md shrink-0">
+              <div className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group overflow-visible transition-all hover:border-primary-200 hover:shadow-sm shrink-0">
                 {customer ? (
                   <div className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center shadow-inner border border-primary-100 relative group-hover:scale-105 transition-transform">
+                      <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center shadow-inner border border-primary-100 relative  transition-transform">
                         <User className="w-5 h-5" />
                         <div className="absolute 0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                       </div>
@@ -4022,7 +4022,7 @@ export function IPosModule() {
                       </button>
                     </div>
                     {customerSearchResults.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-slate-300 rounded-lg divide-y divide-slate-100 shadow-xl bg-white">
+                      <div className="absolute top-full left-0 right-0 mt-2 max-h-[220px] overflow-y-auto border border-slate-300 rounded-lg divide-y divide-slate-100 shadow-sm bg-white">
                         {customerSearchResults.map((c) => (
                           <button
                             key={c.id}
@@ -4150,7 +4150,7 @@ export function IPosModule() {
                   {cart.map((item) => (
                     <div
                       key={item.cartItemId || item.id}
-                      className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-slate-200 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-primary-100 hover:shadow-md"
+                      className="flex justify-between items-center animate-in slide-in- bg-white p-4 py-5 rounded-xl border border-slate-200 shadow-sm relative group transition-all duration-300 hover:shadow-sm hover:border-primary-100 hover:shadow-sm"
                     >
                       {isReturnMode && (
                         <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 rounded-l-xl" />
@@ -4232,7 +4232,7 @@ export function IPosModule() {
                     </div>
                   )}
                   {cart.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-5 py-12">
+                    <div className="h-full flex flex-col items-center justify-center text-center space-y-5 py-6">
                       <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 border-4 border-white shadow-inner">
                         <ShoppingCart className="w-12 h-12" />
                       </div>
@@ -4273,7 +4273,7 @@ export function IPosModule() {
 
                     <div
                       className={cn(
-                        "rounded-xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-lg mt-4",
+                        "rounded-xl p-5 flex justify-between items-center text-white relative overflow-hidden group shadow-sm mt-4",
                         isReturnMode ? "bg-rose-600" : "bg-slate-900",
                       )}
                     >
@@ -4384,7 +4384,7 @@ export function IPosModule() {
                   <div
                     key={table.id}
                     className={cn(
-                      "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all hover:-translate-y-1.5 hover:shadow-sm relative group overflow-hidden",
+                      "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all .5 hover:shadow-sm relative group overflow-hidden",
                       table.status === "available"
                         ? "bg-white border-slate-200 text-slate-500 hover:border-blue-400"
                         : table.status === "occupied"
@@ -4466,7 +4466,7 @@ export function IPosModule() {
                     {/* Quick Actions Hover */}
                     <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                       <button
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600 hover:scale-110 transition-transform shadow-sm"
+                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600  transition-transform shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTableForQr(table.id);
@@ -4485,7 +4485,7 @@ export function IPosModule() {
           </div>
         ) : activeTab === "management" ? (
           <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500 min-h-[600px]">
-            <div className="p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-4">
+            <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary-600 text-[#FAF9F5] rounded-sm flex items-center justify-center shadow-sm shadow-indigo-200">
                   <Settings2 className="w-6 h-6" />
@@ -4547,7 +4547,7 @@ export function IPosModule() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8">
+            <div className="flex-1 overflow-y-auto p-6">
               {mgmtSubTab === "revenue" ? (
                 <div className="space-y-8 animate-in backdrop-blur-sm">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -4609,8 +4609,8 @@ export function IPosModule() {
                     ))}
                   </div>
 
-                  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
-                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
+                  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
+                    <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm">
                       <div className="flex items-center justify-between mb-8">
                         <h4 className="font-extrabold text-slate-900 flex items-center gap-2">
                           <TrendingUp className="w-5 h-5 text-primary-600" />{" "}
@@ -4691,12 +4691,12 @@ export function IPosModule() {
                       </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm">
+                    <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm">
                       <h4 className="font-extrabold text-slate-900 mb-8 flex items-center gap-2">
                         <PieChartIcon className="w-5 h-5 text-primary-600" /> Tỷ
                         lệ sản phẩm bán chạy
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                         <div className="h-[240px]">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -4759,9 +4759,9 @@ export function IPosModule() {
                     </div>
                   </DraggableGrid>
 
-                  <div className="bg-slate-900 rounded-sm p-8 text-[#FAF9F5] relative overflow-hidden group">
+                  <div className="bg-slate-900 rounded-sm p-6 text-[#FAF9F5] relative overflow-hidden group">
                     <div className="absolute inset-0 bg-white /20 to-transparent opacity-50" />
-                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                       <div className="space-y-4 text-center md:text-left">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">
                           <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
@@ -4778,7 +4778,7 @@ export function IPosModule() {
                           cho ngày Thứ 7 & Thứ 8 để tránh cháy hàng.
                         </p>
                       </div>
-                      <button className="px-8 py-4 bg-white text-primary-600 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 transition-all">
+                      <button className="px-6 py-4 bg-white text-primary-600 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm  transition-all">
                         Chi tiết dự báo AI
                       </button>
                     </div>
@@ -4800,7 +4800,7 @@ export function IPosModule() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
                       {
                         name: "GrabFood",
@@ -4833,7 +4833,7 @@ export function IPosModule() {
                     ].map((platform, idx) => (
                       <div
                         key={idx}
-                        className="bg-white p-8 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all group"
+                        className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-sm transition-all group"
                       >
                         <div className="flex justify-between items-start mb-6">
                           <div
@@ -4897,8 +4897,8 @@ export function IPosModule() {
                     ))}
                   </div>
 
-                  <div className="bg-emerald-900 rounded-sm p-10 text-[#FAF9F5] relative overflow-hidden">
-                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                  <div className="bg-emerald-900 rounded-sm p-6 text-[#FAF9F5] relative overflow-hidden">
+                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                       <div className="space-y-4">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-800 rounded-full">
                           <Sparkles className="w-4 h-4 text-emerald-400" />
@@ -4916,7 +4916,7 @@ export function IPosModule() {
                           ưu hóa thời gian vận chuyển.
                         </p>
                       </div>
-                      <button className="px-10 py-5 bg-white text-emerald-900 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm hover:scale-105 active:scale-95 transition-all">
+                      <button className="px-6 py-5 bg-white text-emerald-900 font-black text-xs uppercase tracking-widest rounded-sm shadow-sm  active:scale-95 transition-all">
                         Kích hoạt Smart Shipping
                       </button>
                     </div>
@@ -5219,7 +5219,7 @@ export function IPosModule() {
             </div>
           </div>
         ) : activeTab === "delivery" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 p-8 flex-1 animate-in slide-in- overflow-y-auto">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 p-6 flex-1 animate-in slide-in- overflow-y-auto">
             <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -5232,8 +5232,8 @@ export function IPosModule() {
             </div>
 
             {discrepancyPrompt && (
-              <div className="fixed inset-0 z-[250] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
-                <div className="bg-white rounded-sm max-w-lg shadow-sm p-8 space-y-6">
+              <div className="fixed inset-0 z-[250] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
+                <div className="bg-white rounded-sm max-w-lg shadow-sm p-6 space-y-6">
                   <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
                     <AlertCircle className="w-8 h-8" />
                   </div>
@@ -5360,7 +5360,7 @@ export function IPosModule() {
             )}
           </div>
         ) : activeTab === "lookup" ? (
-          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-10 flex-1 animate-in slide-in-">
+          <div className="col-span-12 bg-white rounded-sm border border-slate-300 shadow-sm p-6 flex-1 animate-in slide-in-">
             <button
               onClick={() => setActiveTab("sales")}
               className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary-600 mb-6 transition-colors"
@@ -5369,7 +5369,7 @@ export function IPosModule() {
             </button>
 
             {selectedProductLookup && (
-              <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-12" columns={2} gap={48}>
+              <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={48}>
                 <div className="aspect-square bg-slate-50 rounded-sm border border-slate-200 flex items-center justify-center relative overflow-hidden">
                   <Monitor className="w-24 h-24 text-slate-400" />
                   <div className="absolute top-6 left-6 bg-primary-600 text-[#FAF9F5] px-4 py-1.5 rounded-sm font-bold text-[10px] uppercase tracking-widest shadow-sm">
@@ -5651,7 +5651,7 @@ export function IPosModule() {
         </div>
       </div>
       {/* Hidden Print View for Receipt */}
-      <div className="hidden print:block p-8 bg-white text-black font-mono text-[10px] w-[80mm]">
+      <div className="hidden print:block p-6 bg-white text-black font-mono text-[10px] w-[80mm]">
         <div className="text-center border-b border-dashed border-black pb-4 mb-4">
           <h1 className="font-serif tracking-tight text-sm font-bold uppercase">
             VComm ERP iPOS System
@@ -5729,14 +5729,14 @@ export function IPosModule() {
       {/* Staff Management MODAL */}
       <AnimatePresence>
         {isAddingStaff && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-sm w-full max-w-xl shadow-sm overflow-hidden"
             >
-              <div className="p-8 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-primary-600 text-[#FAF9F5] rounded-sm flex items-center justify-center">
                     <UserCheck className="w-5 h-5" />
@@ -5753,7 +5753,7 @@ export function IPosModule() {
                 </button>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-6 space-y-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
@@ -5869,7 +5869,7 @@ export function IPosModule() {
                 </div>
               </div>
 
-              <div className="p-8 bg-slate-50/50 border-t border-slate-200 flex gap-4">
+              <div className="p-6 bg-slate-50/50 border-t border-slate-200 flex gap-4">
                 <button
                   onClick={() => setIsAddingStaff(false)}
                   className="flex-1 py-4 bg-white border border-slate-300 text-slate-500 font-bold rounded-sm hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
@@ -5920,8 +5920,8 @@ export function IPosModule() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8">
-                <div className="bg-slate-50 rounded-sm p-8 border border-dashed border-slate-300 relative">
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="bg-slate-50 rounded-sm p-6 border border-dashed border-slate-300 relative">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">
                     E-Receipt Digital
                   </div>
@@ -5997,7 +5997,7 @@ export function IPosModule() {
                 </div>
               </div>
 
-              <div className="p-8 border-t border-slate-200 grid grid-cols-2 gap-4 bg-slate-50/50">
+              <div className="p-6 border-t border-slate-200 grid grid-cols-2 gap-4 bg-slate-50/50">
                 <button className="flex items-center justify-center gap-2 py-4 bg-white border border-slate-300 text-slate-700 font-black text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-50 transition-all shadow-sm">
                   <Download className="w-4 h-4" /> Lưu ảnh
                 </button>
@@ -6016,7 +6016,7 @@ export function IPosModule() {
       {/* Table E-Menu QR Modal */}
       <AnimatePresence>
         {selectedTableForQr !== null && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -6032,7 +6032,7 @@ export function IPosModule() {
                 </button>
               </div>
 
-              <div className="p-8 text-center space-y-6">
+              <div className="p-6 text-center space-y-6">
                 <div className="space-y-1 pt-4">
                   <h3 className="text-xl font-black text-slate-900 tracking-tight">
                     QR E-Menu
@@ -6043,8 +6043,8 @@ export function IPosModule() {
                   </p>
                 </div>
 
-                <div className="bg-slate-50 p-10 rounded-sm border-2 border-dashed border-slate-300 relative group">
-                  <div className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <div className="bg-slate-50 p-6 rounded-sm border-2 border-dashed border-slate-300 relative group">
+                  <div className="aspect-square bg-white rounded-sm shadow-inner flex items-center justify-center relative overflow-hidden  transition-transform duration-500">
                     <QrCode className="w-40 h-40 text-slate-900" />
 
                     {/* Visual overlay for logo branding */}

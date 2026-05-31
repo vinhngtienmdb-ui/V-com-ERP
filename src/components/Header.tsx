@@ -55,7 +55,7 @@ export function Header() {
   }, []);
   
   return (
-  <header className="h-20 px-4 md:px-10 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-slate-300/50">
+  <header className="h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-slate-300/50">
   <div className="header-title">
   {isIPos ? (
     <div>
@@ -82,7 +82,7 @@ export function Header() {
   )}
   </div>
 
-  <div className="flex items-center gap-4 md:gap-8">
+  <div className="flex items-center gap-4 md:gap-6">
   <div className="relative group hidden sm:block">
   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 group-focus-within:text-orange-600 transition-colors" />
   <input
@@ -168,7 +168,7 @@ export function Header() {
   
   <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
   {notifications.length === 0 ? (
-  <div className="p-8 text-center text-slate-500">
+  <div className="p-6 text-center text-slate-500">
   <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
   <p className="text-sm">{'Không có thông báo nào'}</p>
   </div>
@@ -198,7 +198,7 @@ export function Header() {
   </div>
   
   <div className="flex items-center gap-3 border-l border-slate-300 pl-4 md:pl-8">
-  <Link to="/profile" className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-slate-600 border border-slate-300 shadow-sm hover:border-slate-900 hover:text-orange-600 transition-all hover:scale-105 active:scale-95">
+  <Link to="/profile" className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-slate-600 border border-slate-300 shadow-sm hover:border-slate-900 hover:text-orange-600 transition-all  active:scale-95">
   <User className="w-5 h-5" />
   </Link>
   </div>

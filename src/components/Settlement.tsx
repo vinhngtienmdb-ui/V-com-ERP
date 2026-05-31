@@ -148,7 +148,7 @@ export function SettlementManagement() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -177,7 +177,7 @@ export function SettlementManagement() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  {activeTab === 'settlement' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
@@ -301,7 +301,7 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-8 overflow-hidden relative">
+ <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-6 overflow-hidden relative">
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-3">
  <div className="p-2 bg-slate-800 rounded-lg">

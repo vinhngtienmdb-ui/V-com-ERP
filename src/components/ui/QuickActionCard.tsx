@@ -24,7 +24,7 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({ title, descrip
   >
     <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none" />
     <div className="relative z-10 flex flex-col h-full">
-      <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
+      <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md  group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
         <Icon className="w-5 h-5 text-white" />
       </div>
       <div className="mt-auto relative z-10">

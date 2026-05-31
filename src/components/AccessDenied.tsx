@@ -7,7 +7,7 @@ export function AccessDenied() {
 
  return (
  <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center">
- <div className="max-w-md w-full bg-white rounded-lg border border-slate-300 shadow-sm p-10 space-y-8">
+ <div className="max-w-md w-full bg-white rounded-lg border border-slate-300 shadow-sm p-6 space-y-8">
  <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center mx-auto animate-pulse">
  <ShieldAlert className="w-10 h-10" />
  </div>

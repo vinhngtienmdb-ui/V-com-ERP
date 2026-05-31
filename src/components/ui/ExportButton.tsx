@@ -35,7 +35,7 @@ export function ExportButton<T extends Record<string, unknown>>({
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-1.5 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in scale-in duration-150">
+          <div className="absolute right-0 mt-1.5 w-44 bg-white border border-slate-200 rounded-xl shadow-sm z-50 overflow-hidden animate-in fade-in scale-in duration-150">
             <button onClick={doExcel} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
               Excel (.xlsx)

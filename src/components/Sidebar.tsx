@@ -121,7 +121,7 @@ export function Sidebar() {
       )}
       >
       <item.icon className={cn(
-      "w-4 h-4 transition-transform duration-200 group-hover:scale-110",
+      "w-4 h-4 transition-transform duration-200 ",
       isActive ? "text-[#2563EB]" : "text-[#9CA3AF]"
       )} />
       <span className="flex-1 text-left truncate">{item.label}</span>

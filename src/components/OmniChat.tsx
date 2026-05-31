@@ -267,7 +267,7 @@ export function OmniChat() {
  placeholder="Nhập tin nhắn..." 
  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
  />
- <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
+ <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600  transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
  <Send className="w-5 h-5" />
  </button>
  </div>

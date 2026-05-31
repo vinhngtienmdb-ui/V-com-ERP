@@ -46,7 +46,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
 
  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-sm animate-in zoom-in-95 duration-200">
+ <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-sm animate-in zoom-in-95 duration-200">
  <div className="flex justify-between items-start mb-6">
  <div>
  <h2 className="text-2xl font-black text-[#111827]">Chi tiết đơn hàng {order.id}</h2>
@@ -95,7 +95,7 @@ const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void 
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lịch sử Vận chuyển</p>
  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">

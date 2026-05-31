@@ -189,7 +189,7 @@ export function Marketing() {
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
@@ -208,7 +208,7 @@ export function Marketing() {
  {/* Tabs Menu */}
  {activeTab !== 'overview' && (
  <>
- <div className="flex border-b border-slate-300 gap-8">
+ <div className="flex border-b border-slate-300 gap-6">
  {[
  { id: 'campaigns', label: 'Chiến dịch (Campaigns)', icon: Megaphone },
  { id: 'vouchers', label: 'Mã giảm giá (Vouchers)', icon: Calendar },
@@ -290,7 +290,7 @@ export function Marketing() {
  </div>
  </div>
 
- <DraggableGrid className="p-6 bg-slate-100/30 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-8" columns={3} gap={32}>
+ <DraggableGrid className="p-6 bg-slate-100/30 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={32}>
  <div className="flex gap-4">
  <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-300 flex items-center justify-center text-orange-700">
  <MessageSquare className="w-5 h-5" />
@@ -338,7 +338,7 @@ export function Marketing() {
  </button>
  </div>
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left text-sm">
+<table className="w-full text-left text-sm whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
  <th className="px-6 py-3">Tên chiến dịch</th>
@@ -402,7 +402,7 @@ export function Marketing() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-[10px]">Chiến dịch / Voucher</th>

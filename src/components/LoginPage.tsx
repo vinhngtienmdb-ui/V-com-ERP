@@ -34,7 +34,7 @@ export function LoginPage() {
  return (
  <div className="min-h-screen bg-[#F9FAFB] flex flex-col md:flex-row font-sans">
  {/* Left Pane - Branding & Illustration */}
- <div className="hidden md:flex md:w-1/2 bg-[#0F172A] p-12 flex-col justify-between relative overflow-hidden">
+ <div className="hidden md:flex md:w-1/2 bg-[#0F172A] p-6 flex-col justify-between relative overflow-hidden">
  <div className="absolute top-0 left-0 w-full h-full opacity-20">
  <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-slate-900 rounded-full blur-[120px]" />
  <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary-600 rounded-full blur-[120px]" />
@@ -65,7 +65,7 @@ export function LoginPage() {
  </div>
  </div>
 
- <div className="relative z-10 grid grid-cols-2 gap-8">
+ <div className="relative z-10 grid grid-cols-2 gap-6">
  <div>
  <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10 backdrop-blur-sm">
  <Zap className="w-6 h-6 text-amber-400" />
@@ -84,7 +84,7 @@ export function LoginPage() {
  </div>
 
  {/* Right Pane - Login Form */}
- <div className="flex-1 flex items-center justify-center p-6 md:p-12">
+ <div className="flex-1 flex items-center justify-center p-6 md:p-6">
  <div className="max-w-sm w-full space-y-10 animate-in fade-in slide-in-">
  <div className="space-y-2">
  <div className="md:hidden flex items-center gap-2 mb-8">

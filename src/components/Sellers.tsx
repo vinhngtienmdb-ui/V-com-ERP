@@ -543,7 +543,7 @@ export function SellerManagement() {
 
  <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hồ sơ Đối tác</th>
@@ -659,8 +659,8 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="bg-[#111827] rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm">
- <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+ <div className="bg-[#111827] rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
+ <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
  <ShieldCheck className="w-32 h-32" />
  </div>
  <div className="relative z-10 space-y-4">
@@ -699,7 +699,7 @@ export function SellerManagement() {
  </div>
  <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
- <DraggableGrid className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar" columns={2} gap={32}>
+ <DraggableGrid className="flex-1 overflow-y-auto p-6 bg-white grid grid-cols-1 md:grid-cols-2 gap-6 custom-scrollbar" columns={2} gap={32}>
  {/* Left Col: Domain Setup */}
  <div className="space-y-6">
  <div>
@@ -866,7 +866,7 @@ export function SellerManagement() {
  <button onClick={() => setApprovingSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
  </div>
 
- <div className="flex-1 overflow-y-auto p-8 bg-white grid grid-cols-1 md:grid-cols-12 gap-8 custom-scrollbar">
+ <div className="flex-1 overflow-y-auto p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 custom-scrollbar">
  {/* Left Column: Information Overview & Selection */}
  <div className="md:col-span-5 space-y-6">
  <div>
@@ -1121,7 +1121,7 @@ export function SellerManagement() {
  </button>
  <button 
  onClick={() => setApprovingSeller(null)}
- className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm hover:-translate-y-0.5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
+ className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm .5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt
  </button>

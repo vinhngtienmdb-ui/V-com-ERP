@@ -17,12 +17,12 @@ export const StatCard: React.FC<StatCardProps> = ({
   title, value, change, icon: Icon, trend, subValue, color, iconBg
 }) => (
   <div className={cn(
-    'bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden',
+    'bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-sm .5 transition-all duration-200 group relative overflow-hidden',
     color
   )}>
     <div className="flex justify-between items-start mb-4">
       <div className={cn(
-        'w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-200',
+        'w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform  duration-200',
         iconBg || 'bg-blue-500'
       )}>
         <Icon className="w-5 h-5 text-white" />

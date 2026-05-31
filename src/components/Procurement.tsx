@@ -126,7 +126,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
@@ -192,7 +192,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  ))}
  {filteredSuppliers.length === 0 && (
  <tr>
- <td colSpan={6} className="px-6 py-12 text-center text-slate-600">
+ <td colSpan={6} className="px-6 py-6 text-center text-slate-600">
  <Building2 className="w-10 h-10 mx-auto text-slate-500 mb-3" />
  <p className="text-sm font-medium">Không tìm thấy nhà cung cấp nào phù hợp.</p>
  </td>
@@ -282,7 +282,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  </DraggableGrid>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
@@ -326,7 +326,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  ))}
  {filteredRequests.length === 0 && (
  <tr>
- <td colSpan={5} className="px-6 py-12 text-center text-slate-600">
+ <td colSpan={5} className="px-6 py-6 text-center text-slate-600">
  <FileSignature className="w-10 h-10 mx-auto text-slate-500 mb-3" />
  <p className="text-sm font-medium">Không tìm thấy phiếu đề xuất nào phù hợp.</p>
  </td>
@@ -430,7 +430,7 @@ export function Procurement() {
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
@@ -460,7 +460,7 @@ export function Procurement() {
  </button>
  </div>
  
- <div className="p-16 flex flex-col items-center justify-center text-center">
+ <div className="p-6 flex flex-col items-center justify-center text-center">
  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
  <ShoppingCart className="w-10 h-10 text-orange-600" />
  </div>

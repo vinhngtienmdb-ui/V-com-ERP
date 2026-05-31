@@ -129,7 +129,7 @@ export function LoyaltyManagement() {
  ))}
  </div>
 
- <div className="p-8">
+ <div className="p-6">
  <AnimatePresence mode="wait">
  {activeTab === 'tiers' && (
  <motion.div 
@@ -140,11 +140,11 @@ export function LoyaltyManagement() {
  >
  {MOCK_LOYALTY.map(tier => (
  <div key={tier.id} className={cn(
- "relative h-[450px] rounded-lg p-8 flex flex-col justify-between overflow-hidden group shadow-sm transition-transform hover:-translate-y-2",
+ "relative h-[450px] rounded-lg p-6 flex flex-col justify-between overflow-hidden group shadow-sm transition-transform ",
  tier.color
  )}>
  {/* Background pattern */}
- <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+ <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
  {tier.tier === 'diamond' ? <Gem className="w-48 h-48 rotate-12" /> : <Star className="w-48 h-48 rotate-12" />}
  </div>
  
@@ -216,7 +216,7 @@ export function LoyaltyManagement() {
  <div key={i} className="p-6 bg-white border border-slate-200 rounded-lg space-y-6 hover:shadow-sm transition-all group border-b-4 border-b-stone-100 hover:border-b-blue-500">
  <div className="flex justify-between items-start">
  <div className="flex gap-4">
- <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center bg-slate-50 group-hover:scale-110 transition-transform", task.color)}>
+ <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center bg-slate-50  transition-transform", task.color)}>
  <task.icon className="w-6 h-6" />
  </div>
  <div>
@@ -297,7 +297,7 @@ export function LoyaltyManagement() {
  <motion.div 
  initial={{ opacity: 0, rotate: -5 }}
  animate={{ opacity: 1, rotate: 0 }}
- className="flex flex-col md:flex-row gap-12 items-center justify-center py-12"
+ className="flex flex-col md:flex-row gap-6 items-center justify-center py-6"
  >
  <div className="relative w-80 h-80 rounded-full border-[10px] border-slate-900 shadow-sm flex items-center justify-center bg-white p-2">
  <div className="absolute inset-0 rounded-full overflow-hidden">
@@ -317,7 +317,7 @@ export function LoyaltyManagement() {
  <div className="absolute left-0 top-1/2 -translate-y-1/2 p-4 text-[10px] font-black text-slate-500 -rotate-90">Voucher 50k</div>
  </div>
  
- <div className="relative z-10 w-20 h-20 bg-red-600 rounded-full border-4 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] flex flex-col items-center justify-center text-[#FAF9F5] cursor-pointer hover:scale-110 active:scale-95 transition-all">
+ <div className="relative z-10 w-20 h-20 bg-red-600 rounded-full border-4 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] flex flex-col items-center justify-center text-[#FAF9F5] cursor-pointer  active:scale-95 transition-all">
  <p className="text-[10px] font-black tracking-tighter">SPIN</p>
  <Play className="w-6 h-6 fill-current" />
  </div>
@@ -351,7 +351,7 @@ export function LoyaltyManagement() {
  </div>
 
  {/* Retention Marketing Engine Footer */}
- <div className="bg-slate-900 rounded-lg p-10 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
+ <div className="bg-slate-900 rounded-lg p-6 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
  <div className="absolute inset-0 opacity-10">
  <div className="grid grid-cols-12 gap-1 h-full w-full">
  {Array.from({ length: 48 }).map((_, i) => (
@@ -372,10 +372,10 @@ export function LoyaltyManagement() {
  </div>
 
  <div className="flex flex-wrap justify-center gap-4 relative z-10">
- <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-sm text-sm flex items-center gap-2">
+ <button className="px-6 py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-sm text-sm flex items-center gap-2">
  Phân tích Retention Report <ArrowRight className="w-4 h-4" />
  </button>
- <button className="px-8 py-3 bg-white/5 text-[#FAF9F5] font-bold rounded-lg hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
+ <button className="px-6 py-3 bg-white/5 text-[#FAF9F5] font-bold rounded-lg hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
  Quản lý Notification <Smartphone className="w-4 h-4" />
  </button>
  </div>

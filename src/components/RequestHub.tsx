@@ -759,7 +759,7 @@ export function RequestHub() {
  <div className="mt-8 pt-6 border-t border-slate-300 flex justify-end">
  <button 
  onClick={() => alert('Đã lưu cấu hình luồng duyệt thành công!')}
- className="px-8 py-3 bg-primary-600 text-white rounded-xl text-[13px] font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
+ className="px-6 py-3 bg-primary-600 text-white rounded-xl text-[13px] font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
  >
  LƯU CẤU HÌNH LUỒNG DUYỆT
  </button>
@@ -947,7 +947,7 @@ export function RequestHub() {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="w-full max-w-3xl bg-white shadow-2xl h-full overflow-y-auto flex flex-col border-l border-emerald-200" onClick={(e) => e.stopPropagation()}>
+        className="w-full max-w-3xl bg-white shadow-sm h-full overflow-y-auto flex flex-col border-l border-emerald-200" onClick={(e) => e.stopPropagation()}>
         <div className="px-4 py-3 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
@@ -1127,7 +1127,7 @@ export function RequestHub() {
   {/* Digital Signature Modal */}
  <AnimatePresence>
  {signingRequestId && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md" onClick={() => setSigningRequestId(null)}>
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md" onClick={() => setSigningRequestId(null)}>
  <motion.div 
  initial={{ opacity: 0, scale: 0.95, y: 20 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1148,7 +1148,7 @@ export function RequestHub() {
  </button>
  </div>
 
- <div className="flex-1 overflow-y-auto p-8 space-y-4">
+ <div className="flex-1 overflow-y-auto p-6 space-y-4">
  {/* Document Preview */}
  <div className="bg-slate-50 rounded-lg p-6 border border-slate-300 space-y-4">
  <div className="flex justify-between items-center border-b border-slate-300 pb-4">
@@ -1248,21 +1248,21 @@ export function RequestHub() {
  <div className="absolute top-4 -right-16 flex flex-col gap-2 print:hidden">
  <button 
  onClick={() => window.print()}
- className="p-3 bg-blue-600 text-white rounded-full shadow-sm hover:scale-110 transition-transform"
+ className="p-3 bg-blue-600 text-white rounded-full shadow-sm  transition-transform"
  title="In ngay"
  >
  <Printer className="w-5 h-5" />
  </button>
  <button 
  onClick={() => setShowPrintModal(false)}
- className="p-3 bg-white text-slate-700 rounded-full shadow-sm border border-slate-300 hover:scale-110 transition-transform"
+ className="p-3 bg-white text-slate-700 rounded-full shadow-sm border border-slate-300  transition-transform"
  >
  <X className="w-5 h-5" />
  </button>
  </div>
 
  {/* A4 Content */}
- <div className="flex flex-col h-full border-[3px] border-slate-900 p-8">
+ <div className="flex flex-col h-full border-[3px] border-slate-900 p-6">
  <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
  <div className="flex items-center gap-4">
  <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-2xl tracking-tighter">OS</div>
@@ -1304,7 +1304,7 @@ export function RequestHub() {
  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 px-2">
  <Layout className="w-4 h-4" /> DỮ LIỆU CHI TIẾT
  </h3>
- <table className="w-full border-2 border-slate-900">
+ <table className="w-full border-2 border-slate-900 whitespace-nowrap">
  <thead>
  <tr className="bg-blue-600 text-white">
  <th className="px-4 py-2 text-[10px] font-bold uppercase text-left border-r border-white/20">Trường thông tin</th>
@@ -1322,7 +1322,7 @@ export function RequestHub() {
  ))}
  {!formConfigs.find(c => c.name === selectedRequestForPrint.subtype)?.fields.length && (
  <tr>
- <td colSpan={2} className="px-4 py-8 text-center text-xs text-slate-500 italic">Không có dữ liệu chi tiết kèm theo.</td>
+ <td colSpan={2} className="px-4 py-6 text-center text-xs text-slate-500 italic">Không có dữ liệu chi tiết kèm theo.</td>
  </tr>
  )}
  </tbody>

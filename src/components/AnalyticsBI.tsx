@@ -116,8 +116,8 @@ export function AnalyticsBI() {
  ))}
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
+ <div className="bg-white p-6 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
@@ -161,7 +161,7 @@ export function AnalyticsBI() {
  </div>
  </div>
 
- <div className="bg-white p-8 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-6 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
@@ -214,12 +214,12 @@ export function AnalyticsBI() {
  </DraggableGrid>
 
  {/* Fraud Detection Command Console */}
- <div className="bg-slate-900 text-[#FAF9F5] p-10 rounded-none relative overflow-hidden shadow-sm shadow-blue-900/20">
- <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none">
+ <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-none relative overflow-hidden shadow-sm shadow-blue-900/20">
+ <div className="absolute top-0 right-0 p-6 opacity-[0.05] pointer-events-none">
  <Radar className="w-80 h-80 rotate-12" />
  </div>
  
- <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+ <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
  <div className="lg:col-span-2 space-y-6">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-rose-600 rounded-none shadow-sm shadow-rose-600/30 group hover:rotate-12 transition-transform duration-500">
@@ -239,7 +239,7 @@ export function AnalyticsBI() {
  </p>
  
  <div className="flex flex-wrap gap-4 pt-2">
- <button className="px-6 py-3 bg-white text-slate-900 font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 hover:-translate-y-0.5">
+ <button className="px-6 py-3 bg-white text-slate-900 font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 .5">
  Open Security Console
  </button>
  <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">

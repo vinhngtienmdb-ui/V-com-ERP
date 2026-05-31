@@ -93,7 +93,7 @@ export function SellerFinance() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/20" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -105,7 +105,7 @@ export function SellerFinance() {
  <div className="p-6">
  {activeTab === 'credit' && (
  <div className="overflow-x-auto animate-in fade-in duration-300 min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Mã Seller / Tên</th>
@@ -183,8 +183,8 @@ export function SellerFinance() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] p-10 rounded-lg relative overflow-hidden border border-slate-800 shadow-sm">
- <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+ <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-lg relative overflow-hidden border border-slate-800 shadow-sm">
+ <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
  <div className="space-y-6">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-[#2563EB] rounded-lg shadow-sm shadow-slate-900/5">
@@ -196,12 +196,12 @@ export function SellerFinance() {
  Thiết lập thuật toán chấm điểm tín nhiệm (Internal Credit Rating) dựa trên 24 chỉ số: doanh số trung bình, tỷ lệ hoàn trả, đánh giá của người mua, thâm niên hoạt động và mức độ tuân thủ pháp luật sàn.
  </p>
  <div className="pt-6 flex flex-wrap gap-4">
- <button className="px-8 py-4 bg-white text-slate-900 font-bold rounded-lg text-sm hover:bg-slate-100 transition-all shadow-sm shadow-white/5">Xem Model Chấm Điểm</button>
- <button className="px-8 py-4 border border-slate-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-slate-800 transition-all">Lịch sử cấp vốn Seller</button>
+ <button className="px-6 py-4 bg-white text-slate-900 font-bold rounded-lg text-sm hover:bg-slate-100 transition-all shadow-sm shadow-white/5">Xem Model Chấm Điểm</button>
+ <button className="px-6 py-4 border border-slate-700 text-[#FAF9F5] font-bold rounded-lg text-sm hover:bg-slate-800 transition-all">Lịch sử cấp vốn Seller</button>
  </div>
  </div>
  <div className="hidden lg:flex justify-end">
- <div className="w-80 p-8 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 space-y-6 relative overflow-hidden">
+ <div className="w-80 p-6 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 space-y-6 relative overflow-hidden">
  <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-orange-500" /> Tình trạng thanh khoản
  </h4>

@@ -44,20 +44,20 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
       <div className="flex-1 p-6 overflow-y-auto">
          <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-h-[400px] min-w-0">
              {tab === 'issues' ? (
-                <div className="p-8 text-center text-slate-600">
+                <div className="p-6 text-center text-slate-600">
                    <AlertCircle className="w-12 h-12 text-rose-200 mx-auto mb-4" />
                    <h3 className="font-bold text-slate-900 text-lg mb-2">Đơn khiếu nại & Đơn trùng</h3>
                    <p className="text-sm">Hệ thống có thể phát hiện và cảnh báo các đơn trùng lặp dựa trên SĐT, Địa chỉ, và thời gian đặt hàng.</p>
                 </div>
              ) : tab === 'history' ? (
-                <div className="p-8 text-center text-slate-600">
+                <div className="p-6 text-center text-slate-600">
                    <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                    <h3 className="font-bold text-slate-900 text-lg mb-2">Lịch sử Chỉnh sửa / Xóa đơn</h3>
                    <p className="text-sm">Ghi nhận toàn bộ thao tác của nhân viên trên đơn hàng nhằm đối soát và kiểm toán.</p>
                 </div>
              ) : (
                 <div className="overflow-x-auto min-w-0">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left text-sm whitespace-nowrap">
                    <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                        <tr>
                            <th className="px-4 py-3">Mã KH/Nguồn</th>

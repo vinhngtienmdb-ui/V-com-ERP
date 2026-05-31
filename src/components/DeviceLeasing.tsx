@@ -548,7 +548,7 @@ export function DeviceLeasing() {
   return (
     <div className="space-y-6">
       {/* Banner & header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -564,7 +564,7 @@ export function DeviceLeasing() {
         </div>
         <button 
           onClick={() => setShowApplyModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-md shadow-indigo-600/20"
+          className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-indigo-600/20"
         >
           <Plus className="w-4 h-4" /> Tạo Hồ Sơ Trả Góp/Thuê
         </button>
@@ -572,7 +572,7 @@ export function DeviceLeasing() {
 
       {/* Stats Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Hợp đồng hoạt động</span>
@@ -585,7 +585,7 @@ export function DeviceLeasing() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Doanh thu dự kiến</span>
@@ -600,7 +600,7 @@ export function DeviceLeasing() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Đơn Chờ phê duyệt</span>
@@ -613,7 +613,7 @@ export function DeviceLeasing() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Nợ xấu / Trễ hạn thanh toán</span>
@@ -675,7 +675,7 @@ export function DeviceLeasing() {
 
             {/* List and tables content */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left font-sans">
+              <table className="w-full text-left font-sans whitespace-nowrap">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-150 text-[10px] uppercase font-bold text-slate-500">
                     <th className="p-4 w-15">Mã số</th>
@@ -690,7 +690,7 @@ export function DeviceLeasing() {
                 <tbody className="divide-y divide-slate-100 text-xs">
                   {loading ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-8 text-slate-400">
+                      <td colSpan={7} className="text-center py-6 text-slate-400">
                         <div className="flex justify-center items-center gap-2">
                           <span className="w-2 h-2 bg-indigo-600 rounded-full animate-ping"></span>
                           <span>Đang truy vấn hợp đồng từ hệ thống...</span>
@@ -700,7 +700,7 @@ export function DeviceLeasing() {
                   ) : (
                     (activeTab === 'applications' ? pendingApps : activeLeases).length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center py-10 text-slate-400 italic">
+                        <td colSpan={7} className="text-center py-6 text-slate-400 italic">
                           Không tìm thấy hợp đồng phù hợp nào trong bộ lọc.
                         </td>
                       </tr>
@@ -747,14 +747,14 @@ export function DeviceLeasing() {
                                 <>
                                   <button 
                                     onClick={() => handleUpdateStatus(app.id, 'approved')}
-                                    className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg hover:scale-105 active:scale-95 transition-all"
+                                    className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg  active:scale-95 transition-all"
                                     title="Phê duyệt hồ sơ"
                                   >
                                     <Check className="w-3.5 h-3.5" />
                                   </button>
                                   <button 
                                     onClick={() => handleUpdateStatus(app.id, 'cancelled')}
-                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-650 rounded-lg hover:scale-105 active:scale-95 transition-all"
+                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-650 rounded-lg  active:scale-95 transition-all"
                                     title="Từ chố/Huỷ hồ sơ"
                                   >
                                     <X className="w-3.5 h-3.5" />
@@ -764,7 +764,7 @@ export function DeviceLeasing() {
                               {app.status === 'approved' && (
                                 <button 
                                   onClick={() => handleUpdateStatus(app.id, 'active')}
-                                  className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg hover:scale-105 active:scale-95 transition-all"
+                                  className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg  active:scale-95 transition-all"
                                 >
                                   Khởi tạo & Giao máy
                                 </button>
@@ -945,7 +945,7 @@ export function DeviceLeasing() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm w-full max-w-xl overflow-hidden"
           >
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div>
@@ -1091,7 +1091,7 @@ export function DeviceLeasing() {
                 </button>
                 <button 
                   type="submit"
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-md shadow-indigo-600/10 transition-colors"
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-sm shadow-indigo-600/10 transition-colors"
                 >
                   Nộp Hợp Đồng Lên Hệ Thống
                 </button>
@@ -1107,7 +1107,7 @@ export function DeviceLeasing() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-slate-950 text-slate-100 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-md overflow-hidden text-xs font-sans"
+            className="bg-slate-950 text-slate-100 rounded-2xl border border-slate-800 shadow-sm w-full max-w-md overflow-hidden text-xs font-sans"
           >
             <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1213,7 +1213,7 @@ export function DeviceLeasing() {
                   type="button"
                   disabled={sendingNotif}
                   onClick={handleSendNotification}
-                  className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 text-white font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-md shadow-indigo-950/50"
+                  className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 text-white font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-950/50"
                 >
                   <MessageSquare className="w-4 h-4" /> Bắn cảnh báo ngay
                 </button>

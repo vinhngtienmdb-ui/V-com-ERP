@@ -323,7 +323,7 @@ export function FlashSale() {
  {/* PnL Projection Table */}
  {selectedProduct ? (
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
  <th className="p-3 rounded-tl-lg">Mốc đơn</th>
@@ -422,7 +422,7 @@ export function FlashSale() {
  
  {/* Table preview for added flash sale products */}
  <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
  <tr>
  <th className="px-3 py-2">Sản phẩm</th>
@@ -635,7 +635,7 @@ export function FlashSale() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chiến dịch Group Buy / Flash Sale</th>
@@ -722,7 +722,7 @@ export function FlashSale() {
  ))}
  {MOCK_FLASH_SALES.filter(c => c.type === activeTab).length === 0 && (
  <tr>
- <td colSpan={5} className="text-center py-8 text-slate-600 text-sm">Không có chiến dịch nào</td>
+ <td colSpan={5} className="text-center py-6 text-slate-600 text-sm">Không có chiến dịch nào</td>
  </tr>
  )}
  </tbody>
@@ -748,7 +748,7 @@ export function FlashSale() {
  </div>
  
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Mã Voucher</th>

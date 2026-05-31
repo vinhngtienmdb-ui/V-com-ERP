@@ -71,7 +71,7 @@ export function ContractManager() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
   {selectedContract && (
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in p-4" onClick={() => setSelectedContract(null)}>
- <div className="bg-white rounded-xl shadow-2xl w-full max-w-[95vw] h-[95vh] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" onClick={(e) => e.stopPropagation()}>
+ <div className="bg-white rounded-xl shadow-sm w-full max-w-[95vw] h-[95vh] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" onClick={(e) => e.stopPropagation()}>
  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
  <div>
  <h3 className="text-lg font-bold text-slate-900">{selectedContract.title}</h3>
@@ -96,9 +96,9 @@ export function ContractManager() {
   {/* Left Panel: Document Viewer */}
   <div className="flex-1 bg-slate-100/50 border-r border-slate-200 flex flex-col relative">
     {selectedContract.file ? (
-      <div className="flex-1 overflow-auto bg-[#e5e7eb] p-8 flex justify-center">
+      <div className="flex-1 overflow-auto bg-[#e5e7eb] p-6 flex justify-center">
         {/* Mock Document Render */}
-        <div className="bg-white w-[210mm] min-h-[297mm] shadow-lg p-[20mm]  mx-auto relative origin-top max-w-full">
+        <div className="bg-white w-[210mm] min-h-[297mm] shadow-sm p-[20mm]  mx-auto relative origin-top max-w-full">
            <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[9px] font-bold rounded uppercase">
               Preview: {selectedContract.file.name}
            </div>
@@ -499,8 +499,8 @@ export function ContractManager() {
  </div>
  <div>
   <label className="block text-[13px] font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
-  <div className="border-2 border-dashed border-slate-300 p-8 rounded-xl flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
-    <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200 group-hover:scale-110 transition-transform mb-3">
+  <div className="border-2 border-dashed border-slate-300 p-6 rounded-xl flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
+    <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200  transition-transform mb-3">
       <File className="w-6 h-6 text-primary-600" />
     </div>
     <p className="text-xs font-bold text-slate-700">Kéo thả hoặc bấm để chọn tệp</p>

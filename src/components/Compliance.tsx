@@ -97,7 +97,7 @@ export function Compliance() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -123,7 +123,7 @@ export function Compliance() {
  </div>
 
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse">
+ <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  {activeTab === 'brand' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
@@ -201,8 +201,8 @@ export function Compliance() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] p-8 rounded-lg overflow-hidden relative border border-slate-800">
- <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+ <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-lg overflow-hidden relative border border-slate-800">
+ <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
  <div className="space-y-4">
  <div className="flex items-center gap-3">
  <div className="p-3 bg-red-600 rounded-lg shadow-sm shadow-red-600/20">
@@ -214,8 +214,8 @@ export function Compliance() {
  Hệ thống tự động rà quét sản phẩm dựa trên AI để phát hiện từ khóa cấm, hình ảnh nhạy cảm và các sản phẩm vi phạm bản quyền thương hiệu. Tự động tạm khóa các shop có Compliance Score dưới 60.
  </p>
  <div className="flex gap-4 pt-4">
- <button className="px-8 py-3 bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all uppercase tracking-widest">Cấu hình Luật sàn</button>
- <button className="px-8 py-3 border border-slate-700 font-bold rounded-lg text-xs hover:bg-slate-800 transition-all uppercase tracking-widest">Logs vi phạm AI</button>
+ <button className="px-6 py-3 bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all uppercase tracking-widest">Cấu hình Luật sàn</button>
+ <button className="px-6 py-3 border border-slate-700 font-bold rounded-lg text-xs hover:bg-slate-800 transition-all uppercase tracking-widest">Logs vi phạm AI</button>
  </div>
  </div>
  <div className="hidden md:block">

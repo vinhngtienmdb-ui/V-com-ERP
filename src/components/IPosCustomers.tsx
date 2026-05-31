@@ -47,7 +47,7 @@ export function IPosCustomers({ activeStore }: { activeStore: any }) {
          </DraggableGrid>
 
          <div className="bg-white border border-slate-300 rounded-sm shadow-sm overflow-hidden overflow-x-auto min-w-0">
-             <table className="w-full text-left text-sm">
+             <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
                     <tr>
                         <th className="px-4 py-3">Khách hàng</th>

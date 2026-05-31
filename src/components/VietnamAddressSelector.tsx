@@ -277,7 +277,7 @@ export function VietnamProvinceBrowser() {
 
       {/* Table */}
       <div className="border border-slate-200 overflow-hidden">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 w-16">Mã</th>
@@ -289,7 +289,7 @@ export function VietnamProvinceBrowser() {
           <tbody className="divide-y divide-slate-100 bg-white">
             {loading && (
               <tr>
-                <td colSpan={4} className="py-10 text-center">
+                <td colSpan={4} className="py-6 text-center">
                   <Loader2 className="w-5 h-5 animate-spin text-blue-500 mx-auto mb-2" />
                   <p className="text-[12px] text-slate-400">Đang tải dữ liệu từ API...</p>
                 </td>
@@ -351,7 +351,7 @@ export function VietnamProvinceBrowser() {
             ))}
             {!loading && filtered.length === 0 && !error && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-[12px] text-slate-400">
+                <td colSpan={4} className="py-6 text-center text-[12px] text-slate-400">
                   Không có kết quả phù hợp
                 </td>
               </tr>

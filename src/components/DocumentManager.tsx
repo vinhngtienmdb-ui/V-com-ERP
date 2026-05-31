@@ -177,7 +177,7 @@ export function DocumentManager() {
 
               {/* Routing Form Overlay */}
               {showRoutingForm && (
-                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
+                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-sm border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><Share className="w-4 h-4" /> Luân chuyển văn bản</h3>
                   <div className="space-y-4">
                     <div>
@@ -232,7 +232,7 @@ export function DocumentManager() {
 
               {/* Sign Form Overlay */}
               {showSignForm && (
-                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-xl border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
+                <div className="absolute top-[65px] right-4 w-96 bg-white shadow-sm border border-slate-300 rounded-lg z-20 animate-in slide-in-from-top-2 p-5">
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><ShieldCheck className="w-4 h-4" /> Ký & Thao tác</h3>
                   <div className="space-y-4">
                     <div>
@@ -319,7 +319,7 @@ export function DocumentManager() {
                     </div>
                     
                     {/* Mock Document Page & Viewer */}
-                    <div className={cn("flex-1 overflow-auto flex justify-center", selectedDoc.fileType === 'xlsx' ? "bg-white p-0" : "bg-slate-200 p-4 md:p-8")}>
+                    <div className={cn("flex-1 overflow-auto flex justify-center", selectedDoc.fileType === 'xlsx' ? "bg-white p-0" : "bg-slate-200 p-4 md:p-6")}>
                       {selectedDoc.fileType === 'xlsx' ? (
                         // Mock Excel Viewer
                         <div className="w-full h-full flex flex-col font-sans">
@@ -400,7 +400,7 @@ export function DocumentManager() {
                         </div>
                       ) : (
                         // Mock PDF / Word Page
-                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-12 text-slate-900 font-serif relative transition-all">
+                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-6 text-slate-900 font-serif relative transition-all">
                            {/* Watermark / Digital Signature Stamp mock */}
                            {selectedDoc.status === 'signed' && (
                              <div className="absolute top-12 right-12 border-2 border-red-600 text-red-600 px-3 py-2 rounded transform rotate-[-5deg] opacity-70 flex flex-col items-center max-w-[150px]">
@@ -421,7 +421,7 @@ export function DocumentManager() {
                                <p className="text-xs italic mt-2">Hà Nội, ngày {selectedDoc.date}</p>
                              </div>
                            </div>
-                           <h2 className="text-xl font-bold text-center uppercase px-12 leading-relaxed mb-6">
+                           <h2 className="text-xl font-bold text-center uppercase px-6 leading-relaxed mb-6">
                              {selectedDoc.title}
                            </h2>
                            <div className="text-sm space-y-4 text-justify leading-relaxed">
@@ -580,7 +580,7 @@ export function DocumentManager() {
                   </div>
 
                   <div className="p-0 overflow-auto flex-1">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
                       <thead className="bg-slate-50 border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm">
                         <tr>
                           <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Số KH/Ký hiệu</th>
@@ -647,7 +647,7 @@ export function DocumentManager() {
                         ))}
                         {MOCK_DOCS.filter(doc => doc.type === activeTab).length === 0 && (
                           <tr>
-                            <td colSpan={5} className="px-6 py-16 text-center text-slate-600">
+                            <td colSpan={5} className="px-6 py-6 text-center text-slate-600">
                               <div className="flex flex-col items-center gap-3">
                                 <Inbox className="w-10 h-10 text-slate-500" />
                                 <p className="text-sm font-medium">Không có văn bản nào trong mục này.</p>
@@ -671,7 +671,7 @@ export function DocumentManager() {
                     </div>
                   </div>
                   <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" columns={3} gap={16}>
-                    <div className="border border-slate-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md">
+                    <div className="border border-slate-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-sm">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-slate-900">Sổ công văn đến 2024</h4>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-emerald-50 text-emerald-600">Đang mở</span>
@@ -698,7 +698,7 @@ export function DocumentManager() {
                    <div className="space-y-6">
                      <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6 overflow-x-auto min-w-0">
                        <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-blue-600" /> Cấu hình vai trò & Phân quyền</h4>
-                       <table className="w-full text-left border-collapse">
+                       <table className="w-full text-left border-collapse whitespace-nowrap">
                          <thead className="bg-slate-50 border-b border-[#F3F4F6]">
                            <tr>
                              <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Vai trò / Chức danh</th>
@@ -831,7 +831,7 @@ export function DocumentManager() {
       {/* Create Document Modal */}
       {isCreatingDoc && (
         <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl shadow-sm w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-orange-600" />
@@ -840,7 +840,7 @@ export function DocumentManager() {
               <button onClick={() => setIsCreatingDoc(false)} className="text-slate-500 hover:text-slate-700"><X className="w-5 h-5" /></button>
             </div>
             
-            <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)] grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)] grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-5">
                  <div className="grid grid-cols-2 gap-4">
                    <div>

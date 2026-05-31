@@ -56,7 +56,7 @@ const SUPERMARKET_MOCK_ITEMS: SupermarketProduct[] = [
   { id: "sm-p-5", sku: "SM-HOUSE-001", name: "Nước rửa chén Sunlight Trà Xanh 1.4kg", barcode: "893112233445", category: "household", price: 58000, cost: 42000, stock: 45, minStock: 8, shelfLocation: "Kệ hóa chất C1" },
   { id: "sm-p-6", sku: "SM-FOOD-003", name: "Sữa tươi TH True Milk ít đường hộp 1L", barcode: "893112233446", category: "food", price: 36000, cost: 28000, stock: 85, minStock: 15, shelfLocation: "Tủ mát sữa số 1" },
   { id: "sm-p-7", sku: "SM-FOOD-004", name: "Táo Fuji Organic nhập khẩu túi 1kg", barcode: "893112233447", category: "food", price: 95000, cost: 65000, stock: 30, minStock: 10, shelfLocation: "Đảo trái cây" },
-  { id: "sm-p-8", sku: "SM-HOUSE-002", name: "Khăn giấy rút cao cấp Silkwell 3 lớp", barcode: "893112233448", category: "household", price: 22000, cost: 14000, stock: 150, minStock: 25, shelfLocation: "Kệ gia dụng D2" }
+  { id: "sm-p-6", sku: "SM-HOUSE-002", name: "Khăn giấy rút cao cấp Silkwell 3 lớp", barcode: "893112233448", category: "household", price: 22000, cost: 14000, stock: 150, minStock: 25, shelfLocation: "Kệ gia dụng D2" }
 ];
 
 export function VCommSupermarket() {
@@ -403,7 +403,7 @@ export function VCommSupermarket() {
   return (
     <div className="space-y-6">
       {/* Supermarket Dashboard Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-900 via-teal-950 to-emerald-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-900 via-teal-950 to-emerald-900 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-500/10 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -420,7 +420,7 @@ export function VCommSupermarket() {
         {activeTab === 'inventory' && (
           <button 
             onClick={() => setShowAddModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-md shadow-emerald-600/20"
+            className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-emerald-600/20"
           >
             <Plus className="w-4 h-4" /> Thêm Sản Phẩm Siêu Thị
           </button>
@@ -489,11 +489,11 @@ export function VCommSupermarket() {
               {/* Items grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
                 {loading ? (
-                  <div className="col-span-full text-center py-10 text-slate-400">
+                  <div className="col-span-full text-center py-6 text-slate-400">
                     Sắp xếp gian hàng siêu thị...
                   </div>
                 ) : filteredProducts.length === 0 ? (
-                  <div className="col-span-full text-center py-10 text-slate-400 italic">
+                  <div className="col-span-full text-center py-6 text-slate-400 italic">
                     Không tìm thấy sản phẩm nào trong kệ quầy VComm.
                   </div>
                 ) : (
@@ -505,7 +505,7 @@ export function VCommSupermarket() {
                         key={prod.id}
                         onClick={() => !isOutOfStock && addToCart(prod)}
                         className={cn(
-                          "bg-slate-50 border rounded-xl p-3 flex flex-col justify-between hover:shadow-md hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden group",
+                          "bg-slate-50 border rounded-xl p-3 flex flex-col justify-between hover:shadow-sm hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden group",
                           isOutOfStock ? "opacity-60 grayscale cursor-not-allowed border-slate-200" : "border-slate-150"
                         )}
                       >
@@ -721,7 +721,7 @@ export function VCommSupermarket() {
                   <button 
                     onClick={handleCheckoutAndPrint}
                     disabled={cart.length === 0}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:bg-slate-450 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md shadow-emerald-700/20 cursor-pointer text-center"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:bg-slate-450 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/20 cursor-pointer text-center"
                   >
                     <Printer className="w-4 h-4" /> Bán Hàng & In Hoá Đơn K80
                   </button>
@@ -781,7 +781,7 @@ export function VCommSupermarket() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left font-sans">
+              <table className="w-full text-left font-sans whitespace-nowrap">
                 <thead>
                   <tr className="bg-slate-50 text-[10px] font-bold text-slate-550 border-b border-slate-200">
                     <th className="p-4 w-28">Barcode / SKU</th>
@@ -871,7 +871,7 @@ export function VCommSupermarket() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden text-xs font-sans"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm w-full max-w-lg overflow-hidden text-xs font-sans"
           >
             <div className="bg-emerald-900 text-white p-5 flex items-center justify-between">
               <div>
@@ -1018,7 +1018,7 @@ export function VCommSupermarket() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-slate-100 rounded-2xl border border-slate-200 shadow-2xl w-full max-w-[420px] overflow-hidden"
+            className="bg-slate-100 rounded-2xl border border-slate-200 shadow-sm w-full max-w-[420px] overflow-hidden"
           >
             {/* Header toolbar */}
             <div className="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between text-xs">
@@ -1064,7 +1064,7 @@ export function VCommSupermarket() {
                 <div className="my-2 border-b border-dashed border-gray-400"></div>
 
                 {/* Bill Items list */}
-                <table className="w-full text-left text-[9px] mb-2 font-mono">
+                <table className="w-full text-left text-[9px] mb-2 font-mono whitespace-nowrap">
                   <thead>
                     <tr className="border-b border-dashed border-gray-300 font-bold">
                       <th className="py-1">Tên hàng</th>

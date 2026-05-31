@@ -646,7 +646,7 @@ export function HumanResources() {
  <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
  <Activity className="w-5 h-5 text-orange-700" /> HR Dashboard Insight
  </h3>
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
  <div className="h-72 w-full space-y-2">
  <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Tỷ lệ Tuyển dụng & Nghỉ việc</h4>
  <ResponsiveContainer width="100%" height="100%">
@@ -702,7 +702,7 @@ export function HumanResources() {
  
  <div className="space-y-12 bg-transparent rounded-b-xl border-t-0 border-[#F3F4F6] mt-4">
  {HR_MODULE_GROUPS.map((group, gIdx) => (
- <div key={gIdx} className="bg-white rounded-lg border border-slate-300 shadow-sm p-8">
+ <div key={gIdx} className="bg-white rounded-lg border border-slate-300 shadow-sm p-6">
  <div className="flex items-center gap-3 mb-6">
  <div className="w-1.5 h-6 bg-slate-900 rounded-full" />
  <h2 className="text-xl font-bold text-[#111827]">{group.title}</h2>
@@ -721,7 +721,7 @@ export function HumanResources() {
  }}
  className="bg-slate-50 border border-slate-300 rounded-lg p-5 hover:border-blue-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
  >
- <div className={cn("p-3 rounded-lg shrink-0 transition-transform group-hover:scale-105", getColorClasses(item.color))}>
+ <div className={cn("p-3 rounded-lg shrink-0 transition-transform ", getColorClasses(item.color))}>
  <item.icon className="w-6 h-6" />
  </div>
  <div className="flex-1 min-w-0">
@@ -735,8 +735,8 @@ export function HumanResources() {
  ))}
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8" columns={2} gap={32}>
- <div className="bg-white p-10 border border-slate-300 rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8" columns={2} gap={32}>
+ <div className="bg-white p-6 border border-slate-300 rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
  <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3 relative z-10">
  <Rocket className="w-6 h-6 text-emerald-500" /> New Hire Launchpad
  </h3>
@@ -761,10 +761,10 @@ export function HumanResources() {
  ))}
  <button className="w-full py-4 bg-[#111827] text-[#FAF9F5] text-xs font-bold rounded-lg hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/20">Quản lý lộ trình Onboarding</button>
  </div>
- <LucidePieChart className="absolute -bottom-12 -right-12 w-48 h-48 text-slate-100 group-hover:scale-110 transition-transform duration-700" />
+ <LucidePieChart className="absolute -bottom-12 -right-12 w-48 h-48 text-slate-100  transition-transform duration-700" />
  </div>
 
- <div className="bg-gradient-to-br from-[#2563EB] to-[#1E40AF] p-10 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between">
+ <div className="bg-gradient-to-br from-[#2563EB] to-[#1E40AF] p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between">
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -780,7 +780,7 @@ export function HumanResources() {
  </p>
  </div>
  <div className="relative z-10 pt-8">
- <button className="px-10 py-4 bg-white text-orange-700 font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm shadow-blue-900/40">Launch Matrix AI Scan</button>
+ <button className="px-6 py-4 bg-white text-orange-700 font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm shadow-blue-900/40">Launch Matrix AI Scan</button>
  </div>
  <Activity className="absolute -top-12 -right-12 w-64 h-64 text-[#FAF9F5]/5 opacity-50" />
  </div>
@@ -802,7 +802,7 @@ export function HumanResources() {
  </div>
  <p className="text-[10px] text-[#6B7280] mt-3">Tích hợp GPS App để chấm công tự động cho nhân viên vận chuyển và Sale hiện trường khi vào vùng kho/cửa hàng.</p>
  </div>
- <div className="bg-slate-900 text-[#FAF9F5] p-8 rounded-lg flex flex-col justify-between">
+ <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-lg flex flex-col justify-between">
  <div>
  <h3 className="text-xl font-bold italic mb-2">Dynamic Salary Engine</h3>
  <p className="text-slate-500 text-sm leading-relaxed">Cấu hình công thức tính lương động theo từng vị trí (Kinh doanh: Lương cứng + % Hoa hồng; Kho: Lương theo sản lượng). Tự động kết nối dữ liệu từ module Seller & Đơn hàng để tính thưởng nóng.</p>
@@ -840,7 +840,7 @@ export function HumanResources() {
  placeholder="Tìm nhân viên, ID..." 
  value={searchEmployee}
  onChange={(e) => setSearchEmployee(e.target.value)}
- className="bg-slate-50 border border-slate-300 rounded-lg px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 w-64 transition-all" 
+ className="bg-slate-50 border border-slate-300 rounded-lg px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 w-64 transition-all" 
  />
  </div>
  {activeTab === 'personnel' && (
@@ -915,7 +915,7 @@ export function HumanResources() {
  
  <div className="flex-1 overflow-auto">
  {activeTab === 'attendance_config' ? (
- <div className="p-8 space-y-8 bg-slate-50/30">
+ <div className="p-6 space-y-8 bg-slate-50/30">
  <div className="flex justify-between items-center">
  <div className="space-y-1">
  <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900"><Settings className="w-6 h-6 text-orange-700"/> Cấu hình Hệ thống Chấm công</h2>
@@ -923,7 +923,7 @@ export function HumanResources() {
  </div>
  </div>
 
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
  {attendanceSettings.map(setting => (
  <div key={setting.method} className={cn(
  "bg-white rounded-lg border transition-all duration-300 shadow-sm overflow-hidden flex flex-col group",
@@ -932,7 +932,7 @@ export function HumanResources() {
  <div className="p-6 flex justify-between items-start border-b border-stone-50">
  <div className="flex gap-4">
  <div className={cn(
- "w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110",
+ "w-12 h-12 rounded-lg flex items-center justify-center transition-transform ",
  setting.enabled ? "bg-slate-900 text-[#FAF9F5] shadow-sm shadow-blue-200" : "bg-slate-100 text-slate-500"
  )}>
  {setting.method === 'gps' && <MapPin className="w-6 h-6" />}
@@ -996,7 +996,7 @@ export function HumanResources() {
  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Số lượng Vùng</label>
  <div className="px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-orange-700 flex justify-between items-center">
  {setting.config.zones?.length || 0} Vùng an toàn
- <button className="text-orange-600 hover:scale-110 transition-transform"><PlusCircle className="w-4 h-4" /></button>
+ <button className="text-orange-600  transition-transform"><PlusCircle className="w-4 h-4" /></button>
  </div>
  </div>
  </div>
@@ -1175,7 +1175,7 @@ export function HumanResources() {
  )}
  </div>
  ) : (
- <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center p-8 space-y-3">
+ <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center p-6 space-y-3">
  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
  <Lock className="w-6 h-6" />
  </div>
@@ -1200,7 +1200,7 @@ export function HumanResources() {
  ))}
  </div>
 
- <div className="bg-primary-900 text-[#FAF9F5] p-8 rounded-lg shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
+ <div className="bg-primary-900 text-[#FAF9F5] p-6 rounded-lg shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20">
@@ -1216,7 +1216,7 @@ export function HumanResources() {
  </p>
  </div>
  <div className="relative z-10 w-full md:w-auto">
- <button className="w-full px-8 py-4 bg-white text-primary-900 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm">Kích hoạt AI Optimizer</button>
+ <button className="w-full px-6 py-4 bg-white text-primary-900 font-bold rounded-lg text-sm hover:translate-y-[-2px] transition-all uppercase tracking-widest shadow-sm">Kích hoạt AI Optimizer</button>
  </div>
  <Layers className="absolute -bottom-24 -right-12 w-64 h-64 text-[#FAF9F5]/5 rotate-12" />
  </div>
@@ -1224,7 +1224,7 @@ export function HumanResources() {
  ) : (activeTab !== 'attendance' && activeTab !== 'kpi') ? (
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
  {activeTab === 'personnel' && (
@@ -1464,7 +1464,7 @@ export function HumanResources() {
  </tr>
  ))}
  {activeTab === 'teams' && (
- <div className="p-8">
+ <div className="p-6">
  <div className="grid grid-cols-2 gap-4">
  {teams.map(team => (
  <div key={team.id} className="border p-4 rounded-lg bg-white shadow-sm">
@@ -1586,8 +1586,8 @@ export function HumanResources() {
  </div>
 
  {activeAttendanceMethod === 'kiosk' ? (
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full min-h-[500px]">
- <div className="bg-[#111827] rounded-xl p-10 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-sm">
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
+ <div className="bg-[#111827] rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-sm">
  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] /20 via-transparent to-transparent opacity-50" />
  
  <div className="space-y-2 relative z-10">
@@ -1650,7 +1650,7 @@ export function HumanResources() {
  </div>
  
  <div className="bg-white border border-primary-100 p-6 rounded-lg relative overflow-hidden group">
- <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-primary-100 group-hover:scale-110 transition-transform" />
+ <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-primary-100  transition-transform" />
  <div className="flex items-start gap-4 relative z-10">
  <div className="p-3 bg-white text-primary-600 rounded-xl shadow-sm border border-primary-100">
  <ShieldCheck className="w-6 h-6" />
@@ -1690,7 +1690,7 @@ export function HumanResources() {
 
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
@@ -1824,7 +1824,7 @@ export function HumanResources() {
  </div>
  <p className="text-[10px] text-slate-500 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-primary-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
           </div>
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-700" />
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform  duration-700" />
         </div>
       </div>
     </DraggableGrid>
@@ -1834,7 +1834,7 @@ export function HumanResources() {
 )}
 
  {activeTab === 'kpi' && (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 p-8 bg-white min-h-[600px]">
+ <div className="space-y-8 animate-in fade-in slide-in- duration-500 p-6 bg-white min-h-[600px]">
  <div className="flex justify-between items-end mb-8 border-b border-slate-200 pb-8">
  <div className="space-y-1">
  <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
@@ -1888,9 +1888,9 @@ export function HumanResources() {
  </div>
  </DraggableGrid>
 
- <DraggableGrid className="grid grid-cols-12 gap-8 mt-4" columns={12} gap={32}>
+ <DraggableGrid className="grid grid-cols-12 gap-6 mt-4" columns={12} gap={32}>
  <div className="col-span-12 lg:col-span-8 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
- <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-8">
+ <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
  <h3 className="font-black text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
  <div className="relative">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -1902,13 +1902,13 @@ export function HumanResources() {
  </div>
  </div>
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/30 border-b border-slate-200 text-left">
- <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự & Vị trí</th>
- <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chỉ tiêu trọng yếu</th>
- <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Tiến độ (%)</th>
- <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Phân tích AI</th>
+ <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự & Vị trí</th>
+ <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chỉ tiêu trọng yếu</th>
+ <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Tiến độ (%)</th>
+ <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Phân tích AI</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1917,7 +1917,7 @@ export function HumanResources() {
  const progress = (kpi.current / kpi.target) * 100;
  return (
  <tr key={kpi.id} className="hover:bg-slate-50/80 transition-colors group">
- <td className="px-8 py-5">
+ <td className="px-6 py-5">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
  {emp?.fullName.split(' ').pop()?.charAt(0)}
@@ -1928,11 +1928,11 @@ export function HumanResources() {
  </div>
  </div>
  </td>
- <td className="px-8 py-5">
+ <td className="px-6 py-5">
  <p className="text-xs font-bold text-slate-900">{kpi.title}</p>
  <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-tighter">Target: {kpi.target} {kpi.unit}</p>
  </td>
- <td className="px-8 py-5 w-48">
+ <td className="px-6 py-5 w-48">
  <div className="space-y-1.5">
  <div className="flex justify-between text-[10px] font-black">
  <span className={cn(progress >= 100 ? "text-emerald-600" : progress >= 80 ? "text-orange-700" : "text-rose-600")}>{progress.toFixed(1)}%</span>
@@ -1946,7 +1946,7 @@ export function HumanResources() {
  </div>
  </div>
  </td>
- <td className="px-8 py-5 text-right">
+ <td className="px-6 py-5 text-right">
  <div className="flex flex-col items-end gap-1">
  <div className={cn(
  "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest",
@@ -1966,7 +1966,7 @@ export function HumanResources() {
  </div>
 
  <div className="col-span-12 lg:col-span-4 space-y-8">
- <div className="bg-slate-900 rounded-xl p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm">
+ <div className="bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
  <div className="absolute top-0 right-0 p-4">
  <Trophy className="w-12 h-12 text-[#FAF9F5]/10 rotate-12" />
  </div>
@@ -1999,7 +1999,7 @@ export function HumanResources() {
  </button>
  </div>
 
- <div className="bg-white border border-slate-300 rounded-xl p-8 shadow-sm group">
+ <div className="bg-white border border-slate-300 rounded-xl p-6 shadow-sm group">
  <div className="flex items-center gap-3 mb-8">
  <div className="p-3 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 shadow-sm relative">
  <MapIcon className="w-6 h-6" />
@@ -2007,7 +2007,7 @@ export function HumanResources() {
  </div>
  <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
  </div>
- <div className="aspect-square bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-8 space-y-4 text-center group-hover:bg-white transition-all duration-500">
+ <div className="aspect-square bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 space-y-4 text-center group-hover:bg-white transition-all duration-500">
  <Layers className="w-16 h-16 text-slate-500 group-hover:text-primary-400 transition-all duration-500" />
  <div>
  <p className="text-xs font-bold text-slate-700">Phân tích Phủ Kỹ năng</p>
@@ -2021,7 +2021,7 @@ export function HumanResources() {
  )}
  </>
  ) : activeTab === 'payroll' ? (
- <div className="p-8 bg-slate-50 min-h-[500px]">
+ <div className="p-6 bg-slate-50 min-h-[500px]">
  <div className="flex justify-between items-center mb-8">
  <div>
  <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900"><Wallet className="w-6 h-6 text-orange-700"/> Quản lý Quỹ lương & Payslip</h2>
@@ -2084,22 +2084,22 @@ export function HumanResources() {
  {/* Payroll Dashboard Cards */}
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" columns={4} gap={16}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng lương cơ bản</p>
  <p className="text-2xl font-bold text-slate-900 relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.baseSalary, 0))}</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng Phụ cấp & Thưởng</p>
  <p className="text-2xl font-bold text-emerald-600 relative z-10">+{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.allowance + pay.bonus, 0))}</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Thuế TNCN & BH</p>
  <p className="text-2xl font-bold text-red-500 relative z-10">-{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.pitAmount + pay.insuranceAmount, 0))}</p>
  </div>
  <div className="bg-gradient-to-br from-[#111827] to-slate-900 p-5 rounded-lg border border-slate-700 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform group-hover:scale-110" />
+ <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform " />
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
  <p className="text-2xl font-bold text-[#FAF9F5] relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
  </div>
@@ -2108,7 +2108,7 @@ export function HumanResources() {
  {/* Advanced Payroll Table */}
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
  <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/80 border-b border-slate-200">
  <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest">Mã / Tên Nhân viên</th>
@@ -2163,7 +2163,7 @@ export function HumanResources() {
  ))}
  {payrollList.length === 0 && (
  <tr>
- <td colSpan={7} className="px-6 py-12 text-center text-slate-600">
+ <td colSpan={7} className="px-6 py-6 text-center text-slate-600">
  Không có dữ liệu bảng lương trong kỳ này.
  </td>
  </tr>
@@ -2434,7 +2434,7 @@ export function HumanResources() {
  </div>
  </div>
  ) : (
- <div className="p-16 flex flex-col items-center justify-center text-center">
+ <div className="p-6 flex flex-col items-center justify-center text-center">
  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
  <Rocket className="w-10 h-10 text-orange-600" />
  </div>
@@ -2461,7 +2461,7 @@ export function HumanResources() {
  transition={{ type: "spring", damping: 25, stiffness: 200 }}
  className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-sm z-50 border-l border-slate-300 flex flex-col overflow-y-auto"
  >
- <div className="p-8 border-b border-slate-200 flex justify-between items-start bg-white to-white sticky top-0 z-10">
+ <div className="p-6 border-b border-slate-200 flex justify-between items-start bg-white to-white sticky top-0 z-10">
  <div className="flex gap-4 items-center">
  <div className="w-16 h-16 bg-[#EAE7DF] text-orange-700 rounded-full flex items-center justify-center text-xl font-bold shadow-sm border border-orange-200">
  {selectedEmployee.fullName.charAt(0)}
@@ -2480,7 +2480,7 @@ export function HumanResources() {
  </button>
  </div>
  
- <div className="p-8 space-y-10 flex-1">
+ <div className="p-6 space-y-10 flex-1">
  {/* Roles - Admin only */}
  {isAdmin && (
  <div className="space-y-6">
@@ -2708,7 +2708,7 @@ export function HumanResources() {
  <AnimatePresence>
  {showATSModal && (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-lg w-full max-w-4xl p-8 shadow-sm">
+ <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-lg w-full max-w-4xl p-6 shadow-sm">
  <div className="flex justify-between items-center mb-6">
  <h2 className="text-2xl font-bold text-[#111827]">Quản lý Tuyển dụng (ATS) - {
  activeATSView === 'request' ? 'Đề xuất tuyển dụng' : 

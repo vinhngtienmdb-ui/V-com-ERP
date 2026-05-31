@@ -50,7 +50,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-[#F3F4F6] rounded-xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-[#F3F4F6] rounded-xl w-full max-w-5xl h-[85vh] shadow-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Header */}
         <div className="bg-white px-6 py-4 flex flex-col items-center justify-center relative border-b border-slate-300">
@@ -108,7 +108,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
           </div>
 
           {/* Grid */}
-          <div className="flex-1 overflow-y-auto p-8 bg-[#F8F9FA]">
+          <div className="flex-1 overflow-y-auto p-6 bg-[#F8F9FA]">
             {groupedTemplates.map(group => (
               <div key={group.id} className="mb-8">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">{group.label}</h3>
@@ -117,7 +117,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
                     <button
                       key={t.id}
                       onClick={() => onSelectTemplate(t)}
-                      className="bg-white p-4 rounded-xl border border-slate-300 hover:shadow-md hover:border-emerald-200 transition-all flex items-center gap-4 text-left group"
+                      className="bg-white p-4 rounded-xl border border-slate-300 hover:shadow-sm hover:border-emerald-200 transition-all flex items-center gap-4 text-left group"
                     >
                       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", t.bg, t.color)}>
                         <t.icon className="w-5 h-5" />
@@ -130,7 +130,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
             ))}
             
             {groupedTemplates.length === 0 && (
-              <div className="text-center text-slate-500 py-12 font-medium">
+              <div className="text-center text-slate-500 py-6 font-medium">
                 Không tìm thấy mẫu yêu cầu nào.
               </div>
             )}

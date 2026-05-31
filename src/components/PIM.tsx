@@ -482,13 +482,13 @@ export function PIM() {
  <img 
  src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200&h=400" 
  alt="Banner giới thiệu tính năng" 
- className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+ className="w-full h-full object-cover  transition-transform duration-700" 
  referrerPolicy="no-referrer"
  />
- <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-12">
+ <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-6">
  <h2 className="text-3xl font-black text-[#FAF9F5] italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
  <p className="text-blue-100 text-sm mt-3 max-w-lg">Tối ưu hoá giá bán tự động dựa trên dữ liệu đối thủ và tồn kho thực tế. Giúp tăng 15% biên lợi nhuận chỉ trong 1 thao tác.</p>
- <button className="mt-6 w-fit px-8 py-3 bg-white text-blue-800 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm">
+ <button className="mt-6 w-fit px-6 py-3 bg-white text-blue-800 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm">
  Trải nghiệm ngay
  </button>
  </div>
@@ -498,7 +498,7 @@ export function PIM() {
  {isUploadModalOpen && (
  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
  <div className="bg-white w-full max-w-4xl rounded-lg shadow-sm border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
- <div className="p-8 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
+ <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-slate-900 rounded-[1.5rem] shadow-sm shadow-slate-900/5">
  <ArrowUpCircle className="w-8 h-8 text-[#FAF9F5]" />
@@ -530,8 +530,8 @@ export function PIM() {
 
  <form onSubmit={handleAddProduct} className="flex-1 overflow-y-auto flex flex-col">
  {uploadMode === 'single' ? (
- <div className="p-10 space-y-8">
- <div className="grid grid-cols-2 gap-8">
+ <div className="p-6 space-y-8">
+ <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
  <input 
@@ -552,7 +552,7 @@ export function PIM() {
  </div>
  </div>
 
- <div className="grid grid-cols-2 gap-8">
+ <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ngành hàng</label>
  <select 
@@ -587,7 +587,7 @@ export function PIM() {
  </div>
  </div>
 
- <div className="grid grid-cols-2 gap-8">
+ <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá niêm yết (VNĐ)</label>
  <input 
@@ -608,7 +608,7 @@ export function PIM() {
  </div>
  </div>
 
- <div className="grid grid-cols-2 gap-8">
+ <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Giá vốn (VNĐ)</label>
  <input 
@@ -640,7 +640,7 @@ export function PIM() {
  ></textarea>
  </div>
 
- <div className="grid grid-cols-2 gap-8">
+ <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Trọng lượng (Gram)</label>
  <input 
@@ -662,12 +662,12 @@ export function PIM() {
  </div>
  </div>
  ) : (
- <div className="p-10 space-y-8 flex-1 flex flex-col justify-center">
+ <div className="p-6 space-y-8 flex-1 flex flex-col justify-center">
  <div 
  onDragOver={handleDragOver}
  onDrop={handleDrop}
  className={cn(
- "border-2 border-dashed rounded-lg p-12 text-center transition-all relative flex flex-col items-center justify-center gap-6",
+ "border-2 border-dashed rounded-lg p-6 text-center transition-all relative flex flex-col items-center justify-center gap-6",
  fileValidation.status === 'validating' ? "border-blue-300 bg-slate-100/50" : 
  fileValidation.status === 'error' ? "border-red-300 bg-red-50/50" :
  fileValidation.status === 'success' ? "border-emerald-300 bg-emerald-50/50" :
@@ -773,11 +773,11 @@ export function PIM() {
  </div>
  )}
 
- <div className="flex gap-4 p-8 border-t border-slate-200 bg-white mt-auto">
+ <div className="flex gap-4 p-6 border-t border-slate-200 bg-white mt-auto">
  <button 
  type="button"
  onClick={() => setIsUploadModalOpen(false)}
- className="px-8 py-5 border border-slate-300 text-[#4B5563] font-black rounded-lg text-[11px] hover:bg-slate-50 transition-all uppercase tracking-[0.2em]"
+ className="px-6 py-5 border border-slate-300 text-[#4B5563] font-black rounded-lg text-[11px] hover:bg-slate-50 transition-all uppercase tracking-[0.2em]"
  >
  Hủy bỏ
  </button>
@@ -796,7 +796,7 @@ export function PIM() {
 
  {isScanMode && (
  <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
- <div className="bg-white w-full max-w-xl rounded-lg shadow-sm p-8 animate-in zoom-in-95">
+ <div className="bg-white w-full max-w-xl rounded-lg shadow-sm p-6 animate-in zoom-in-95">
  <div className="flex justify-between items-center mb-6">
  <h2 className="text-xl font-black">Quét mã vạch & Kiểm kê</h2>
  <button onClick={() => { setIsScanMode(false); setIsCameraActive(false); }} className="p-2 hover:bg-slate-100 rounded-lg">
@@ -818,7 +818,7 @@ export function PIM() {
  {!isCameraActive ? (
  <div className="space-y-6">
  <div className="aspect-video bg-slate-900 rounded-lg flex flex-col items-center justify-center text-[#FAF9F5]/40 cursor-pointer hover:bg-slate-800 transition-all group" onClick={() => setIsCameraActive(true)}>
- <Camera className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform" />
+ <Camera className="w-12 h-12 mb-3  transition-transform" />
  <p className="text-sm font-bold">Bật Camera để quét mã vạch</p>
  <p className="text-[10px] uppercase tracking-widest mt-1">Hỗ trợ QR, Barcode, SKU</p>
  </div>
@@ -890,7 +890,7 @@ export function PIM() {
  </div>
  ))}
  {scannedSkus.length === 0 && (
- <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-lg text-slate-500 text-[11px] font-medium italic">
+ <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-lg text-slate-500 text-[11px] font-medium italic">
  Chưa có SKU nào được quét
  </div>
  )}
@@ -931,7 +931,7 @@ export function PIM() {
  {/* Confirmation Dialog */}
  {deleteConfirm && (
  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#111827]/60 backdrop-blur-sm animate-in fade-in duration-300">
- <div className="bg-white w-full max-w-md rounded-lg shadow-sm border border-slate-300 overflow-hidden p-8 animate-in zoom-in-95 duration-300">
+ <div className="bg-white w-full max-w-md rounded-lg shadow-sm border border-slate-300 overflow-hidden p-6 animate-in zoom-in-95 duration-300">
  <div className="flex flex-col items-center text-center space-y-4">
  <div className="p-4 bg-red-50 rounded-full text-red-600">
  <Trash2 className="w-8 h-8" />
@@ -1002,7 +1002,7 @@ export function PIM() {
  </div>
 
  <DraggableGrid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" columns={4} gap={16}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
  <Clock className="w-5 h-5 text-amber-500" />
@@ -1010,7 +1010,7 @@ export function PIM() {
  <div className="text-3xl font-bold text-[#111827]">245</div>
  <p className="text-[10px] text-amber-600 mt-2 font-bold bg-amber-50 px-2 py-0.5 rounded w-fit">Cần SLA xử lý: 4h</p>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Lỗi chuẩn hóa (AI)</span>
  <AlertCircle className="w-5 h-5 text-red-500" />
@@ -1018,7 +1018,7 @@ export function PIM() {
  <div className="text-3xl font-bold text-red-500">18</div>
  <p className="text-[10px] text-slate-500 mt-2">Phát hiện bởi AI Auto-Scan</p>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform hover:-translate-y-1 transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
  <Calculator className="w-5 h-5 text-orange-700" />
@@ -1100,7 +1100,7 @@ export function PIM() {
  </div>
  </div>
 
- <div className="p-8 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
+ <div className="p-6 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
  {filteredProducts.map((product) => (
  <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
  <div className="absolute top-4 left-4 z-20">
@@ -1131,7 +1131,7 @@ export function PIM() {
 
  {/* Image & Badges */}
  <div className="relative h-60 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-6 group-hover:shadow-sm transition-all">
- <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover group-hover:scale-105 transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
+ <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover  transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
  <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[9px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
  {product.id}
  </div>
@@ -1230,8 +1230,8 @@ export function PIM() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-10 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
+ <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
  <div className="relative z-10 space-y-6">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -1247,12 +1247,12 @@ export function PIM() {
  </p>
  </div>
  <div className="relative z-10 pt-8">
- <button className="px-10 py-4 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
+ <button className="px-6 py-4 bg-[#111827] text-[#FAF9F5] font-bold rounded-lg text-xs hover:translate-y-[-2px] transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40">Launch Data AI Matrix</button>
  </div>
  <Target className="absolute -bottom-12 -right-12 w-64 h-64 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-10 border border-slate-300 rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
+ <div className="bg-white p-6 border border-slate-300 rounded-lg shadow-sm space-y-8 relative overflow-hidden group">
  <h3 className="text-xl font-bold text-[#111827] flex items-center gap-3">
  <ShieldCheck className="w-6 h-6 text-emerald-500" /> P&L Configuration Engine
  </h3>
@@ -1292,7 +1292,7 @@ export function PIM() {
  </div>
  </div>
  </div>
- <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-100 opacity-50 group-hover:scale-105 transition-transform duration-700" />
+ <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-100 opacity-50  transition-transform duration-700" />
  </div>
  </DraggableGrid>
  
@@ -1301,7 +1301,7 @@ export function PIM() {
  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-all">
  <div className="bg-white rounded-lg w-full max-w-3xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
  {/* Header */}
- <div className="px-8 py-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+ <div className="px-6 py-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-orange-700">
  <Calculator className="w-6 h-6" />
@@ -1322,7 +1322,7 @@ export function PIM() {
  </div>
 
  {/* Body */}
- <div className="p-8 overflow-y-auto no-scrollbar space-y-8">
+ <div className="p-6 overflow-y-auto no-scrollbar space-y-8">
  {/* Product Info Summary */}
  <div className="flex items-center gap-6 pb-8 border-b border-slate-200">
  {showPnLForProduct.image ? (
@@ -1352,7 +1352,7 @@ export function PIM() {
  </div>
 
  {/* Financial Metrics Grid */}
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
  <Sparkles className="w-3.5 h-3.5 text-orange-600" /> Cấu hình Giá & Chi phí gốc
@@ -1518,7 +1518,7 @@ export function PIM() {
  const netMargin = pnlPrice > 0 ? (netProfit / pnlPrice) * 100 : 0;
 
  return (
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden flex items-center justify-between shadow-sm shadow-blue-900/20">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden flex items-center justify-between shadow-sm shadow-blue-900/20">
  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-20 translate-x-20" />
  <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl -translate-x-10 translate-y-10" />
  

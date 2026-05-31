@@ -78,13 +78,13 @@ export function StoreSelector() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,transparent_0%,#0F172A_100%)]" />
       </div>
 
-      <div className="max-w-6xl w-full mx-6 bg-white/5 backdrop-blur-2xl rounded-md border border-white/10 shadow-2xl flex relative z-10 h-[700px] overflow-hidden">
+      <div className="max-w-6xl w-full mx-6 bg-white/5 backdrop-blur-2xl rounded-md border border-white/10 shadow-sm flex relative z-10 h-[700px] overflow-hidden">
         
         {/* Left Side - Branding */}
-        <div className="w-[40%] bg-[#0B1121]/80 p-12 flex flex-col justify-between relative border-r border-white/5">
+        <div className="w-[40%] bg-[#0B1121]/80 p-6 flex flex-col justify-between relative border-r border-white/5">
           <div className="relative z-10 space-y-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-600 rounded-sm flex items-center justify-center shadow-lg shadow-indigo-600/20 border border-white/10">
+              <div className="w-10 h-10 bg-primary-600 rounded-sm flex items-center justify-center shadow-sm shadow-indigo-600/20 border border-white/10">
                 <Store className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
@@ -158,7 +158,7 @@ export function StoreSelector() {
         </div>
         
         {/* Right Side - Interactive Area */}
-        <div className="w-[60%] bg-white p-12 flex flex-col h-full relative">
+        <div className="w-[60%] bg-white p-6 flex flex-col h-full relative">
           {!selectedStoreForPin ? (
             <div className="flex flex-col h-full animate-in fade-in duration-500">
               <div className="flex justify-between items-end mb-8">
@@ -183,7 +183,7 @@ export function StoreSelector() {
 
               <div className="grid grid-cols-2 gap-4 auto-rows-max overflow-y-auto custom-scrollbar pr-2 pb-4">
                 {filteredStores.length === 0 ? (
-                  <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-300 rounded-md bg-slate-50">
+                  <div className="col-span-2 flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-slate-300 rounded-md bg-slate-50">
                     <div className="w-16 h-16 bg-slate-200 text-slate-700 rounded-md flex items-center justify-center mb-4"><MapPin className="w-8 h-8" /></div>
                     <p className="text-slate-600 font-medium">Không tìm thấy chi nhánh nào hệ thống.</p>
                     <p className="text-xs text-slate-500 mt-2">Vui lòng liên hệ Quản trị viên để được cấp quyền.</p>
@@ -193,7 +193,7 @@ export function StoreSelector() {
                     <button
                       key={store.id}
                       onClick={() => handleStoreClick(store)}
-                      className="text-left bg-white p-6 rounded-md border-2 border-slate-200 hover:border-primary-600 hover:shadow-xl hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
+                      className="text-left bg-white p-6 rounded-md border-2 border-slate-200 hover:border-primary-600 hover:shadow-sm hover:shadow-indigo-600/10 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]"
                     >
                       <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-[60px] -translate-y-full translate-x-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                       

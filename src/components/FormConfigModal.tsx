@@ -27,7 +27,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={onClose}>
-      <div className="bg-[#F8F9FA] rounded-xl w-full max-w-4xl h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-[#F8F9FA] rounded-xl w-full max-w-4xl h-[85vh] shadow-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Tabs */}
         <div className="bg-white border-b border-slate-300 pt-4 px-6 flex justify-between items-end relative">
@@ -68,9 +68,9 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+        <div className="flex-1 overflow-y-auto p-6 md:p-6">
           {activeTab === 'basic' && (
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               
               <div className="flex gap-4 items-start border-b border-slate-300 pb-4">
                 <div className="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
@@ -156,7 +156,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'design' && (
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               <div className="flex justify-between items-center border-b border-slate-300 pb-4 mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">Thiết kế biểu mẫu</h3>
@@ -183,7 +183,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                           fields: config.fields.filter((f: any) => f.id !== field.id)
                         });
                       }}
-                      className="absolute -top-2 -right-2 bg-rose-100 text-rose-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                      className="absolute -top-2 -right-2 bg-rose-100 text-rose-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm  transition-transform"
                       title="Xóa trường này"
                     >
                       <X className="w-3 h-3" />
@@ -254,7 +254,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   </div>
                 ))}
                 {(!config.fields || config.fields.length === 0) && (
-                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 flex flex-col items-center justify-center text-slate-500">
+                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-500">
                     <Settings className="w-8 h-8 mb-3 text-slate-400" />
                     <p className="text-sm font-bold text-slate-700">Chưa có trường dữ liệu nào</p>
                     <p className="text-xs text-slate-500 mt-1">Bấm "Thêm trường" để bắt đầu thiết kế E-Form.</p>
@@ -265,7 +265,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'workflow' && (
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               <div className="border-b border-slate-300 pb-4 mb-6">
                 <h3 className="text-xl font-bold text-slate-900">Cấu hình luồng phê duyệt</h3>
                 <p className="text-sm text-slate-600 mt-1">Thiết lập quy trình duyệt mặc định định và các quyền đi kèm.</p>

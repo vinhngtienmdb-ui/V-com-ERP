@@ -1,52 +1,52 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { safeLocalStorage } from './lib/storage';
 
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
-import { Dashboard } from './components/Dashboard';
-import { Home } from './components/Home';
-import { Orders } from './components/Orders';
-import { PIM } from './components/PIM';
-import { SellerManagement } from './components/Sellers';
-import { Customers } from './components/Customers';
-import { Marketing } from './components/Marketing';
-import { FlashSale } from './components/FlashSale';
-import { AffiliateManagement } from './components/Affiliate';
-import { WarehouseModule } from './components/Warehouse';
-import { Procurement } from './components/Procurement';
-import { Finance } from './components/Finance';
-import { SettlementManagement } from './components/Settlement';
-import { HumanResources } from './components/HR';
-import { Performance } from './components/Performance';
-import { Workspace } from './components/Workspace';
-import { AnalyticsBI } from './components/AnalyticsBI';
-import { SalesManagement } from './components/Sales';
-import { LoyaltyManagement } from './components/Loyalty';
-import { SettingsPage } from './components/Settings';
-import { UserProfile } from './components/UserProfile';
-import { WalletHub } from './components/Wallet';
-import { LiveCommerce } from './components/LiveCommerce';
-import { AdManager } from './components/AdManager';
-import { Compliance } from './components/Compliance';
-import { SellerFinance } from './components/SellerFinance';
-import { SocialCommerce } from './components/SocialCommerce';
-import { OmniChat } from './components/OmniChat';
-import { WorkflowHub } from './components/WorkflowHub';
-import { AIOperations } from './components/AIOperations';
-import { AIChatBot } from './components/AIChatBot';
-import { OrgStructure } from './components/OrgStructure';
-import { IPosModule } from './components/IPos';
-import { EMenu } from './components/EMenu';
-import { CustomerService } from './components/CustomerService';
-import { RequestHub } from './components/RequestHub';
-import { ContractManager } from './components/ContractManager';
-import { DocumentManager } from './components/DocumentManager';
-import { SignatureHub } from './components/SignatureHub';
-import { VCommSupermarket } from './components/VCommSupermarket';
-import { DeviceLeasing } from './components/DeviceLeasing';
+const Dashboard = React.lazy(() => import('./components/Dashboard').then(m => ({ default: m.Dashboard })));
+const Home = React.lazy(() => import('./components/Home').then(m => ({ default: m.Home })));
+const Orders = React.lazy(() => import('./components/Orders').then(m => ({ default: m.Orders })));
+const PIM = React.lazy(() => import('./components/PIM').then(m => ({ default: m.PIM })));
+const SellerManagement = React.lazy(() => import('./components/Sellers').then(m => ({ default: m.SellerManagement })));
+const Customers = React.lazy(() => import('./components/Customers').then(m => ({ default: m.Customers })));
+const Marketing = React.lazy(() => import('./components/Marketing').then(m => ({ default: m.Marketing })));
+const FlashSale = React.lazy(() => import('./components/FlashSale').then(m => ({ default: m.FlashSale })));
+const AffiliateManagement = React.lazy(() => import('./components/Affiliate').then(m => ({ default: m.AffiliateManagement })));
+const WarehouseModule = React.lazy(() => import('./components/Warehouse').then(m => ({ default: m.WarehouseModule })));
+const Procurement = React.lazy(() => import('./components/Procurement').then(m => ({ default: m.Procurement })));
+const Finance = React.lazy(() => import('./components/Finance').then(m => ({ default: m.Finance })));
+const SettlementManagement = React.lazy(() => import('./components/Settlement').then(m => ({ default: m.SettlementManagement })));
+const HumanResources = React.lazy(() => import('./components/HR').then(m => ({ default: m.HumanResources })));
+const Performance = React.lazy(() => import('./components/Performance').then(m => ({ default: m.Performance })));
+const Workspace = React.lazy(() => import('./components/Workspace').then(m => ({ default: m.Workspace })));
+const AnalyticsBI = React.lazy(() => import('./components/AnalyticsBI').then(m => ({ default: m.AnalyticsBI })));
+const SalesManagement = React.lazy(() => import('./components/Sales').then(m => ({ default: m.SalesManagement })));
+const LoyaltyManagement = React.lazy(() => import('./components/Loyalty').then(m => ({ default: m.LoyaltyManagement })));
+const SettingsPage = React.lazy(() => import('./components/Settings').then(m => ({ default: m.SettingsPage })));
+const UserProfile = React.lazy(() => import('./components/UserProfile').then(m => ({ default: m.UserProfile })));
+const WalletHub = React.lazy(() => import('./components/Wallet').then(m => ({ default: m.WalletHub })));
+const LiveCommerce = React.lazy(() => import('./components/LiveCommerce').then(m => ({ default: m.LiveCommerce })));
+const AdManager = React.lazy(() => import('./components/AdManager').then(m => ({ default: m.AdManager })));
+const Compliance = React.lazy(() => import('./components/Compliance').then(m => ({ default: m.Compliance })));
+const SellerFinance = React.lazy(() => import('./components/SellerFinance').then(m => ({ default: m.SellerFinance })));
+const SocialCommerce = React.lazy(() => import('./components/SocialCommerce').then(m => ({ default: m.SocialCommerce })));
+const OmniChat = React.lazy(() => import('./components/OmniChat').then(m => ({ default: m.OmniChat })));
+const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m => ({ default: m.WorkflowHub })));
+const AIOperations = React.lazy(() => import('./components/AIOperations').then(m => ({ default: m.AIOperations })));
+const AIChatBot = React.lazy(() => import('./components/AIChatBot').then(m => ({ default: m.AIChatBot })));
+const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m => ({ default: m.OrgStructure })));
+const IPosModule = React.lazy(() => import('./components/IPos').then(m => ({ default: m.IPosModule })));
+const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
+const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
+const RequestHub = React.lazy(() => import('./components/RequestHub').then(m => ({ default: m.RequestHub })));
+const ContractManager = React.lazy(() => import('./components/ContractManager').then(m => ({ default: m.ContractManager })));
+const DocumentManager = React.lazy(() => import('./components/DocumentManager').then(m => ({ default: m.DocumentManager })));
+const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
+const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
+const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
 
-import { IPosSettings } from './components/IPosSettings';
+const IPosSettings = React.lazy(() => import('./components/IPosSettings').then(m => ({ default: m.IPosSettings })));
 
 import { useAuth } from './context/AuthContext';
 import { StoreProvider } from './context/StoreContext';
@@ -77,9 +77,10 @@ function AppLayout() {
   <Sidebar />
   <div className="flex-1 flex flex-col min-w-0">
   <Header />
-  <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+  <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
   <div className="max-w-7xl mx-auto h-full col-span-12">
-  <Routes>
+  <Suspense fallback={<div className="flex h-full flex-col items-center justify-center p-10 bg-slate-50 rounded-2xl border border-slate-200 mt-4"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div><p className="text-slate-500 text-sm font-medium animate-pulse">Đang tải phân hệ...</p></div>}>
+            <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/ipos" element={<IPosModule />} />
     <Route path="/dashboard" element={<Dashboard />} />
@@ -122,6 +123,7 @@ function AppLayout() {
     <Route path="/profile" element={<UserProfile />} />
     <Route path="*" element={<Dashboard />} />
   </Routes>
+          </Suspense>
   <AIChatBot />
   </div>
   </main>
@@ -139,9 +141,11 @@ function AppContent() {
   if (isPublicEMenu) {
   return (
   <Router>
-  <Routes>
+  <Suspense fallback={<div className="flex h-full flex-col items-center justify-center p-10 bg-slate-50 rounded-2xl border border-slate-200 mt-4"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div><p className="text-slate-500 text-sm font-medium animate-pulse">Đang tải phân hệ...</p></div>}>
+            <Routes>
   <Route path="/emenu/:tableId" element={<EMenu />} />
   </Routes>
+          </Suspense>
   </Router>
   );
   }

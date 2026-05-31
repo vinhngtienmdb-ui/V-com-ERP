@@ -98,7 +98,7 @@ export function AIOperations() {
  <div className="bg-stone-950 text-[#FAF9F5] p-7 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-6">
- <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5 group-hover:scale-110 transition-transform duration-500">
+ <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5  transition-transform duration-500">
  <Cpu className="w-6 h-6" />
  </div>
  <div className="flex flex-col items-end">
@@ -122,7 +122,7 @@ export function AIOperations() {
  ].map((stat) => (
  <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
  <div className={cn(
- "p-4 rounded-none transition-transform group-hover:scale-110 duration-500",
+ "p-4 rounded-none transition-transform  duration-500",
  stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-orange-700"
  )}>
  <stat.icon className="w-6 h-6" />
@@ -161,7 +161,7 @@ export function AIOperations() {
  ))}
  </div>
 
- <div className="p-8">
+ <div className="p-6">
  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
  <div className="flex gap-4 w-full md:w-auto">
  <div className="relative flex-1 md:flex-initial">
@@ -184,8 +184,8 @@ export function AIOperations() {
  <div className="space-y-4">
  {activeModel === 'review' ? (
  MOCK_HUMAN_QUEUE.map((item) => (
- <div key={item.id} className="p-8 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-8 group">
- <div className="p-5 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100 group-hover:scale-105 transition-transform">
+ <div key={item.id} className="p-6 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-6 group">
+ <div className="p-5 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100  transition-transform">
  <UserCheck className="w-8 h-8" />
  </div>
  <div className="flex-1 space-y-4">
@@ -216,9 +216,9 @@ export function AIOperations() {
  ))
  ) : (
  MOCK_AI_LOGS.filter(l => l.type === activeModel || activeModel === 'moderation').map((log) => (
- <div key={log.id} className="p-8 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-8 border-b-2">
+ <div key={log.id} className="p-6 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-6 border-b-2">
  <div className={cn(
- "p-5 rounded-lg shadow-sm transition-all group-hover:scale-105",
+ "p-5 rounded-lg shadow-sm transition-all ",
  log.status === 'flagged' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : "bg-emerald-50 text-emerald-500 shadow-emerald-200/30"
  )}>
  {log.status === 'flagged' ? <AlertTriangle className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
@@ -258,8 +258,8 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-8" columns={2} gap={32}>
- <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={32}>
+ <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
  <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
@@ -299,7 +299,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
  <LineChart className="w-6 h-6 text-orange-700" /> Multi-Model Arena Performance
@@ -307,7 +307,7 @@ export function AIOperations() {
  <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
  </div>
  <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left">
+ <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-slate-200">
  <th className="pb-5">Neural Model</th>
@@ -333,13 +333,13 @@ export function AIOperations() {
  </div>
  </DraggableGrid>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-12 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4" columns={2} gap={32}>
+ <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-slate-900/20 transition-all duration-1000" />
  
  <div className="relative z-10 space-y-8">
  <div className="flex items-center gap-6">
- <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
+ <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm  transition-transform duration-500">
  <BarChart4 className="w-10 h-10 text-orange-500" />
  </div>
  <h3 className="text-4xl font-black tracking-tight leading-tight italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
@@ -348,14 +348,14 @@ export function AIOperations() {
  Tự động phân bổ tác vụ cho các cụm mô hình tối ưu nhất. Giảm thiểu chi phí lên tới 40% bằng cách sử dụng Small Model cho các tác vụ cơ bản.
  </p>
  <div className="flex flex-wrap gap-4 pt-4">
- <button className="px-8 py-4 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 hover:-translate-y-1">Inference Logs</button>
- <button className="px-8 py-4 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
+ <button className="px-6 py-4 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 ">Inference Logs</button>
+ <button className="px-6 py-4 bg-slate-900/5 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-lg text-xs uppercase tracking-widest hover:bg-slate-900/10 transition-all">Optimization Policy</button>
  </div>
  </div>
  <Layers className="absolute -bottom-16 -right-16 w-80 h-80 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-12 border border-slate-200 rounded-xl shadow-sm shadow-slate-200/40 space-y-10">
+ <div className="bg-white p-6 border border-slate-200 rounded-xl shadow-sm shadow-slate-200/40 space-y-10">
  <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
  <Activity className="w-7 h-7 text-orange-700" /> Phân tích Độ lệch & Tình trạng Model
  </h3>
@@ -393,8 +393,8 @@ export function AIOperations() {
  </DraggableGrid>
 
  {/* Hardware & Resource Grid */}
- <div className="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm p-12 relative overflow-hidden group">
- <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+ <div className="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden group">
+ <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none  transition-transform duration-1000">
  <Server className="w-64 h-64 rotate-12" />
  </div>
  
@@ -411,8 +411,8 @@ export function AIOperations() {
  </button>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10" columns={3} gap={32}>
- <div className="border border-slate-200 rounded-xl p-8 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
+ <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10" columns={3} gap={32}>
+ <div className="border border-slate-200 rounded-xl p-6 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
  <div className="flex justify-between items-center mb-8">
  <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: A100-80GB</h4>
  <span className="text-[9px] bg-emerald-600 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-emerald-600/20">Training Pool</span>
@@ -444,7 +444,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border border-slate-300 rounded-xl p-8 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
+ <div className="border border-slate-300 rounded-xl p-6 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
  <div className="flex justify-between items-center mb-8">
  <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: L4-24GB</h4>
  <span className="text-[9px] bg-slate-900 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-slate-900/5">Inference Pool</span>
@@ -476,7 +476,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border-2 border-slate-200 border-dashed rounded-xl p-8 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
+ <div className="border-2 border-slate-200 border-dashed rounded-xl p-6 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
  <div className="p-5 bg-white rounded-full shadow-sm group-hover/add:scale-110 transition-transform mb-4 border border-slate-200">
  <Plus className="w-10 h-10 text-slate-500 group-hover/add:text-orange-600" />
  </div>

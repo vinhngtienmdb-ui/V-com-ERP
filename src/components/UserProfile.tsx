@@ -60,7 +60,7 @@ export function UserProfile() {
  </button>
  </div>
 
- <div className="flex flex-col md:flex-row gap-8">
+ <div className="flex flex-col md:flex-row gap-6">
  {/* Sidebar Tabs */}
  <div className="w-full md:w-64 space-y-1">
  {tabs.map((tab) => (
@@ -83,7 +83,7 @@ export function UserProfile() {
  {/* Content Area */}
  <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
  {activeTab === 'profile' && (
- <div className="p-8 space-y-8 animate-in fade-in duration-300">
+ <div className="p-6 space-y-8 animate-in fade-in duration-300">
  <div className="flex flex-col items-center sm:flex-row gap-6">
  <div className="relative group">
  <div className="w-24 h-24 rounded-lg bg-slate-100 flex items-center justify-center text-orange-700 text-2xl font-bold border-2 border-white shadow-sm overflow-hidden relative">
@@ -92,7 +92,7 @@ export function UserProfile() {
  <Camera className="w-6 h-6 text-[#FAF9F5]" />
  </div>
  </div>
- <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-lg shadow-sm border border-slate-200 text-orange-700 hover:scale-110 transition-transform">
+ <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-lg shadow-sm border border-slate-200 text-orange-700  transition-transform">
  <Camera className="w-4 h-4" />
  </button>
  </div>
@@ -166,7 +166,7 @@ export function UserProfile() {
  )}
 
  {activeTab === 'security' && (
- <div className="p-8 space-y-8 animate-in fade-in duration-300">
+ <div className="p-6 space-y-8 animate-in fade-in duration-300">
  <div>
  <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
  <Lock className="w-5 h-5 text-red-500" /> Đổi mật khẩu
@@ -234,7 +234,7 @@ export function UserProfile() {
  )}
 
  {activeTab === 'notifications' && (
- <div className="p-8 space-y-6 animate-in fade-in duration-300">
+ <div className="p-6 space-y-6 animate-in fade-in duration-300">
  <div className="flex items-center justify-between mb-4">
  <h3 className="text-lg font-bold text-slate-900">Cài đặt thông báo</h3>
  <button 
@@ -272,7 +272,7 @@ export function UserProfile() {
  )}
 
  {activeTab === 'appearance' && (
- <div className="p-8 space-y-8 animate-in fade-in duration-300">
+ <div className="p-6 space-y-8 animate-in fade-in duration-300">
  <div>
  <h3 className="text-lg font-bold text-slate-900 mb-4">Màu sắc chủ đạo (Chế độ Theme)</h3>
  <DraggableGrid className="grid grid-cols-2 sm:grid-cols-3 gap-4" columns={3} gap={16}>

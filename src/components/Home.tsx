@@ -133,19 +133,19 @@ const FUNCTIONAL_GROUPS: FunctionalGroup[] = [
 const ALL_SUB_MODULES = navGroups.flatMap(group => group.items);
 
 const COLOR_MAP: Record<string, string> = {
-  orange: 'bg-orange-500 text-white shadow-md shadow-orange-100',
-  emerald: 'bg-emerald-500 text-white shadow-md shadow-emerald-100',
-  blue: 'bg-blue-500 text-white shadow-md shadow-blue-100',
-  indigo: 'bg-indigo-500 text-white shadow-md shadow-indigo-100',
-  rose: 'bg-rose-500 text-white shadow-md shadow-rose-100',
-  violet: 'bg-violet-500 text-white shadow-md shadow-violet-100',
-  amber: 'bg-amber-500 text-white shadow-md shadow-amber-100',
-  lime: 'bg-lime-600 text-white shadow-md shadow-lime-100',
-  cyan: 'bg-cyan-500 text-white shadow-md shadow-cyan-100',
-  teal: 'bg-teal-500 text-white shadow-md shadow-teal-100',
-  slate: 'bg-slate-700 text-white shadow-md shadow-slate-100',
-  purple: 'bg-purple-500 text-white shadow-md shadow-purple-100',
-  sky: 'bg-sky-500 text-white shadow-md shadow-sky-100',
+  orange: 'bg-orange-500 text-white shadow-sm shadow-orange-100',
+  emerald: 'bg-emerald-500 text-white shadow-sm shadow-emerald-100',
+  blue: 'bg-blue-500 text-white shadow-sm shadow-blue-100',
+  indigo: 'bg-indigo-500 text-white shadow-sm shadow-indigo-100',
+  rose: 'bg-rose-500 text-white shadow-sm shadow-rose-100',
+  violet: 'bg-violet-500 text-white shadow-sm shadow-violet-100',
+  amber: 'bg-amber-500 text-white shadow-sm shadow-amber-100',
+  lime: 'bg-lime-600 text-white shadow-sm shadow-lime-100',
+  cyan: 'bg-cyan-500 text-white shadow-sm shadow-cyan-100',
+  teal: 'bg-teal-500 text-white shadow-sm shadow-teal-100',
+  slate: 'bg-slate-700 text-white shadow-sm shadow-slate-100',
+  purple: 'bg-purple-500 text-white shadow-sm shadow-purple-100',
+  sky: 'bg-sky-500 text-white shadow-sm shadow-sky-100',
 };
 
 const getModuleVisuals = (path: string) => {
@@ -323,19 +323,19 @@ export function Home() {
                       <div 
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-md hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-0.5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button 
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500 hover:scale-110 transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
                         >
                           <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
                         </button>
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-105",
+                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -357,7 +357,7 @@ export function Home() {
                     );
                   })}
                   {filteredSubModules.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-xs text-slate-400">Không tìm thấy module nào khớp với "{searchQuery}"</div>
+                    <div className="col-span-full py-6 text-center text-xs text-slate-400">Không tìm thấy module nào khớp với "{searchQuery}"</div>
                   )}
                 </div>
               </div>
@@ -375,13 +375,13 @@ export function Home() {
                     id={`card-${group.id}`}
                     onClick={() => handleGroupClick(group)}
                     className={cn(
-                      "bg-white border rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-md hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-0.5 relative overflow-hidden group min-h-[190px]",
+                      "bg-white border rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px]",
                       isSelected ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
                     )}
                   >
                     {/* Circle squircle around icon */}
                     <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-105",
+                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
                       COLOR_MAP[group.color] || COLOR_MAP.blue
                     )}>
                       <IconComponent className="w-6 h-6" />
@@ -423,7 +423,7 @@ export function Home() {
               </div>
 
               {bookmarkedPaths.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
+                <div className="py-6 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
                   <Star className="w-10 h-10 text-slate-300" />
                   <p className="text-sm font-semibold text-slate-500">Chưa có ứng dụng nào được đánh dấu</p>
                   <button 
@@ -442,12 +442,12 @@ export function Home() {
                       <div
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-md hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-0.5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-amber-500 hover:scale-110 transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-amber-500  transition-transform z-10"
                           title="Bỏ đánh dấu"
                         >
                           <Star className="w-3.5 h-3.5 fill-amber-500" />
@@ -455,7 +455,7 @@ export function Home() {
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-105",
+                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -503,12 +503,12 @@ export function Home() {
                       <div
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-md hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-0.5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500 hover:scale-110 transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
                           title="Đánh dấu"
                         >
                           <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
@@ -516,7 +516,7 @@ export function Home() {
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-105",
+                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -542,7 +542,7 @@ export function Home() {
             ))}
 
             {filteredGroups.length === 0 && (
-              <div className="py-12 text-center text-slate-400 text-sm font-medium">Không tìm thấy module nào phù hợp với yêu cầu tìm kiếm.</div>
+              <div className="py-6 text-center text-slate-400 text-sm font-medium">Không tìm thấy module nào phù hợp với yêu cầu tìm kiếm.</div>
             )}
           </div>
         )}
@@ -586,7 +586,7 @@ export function Home() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col z-10 border-l border-slate-200"
+              className="relative w-full max-w-md bg-white h-full shadow-sm flex flex-col z-10 border-l border-slate-200"
             >
               {/* Drawer Header */}
               <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
@@ -652,7 +652,7 @@ export function Home() {
                   })}
 
                   {selectedGroup.modulePaths.length === 0 && (
-                    <div className="py-12 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
+                    <div className="py-6 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
                       <Layers3 className="w-8 h-8 text-slate-300" />
                       <p className="text-xs font-bold">Không tìm thấy phân hệ phụ</p>
                       <p className="text-[10px] text-slate-500">Phân hệ này đang hoạt động cơ chế ngầm định.</p>
@@ -683,7 +683,7 @@ export function Home() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-200 z-10 flex flex-col"
+              className="relative w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 z-10 flex flex-col"
             >
               <div className="bg-gradient-to-br from-slate-900 to-blue-980 p-6 text-white text-center sm:text-left relative overflow-hidden">
                 <div className="absolute top-0 right-0 opacity-[0.05] p-6 pointer-events-none">
@@ -728,7 +728,7 @@ export function Home() {
               <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
                 <button 
                   onClick={() => setShowCopyright(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
+                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-extrabold transition-all shadow-sm active:scale-95"
                 >
                   Đóng chứng chỉ
                 </button>
@@ -753,11 +753,11 @@ export function Home() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-200 z-10 flex flex-col"
+              className="relative w-full max-w-4xl bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 z-10 flex flex-col"
             >
               <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-lime-500 text-white flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 rounded-xl bg-lime-500 text-white flex items-center justify-center shadow-sm">
                     <Factory className="w-5 h-5" />
                   </div>
                   <div>
@@ -821,7 +821,7 @@ export function Home() {
               <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
                 <button 
                   onClick={() => setShowProduction(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
                 >
                   Xác nhận cấu hình
                 </button>

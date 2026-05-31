@@ -144,8 +144,8 @@ export function Workspace() {
  {activeModule === 'overview' && (
  <div className="space-y-8">
  {/* News / Alert Banner */}
- <div className="bg-slate-900 rounded-lg p-8 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-blue-900/10">
- <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-blue-900/10">
+ <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center">
  <div className="flex-1 space-y-4">
  <div className="flex items-center gap-3">
  <div className="bg-slate-800/20 text-orange-500 p-2 rounded-lg border border-slate-900/30">
@@ -197,7 +197,7 @@ export function Workspace() {
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">

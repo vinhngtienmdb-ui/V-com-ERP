@@ -110,7 +110,7 @@ export function EMenu() {
  <motion.div 
  initial={{ scale: 0.8, opacity: 0 }}
  animate={{ scale: 1, opacity: 1 }}
- className="bg-white p-10 rounded-[32px] shadow-sm max-w-sm w-full space-y-6"
+ className="bg-white p-6 rounded-[32px] shadow-sm max-w-sm w-full space-y-6"
  >
  <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
  <CheckCircle2 className="w-10 h-10" />
@@ -271,7 +271,7 @@ export function EMenu() {
  <button 
  onClick={handleSubmitOrder}
  disabled={orderStatus === 'submitting'}
- className="bg-primary-600 text-[#FAF9F5] px-8 h-12 rounded-lg font-bold flex items-center gap-2 active:scale-95 transition-all shadow-sm shadow-indigo-600/30 disabled:opacity-50"
+ className="bg-primary-600 text-[#FAF9F5] px-6 h-12 rounded-lg font-bold flex items-center gap-2 active:scale-95 transition-all shadow-sm shadow-indigo-600/30 disabled:opacity-50"
  >
  Đặt món ngay
  <ArrowRight className="w-4 h-4" />

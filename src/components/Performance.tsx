@@ -101,7 +101,7 @@ export function Performance() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "px-8 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
+ "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
  activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
@@ -145,7 +145,7 @@ export function Performance() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] p-8 rounded-lg flex flex-col items-center text-center space-y-4">
+ <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-lg flex flex-col items-center text-center space-y-4">
  <div className="p-3 bg-white/10 rounded-lg border border-white/20">
  <Users className="w-8 h-8 text-blue-300" />
  </div>
@@ -153,7 +153,7 @@ export function Performance() {
  <p className="text-slate-500 text-sm max-w-2xl">
  Tự động tổng hợp ý kiến từ Đồng nghiệp, Quản lý trực tiếp và Nhân viên cấp dưới để đưa ra cái nhìn khách quan nhất về năng lực. Kết nối trực tiếp kết quả học tập từ LMS để đề xuất thăng tiến hoặc điều chỉnh quỹ lương.
  </p>
- <button className="px-8 py-3 bg-[#2563EB] text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2">
+ <button className="px-6 py-3 bg-[#2563EB] text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2">
  Mở cổng Đánh giá Định kỳ <ArrowRight className="w-4 h-4" />
  </button>
  </div>
