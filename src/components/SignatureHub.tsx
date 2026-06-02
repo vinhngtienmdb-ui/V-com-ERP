@@ -57,7 +57,7 @@ export function SignatureHub() {
  setSigningModalOpen(true);
  };
  
- const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
+ const [signatureMethod, setSignatureMethod] = useState<'internal_identity' | 'biometric'>('internal_identity');
  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
 
  const confirmSign = async () => {
@@ -79,7 +79,7 @@ export function SignatureHub() {
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900 tracking-tight">Trung tâm Ký số (Digital Signature Hub)</h1>
- <p className="text-xs text-slate-500 mt-1 italic">Hệ thống ký số tập trung, hỗ trợ SmartCA, Viettel-CA và HSM Token.</p>
+ <p className="text-xs text-slate-500 mt-1 italic">Hệ thống cấp phát chứng thư số nội bộ tự động, gắn liền định danh nhân viên ERP.</p>
  </div>
  <div className="flex gap-3">
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2">
@@ -119,13 +119,13 @@ export function SignatureHub() {
  <div className="relative z-10 flex justify-between items-center h-full">
  <div>
  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chứng thư đang hoạt động</h3>
- <p className="text-xl font-bold text-white">VNPT SmartCA Certificate</p>
+ <p className="text-xl font-bold text-white">VComm Internal Identity (SSO)</p>
  <div className="flex items-center gap-4 mt-3">
  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
- <ShieldCheck className="w-3 h-3" /> Đang bảo mật (Active)
+ <ShieldCheck className="w-3 h-3" /> Cấp phát nội bộ (Active)
  </div>
  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
- <Clock className="w-3 h-3" /> Hết hạn: 15/10/2026
+ <Clock className="w-3 h-3" /> Gia hạn: Tự động
  </div>
  </div>
  </div>
@@ -372,9 +372,9 @@ export function SignatureHub() {
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
  {[
- { id: 'CA-001', name: 'Nguyễn Văn A (Giám đốc)', provider: 'SmartCA VNPT', type: 'Cá nhân', expiry: '15/10/2025', status: 'active' },
- { id: 'CA-002', name: 'Công ty Cổ phần VComm ERP', provider: 'Viettel CA', type: 'Doanh nghiệp', expiry: '20/01/2026', status: 'active' },
- { id: 'CA-003', name: 'Trần B (Kế toán)', provider: 'USB Token', type: 'Cá nhân', expiry: '10/05/2024', status: 'expiring_soon' },
+ { id: 'CA-INT-001', name: 'Nguyễn Văn A (Giám đốc)', provider: 'VComm Internal CA', type: 'Cá nhân (Auto)', expiry: 'Tự động gia hạn', status: 'active' },
+ { id: 'CA-INT-002', name: 'Trần B (Kế toán)', provider: 'VComm Internal CA', type: 'Cá nhân (Auto)', expiry: 'Tự động gia hạn', status: 'active' },
+ { id: 'CA-INT-003', name: 'System Auto-Signer', provider: 'VComm Root CA', type: 'Hệ thống (Auto)', expiry: 'Không thời hạn', status: 'active' },
  ].map(cert => (
  <div key={cert.id} className="border border-slate-200 rounded-2xl p-5 flex items-start gap-4 hover:border-primary-300 transition-colors bg-white">
  <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-300 flex items-center justify-center shrink-0">
@@ -467,12 +467,11 @@ export function SignatureHub() {
  </div>
 
  <div>
- <label className="block text-sm font-semibold text-slate-800 mb-3">Chọn phương thức ký số chuyên dụng</label>
+ <label className="block text-sm font-semibold text-slate-800 mb-3">Chọn phương thức định danh VComm</label>
  <div className="space-y-3">
  {[
- { id: 'smart_ca', label: 'VNPT SmartCA', desc: 'Remote Signing App' },
- { id: 'viettel_ca', label: 'Viettel CA', desc: 'Cloud Hub / SIM PKI' },
- { id: 'usb_token', label: 'USB Token', desc: 'Thiết bị HSM vật lý' }
+ { id: 'internal_identity', label: 'VComm Internal Auto-CA', desc: 'Định danh gắn liền với account ERP' },
+ { id: 'biometric', label: 'Xác thực sinh trắc học', desc: 'Face ID / Touch ID qua Mobile App' }
  ].map((ca) => (
  <div 
  key={ca.id}

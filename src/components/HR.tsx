@@ -1046,9 +1046,19 @@ export function HumanResources() {
  </button>
  </div>
  ) : (
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 w-max">
- <PlusCircle className="w-4 h-4" /> Thêm mới
- </button>
+ <button 
+   onClick={() => {
+    if (activeTab === 'personnel') {
+     setEditingEmployee(null);
+     setShowEmployeeModal(true);
+    } else {
+     alert('Phân hệ này liên kết tự động, không cần tạo thủ công!');
+    }
+   }}
+   className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 w-max"
+  >
+  <PlusCircle className="w-4 h-4" /> Thêm mới
+  </button>
  )}
  </div>
  </div>

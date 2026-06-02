@@ -59,6 +59,15 @@ import { formatCurrency, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
 import { getAiChatResponse } from '../services/geminiService';
+import { 
+  getZnsLogs, 
+  getZnsTemplates, 
+  getZnsConfig, 
+  saveZnsConfig, 
+  saveZnsTemplates, 
+  sendZnsNotification, 
+  clearZnsLogs 
+} from '../services/znsService';
 
 // --- MOCK DATA ---
 const MOCK_THREADS: ChatThread[] = [
@@ -89,7 +98,136 @@ const MOCK_CAMPAIGNS = [
 
 // --- COMPONENT ---
 export function CustomerService() {
- const [activeTab, setActiveTab] = useState<'dashboard' | 'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents'>('dashboard');
+  const [activeTab, setActiveTab] = useState<any>('dashboard');
+  const [tickets, setTickets] = useState(MOCK_TICKETS);
+  const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
+  
+  // Zalo ZNS state variables
+  const [znsLogs, setZnsLogs] = useState<any[]>([]);
+  const [znsTemplates, setZnsTemplates] = useState<any[]>([]);
+  const [znsOaConnected, setZnsOaConnected] = useState<boolean>(true);
+  
+  const [testTemplateCode, setTestTemplateCode] = useState<string>('ZNS_ORDER_CONFIRMED');
+  const [testCustomerName, setTestCustomerName] = useState<string>('Nguyễn Hữu Nghĩa');
+  const [testPhone, setTestPhone] = useState<string>('0981234567');
+  const [testVar1, setTestVar1] = useState<string>('ORD-2026');
+  const [testVar2, setTestVar2] = useState<string>('1,850,000đ');
+
+  const [logsSearchQuery, setLogsSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    setZnsLogs(getZnsLogs());
+    setZnsTemplates(getZnsTemplates());
+    setZnsOaConnected(getZnsConfig().isActive);
+
+    const handleZnsLogAdded = (e: any) => {
+      setZnsLogs(prev => [e.detail, ...prev]);
+    };
+    
+    window.addEventListener('zns-log-added', handleZnsLogAdded);
+    return () => {
+      window.removeEventListener('zns-log-added', handleZnsLogAdded);
+    };
+  }, []);
+
+  const handleToggleTemplate = (templateId: string) => {
+    const updated = znsTemplates.map(t => t.id === templateId ? { ...t, isActive: !t.isActive } : t);
+    setZnsTemplates(updated);
+    saveZnsTemplates(updated);
+  };
+
+  const handleUpdateTemplateText = (templateId: string, newText: string) => {
+    const updated = znsTemplates.map(t => t.id === templateId ? { ...t, contentTemplate: newText } : t);
+    setZnsTemplates(updated);
+    saveZnsTemplates(updated);
+    setSuccessToast("Cập nhật mẫu tin ZNS thành công!");
+  };
+
+  const handleToggleZaloOA = () => {
+    const newStatus = !znsOaConnected;
+    setZnsOaConnected(newStatus);
+    const config = getZnsConfig();
+    config.isActive = newStatus;
+    saveZnsConfig(config);
+    setSuccessToast(newStatus ? "Đã bật kết nối Zalo OA & dịch vụ ZNS!" : "Đã tạm dừng kết nối Zalo OA.");
+  };
+
+  const handleSendTestZns = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!znsOaConnected) {
+      alert("Zalo OA chưa kết nối! Vui lòng bật hoạt động để gửi.");
+      return;
+    }
+    
+    const activeTpl = znsTemplates.find(t => t.code === testTemplateCode);
+    if (activeTpl && !activeTpl.isActive) {
+      alert("Mẫu tin này đang bị tắt! Vui lòng kích hoạt mẫu tin.");
+      return;
+    }
+
+    const vars: Record<string, string> = {
+      'Tên_Khách_Hàng': testCustomerName,
+      'Mã_Đơn_Hàng': testVar1,
+      'Mã_Phiếu': testVar1,
+      'Tổng_Tiền': testVar2,
+      'Trạng_Thái': 'Đang vận chuyển',
+      'Đơn_Vị_Vận_Chuyển': 'GHN Fast',
+      'Mã_Vận_Đơn': 'GHN-VN-48201',
+      'Tiêu_Đề': 'Yêu cầu thẩm định RMA',
+      'Nội_Dung_Phản_Hồi': 'Phản hồi CSKH mẫu: Chúng tôi đã tiếp nhận ý kiến của khách hàng.'
+    };
+
+    const log = sendZnsNotification(testPhone, testTemplateCode, vars, {
+      customerName: testCustomerName,
+      ticketId: testTemplateCode.includes('TICKET') ? testVar1 : undefined,
+      orderId: testTemplateCode.includes('ORDER') ? testVar1 : undefined
+    });
+
+    setZnsToast({
+      show: true,
+      message: `Đã gửi tin nhắn Zalo ZNS thành công tới SĐT ${testPhone}!`,
+      logContent: log.content
+    });
+  };
+
+  const handleCloseTicket = (ticket: any, replyText: string) => {
+    // Update ticket in state
+    setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'closed' } : t));
+    
+    const textOfReply = replyText.trim() || 'Chào anh/chị, yêu cầu hỗ trợ của anh/chị đã được giải quyết hoàn tất và bộ phận CSKH xin phép được đóng phiếu yêu cầu.';
+    
+    // Variables for ZNS replies
+    const variables = {
+      'Tên_Khách_Hàng': ticket.customerName,
+      'Mã_Phiếu': ticket.id,
+      'Tiêu_Đề': ticket.subject,
+      'Nội_Dung_Phản_Hồi': textOfReply.length > 50 ? textOfReply.slice(0, 50) + '...' : textOfReply
+    };
+    
+    // Send ZNS Notifications via service
+    const log1 = sendZnsNotification('0912345678', 'ZNS_TICKET_REPLIED', variables, {
+      ticketId: ticket.id,
+      customerName: ticket.customerName
+    });
+
+    const closeVariables = {
+      'Tên_Khách_Hàng': ticket.customerName,
+      'Mã_Phiếu': ticket.id
+    };
+    sendZnsNotification('0912345678', 'ZNS_TICKET_CLOSED', closeVariables, {
+      ticketId: ticket.id,
+      customerName: ticket.customerName
+    });
+
+    setZnsToast({
+      show: true,
+      message: `Ticket ${ticket.id} đã đóng! Đã gửi thông báo ZNS tự động cho khách hàng ${ticket.customerName}.`,
+      logContent: log1.content
+    });
+
+    setDraftedMessage('');
+    setSelectedTicket(null);
+  };
 
  // Real-time SLA & Distribution States
  const [dashboardChannel, setDashboardChannel] = useState<string>('all');
@@ -398,6 +536,12 @@ export function CustomerService() {
  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
  >
  <Settings className="w-4 h-4" /> Cấu hình Kênh
+ </button>
+ <button 
+ onClick={() => setActiveTab('zalo_zns')}
+ className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'zalo_zns' ? "bg-white text-blue-700 shadow-sm border border-blue-200" : "text-slate-600 hover:bg-slate-100")}
+ >
+ <MessageSquare className="w-4 h-4 text-blue-600" /> Bản tin Zalo ZNS
  </button>
  </div>
 
@@ -715,7 +859,7 @@ export function CustomerService() {
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
- {MOCK_TICKETS.map(ticket => (
+ {tickets.map(ticket => (
  <tr 
  key={ticket.id} 
  onClick={() => setSelectedTicket(ticket)}
@@ -1727,9 +1871,12 @@ export function CustomerService() {
  {aiDrafting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
  Tự động soạn bằng AI
  </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all">
- Gửi & Đóng Ticket
- </button>
+ <button 
+   onClick={() => handleCloseTicket(selectedTicket, draftedMessage)}
+   className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all font-mono"
+  >
+  Gửi & Đóng Ticket
+  </button>
  </div>
  </div>
  </div>
@@ -1737,6 +1884,41 @@ export function CustomerService() {
  </div>
  )}
  </AnimatePresence>
+
+  {/* Zalo ZNS Sentinel Success Floating Toast */}
+  {znsToast && znsToast.show && (
+    <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-2xl p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
+          Z
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">Zalo Notification Service (ZNS)</p>
+          <p className="text-xs font-semibold text-slate-100 mt-1 leading-snug">{znsToast.message}</p>
+          
+          <div className="mt-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1 font-mono">Bản tin đã gửi:</p>
+            <p className="text-[11px] text-slate-300 font-mono leading-relaxed max-h-24 overflow-y-auto">
+              {znsToast.logContent}
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-between mt-3 text-[10px]">
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              ● Đã chuyển tiếp thành công
+            </span>
+            <button 
+              onClick={() => setZnsToast(null)}
+              className="font-bold text-slate-400 hover:text-slate-100 underline transition"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
  </div>
  );
 }

@@ -379,6 +379,18 @@ export function Home() {
                       isSelected ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
                     )}
                   >
+                    {group.id === 'hanh_chinh_phap_ly' && (
+                      <div 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/settings');
+                        }}
+                        className="absolute top-4 right-4 p-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer z-10"
+                        title="Thiết lập quy trình trình ký"
+                      >
+                        <Settings className="w-4 h-4" />
+                      </div>
+                    )}
                     {/* Circle squircle around icon */}
                     <div className={cn(
                       "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
