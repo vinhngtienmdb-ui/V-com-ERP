@@ -30,13 +30,21 @@ import {
  ChevronRight,
  Monitor,
  Lock,
- Cpu as CpuIcon
+ Cpu as CpuIcon,
+ Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {
+ linkGoogleCalendar,
+ getGoogleCalendarSession,
+ disconnectGoogleCalendar,
+ parseDeadlineStringToDate,
+ createCalendarEvent
+} from '../services/googleCalendar';
 
 const initialNodes = [
  { id: '1', data: { label: 'Đơn hàng mới' }, position: { x: 250, y: 5 } },
@@ -65,6 +73,68 @@ export function WorkflowHub() {
  const [signingTaskId, setSigningTaskId] = useState<string | null>(null);
  const [signatureMethod, setSignatureMethod] = useState<'smart_ca' | 'viettel_ca' | 'usb_token'>('smart_ca');
  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
+
+ const [calendarSession, setCalendarSession] = useState<{ email: string | null } | null>(
+  getGoogleCalendarSession()
+ );
+ const [syncedTaskIds, setSyncedTaskIds] = useState<string[]>([]);
+ const [syncingTask, setSyncingTask] = useState<WorkflowTask | null>(null);
+ const [isSyncingAllTasks, setIsSyncingAllTasks] = useState(false);
+ const [isSyncingInProgress, setIsSyncingInProgress] = useState(false);
+
+ const handleConnectCalendar = async () => {
+  try {
+   const session = await linkGoogleCalendar();
+   setCalendarSession({ email: session.email });
+   alert("Đã kết nối tài khoản Google và cấp quyền Google Calendar thành công!");
+  } catch (err: any) {
+   console.error(err);
+   alert("Kết nối Google Calendar thất bại: " + err.message);
+  }
+ };
+
+ const handleDisconnectCalendar = () => {
+  disconnectGoogleCalendar();
+  setCalendarSession(null);
+  alert("Đã ngắt kết nối Google Calendar.");
+ };
+
+ const handleConfirmSyncSingle = async (task: WorkflowTask) => {
+  setIsSyncingInProgress(true);
+  try {
+   const { start, end } = parseDeadlineStringToDate(task.deadline);
+   await createCalendarEvent(task, start, end);
+   setSyncedTaskIds((prev) => [...prev, task.id]);
+   alert(`Đã đồng bộ công việc "${task.title}" vào Google Calendar thành công!`);
+  } catch (err: any) {
+   console.error(err);
+   alert("Đồng bộ lịch thất bại: " + err.message);
+  } finally {
+   setIsSyncingInProgress(false);
+   setSyncingTask(null);
+  }
+ };
+
+ const handleConfirmSyncAll = async () => {
+  setIsSyncingInProgress(true);
+  let successCount = 0;
+  const tasksToSync = tasks.filter(t => !syncedTaskIds.includes(t.id));
+  
+  for (const task of tasksToSync) {
+   try {
+    const { start, end } = parseDeadlineStringToDate(task.deadline);
+    await createCalendarEvent(task, start, end);
+    setSyncedTaskIds((prev) => [...prev, task.id]);
+    successCount++;
+   } catch (err) {
+    console.error(`Thất bại khi đồng bộ task ${task.id}:`, err);
+   }
+  }
+
+  setIsSyncingInProgress(false);
+  setIsSyncingAllTasks(false);
+  alert(`Đã hoàn tất đồng bộ! Thêm mới ${successCount}/${tasksToSync.length} sự kiện vào Google Calendar thành công.`);
+ };
 
  const onNodesChange = useCallback(
  (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -182,6 +252,52 @@ export function WorkflowHub() {
  {viewMode === 'tasks' ? (
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-2 space-y-6">
+  {/* Google Calendar Integration Panel */}
+  <div className="bg-gradient-to-r from-orange-50/50 to-orange-100/50 p-6 rounded-xl border border-orange-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+   <div className="flex items-start gap-4">
+    <div className="p-3 bg-white text-orange-700 rounded-lg shadow-sm border border-orange-100 shrink-0">
+     <Calendar className="w-6 h-6" />
+    </div>
+    <div className="space-y-1 text-left">
+     <h1 className="text-sm font-black text-slate-900 uppercase tracking-wider">Đồng bộ lịch Google Calendar</h1>
+     {calendarSession ? (
+      <p className="text-xs text-slate-600">
+       Đang liên kết với: <span className="font-bold text-orange-750">{calendarSession.email}</span>. Sẵn sàng tích hợp dòng thời gian.
+      </p>
+     ) : (
+      <p className="text-xs text-slate-500">
+       Hỗ trợ gửi trực tiếp deadline vào lịch cá nhân của bạn để không bao giờ bỏ lỡ nhiệm vụ quan trọng.
+      </p>
+     )}
+    </div>
+   </div>
+   <div className="flex items-center gap-2 shrink-0">
+    {calendarSession ? (
+     <>
+      <button 
+       onClick={() => setIsSyncingAllTasks(true)}
+       className="px-4 py-2.5 bg-slate-900 text-[#FAF9F5] text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-sm active:scale-95"
+      >
+       Đồng bộ tất cả
+      </button>
+      <button 
+       onClick={handleDisconnectCalendar}
+       className="px-4 py-2.5 bg-white border border-slate-300 text-rose-600 hover:text-rose-700 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+      >
+       Hủy liên kết
+      </button>
+     </>
+    ) : (
+     <button 
+       onClick={handleConnectCalendar}
+       className="px-5 py-2.5 bg-orange-700 text-[#FAF9F5] text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-850 transition-all shadow-md shadow-orange-700/10 flex items-center gap-2 active:scale-95"
+     >
+      <Calendar className="w-4 h-4" /> Liên kết Lịch
+     </button>
+    )}
+   </div>
+  </div>
+
  <div className="flex justify-between items-center mb-6">
  <div className="relative flex-1 max-w-sm">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -226,9 +342,16 @@ export function WorkflowHub() {
  {task.priority === 'critical' && <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />}
  </div>
  <h4 className="text-base font-black text-slate-900 group-hover:text-orange-700 transition-colors uppercase tracking-tight">{task.title}</h4>
- <p className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5 mt-2 shadow-inner bg-slate-50 px-3 py-1 rounded-full w-fit">
- <Clock className="w-3.5 h-3.5" /> Hạn chót: {task.deadline}
- </p>
+ <div className="flex flex-wrap items-center gap-2 mt-2">
+  <p className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5 shadow-inner bg-slate-50 px-3 py-1 rounded-full w-fit">
+   <Clock className="w-3.5 h-3.5" /> Hạn chót: {task.deadline}
+  </p>
+  {syncedTaskIds.includes(task.id) && (
+   <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full flex items-center gap-1 animate-pulse">
+    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Đã đồng bộ Lịch
+   </span>
+  )}
+ </div>
  </div>
  <div className="flex items-center gap-4">
  <div className="flex gap-2">
@@ -238,6 +361,21 @@ export function WorkflowHub() {
  <button onClick={() => handleSignRequest(task.id)} className="p-3 bg-slate-100 text-orange-700 rounded-xl hover:bg-[#EAE7DF] transition-all opacity-0 group-hover:opacity-100 border border-slate-300">
  <FileSignature className="w-5 h-5" />
  </button>
+ {calendarSession && (
+  <button 
+   onClick={() => setSyncingTask(task)}
+   className={cn(
+    "p-3 rounded-xl transition-all border",
+    syncedTaskIds.includes(task.id)
+     ? "bg-emerald-50 text-emerald-600 border-emerald-100 opacity-100"
+     : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-100 group-hover:opacity-100 opacity-0"
+   )}
+   title={syncedTaskIds.includes(task.id) ? "Đã đồng bộ Lịch" : "Đồng bộ Google Calendar"}
+   disabled={syncedTaskIds.includes(task.id)}
+  >
+   <Calendar className="w-5 h-5" />
+  </button>
+ )}
  <button onClick={() => navigate(task.link)} className="p-3 bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm shadow-slate-900/20  active:scale-95 transition-all">
  <ArrowUpRight className="w-5 h-5" />
  </button>
@@ -416,6 +554,172 @@ export function WorkflowHub() {
  </div>
  </motion.div>
  </div>
+ )}
+
+ {/* Single Task Sync Confirmation Modal */}
+ {syncingTask && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-stone-950/60 backdrop-blur-3xl text-left">
+   <motion.div 
+    initial={{ opacity: 0, scale: 0.9, y: 40 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    exit={{ opacity: 0, scale: 0.9, y: 40 }}
+    className="bg-white rounded-xl w-full max-w-lg overflow-hidden shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/20 relative"
+   >
+    <button 
+     onClick={() => setSyncingTask(null)}
+     className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-lg transition-all z-20 group"
+     disabled={isSyncingInProgress}
+    >
+     <X className="w-5 h-5 text-slate-500 group-hover:text-slate-900" />
+    </button>
+
+    <div className="p-6 space-y-6">
+     <div className="flex items-center gap-4">
+      <div className="p-4 bg-orange-50 text-orange-700 rounded-xl relative">
+       <Calendar className="w-8 h-8" />
+      </div>
+      <div>
+       <span className="text-[10px] font-black uppercase tracking-widest text-orange-700/80">Google Calendar Integration</span>
+       <h2 className="text-xl font-black text-slate-900 tracking-tight">Xác nhận đồng bộ Lịch</h2>
+      </div>
+     </div>
+
+     <div className="bg-slate-50 p-5 rounded-xl border border-slate-200/60 text-left space-y-3">
+      <div className="flex justify-between items-center text-xs">
+       <span className="font-bold text-slate-500 uppercase tracking-widest">Nhiệm vụ:</span>
+       <span className="font-mono bg-slate-200 px-2 py-0.5 rounded text-slate-800 font-bold">{syncingTask.id}</span>
+      </div>
+      <div className="text-sm font-black text-slate-900 uppercase tracking-tight leading-snug">{syncingTask.title}</div>
+      <hr className="border-slate-200" />
+      <div className="grid grid-cols-2 gap-4 text-xs">
+       <div>
+        <div className="text-slate-500 font-bold uppercase tracking-widest mb-1">Phân hệ:</div>
+        <div className="font-bold text-slate-800">{syncingTask.module}</div>
+       </div>
+       <div>
+        <div className="text-slate-500 font-bold uppercase tracking-widest mb-1">Thời hạn:</div>
+        <div className="font-bold text-slate-800">{syncingTask.deadline}</div>
+       </div>
+      </div>
+      <div className="bg-orange-50/50 p-3 rounded-lg border border-orange-100 text-xs mt-2 font-black text-slate-800">
+       <div className="text-orange-700 font-bold uppercase tracking-widest mb-1">Thời gian tạo trên Google Lịch:</div>
+       <div>
+        {(() => {
+         const { start, end } = parseDeadlineStringToDate(syncingTask.deadline);
+         return `${new Date(start).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+        })()}
+       </div>
+      </div>
+     </div>
+
+     <p className="text-xs text-slate-500 leading-relaxed text-left">
+      VComm ERP sẽ kết nối trực tiếp đến Google Calendar của tài khoản <span className="font-bold">{calendarSession?.email}</span> để thực hiện thêm sự kiện.
+     </p>
+
+     <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+      <button 
+       onClick={() => setSyncingTask(null)}
+       className="px-5 py-3 text-[10px] font-black uppercase tracking-widest bg-slate-50 border border-slate-300 rounded-lg hover:bg-slate-100 transition-all text-slate-600"
+       disabled={isSyncingInProgress}
+      >
+       Hủy
+      </button>
+      <button 
+       onClick={() => handleConfirmSyncSingle(syncingTask)}
+       disabled={isSyncingInProgress}
+       className={cn(
+        "px-5 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-[#FAF9F5] shadow-sm flex items-center gap-2",
+        isSyncingInProgress ? "bg-slate-400 cursor-not-allowed" : "bg-orange-700 hover:bg-orange-850"
+       )}
+      >
+       {isSyncingInProgress ? (
+        <>
+         <RefreshCw className="w-4 h-4 animate-spin" />
+         Đang đồng bộ...
+        </>
+       ) : (
+        'Thêm vào Lịch'
+       )}
+      </button>
+     </div>
+    </div>
+   </motion.div>
+  </div>
+ )}
+
+ {/* Sync All Tasks Confirmation Modal */}
+ {isSyncingAllTasks && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-stone-950/60 backdrop-blur-3xl text-left">
+   <motion.div 
+    initial={{ opacity: 0, scale: 0.9, y: 40 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    exit={{ opacity: 0, scale: 0.9, y: 40 }}
+    className="bg-white rounded-xl w-full max-w-lg overflow-hidden shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/20 relative"
+   >
+    <button 
+     onClick={() => setIsSyncingAllTasks(false)}
+     className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-lg transition-all z-20 group"
+     disabled={isSyncingInProgress}
+    >
+     <X className="w-5 h-5 text-slate-500 group-hover:text-slate-900" />
+    </button>
+
+    <div className="p-6 space-y-6">
+     <div className="flex items-center gap-4">
+      <div className="p-4 bg-orange-50 text-orange-700 rounded-xl relative">
+       <Calendar className="w-8 h-8" />
+      </div>
+      <div>
+       <span className="text-[10px] font-black uppercase tracking-widest text-orange-700/80">Google Calendar Batch Process</span>
+       <h2 className="text-xl font-black text-slate-900 tracking-tight">Đồng bộ hàng loạt</h2>
+      </div>
+     </div>
+
+     <p className="text-sm text-slate-650 leading-relaxed text-left">
+      Bạn có chắc chắn muốn đồng bộ tất cả <span className="font-bold text-orange-700">{tasks.filter(t => !syncedTaskIds.includes(t.id)).length}</span> nhiệm vụ chưa đồng bộ của bạn sang Google Calendar của tài khoản <span className="font-bold">({calendarSession?.email})</span>?
+     </p>
+
+     <div className="max-h-48 overflow-y-auto space-y-2 text-left">
+      {tasks.filter(t => !syncedTaskIds.includes(t.id)).map(task => (
+       <div key={task.id} className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between text-xs">
+        <div>
+         <span className="font-bold font-mono text-orange-700 mr-2">{task.id}</span>
+         <span className="text-slate-800 font-bold">{task.title}</span>
+        </div>
+        <span className="text-[10px] bg-slate-200 px-2 py-0.5 rounded font-black uppercase text-slate-600 shrink-0">{task.deadline}</span>
+       </div>
+      ))}
+     </div>
+
+     <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3 font-bold text-slate-500">
+      <button 
+       onClick={() => setIsSyncingAllTasks(false)}
+       className="px-5 py-3 text-[10px] font-black uppercase tracking-widest bg-slate-50 border border-slate-300 rounded-lg hover:bg-slate-100 transition-all text-slate-600"
+       disabled={isSyncingInProgress}
+      >
+       Hủy
+      </button>
+      <button 
+       onClick={handleConfirmSyncAll}
+       disabled={isSyncingInProgress}
+       className={cn(
+        "px-5 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-[#FAF9F5] shadow-sm flex items-center gap-2",
+        isSyncingInProgress ? "bg-slate-400 cursor-not-allowed" : "bg-orange-700 hover:bg-orange-850"
+       )}
+      >
+       {isSyncingInProgress ? (
+        <>
+         <RefreshCw className="w-4 h-4 animate-spin" />
+         Đang đồng bộ...
+        </>
+       ) : (
+        'Đồng bộ toàn bộ'
+       )}
+      </button>
+     </div>
+    </div>
+   </motion.div>
+  </div>
  )}
  </AnimatePresence>
  </div>

@@ -63,6 +63,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
+import { EmployeeDetailModal } from './EmployeeDetailModal';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import {
@@ -173,7 +174,24 @@ const MOCK_EMPLOYEES: Employee[] = [
  contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '15/01/2024', expiryDate: '14/01/2025' }],
  skills: [{ name: 'Logistics', level: 90 }, { name: 'Leadership', level: 75 }],
  leaveBalance: { total: 12, used: 4, pending: 1 },
- recentSentiment: 'positive'
+ recentSentiment: 'positive',
+ gender: 'Nam',
+ dateOfBirth: '1995-08-12',
+ identityCard: '001095001234',
+ identityCardDate: '2021-10-20',
+ identityCardPlace: 'Cục Cảnh sát QLHC về TTXH',
+ permanentAddress: 'Số 15, Ngách 20, Ngõ 105 Doãn Kế Thiện, Mai Dịch, Cầu Giấy, Hà Nội',
+ currentAddress: 'Chung cư Hateco Apollo, Phương Canh, Nam Từ Liêm, Hà Nội',
+ personalEmail: 'hoangminh.le95@gmail.com',
+ personalPhone: '0901234567',
+ bankAccountNo: '1903456789012',
+ bankName: 'Techcombank',
+ bankAccountName: 'LE HOANG MINH',
+ taxCode: '8532456789',
+ socialInsuranceNo: '0116123456',
+ emergencyName: 'Nguyễn Thị Hồng',
+ emergencyPhone: '0912345678',
+ emergencyRelation: 'Mẹ'
  },
  {
  id: 'EMP-002',
@@ -188,7 +206,24 @@ const MOCK_EMPLOYEES: Employee[] = [
  contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: '01/06/2023', expiryDate: '31/05/2024' }],
  skills: [{ name: 'Social Media', level: 95 }, { name: 'Creativity', level: 88 }],
  leaveBalance: { total: 12, used: 11, pending: 0 },
- recentSentiment: 'critical'
+ recentSentiment: 'critical',
+ gender: 'Nữ',
+ dateOfBirth: '1998-09-24',
+ identityCard: '031098005678',
+ identityCardDate: '2019-03-15',
+ identityCardPlace: 'Cục Cảnh sát QLHC về TTXH',
+ permanentAddress: 'Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
+ currentAddress: 'Khu đô thị Vinhomes Ocean Park, Gia Lâm, Hà Nội',
+ personalEmail: 'dieunhi.nguyen98@gmail.com',
+ personalPhone: '0987123456',
+ bankAccountNo: '1023456789',
+ bankName: 'Vietcombank',
+ bankAccountName: 'NGUYEN DIEU NHI',
+ taxCode: '8612345678',
+ socialInsuranceNo: '0218654321',
+ emergencyName: 'Nguyễn Văn Hùng',
+ emergencyPhone: '0909876543',
+ emergencyRelation: 'Bố'
  }
 ];
 
@@ -405,7 +440,112 @@ export function HumanResources() {
  const [activeTab, setActiveTab] = useState<string>('overview');
  const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
- const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
+ // Propose New HRM Features States
+ const [vpointHistory, setVpointHistory] = useState([
+  { id: 'VP-01', employeeName: 'Lê Hoàng Minh', points: 150, reason: 'Tối ưu hóa sơ đồ kho bãi tiết kiệm 15% diện tích', date: '01/06/2026', type: 'plus' },
+  { id: 'VP-02', employeeName: 'Nguyễn Diệu Nhi', points: 200, reason: 'Đóng góp ý tưởng chiến dịch KOL đạt 580 nghìn lượt hiển thị', date: '28/05/2026', type: 'plus' },
+  { id: 'VP-03', employeeName: 'Nguyễn Văn Thắng', points: -50, reason: 'Đi muộn 3 lần trong tuần không có lý do chính đáng', date: '25/05/2026', type: 'minus' },
+ ]);
+ const [userPoints, setUserPoints] = useState(2450);
+ const [pointReason, setPointReason] = useState('');
+ const [pointValue, setPointValue] = useState(100);
+ const [pointEmpId, setPointEmpId] = useState('EMP-001');
+
+ const [suggestions, setSuggestions] = useState([
+  { id: 'SUG-01', content: 'Thay thế đèn phòng máy chủ bằng đèn huỳnh quang tiết kiệm điện và làm dịu mắt kỹ sư vận hành.', category: 'Cơ sở vật chất', sentiment: 'Tích cực', threatLevel: 'Thấp', date: '30/05/2026', status: 'Đang xử lý', replies: [] as string[] },
+  { id: 'SUG-02', content: 'Cần bổ sung lò vi sóng tại khu vực bếp ăn tầng 2 vì số lượng nhân viên buổi trưa tăng đột biến xếp hàng rất lâu.', category: 'Nội bộ công sở', sentiment: 'Đóng góp ý kiến', threatLevel: 'Thấp', date: '29/05/2026', status: 'Đã trả lời', replies: ['Cảm ơn đóng góp của bạn. Ban Hành chính đã phê duyệt mua thêm 2 lò vi sóng nữa trong tuần này.'] },
+  { id: 'SUG-03', content: 'Đề xuất tăng thêm định mức hỗ trợ cước phí điện thoại cho nhân viên Sale thị trường do liên tục gọi điện CSKH ngoài giờ.', category: 'Chính sách phúc lợi', sentiment: 'Khẩn cấp', threatLevel: 'Trung bình', date: '28/05/2026', status: 'Chờ duyệt', replies: [] as string[] }
+ ]);
+ const [newSuggestionInput, setNewSuggestionInput] = useState('');
+ const [newSuggestionCategory, setNewSuggestionCategory] = useState('Nội bộ công sở');
+ const [suggestionReplyTexts, setSuggestionReplyTexts] = useState<Record<string, string>>({});
+
+ const [burnoutInterventions, setBurnoutInterventions] = useState<Record<string, string>>({});
+
+ const [employees, setEmployees] = useState<Employee[]>(() => {
+  const cached = localStorage.getItem('erp_employees');
+  if (cached) {
+   try {
+    return JSON.parse(cached);
+   } catch (e) {
+    console.error('Error parsing cached employees:', e);
+   }
+  }
+  return MOCK_EMPLOYEES;
+ });
+
+ React.useEffect(() => {
+  localStorage.setItem('erp_employees', JSON.stringify(employees));
+ }, [employees]);
+
+ const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+ const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+ const [formState, setFormState] = useState<Partial<Employee>>({});
+ const [modalTab, setModalTab] = useState<'job' | 'personal' | 'finance'>('job');
+
+ React.useEffect(() => {
+  if (editingEmployee) {
+   setFormState({ ...editingEmployee });
+  } else {
+   setFormState({
+    fullName: '',
+    email: '',
+    phone: '',
+    department: 'Marketing',
+    position: 'KOL Specialist',
+    joinDate: new Date().toISOString().split('T')[0],
+    employeeType: 'full_time',
+    status: 'active',
+    contracts: [{ type: 'Hợp đồng lao động xác định thời hạn 1 năm', signDate: new Date().toISOString().split('T')[0], expiryDate: '' }],
+    skills: [],
+    leaveBalance: { total: 12, used: 0, pending: 0 },
+    recentSentiment: 'positive',
+    role: 'Nhân viên',
+    permissions: {
+     personnel: { read: true, create: false, update: false, delete: false },
+     attendance: { read: true, create: false, update: false, delete: false },
+     payroll: { read: true, create: false, update: false, delete: false },
+     kpi: { read: true, create: false, update: false, delete: false },
+     rewards: { read: true, create: false, update: false, delete: false }
+    }
+   });
+  }
+  setModalTab('job');
+ }, [editingEmployee, showEmployeeModal]);
+
+ const handleSaveEmployee = (updatedFormState: any) => {
+  if (!updatedFormState.fullName?.trim()) {
+   alert('Vui lòng điền Họ tên nhân viên');
+   return;
+  }
+  
+  if (editingEmployee) {
+   // Update
+   const updated = { ...editingEmployee, ...updatedFormState } as Employee;
+   setEmployees(prev => prev.map(emp => emp.id === editingEmployee.id ? updated : emp));
+   if (selectedEmployee && selectedEmployee.id === editingEmployee.id) {
+    setSelectedEmployee(updated);
+   }
+   alert('Đã cập nhật thông tin nhân viên thành công!');
+  } else {
+   // Create new
+   const lastIdNum = employees.reduce((max, emp) => {
+    const num = parseInt(emp.id.replace('EMP-', '').replace('LKS', ''));
+    return isNaN(num) ? max : Math.max(max, num);
+   }, 2);
+   const nextId = updatedFormState.id || `EMP-${String(lastIdNum + 1).padStart(3, '0')}`;
+   
+   const newEmp = {
+    ...updatedFormState,
+    id: nextId,
+   } as Employee;
+   
+   setEmployees(prev => [...prev, newEmp]);
+   alert('Đã thêm mới nhân viên thành công!');
+  }
+  setShowEmployeeModal(false);
+  setEditingEmployee(null);
+ };
  const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
  
  // Payroll state
@@ -2433,16 +2573,532 @@ export function HumanResources() {
  ))}
  </div>
  </div>
+ ) : activeTab === 'points_mod' ? (
+  <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+    <div>
+     <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
+      <Trophy className="w-6 h-6 text-amber-500 animate-bounce" /> V-Points Rewards & Golden Board
+     </h2>
+     <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Tích điểm đổi quà & Khen thưởng nội bộ thông qua đóng góp công việc và tinh thần</p>
+    </div>
+    <div className="px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
+     <div className="p-2 bg-amber-500 text-white rounded-lg">
+      <Trophy className="w-5 h-5" />
+     </div>
+     <div>
+      <p className="text-[10px] text-slate-500 font-bold uppercase">Quỹ điểm của tôi</p>
+      <p className="text-xl font-black text-amber-700">{userPoints.toLocaleString()} V-Pts</p>
+     </div>
+    </div>
+   </div>
+
+   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="lg:col-span-4 space-y-6">
+     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-4">
+      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+       <Sparkles className="w-4 h-4 text-purple-600" /> Tặng / Phạt V-Points (Quản lý)
+      </h3>
+      <div className="space-y-3">
+       <div>
+        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Nhân viên nhận</label>
+        <select 
+         value={pointEmpId}
+         onChange={(e) => setPointEmpId(e.target.value)}
+         className="w-full text-xs font-semibold border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-amber-500/20"
+        >
+         {employees.map(emp => (
+          <option key={emp.id} value={emp.id}>{emp.fullName} ({emp.id})</option>
+         ))}
+        </select>
+       </div>
+       <div>
+        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Số điểm (+ / -)</label>
+        <input 
+         type="number"
+         value={pointValue}
+         onChange={(e) => setPointValue(Number(e.target.value))}
+         className="w-full text-xs font-mono font-bold border border-slate-300 rounded-lg p-2.5"
+        />
+       </div>
+       <div>
+        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Lý do điều chỉnh</label>
+        <textarea 
+         placeholder="Vd: Đóng góp ý tưởng tự động hóa Excel, hỗ trợ đồng nghiệp ngoài ca làm việc..."
+         value={pointReason}
+         onChange={(e) => setPointReason(e.target.value)}
+         className="w-full text-xs border border-slate-300 rounded-lg p-2.5 h-20"
+        />
+       </div>
+       <button 
+        onClick={() => {
+         if (!pointReason.trim()) {
+          alert('Vui lòng điền lý do khen thưởng/phạt!');
+          return;
+         }
+         const targetEmp = employees.find(e => e.id === pointEmpId);
+         const newLog = {
+          id: `VP-${Date.now().toString().slice(-4)}`,
+          employeeName: targetEmp?.fullName || 'Nhân sự khác',
+          points: pointValue,
+          reason: pointReason,
+          date: 'Hôm nay',
+          type: pointValue >= 0 ? 'plus' as const : 'minus' as const
+         };
+         setVpointHistory([newLog, ...vpointHistory]);
+         setPointReason('');
+         alert(`Đã ghi nhận điều chỉnh ${pointValue >= 0 ? '+' : ''}${pointValue} V-Points cho ${targetEmp?.fullName}!`);
+        }}
+        className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"
+       >
+        <Plus className="w-4 h-4" /> Xác nhận đề xuất điểm
+       </button>
+      </div>
+     </div>
+
+     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-4">
+      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Lịch sử giao dịch điểm</h3>
+      <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2">
+       {vpointHistory.map((item) => (
+        <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-start gap-4">
+         <div className="space-y-1">
+          <p className="text-xs font-bold text-slate-900">{item.employeeName}</p>
+          <p className="text-[10px] text-slate-500 leading-normal">{item.reason}</p>
+          <p className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">{item.date} • {item.id}</p>
+         </div>
+         <span className={cn(
+          "text-xs font-black font-mono shrink-0 px-2 py-0.5 rounded",
+          item.type === 'plus' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+         )}>
+          {item.type === 'plus' ? '+' : ''}{item.points}
+         </span>
+        </div>
+       ))}
+      </div>
+     </div>
+    </div>
+
+    <div className="lg:col-span-8 space-y-6">
+     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
+      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+       <BadgeDollarSign className="w-4 h-4 text-orange-600" /> Cửa hàng đổi quà HRM (Thử nghiệm)
+      </h3>
+      <p className="text-xs text-slate-500 mb-6 leading-relaxed">Sử dụng điểm tích lũy của bạn để đổi các phần thưởng thiết thực hoặc voucher độc quyền từ đối tác doanh nghiệp.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+       {[
+        { title: 'Voucher Grab Car 100K', price: 800, badge: 'Phổ biến', icon: MapPin },
+        { title: 'Vé xem phim CGV 2D', price: 1200, badge: 'Hot', icon: Sparkles },
+        { title: 'Nghỉ phép thêm 04 tiếng', price: 2000, badge: 'Độc quyền VIP', icon: Calendar }
+       ].map((item, idx) => {
+        const Icon = item.icon;
+        return (
+         <div key={idx} className="bg-slate-50/50 hover:bg-white rounded-xl border border-slate-200 hover:border-amber-400 p-4 transition-all duration-300 flex flex-col justify-between h-full hover:shadow-sm relative group text-slate-800">
+          {item.badge && (
+           <span className="absolute top-3 right-3 bg-amber-500 text-white font-bold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full">
+            {item.badge}
+           </span>
+          )}
+          <div className="space-y-2">
+           <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600 uppercase border border-amber-100 group-hover:scale-105 transition-transform">
+            <Icon className="w-5 h-5" />
+           </div>
+           <h4 className="font-bold text-xs text-slate-800 leading-snug">{item.title}</h4>
+           <p className="text-sm font-black font-mono text-amber-700">{item.price} V-Pts</p>
+          </div>
+          <button 
+           onClick={() => {
+            if (userPoints < item.price) {
+             alert('Không đủ V-Points! Hãy đóng góp nhiều hơn hoặc tích lũy thêm điểm.');
+             return;
+            }
+            setUserPoints(prev => prev - item.price);
+            alert(`Chúc mừng! Bạn đã đổi thành công [${item.title}]. Mã Code voucher đã được gửi qua email của bạn.`);
+           }}
+           className="w-full mt-4 py-2 bg-white text-slate-800 hover:bg-amber-50 border border-slate-300 hover:border-amber-400 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors border-dashed"
+          >
+           Đổi ngay
+          </button>
+         </div>
+        );
+       })}
+      </div>
+     </div>
+
+     <div className="bg-slate-900 text-white rounded-xl p-6 relative overflow-hidden shadow-sm">
+      <div className="absolute right-0 bottom-0 opacity-10 rotate-12 scale-125">
+       <Trophy className="w-72 h-72 text-amber-400" />
+      </div>
+      <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+       <div>
+        <h3 className="font-black italic tracking-wider text-base text-amber-400">GOLDEN BOARD • BẢNG VÀNG DANH VỌNG</h3>
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Các tấm gương có đóng góp đột phá về hiệu suất và tinh thần đồng đội</p>
+       </div>
+       <Trophy className="w-8 h-8 text-amber-400 animate-pulse" />
+      </div>
+
+      <div className="space-y-4 relative z-10">
+       {[
+        { name: 'Trần Thu Thủy', role: 'Team Lead CSKH', points: 3450, rank: 'Hạng 1', badge: 'Chúa tể giải quyết nhanh' },
+        { name: 'Lê Hoàng Minh', role: 'Kỹ sư Vận hành Kho', points: 3200, rank: 'Hạng 2', badge: 'Cứu tinh Layout tối ưu' },
+        { name: 'Nguyễn Diệu Nhi', role: 'Chuyên viên Content', points: 2950, rank: 'Hạng 3', badge: 'Sáng tạo đột phá KPI' }
+       ].map((champion, i) => (
+        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+         <div className="flex items-center gap-4">
+          <span className="text-xl font-black text-amber-400 w-12">{champion.rank}</span>
+          <div>
+           <p className="text-sm font-bold text-white tracking-tight">{champion.name}</p>
+           <p className="text-[10px] text-slate-400 uppercase tracking-tight">{champion.role}</p>
+          </div>
+         </div>
+         <div className="flex items-center gap-4 mt-2 sm:mt-0 justify-between sm:justify-end">
+          <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-[9px] font-bold uppercase border border-amber-500/20">
+           {champion.badge}
+          </span>
+          <div className="text-right">
+           <p className="text-sm font-black font-mono text-amber-300">{champion.points.toLocaleString()}</p>
+           <p className="text-[8px] text-slate-400 uppercase font-bold">V-Pts</p>
+          </div>
+         </div>
+        </div>
+       ))}
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ ) : activeTab === 'suggestions_mod' ? (
+  <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+    <div>
+     <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
+      <AlertCircle className="w-6 h-6 text-indigo-600" /> Democratic Suggestions Box
+     </h2>
+     <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Cửa ngõ đóng góp ẩn danh trung thực - Bảo vệ quyền lợi, tối ưu môi trường làm việc</p>
+    </div>
+    <div className="flex h-10 border border-indigo-200 bg-indigo-50/50 rounded-xl px-4 items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
+     <ShieldCheck className="w-4 h-4" /> Bảo mật & mã hóa đầu-cuối
+    </div>
+   </div>
+
+   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="lg:col-span-8 space-y-4">
+     <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider">Tất cả góp ý từ tập thể nhân sự</h3>
+     {suggestions.map((item) => (
+      <div key={item.id} className="bg-white rounded-xl border border-slate-300 p-5 shadow-sm space-y-4 relative overflow-hidden hover:border-indigo-300 transition-all text-slate-800 text-slate-800">
+       <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+         <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold uppercase border border-slate-200">
+          {item.category}
+         </span>
+         <span className="text-[10px] font-mono text-slate-500">#{item.id}</span>
+        </div>
+        <div className="flex items-center gap-2">
+         <span className={cn(
+          "px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-tight",
+          item.threatLevel === 'Cao' ? "bg-red-50 text-red-600 border border-red-100" :
+          item.threatLevel === 'Trung bình' ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+         )}>
+          Nguy cơ: {item.threatLevel}
+         </span>
+         <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{item.date}</span>
+        </div>
+       </div>
+
+       <p className="text-sm font-semibold text-slate-800 leading-relaxed italic border-l-4 border-indigo-300 pl-4 bg-slate-50/50 py-2.5 rounded-r-lg">
+        "{item.content}"
+       </p>
+
+       {item.replies.length > 0 && (
+        <div className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-xl space-y-2 mt-4 ml-4">
+         <p className="text-[10px] font-black text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Phản hồi chính thức từ Ban Giám Đốc/HR:
+         </p>
+         {item.replies.map((reply, rIdx) => (
+          <p className="text-xs font-semibold text-slate-700 leading-relaxed pl-1" key={rIdx}>{reply}</p>
+         ))}
+        </div>
+       )}
+
+       <div className="pt-4 border-t border-slate-100 flex gap-2">
+        <input 
+         type="text"
+         placeholder="Quản lý nhập phản hồi phản hồi chính thức cho hòm thư ẩn danh..."
+         value={suggestionReplyTexts[item.id] || ''}
+         onChange={(e) => {
+          const val = e.target.value;
+          setSuggestionReplyTexts(prev => ({ ...prev, [item.id]: val }));
+         }}
+         className="flex-1 bg-slate-50 text-xs border border-slate-300 rounded-lg px-4 py-2 focus:bg-white"
+        />
+        <button 
+         onClick={() => {
+          const text = suggestionReplyTexts[item.id];
+          if (!text || !text.trim()) {
+           alert('Vui lòng nhập nội dung phản hồi!');
+           return;
+          }
+          const updatedSuggestions = suggestions.map(s => {
+           if (s.id === item.id) {
+            return {
+             ...s,
+             status: 'Đã trả lời',
+             replies: [...s.replies, text]
+            };
+           }
+           return s;
+          });
+          setSuggestions(updatedSuggestions);
+          setSuggestionReplyTexts(prev => ({ ...prev, [item.id]: '' }));
+          alert('Đã gửi phản hồi thành công! Trực quan hóa ý kiến đóng góp được đồng bộ tức thì.');
+         }}
+         className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shrink-0"
+        >
+         Gửi phản hồi
+        </button>
+       </div>
+      </div>
+     ))}
+    </div>
+
+    <div className="lg:col-span-4 space-y-6">
+     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4 text-slate-800">
+      <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-3">
+       <Smile className="w-4 h-4 text-emerald-500 animate-pulse" /> Đóng góp ý kiến mới (Ẩn danh)
+      </h3>
+      <div className="space-y-4">
+       <div>
+        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Chủ đề đóng góp</label>
+        <select 
+         value={newSuggestionCategory}
+         onChange={(e) => setNewSuggestionCategory(e.target.value)}
+         className="w-full text-xs border border-slate-300 rounded-lg p-2.5 bg-white font-medium focus:outline-none"
+        >
+         <option value="Chính sách phúc lợi">Chính sách phúc lợi</option>
+         <option value="Nội bộ công sở">Nội bộ công sở</option>
+         <option value="Cơ sở vật chất">Cơ sở vật chất</option>
+         <option value="Quy trình vận hành">Quy trình vận hành</option>
+        </select>
+       </div>
+       <div>
+        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Nội dung đề xuất ẩn danh</label>
+        <textarea 
+         placeholder="Hãy chia sẻ trực quan, góp ý trung thực nhất để cải thiện môi trường làm việc chung..."
+         value={newSuggestionInput}
+         onChange={(e) => setNewSuggestionInput(e.target.value)}
+         className="w-full text-xs border border-slate-300 rounded-lg p-3 h-32 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+        />
+       </div>
+
+       <div className="p-3 bg-indigo-50 text-indigo-900 rounded-lg text-[10px] leading-relaxed font-semibold italic flex items-start gap-2">
+        <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+        Sử dụng hệ thống mã hóa định danh hai lớp SHA-256. Không một cấp quản lý nào có quyền truy tìm IP hoặc tài khoản gửi góp ý này.
+       </div>
+
+       <button 
+        onClick={() => {
+         if (!newSuggestionInput.trim()) {
+          alert('Vui lòng nhập nội dung đề xuất!');
+          return;
+         }
+         const newSug = {
+          id: `SUG-${Date.now().toString().slice(-4)}`,
+          content: newSuggestionInput,
+          category: newSuggestionCategory,
+          sentiment: 'Đóng góp ý kiến',
+          threatLevel: 'Thấp',
+          date: 'Hôm nay',
+          status: 'Đang xử lý',
+          replies: []
+         };
+         setSuggestions([newSug, ...suggestions]);
+         setNewSuggestionInput('');
+         alert('Đề xuất ẩn danh của bạn đã được gửi thành công vào Hòm thư chung của Ban Giám Đốc.');
+        }}
+        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+       >
+        <Send className="w-4 h-4" /> Gửi ẩn danh an toàn
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ ) : activeTab === 'review_mod' ? (
+  <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+    <div>
+     <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
+      <Users className="w-6 h-6 text-rose-500" /> AI Timesheet Aggregation & Burnout Predictor
+     </h2>
+     <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Theo dõi tổng hợp chuyên cần chuyên sâu phối hợp dự báo kiệt sức (Burnout Index) của nhân sự</p>
+    </div>
+    <div className="px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs font-bold text-rose-800 uppercase tracking-tight shadow-inner">
+     <AlertCircle className="w-4 h-4 text-rose-500 animate-pulse" /> 02 Trường hợp Burnout rủi ro cao
+    </div>
+   </div>
+
+   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {[
+     { dept: 'Warehouse & Logistics', safety: '38%', risk: 'Rủi ro kiệt sức CAO', count: 4, stats: 'Trung bình làm việc 9.6h/ngày và 12.4h OT', status: 'critical' },
+     { dept: 'Customer Support (CSKH)', safety: '74%', risk: 'Rủi ro Trung bình', count: 2, stats: 'Lượng ticket dồn dập, ca tối nghỉ gián đoạn', status: 'medium' },
+     { dept: 'Marketing & Design', safety: '95%', risk: 'Vùng An toàn', count: 0, stats: '96% đúng giờ, làm việc hành chính chuẩn', status: 'safe' }
+    ].map((item, idx) => (
+     <div key={idx} className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex flex-col justify-between">
+      <div className="space-y-1">
+       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black leading-none">{item.dept}</span>
+       <h3 className="text-xl font-black text-slate-900 mt-1">{item.risk}</h3>
+       <p className="text-[11px] text-slate-600 leading-relaxed font-semibold">{item.stats}</p>
+      </div>
+      <div className="mt-5 space-y-1.5">
+       <div className="flex justify-between text-[10px] font-bold uppercase tracking-tight">
+        <span>KPI Sức khỏe tập thể</span>
+        <span className={cn(
+         item.status === 'critical' ? "text-rose-600" :
+         item.status === 'medium' ? "text-amber-600" : "text-emerald-600"
+        )}>{item.safety} An toàn</span>
+       </div>
+       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+        <div 
+         className={cn(
+          "h-full transition-all duration-1000",
+          item.status === 'critical' ? "bg-rose-500" :
+          item.status === 'medium' ? "bg-amber-500" : "bg-emerald-500"
+         )}
+         style={{ width: item.safety }}
+        />
+       </div>
+      </div>
+     </div>
+    ))}
+   </div>
+
+   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="lg:col-span-8 bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col mt-4">
+     <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
+      <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Danh sách nhân sự cần theo dõi đặc biệt</h3>
+      <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Tháng 06/2026</span>
+     </div>
+     <div className="overflow-x-auto min-w-0">
+      <table className="w-full text-left border-collapse whitespace-nowrap">
+       <thead>
+        <tr className="bg-slate-50/20 border-b border-slate-200 text-left">
+         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự</th>
+         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">OT Tháng này</th>
+         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Chỉ số Burnout</th>
+         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Hành động của HR</th>
+        </tr>
+       </thead>
+       <tbody className="divide-y divide-slate-100">
+        {[
+         { id: 'EMP-001', name: 'Lê Hoàng Minh', dept: 'Kho & Vận hành', hours: '192h', ot: '28h OT', index: 92, status: 'critical', rec: 'Gợi ý: Cấp ngay 02 ngày phép bù hoặc luân ca trưa.' },
+         { id: 'EMP-003', name: 'Nguyễn Diệu Nhi', dept: 'CSKH & Sales', hours: '176h', ot: '14h OT', index: 65, status: 'medium', rec: 'Gợi ý: Hạn chế phân ca tối chồng ca sáng hôm sau.' },
+         { id: 'EMP-002', name: 'Trần Thu Thủy', dept: 'Marketing', hours: '160h', ot: '4h OT', index: 32, status: 'safe', rec: 'Gợi ý: Thưởng nóng V-Points ghi nhận đúng hạn.' }
+        ].map((emp) => (
+         <tr key={emp.id} className="hover:bg-slate-50/50">
+          <td className="px-6 py-4">
+           <p className="text-xs font-bold text-slate-900">{emp.name}</p>
+           <p className="text-[10px] text-slate-500 uppercase tracking-tight">{emp.dept}</p>
+          </td>
+          <td className="px-6 py-4 text-center">
+           <span className="text-xs font-mono font-bold text-slate-800">{emp.hours} </span>
+           <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">+{emp.ot}</span>
+          </td>
+          <td className="px-6 py-4 w-40">
+           <div className="space-y-1">
+            <div className="flex justify-between text-[10px] font-bold font-mono">
+             <span className={cn(
+              emp.status === 'critical' ? "text-rose-600 bg-rose-50 px-1 rounded font-bold" :
+              emp.status === 'medium' ? "text-amber-600" : "text-emerald-600"
+             )}>{emp.index}%</span>
+             <span className="text-slate-500 font-normal uppercase">{emp.status}</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+             <div 
+              className={cn("h-full", 
+               emp.status === 'critical' ? 'bg-red-500' :
+               emp.status === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'
+              )}
+              style={{ width: `${emp.index}%` }}
+             />
+            </div>
+           </div>
+          </td>
+          <td className="px-6 py-4 text-right">
+           {burnoutInterventions[emp.id] ? (
+            <span className="text-xs text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg font-bold">
+             {burnoutInterventions[emp.id]}
+            </span>
+           ) : (
+            <div className="flex gap-2 justify-end">
+             <button 
+              onClick={() => {
+               setBurnoutInterventions(prev => ({
+                ...prev,
+                [emp.id]: 'Đã gửi lịch hẹn 1-on-1'
+               }));
+               alert(`Đã gửi thông báo hẹn lịch đối thoại 1-on-1 với ${emp.name} thông qua Workplace Chat!`);
+              }}
+              className="px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 text-[10px] font-bold rounded-lg transition-colors border border-slate-300"
+             >
+              Hẹn 1-on-1
+             </button>
+             <button 
+              onClick={() => {
+               setBurnoutInterventions(prev => ({
+                ...prev,
+                [emp.id]: 'Đã duyệt ngày phép phục hồi'
+               }));
+               alert(`Đã duyệt phê chuẩn 1 ngày nghỉ Rest Day hồi phục sức khỏe cho ${emp.name}!`);
+              }}
+              className="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 text-[10px] font-bold rounded-lg transition-all"
+             >
+              Cấp Rest Day
+             </button>
+            </div>
+           )}
+          </td>
+         </tr>
+        ))}
+       </tbody>
+      </table>
+     </div>
+    </div>
+
+    <div className="lg:col-span-4 space-y-6 mt-4">
+     <div className="bg-[#111827] text-white p-6 rounded-xl relative overflow-hidden group">
+      <div className="absolute top-0 right-0 p-4">
+       <Sparkles className="w-12 h-12 text-white/5 rotate-12" />
+      </div>
+      <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+       <Activity className="w-4 h-4 animate-pulse" /> Sổ tay Chăm sóc sức khỏe
+      </h4>
+      <p className="text-xs text-slate-300 leading-relaxed mb-4">Các hành động được đề xuất dựa trên quy tắc SLA Sức khỏe và phân tích thói quen nghỉ ngơi của nhân sự:</p>
+      
+      <div className="space-y-3">
+       <div className="p-3.5 bg-white/5 rounded-lg border border-white/10 text-white">
+        <p className="text-xs font-bold text-amber-300 mb-1">Luật Lao Động Việt Nam</p>
+        <p className="text-[10.5px] text-slate-400 leading-normal">Tổng thời gian làm thêm giờ của NLĐ không quá 40 giờ trong 01 tháng và không quá 200 giờ trong 01 năm.</p>
+       </div>
+       <div className="p-3.5 bg-white/5 rounded-lg border border-white/10 text-white">
+        <p className="text-xs font-bold text-amber-300 mb-1">Lợi ích của 1-on-1 định kỳ</p>
+        <p className="text-[10.5px] text-slate-400 leading-normal">92% rủi ro nghỉ việc được giải cấp ngay tại giai đoạn 1 khi phát hiện kịp thời qua Burnout Index.</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
  ) : (
- <div className="p-6 flex flex-col items-center justify-center text-center">
- <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
- <Rocket className="w-10 h-10 text-orange-600" />
- </div>
- <h3 className="text-xl font-bold text-slate-900 mb-2">Phân hệ đang được phát triển</h3>
- <p className="text-slate-600 max-w-md mx-auto leading-relaxed">
- Tính năng này đang trong quá trình hoàn thiện và sẽ sớm được ra mắt trong bản cập nhật HRM tiếp theo.
- </p>
- </div>
+  <div className="p-6 flex flex-col items-center justify-center text-center">
+   <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+    <Rocket className="w-10 h-10 text-orange-600" />
+   </div>
+   <h3 className="text-xl font-bold text-slate-900 mb-2">Phân hệ đang được phát triển</h3>
+   <p className="text-slate-600 max-w-md mx-auto leading-relaxed">
+    Tính năng này đang trong quá trình hoàn thiện và sẽ sớm được ra mắt trong bản cập nhật HRM tiếp theo.
+   </p>
+  </div>
  )}
  </div>
  )}
@@ -2481,6 +3137,113 @@ export function HumanResources() {
  </div>
  
  <div className="p-6 space-y-10 flex-1">
+  {/* Personal details (Thông tin cá nhân) section */}
+  <div className="space-y-4">
+   <div className="flex items-center justify-between col-span-2">
+    <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
+     <User className="w-4 h-4 text-orange-600"/> Thông tin cá nhân
+    </h3>
+    <button 
+     onClick={() => {
+      setEditingEmployee(selectedEmployee);
+      setShowEmployeeModal(true);
+     }}
+     className="text-xs text-orange-600 hover:text-orange-700 font-bold transition-all flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg border border-slate-300"
+    >
+     <Edit2 className="w-3 h-3" /> Chỉnh sửa
+    </button>
+   </div>
+   <div className="bg-slate-50 rounded-xl p-5 border border-slate-300 space-y-4 shadow-sm text-sm">
+    <div className="grid grid-cols-2 gap-4 border-b border-slate-200 pb-3">
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Ngày sinh</span>
+      <span className="font-medium text-slate-800">{selectedEmployee.dateOfBirth || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
+     </div>
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Giới tính</span>
+      <span className="font-medium text-slate-800">{selectedEmployee.gender || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
+     </div>
+    </div>
+
+    <div className="border-b border-slate-200 pb-3 space-y-2">
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Số CCCD / CMND</span>
+      <span className="font-medium font-mono text-slate-800">{selectedEmployee.identityCard || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
+     </div>
+     {selectedEmployee.identityCard && (
+      <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+       <div>
+        <span className="text-[9px] uppercase font-bold text-slate-500 block">Ngày cấp</span>
+        <span>{selectedEmployee.identityCardDate || '-'}</span>
+       </div>
+       <div>
+        <span className="text-[9px] uppercase font-bold text-slate-500 block">Nơi cấp</span>
+        <span>{selectedEmployee.identityCardPlace || '-'}</span>
+       </div>
+      </div>
+     )}
+    </div>
+
+    <div className="border-b border-slate-200 pb-3 space-y-2">
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Thông tin liên lạc</span>
+      <div className="space-y-1.5 mt-1 text-slate-800 font-medium">
+       <p className="flex items-center gap-1.5"><Smartphone className="w-3.5 h-3.5 text-slate-500"/> SĐT: {selectedEmployee.personalPhone || selectedEmployee.phone || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</p>
+       <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-500"/> Email: {selectedEmployee.personalEmail || selectedEmployee.email || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</p>
+      </div>
+     </div>
+    </div>
+
+    <div className="border-b border-slate-200 pb-3 space-y-2">
+     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Địa chỉ liên hệ</span>
+     <div className="space-y-2 text-slate-800 font-medium leading-relaxed">
+      <div>
+       <span className="text-[9px] uppercase font-bold text-slate-400 block">Quê quán / Thường trú</span>
+       <p className="text-xs text-slate-700">{selectedEmployee.permanentAddress || <span className="text-slate-400 italic">Chưa cập nhật</span>}</p>
+      </div>
+      <div>
+       <span className="text-[9px] uppercase font-bold text-slate-400 block">Nơi ở hiện tại</span>
+       <p className="text-xs text-slate-700">{selectedEmployee.currentAddress || <span className="text-slate-400 italic">Chưa cập nhật</span>}</p>
+      </div>
+     </div>
+    </div>
+
+    <div className="border-b border-slate-200 pb-3 space-y-2">
+     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Tài khoản ngân hàng</span>
+     {selectedEmployee.bankAccountNo ? (
+      <div className="bg-slate-100 p-2.5 rounded-lg border border-slate-200 text-xs">
+       <p className="font-bold text-slate-900 font-mono tracking-wider">{selectedEmployee.bankAccountNo}</p>
+       <p className="text-slate-600 font-semibold mt-0.5">{selectedEmployee.bankName} - {selectedEmployee.bankAccountName}</p>
+      </div>
+     ) : (
+      <span className="text-slate-400 italic text-xs block">Chưa cập nhật thông tin tài khoản</span>
+     )}
+    </div>
+
+    <div className="grid grid-cols-2 gap-4 border-b border-slate-200 pb-3">
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Mã số thuế</span>
+      <span className="font-semibold font-mono text-slate-700">{selectedEmployee.taxCode || <span className="text-slate-400 italic text-xs font-sans">Chưa cập nhật</span>}</span>
+     </div>
+     <div>
+      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Số BHXH</span>
+      <span className="font-semibold font-mono text-slate-700">{selectedEmployee.socialInsuranceNo || <span className="text-slate-400 italic text-xs font-sans">Chưa cập nhật</span>}</span>
+     </div>
+    </div>
+
+    <div className="space-y-2">
+     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Liên hệ khẩn cấp</span>
+     {selectedEmployee.emergencyName ? (
+      <div className="text-xs space-y-1 bg-amber-500/5 p-2.5 rounded-lg border border-amber-500/10 text-slate-800">
+       <p className="font-bold">{selectedEmployee.emergencyName} <span className="text-slate-500 font-medium">({selectedEmployee.emergencyRelation})</span></p>
+       <p className="font-mono text-slate-600">{selectedEmployee.emergencyPhone}</p>
+      </div>
+     ) : (
+      <span className="text-slate-400 italic text-xs block">Chưa cập nhật liên hệ khẩn cấp</span>
+     )}
+    </div>
+   </div>
+  </div>
  {/* Roles - Admin only */}
  {isAdmin && (
  <div className="space-y-6">
@@ -2780,6 +3543,21 @@ export function HumanResources() {
  </div>
  </motion.div>
  </div>
+ )}
+ </AnimatePresence>
+
+ {/* Add/Edit Employee Modal */}
+ <AnimatePresence>
+ {showEmployeeModal && (
+  <EmployeeDetailModal
+   show={showEmployeeModal}
+   employee={editingEmployee}
+   onClose={() => {
+    setShowEmployeeModal(false);
+    setEditingEmployee(null);
+   }}
+   onSave={handleSaveEmployee}
+  />
  )}
  </AnimatePresence>
  </div>

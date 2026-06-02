@@ -48,7 +48,8 @@ try {
 
 export const db = firestoreInstance;
 
-const googleProvider = new GoogleAuthProvider();
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('https://www.googleapis.com/auth/calendar.events');
 
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const signIn = signInWithEmailAndPassword;

@@ -251,6 +251,24 @@ export interface Employee {
  role?: 'Admin' | 'Quản lý' | 'Nhân viên';
  permissions?: Record<string, { read: boolean; create: boolean; update: boolean; delete: boolean }>;
  teamId?: string;
+ // Personal details
+ gender?: 'Nam' | 'Nữ' | 'Khác';
+ dateOfBirth?: string;
+ identityCard?: string;
+ identityCardDate?: string;
+ identityCardPlace?: string;
+ permanentAddress?: string;
+ currentAddress?: string;
+ personalEmail?: string;
+ personalPhone?: string;
+ bankAccountNo?: string;
+ bankName?: string;
+ bankAccountName?: string;
+ taxCode?: string;
+ socialInsuranceNo?: string;
+ emergencyName?: string;
+ emergencyPhone?: string;
+ emergencyRelation?: string;
 }
 
 export interface Team {
