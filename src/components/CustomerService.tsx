@@ -1,4 +1,18 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { 
+  BarChart, 
+  Bar, 
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
+import { LayoutGrid as LayoutGridIcon } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
  Headphones, 
@@ -75,7 +89,104 @@ const MOCK_CAMPAIGNS = [
 
 // --- COMPONENT ---
 export function CustomerService() {
- const [activeTab, setActiveTab] = useState<'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents'>('tickets');
+ const [activeTab, setActiveTab] = useState<'dashboard' | 'tickets' | 'campaigns' | 'feedback' | 'chat' | 'calls' | 'config' | 'livechat' | 'agents'>('dashboard');
+
+ // Real-time SLA & Distribution States
+ const [dashboardChannel, setDashboardChannel] = useState<string>('all');
+ const [dashboardPriority, setDashboardPriority] = useState<string>('all');
+ const [liveTicketResolvedCount, setLiveTicketResolvedCount] = useState<number>(384);
+ const [isSimulatingTicket, setIsSimulatingTicket] = useState<boolean>(false);
+ const [successToast, setSuccessToast] = useState<string | null>(null);
+ const [activeAlerts, setActiveAlerts] = useState<any[]>([
+   { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', priority: 'high', channel: 'shopee', waitingTime: '24 phút', sentiment: 'critical' },
+   { id: 'TKT-1039', customerName: 'Phạm D', subject: 'Cần đổi size áo', priority: 'medium', channel: 'facebook', waitingTime: '18 phút', sentiment: 'neutral' },
+   { id: 'TKT-1041', customerName: 'Trần Thị B', subject: 'Hỏi về thời gian bảo hành', priority: 'medium', channel: 'zalo', waitingTime: '15 phút', sentiment: 'neutral' },
+   { id: 'TKT-1040', customerName: 'Lê Văn C', subject: 'Lỗi thanh toán Momo', priority: 'high', channel: 'web', waitingTime: '32 phút', sentiment: 'negative' },
+ ]);
+
+ const simulateNewTicket = () => {
+   setIsSimulatingTicket(true);
+   setTimeout(() => {
+     const customers = ['Đặng Văn Lâm', 'Nguyễn Thị Tuyết', 'Hồ Hoài Nam', 'Phạm Quỳnh Anh'];
+     const issues = ['Hỏi về mã khuyến mãi giảm 20%', 'Sản phẩm giao bị thiếu quà tặng', 'Lỗi thanh toán ngân hàng báo thành công nhưng app báo chờ', 'Tư vấn đóng gói quà sinh nhật'];
+     const channels = ['facebook', 'zalo', 'web', 'shopee'];
+     const priorities = ['high', 'medium', 'low'];
+     const sentiments = ['critical', 'neutral', 'negative'];
+
+     const randomCustomer = customers[Math.floor(Math.random() * customers.length)];
+     const randomIssue = issues[Math.floor(Math.random() * issues.length)];
+     const randomChannel = channels[Math.floor(Math.random() * channels.length)];
+     const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
+     const randomSentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
+     const id = 'TKT-' + (1043 + Math.floor(Math.random() * 100));
+
+     const newAlert = {
+       id,
+       customerName: randomCustomer,
+       subject: randomIssue,
+       priority: randomPriority,
+       channel: randomChannel,
+       waitingTime: '1 phút',
+       sentiment: randomSentiment,
+       createdAt: 'Vừa xong',
+       type: 'complaint'
+     };
+
+     setActiveAlerts(prev => [newAlert, ...prev]);
+     setLiveTicketResolvedCount(prev => prev + 1);
+     setSuccessToast(`Nhận thành công Ticket mới ${id} từ ${randomCustomer}!`);
+     setIsSimulatingTicket(false);
+
+     setTimeout(() => {
+       setSuccessToast(null);
+     }, 4000);
+   }, 800);
+ };
+
+ const getSlaDistribution = () => {
+   let modifier = 1.0;
+   if (dashboardChannel === 'facebook') modifier *= 0.35;
+   else if (dashboardChannel === 'zalo') modifier *= 0.28;
+   else if (dashboardChannel === 'web') modifier *= 0.20;
+   else if (dashboardChannel === 'shopee') modifier *= 0.17;
+
+   if (dashboardPriority === 'high') modifier *= 0.30;
+   else if (dashboardPriority === 'medium') modifier *= 0.45;
+   else if (dashboardPriority === 'low') modifier *= 0.25;
+
+   const ratioFast = dashboardPriority === 'high' ? 1.35 : dashboardPriority === 'low' ? 0.75 : 1.0;
+   const ratioSlow = dashboardPriority === 'high' ? 0.45 : dashboardPriority === 'low' ? 1.45 : 1.0;
+
+   return [
+     { range: '< 5 phút', count: Math.round(184 * modifier * ratioFast), label: 'Xuất sắc', color: '#10B981', desc: 'Đạt SLA tối ưu' },
+     { range: '5-15 phút', count: Math.round(112 * modifier * ratioFast), label: 'Đạt SLA', color: '#34D399', desc: 'Đạt SLA tiêu chuẩn' },
+     { range: '15-30 phút', count: Math.round(54 * modifier), label: 'Cảnh báo', color: '#FBBF24', desc: 'Vượt SLA nhẹ' },
+     { range: '30-60 phút', count: Math.round(24 * modifier * ratioSlow), label: 'Vi phạm', color: '#F97316', desc: 'Vi phạm SLA cấp 1' },
+     { range: '1-2 giờ', count: Math.round(8 * modifier * ratioSlow), label: 'Nghiêm trọng', color: '#EF4444', desc: 'Vi phạm SLA cấp 2' },
+     { range: '> 2 giờ', count: Math.round(2 * modifier * ratioSlow), label: 'Bỏ lỡ', color: '#B91C1C', desc: 'Bỏ qua ticket' },
+   ].map(item => ({
+     ...item,
+     count: Math.max(0, item.count)
+   }));
+ };
+
+ const dashboardData = getSlaDistribution();
+
+ const CustomTooltip = ({ active, payload }: any) => {
+   if (active && payload && payload.length) {
+     const data = payload[0].payload;
+     return (
+       <div className="bg-slate-900 text-white p-3 rounded-lg border border-slate-700 shadow-xl text-left text-xs space-y-1">
+         <p className="font-extrabold text-[#F59E0B]">{data.range}</p>
+         <p className="font-semibold text-slate-100">Vé đã xử lý: <strong className="text-[#FAF9F5] text-sm">{data.count}</strong></p>
+         <p className="text-slate-300">Đánh giá: <span className="font-bold uppercase tracking-wider" style={{ color: data.color }}>{data.label}</span></p>
+         <p className="text-slate-400 text-[10px] italic">{data.desc}</p>
+       </div>
+     );
+   }
+   return null;
+ };
+
  const [roleScope, setRoleScope] = useState<'platform' | 'seller'>('platform');
  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
  const [aiDrafting, setAiDrafting] = useState(false);
@@ -173,7 +284,7 @@ export function CustomerService() {
  </p>
  </div>
  <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+ <button onClick={() => setActiveTab('dashboard')} className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
  <BarChart2 className="w-4 h-4 text-emerald-600" />
  Báo cáo SLA
  </button>
@@ -203,7 +314,10 @@ export function CustomerService() {
  <Clock className="w-4 h-4 text-orange-600" />
  </div>
  <p className="text-3xl font-bold text-slate-900 relative z-10">14 <span className="text-sm font-medium text-slate-600">phút</span></p>
- <div className="mt-2 text-[10px] text-emerald-500 font-medium">Nhanh hơn 5p so với tuần trước</div>
+ <div className="flex justify-between items-center mt-2 group/btn">
+					<div className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Nhanh hơn 5p so với tuần trước</div>
+					<button onClick={(e) => { e.stopPropagation(); setActiveTab('dashboard'); }} className="text-[10px] text-primary-600 font-extrabold hover:underline flex items-center gap-0.5 transition-all">Biểu đồ &rarr;</button>
+				</div>
  </div>
 
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
@@ -231,6 +345,12 @@ export function CustomerService() {
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
  {/* Navigation Tabs */}
  <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
+  <button 
+    onClick={() => setActiveTab('dashboard')}
+    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'dashboard' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+    <LayoutGridIcon className="w-4 h-4" /> Tổng quan Dashboard
+  </button>
  <button 
  onClick={() => setActiveTab('tickets')}
  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
@@ -300,7 +420,290 @@ export function CustomerService() {
 
  {/* Content by Tab */}
  <div className="flex-1 overflow-x-auto min-w-0">
- {activeTab === 'tickets' && (
+ {activeTab === 'dashboard' && (
+		<div className="p-6 space-y-6 bg-[#FAF9F5] min-h-[600px] overflow-y-auto">
+			{/* Dashboard Top Alerts */}
+			{successToast && (
+				<div className="bg-emerald-600 text-white p-3 rounded-lg shadow-lg flex items-center justify-between text-sm animate-bounce font-bold tracking-tight">
+					<span>✓ {successToast}</span>
+					<button onClick={() => setSuccessToast(null)} className="text-white hover:text-emerald-100 text-xs uppercase font-bold ml-4">Đóng</button>
+				</div>
+			)}
+
+			<div className="flex flex-col lg:flex-row gap-6 items-start">
+				{/* Left: Distribution Bar Chart Component */}
+				<div className="w-full lg:w-2/3 bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-6">
+					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
+						<div>
+							<h3 className="text-base font-bold text-slate-900 flex items-center gap-2 font-sans">
+								<Clock className="w-5 h-5 text-indigo-600 animate-pulse" />
+								Phân phối Thời gian Phản hồi (Response Time Distribution)
+							</h3>
+							<p className="text-xs text-slate-500 mt-1 font-medium font-sans">Theo dõi thời gian khách chờ nhận phản hồi đầu tiên (FCR/FRT) thời gian thực.</p>
+						</div>
+
+						{/* Real-time Indicator Badge */}
+						<div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-50 border border-red-100 text-[10px] font-extrabold text-red-600 animate-pulse shrink-0 font-sans">
+							<span className="w-2 h-2 rounded-full bg-red-500" />
+							REAL-TIME MONITORING
+						</div>
+					</div>
+
+					{/* Filters Row Inside Chart */}
+					<div className="flex flex-wrap items-center gap-4 bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs font-sans">
+						<div className="flex items-center gap-2">
+							<span className="font-bold text-slate-600">Kênh Tiếp Nhận:</span>
+							<select 
+								value={dashboardChannel} 
+								onChange={(e) => setDashboardChannel(e.target.value)}
+								className="bg-white border border-slate-300 rounded-md px-2.5 py-1.5 font-bold text-slate-800 focus:ring-2 focus:ring-primary-500/20 shadow-sm"
+							>
+								<option value="all">Tất cả Kênh ({liveTicketResolvedCount - 300}+ vé)</option>
+								<option value="facebook">Facebook Messenger</option>
+								<option value="zalo">Zalo OA</option>
+								<option value="web">Website Chat widget</option>
+								<option value="shopee">Shopee Chat</option>
+							</select>
+						</div>
+
+						<div className="flex items-center gap-2">
+							<span className="font-bold text-slate-600">Mức Độ Ưu Tiên:</span>
+							<select 
+								value={dashboardPriority} 
+								onChange={(e) => setDashboardPriority(e.target.value)}
+								className="bg-white border border-slate-300 rounded-md px-2.5 py-1.5 font-bold text-slate-800 focus:ring-2 focus:ring-primary-500/20 shadow-sm"
+							>
+								<option value="all">Tất cả Độ Ưu Tiên</option>
+								<option value="high">Cao (Gấp)</option>
+								<option value="medium">Trung bình</option>
+								<option value="low">Thấp</option>
+							</select>
+						</div>
+
+						<div className="ml-auto flex items-center gap-2 max-sm:w-full max-sm:justify-between">
+							<span className="text-[11px] font-mono font-bold text-slate-500">Đăng ký tự động:</span>
+							<button 
+								onClick={() => simulateNewTicket()}
+								disabled={isSimulatingTicket}
+								className={cn(
+									"px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer",
+									isSimulatingTicket ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-orange-600 text-white hover:bg-orange-700"
+								)}
+							>
+								{isSimulatingTicket ? (
+									<>
+										<Loader2 className="w-3 h-3 animate-spin" />
+										Đang tạo...
+									</>
+								) : (
+									<>
+										<Plus className="w-3 h-3" />
+										Giả lập Ticket Mới (+1)
+									</>
+								)}
+							</button>
+						</div>
+					</div>
+
+					{/* Recharts Bar Chart Container */}
+					<div className="h-[280px] w-full bg-white relative">
+						<ResponsiveContainer width="100%" height="100%">
+							<BarChart data={dashboardData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+								<defs>
+									<linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+										<stop offset="0%" stopColor="#4F46E5" stopOpacity={0.85}/>
+										<stop offset="100%" stopColor="#4F46E5" stopOpacity={0.4}/>
+									</linearGradient>
+								</defs>
+								<CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+								<XAxis 
+									dataKey="range" 
+									stroke="#64748B" 
+									fontSize={11} 
+									fontWeight="bold" 
+									tickLine={false} 
+									axisLine={false} 
+								/>
+								<YAxis 
+									stroke="#64748B" 
+									fontSize={11} 
+									fontWeight="bold" 
+									tickLine={false} 
+									axisLine={false} 
+									allowDecimals={false}
+								/>
+								<Tooltip content={<CustomTooltip />} cursor={{ fill: '#F8FAFC', opacity: 0.6 }} />
+								<Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={44}>
+									{dashboardData.map((entry, index) => (
+										<Cell key={`cell-${index}`} fill={entry.color} />
+									))}
+								</Bar>
+							</BarChart>
+						</ResponsiveContainer>
+					</div>
+
+					{/* Custom Legend / Guide */}
+					<div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-4 border-t border-slate-100 text-center text-[10px] font-bold text-slate-600 uppercase tracking-wider font-sans">
+						{dashboardData.map((item, idx) => (
+							<div key={idx} className="p-2 rounded bg-slate-50 border border-slate-200/60 flex flex-col items-center justify-center gap-1">
+								<span className="w-3 h-1.5 rounded" style={{ backgroundColor: item.color }} />
+								<span>{item.range}</span>
+								<span className="text-slate-900 text-xs font-black">{item.count} vé</span>
+							</div>
+						))}
+					</div>
+				</div>
+
+				{/* Right: Operational Statistics & Live Actions */}
+				<div className="w-full lg:w-1/3 space-y-6 font-sans">
+					{/* Status Stats Summary */}
+					<div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4">
+						<h4 className="text-sm font-bold text-slate-800 uppercase tracking-widest pb-2 border-b border-slate-150 flex items-center gap-2">
+							<Sparkles className="w-4 h-4 text-primary-500" />
+							Chỉ Số SLA Chốt Hôm Nay
+						</h4>
+						<div className="space-y-3.5">
+							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
+								<div>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Tỷ Lệ Đạt SLA</p>
+									<p className="text-2xl font-black text-emerald-600 font-sans">92.5%</p>
+								</div>
+								<div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-extrabold font-mono border border-emerald-100">
+									Mục tiêu: 90%
+								</div>
+							</div>
+
+							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
+								<div>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Xử Lý Trung Bình (ART)</p>
+									<p className="text-2xl font-black text-indigo-700 font-sans">11.8 phút</p>
+								</div>
+								<div className="p-2 bg-indigo-50 text-indigo-100 rounded-lg text-xs font-extrabold font-mono border border-indigo-100">
+									Hạn định: 15p
+								</div>
+							</div>
+
+							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
+								<div>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Tổng Vé Đã Đóng</p>
+									<p className="text-2xl font-black text-slate-800 font-sans">{liveTicketResolvedCount}</p>
+								</div>
+								<div className="p-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-extrabold font-mono font-sans">
+									Hôm nay
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Routing and Live Support Tip */}
+					<div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-5 rounded-xl text-[#FAF9F5] shadow-lg relative overflow-hidden border border-slate-700">
+						<div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl" />
+						<div className="relative z-15">
+							<div className="flex items-center gap-1.5 text-xs font-bold text-[#E2E8F0] uppercase tracking-widest mb-2 font-sans">
+								<Zap className="w-3.5 h-3.5 text-amber-400" />
+								Tip Tự động hóa CSKH
+							</div>
+							<h5 className="text-sm font-bold leading-snug mb-1 font-sans">Thiết lập quy tắc định tuyến tự động!</h5>
+							<p className="text-xs text-[#94A3B8] leading-relaxed font-medium font-sans">Bố trí chia đều các Ticket có dải phản hồi chạm mức vi phạm SLA để đảm bảo trải nghiệm người dùng khẩn trương.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* SLA Violations warnings table (Actionable Warnings) */}
+			<div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden font-sans">
+				<div className="p-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4 bg-slate-50/70">
+					<div>
+						<h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+							<AlertCircle className="w-5 h-5 text-red-600 animate-pulse" />
+							Danh sách Vé Chờ Quá Hạn Phản Hồi SLA (Cần xử lý khẩn cấp)
+						</h4>
+						<p className="text-xs text-slate-500 mt-1 font-medium text-slate-600">Chi tiết các Ticket có thời gian phản hồi đang chạm dải cảnh báo. Nhấp "Xử lý khẩn" để viết mẫu trả lời AI và hoàn tất gửi ngay.</p>
+					</div>
+
+					<div className="px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-100 font-bold text-xs text-orange-700 font-mono">
+						Đang vi phạm: {activeAlerts.length} ticket(s)
+					</div>
+				</div>
+
+				<div className="overflow-x-auto min-w-0">
+					<table className="w-full text-left border-collapse whitespace-nowrap">
+						<thead>
+							<tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+								<th className="px-6 py-4">Mã Vé</th>
+								<th className="px-6 py-4">Khách Hàng</th>
+								<th className="px-6 py-4">Chủ Đề Yêu Cầu</th>
+								<th className="px-6 py-4 text-center">Độ Ưu Tiên</th>
+								<th className="px-6 py-4 text-center">Thực Tế Đã Đợi</th>
+								<th className="px-6 py-4 text-center">Cực Đoán</th>
+								<th className="px-6 py-4 text-right">Thao Tác</th>
+							</tr>
+						</thead>
+						<tbody className="divide-y divide-slate-100 divide-dotted text-sm">
+							{activeAlerts.map(alert => (
+								<tr key={alert.id} className="hover:bg-slate-50/70 transition-colors">
+									<td className="px-6 py-4 font-mono font-bold text-slate-700 text-xs">{alert.id}</td>
+									<td className="px-6 py-4">
+										<div className="font-bold text-slate-900">{alert.customerName}</div>
+										<div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+											{alert.channel === 'facebook' ? <span className="text-blue-600 font-bold">Facebook</span> : 
+											 alert.channel === 'zalo' ? <span className="text-sky-600 font-bold">Zalo</span> : 
+											 alert.channel === 'shopee' ? <span className="text-orange-600 font-bold">Shopee</span> : 
+											 <span className="text-emerald-600 font-bold font-sans">Web Engine</span>}
+										</div>
+									</td>
+									<td className="px-6 py-4">
+										<div className="font-bold text-slate-800 truncate max-w-sm">{alert.subject}</div>
+									</td>
+									<td className="px-6 py-4 text-center">
+										<span className={cn(
+											"px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border",
+											alert.priority === 'high' ? "border-red-200 text-red-700 bg-red-50" : "border-slate-300 text-slate-600"
+										)}>
+											{alert.priority === 'high' ? 'Khẩn cấp' : 'Bình thường'}
+										</span>
+									</td>
+									<td className="px-6 py-4 text-center">
+										<span className="font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-md text-xs font-mono select-none animate-pulse">
+											{alert.waitingTime} ⏳
+										</span>
+									</td>
+									<td className="px-6 py-4 text-center">
+										<span className={cn(
+											"inline-flex w-2.5 h-2.5 rounded-full",
+											alert.sentiment === 'critical' ? 'bg-red-500 animate-ping' : 'bg-slate-400'
+										)} title={alert.sentiment} />
+									</td>
+									<td className="px-6 py-4 text-right">
+										<button 
+											onClick={() => {
+												setSelectedTicket({
+													id: alert.id,
+													customerName: alert.customerName,
+													subject: alert.subject,
+													status: 'open',
+													priority: alert.priority,
+													type: alert.type || 'complaint',
+													createdAt: alert.createdAt,
+													sentiment: alert.sentiment
+												});
+											}}
+											className="px-3.5 py-1.5 bg-red-600 text-white rounded-lg text-xs font-extrabold hover:bg-slate-900 shadow-sm transition-all flex items-center gap-1.5 ml-auto cursor-pointer"
+										>
+											<Zap className="w-3 h-3" />
+											Xử lý khẩn
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	)}
+
+{activeTab === 'tickets' && (
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">

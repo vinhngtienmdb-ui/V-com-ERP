@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, Filter, AlertCircle, FileText, Truck } from 'lucide-react';
+import { ShoppingBag, Search, Filter, AlertCircle, FileText, Truck, Printer } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
+import { QuickPrintModal } from './QuickPrintModal';
 
 export function IPosOrders({ activeStore }: { activeStore: any }) {
   const [tab, setTab] = useState<'all' | 'pending' | 'shipping' | 'completed' | 'issues' | 'history'>('all');
+  const [printingOrder, setPrintingOrder] = useState<any | null>(null);
   
   return (
     <div className="col-span-12 flex-1 bg-slate-50 overflow-hidden flex flex-col h-full animate-in fade-in duration-300">
@@ -88,7 +90,28 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
                                </td>
                                <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(150000 * i)}</td>
                                <td className="px-4 py-4 text-center space-x-2">
-                                   <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
+                                   <button 
+                                      onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        setPrintingOrder({
+                                          id: `ORD-00${i}`,
+                                          customerName: `Khách hàng ${i}`,
+                                          date: new Date().toLocaleString('vi-VN'),
+                                          total: 150000 * i,
+                                          paymentMethod: i % 2 === 0 ? 'cash' : 'qr',
+                                          status: i % 3 === 0 ? 'pending' : 'delivered',
+                                          items: [
+                                            { name: `Sản phẩm mẫu ${i}A`, price: 100000 },
+                                            { name: `Sản phẩm mẫu ${i}B`, price: 50000 * (i - 1) || 50000 }
+                                          ]
+                                        }); 
+                                      }}
+                                      className="p-1.5 bg-white border border-slate-300 text-slate-600 rounded hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition-colors shadow-sm" 
+                                      title="In nhanh Biên lai"
+                                    >
+                                      <Printer className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>
                                </td>
                            </tr>
@@ -99,6 +122,13 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
              )}
          </div>
       </div>
+
+      {printingOrder && (
+        <QuickPrintModal 
+          order={printingOrder}
+          onClose={() => setPrintingOrder(null)}
+        />
+      )}
     </div>
   );
 }

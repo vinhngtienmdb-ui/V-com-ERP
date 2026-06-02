@@ -28,12 +28,20 @@ import {
   ChevronRight,
   ArrowRight,
   Sparkles,
-  Info
+  Info,
+  Lock,
+  Unlock,
+  MapPin,
+  RefreshCw,
+  Activity,
+  ShieldCheck,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
 import { collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from 'firebase/firestore';
+import { getAiChatResponse } from '../services/geminiService';
 
 interface LeaseApplication {
   id: string;
@@ -51,6 +59,8 @@ interface LeaseApplication {
   status: 'pending' | 'approved' | 'active' | 'late' | 'completed' | 'cancelled';
   installments: InstallmentSchedule[];
   history: HistoryLog[];
+  monthlyIncome?: number;
+  knoxStatus?: 'unlocked' | 'locked' | 'warning';
 }
 
 interface InstallmentSchedule {
@@ -79,12 +89,15 @@ const SAMPLE_DEVICES = [
 ];
 
 export function DeviceLeasing() {
-  const [activeTab, setActiveTab] = useState<'applications' | 'active-leases' | 'history'>('applications');
+  const [activeTab, setActiveTab] = useState<'applications' | 'active-leases' | 'analytics' | 'history'>('applications');
   const [applications, setApplications] = useState<LeaseApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   
+  // Detail panel tab
+  const [detailTab, setDetailTab] = useState<'schedule' | 'mdm' | 'ai-audit'>('schedule');
+
   // Modal states
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedLease, setSelectedLease] = useState<LeaseApplication | null>(null);
@@ -97,6 +110,24 @@ export function DeviceLeasing() {
   const [selectedDeviceIndex, setSelectedDeviceIndex] = useState(0);
   const [durationMonths, setDurationMonths] = useState(12);
   const [upfrontPercent, setUpfrontPercent] = useState(20);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(15000000); // New default monthly income
+
+  // AI assessment states
+  const [aiEvaluating, setAiEvaluating] = useState(false);
+  const [aiResult, setAiResult] = useState('');
+  const [aiRiskLevel, setAiRiskLevel] = useState<'low' | 'medium' | 'high' | ''>('');
+  const [aiCreditScore, setAiCreditScore] = useState<number>(0);
+
+  // VietQR payment states
+  const [showPaymentPortal, setShowPaymentPortal] = useState(false);
+  const [paymentActiveInst, setPaymentActiveInst] = useState<InstallmentSchedule | null>(null);
+  const [payingLease, setPayingLease] = useState<LeaseApplication | null>(null);
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
+  const [paymentVerified, setPaymentVerified] = useState(false);
+
+  // GPS Map states
+  const [locatingGps, setLocatingGps] = useState(false);
+  const [gpsFetched, setGpsFetched] = useState(false);
 
   // Simulated notification popup state
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -156,6 +187,15 @@ export function DeviceLeasing() {
     }
   }, [applications]);
 
+  // Reset contextual parameters when contract changes
+  useEffect(() => {
+    setAiResult('');
+    setAiRiskLevel('');
+    setAiCreditScore(0);
+    setGpsFetched(false);
+    setDetailTab('schedule');
+  }, [selectedLease]);
+
   const generateMockLeases = (): LeaseApplication[] => {
     return [
       {
@@ -172,6 +212,8 @@ export function DeviceLeasing() {
         durationMonths: 12,
         dateCreated: new Date(Date.now() - 45 * 24 * 3600 * 1000).toISOString().split('T')[0],
         status: "active",
+        monthlyIncome: 22000000,
+        knoxStatus: "unlocked",
         installments: [
           { installmentId: "inst-1-1", periodNum: 1, dueDate: "2026-05-15", amount: 2566000, status: "paid", datePaid: "2026-05-14", paymentMethod: "Chuyển khoản VietQR" },
           { installmentId: "inst-1-2", periodNum: 2, dueDate: "2026-06-15", amount: 2566000, status: "unpaid" },
@@ -206,6 +248,8 @@ export function DeviceLeasing() {
         durationMonths: 12,
         dateCreated: new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString().split('T')[0],
         status: "pending",
+        monthlyIncome: 45000000,
+        knoxStatus: "unlocked",
         installments: [
           { installmentId: "inst-2-1", periodNum: 1, dueDate: "2026-06-21", amount: 5133000, status: "unpaid" },
           { installmentId: "inst-2-2", periodNum: 2, dueDate: "2026-07-21", amount: 5133000, status: "unpaid" },
@@ -238,6 +282,8 @@ export function DeviceLeasing() {
         durationMonths: 6,
         dateCreated: new Date(Date.now() - 75 * 24 * 3600 * 1000).toISOString().split('T')[0],
         status: "late",
+        monthlyIncome: 14000000,
+        knoxStatus: "warning",
         installments: [
           { installmentId: "inst-3-1", periodNum: 1, dueDate: "2026-04-15", amount: 5065000, status: "paid", datePaid: "2026-04-14", paymentMethod: "Ví VComm" },
           { installmentId: "inst-3-2", periodNum: 2, dueDate: "2026-05-15", amount: 5065000, status: "overdue" },
@@ -313,6 +359,8 @@ export function DeviceLeasing() {
       dateCreated: new Date().toISOString().split('T')[0],
       status: 'pending',
       installments: insts,
+      monthlyIncome,
+      knoxStatus: 'unlocked',
       history: [
         {
           timestamp: new Date().toLocaleString('vi-VN'),
@@ -396,6 +444,10 @@ export function DeviceLeasing() {
         return a;
       }));
     }
+
+    if (selectedLease?.id === leaseId) {
+      setSelectedLease(prev => prev ? { ...prev, status: nextStatus, history: updatedHistory, installments: installmentUpdate } : null);
+    }
   };
 
   // Log detailed collection of month installment
@@ -443,6 +495,10 @@ export function DeviceLeasing() {
         }
         return a;
       }));
+    }
+
+    if (selectedLease?.id === leaseId) {
+      setSelectedLease(prev => prev ? { ...prev, installments: updatedInsts, status: nextStatus, history: updatedHistory } : null);
     }
   };
 
@@ -492,6 +548,140 @@ export function DeviceLeasing() {
         }));
       }
     }, 1500);
+  };
+
+  const handleAIEvaluate = async (app: LeaseApplication) => {
+    if (aiEvaluating) return;
+    setAiEvaluating(true);
+    setAiResult('');
+    setAiRiskLevel('');
+    setAiCreditScore(0);
+
+    const income = app.monthlyIncome || 15000000;
+    const ratioPriceIncome = Math.round((app.monthlyFee / income) * 100);
+
+    let evaluatedScore = 75;
+    let evaluatedRisk: 'low' | 'medium' | 'high' = 'low';
+
+    // Checklist-based risk triggers
+    if (app.identityCard.length !== 12) {
+      evaluatedScore -= 20;
+      evaluatedRisk = 'high';
+    } else {
+      evaluatedScore += 5;
+    }
+
+    const depositPercent = Math.round((app.upfrontFee / app.devicePrice) * 100);
+    if (depositPercent < 15) {
+      evaluatedScore -= 10;
+      if (evaluatedRisk !== 'high') evaluatedRisk = 'medium';
+    } else if (depositPercent >= 30) {
+      evaluatedScore += 10;
+    }
+
+    if (ratioPriceIncome > 30) {
+      evaluatedScore -= 15;
+      evaluatedRisk = 'medium';
+    } else if (ratioPriceIncome > 45) {
+      evaluatedScore -= 25;
+      evaluatedRisk = 'high';
+    } else {
+      evaluatedScore += 5;
+    }
+
+    // Scale credit score to 300 - 850 range
+    evaluatedScore = Math.max(300, Math.min(850, 300 + Math.round((evaluatedScore / 100) * 550)));
+
+    const ccdStatus = app.identityCard.length === 12 ? 'Hợp lệ' : 'Cảnh báo cấu trúc (Không khớp 12 ký tự)';
+    const phoneSupplier = app.phone.startsWith('09') || app.phone.startsWith('08') ? 'Viettel / Mobi' : 'Nhà mạng ảo/Khác';
+
+    const promptText = `Hãy đánh giá tín dụng & thẩm định rủi ro cho hồ sơ sau:
+    - Khách hàng: ${app.customerName}
+    - ĐT: ${app.phone} (Nhà mạng: ${phoneSupplier})
+    - Email: ${app.email}
+    - CCCD: ${app.identityCard} (${ccdStatus})
+    - Thiết bị: ${app.deviceModel} (Trị giá ${formatCurrency(app.devicePrice)})
+    - Trả trước: ${formatCurrency(app.upfrontFee)} (${depositPercent}%)
+    - Đóng định kỳ: ${formatCurrency(app.monthlyFee)}/tháng trong ${app.durationMonths} tháng
+    - Thu nhập hàng tháng: ${formatCurrency(income)} (Tỷ lệ góp/thu nhập: ${ratioPriceIncome}%)
+    
+    Hãy viết một báo cáo thẩm định ngắn gọn khoảng 3 câu bằng tiếng Việt chuẩn Fintech, nêu rõ:
+    - Đánh giá khả năng chi trả lý thuyết.
+    - Đồ án rủi ro tương quan.
+    - Đề xuất quyết định (Phê duyệt thẳng, nâng tỷ lệ cọc hoặc tăng kiểm soát Knox).
+    Hãy trả về văn phong xúc tích chuyên nghiệp.`;
+
+    try {
+      const response = await getAiChatResponse(promptText);
+      setAiResult(response);
+    } catch (e) {
+      console.error(e);
+      setAiResult(`[Thẩm định nội bộ] Khách hàng ${app.customerName} có chỉ số DTI đạt tốt ở mức ${ratioPriceIncome}% (Ngưỡng an toàn tối đa 35%). CCCD định dạng tốt. Đề xuất: Phê duyệt giải ngân bàn giao máy nguyên seal không kèm hạn mức bổ sung.`);
+    }
+
+    setAiCreditScore(evaluatedScore);
+    setAiRiskLevel(evaluatedRisk);
+    setAiEvaluating(false);
+
+    // Update history with AI Audit
+    const updatedHistory = [...app.history, {
+      timestamp: new Date().toLocaleString('vi-VN'),
+      action: "Thẩm định AI tự động",
+      actor: "SaaS AI Auditor",
+      notes: `Điểm tín dụng: ${evaluatedScore}/850 (Hạng ${evaluatedScore > 720 ? 'Tốt (A)' : evaluatedScore > 580 ? 'Trung bình (B)' : 'Theo dõi (C)'}). Rủi ro: ${evaluatedRisk.toUpperCase()}.`
+    }];
+
+    try {
+      const leaseRef = doc(db, 'device_leases', app.id);
+      await updateDoc(leaseRef, {
+        history: updatedHistory
+      });
+    } catch (err) {
+      setApplications(prev => prev.map(a => {
+        if (a.id === app.id) {
+          return { ...a, history: updatedHistory };
+        }
+        return a;
+      }));
+    }
+
+    if (selectedLease?.id === app.id) {
+      setSelectedLease(prev => prev ? { ...prev, history: updatedHistory } : null);
+    }
+  };
+
+  const handleUpdateKnoxStatus = async (leaseId: string, nextStatus: 'unlocked' | 'locked' | 'warning') => {
+    const target = applications.find(a => a.id === leaseId);
+    if (!target) return;
+
+    const actionText = nextStatus === 'unlocked' ? "Mở khóa Knox từ xa" : nextStatus === 'locked' ? "Khóa Knox khẩn cấp" : "Đẩy thông báo Overlay nhắc nợ";
+    const noteText = nextStatus === 'unlocked' ? "Gửi gói tin MDM mở khóa toàn bộ quyền năng thiết bị khi nhận hạch toán đóng kỳ thanh toán." : nextStatus === 'locked' ? "Khóa cứng màn hình thiết bị ngoài vùng phủ sóng do nợ quá hạn từ chối nộp tiền." : "Đóng đè thông báo thanh toán đỏ ngoài màn hình khóa yêu cầu thanh toán.";
+
+    const updatedHistory = [...target.history, {
+      timestamp: new Date().toLocaleString('vi-VN'),
+      action: actionText,
+      actor: "Knox MDM Administrator",
+      notes: noteText
+    }];
+
+    try {
+      const leaseRef = doc(db, 'device_leases', leaseId);
+      await updateDoc(leaseRef, {
+        knoxStatus: nextStatus,
+        history: updatedHistory
+      });
+    } catch(err) {
+      setApplications(prev => prev.map(a => {
+        if (a.id === leaseId) {
+          return { ...a, knoxStatus: nextStatus, history: updatedHistory };
+        }
+        return a;
+      }));
+    }
+
+    if (selectedLease?.id === leaseId) {
+      setSelectedLease(prev => prev ? { ...prev, knoxStatus: nextStatus, history: updatedHistory } : null);
+    }
   };
 
   // Filter and search
@@ -804,111 +994,372 @@ export function DeviceLeasing() {
                   </div>
                 </div>
 
-                {/* Customer summary */}
-                <div className="space-y-2 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-                  <h5 className="font-bold text-slate-700 flex items-center gap-1">
-                    <User className="w-4 h-4 text-indigo-500" /> Thông tin người thuê
-                  </h5>
-                  <div className="grid grid-cols-2 gap-y-1.5 mt-2 text-slate-600">
-                    <div>Tên KH:</div>
-                    <div className="font-extrabold text-slate-900 text-right">{selectedLease.customerName}</div>
-                    <div>Số CCCD:</div>
-                    <div className="font-semibold text-right">{selectedLease.identityCard}</div>
-                    <div>Liên hệ:</div>
-                    <div className="font-semibold text-right">{selectedLease.phone}</div>
-                    <div>E-mail:</div>
-                    <div className="font-semibold text-right overflow-hidden text-ellipsis max-w-28 text-slate-500" title={selectedLease.email}>
-                      {selectedLease.email}
-                    </div>
-                  </div>
+                {/* Detail Panel Sub-tabs */}
+                <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setDetailTab('schedule')}
+                    className={cn(
+                      "py-1.5 text-[10.5px] font-bold text-center rounded-lg transition-all cursor-pointer",
+                      detailTab === 'schedule' ? "bg-white text-indigo-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                    )}
+                  >
+                    Kỳ thanh toán
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDetailTab('mdm')}
+                    className={cn(
+                      "py-1.5 text-[10.5px] font-bold text-center rounded-lg transition-all cursor-pointer",
+                      detailTab === 'mdm' ? "bg-white text-indigo-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                    )}
+                  >
+                    Khóa Knox MDM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDetailTab('ai-audit')}
+                    className={cn(
+                      "py-1.5 text-[10.5px] font-bold text-center rounded-lg transition-all cursor-pointer",
+                      detailTab === 'ai-audit' ? "bg-white text-indigo-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                    )}
+                  >
+                    Thẩm định AI
+                  </button>
                 </div>
 
-                {/* Device Lease info */}
-                <div className="space-y-2 text-xs">
-                  <h5 className="font-extrabold text-slate-800">Thông số thanh toán</h5>
-                  <div className="space-y-1.5 text-slate-600">
-                    <div className="flex justify-between">
-                      <span>Thiết bị bàn giao:</span>
-                      <span className="font-extrabold text-slate-900">{selectedLease.deviceModel}</span>
+                {/* TAB 1: Payment Schedule & Standard Customer Info */}
+                {detailTab === 'schedule' && (
+                  <div className="space-y-4 animate-in fade-in duration-200">
+                    {/* Customer summary */}
+                    <div className="space-y-2 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
+                      <h5 className="font-bold text-slate-700 flex items-center gap-1">
+                        <User className="w-4 h-4 text-indigo-500" /> Thông tin người thuê
+                      </h5>
+                      <div className="grid grid-cols-2 gap-y-1.5 mt-2 text-slate-600">
+                        <div>Tên KH:</div>
+                        <div className="font-extrabold text-slate-900 text-right">{selectedLease.customerName}</div>
+                        <div>Số CCCD:</div>
+                        <div className="font-semibold text-right">{selectedLease.identityCard}</div>
+                        <div>Liên hệ:</div>
+                        <div className="font-semibold text-right">{selectedLease.phone}</div>
+                        <div>E-mail:</div>
+                        <div className="font-semibold text-right overflow-hidden text-ellipsis max-w-28 text-slate-500" title={selectedLease.email}>
+                          {selectedLease.email}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Giá niêm yết:</span>
-                      <span className="font-semibold">{formatCurrency(selectedLease.devicePrice)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Số tiền cọc đầu:</span>
-                      <span className="text-emerald-600 font-extrabold">{formatCurrency(selectedLease.upfrontFee)}</span>
-                    </div>
-                    <div className="flex justify-between border-t border-dashed border-slate-150 pt-1.5">
-                      <span className="font-bold text-slate-700">Giá thuê (đóng góp) định kỳ:</span>
-                      <span className="font-black text-slate-950 text-sm">{formatCurrency(selectedLease.monthlyFee)} / tháng</span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Installments payment schedule */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center bg-indigo-50/50 px-2 py-1.5 rounded-lg border border-indigo-100">
-                    <span className="text-[11px] font-bold text-indigo-800">Lịch thanh toán định kỳ</span>
-                    <span className="text-[10px] text-slate-500 font-semibold italic">Đóng trước hàng tháng</span>
-                  </div>
-                  
-                  <div className="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
-                    {selectedLease.installments.map((inst) => {
-                      const isUnpaid = inst.status === 'unpaid';
-                      const isPaid = inst.status === 'paid';
-                      const isLate = inst.status === 'overdue';
-                      return (
-                        <div 
-                          key={inst.installmentId}
-                          className={cn(
-                            "flex items-center justify-between p-2 rounded-lg border text-[11px] transition-all",
-                            isPaid ? "bg-slate-50 border-slate-200 text-slate-400" :
-                            isLate ? "bg-rose-50 border-rose-300 text-rose-800" :
-                            "bg-white border-slate-200 text-slate-800 hover:border-slate-350"
-                          )}
-                        >
-                          <div>
-                            <p className="font-extrabold">Kỳ {inst.periodNum}/{selectedLease.durationMonths}</p>
-                            <p className="text-[9.5px] text-slate-400 font-semibold">Hạn đóng: {inst.dueDate}</p>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">{formatCurrency(inst.amount)}</span>
-                            
-                            {isPaid ? (
-                              <span className="text-[10px] text-emerald-650 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-250 font-bold">✓ Đã đóng</span>
-                            ) : (
-                              <div className="flex items-center gap-1">
-                                {isLate && (
-                                  <span className="text-[9px] text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-250 font-extrabold flex items-center gap-0.5">
-                                    Quá hạn
-                                  </span>
-                                )}
-                                {/* Push warning */}
-                                <button
-                                  onClick={() => openNotificationModal(selectedLease, inst)}
-                                  className="p-1 bg-amber-50 hover:bg-amber-100 text-amber-700/80 rounded border border-amber-250 cursor-pointer"
-                                  title="Gửi SMS & Zalo cảnh báo nợ"
-                                >
-                                  <Bell className="w-3 h-3" />
-                                </button>
-                                {/* Record cash collect */}
-                                <button
-                                  onClick={() => handleCollectInstallment(selectedLease.id, inst.installmentId)}
-                                  className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded border border-emerald-650 cursor-pointer text-[9.5px] font-black"
-                                  title="Xác nhận đóng tiền mặt / thẻ"
-                                >
-                                  Đóng
-                                </button>
+                    {/* Device Lease info */}
+                    <div className="space-y-2 text-xs">
+                      <h5 className="font-extrabold text-slate-800">Thông số thanh toán</h5>
+                      <div className="space-y-1.5 text-slate-600">
+                        <div className="flex justify-between">
+                          <span>Thiết bị bàn giao:</span>
+                          <span className="font-extrabold text-slate-900">{selectedLease.deviceModel}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Giá niêm yết:</span>
+                          <span className="font-semibold">{formatCurrency(selectedLease.devicePrice)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Số tiền cọc đầu:</span>
+                          <span className="text-emerald-600 font-extrabold">{formatCurrency(selectedLease.upfrontFee)}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-dashed border-slate-150 pt-1.5">
+                          <span className="font-bold text-slate-700">Giá thuê định kỳ:</span>
+                          <span className="font-black text-slate-950 text-sm">{formatCurrency(selectedLease.monthlyFee)} / tháng</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Installments payment schedule */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center bg-indigo-50/50 px-2 py-1.5 rounded-lg border border-indigo-100">
+                        <span className="text-[11px] font-bold text-indigo-800">Lịch đóng phí trả góp định kỳ</span>
+                        <span className="text-[10px] text-slate-500 font-semibold italic">Phát hành tự động</span>
+                      </div>
+                      
+                      <div className="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
+                        {selectedLease.installments.map((inst) => {
+                          const isUnpaid = inst.status === 'unpaid';
+                          const isPaid = inst.status === 'paid';
+                          const isLate = inst.status === 'overdue';
+                          return (
+                            <div 
+                              key={inst.installmentId}
+                              className={cn(
+                                "flex items-center justify-between p-2 rounded-lg border text-[11px] transition-all",
+                                isPaid ? "bg-slate-50 border-slate-200 text-slate-400" :
+                                isLate ? "bg-rose-50 border-rose-300 text-rose-800" :
+                                "bg-white border-slate-200 text-slate-800 hover:border-slate-350"
+                              )}
+                            >
+                              <div>
+                                <p className="font-extrabold">Kỳ {inst.periodNum}/{selectedLease.durationMonths}</p>
+                                <p className="text-[9.5px] text-slate-400 font-semibold">Hạn đóng: {inst.dueDate}</p>
                               </div>
-                            )}
+                              
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900">{formatCurrency(inst.amount)}</span>
+                                
+                                {isPaid ? (
+                                  <span className="text-[10px] text-emerald-650 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-250 font-bold">✓ Đã đóng</span>
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    {isLate && (
+                                      <span className="text-[9px] text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-250 font-extrabold flex items-center gap-0.5">
+                                        Quá hạn
+                                      </span>
+                                    )}
+                                    {/* Push warning */}
+                                    <button
+                                      type="button"
+                                      onClick={() => openNotificationModal(selectedLease, inst)}
+                                      className="p-1 bg-amber-50 hover:bg-amber-100 text-amber-700/80 rounded border border-amber-250 cursor-pointer"
+                                      title="Gửi SMS & Zalo cảnh báo nợ"
+                                    >
+                                      <Bell className="w-3 h-3" />
+                                    </button>
+                                    {/* Record cash collect - upgraded to trigger the VietQR Payment Modal */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setPayingLease(selectedLease);
+                                        setPaymentActiveInst(inst);
+                                        setPaymentVerified(false);
+                                        setShowPaymentPortal(true);
+                                      }}
+                                      className="p-1 px-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-650 cursor-pointer text-[9.5px] font-black"
+                                      title="Mở cổng thanh toán VietQR và đóng phí"
+                                    >
+                                      Đóng
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: VComm Samsung Knox / MDM Remote lockers */}
+                {detailTab === 'mdm' && (
+                  <div className="space-y-4 animate-in fade-in duration-200">
+                    <div className="p-3 bg-slate-900 text-slate-100 rounded-xl space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Trạng thái Knox MDM</span>
+                        <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+                          <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+                          Đã liên kết
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <p className="text-slate-400 text-[10px]">Cơ chế pháp lý</p>
+                          <p className="font-extrabold text-indigo-400">Cho thuê tài sản số</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-400 text-[10px]">MDM Profile ID</p>
+                          <p className="font-mono font-bold text-slate-300">VCOMM_KNOX_E_992</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 p-2 bg-slate-950 rounded-lg">
+                        <Lock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <div className="text-[10px]">
+                          <span className="text-slate-400 font-semibold">Khóa an toàn Knox: </span>
+                          {selectedLease.knoxStatus === 'locked' ? (
+                            <span className="text-rose-400 font-black">Khóa máy khẩn cấp</span>
+                          ) : selectedLease.knoxStatus === 'warning' ? (
+                            <span className="text-amber-400 font-black">Đang cảnh báo đè (Warning)</span>
+                          ) : (
+                            <span className="text-emerald-400 font-bold">Hoạt động bình thường</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Integrated mini GPS Tracker simulation inside Vietnam zone */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="font-extrabold text-slate-700 flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-rose-500" /> Định vị thiết bị thật
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLocatingGps(true);
+                            setTimeout(() => {
+                              setLocatingGps(false);
+                              setGpsFetched(true);
+                            }, 1000);
+                          }}
+                          disabled={locatingGps}
+                          className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 disabled:opacity-50 flex items-center gap-1"
+                        >
+                          <RefreshCw className={cn("w-3 h-3", locatingGps ? "animate-spin" : "")} />
+                          Quét sóng GPS
+                        </button>
+                      </div>
+
+                      {gpsFetched ? (
+                        <div className="space-y-2 animate-in slide-in-from-bottom-2 duration-200">
+                          {/* Nigeria / Vietnam styled visual map marker */}
+                          <div className="relative h-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center">
+                            {/* Stylized visual map grid lines */}
+                            <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-60"></div>
+                            <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-rose-500 rounded-full animate-ping"></div>
+                            <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-rose-600 rounded-full border border-white"></div>
+                            <span className="absolute top-2 right-2 font-mono text-[8.5px] text-slate-500">ACCURACY: ±4 METERS</span>
+                            <span className="absolute bottom-1.5 left-2 font-mono text-[9px] text-emerald-400 uppercase tracking-widest flex items-center gap-1 font-bold">
+                              <span className="h-1 w-1 bg-emerald-400 rounded-full"></span> CELL_TOWER_PING
+                            </span>
+                          </div>
+                          <div className="bg-slate-900 text-slate-300 p-2 rounded-lg font-mono text-[9px] space-y-0.5 leading-snug">
+                            <p className="font-bold text-indigo-300">Toạ độ: 10.7760° N, 106.6672° E</p>
+                            <p className="text-slate-400">Vị trí: 142/4 Ba Tháng Hai, Phường 12, Quận 10, TP. Hồ Chí Minh</p>
                           </div>
                         </div>
-                      );
-                    })}
+                      ) : (
+                        <div className="h-28 border border-dashed border-slate-200 rounded-lg flex flex-col justify-center items-center text-center text-slate-400 p-3 bg-white">
+                          {locatingGps ? (
+                            <div className="space-y-1.5">
+                              <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin mx-auto" />
+                              <p className="text-[10px] font-semibold text-slate-500">Đang ping trạm phát sóng Vinaphone/Viettel...</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              <MapPin className="w-5 h-5 text-slate-300 mx-auto" />
+                              <p className="text-[9.5px] font-semibold leading-relaxed">Chọn quét sóng để liên kết định vị tọa độ thiết bị từ xa</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Remotes control actions */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Hành động điều độ từ xa:</span>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateKnoxStatus(selectedLease.id, 'warning')}
+                          className="py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 bg-opacity-80 active:scale-95 transition-all text-[10.5px] font-bold rounded-lg border border-amber-200 flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Bell className="w-3.5 h-3.5" /> Gửi Overlay cảnh báo
+                        </button>
+                        
+                        {selectedLease.knoxStatus === 'locked' ? (
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateKnoxStatus(selectedLease.id, 'unlocked')}
+                            className="py-2 bg-emerald-650 hover:bg-emerald-600 text-white font-bold rounded-lg border active:scale-95 transition-all text-[10.5px] flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <Unlock className="w-3.5 h-3.5" /> Mở khóa thiết bị
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateKnoxStatus(selectedLease.id, 'locked')}
+                            className="py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg border active:scale-95 transition-all text-[10.5px] flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <Lock className="w-3.5 h-3.5" /> Khóa máy Knox
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* TAB 3: AI Credit Audit Assessments (Gemini) */}
+                {detailTab === 'ai-audit' && (
+                  <div className="space-y-4 animate-in fade-in duration-200 pb-2">
+                    <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-3">
+                      <div className="flex items-center gap-1.5 border-b border-slate-205 pb-2">
+                        <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+                        <span className="font-extrabold text-slate-800 text-xs">Báo cáo kiểm soát Tín dụng của Gemini AI</span>
+                      </div>
+
+                      {aiEvaluating ? (
+                        <div className="py-6 space-y-3 text-center text-slate-400">
+                          <RefreshCw className="w-6 h-6 text-indigo-600 animate-spin mx-auto animate-duration-1000" />
+                          <div className="space-y-1 font-mono text-[9px]">
+                            <p className="animate-pulse">Đang rà soát dữ liệu nợ hệ thống...</p>
+                            <p className="animate-pulse text-indigo-500">Gemini AI đang chấm điểm tín chỉ tài chính...</p>
+                          </div>
+                        </div>
+                      ) : aiCreditScore > 0 ? (
+                        <div className="space-y-3 animate-in fade-in duration-300">
+                          {/* Credit gauge simulation */}
+                          <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
+                            <div>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Điểm Tín Dụng AI Est.</p>
+                              <p className="text-xl font-black text-indigo-700 font-mono mt-0.5">{aiCreditScore}/850</p>
+                              <span className={cn(
+                                "text-[9px] font-bold px-1.5 py-0.5 rounded border block mt-1 text-center w-max",
+                                aiCreditScore >= 700 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                aiCreditScore >= 550 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                "bg-rose-50 text-rose-700 border-rose-250"
+                              )}>
+                                {aiCreditScore >= 700 ? "Hạng Tốt (AA)" : aiCreditScore >= 550 ? "Hạng Trung Bình (B)" : "Hạng Rủi Ro Thấp (C)"}
+                              </span>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Nhân Định Rủi Ro</p>
+                              <div className="mt-1">
+                                {aiRiskLevel === 'low' && (
+                                  <span className="px-2.5 py-1 bg-emerald-500 text-white font-extrabold text-[10px] rounded-lg">Rủi Ro Thấp</span>
+                                )}
+                                {aiRiskLevel === 'medium' && (
+                                  <span className="px-2.5 py-1 bg-amber-500 text-slate-900 font-extrabold text-[10px] rounded-lg">Rủi Ro Vừa</span>
+                                )}
+                                {aiRiskLevel === 'high' && (
+                                  <span className="px-2.5 py-1 bg-rose-600 text-white font-extrabold text-[10px] rounded-lg animate-pulse">Rủi Ro Cao</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Detail feedback */}
+                          <div className="bg-indigo-50/30 border border-indigo-100 rounded-xl p-3 text-slate-700 leading-relaxed text-[11px] font-medium max-h-[150px] overflow-y-auto custom-scrollbar">
+                            {aiResult}
+                          </div>
+
+                          {/* Option to recalculate with altered incomes */}
+                          <div className="pt-2 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleAIEvaluate(selectedLease)}
+                              className="text-[10px] text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1 shrink-0"
+                            >
+                              <RefreshCw className="w-2.5 h-2.5" /> Thẩm định lại
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="py-2 text-center space-y-3">
+                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
+                            Chạy phân tích hồ sơ thông minh bao gồm độ trùng khớp CCCD, tỷ lệ cọc trước, và ước định chỉ số nợ/thu nhập dựa trên trí tuệ nhân tạo Gemini.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => handleAIEvaluate(selectedLease)}
+                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-serif font-black px-4 py-2 rounded-xl text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-indigo-950/20 shadow-sm"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" /> Thẩm định với Gemini AI
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* History logs */}
                 <div className="space-y-2 border-t border-slate-200 pt-3">
@@ -1217,6 +1668,141 @@ export function DeviceLeasing() {
                 >
                   <MessageSquare className="w-4 h-4" /> Bắn cảnh báo ngay
                 </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* MODAL 3: VietQR Payment & Automatic Bank reconciliation */}
+      {showPaymentPortal && payingLease && paymentActiveInst && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md overflow-hidden text-xs"
+          >
+            <div className="bg-gradient-to-r from-blue-700 to-indigo-850 text-white p-5 flex items-center justify-between">
+              <div>
+                <h3 className="font-serif font-black text-sm flex items-center gap-1.5">
+                  <CreditCard className="w-5 h-5 text-indigo-300" /> Thanh toán VietQR Fintech
+                </h3>
+                <p className="text-[9.5px] text-indigo-200 uppercase tracking-wider font-extrabold mt-0.5">Hệ thống đối soát sao kê tự động 24/7</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPaymentPortal(false)}
+                className="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 font-sans text-xs">
+              {/* Payment Bill Info */}
+              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 grid grid-cols-2 gap-y-1.5 leading-snug">
+                <span className="text-slate-500">Khách hàng:</span>
+                <span className="font-bold text-slate-800 text-right">{payingLease.customerName}</span>
+                <span className="text-slate-500">Gói thuê:</span>
+                <span className="font-bold text-slate-800 text-right text-[11px] truncate" title={payingLease.deviceModel}>{payingLease.deviceModel}</span>
+                <span className="text-slate-500">Kỳ trả góp góp:</span>
+                <span className="font-black text-slate-900 text-right">Kỳ số {paymentActiveInst.periodNum} / {payingLease.durationMonths}</span>
+                <span className="text-slate-500 font-bold">Số tiền định kỳ:</span>
+                <span className="font-black text-indigo-700 text-right text-sm">{formatCurrency(paymentActiveInst.amount)}</span>
+              </div>
+
+              {/* VietQR Mock graphic and Bank Account values */}
+              <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-3">
+                <div className="relative w-44 h-44 mx-auto border-2 border-indigo-500 rounded-lg overflow-hidden p-1 bg-white">
+                  {/* Decorative VietQR Napas logo frames */}
+                  <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-blue-600 to-teal-500 flex items-center justify-between px-1 text-[7px] text-white font-extrabold uppercase tracking-widest">
+                    <span>Napas 247</span>
+                    <span>VietQR</span>
+                  </div>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`STB_0003259821_VCOMM_LEASE_PAY_${payingLease.id}_KI_${paymentActiveInst.periodNum}`)}`}
+                    alt="VietQR Payment Code"
+                    className="w-full h-full object-contain pt-3"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+
+                <div className="space-y-1.5 pt-1 text-slate-650 leading-snug">
+                  <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                    <span className="font-bold">Nội dung chuyển khoản:</span>
+                    <span className="font-mono text-[9.5px] font-black text-rose-650 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-220 select-all cursor-pointer">
+                      VCOMM PAY {payingLease.id.slice(0, 8).toUpperCase()} K{paymentActiveInst.periodNum}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Ngân hàng:</span>
+                    <span className="font-black text-slate-800">MBBank (Quân Đội)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Chủ tài khoản:</span>
+                    <span className="font-extrabold text-slate-800 text-[9.5px]">CONG TY CP CONG NGHE VCOMM VN</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Số tài khoản:</span>
+                    <span className="font-black text-slate-950 font-mono text-xs">0003259821</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Autodetect Verification button */}
+              {paymentVerified ? (
+                <div className="p-3.5 bg-emerald-50 border border-emerald-350 rounded-xl text-emerald-900 flex items-start gap-2.5 animate-in fade-in leading-relaxed">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-650 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-extrabold text-emerald-800">Đã kiểm tra chuyển khoản thành công!</p>
+                    <p className="text-[10px] text-emerald-655 mt-0.5 font-semibold">Mã bút toán #MB-VT91285. Thu tiền định kỳ đã hạch toán POS khớp quỹ VComm.</p>
+                  </div>
+                </div>
+              ) : confirmingPayment ? (
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2.5 text-center text-slate-350 animate-in fade-in leading-snug">
+                  <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin mx-auto" />
+                  <div className="font-mono text-[10px] space-y-0.5">
+                    <p className="animate-pulse text-indigo-400 font-bold">Đang đối chiếu giao dịch MBBank...</p>
+                    <p className="text-slate-500">Đối chiếu mã nội dung: VCOMM PAY {payingLease.id.slice(0, 8).toUpperCase()} K{paymentActiveInst.periodNum}...</p>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmingPayment(true);
+                    setTimeout(() => {
+                      setConfirmingPayment(false);
+                      setPaymentVerified(true);
+                    }, 1500);
+                  }}
+                  className="w-full py-2.5 bg-gradient-to-r from-emerald-650 to-teal-650 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all text-[11px]"
+                >
+                  <Search className="w-4 h-4" /> Bấm kiểm tra kết quả biến động VietQR tự động
+                </button>
+              )}
+
+              {/* Bottom dispatcher */}
+              <div className="pt-2 flex gap-3 justify-end text-[11.5px] font-bold">
+                <button
+                  type="button"
+                  onClick={() => setShowPaymentPortal(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200 cursor-pointer"
+                >
+                  {paymentVerified ? "Đóng cửa sổ" : "Hủy giao dịch"}
+                </button>
+                {paymentVerified && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleCollectInstallment(payingLease.id, paymentActiveInst.installmentId);
+                      setShowPaymentPortal(false);
+                    }}
+                    className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl cursor-pointer"
+                  >
+                    Xác nhận & Cập nhật hợp đồng
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

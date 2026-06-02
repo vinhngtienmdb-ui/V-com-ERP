@@ -17,7 +17,18 @@ import {
  ShieldCheck,
  Check,
  PenTool,
- Key
+ Key,
+ Settings,
+ Users,
+ Trash2,
+ Edit2,
+ ChevronDown,
+ ChevronUp,
+ Copy,
+ Sliders,
+ Lock,
+ Eye,
+ Info
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -37,6 +48,245 @@ export function ContractManager() {
  const [showCreateModal, setShowCreateModal] = useState(false);
  const [newComment, setNewComment] = useState('');
  const navigate = useNavigate();
+
+ // Workflow structures for: labor, sales, service
+ const [workflows, setWorkflows] = useState<any[]>([
+   {
+     contractType: 'labor',
+     contractTypeName: 'Hợp đồng Lao động',
+     steps: [
+       { id: 'step-1', name: 'Nhân sự chuẩn bị và ban hành hồ sơ dự thảo', role: 'Nhân viên Hành chính Nhân sự', actionType: 'create', order: 1 },
+       { id: 'step-2', name: 'Cố vấn Pháp chế kiểm tra độ chuẩn mực pháp lý', role: 'Ban Pháp Chế', actionType: 'review', order: 2 },
+       { id: 'step-3', name: 'Trưởng phòng Nhân sự duyệt chuyển tiếp', role: 'Trưởng phòng HR', actionType: 'approve', order: 3 },
+       { id: 'step-4', name: 'Đại diện Ban Giám Đốc đóng dấu & ký số', role: 'Tổng Giám Đốc (CEO)', actionType: 'sign', order: 4 },
+       { id: 'step-5', name: 'Ứng viên nhận thư mời & ký số từ xa', role: 'Người lao động', actionType: 'sign', order: 5 }
+     ],
+     templates: [
+       { id: 'temp-lab-01', name: 'Mẫu hợp đồng lao động không xác định thời hạn 2026', fileSize: '185 KB', version: 'v2.4', lastUpdated: '12/03/2026', requiredFields: ['{HO_TEN}', '{SO_CCCD}', '{NGAY_SINH}', '{LUONG_CO_BAN}', '{PHU_CAP}', '{VI_TRI_CONG_VIEC}', '{NGAY_BAT_DAU}'] },
+       { id: 'temp-lab-02', name: 'Thỏa thuận bảo mật thông tin & sở hữu trí tuệ (NDA)', fileSize: '124 KB', version: 'v3.2', lastUpdated: '28/05/2026', requiredFields: ['{HO_TEN}', '{CONG_TY_A}', '{CS_PHAT_CO_PHAN}', '{NGAY_KY}'] },
+       { id: 'temp-lab-03', name: 'Mẫu quyết định tuyển dụng và thử việc tiêu chuẩn', fileSize: '98 KB', version: 'v1.5', lastUpdated: '15/01/2026', requiredFields: ['{HO_TEN}', '{THOI_GIAN_THU_VIEC}', '{LUONG_THU_VIEC}', '{NGAY_AP_DUNG}'] }
+     ],
+     permissions: [
+       { role: 'Ban Giám Đốc', view: true, edit: true, approve: true, sign: true },
+       { role: 'Trưởng phòng HR', view: true, edit: true, approve: true, sign: false },
+       { role: 'Ban Pháp Chế', view: true, edit: true, approve: true, sign: false },
+       { role: 'Nhân viên HR', view: true, edit: true, approve: false, sign: false },
+       { role: 'Người lao động', view: true, edit: false, approve: false, sign: true }
+     ],
+     securityLevel: 'high',
+     allowUSB: false,
+     allowSmartCA: true,
+     allowSMS: true
+   },
+   {
+     contractType: 'sales',
+     contractTypeName: 'Hợp đồng Mua bán',
+     steps: [
+       { id: 'step-1', name: 'Nhân viên sale lên đơn hàng và biểu giá', role: 'Nhân viên Kinh doanh', actionType: 'create', order: 1 },
+       { id: 'step-2', name: 'Kế toán đối soát hạn mức công nợ', role: 'Kế toán trưởng', actionType: 'approve', order: 2 },
+       { id: 'step-3', name: 'Phó giám đốc duyệt chiết khấu đặc biệt', role: 'Phó Giám Đốc Kinh Doanh', actionType: 'approve', order: 3 },
+       { id: 'step-4', name: 'Giám đốc ký chứng thư số USB Token đại diện', role: 'Ban Giám Đốc', actionType: 'sign', order: 4 },
+       { id: 'step-5', name: 'Khách hàng đối tác ký xác nhận hóa đơn', role: 'Đại diện bên mua', actionType: 'sign', order: 5 }
+     ],
+     templates: [
+       { id: 'temp-sl-01', name: 'Mẫu hợp đồng mua bán thiết bị văn phòng VN', fileSize: '210 KB', version: 'v3.0', lastUpdated: '20/01/2026', requiredFields: ['{TEN_BEN_MAN}', '{TEN_BEN_BAN}', '{DANH_SACH_THIET_BI}', '{GIA_TRI_HOP_DONG}', '{NGAY_BAT_DAU_TRA_GOP}'] },
+       { id: 'temp-sl-02', name: 'Mẫu hợp đồng đại lý và phân phối linh kiện', fileSize: '345 KB', version: 'v1.0', lastUpdated: '02/02/2026', requiredFields: ['{TEN_DAI_LY}', '{CHIET_KHAU_TI_LE}', '{VI_TRI_KHO_BAI}'] }
+     ],
+     permissions: [
+       { role: 'Ban Giám Đốc', view: true, edit: true, approve: true, sign: true },
+       { role: 'Kế toán trưởng', view: true, edit: true, approve: true, sign: true },
+       { role: 'Phó Giám Đốc Kinh Doanh', view: true, edit: true, approve: true, sign: false },
+       { role: 'Nhân viên Kinh doanh', view: true, edit: true, approve: false, sign: false },
+       { role: 'Đại diện bên mua', view: true, edit: false, approve: false, sign: true }
+     ],
+     securityLevel: 'medium',
+     allowUSB: true,
+     allowSmartCA: true,
+     allowSMS: true
+   },
+   {
+     contractType: 'service',
+     contractTypeName: 'Hợp đồng Dịch vụ',
+     steps: [
+       { id: 'step-1', name: 'Quản lý dự án soạn thảo điều khoản công việc', role: 'Quản lý Dự án (PM)', actionType: 'create', order: 1 },
+       { id: 'step-2', name: 'Bộ phận pháp chế thẩm định ràng buộc SLAs', role: 'BP Pháp Chế', actionType: 'review', order: 2 },
+       { id: 'step-3', name: 'Đối tác ký duyệt đồng ý các điều khoản', role: 'Khách hàng/Đối tác', actionType: 'sign', order: 3 },
+       { id: 'step-4', name: 'Giám đốc VComm ký số đóng dấu xác nhận', role: 'Tổng Giám Đốc (CEO)', actionType: 'sign', order: 4 }
+     ],
+     templates: [
+       { id: 'temp-srv-01', name: 'Mẫu hợp đồng dịch vụ thuê máy Knox Cloud v4', fileSize: '320 KB', version: 'v4.1', lastUpdated: '15/02/2026', requiredFields: ['{TEN_CONG_TY_KNOX}', '{SO_LUONG_MAY}', '{SLA_HO_TRO_PHANTRAM}', '{PHI_THEO_THANG}'] }
+     ],
+     permissions: [
+       { role: 'Tổng Giám Đốc (CEO)', view: true, edit: true, approve: true, sign: true },
+       { role: 'BP Pháp Chế', view: true, edit: true, approve: true, sign: false },
+       { role: 'Quản lý Dự án (PM)', view: true, edit: true, approve: false, sign: false },
+       { role: 'Khách hàng/Đối tác', view: true, edit: false, approve: false, sign: true }
+     ],
+     securityLevel: 'high',
+     allowUSB: true,
+     allowSmartCA: true,
+     allowSMS: false
+   }
+ ]);
+
+ const [selectedWorkflowType, setSelectedWorkflowType] = useState<string>('labor');
+
+ // Modal triggers inside configuration
+ const [isAddingStepModal, setIsAddingStepModal] = useState(false);
+ const [isAddingTemplateModal, setIsAddingTemplateModal] = useState(false);
+
+ // Form states
+ const [newStepName, setNewStepName] = useState('');
+ const [newStepRole, setNewStepRole] = useState('Trưởng phòng HR');
+ const [newStepAction, setNewStepAction] = useState<'create' | 'approve' | 'sign' | 'review'>('approve');
+
+ const [newTempName, setNewTempName] = useState('');
+ const [newTempFields, setNewTempFields] = useState('');
+ const [newTempVersion, setNewTempVersion] = useState('v1.0');
+
+ // Operational handlers
+ const handleAddWorkflowStep = () => {
+   if (!newStepName.trim()) return;
+   
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       const nextOrder = wf.steps.length + 1;
+       const newStepObj = {
+         id: `step-${Date.now()}`,
+         name: newStepName.trim(),
+         role: newStepRole,
+         actionType: newStepAction,
+         order: nextOrder
+       };
+       return {
+         ...wf,
+         steps: [...wf.steps, newStepObj]
+       };
+     }
+     return wf;
+   }));
+
+   setNewStepName('');
+   setIsAddingStepModal(false);
+ };
+
+ const handleRemoveWorkflowStep = (stepId: string) => {
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       const filtered = wf.steps.filter((s: any) => s.id !== stepId);
+       const reordered = filtered.map((s: any, idx: number) => ({ ...s, order: idx + 1 }));
+       return {
+         ...wf,
+         steps: reordered
+       };
+     }
+     return wf;
+   }));
+ };
+
+ const handleMoveStep = (stepId: string, direction: 'up' | 'down') => {
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       const stepsCopy = [...wf.steps];
+       const index = stepsCopy.findIndex((s: any) => s.id === stepId);
+       if (index === -1) return wf;
+
+       if (direction === 'up' && index > 0) {
+         const temp = stepsCopy[index];
+         stepsCopy[index] = stepsCopy[index - 1];
+         stepsCopy[index - 1] = temp;
+       } else if (direction === 'down' && index < stepsCopy.length - 1) {
+         const temp = stepsCopy[index];
+         stepsCopy[index] = stepsCopy[index + 1];
+         stepsCopy[index + 1] = temp;
+       }
+
+       const reordered = stepsCopy.map((s: any, idx: number) => ({ ...s, order: idx + 1 }));
+       return { ...wf, steps: reordered };
+     }
+     return wf;
+   }));
+ };
+
+ const handleUpdateSecuritySettings = (field: 'securityLevel' | 'allowUSB' | 'allowSmartCA' | 'allowSMS', value: any) => {
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       return {
+         ...wf,
+         [field]: value
+       };
+     }
+     return wf;
+   }));
+ };
+
+ const handleTogglePermission = (roleName: string, permissionField: 'view' | 'edit' | 'approve' | 'sign') => {
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       const updatedPermissions = wf.permissions.map((p: any) => {
+         if (p.role === roleName) {
+           return {
+             ...p,
+             [permissionField]: !p[permissionField]
+           };
+         }
+         return p;
+       });
+       return {
+         ...wf,
+         permissions: updatedPermissions
+       };
+     }
+     return wf;
+   }));
+ };
+
+ const handleAddTemplate = () => {
+   if (!newTempName.trim()) return;
+
+   const fieldsArray = newTempFields
+     .split(',')
+     .map(f => f.trim().toUpperCase())
+     .filter(f => f.length > 0)
+     .map(f => f.startsWith('{') && f.endsWith('}') ? f : `{${f}}`);
+
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       return {
+         ...wf,
+         templates: [
+           ...wf.templates,
+           {
+             id: `temp-${Date.now()}`,
+             name: newTempName.trim(),
+             fileSize: '150 KB',
+             version: newTempVersion || 'v1.0',
+             lastUpdated: new Date().toLocaleDateString('vi-VN'),
+             requiredFields: fieldsArray.length > 0 ? fieldsArray : ['{HO_TEN}', '{SO_CCCD}']
+           }
+         ]
+       };
+     }
+     return wf;
+   }));
+
+   setNewTempName('');
+   setNewTempFields('');
+   setNewTempVersion('v1.0');
+   setIsAddingTemplateModal(false);
+ };
+
+ const handleRemoveTemplate = (tempId: string) => {
+   setWorkflows(prev => prev.map(wf => {
+     if (wf.contractType === selectedWorkflowType) {
+       return {
+         ...wf,
+         templates: wf.templates.filter((t: any) => t.id !== tempId)
+       };
+     }
+     return wf;
+   }));
+ };
 
  const handleStatusChange = (id: string, newStatus: string) => {
    if (window.confirm('Bạn có chắc chắn muốn thực hiện hành động này?')) {

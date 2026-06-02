@@ -178,5 +178,30 @@ service cloud.firestore {
     match /pos_customers/{id} { allow read, write: if isStaff(); }
     match /pos_campaigns/{id} { allow read, write: if isStaff(); }
     match /campaigns/{id} { allow read, write: if isStaff(); }
+
+    // 8. Admin Audit & Tenant Audit Logs
+    match /admin_audit_logs/{id} {
+      allow create: if isValidAuditLog(incoming());
+      allow read: if isAdmin();
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+
+      match /audit_logs/{id} {
+        allow create: if isValidAuditLog(incoming());
+        allow read: if isAdmin();
+      }
+    }
+
+    function isValidAuditLog(data) {
+      return data.email is string && data.email.size() <= 150 &&
+             data.action is string && data.action.size() <= 100 &&
+             data.status in ['Success', 'Failed'] &&
+             data.timestamp is string &&
+             (data.userId == null || data.userId is string) &&
+             (data.tenantId == null || data.tenantId is string);
+    }
   }
 }

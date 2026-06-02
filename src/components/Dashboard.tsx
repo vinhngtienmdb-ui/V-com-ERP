@@ -431,17 +431,106 @@ export function Dashboard() {
  </div>
  )}
 
- {/* Tabs */}
- <div className="flex items-center gap-6 border-b border-slate-300 shrink-0">
- <button onClick={() => setActiveTab('overview')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'overview' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
- Kinh doanh & Bán hàng
- </button>
- <button onClick={() => setActiveTab('performance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'performance' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
- Hiệu suất Vận hành
- </button>
- <button onClick={() => setActiveTab('finance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-colors", activeTab === 'finance' ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-900")}>
- Tài chính & Dòng tiền
- </button>
+ {/* Tabs & Grid Layout Presets */}
+ <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-300 shrink-0 pb-1">
+  <div className="flex items-center gap-6">
+   <button onClick={() => setActiveTab('overview')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-all cursor-pointer", activeTab === 'overview' ? "border-slate-900 text-indigo-900" : "border-transparent text-slate-500 hover:text-slate-900")}>
+   Kinh doanh & Bán hàng
+   </button>
+   <button onClick={() => setActiveTab('performance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-all cursor-pointer", activeTab === 'performance' ? "border-slate-900 text-indigo-900" : "border-transparent text-slate-500 hover:text-slate-900")}>
+   Hiệu suất Vận hành
+   </button>
+   <button onClick={() => setActiveTab('finance')} className={cn("pb-3 px-1 text-sm font-bold border-b-2 transition-all cursor-pointer", activeTab === 'finance' ? "border-slate-900 text-indigo-900" : "border-transparent text-slate-500 hover:text-slate-900")}>
+   Tài chính & Dòng tiền
+   </button>
+  </div>
+
+  {/* Quick Preset Layout Switcher */}
+  <div className="flex flex-wrap items-center gap-2 pb-2 lg:pb-0">
+   <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+    <LayoutDashboard className="w-3.5 h-3.5 text-orange-600" /> Bố cục nhanh:
+   </span>
+   <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex gap-1 shadow-inner">
+    <button 
+     onClick={() => {
+       setActiveTab('overview');
+       const newConfig = {
+         showStats: true,
+         showMainChart: true,
+         showCategorySplit: true,
+         showHourlyOrders: false,
+         showTopSellers: true,
+         showSLA: false,
+         showCommunity: true,
+         showQuickNav: true,
+         showFinanceStats: false,
+         showRevenueExpense: false,
+         showCashFlow: false,
+       };
+       setConfig(newConfig);
+       safeLocalStorage.setItem('dashboard_config', JSON.stringify(newConfig));
+     }}
+     className={cn(
+       "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+       activeTab === 'overview' ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+     )}
+    >
+     Tổng hợp
+    </button>
+    <button 
+     onClick={() => {
+       setActiveTab('finance');
+       const newConfig = {
+         showStats: false,
+         showMainChart: false,
+         showCategorySplit: false,
+         showHourlyOrders: false,
+         showTopSellers: false,
+         showSLA: false,
+         showCommunity: false,
+         showQuickNav: true,
+         showFinanceStats: true,
+         showRevenueExpense: true,
+         showCashFlow: true,
+       };
+       setConfig(newConfig);
+       safeLocalStorage.setItem('dashboard_config', JSON.stringify(newConfig));
+     }}
+     className={cn(
+       "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+       activeTab === 'finance' ? "bg-white text-[#0F172A] shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+     )}
+    >
+     <DollarSign className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Tài chính
+    </button>
+    <button 
+     onClick={() => {
+       setActiveTab('performance');
+       const newConfig = {
+         showStats: true,
+         showMainChart: false,
+         showCategorySplit: false,
+         showHourlyOrders: true,
+         showTopSellers: false,
+         showSLA: true,
+         showCommunity: false,
+         showQuickNav: false,
+         showFinanceStats: false,
+         showRevenueExpense: false,
+         showCashFlow: false,
+       };
+       setConfig(newConfig);
+       safeLocalStorage.setItem('dashboard_config', JSON.stringify(newConfig));
+     }}
+     className={cn(
+       "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+       activeTab === 'performance' ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+     )}
+    >
+     <Package className="w-3.5 h-3.5 text-orange-600 shrink-0" /> Vận hành
+    </button>
+   </div>
+  </div>
  </div>
 
  <div className="space-y-6">

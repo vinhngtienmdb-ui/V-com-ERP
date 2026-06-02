@@ -19,7 +19,8 @@ import {
  Download,
  BrainCircuit,
  PieChart as PieIcon,
- Sparkles
+ Sparkles,
+ Printer
 } from 'lucide-react';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
@@ -27,6 +28,7 @@ import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { QuickPrintModal } from './QuickPrintModal';
 
 const OrderDetailModal = ({ order, onClose }: { order: any; onClose: () => void }) => {
  const [isGenerating, setIsGenerating] = useState(false);
@@ -295,6 +297,7 @@ export function Orders() {
  const [statusFilter, setStatusFilter] = useState<string>('all');
  const [dateQuery, setDateQuery] = useState<string>('');
  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+ const [printingOrder, setPrintingOrder] = useState<any | null>(null);
  const [dbOrders, setDbOrders] = useState<any[]>([]);
 
  useEffect(() => {
@@ -586,6 +589,16 @@ export function Orders() {
         <td className="px-6 py-4 text-right">
           <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
             <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setPrintingOrder(order); 
+              }}
+              className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-emerald-500 hover:bg-emerald-50 rounded-lg text-slate-500 hover:text-emerald-600 transition-all active:scale-95 flex items-center justify-center"
+              title="In nhanh Biên lai"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
+            <button 
               onClick={(e) => { e.stopPropagation(); }}
               className="p-2.5 bg-white border border-slate-300 shadow-sm hover:border-primary-500 hover:bg-primary-50 rounded-lg text-slate-500 hover:text-primary-600 transition-all active:scale-95"
             >
@@ -598,11 +611,18 @@ export function Orders() {
   />
   </div>
   {selectedOrder && (
- <OrderDetailModal 
- order={selectedOrder} 
- onClose={() => setSelectedOrder(null)} 
- />
- )}
+    <OrderDetailModal 
+      order={selectedOrder} 
+      onClose={() => setSelectedOrder(null)} 
+    />
+  )}
+
+  {printingOrder && (
+    <QuickPrintModal 
+      order={printingOrder} 
+      onClose={() => setPrintingOrder(null)} 
+    />
+  )}
 
  <div className="bg-amber-50 rounded-lg p-6 border border-amber-100 flex items-start gap-4">
  <div className="p-3 bg-amber-100 text-amber-600 rounded-lg">

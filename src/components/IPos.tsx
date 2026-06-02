@@ -609,6 +609,8 @@ export function IPosModule() {
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
   const [isReturnMode, setIsReturnMode] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isTableQrScannerOpen, setIsTableQrScannerOpen] = useState(false);
+  const [linkedTableId, setLinkedTableId] = useState<number | null>(null);
   const [selectedProductLookup, setSelectedProductLookup] = useState<
     any | null
   >(null);
@@ -1187,6 +1189,38 @@ export function IPosModule() {
     }
   }, [cart, subtotal, discount, loyaltyDiscount, promoWalletDiscount, total, setIposCartCount, setIposCartSubtotal, setIposCartDiscount, setIposCartTotal]);
 
+  useEffect(() => {
+    if (linkedTableId !== null) {
+      setTables((prevTables) =>
+        prevTables.map((t) => {
+          if (t.id === linkedTableId) {
+            const itemsCount = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+            if (itemsCount > 0) {
+              return {
+                ...t,
+                status: "occupied",
+                currentOrder: {
+                  total: total,
+                  items: itemsCount,
+                },
+              };
+            } else {
+              return {
+                ...t,
+                status: "occupied",
+                currentOrder: {
+                  total: 0,
+                  items: 0,
+                },
+              };
+            }
+          }
+          return t;
+        })
+      );
+    }
+  }, [cart, total, linkedTableId]);
+
   const handleCheckout = () => {
     setShowPaymentModal(true);
   };
@@ -1551,6 +1585,19 @@ export function IPosModule() {
         cartItems: [...cart]
       });
       setInvoiceEmail(customer?.email || "");
+
+      // Clear linked table status
+      if (linkedTableId !== null) {
+        setTables((prevTables) =>
+          prevTables.map((t) =>
+            t.id === linkedTableId
+              ? { ...t, status: "cleaning", currentOrder: undefined }
+              : t
+          )
+        );
+        setLinkedTableId(null);
+      }
+
       setCart([]);
       setCustomer(null);
       setDiscountCode("");
@@ -3264,6 +3311,119 @@ export function IPosModule() {
         </div>
       )}
 
+      {/* Table QR Scanner Modal */}
+      {isTableQrScannerOpen && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
+          <style>{`
+            @keyframes scan {
+              0% { top: 4%; opacity: 0.3; }
+              50% { top: 94%; opacity: 1; }
+              100% { top: 4%; opacity: 0.3; }
+            }
+          `}</style>
+          <div className="bg-white rounded-2xl w-full max-w-xl shadow-xl overflow-hidden flex flex-col border border-slate-200 animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-md">
+                  <QrCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Quét QR Code Bàn Mới</h2>
+                  <p className="text-xs text-slate-500 font-medium tracking-wide">Bố trí phục vụ tại bàn qua mã QR dán sẵn</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsTableQrScannerOpen(false)}
+                className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[75vh] scrollbar-thin">
+              {/* Fake Scanner Screen */}
+              <div className="relative bg-slate-950 aspect-[16/9] rounded-2xl overflow-hidden border-2 border-slate-800 flex flex-col items-center justify-center text-center shadow-lg group">
+                {/* Scan grid effect */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f108_1px,transparent_1px),linear-gradient(to_bottom,#6366f108_1px,transparent_1px)] bg-[size:1.5rem_1.5rem]" />
+                
+                {/* Scanning laser line */}
+                <div className="absolute left-0 right-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,1)] top-0 animate-[scan_2.8s_ease-in-out_infinite] z-20" />
+                
+                {/* Tech brackets corners */}
+                <div className="absolute top-6 left-6 w-8 h-8 border-t-4 border-l-4 border-indigo-500 rounded-tl-md" />
+                <div className="absolute top-6 right-6 w-8 h-8 border-t-4 border-r-4 border-indigo-500 rounded-tr-md" />
+                <div className="absolute bottom-6 left-6 w-8 h-8 border-b-4 border-l-4 border-indigo-500 rounded-bl-md" />
+                <div className="absolute bottom-6 right-6 w-8 h-8 border-b-4 border-r-4 border-indigo-500 rounded-br-md" />
+
+                {/* Main QR Icon representing target */}
+                <div className="relative z-10 w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 backdrop-blur-sm animate-pulse mb-3">
+                  <QrCode className="w-12 h-12 text-indigo-400 animate-spin-slow" />
+                </div>
+                
+                <p className="text-indigo-400 text-xs font-mono tracking-widest uppercase relative z-10 font-bold bg-indigo-950/50 border border-indigo-500/20 px-3.5 py-1.5 rounded-lg shadow-sm">
+                  [ CAMERA-LIVE: ĐANG QUÉT QR BÀN ]
+                </p>
+                <p className="text-[10px] text-slate-400 mt-2.5 relative z-10 italic max-w-xs leading-normal font-sans">
+                  Di chuyển camera hướng về phía mã QR dán tại bàn khách hàng để liên kết tự động.
+                </p>
+              </div>
+
+              {/* Simulation panel */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                  <span className="text-xs font-black uppercase text-slate-700 tracking-wider font-sans">
+                    Mô phỏng quét mã QR dán tại bàn (Chọn để khớp mã)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {tables.map((table) => (
+                    <button
+                      key={table.id}
+                      onClick={() => {
+                        setLinkedTableId(table.id);
+                        setOrderNote(`Đơn từ Bàn ${table.name}`);
+                        setIsTableQrScannerOpen(false);
+                      }}
+                      className={cn(
+                        "p-3 rounded-xl border transition-all text-left flex items-start gap-2.5 group relative overflow-hidden cursor-pointer",
+                        linkedTableId === table.id
+                          ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-100"
+                          : "bg-slate-50 hover:bg-white border-slate-200 hover:border-indigo-200 hover:shadow-xs"
+                      )}
+                    >
+                      <div className="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-500 group-hover:text-indigo-600 transition-colors shadow-sm shrink-0">
+                        <QrCode className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors tracking-tight">
+                          {table.name}
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-medium leading-normal">
+                          {table.zone}
+                        </p>
+                      </div>
+                      
+                      <div className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[8px] font-black uppercase bg-indigo-600 text-[#FAF9F5] px-1 py-0.5 rounded-sm tracking-wider">Quét</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-center shrink-0">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hệ thống đồng bộ trực tiếp với Sơ đồ bàn của trung tâm vận hành POS</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sleek Utilities & Operations Controls bar */}
       <div className="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm mb-6 flex-wrap gap-4">
         {/* Left Side: Active Status & Staff */}
@@ -4066,6 +4226,69 @@ export function IPosModule() {
                 )}
               </div>
 
+              {/* Table / QR Association Panel */}
+              <div className="bg-white rounded-xl border border-slate-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-4 relative group transition-all hover:border-primary-200 hover:shadow-sm shrink-0">
+                {linkedTableId !== null ? (
+                  <div className="flex items-center justify-between relative z-10 animate-in slide-in- duration-300">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner border border-indigo-100 relative transition-transform">
+                        <Coffee className="w-5 h-5 animate-bounce" />
+                        <div className="absolute top-0 right-0 w-3 h-3 bg-indigo-500 border-2 border-white rounded-full animate-ping" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-slate-900 text-sm tracking-tight">
+                            {tables.find(t => t.id === linkedTableId)?.name || `Bàn #${linkedTableId}`}
+                          </p>
+                          <span className="text-[10px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full tracking-wide flex items-center gap-1">
+                            <QrCode className="w-2.5 h-2.5" /> Đã quét QR
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                          {tables.find(t => t.id === linkedTableId)?.zone || "Khu vực chính"} • Sức chứa: {tables.find(t => t.id === linkedTableId)?.capacity || 4} chỗ
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setIsTableQrScannerOpen(true)}
+                        title="Quét bàn khác"
+                        className="p-1.5 flex items-center justify-center text-slate-500 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-all border border-slate-200"
+                      >
+                        <RefreshCcw className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setLinkedTableId(null);
+                        }}
+                        title="Hủy liên kết bàn"
+                        className="p-1.5 flex items-center justify-center text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-lg transition-all border border-slate-200"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsTableQrScannerOpen(true)}
+                    className="w-full flex items-center gap-4 group transition-all"
+                  >
+                    <div className="w-12 h-12 bg-slate-50 text-slate-500 rounded-xl flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all border border-dashed border-slate-400 group-hover:border-indigo-300">
+                      <QrCode className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                    </div>
+                    <div className="text-left flex-1 font-sans">
+                      <p className="font-semibold text-slate-800 text-sm group-hover:text-indigo-700 transition-colors flex items-center gap-1.5">
+                        Quét QR Code Bàn Mới
+                        <span className="text-[9px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full font-black uppercase">F&B iPOS</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                        Quét mã hiệu dán tại bàn để liên kết trực tiếp vào đơn hàng hiện tại
+                      </p>
+                    </div>
+                  </button>
+                )}
+              </div>
+
               <div className="flex-1 bg-white rounded-sm border border-slate-300 shadow-sm flex flex-col overflow-hidden relative">
                 <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center shrink-0">
                   <div className="flex items-center gap-3">
@@ -4093,6 +4316,7 @@ export function IPosModule() {
                         setCart([]);
                         setCustomer(null);
                         setIsReturnMode(false);
+                        setLinkedTableId(null);
                       }}
                       className="w-9 h-9 bg-white border border-slate-300 text-rose-500 rounded-sm hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm flex items-center justify-center"
                     >
@@ -4386,7 +4610,7 @@ export function IPosModule() {
                     className={cn(
                       "aspect-square rounded-sm border-2 flex flex-col p-4 cursor-pointer transition-all .5 hover:shadow-sm relative group overflow-hidden",
                       table.status === "available"
-                        ? "bg-white border-slate-200 text-slate-500 hover:border-blue-400"
+                        ? "bg-white border-slate-200 text-slate-500 hover:border-indigo-400"
                         : table.status === "occupied"
                           ? "bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm"
                           : table.status === "reserved"
@@ -4394,17 +4618,20 @@ export function IPosModule() {
                             : "bg-slate-100 border-primary-200 text-blue-900",
                     )}
                     onClick={() => {
-                      if (
-                        table.status === "available" ||
-                        table.status === "cleaning"
-                      ) {
-                        alert(
-                          `Mở ${activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "phòng" : "bàn"} ${table.name}`,
-                        );
+                      setLinkedTableId(table.id);
+                      setOrderNote(`Đơn từ Bàn ${table.name}`);
+                      setActiveTab("sales");
+                      if (table.status === "occupied" && table.currentOrder) {
+                        const mockProductItems = [
+                          { id: "1", name: "Cafe Phin Sữa Đá", price: 35000, quantity: 2, category: "Đồ uống" },
+                          { id: "2", name: "Trà Đào Cam Sả", price: 45000, quantity: 1, category: "Đồ uống" }
+                        ].map(item => ({
+                          ...item,
+                          cartItemId: String(Math.random())
+                        }));
+                        setCart(mockProductItems);
                       } else {
-                        alert(
-                          `Xem đơn ${activeStoreConfig?.industry === "Lưu trú, làm đẹp" ? "phòng" : "bàn"} ${table.name}`,
-                        );
+                        setCart([]);
                       }
                     }}
                   >
@@ -4444,7 +4671,7 @@ export function IPosModule() {
                     </div>
 
                     {table.status === "occupied" && (
-                      <div className="mt-2 pt-2 border-t border-emerald-100 flex justify-between items-center animate-in fade-in slide-in-">
+                      <div className="mt-2 pt-2 border-t border-emerald-100 flex justify-between items-center animate-in face-in slide-in-">
                         <p className="text-[10px] font-black">
                           {formatCurrency(table.currentOrder.total)}
                         </p>
@@ -4464,18 +4691,45 @@ export function IPosModule() {
                     )}
 
                     {/* Quick Actions Hover */}
-                    <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                      <button
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600  transition-transform shadow-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTableForQr(table.id);
-                        }}
-                      >
-                        <QrCode className="w-5 h-5" />
-                      </button>
-                      <p className="text-[10px] font-black text-[#FAF9F5] uppercase tracking-widest px-3 py-1.5 bg-white/20 rounded-sm">
-                        Chọn Bàn
+                    <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center gap-2.5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs p-3">
+                      <div className="flex gap-2">
+                        <button
+                          className="w-9 h-9 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-all shadow-md active:scale-95"
+                          title="Hiển thị QR Code E-Menu"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTableForQr(table.id);
+                          }}
+                        >
+                          <QrCode className="w-4.5 h-4.5" />
+                        </button>
+                        <button
+                          className="w-9 h-9 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-all shadow-md active:scale-95"
+                          title="Bán hàng / Vào bàn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLinkedTableId(table.id);
+                            setOrderNote(`Đơn từ Bàn ${table.name}`);
+                            setActiveTab("sales");
+                            if (table.status === "occupied" && table.currentOrder) {
+                              const mockProductItems = [
+                                { id: "1", name: "Cafe Phin Sữa Đá", price: 35000, quantity: 2, category: "Đồ uống" },
+                                { id: "2", name: "Trà Đào Cam Sả", price: 45000, quantity: 1, category: "Đồ uống" }
+                              ].map(item => ({
+                                ...item,
+                                cartItemId: String(Math.random())
+                              }));
+                              setCart(mockProductItems);
+                            } else {
+                              setCart([]);
+                            }
+                          }}
+                        >
+                          <ShoppingCart className="w-4.5 h-4.5" />
+                        </button>
+                      </div>
+                      <p className="text-[9px] font-bold text-white uppercase tracking-wider text-center line-clamp-1">
+                        Bàn {table.name}
                       </p>
                     </div>
                   </div>

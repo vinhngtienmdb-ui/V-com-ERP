@@ -189,10 +189,10 @@ const logAdminAudit = async (
    const isKnownAdmin = currentUser.email === 'admin@v-erp.com' || currentUser.email === 'vinh.ngtienmdb@gmail.com' || (staffInfo && staffInfo.role === 'admin');
    if (isKnownAdmin) {
      const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
-     await logAdminAudit(currentUser.email || 'admin', 'Logout', 'Success', currentUser.uid, tenantId);
+     logAdminAudit(currentUser.email || 'admin', 'Logout', 'Success', currentUser.uid, tenantId).catch(err => { console.error("Logout audit logging failed in background:", err); });
    }
  }
- await logout();
+ try { await logout(); } catch (e) { console.error("Logout failed:", e); }
  };
 
  return (

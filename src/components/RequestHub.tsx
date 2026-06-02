@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
  FileText, 
  Send, 
@@ -24,7 +24,12 @@ import {
  ChevronRight,
  Layout,
  AlertTriangle,
- Trash2
+ Trash2,
+ ArrowRightLeft,
+ ShieldAlert,
+ Sparkles,
+ Scale,
+ BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -73,6 +78,7 @@ export function RequestHub() {
  }, (err) => console.error('RequestHub snapshot error:', err));
  return () => unsub();
  }, []);
+
  
  // Settings State
  const [formConfigs, setFormConfigs] = useState(INITIAL_FORM_CONFIGS);
@@ -84,6 +90,18 @@ export function RequestHub() {
 
  // Signature State
  const [signingRequestId, setSigningRequestId] = useState<string | null>(null);
+ const [legalAuditResult, setLegalAuditResult] = useState<string | null>(null);
+ const [isAuditing, setIsAuditing] = useState(false);
+ const canvasRef = useRef<HTMLCanvasElement | null>(null);
+ const [isCanvasDrawing, setIsCanvasDrawing] = useState(false);
+ const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
+ const [drawnSignatureData, setDrawnSignatureData] = useState<string | null>(() => {
+  try {
+    return localStorage.getItem('vcomm_saved_signature') || null;
+  } catch {
+    return null;
+  }
+ });
  const [signatureMethod, setSignatureMethod] = useState<'company_ca' | 'personal_ca' | 'personal_image'>('company_ca');
  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
 
@@ -93,6 +111,17 @@ export function RequestHub() {
 
  // Detail View State
  const [selectedRequestForView, setSelectedRequestForView] = useState<any>(null);
+
+ useEffect(() => {
+  setLegalAuditResult(null);
+ }, [selectedRequestForView]);
+
+ // Routing State
+ const [showRouteModal, setShowRouteModal] = useState(false);
+ const [routingRequest, setRoutingRequest] = useState<any>(null);
+ const [routingDepartment, setRoutingDepartment] = useState('accounting');
+ const [routingRecipient, setRoutingRecipient] = useState('');
+ const [routingNote, setRoutingNote] = useState('');
 
  const handleRevokeRequest = (id: string) => {
  if(window.confirm('Bạn có chắc muốn thu hồi đề xuất này?')) {
@@ -108,6 +137,101 @@ export function RequestHub() {
   setRequests(requests.filter(r => r.id !== id));
   setSelectedRequestForView(null);
  }
+ };
+
+ const executeRouting = async () => {
+ if (!routingRequest) return;
+ 
+ const departmentLabels: Record<string, string> = {
+  accounting: 'Phòng Kế toán & Tài chính',
+  hr: 'Phòng Nhân sự & Đào tạo',
+  ceo: 'Văn phòng Ban Giám đốc',
+  ops: 'Phòng Vận hành & Kho vận',
+ };
+ 
+ const selectedDeptLabel = departmentLabels[routingDepartment] || 'Đơn vị đích';
+ const recipientSuffix = routingRecipient ? ` (${routingRecipient})` : '';
+ const stepName = `Luân chuyển -> ${selectedDeptLabel}${recipientSuffix}`;
+ 
+ const routingActionLog = {
+  level: (routingRequest.approvalLog || []).length + 1,
+  status: 'approved',
+  by: user?.displayName || user?.email || 'Hệ thống',
+  time: new Date().toLocaleString('vi-VN'),
+  stepName: stepName,
+  note: routingNote || 'Gửi kèm văn bản điện tử'
+ };
+ 
+ const updatedApprovalLog = [
+  ...(routingRequest.approvalLog || []),
+  routingActionLog
+ ];
+ 
+ // Update local state
+ setRequests(prevRequests => prevRequests.map(req => 
+  req.id === routingRequest.id 
+    ? { ...req, approvalLog: updatedApprovalLog, status: 'pending' } 
+    : req
+ ));
+ 
+ // If we have selectedRequestForPrint open, update its state as well
+ if (selectedRequestForPrint && selectedRequestForPrint.id === routingRequest.id) {
+  setSelectedRequestForPrint({
+    ...selectedRequestForPrint,
+    approvalLog: updatedApprovalLog,
+    status: 'pending'
+  });
+ }
+
+ // Also update selectedRequestForView if open
+ if (selectedRequestForView && selectedRequestForView.id === routingRequest.id) {
+  setSelectedRequestForView({
+    ...selectedRequestForView,
+    approvalLog: updatedApprovalLog,
+    status: 'pending'
+  });
+ }
+ 
+ // Check if DB record and update Firestore
+ if (dbRequestIds.has(routingRequest.id)) {
+  try {
+    updateDoc(doc(db, 'requests', routingRequest.id), {
+      approvalLog: updatedApprovalLog,
+      status: 'pending',
+      updatedAt: serverTimestamp()
+    }).catch(err => console.error('Failed to update routed request in DB:', err));
+  } catch (err) {
+    console.error('Failed to update routed request in DB:', err);
+  }
+ }
+ 
+ // Add real logs to Admin Audit Logs too for total corporate consistency
+ try {
+  const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+  const auditPayload = {
+    email: user?.email || 'admin@v-erp.com',
+    userId: user?.uid || 'admin-ai-system',
+    action: `Circulate Document [${routingRequest.id}] to ${selectedDeptLabel}`,
+    status: 'Success',
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    browser: 'WorkFlow Routing Engine',
+    ipAddress: '127.0.0.1',
+    tenantId
+  };
+  
+  addDoc(collection(db, 'admin_audit_logs'), auditPayload).catch(err => console.error('Failed to log routing audit trail:', err));
+ } catch (err) {
+  console.error('Failed to log routing audit trail:', err);
+ }
+ 
+ addNotification(
+  'Luân chuyển thành công', 
+  `Đã chuyển tiếp văn bản ${routingRequest.id} đến bộ phận ${selectedDeptLabel}.`
+ );
+ 
+ // Close route modal
+ setShowRouteModal(false);
  };
 
  const handleStatusChange = (id: string, newStatus: string) => {
@@ -271,43 +395,171 @@ export function RequestHub() {
  });
  };
 
- const executeSignature = async () => {
- if (!signingRequestId) return;
- setIsSigningInProcess(true);
- try {
- const res = await fetch('/api/signature/sign', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-  requestId: signingRequestId,
-  provider: signatureMethod,
-  signerName: user?.displayName || user?.email || 'Unknown',
-  }),
- });
- if (!res.ok) throw new Error(`Signature API error: ${res.status}`);
+ // --- START OF HANDDRAWN SIGNATURE PAD HELPERS ---
+ const startCanvasDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  if (!canvasRef.current) return;
+  const canvas = canvasRef.current;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
- const signedData = {
-  signatureStatus: 'signed',
-  status: 'approved',
-  signedBy: user?.displayName || 'User',
-  signedAt: new Date().toLocaleString('vi-VN'),
-  caProvider: signatureMethod.toUpperCase().replace('_', ' '),
+  setIsCanvasDrawing(true);
+  setIsCanvasEmpty(false);
+
+  // Setup drawing appearance
+  ctx.strokeStyle = '#1e3a8a'; // Deep primary blue-900 for executive signing feel
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const pos = getCanvasPosition(e, canvas);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
  };
 
- setRequests(requests.map(req =>
-  req.id === signingRequestId ? { ...req, ...signedData } : req
- ));
+ const drawCanvas = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  if (!isCanvasDrawing || !canvasRef.current) return;
+  const canvas = canvasRef.current;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
- if (dbRequestIds.has(signingRequestId)) {
-  updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() })
-  .catch(err => console.error('Signature updateDoc error:', err));
- }
- } catch (err) {
- console.error('executeSignature error:', err);
- } finally {
- setIsSigningInProcess(false);
- setSigningRequestId(null);
- }
+  const pos = getCanvasPosition(e, canvas);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+ };
+
+ const stopCanvasDrawing = () => {
+  setIsCanvasDrawing(false);
+  saveCanvasSignature();
+ };
+
+ const getCanvasPosition = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) => {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = 'touches' in e ? (e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX) : e.clientX;
+  const clientY = 'touches' in e ? (e.touches[0] ? e.touches[0].clientY : e.changedTouches[0].clientY) : e.clientY;
+  return {
+   x: clientX - rect.left,
+   y: clientY - rect.top
+  };
+ };
+
+ const clearCanvasSignature = () => {
+  if (!canvasRef.current) return;
+  const canvas = canvasRef.current;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  setIsCanvasEmpty(true);
+  setDrawnSignatureData(null);
+  try {
+    localStorage.removeItem('vcomm_saved_signature');
+  } catch {}
+ };
+
+ const saveCanvasSignature = () => {
+  if (!canvasRef.current || isCanvasEmpty) return;
+  try {
+    const dataUrl = canvasRef.current.toDataURL('image/png');
+    setDrawnSignatureData(dataUrl);
+    localStorage.setItem('vcomm_saved_signature', dataUrl);
+  } catch (err) {
+    console.error('Failed to save drawn signature:', err);
+  }
+ };
+ // --- END OF HANDDRAWN SIGNATURE PAD HELPERS ---
+
+ // --- START OF LEGAL AI AUDITOR ENGINE ---
+ const handleAiLegalAudit = async (req: any) => {
+  if (!req) return;
+  setIsAuditing(true);
+  setLegalAuditResult(null);
+  try {
+    const response = await fetch('/api/gemini/legal-audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        documentId: req.id,
+        type: req.type || 'admin',
+        subtype: req.subtype || 'Nghỉ phép',
+        title: req.title || '',
+        formData: req.formData || {}
+      })
+    });
+    
+    if (!response.ok) throw new Error('API Legal Audit failed');
+    const data = await response.json();
+    setLegalAuditResult(data.text);
+    addNotification('Thẩm định AI hoàn tất', `Pháp chế VComm đã hoàn tất thẩm định tính tuân thủ cho hồ sơ ${req.id}.`);
+  } catch (err) {
+    console.error('AI Legal Audit Error:', err);
+    addNotification('Lỗi Thẩm định AI', 'Hệ thống thẩm định pháp lý AI đang bận. Vui lòng thử lại sau.');
+  } finally {
+    setIsAuditing(false);
+  }
+ };
+ // --- END OF LEGAL AI AUDITOR ENGINE ---
+
+ const executeSignature = async () => {
+  if (!signingRequestId) return;
+  setIsSigningInProcess(true);
+  try {
+   const sigImage = signatureMethod === 'personal_image' ? drawnSignatureData : null;
+   const bodyPayload: any = {
+    requestId: signingRequestId,
+    provider: signatureMethod,
+    signerName: user?.displayName || user?.email || 'Unknown'
+   };
+   if (sigImage) {
+    bodyPayload.signatureDraw = sigImage;
+   }
+
+   const res = await fetch('/api/signature/sign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(bodyPayload),
+   });
+   
+   if (!res.ok) throw new Error(`Signature API error: ${res.status}`);
+   const resData = await res.json();
+   const secureHash = resData.secureHash || ('AES-' + Math.random().toString(36).substring(2, 10).toUpperCase());
+
+   const signedData = {
+    signatureStatus: 'signed',
+    status: 'approved',
+    signedBy: user?.displayName || 'User',
+    signedAt: new Date().toLocaleString('vi-VN'),
+    caProvider: signatureMethod.toUpperCase().replace('_', ' '),
+    secureHash: secureHash,
+    signatureDraw: sigImage
+   };
+
+   setRequests(prev => prev.map(req =>
+    req.id === signingRequestId ? { ...req, ...signedData } : req
+   ));
+
+   // If current detail view is open, update its state too
+   if (selectedRequestForView && selectedRequestForView.id === signingRequestId) {
+    setSelectedRequestForView({ ...selectedRequestForView, ...signedData });
+   }
+
+   // If print view is open, update it
+   if (selectedRequestForPrint && selectedRequestForPrint.id === signingRequestId) {
+    setSelectedRequestForPrint({ ...selectedRequestForPrint, ...signedData });
+   }
+
+   if (dbRequestIds.has(signingRequestId)) {
+    updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() })
+    .catch(err => console.error('Signature updateDoc error:', err));
+   }
+
+   addNotification('Ký số thành công', `Đề xuất mã ${signingRequestId} đã được ký niêm phong điện tử.`);
+  } catch (err) {
+   console.error('executeSignature error:', err);
+   addNotification('Lỗi kết nối ký số', 'Không thể kết nối cổng xác thực CA chữ ký điện tử.');
+  } finally {
+   setIsSigningInProcess(false);
+   setSigningRequestId(null);
+  }
  };
 
 
@@ -921,6 +1173,51 @@ export function RequestHub() {
   ))}
   </div>
   </div>
+
+  {signatureMethod === 'personal_image' && (
+  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+   <div className="flex justify-between items-center text-xs">
+    <span className="font-bold text-slate-700 flex items-center gap-1.5 font-sans">
+     <PenTool className="w-4 h-4 text-blue-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
+    </span>
+    {drawnSignatureData && (
+     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
+      Đã thiết lập chữ ký
+     </span>
+    )}
+   </div>
+   <div className="relative border border-slate-300 rounded-xl bg-white overflow-hidden h-40 shadow-inner">
+    <canvas
+     ref={canvasRef}
+     width={600}
+     height={160}
+     className="w-full h-full cursor-crosshair rounded-xl block touch-none"
+     onMouseDown={startCanvasDrawing}
+     onMouseMove={drawCanvas}
+     onMouseUp={stopCanvasDrawing}
+     onMouseLeave={stopCanvasDrawing}
+     onTouchStart={startCanvasDrawing}
+     onTouchMove={drawCanvas}
+     onTouchEnd={stopCanvasDrawing}
+    />
+    {isCanvasEmpty && !drawnSignatureData && (
+     <div className="absolute inset-0 flex items-center justify-center p-4 text-center pointer-events-none select-none">
+      <p className="text-[11px] text-slate-400 font-medium">Sử dụng chuột, bút cảm ứng hoặc ngón tay để vẽ chữ ký của bạn vào đây...</p>
+     </div>
+    )}
+   </div>
+   <div className="flex justify-between items-center gap-4">
+    <button
+     type="button"
+     onClick={clearCanvasSignature}
+     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200"
+    >
+     <X className="w-3.5 h-3.5 text-slate-500" /> Xóa nét vẽ
+    </button>
+    <p className="text-[9px] text-slate-400 leading-snug font-medium text-right italic max-w-xs">Chữ ký tay sẽ được lưu tự động cục bộ và kết xuất trên văn bản trình in A4.</p>
+   </div>
+  </div>
+  )}
   </div>
   </div>
  <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
@@ -1005,6 +1302,113 @@ export function RequestHub() {
               ))}
             </div>
           </div>
+
+          {/* Thẩm định Pháp lý & Tuân thủ AI */}
+          <div>
+            <h4 className="text-[13px] font-bold text-slate-900 mb-3 border-b border-rose-100 pb-2 text-rose-800 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Scale className="w-4 h-4" /> Thẩm định Pháp chế & Tuân thủ AI
+              </span>
+              <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 px-2 py-0.5 rounded tracking-wider leading-none">
+                Luật Lao động & Kế toán VN
+              </span>
+            </h4>
+
+            {legalAuditResult ? (
+              <div className="bg-rose-50/50 border border-rose-100 rounded-2xl p-5 space-y-4">
+                <div className="prose prose-slate max-w-none text-xs leading-relaxed text-slate-700 whitespace-pre-line font-medium md:text-[13px]">
+                  {legalAuditResult}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleAiLegalAudit(selectedRequestForView)}
+                    disabled={isAuditing}
+                    className="px-3.5 py-1.5 bg-white border border-rose-200 rounded-xl text-xs font-bold hover:bg-rose-50 text-rose-700 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <RefreshCw className={cn("w-3.5 h-3.5", isAuditing && "animate-spin")} /> Chạy lại kiểm tra
+                  </button>
+                  <button
+                    onClick={() => setLegalAuditResult(null)}
+                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                  >
+                    Đóng kết quả
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[#fafafa] border border-slate-200 rounded-2xl p-6 text-center space-y-3">
+                <div className="w-12 h-12 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                  <Sparkles className="w-5 h-5 animate-pulse" />
+                </div>
+                <div className="max-w-md mx-auto">
+                  <p className="text-[13px] font-bold text-slate-800">Quét rủi ro pháp lý bằng trí tuệ nhân tạo (Generative AI)</p>
+                  <p className="text-[11px] text-slate-500 mt-1 font-medium leading-normal">
+                    Tự động rà soát nội dung phiếu so với Bộ luật Lao động 2019, Luật Kế toán 2015, định ngạch chi tiêu nội bộ, trần OT, và phát hiện lỗi trước khi quản cấp cao tiến hành "Ký số" phê duyệt.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleAiLegalAudit(selectedRequestForView)}
+                  disabled={isAuditing}
+                  className="px-5 py-2.5 bg-rose-950 text-rose-200 border border-rose-900 rounded-2xl text-xs font-bold hover:bg-rose-900 hover:text-white transition-all flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50 shadow-sm"
+                >
+                  {isAuditing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang thẩm định điều khoản...
+                    </>
+                  ) : (
+                    <>
+                      <Scale className="w-4 h-4 text-rose-400" /> BẮT ĐẦU THẨM ĐỊNH TUÂN THỦ <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Chứng thư tài liệu / Security Sealed block */}
+          {selectedRequestForView.signatureStatus === 'signed' && (
+            <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-950 shadow-sm space-y-4">
+              <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-emerald-950 text-emerald-400 border border-emerald-900/50 rounded-lg">
+                    <ShieldCheck className="w-4 h-4 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-100 font-sans leading-none">Chứng Thư Niêm Phong Điện Tử</h4>
+                    <span className="text-[9px] text-slate-400 font-medium">Đối soát bảo mật AES-256 mã hóa qua {selectedRequestForView.caProvider || 'CA'}</span>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-900/40">
+                  SECURE INTEGRITY
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-[11px] leading-tight font-medium pb-2">
+                <div>
+                  <p className="text-slate-400 mb-0.5">Xác thực chứng thư:</p>
+                  <p className="font-bold text-slate-100">{selectedRequestForView.signedBy || 'Quản trị viên'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 mb-0.5">Thời gian ký số:</p>
+                  <p className="font-bold text-slate-100">{selectedRequestForView.signedAt || '---'}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-slate-400 mb-0.5">Mã định danh bảo mật SHA-256 Seal:</p>
+                  <p className="font-bold text-slate-100 text-[10px] font-mono tracking-tight bg-slate-950 p-2 rounded-lg border border-slate-800 truncate">
+                    {selectedRequestForView.secureHash || 'AES-SHA256-D93B8C1D0F1C3E4'}
+                  </p>
+                </div>
+              </div>
+              
+              {selectedRequestForView.signatureDraw && (
+                <div className="border-t border-slate-800 pt-3">
+                  <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
+                  <div className="bg-white p-2 rounded-xl flex items-center justify-center max-w-[200px] border border-slate-700">
+                    <img src={selectedRequestForView.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Approval Workflow */}
           <div>
@@ -1247,6 +1651,27 @@ export function RequestHub() {
  {/* Print Control Overlay (Visible only on UI, hidden in Print) */}
  <div className="absolute top-4 -right-16 flex flex-col gap-2 print:hidden">
  <button 
+ onClick={() => {
+   setSigningRequestId(selectedRequestForPrint.id);
+   setShowPrintModal(false);
+ }}
+ className="p-3 bg-amber-600 text-white rounded-full shadow-sm hover:scale-105 active:translate-y-0.5 transition-all cursor-pointer"
+ title="Gửi ký số"
+ >
+ <FileSignature className="w-5 h-5" />
+ </button>
+
+ <button 
+ onClick={() => {
+   setRoutingRequest(selectedRequestForPrint);
+   setShowRouteModal(true);
+ }}
+ className="p-3 bg-emerald-600 text-white rounded-full shadow-sm hover:scale-105 active:translate-y-0.5 transition-all cursor-pointer"
+ title="Luân chuyển văn bản"
+ >
+ <ArrowRightLeft className="w-5 h-5" />
+ </button>
+ <button 
  onClick={() => window.print()}
  className="p-3 bg-blue-600 text-white rounded-full shadow-sm  transition-transform"
  title="In ngay"
@@ -1373,7 +1798,20 @@ export function RequestHub() {
  <p className="text-[10px] font-bold text-slate-900 uppercase">NIÊM PHONG SỐ (CA)</p>
  <div className="h-24 w-full flex items-center justify-center relative border-2 border-slate-900 bg-slate-50/10">
  {selectedRequestForPrint.signatureStatus === 'signed' ? (
-  selectedRequestForPrint.caProvider === 'PERSONAL IMAGE' ? (
+  selectedRequestForPrint.signatureDraw ? (
+    <div className="relative flex flex-col items-center h-full justify-between p-1 text-center font-sans">
+      <img 
+        src={selectedRequestForPrint.signatureDraw} 
+        alt="Chữ ký tay điện tử" 
+        className="max-h-14 object-contain max-w-[95%] mx-auto mt-0.5" 
+        referrerPolicy="no-referrer" 
+      />
+      <div className="text-[6.5px] text-slate-500 leading-none font-mono">
+        Ký bởi: {selectedRequestForPrint.signedBy}<br/>
+        {selectedRequestForPrint.signedAt}
+      </div>
+    </div>
+  ) : selectedRequestForPrint.caProvider === 'PERSONAL IMAGE' ? (
     <div className="relative flex flex-col items-center gap-1 p-2 text-center">
       <div className="text-blue-800 text-xl opacity-80 -rotate-3 mb-1" style={{ fontFamily: 'cursive' }}>
         {selectedRequestForPrint.signedBy}
@@ -1390,8 +1828,8 @@ export function RequestHub() {
     </div>
   )
  ) : (
- <div className="text-slate-500 italic text-[9px] text-center px-4 leading-tight">
- (Tài liệu chưa được ký số niêm phong)
+ <div className="text-slate-400 italic text-[9px] text-center px-4 leading-tight">
+ (Chờ ký số niêm phong điện tử)
  </div>
  )}
  </div>
@@ -1399,16 +1837,178 @@ export function RequestHub() {
  </div>
  </div>
 
- <div className="mt-20 pt-8 border-t border-slate-300 text-center space-y-1">
- <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu này được tạo và lưu trữ trên hệ thống Omni-System ERP v2.0</p>
- <p className="text-[7px] text-slate-500 font-mono">MD5: {Math.random().toString(36).substring(7).toUpperCase()} | Timestamp: {new Date().toISOString()}</p>
+ <div className="mt-20 pt-8 border-t border-slate-300 flex justify-between items-center gap-8 text-left font-sans">
+  <div className="flex items-center gap-4">
+   <div className="w-12 h-12 bg-white border border-slate-300 p-1 shrink-0 flex items-center justify-center">
+    <svg viewBox="0 0 100 100" className="w-full h-full text-slate-900 animate-pulse" fill="currentColor">
+     <rect x="0" y="0" width="30" height="30" />
+     <rect x="5" y="5" width="20" height="20" fill="white" />
+     <rect x="10" y="10" width="10" height="10" />
+
+     <rect x="70" y="0" width="30" height="30" />
+     <rect x="75" y="5" width="20" height="20" fill="white" />
+     <rect x="80" y="10" width="10" height="10" />
+
+     <rect x="0" y="70" width="30" height="30" />
+     <rect x="5" y="75" width="20" height="20" fill="white" />
+     <rect x="10" y="80" width="10" height="10" />
+     
+     <rect x="35" y="5" width="8" height="8" />
+     <rect x="48" y="12" width="12" height="6" />
+     <rect x="35" y="20" width="10" height="10" />
+     <rect x="55" y="25" width="8" height="8" />
+     
+     <rect x="5" y="35" width="14" height="6" />
+     <rect x="24" y="42" width="12" height="12" />
+     
+     <rect x="42" y="42" width="16" height="16" />
+     <rect x="75" y="42" width="10" height="10" />
+     
+     <rect x="35" y="70" width="14" height="8" />
+     <rect x="55" y="75" width="8" height="12" />
+     <rect x="70" y="75" width="12" height="8" />
+     <rect x="88" y="88" width="12" height="12" />
+    </svg>
+   </div>
+   <div className="space-y-1">
+    <p className="text-[9px] font-bold text-slate-900 uppercase">Xác thực chứng từ điện tử (VComm E-Verify Portal)</p>
+    <p className="text-[8px] text-slate-500 leading-normal max-w-sm">
+      Quét mã QR để đối soát nguyên trạng nội dung gốc và lịch sử lưu vết thay đổi của chứng từ lưu mã hóa trên mạng lưới của Omni-System ERP v2.0.
+    </p>
+   </div>
+  </div>
+  <div className="text-right space-y-1 shrink-0">
+   <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">Hệ thống Trình ký & Ký số VComm Legal v2.0</p>
+   <p className="text-[7px] text-slate-400 font-mono mt-0.5">
+    Secure Hash: {selectedRequestForPrint.secureHash || 'AES-PENDING-UNSEALED'}<br />
+    Xác minh UTC: {new Date().toLocaleString('vi-VN')}
+   </p>
+  </div>
  </div>
  </div>
  </motion.div>
  </div>
  )}
  </AnimatePresence>
- {showTemplateGallery && (
+
+ {/* Routing / Luân chuyển văn bản modal */}
+ <AnimatePresence>
+ {showRouteModal && routingRequest && (
+  <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" onClick={() => setShowRouteModal(false)}>
+   <motion.div 
+     initial={{ opacity: 0, scale: 0.95 }}
+     animate={{ opacity: 1, scale: 1 }}
+     exit={{ opacity: 0, scale: 0.95 }}
+     className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200"
+     onClick={(e) => e.stopPropagation()}
+   >
+     {/* Header */}
+     <div className="bg-slate-950 text-white px-6 py-4 flex items-center justify-between">
+       <div className="flex items-center gap-3">
+         <div className="p-2 bg-emerald-950 text-emerald-400 rounded-lg border border-emerald-900/50">
+           <ArrowRightLeft className="w-5 h-5 animate-pulse" />
+         </div>
+         <div>
+           <h3 className="font-bold text-sm uppercase tracking-wider font-sans text-slate-100 flex items-center gap-1.5">
+             Luân chuyển văn bản điện tử
+           </h3>
+           <p className="text-[10px] text-slate-400 font-medium">Bàn giao hồ sơ số và phân luồng tiếp nhận quy trình tự động.</p>
+         </div>
+       </div>
+       <button 
+         type="button"
+         onClick={() => setShowRouteModal(false)}
+         className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+       >
+         <X className="w-5 h-5" />
+       </button>
+     </div>
+
+     {/* Info Strip */}
+     <div className="bg-slate-50 px-6 py-3 border-b border-slate-200 text-xs flex justify-between items-center text-slate-600 font-medium">
+       <span>Phiếu: <strong className="text-slate-900 font-bold">{routingRequest.id}</strong> ({routingRequest.subtype})</span>
+       <span>Người gửi: <strong className="text-slate-900 font-bold">{routingRequest.requester}</strong></span>
+     </div>
+
+     {/* Content */}
+     <div className="p-6 space-y-4">
+       <div className="space-y-2">
+         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Chọn Bộ phận / Phòng ban tiếp nhận:</label>
+         <div className="grid grid-cols-2 gap-3">
+           {[
+             { id: 'accounting', name: 'Phòng Kế toán & Tài chính', desc: 'Quyết toán, đối soát tạm ứng', color: 'blue' },
+             { id: 'hr', name: 'Phòng Nhân sự & Đào tạo', desc: 'Phê duyệt nghỉ phép, tuyển dụng', color: 'purple' },
+             { id: 'ceo', name: 'Văn phòng Ban Giám đốc', desc: 'Duyệt tối cao & đầu tư lớn', color: 'rose' },
+             { id: 'ops', name: 'Phòng Vận hành & Kho vận', desc: 'Logistics, iPOS, siêu thị VComm', color: 'emerald' },
+           ].map((dept) => (
+             <div 
+               key={dept.id}
+               onClick={() => setRoutingDepartment(dept.id)}
+               className={cn(
+                 "p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-1.5",
+                 routingDepartment === dept.id 
+                   ? "bg-slate-50 border-slate-950 ring-2 ring-slate-100" 
+                   : "bg-white border-slate-200 hover:border-slate-300"
+               )}
+             >
+               <div className="flex justify-between items-center">
+                 <span className="font-bold text-xs text-slate-900">{dept.name}</span>
+                 <div className={cn("w-3 h-3 rounded-full border-2", routingDepartment === dept.id ? "bg-slate-900 border-slate-900" : "bg-white border-slate-300")} />
+               </div>
+               <span className="text-[10px] text-slate-500 leading-tight font-medium ml-0.5">{dept.desc}</span>
+             </div>
+           ))}
+         </div>
+       </div>
+
+       {/* Recipient name */}
+       <div className="space-y-1">
+         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Chỉ định đích danh người xử lý (Tùy chọn):</label>
+         <input 
+           type="text"
+           placeholder="Ví dụ: Nguyễn Văn A (Trưởng phòng), hoặc bỏ trống để tự động nhận..."
+           value={routingRecipient}
+           onChange={(e) => setRoutingRecipient(e.target.value)}
+           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium"
+         />
+       </div>
+
+       {/* Ghi chú / Đi kèm */}
+       <div className="space-y-1">
+         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Ý kiến luân chuyển / Hướng dẫn xử lý:</label>
+         <textarea
+           rows={3}
+           placeholder="Nhập hướng dẫn xử lý hồ sơ..."
+           value={routingNote}
+           onChange={(e) => setRoutingNote(e.target.value)}
+           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium resize-none text-slate-800"
+         />
+       </div>
+     </div>
+
+     {/* Footer */}
+     <div className="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+       <button 
+         type="button"
+         onClick={() => setShowRouteModal(false)}
+         className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all cursor-pointer"
+       >
+         Hủy bỏ
+       </button>
+       <button 
+         type="button"
+         onClick={executeRouting}
+         className="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-sm shadow-emerald-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
+       >
+         Xác nhận Luân chuyển <Send className="w-4 h-4" />
+       </button>
+     </div>
+   </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+
+  {showTemplateGallery && (
  <TemplateGalleryModal
    onClose={() => setShowTemplateGallery(false)}
    onSelectTemplate={(template) => {

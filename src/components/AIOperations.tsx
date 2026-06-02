@@ -33,6 +33,9 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { AiTaskResult } from '../types/erp';
+import { db } from '../lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const MOCK_AI_LOGS: AiTaskResult[] = [
  { id: 'AI-101', type: 'image_moderation', targetId: 'PRD-002', confidence: 0.98, status: 'flagged', result: { reason: 'Hình ảnh chứa watermark thương hiệu khác' }, timestamp: '10 phút trước' },
@@ -70,6 +73,106 @@ const MOCK_HUMAN_QUEUE = [
 
 export function AIOperations() {
  const [activeModel, setActiveModel] = useState<'moderation' | 'pricing' | 'fraud' | 'recommendation' | 'chatbot' | 'review'>('moderation');
+ const { staffInfo, user } = useAuth();
+ 
+ // Custom neural diagnostics states
+ const [customPrompt, setCustomPrompt] = useState('');
+ const [insightOutput, setInsightOutput] = useState('');
+ const [isLoadingInsight, setIsLoadingInsight] = useState(false);
+ const [insightSimulated, setInsightSimulated] = useState(false);
+ const [diagnosticType, setDiagnosticType] = useState<'fraud' | 'pricing' | 'general'>('general');
+ const [insightStatusMsg, setInsightStatusMsg] = useState('');
+
+ const handleGenerateDiagnostics = async (type: 'fraud' | 'pricing' | 'general', promptText: string) => {
+   setIsLoadingInsight(true);
+   setInsightOutput('');
+   setInsightStatusMsg('Đang gửi yêu cầu phân tích nơ-ron...');
+   setDiagnosticType(type);
+   
+   try {
+     const response = await fetch('/api/gemini/diagnostics', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ prompt: promptText, type }),
+     });
+     const data = await response.json();
+     if (data.error) {
+       setInsightOutput(`### ❌ Lỗi phân tích\n\${data.error}`);
+     } else {
+       setInsightOutput(data.text || '');
+       setInsightSimulated(!!data.simulated);
+       setInsightStatusMsg('Phân tích hoàn tất thành công!');
+     }
+   } catch (e: any) {
+     setInsightOutput(`### ❌ Lỗi kết nối\nKhông thể kết nối đến máy chủ AI: \${e.message || e}`);
+   } finally {
+     setIsLoadingInsight(false);
+   }
+ };
+
+ const handleApplyMitigation = async () => {
+   if (!insightOutput) return;
+   setInsightStatusMsg('Đang ghi nhận cấu hình quyết định vào blockchain/audit logs...');
+   
+   try {
+     const email = user?.email || staffInfo?.username || 'admin@v-erp.com';
+     const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+     
+     const payload = {
+       email,
+       userId: user?.uid || 'admin-ai-system',
+       action: `Apply Gemini AI Mitigation [\${diagnosticType.toUpperCase()}]`,
+       status: 'Success',
+       timestamp: new Date().toISOString(),
+       userAgent: navigator.userAgent,
+       browser: 'AIOps Engine (Gemini 3.5)',
+       ipAddress: '127.0.0.1',
+       tenantId
+     };
+     
+     // Write to Firestore admin_audit_logs root collection
+     await addDoc(collection(db, 'admin_audit_logs'), payload);
+     
+     // Write to nested tenant subcollection
+     await addDoc(collection(db, 'tenants', tenantId, 'audit_logs'), payload);
+     
+     setInsightStatusMsg('Áp dụng chính sách thành công! Đã đồng bộ lên lịch sử Audit Logs.');
+     alert('Đã áp dụng đề xuất thành công và lưu vết kiểm toán (Audit Trail) hệ thống!');
+   } catch (err: any) {
+     console.error('Failed to log audit of mitigation:', err);
+     setInsightStatusMsg(`Lỗi ghi nhận: \${err.message || err}`);
+   }
+ };
+
+ const renderInsightText = (text: string) => {
+   return text.split('\n').map((line, index) => {
+     if (line.startsWith('###')) {
+       return <h3 key={index} className="text-sm uppercase tracking-wider font-black text-slate-100 flex items-center gap-2 mt-4 first:mt-0 mb-2 italic border-b border-light-900 pb-1">{line.replace('###', '')}</h3>;
+     }
+     if (line.startsWith('####')) {
+       return <h4 key={index} className="text-xs font-black uppercase tracking-wider text-orange-400 mt-3 mb-1.5">{line.replace('####', '')}</h4>;
+     }
+     if (line.startsWith('- **') || line.startsWith('* **')) {
+       const parts = line.split('**');
+       if (parts.length >= 3) {
+         return (
+           <li key={index} className="list-none pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-orange-500 text-xs text-slate-300 leading-relaxed mb-1.5">
+             <strong className="text-slate-100 font-bold">{parts[1]}</strong>{parts.slice(2).join('')}
+           </li>
+         );
+       }
+     }
+     if (line.startsWith('-') || line.startsWith('*')) {
+       return (
+         <li key={index} className="list-none pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-orange-500 text-xs text-slate-300 leading-relaxed mb-1.5">
+           {line.substring(2)}
+         </li>
+       );
+     }
+     if (line.trim() === '') return <div key={index} className="h-2" />;
+     return <p key={index} className="text-xs text-slate-300 leading-relaxed mb-1.5">{line}</p>;
+   });
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-700 pb-12">
@@ -258,7 +361,187 @@ export function AIOperations() {
  </div>
  </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={32}>
+   {/* Gemini Real-time AI Operations Analyzer Console */}
+  <div className="bg-[#0b1329] text-[#f8fafc] p-6 rounded-xl border border-slate-800 shadow-xl overflow-hidden relative group my-6">
+    {/* Background pulse elements */}
+    <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40 animate-pulse duration-[8000ms]" />
+    
+    <div className="relative z-10 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-blue-950 border border-blue-900 rounded-xl text-orange-500">
+            <Sparkles className="w-6 h-6 animate-pulse" />
+          </div>
+          <div>
+            <h3 className="text-xl font-black font-sans tracking-tight flex items-center gap-2 text-slate-100">
+              Gemini 3.5 Neural Insights Console
+              <span className="bg-slate-800 text-[9px] font-bold text-orange-400 px-2 py-0.5 rounded tracking-normal normal-case">VComm AIOps Edition</span>
+            </h3>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Truy vấn sâu nơ-ron đa nhiệm sử dụng Gemini Agent phục vụ kiểm toán phân tích rủi ro & giá động.</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          {insightOutput && (
+            <span className={cn(
+              "text-[10px] uppercase font-black tracking-wider px-3.5 py-1.5 rounded-full",
+              insightSimulated 
+                ? "bg-amber-950/80 border border-amber-900/60 text-amber-400" 
+                : "bg-emerald-950/80 border border-emerald-900/60 text-emerald-400"
+            )}>
+              {insightSimulated ? "💡 Chế độ mô phỏng" : "⚡ Đã kết nối Live Gemini API"}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Preset Tasks / Prompts */}
+      <div className="space-y-3">
+        <label className="text-[10px] text-slate-400 font-black uppercase tracking-[0.15em] block">Nhiệm vụ phân tích ERP khẩn cấp:</label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <button 
+            type="button"
+            onClick={() => {
+              const p = "Quét phát hiện click farm và buff đơn ảo hàng loạt đối với khách hàng mới tạo dưới 48 giờ từ dải IP liên kết.";
+              setCustomPrompt(p);
+              handleGenerateDiagnostics('fraud', p);
+            }}
+            disabled={isLoadingInsight}
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="p-1.5 bg-rose-950/50 border border-rose-900 rounded text-rose-500"><AlertTriangle className="w-4 h-4" /></span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#f8fafc]/40">Độ khẩn: Cao</span>
+            </div>
+            <div>
+              <p className="font-bold text-slate-200 group-hover/btn:text-slate-100">Quét Gian Lận & Đơn Ảo</p>
+              <p className="text-[10px] text-slate-400 font-normal mt-1 leading-relaxed text-slate-400">Nhận diện click farm, spam dải IP, đề xuất tự động khóa.</p>
+            </div>
+          </button>
+
+          <button 
+            type="button"
+            onClick={() => {
+              const p = "Tối ưu hóa giá bán linh hoạt sản phẩm điện thoại iPhone và phụ kiện Apple thiết lập bám cạnh đối thủ tuần này.";
+              setCustomPrompt(p);
+              handleGenerateDiagnostics('pricing', p);
+            }}
+            disabled={isLoadingInsight}
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="p-1.5 bg-emerald-950/50 border border-emerald-900 rounded text-emerald-500"><DollarSign className="w-4 h-4" /></span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#f8fafc]/40">Đối soát: Giá động</span>
+            </div>
+            <div>
+              <p className="font-bold text-slate-200 group-hover/btn:text-slate-100">Tối Ưu Giá Bán Động</p>
+              <p className="text-[10px] text-slate-400 font-normal mt-1 leading-relaxed text-slate-400">Phân bổ biên lợi nhuận và thiết lập giá tối ưu theo thị trường.</p>
+            </div>
+          </button>
+
+          <button 
+            type="button"
+            onClick={() => {
+              const p = "Kiểm tra 48 đơn hàng vi phạm cam kết SLA giao vận vượt mức 24 giờ chưa bàn giao kho tự động chuyển tiếp đối tác.";
+              setCustomPrompt(p);
+              handleGenerateDiagnostics('general', p);
+            }}
+            disabled={isLoadingInsight}
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="p-1.5 bg-blue-950/50 border border-blue-900 rounded text-blue-500"><Layers className="w-4 h-4" /></span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#f8fafc]/40">Vận hành: Đầy đủ</span>
+            </div>
+            <div>
+              <p className="font-bold text-slate-200 group-hover/btn:text-slate-100">Giải Quyết Vi Phạm SLA</p>
+              <p className="text-[10px] text-slate-400 font-normal mt-1 leading-relaxed text-slate-400">Phân luồng đối tác giao vận, kiểm soát độ trễ giao nhận.</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Input box */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center text-[10px] text-slate-400 font-black uppercase tracking-[0.1em]">
+          <span>Gửi yêu cầu tùy chỉnh bảo mật:</span>
+          <span>Sử dụng Mô hình Gemini 3.5 Flash</span>
+        </div>
+        <div className="flex gap-3">
+          <input
+            type="text"
+            className="flex-1 bg-[#141d36] text-[#f8fafc] text-xs px-4 py-3 border border-slate-800 rounded-xl focus:border-slate-700 focus:outline-none placeholder-slate-500 font-medium"
+            placeholder="Nhập yêu cầu phân tích dữ liệu kho, đối soát iPOS, hoặc chỉ tiêu lợi nhuận..."
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => handleGenerateDiagnostics('general', customPrompt)}
+            disabled={isLoadingInsight || !customPrompt.trim()}
+            className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-950 disabled:opacity-50 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-md active:translate-y-0.5 border-b-2 flex items-center gap-2 cursor-pointer font-sans"
+          >
+            {isLoadingInsight ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Trực Quan Hóa...
+              </>
+            ) : (
+              <>
+                <Zap className="w-3.5 h-3.5 text-orange-600 fill-orange-600" /> Phân Tích AI
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Output Screen */}
+      {(insightOutput || isLoadingInsight) && (
+        <div className="border border-slate-800 bg-[#070d1a] rounded-xl overflow-hidden shadow-inner">
+          <div className="bg-[#101930] px-4 py-3 border-b border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-400 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              {insightStatusMsg || "Đang xử lý phân tích logic..."}
+            </span>
+            <span className="text-slate-500 text-[10px] tracking-widest uppercase">AIOps Terminal v1.4</span>
+          </div>
+          
+          <div className="p-6 overflow-y-auto max-h-[350px] space-y-4 font-mono select-text bg-[#070d1a]/80">
+            {isLoadingInsight ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                <div className="w-10 h-10 border-4 border-[#1e293b] border-t-orange-500 rounded-full animate-spin" />
+                <p className="text-xs text-slate-400 font-black uppercase tracking-widest animate-pulse leading-none py-1">
+                  Đang khởi chạy luồng suy nghĩ nơ-ron ERP...
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2 text-slate-300">
+                  {renderInsightText(insightOutput)}
+                </div>
+                
+                {/* Applied CTA block */}
+                <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-slate-200">Bạn muốn triển khai khuyến nghị này?</p>
+                    <p className="text-[10px] text-slate-500 leading-relaxed text-slate-500">Kích hoạt nút dưới đây để phê duyệt, áp dụng thay đổi và lưu vết kiểm toán.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleApplyMitigation}
+                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-950 font-black rounded-lg text-xs uppercase tracking-widest transition-all flex items-center gap-2 border-b-2 active:translate-y-0.5 cursor-pointer"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Phê Duyệt & Ghi Lịch Sử Audit
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+<DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={32}>
  <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
