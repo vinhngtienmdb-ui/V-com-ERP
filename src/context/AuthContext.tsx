@@ -74,6 +74,14 @@ const logAdminAudit = async (
  const [staffInfo, setStaffInfo] = useState<any | null>(null);
 
  useEffect(() => {
+ // Aggressive fallback to prevent loading screen hang
+ const forceLoadTimer = setTimeout(() => {
+   setLoading(prev => {
+     if (prev) console.warn("Force unlocked loading state in AuthContext.");
+     return false;
+   });
+ }, 5000);
+
  const unsubscribe = onAuthStateChanged(auth, async (user) => {
  setUser(user);
  if (user) {
@@ -94,7 +102,7 @@ const logAdminAudit = async (
  }
  } else {
  // Check if it's the bootstrapped admin
- const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com';
+ const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn';
  if (isBootstrapped) {
  setIsStaff(true);
  setIsAdmin(true);
@@ -121,7 +129,7 @@ const logAdminAudit = async (
  
  // STRICT FIX for bootstrapped security flaw:
  // Only grant staff and admin status in error/offline fallbacks to AUTHENTICATED/VERIFIED bootstrap accounts
- const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com';
+ const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn';
  if (isAuthorizedBootstrap) {
    setIsStaff(true);
    setIsAdmin(true);
@@ -146,13 +154,16 @@ const logAdminAudit = async (
  setLoading(false);
  });
 
- return () => unsubscribe();
+ return () => {
+    clearTimeout(forceLoadTimer);
+    unsubscribe();
+ };
  }, []);
 
 
  const login = async (username: string, password: string) => {
  const email = username.includes('@') ? username : `${username}@v-erp.com`;
- const isAdminAccount = username === 'admin' || email === 'admin@v-erp.com' || email === 'vinh.ngtienmdb@gmail.com';
+ const isAdminAccount = username === 'admin' || email === 'admin@v-erp.com' || email === 'vinh.ngtienmdb@gmail.com' || email === 'admin@vcomm.vn';
  
  try {
  await signIn(auth, email, password);
@@ -191,7 +202,7 @@ const logAdminAudit = async (
  const signOut = async () => {
  const currentUser = auth.currentUser;
  if (currentUser) {
-   const isKnownAdmin = currentUser.email === 'admin@v-erp.com' || currentUser.email === 'vinh.ngtienmdb@gmail.com' || (staffInfo && staffInfo.role === 'admin');
+   const isKnownAdmin = currentUser.email === 'admin@v-erp.com' || currentUser.email === 'vinh.ngtienmdb@gmail.com' || currentUser.email === 'admin@vcomm.vn' || (staffInfo && staffInfo.role === 'admin');
    if (isKnownAdmin) {
      const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
      logAdminAudit(currentUser.email || 'admin', 'Logout', 'Success', currentUser.uid, tenantId).catch(err => { console.error("Logout audit logging failed in background:", err); });
