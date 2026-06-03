@@ -78,7 +78,10 @@ const logAdminAudit = async (
  setUser(user);
  if (user) {
  try {
- const staffDoc = await getDoc(doc(db, 'staff', user.uid));
+ const staffDoc = await Promise.race([
+  getDoc(doc(db, 'staff', user.uid)),
+  new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+ ]);
  if (staffDoc.exists()) {
  const data = staffDoc.data();
  setIsStaff(true);

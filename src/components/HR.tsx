@@ -359,7 +359,7 @@ const HR_MODULE_GROUPS = [
  {
  title: 'Hành chính & Nhân sự',
  items: [
- { id: 'personnel', label: 'Hồ sơ nhân sự', desc: 'Quản lý thông tin & lưu trữ.', icon: Users, color: 'blue' },
+ { id: 'easyhrm', label: 'Hồ sơ nhân sự (EasyHRM)', desc: 'Quản lý thông tin & lưu trữ.', icon: Users, color: 'blue' },
  { id: 'insurance', label: 'Bảo hiểm Xã hội', desc: 'Quản lý đóng BHXH, BHYT, BHTN.', icon: ShieldCheck, color: 'emerald' },
  { id: 'skills', label: 'Skill Matrix', desc: 'Sơ đồ kỹ năng & AI Scan.', icon: BrainCircuit, color: 'emerald' },
  { id: 'attendance', label: 'Chấm công GPS', desc: 'Quản lý chấm công đa nền tảng.', icon: MapPin, color: 'orange' },
@@ -438,7 +438,7 @@ const MOCK_TEAMS: Team[] = [
 ];
 
 export function HumanResources() {
- const [activeTab, setActiveTab] = useState<string>('easyhrm');
+ const [activeTab, setActiveTab] = useState<string>('overview');
  const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
  // Propose New HRM Features States
@@ -784,26 +784,6 @@ export function HumanResources() {
  <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý hồ sơ nhân sự, Skill Matrix và Onboarding Intelligence.</p>
  </div>
- <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-300 w-fit mt-1">
- <button
- onClick={() => setActiveTab('easyhrm')}
- className={cn(
- "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all",
- activeTab === 'easyhrm' ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
- )}
- >
- ✨ Giao diện EasyHRM mới (17 Phân hệ)
- </button>
- <button
- onClick={() => setActiveTab('overview')}
- className={cn(
- "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all",
- activeTab !== 'easyhrm' ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
- )}
- >
- Mặc định ERP (Standard)
- </button>
- </div>
  </div>
  <div className="flex gap-3 items-center">
  <div className="flex items-center gap-2 mr-4 bg-slate-100 p-1.5 rounded-lg border border-slate-300">
@@ -830,7 +810,17 @@ export function HumanResources() {
  </div>
 
  {activeTab === 'easyhrm' && (
- <EasyHRMComponent />
+ <div className="space-y-4">
+  <div className="bg-white rounded-lg border border-slate-300 shadow-sm p-4 w-fit">
+   <button 
+   onClick={() => setActiveTab('overview')} 
+   className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors"
+   >
+   <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
+   </button>
+  </div>
+  <EasyHRMComponent />
+ </div>
  )}
 
  {activeTab === 'overview' && (
