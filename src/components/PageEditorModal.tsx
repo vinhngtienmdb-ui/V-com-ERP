@@ -5,8 +5,7 @@ import {
   AlignRight, Link, Image, Quote, Minus, Eraser, Undo, Redo,
   ChevronDown, ExternalLink, Loader2, FileText,
 } from 'lucide-react';
-import { db } from '../lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, doc, getDoc, setDoc, serverTimestamp } from '../lib/firebase';
 import { cn } from '../lib/utils';
 
 interface PageData {

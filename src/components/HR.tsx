@@ -1,5 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
+import { EasyHRMComponent } from './EasyHRM';
 import { 
  Users, 
  Clock, 
@@ -437,7 +438,7 @@ const MOCK_TEAMS: Team[] = [
 ];
 
 export function HumanResources() {
- const [activeTab, setActiveTab] = useState<string>('overview');
+ const [activeTab, setActiveTab] = useState<string>('easyhrm');
  const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
  // Propose New HRM Features States
@@ -581,18 +582,25 @@ export function HumanResources() {
  const [attendanceView, setAttendanceView] = useState<'week' | 'month'>('week');
  const [filterDateAtt, setFilterDateAtt] = useState('');
 
- const filteredEmployees = employees.filter(emp => {
- if (searchEmployee && !emp.fullName.toLowerCase().includes(searchEmployee.toLowerCase()) && !emp.id.toLowerCase().includes(searchEmployee.toLowerCase())) return false;
- if (filterDept !== 'all' && emp.department !== filterDept) return false;
- if (filterPosition !== 'all' && emp.position !== filterPosition) return false;
- if (filterStatus !== 'all' && emp.status !== filterStatus) return false;
- return true;
- });
+ const deferredSearchEmployee = React.useDeferredValue(searchEmployee);
 
- const filteredAttendance = MOCK_ATTENDANCE.filter(att => {
- if (filterDateAtt && !att.date.startsWith(filterDateAtt)) return false;
- return true;
- });
+ const filteredEmployees = React.useMemo(() => {
+  const q = deferredSearchEmployee.trim().toLowerCase();
+  return employees.filter(emp => {
+   if (q && !emp.fullName.toLowerCase().includes(q) && !emp.id.toLowerCase().includes(q)) return false;
+   if (filterDept !== 'all' && emp.department !== filterDept) return false;
+   if (filterPosition !== 'all' && emp.position !== filterPosition) return false;
+   if (filterStatus !== 'all' && emp.status !== filterStatus) return false;
+   return true;
+  });
+ }, [employees, deferredSearchEmployee, filterDept, filterPosition, filterStatus]);
+
+ const filteredAttendance = React.useMemo(() => {
+  return MOCK_ATTENDANCE.filter(att => {
+   if (filterDateAtt && !att.date.startsWith(filterDateAtt)) return false;
+   return true;
+  });
+ }, [filterDateAtt]);
 
  const handleDragStart = (e: React.DragEvent, id: string) => {
  setDraggedCandidateId(id);
@@ -706,12 +714,96 @@ export function HumanResources() {
  setAttendanceSettings(prev => prev.map(s => s.method === method ? { ...s, config: { ...s.config, [key]: value } } : s));
  };
 
+ const memoizedDashboardCharts = React.useMemo(() => {
+  return (
+   <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm mb-6">
+    <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
+     <Activity className="w-5 h-5 text-orange-700" /> HR Dashboard Insight
+    </h3>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+     <div className="h-72 w-full space-y-2">
+      <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Tỷ lệ Tuyển dụng & Nghỉ việc</h4>
+      <ResponsiveContainer width="100%" height="100%">
+       <BarChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+        <YAxis yAxisId="left" orientation="left" stroke="#2563EB" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
+        <YAxis yAxisId="right" orientation="right" stroke="#F59E0B" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={10} />
+        <Tooltip 
+         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+         cursor={{fill: '#F3F4F6'}}
+        />
+        <Bar yAxisId="left" dataKey="hiring" name="Tuyển mới" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={24} />
+        <Bar yAxisId="right" dataKey="attrition" name="Tỷ lệ nghỉ việc (%)" fill="#FBBF24" radius={[4, 4, 0, 0]} barSize={24} />
+       </BarChart>
+      </ResponsiveContainer>
+     </div>
+     <div className="h-72 w-full space-y-2">
+      <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Biểu đồ Vi phạm Chấm công</h4>
+      <ResponsiveContainer width="100%" height="100%">
+       <RechartsLineChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
+        <Tooltip 
+         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+        />
+        <Line type="monotone" dataKey="late" name="Đi muộn" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 2, stroke: '#fff' }} />
+        <Line type="monotone" dataKey="absent" name="Vắng mặt" stroke="#EF4444" strokeWidth={3} dot={{ r: 4, fill: '#EF4444', strokeWidth: 2, stroke: '#fff' }} />
+       </RechartsLineChart>
+      </ResponsiveContainer>
+     </div>
+     <div className="space-y-6">
+      <div className="p-5 bg-slate-100/50 border border-slate-300 rounded-lg">
+       <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2"><BrainCircuit className="w-4 h-4 text-orange-700" /> AI Insights</h4>
+       <p className="text-xs text-blue-800 leading-relaxed">Tỷ lệ nghỉ việc (attrition rate) giảm ổn định trong Q2, đặc biệt sau khi triển khai chương trình phúc lợi mới. Nhu cầu tuyển mới tăng mạnh trong tháng 6 chuẩn bị cho mùa Sale cuối năm.</p>
+      </div>
+      <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+       <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Time to Fill</span>
+        <div className="text-2xl font-bold text-[#111827]">14 Ngày</div>
+        <span className="text-[10px] text-emerald-600 font-bold block mt-1">-2 ngày vs Q1</span>
+       </div>
+       <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Employee NPS</span>
+        <div className="text-2xl font-bold text-[#111827]">78</div>
+        <span className="text-[10px] text-emerald-600 font-bold block mt-1">Hạng A Industry</span>
+       </div>
+      </DraggableGrid>
+     </div>
+    </div>
+   </div>
+  );
+ }, []);
+
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
+ <div className="flex flex-col gap-2">
  <div className="header-title">
  <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý hồ sơ nhân sự, Skill Matrix và Onboarding Intelligence.</p>
+ </div>
+ <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-300 w-fit mt-1">
+ <button
+ onClick={() => setActiveTab('easyhrm')}
+ className={cn(
+ "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all",
+ activeTab === 'easyhrm' ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
+ )}
+ >
+ ✨ Giao diện EasyHRM mới (17 Phân hệ)
+ </button>
+ <button
+ onClick={() => setActiveTab('overview')}
+ className={cn(
+ "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all",
+ activeTab !== 'easyhrm' ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
+ )}
+ >
+ Mặc định ERP (Standard)
+ </button>
+ </div>
  </div>
  <div className="flex gap-3 items-center">
  <div className="flex items-center gap-2 mr-4 bg-slate-100 p-1.5 rounded-lg border border-slate-300">
@@ -736,6 +828,10 @@ export function HumanResources() {
  </button>
  </div>
  </div>
+
+ {activeTab === 'easyhrm' && (
+ <EasyHRMComponent />
+ )}
 
  {activeTab === 'overview' && (
  <div className="space-y-8 animate-in fade-in duration-700">
@@ -782,63 +878,7 @@ export function HumanResources() {
  </DraggableGrid>
 
  {/* HR Analytics Dashboard (Upgraded) */}
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm mb-6">
- <h3 className="text-lg font-bold text-[#111827] mb-6 flex items-center gap-2">
- <Activity className="w-5 h-5 text-orange-700" /> HR Dashboard Insight
- </h3>
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
- <div className="h-72 w-full space-y-2">
- <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Tỷ lệ Tuyển dụng & Nghỉ việc</h4>
- <ResponsiveContainer width="100%" height="100%">
- <BarChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
- <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
- <YAxis yAxisId="left" orientation="left" stroke="#2563EB" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
- <YAxis yAxisId="right" orientation="right" stroke="#F59E0B" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={10} />
- <Tooltip 
- contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
- cursor={{fill: '#F3F4F6'}}
- />
- <Bar yAxisId="left" dataKey="hiring" name="Tuyển mới" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={24} />
- <Bar yAxisId="right" dataKey="attrition" name="Tỷ lệ nghỉ việc (%)" fill="#FBBF24" radius={[4, 4, 0, 0]} barSize={24} />
- </BarChart>
- </ResponsiveContainer>
- </div>
- <div className="h-72 w-full space-y-2">
- <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Biểu đồ Vi phạm Chấm công</h4>
- <ResponsiveContainer width="100%" height="100%">
- <RechartsLineChart data={HR_METRICS_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
- <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
- <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
- <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
- <Tooltip 
- contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
- />
- <Line type="monotone" dataKey="late" name="Đi muộn" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 2, stroke: '#fff' }} />
- <Line type="monotone" dataKey="absent" name="Vắng mặt" stroke="#EF4444" strokeWidth={3} dot={{ r: 4, fill: '#EF4444', strokeWidth: 2, stroke: '#fff' }} />
- </RechartsLineChart>
- </ResponsiveContainer>
- </div>
- <div className="space-y-6">
- <div className="p-5 bg-slate-100/50 border border-slate-300 rounded-lg">
- <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2"><BrainCircuit className="w-4 h-4 text-orange-700" /> AI Insights</h4>
- <p className="text-xs text-blue-800 leading-relaxed">Tỷ lệ nghỉ việc (attrition rate) giảm ổn định trong Q2, đặc biệt sau khi triển khai chương trình phúc lợi mới. Nhu cầu tuyển mới tăng mạnh trong tháng 6 chuẩn bị cho mùa Sale cuối năm.</p>
- </div>
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
- <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
- <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Time to Fill</span>
- <div className="text-2xl font-bold text-[#111827]">14 Ngày</div>
- <span className="text-[10px] text-emerald-600 font-bold block mt-1">-2 ngày vs Q1</span>
- </div>
- <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
- <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Employee NPS</span>
- <div className="text-2xl font-bold text-[#111827]">78</div>
- <span className="text-[10px] text-emerald-600 font-bold block mt-1">Hạng A Industry</span>
- </div>
- </DraggableGrid>
- </div>
- </div>
- </div>
+ {memoizedDashboardCharts}
  
  <div className="space-y-12 bg-transparent rounded-b-xl border-t-0 border-[#F3F4F6] mt-4">
  {HR_MODULE_GROUPS.map((group, gIdx) => (
@@ -957,7 +997,7 @@ export function HumanResources() {
  </div>
  )}
 
- {activeTab !== 'overview' && (
+ {activeTab !== 'overview' && activeTab !== 'easyhrm' && (
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
  <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
  <button 

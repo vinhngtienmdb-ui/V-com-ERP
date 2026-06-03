@@ -26,17 +26,8 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { db } from '../lib/firebase';
+import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from '../lib/firebase';
 import { sendZnsNotification } from '../services/znsService';
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  limit,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
 import { QuickPrintModal } from './QuickPrintModal';
 
 const OrderDetailModal = ({

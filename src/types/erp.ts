@@ -269,6 +269,20 @@ export interface Employee {
  emergencyName?: string;
  emergencyPhone?: string;
  emergencyRelation?: string;
+ faceVerified?: boolean;
+ unitCode?: string;
+ workEmail?: string;
+ timeAttendanceCode?: string;
+ workplace?: string;
+ salaryHistory?: Array<any>;
+ familyMembers?: Array<any>;
+ documents?: Array<any>;
+ equipmentList?: Array<any>;
+ workHistory?: Array<any>;
+ rewardsHistory?: Array<any>;
+ personalHistory?: Array<any>;
+ editRequests?: Array<any>;
+ insuranceHistory?: Array<any>;
 }
 
 export interface Team {

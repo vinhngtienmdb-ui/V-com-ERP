@@ -43,8 +43,7 @@ import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../lib/firebase';
-import { doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../lib/firebase';
 import { PageEditorModal } from './PageEditorModal';
 
 interface Department { id: string; name: string; manager: string; staffCount: number; parentId?: string; }

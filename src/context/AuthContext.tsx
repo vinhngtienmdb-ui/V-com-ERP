@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth, db, logout, signIn, createUser } from '../lib/firebase';
-import { doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc } from '../lib/firebase';
 
 interface AuthContextType {
  user: User | null;
@@ -35,11 +34,14 @@ const logAdminAudit = async (
     // Obtain client's public IP
     let ipAddress = '127.0.0.1';
     try {
-      const res = await fetch('https://api.ipify.org?format=json');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+      clearTimeout(timeoutId);
       const data = await res.json();
       ipAddress = data.ip || '127.0.0.1';
-    } catch {
-      // Ignored: network failure or offline
+    } catch (e) {
+      // Ignored: network failure, request abort, or offline
     }
     
     const payload = {
@@ -85,7 +87,7 @@ const logAdminAudit = async (
  setStaffInfo(data);
  
  if (isUserAdmin) {
-   await logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01');
+   logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01').catch(console.error);
  }
  } else {
  // Check if it's the bootstrapped admin
@@ -100,7 +102,7 @@ const logAdminAudit = async (
    tenantId: 'tenant-vcomm-prod-01'
  };
  setStaffInfo(adminInfo);
- await logAdminAudit(user.email, 'Login (Bootstrapped)', 'Success', user.uid, 'tenant-vcomm-prod-01');
+ logAdminAudit(user.email, 'Login (Bootstrapped)', 'Success', user.uid, 'tenant-vcomm-prod-01').catch(console.error);
  } else {
  setIsStaff(false);
  setIsAdmin(false);
