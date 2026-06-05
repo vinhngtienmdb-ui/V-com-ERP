@@ -37,6 +37,7 @@ import { Product } from '../types/erp';
 import { syncProductToMisa } from '../services/misaService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { db, serverTimestamp, handleFirestoreError } from '../lib/firebase';
+import nexhubProducts from '../constants/nexhub_products.json';
 import { 
  collection, 
  onSnapshot, 
@@ -78,7 +79,7 @@ export function PIM() {
  costPrice: 31000000,
  margin: 11.4,
  stock: 45,
- category: 'Thết bị số',
+ category: 'Thiết bị số',
  brand: 'Apple',
  sellerName: 'VComm Electronics',
  status: 'in_stock',
@@ -145,7 +146,8 @@ export function PIM() {
  image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80',
  weight: '695',
  dimensions: '87.8 x 119.9 x 87.8'
- }
+ },
+ ...nexhubProducts
  ];
  for (const item of demoItems) {
  await addDoc(collection(db, 'products'), {

@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { safeLocalStorage } from './lib/storage';
+import nexhubProducts from './constants/nexhub_products.json';
 
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -193,12 +194,107 @@ function AppLayout() {
         }
       ];
 
+      const PRODUCTS_DATA = [
+        {
+          id: 'PRD-IP15PM',
+          name: 'iPhone 15 Pro Max 256GB - VN/A',
+          sku: 'APP-IP15PM-256',
+          price: 34990000,
+          costPrice: 31000000,
+          hiddenCosts: 0,
+          margin: 11.4,
+          profit: 3990000,
+          stock: 45,
+          category: 'Thiết bị số',
+          brand: 'Apple',
+          sellerName: 'VComm Electronics',
+          status: 'in_stock',
+          image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80',
+          weight: '221',
+          dimensions: '159.9 x 76.7 x 8.25'
+        },
+        {
+          id: 'PRD-MBA-M2',
+          name: 'MacBook Air M2 13.6" 8CPU 8GPU 8GB/256GB',
+          sku: 'APP-MBA-M2-8-256',
+          price: 26490000,
+          costPrice: 23500000,
+          hiddenCosts: 0,
+          margin: 11.2,
+          profit: 2990000,
+          stock: 20,
+          category: 'Thiết bị số',
+          brand: 'Apple',
+          sellerName: 'VComm Electronics',
+          status: 'in_stock',
+          image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80',
+          weight: '1240',
+          dimensions: '304.1 x 215 x 11.3'
+        },
+        {
+          id: 'PRD-MX-MINI',
+          name: 'Bàn phím cơ không dây Logitech MX Mechanical Mini',
+          sku: 'LOG-MX-MECH-MINI',
+          price: 3590000,
+          costPrice: 2800000,
+          hiddenCosts: 0,
+          margin: 22,
+          profit: 790000,
+          stock: 120,
+          category: 'Phụ kiện',
+          brand: 'Logitech',
+          sellerName: 'VComm Accessories',
+          status: 'in_stock',
+          image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400&q=80',
+          weight: '612',
+          dimensions: '312.6 x 131.5 x 26.1'
+        },
+        {
+          id: 'PRD-MX-3S',
+          name: 'Chuột không dây Logitech MX Master 3S',
+          sku: 'LOG-MX-MASTER-3S',
+          price: 2590000,
+          costPrice: 1900000,
+          hiddenCosts: 0,
+          margin: 26.6,
+          profit: 690000,
+          stock: 85,
+          category: 'Phụ kiện',
+          brand: 'Logitech',
+          sellerName: 'VComm Accessories',
+          status: 'pending_approval',
+          image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&q=80',
+          weight: '141',
+          dimensions: '124.9 x 84.3 x 51'
+        },
+        {
+          id: 'PRD-SONY-2470',
+          name: 'Sony FE 24-70mm f/2.8 GM II',
+          sku: 'SONY-SEL2470GM2',
+          price: 45990000,
+          costPrice: 40000000,
+          hiddenCosts: 0,
+          margin: 13,
+          profit: 5990000,
+          stock: 8,
+          category: 'Nhiếp ảnh',
+          brand: 'Sony',
+          sellerName: 'Camera Pro Studio',
+          status: 'in_stock',
+          image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80',
+          weight: '695',
+          dimensions: '87.8 x 119.9 x 87.8'
+        },
+        ...nexhubProducts
+      ];
+
       const checkAndSeed = (key: string, dataArray: any[]) => {
         const cached = safeLocalStorage.getItem(key);
         const needsSeed = !cached || 
           (key === 'fs_cache_docs_customers' && !cached.includes('CUST-001')) ||
           (key === 'fs_cache_docs_device_leases' && !cached.includes('LEAS-001')) ||
-          (key === 'fs_cache_docs_finance_transactions' && !cached.includes('TX-HM-01'));
+          (key === 'fs_cache_docs_finance_transactions' && !cached.includes('TX-HM-01')) ||
+          (key === 'fs_cache_docs_products' && !cached.includes('APP-IP15PM-256'));
           
         if (needsSeed) {
           const docsData = dataArray.map(item => ({
@@ -213,6 +309,7 @@ function AppLayout() {
       checkAndSeed('fs_cache_docs_customers', CUSTOMERS_DATA);
       checkAndSeed('fs_cache_docs_device_leases', LEASES_DATA);
       checkAndSeed('fs_cache_docs_finance_transactions', TRANSACTIONS_DATA);
+      checkAndSeed('fs_cache_docs_products', PRODUCTS_DATA);
     };
 
     seedLocalStorageDemoData();
