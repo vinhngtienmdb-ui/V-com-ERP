@@ -42,6 +42,21 @@ import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
 import { collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from 'firebase/firestore';
 import { getAiChatResponse } from '../services/geminiService';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar
+} from 'recharts';
 
 interface LeaseApplication {
   id: string;
@@ -61,6 +76,79 @@ interface LeaseApplication {
   history: HistoryLog[];
   monthlyIncome?: number;
   knoxStatus?: 'unlocked' | 'locked' | 'warning';
+  cicGroup?: number;
+  cicScore?: number;
+  cicNotes?: string;
+}
+
+// Define colors for Pie charts
+const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899'];
+
+// Mock revenue data for Analytics
+const REVENUE_TREND_DATA = [
+  { month: 'Tháng 1', expected: 45000000, actual: 42000000 },
+  { month: 'Tháng 2', expected: 55000000, actual: 51000000 },
+  { month: 'Tháng 3', expected: 70000000, actual: 68000000 },
+  { month: 'Tháng 4', expected: 85000000, actual: 80000000 },
+  { month: 'Tháng 5', expected: 110000000, actual: 95000000 },
+  { month: 'Tháng 6', expected: 130000000, actual: 105000000 }
+];
+
+export function calculateLeaseStats(devicePrice: number, upfrontPercent: number, durationMonths: number) {
+  const upfront = Math.round(devicePrice * (upfrontPercent / 100));
+  const principalToAmortize = devicePrice - upfront;
+  const interestTotal = principalToAmortize * (0.012 * durationMonths);
+  const monthly = Math.round((principalToAmortize + interestTotal) / durationMonths);
+  return {
+    upfront,
+    monthly,
+    totalPaid: upfront + (monthly * durationMonths),
+    interestPercent: durationMonths * 1.2
+  };
+}
+
+export function getCicGroupFromCccd(cccd: string): { group: number; score: number; notes: string } {
+  const cleanCccd = cccd.trim();
+  const lastChar = cleanCccd.slice(-1);
+  const lastDigit = isNaN(parseInt(lastChar)) ? 0 : parseInt(lastChar);
+  
+  let group = 1;
+  let score = 750;
+  let notes = 'Nợ đủ tiêu chuẩn';
+
+  if ([0, 9, 7, 5].includes(lastDigit)) {
+    group = 1;
+    score = 750 + (lastDigit % 3) * 30; // 750 - 810
+    notes = 'Nợ đủ tiêu chuẩn (Dư nợ nhóm 1 tiêu chuẩn, tín dụng tốt)';
+  } else if ([1, 3].includes(lastDigit)) {
+    group = 2;
+    score = 620 - (lastDigit % 2) * 40; // 580 - 620
+    notes = 'Nợ cần chú ý (Nhóm 2 - Chậm thanh toán dưới 30 ngày)';
+  } else if (lastDigit === 2) {
+    group = 3;
+    score = 480;
+    notes = 'Nợ dưới tiêu chuẩn (Nhóm 3 - Quá hạn từ 30 đến 90 ngày)';
+  } else if (lastDigit === 4) {
+    group = 4;
+    score = 380;
+    notes = 'Nợ nghi ngờ (Nhóm 4 - Quá hạn từ 90 đến 180 ngày)';
+  } else { // 6, 8
+    group = 5;
+    score = 320;
+    notes = 'Nợ có khả năng mất vốn (Nhóm 5 - Nợ xấu trên 180 ngày)';
+  }
+
+  return { group, score, notes };
+}
+
+export function determineKnoxStatusFromInstallments(installments: InstallmentSchedule[]): 'unlocked' | 'warning' | 'locked' {
+  const overdueCount = installments.filter(i => i.status === 'overdue').length;
+  if (overdueCount >= 2) {
+    return 'locked';
+  } else if (overdueCount === 1) {
+    return 'warning';
+  }
+  return 'unlocked';
 }
 
 interface InstallmentSchedule {
@@ -117,6 +205,7 @@ export function DeviceLeasing() {
   const [aiResult, setAiResult] = useState('');
   const [aiRiskLevel, setAiRiskLevel] = useState<'low' | 'medium' | 'high' | ''>('');
   const [aiCreditScore, setAiCreditScore] = useState<number>(0);
+  const [cicLoading, setCicLoading] = useState(false);
 
   // VietQR payment states
   const [showPaymentPortal, setShowPaymentPortal] = useState(false);
@@ -308,17 +397,7 @@ export function DeviceLeasing() {
 
   const getLeasePriceStats = () => {
     const dev = SAMPLE_DEVICES[selectedDeviceIndex];
-    const upfront = Math.round(dev.price * (upfrontPercent / 100));
-    const principalToAmortize = dev.price - upfront;
-    // Leasing rate includes finance premium of 1% flat interest rate per month 
-    const interestTotal = principalToAmortize * (0.012 * durationMonths);
-    const monthlyTotal = Math.round((principalToAmortize + interestTotal) / durationMonths);
-    return {
-      upfront,
-      monthly: monthlyTotal,
-      totalPaid: upfront + (monthlyTotal * durationMonths),
-      interestPercent: durationMonths * 1.2
-    };
+    return calculateLeaseStats(dev.price, upfrontPercent, durationMonths);
   };
 
   const handleCreateApplication = async (e: React.FormEvent) => {
@@ -473,6 +552,7 @@ export function DeviceLeasing() {
     // Check if all are paid
     const allPaid = updatedInsts.every(i => i.status === 'paid');
     const nextStatus = allPaid ? 'completed' : target.status;
+    const nextKnoxStatus = allPaid ? 'unlocked' : determineKnoxStatusFromInstallments(updatedInsts);
 
     const updatedHistory = [...target.history, {
       timestamp: new Date().toLocaleString('vi-VN'),
@@ -486,19 +566,20 @@ export function DeviceLeasing() {
       await updateDoc(leaseRef, {
         installments: updatedInsts,
         status: nextStatus,
+        knoxStatus: nextKnoxStatus,
         history: updatedHistory
       });
     } catch(err) {
       setApplications(prev => prev.map(a => {
         if (a.id === leaseId) {
-          return {  ...a, installments: updatedInsts, status: nextStatus, history: updatedHistory };
+          return {  ...a, installments: updatedInsts, status: nextStatus, knoxStatus: nextKnoxStatus, history: updatedHistory };
         }
         return a;
       }));
     }
 
     if (selectedLease?.id === leaseId) {
-      setSelectedLease(prev => prev ? { ...prev, installments: updatedInsts, status: nextStatus, history: updatedHistory } : null);
+      setSelectedLease(prev => prev ? { ...prev, installments: updatedInsts, status: nextStatus, knoxStatus: nextKnoxStatus, history: updatedHistory } : null);
     }
   };
 
@@ -589,17 +670,38 @@ export function DeviceLeasing() {
       evaluatedScore += 5;
     }
 
+    // Adjust based on CIC group if exists
+    if (app.cicGroup) {
+      if (app.cicGroup === 1) {
+        evaluatedScore += 15;
+      } else if (app.cicGroup === 2) {
+        evaluatedScore -= 10;
+        if (evaluatedRisk !== 'high') evaluatedRisk = 'medium';
+      } else if (app.cicGroup === 3) {
+        evaluatedScore -= 25;
+        evaluatedRisk = 'high';
+      } else { // 4 or 5
+        evaluatedScore -= 40;
+        evaluatedRisk = 'high';
+      }
+    }
+
     // Scale credit score to 300 - 850 range
     evaluatedScore = Math.max(300, Math.min(850, 300 + Math.round((evaluatedScore / 100) * 550)));
 
     const ccdStatus = app.identityCard.length === 12 ? 'Hợp lệ' : 'Cảnh báo cấu trúc (Không khớp 12 ký tự)';
     const phoneSupplier = app.phone.startsWith('09') || app.phone.startsWith('08') ? 'Viettel / Mobi' : 'Nhà mạng ảo/Khác';
 
+    const cicInfoText = app.cicGroup 
+      ? `- Tín dụng CIC: Nhóm ${app.cicGroup} (${app.cicNotes}), Điểm CIC: ${app.cicScore}/850`
+      : `- Tín dụng CIC: Chưa thực hiện tra cứu CIC`;
+
     const promptText = `Hãy đánh giá tín dụng & thẩm định rủi ro cho hồ sơ sau:
     - Khách hàng: ${app.customerName}
     - ĐT: ${app.phone} (Nhà mạng: ${phoneSupplier})
     - Email: ${app.email}
     - CCCD: ${app.identityCard} (${ccdStatus})
+    ${cicInfoText}
     - Thiết bị: ${app.deviceModel} (Trị giá ${formatCurrency(app.devicePrice)})
     - Trả trước: ${formatCurrency(app.upfrontFee)} (${depositPercent}%)
     - Đóng định kỳ: ${formatCurrency(app.monthlyFee)}/tháng trong ${app.durationMonths} tháng
@@ -696,8 +798,21 @@ export function DeviceLeasing() {
     return matchesSearch && app.status === statusFilter;
   });
 
-  const activeLeases = filteredApps.filter(a => ['active', 'late'].includes(a.status));
+  const activeLeases = filteredApps.filter(a => ['active', 'late', 'approved'].includes(a.status));
   const pendingApps = filteredApps.filter(a => a.status === 'pending');
+  const historyLeases = filteredApps.filter(a => ['completed', 'cancelled'].includes(a.status));
+
+  const currentLeaseDataset = 
+    activeTab === 'applications' ? pendingApps :
+    activeTab === 'active-leases' ? activeLeases :
+    historyLeases;
+
+  const deviceMixData = [
+    { name: 'Điện thoại', value: applications.filter(a => a.deviceType === 'phone').length },
+    { name: 'Máy tính bảng', value: applications.filter(a => a.deviceType === 'tablet').length },
+    { name: 'Laptop', value: applications.filter(a => a.deviceType === 'laptop').length },
+    { name: 'Khác', value: applications.filter(a => a.deviceType === 'other').length },
+  ].filter(item => item.value > 0);
 
   const stats = {
     totalApplications: applications.length,
@@ -824,7 +939,7 @@ export function DeviceLeasing() {
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             {/* Header controls */}
             <div className="p-5 border-b border-slate-150 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <button 
                   onClick={() => setActiveTab('applications')}
                   className={cn(
@@ -848,134 +963,233 @@ export function DeviceLeasing() {
                 >
                   Danh Sách Đang Thuê (Trả Góp)
                 </button>
-              </div>
-
-              {/* Quick Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Tìm kiếm khách hàng..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-1.5 w-full sm:w-60 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
-                />
+                <button 
+                  onClick={() => setActiveTab('analytics')}
+                  className={cn(
+                    "pb-3 text-sm font-bold border-b-2 text-slate-700 transition-all cursor-pointer relative",
+                    activeTab === 'analytics' ? "border-indigo-600 text-indigo-700" : "border-transparent text-slate-500 hover:text-slate-800"
+                  )}
+                >
+                  Phân Tích
+                </button>
               </div>
             </div>
-
             {/* List and tables content */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left font-sans whitespace-nowrap">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-150 text-[10px] uppercase font-bold text-slate-500">
-                    <th className="p-4 w-15">Mã số</th>
-                    <th className="p-4">Khách hàng</th>
-                    <th className="p-4">Sản Phẩm</th>
-                    <th className="p-4">Giá bán / Cọc</th>
-                    <th className="p-4">Tiền Thuê Tháng</th>
-                    <th className="p-4">Trạng thái</th>
-                    <th className="p-4 text-center">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={7} className="text-center py-6 text-slate-400">
-                        <div className="flex justify-center items-center gap-2">
-                          <span className="w-2 h-2 bg-indigo-600 rounded-full animate-ping"></span>
-                          <span>Đang truy vấn hợp đồng từ hệ thống...</span>
-                        </div>
-                      </td>
+            {activeTab === 'analytics' ? (
+              <div className="p-6 space-y-6">
+                {/* Visual Charts grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Chart 1: Cơ cấu loại thiết bị */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Cơ cấu loại thiết bị thuê</h4>
+                    <div className="h-60">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={deviceMixData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={80}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {deviceMixData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '11px' }}
+                            formatter={(value: any) => [`${value} thiết bị`, 'Số lượng']}
+                          />
+                          <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Chart 2: Dự kiến vs Thực thu */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Doanh thu dự kiến vs Thực tế thu</h4>
+                    <div className="h-60">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={REVENUE_TREND_DATA}>
+                          <defs>
+                            <linearGradient id="colorExpected" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4}/>
+                              <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                            </linearGradient>
+                            <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                          <XAxis dataKey="month" tickLine={false} axisLine={false} style={{ fontSize: '10px', fill: '#64748b' }} />
+                          <YAxis 
+                            tickLine={false} 
+                            axisLine={false} 
+                            style={{ fontSize: '10px', fill: '#64748b' }}
+                            tickFormatter={(value) => `${value / 1000000}M`}
+                          />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '11px' }}
+                            formatter={(value: any) => [formatCurrency(value), '']}
+                          />
+                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '11px' }} />
+                          <Area type="monotone" dataKey="expected" name="Dự kiến thu" stroke="#4f46e5" fillOpacity={1} fill="url(#colorExpected)" strokeWidth={2} />
+                          <Area type="monotone" dataKey="actual" name="Thực tế thu" stroke="#10b981" fillOpacity={1} fill="url(#colorActual)" strokeWidth={2} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Risk Level Chart */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Tỷ lệ thanh toán đúng hạn và nợ quá hạn</h4>
+                  <div className="h-44">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[
+                        { name: 'Đã đóng', value: stats.collectedPremium, color: '#10b981' },
+                        { name: 'Dự kiến (Chưa đóng)', value: stats.totalExpectedRevenue - stats.collectedPremium, color: '#e2e8f0' }
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="name" tickLine={false} axisLine={false} style={{ fontSize: '10px', fill: '#64748b' }} />
+                        <YAxis 
+                          tickLine={false} 
+                          axisLine={false} 
+                          style={{ fontSize: '10px', fill: '#64748b' }}
+                          tickFormatter={(value) => `${value / 1000000}M`}
+                        />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '11px' }}
+                          formatter={(value: any) => [formatCurrency(value), 'Số tiền']}
+                        />
+                        <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                          <Cell fill="#10b981" />
+                          <Cell fill="#6366f1" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+
+                <table className="w-full text-left font-sans whitespace-nowrap">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-150 text-[10px] uppercase font-bold text-slate-500">
+                      <th className="p-4 w-15">Mã số</th>
+                      <th className="p-4">Khách hàng</th>
+                      <th className="p-4">Sản Phẩm</th>
+                      <th className="p-4">Giá bán / Cọc</th>
+                      <th className="p-4">Tiền Thuê Tháng</th>
+                      <th className="p-4">Trạng thái</th>
+                      <th className="p-4 text-center">Thao tác</th>
                     </tr>
-                  ) : (
-                    (activeTab === 'applications' ? pendingApps : activeLeases).length === 0 ? (
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-xs">
+                    {loading ? (
                       <tr>
-                        <td colSpan={7} className="text-center py-6 text-slate-400 italic">
-                          Không tìm thấy hợp đồng phù hợp nào trong bộ lọc.
+                        <td colSpan={7} className="text-center py-6 text-slate-400">
+                          <div className="flex justify-center items-center gap-2">
+                            <span className="w-2 h-2 bg-indigo-600 rounded-full animate-ping"></span>
+                            <span>Đang truy vấn hợp đồng từ hệ thống...</span>
+                          </div>
                         </td>
                       </tr>
                     ) : (
-                      (activeTab === 'applications' ? pendingApps : activeLeases).map((app) => (
-                        <tr 
-                          key={app.id} 
-                          onClick={() => setSelectedLease(app)}
-                          className={cn(
-                            "hover:bg-slate-50/75 cursor-pointer transition-colors",
-                            selectedLease?.id === app.id ? "bg-indigo-50/30" : ""
-                          )}
-                        >
-                          <td className="p-4 font-mono font-bold text-slate-500 whitespace-nowrap">
-                            {app.id.slice(0, 8).toUpperCase()}
-                          </td>
-                          <td className="p-4">
-                            <p className="font-extrabold text-slate-900 leading-snug">{app.customerName}</p>
-                            <p className="text-[10px] text-slate-400">{app.phone} • {app.email}</p>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex items-center gap-1.5">
-                              {app.deviceType === 'phone' ? <Smartphone className="w-3.5 h-3.5 text-slate-400 shrink-0" /> : <Laptop className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
-                              <span className="font-bold text-slate-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={app.deviceModel}>
-                                {app.deviceModel}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-slate-400 block mt-0.5">Ngày tạo: {app.dateCreated}</span>
-                          </td>
-                          <td className="p-4">
-                            <p className="font-semibold text-slate-800">{formatCurrency(app.devicePrice)}</p>
-                            <span className="text-[10px] text-emerald-600 font-bold">Cọc: {formatCurrency(app.upfrontFee)}</span>
-                          </td>
-                          <td className="p-4">
-                            <p className="font-black text-slate-900">{formatCurrency(app.monthlyFee)}</p>
-                            <span className="text-[10.5px] text-indigo-500 font-bold">{app.durationMonths} kỳ (tháng)</span>
-                          </td>
-                          <td className="p-4 whitespace-nowrap">
-                            {getStatusBadge(app.status)}
-                          </td>
-                          <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-center gap-1">
-                              {app.status === 'pending' && (
-                                <>
-                                  <button 
-                                    onClick={() => handleUpdateStatus(app.id, 'approved')}
-                                    className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg  active:scale-95 transition-all"
-                                    title="Phê duyệt hồ sơ"
-                                  >
-                                    <Check className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button 
-                                    onClick={() => handleUpdateStatus(app.id, 'cancelled')}
-                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-650 rounded-lg  active:scale-95 transition-all"
-                                    title="Từ chố/Huỷ hồ sơ"
-                                  >
-                                    <X className="w-3.5 h-3.5" />
-                                  </button>
-                                </>
-                              )}
-                              {app.status === 'approved' && (
-                                <button 
-                                  onClick={() => handleUpdateStatus(app.id, 'active')}
-                                  className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg  active:scale-95 transition-all"
-                                >
-                                  Khởi tạo & Giao máy
-                                </button>
-                              )}
-                              {['active', 'late'].includes(app.status) && (
-                                <button 
-                                  onClick={() => setSelectedLease(app)}
-                                  className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10.5px] font-bold rounded-lg border border-slate-300"
-                                >
-                                  Quản lý thu tiền
-                                </button>
-                              )}
-                            </div>
+                      currentLeaseDataset.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="text-center py-6 text-slate-400 italic">
+                            Không tìm thấy hợp đồng phù hợp nào trong bộ lọc.
                           </td>
                         </tr>
-                      ))
-                    )
-                  )}
-                </tbody>
-              </table>
-            </div>
+                      ) : (
+                        currentLeaseDataset.map((app) => (
+                          <tr 
+                            key={app.id} 
+                            onClick={() => setSelectedLease(app)}
+                            className={cn(
+                              "hover:bg-slate-50/75 cursor-pointer transition-colors",
+                              selectedLease?.id === app.id ? "bg-indigo-50/30" : ""
+                            )}
+                          >
+                            <td className="p-4 font-mono font-bold text-slate-500 whitespace-nowrap">
+                              {app.id.slice(0, 8).toUpperCase()}
+                            </td>
+                            <td className="p-4">
+                              <p className="font-extrabold text-slate-900 leading-snug">{app.customerName}</p>
+                              <p className="text-[10px] text-slate-400">{app.phone} • {app.email}</p>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex items-center gap-1.5">
+                                {app.deviceType === 'phone' ? <Smartphone className="w-3.5 h-3.5 text-slate-400 shrink-0" /> : <Laptop className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
+                                <span className="font-bold text-slate-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={app.deviceModel}>
+                                  {app.deviceModel}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-slate-400 block mt-0.5">Ngày tạo: {app.dateCreated}</span>
+                            </td>
+                            <td className="p-4">
+                              <p className="font-semibold text-slate-800">{formatCurrency(app.devicePrice)}</p>
+                              <span className="text-[10px] text-emerald-600 font-bold">Cọc: {formatCurrency(app.upfrontFee)}</span>
+                            </td>
+                            <td className="p-4">
+                              <p className="font-black text-slate-900">{formatCurrency(app.monthlyFee)}</p>
+                              <span className="text-[10.5px] text-indigo-500 font-bold">{app.durationMonths} kỳ (tháng)</span>
+                            </td>
+                            <td className="p-4 whitespace-nowrap">
+                              {getStatusBadge(app.status)}
+                            </td>
+                            <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-center gap-1">
+                                {app.status === 'pending' && (
+                                  <>
+                                    <button 
+                                      onClick={() => handleUpdateStatus(app.id, 'approved')}
+                                      className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg  active:scale-95 transition-all"
+                                      title="Phê duyệt hồ sơ"
+                                    >
+                                      <Check className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleUpdateStatus(app.id, 'cancelled')}
+                                      className="p-1.5 bg-red-50 hover:bg-red-100 text-red-650 rounded-lg  active:scale-95 transition-all"
+                                      title="Từ chối/Huỷ hồ sơ"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </>
+                                )}
+                                {app.status === 'approved' && (
+                                  <button 
+                                    onClick={() => handleUpdateStatus(app.id, 'active')}
+                                    className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg  active:scale-95 transition-all"
+                                  >
+                                    Khởi tạo & Giao máy
+                                  </button>
+                                )}
+                                {['active', 'late'].includes(app.status) && (
+                                  <button 
+                                    onClick={() => setSelectedLease(app)}
+                                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10.5px] font-bold rounded-lg border border-slate-300"
+                                  >
+                                    Quản lý thu tiền
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1184,6 +1398,56 @@ export function DeviceLeasing() {
                       </div>
                     </div>
 
+                    {/* Knox Lock Visual Overlay Simulator */}
+                    <div className="relative mx-auto" style={{ width: '140px' }}>
+                      {/* Phone frame */}
+                      <div className="relative bg-slate-950 rounded-[20px] border-2 border-slate-700 shadow-2xl overflow-hidden" style={{ height: '250px', width: '140px' }}>
+                        {/* Dynamic Island */}
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10"></div>
+                        
+                        {/* Locked Screen Overlay */}
+                        {selectedLease.knoxStatus === 'locked' ? (
+                          <div className="absolute inset-0 bg-gradient-to-b from-rose-950 to-slate-950 flex flex-col items-center justify-center gap-2 p-3">
+                            <Lock className="w-8 h-8 text-rose-400" />
+                            <p className="text-rose-300 font-black text-[9px] text-center uppercase tracking-widest">THIẾT BỊ BỊ KHÓA</p>
+                            <p className="text-rose-500 font-mono text-[7px] text-center">V-Com Knox MDM</p>
+                            <div className="mt-1 bg-rose-900/50 border border-rose-700 rounded-lg px-2 py-1 text-center">
+                              <p className="text-rose-200 text-[7px] font-bold leading-snug">Liên hệ cửa hàng<br/>để mở khóa thiết bị</p>
+                              <p className="text-rose-400 font-mono text-[6.5px] mt-0.5">1800-xxxx</p>
+                            </div>
+                            <span className="absolute bottom-4 text-rose-700 font-mono text-[6px]">VCOMM_KNOX_E_992</span>
+                          </div>
+                        ) : selectedLease.knoxStatus === 'warning' ? (
+                          <div className="absolute inset-0 bg-gradient-to-b from-amber-950 to-slate-950 flex flex-col items-center justify-center gap-2 p-3">
+                            <AlertTriangle className="w-7 h-7 text-amber-400 animate-pulse" />
+                            <p className="text-amber-300 font-black text-[9px] text-center uppercase tracking-widest">CẢNH BÁO NỢ QUÁ HẠN</p>
+                            <div className="mt-1 bg-amber-900/40 border border-amber-700 rounded-lg px-2 py-1 text-center">
+                              <p className="text-amber-200 text-[7px] font-bold leading-snug">Vui lòng thanh toán<br/>kỳ hạn chưa đóng</p>
+                            </div>
+                            <span className="absolute bottom-2 flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 bg-amber-500 rounded-full animate-ping"></span>
+                              <span className="text-amber-600 font-mono text-[6px]">WARNING_MODE_ACTIVE</span>
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-950 flex flex-col items-center justify-center gap-2">
+                            <div className="text-center space-y-1">
+                              <p className="text-slate-300 text-[11px] font-mono">09:41</p>
+                              <p className="text-slate-500 text-[7px]">Thứ Năm, 5 Tháng 6</p>
+                            </div>
+                            <ShieldCheck className="w-6 h-6 text-emerald-400 mt-2" />
+                            <p className="text-emerald-400 text-[7.5px] font-bold">Knox Protected</p>
+                          </div>
+                        )}
+
+                        {/* Bottom bar */}
+                        <div className="absolute bottom-0 inset-x-0 h-5 bg-slate-900 flex items-center justify-center">
+                          <div className="w-12 h-0.5 bg-slate-600 rounded-full"></div>
+                        </div>
+                      </div>
+                      <p className="text-center text-[9px] text-slate-400 font-semibold mt-2">Trạng thái màn hình thiết bị</p>
+                    </div>
+
                     {/* Integrated mini GPS Tracker simulation inside Vietnam zone */}
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
                       <div className="flex justify-between items-center text-[11px]">
@@ -1346,18 +1610,112 @@ export function DeviceLeasing() {
                       ) : (
                         <div className="py-2 text-center space-y-3">
                           <p className="text-slate-500 text-[10.5px] leading-relaxed">
-                            Chạy phân tích hồ sơ thông minh bao gồm độ trùng khớp CCCD, tỷ lệ cọc trước, và ước định chỉ số nợ/thu nhập dựa trên trí tuệ nhân tạo Gemini.
+                            Chạy phân tích hồ sơ thông minh dựa trên dữ liệu CIC và Gemini AI để đánh giá rủi ro tín dụng.
                           </p>
                           <button
                             type="button"
                             onClick={() => handleAIEvaluate(selectedLease)}
-                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-serif font-black px-4 py-2 rounded-xl text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-indigo-950/20 shadow-sm"
+                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-xl text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm"
                           >
                             <Sparkles className="w-3.5 h-3.5" /> Thẩm định với Gemini AI
                           </button>
                         </div>
                       )}
                     </div>
+
+                    {/* CIC Lookup Section */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-3 space-y-2">
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
+                          <span className="font-extrabold text-xs text-slate-800">Tra cứu CIC / PCB</span>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={cicLoading}
+                          onClick={async () => {
+                            setCicLoading(true);
+                            await new Promise(r => setTimeout(r, 1800));
+                            const cicData = getCicGroupFromCccd(selectedLease.identityCard);
+                            setApplications(prev => prev.map(a =>
+                              a.id === selectedLease.id
+                                ? { ...a, cicGroup: cicData.group, cicScore: cicData.score, cicNotes: cicData.notes }
+                                : a
+                            ));
+                            setSelectedLease(prev => prev ? { ...prev, cicGroup: cicData.group, cicScore: cicData.score, cicNotes: cicData.notes } : prev);
+                            setCicLoading(false);
+                          }}
+                          className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+                        >
+                          {cicLoading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                          Truy xuất CIC
+                        </button>
+                      </div>
+
+                      {cicLoading ? (
+                        <div className="flex items-center gap-2 py-3 justify-center">
+                          <RefreshCw className="w-4 h-4 text-indigo-500 animate-spin" />
+                          <span className="text-[10px] text-slate-400 font-mono animate-pulse">Đang kết nối hệ thống CIC Việt Nam...</span>
+                        </div>
+                      ) : selectedLease.cicGroup ? (
+                        <div className="space-y-2 animate-in fade-in duration-300">
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Nhóm nợ</p>
+                              <p className={cn(
+                                "text-lg font-black font-mono",
+                                selectedLease.cicGroup === 1 ? "text-emerald-600" :
+                                selectedLease.cicGroup === 2 ? "text-amber-500" :
+                                selectedLease.cicGroup === 3 ? "text-orange-500" :
+                                "text-rose-600"
+                              )}>{selectedLease.cicGroup}</p>
+                            </div>
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Điểm</p>
+                              <p className={cn(
+                                "text-lg font-black font-mono",
+                                (selectedLease.cicScore || 0) >= 700 ? "text-emerald-600" :
+                                (selectedLease.cicScore || 0) >= 500 ? "text-amber-500" :
+                                "text-rose-600"
+                              )}>{selectedLease.cicScore}</p>
+                            </div>
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Xếp hạng</p>
+                              <p className={cn(
+                                "text-sm font-black",
+                                selectedLease.cicGroup === 1 ? "text-emerald-600" :
+                                selectedLease.cicGroup <= 2 ? "text-amber-500" :
+                                "text-rose-600"
+                              )}>
+                                {selectedLease.cicGroup === 1 ? 'AA' : selectedLease.cicGroup === 2 ? 'B+' : selectedLease.cicGroup === 3 ? 'B' : selectedLease.cicGroup === 4 ? 'C' : 'D'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="bg-slate-50 border border-slate-150 rounded-lg p-2">
+                            <p className="text-[10px] text-slate-600 font-semibold leading-relaxed">{selectedLease.cicNotes}</p>
+                          </div>
+                          <p className="text-[9px] text-slate-400 italic text-right">Nguồn: Trung tâm Thông tin Tín dụng Quốc gia VN</p>
+                        </div>
+                      ) : (
+                        <div className="py-3 text-center space-y-1">
+                          <CreditCard className="w-5 h-5 text-slate-300 mx-auto" />
+                          <p className="text-[10px] text-slate-400">Chưa có dữ liệu CIC. Nhấn Truy xuất để kết nối.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Option to re-run AI eval with CIC data */}
+                    {selectedLease.cicGroup && (
+                      <button
+                        type="button"
+                        onClick={() => handleAIEvaluate(selectedLease)}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-xl text-[10.5px] flex items-center gap-1.5 justify-center cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Thẩm định AI ngay với dữ liệu CIC
+                      </button>
+                    )}
+
                   </div>
                 )}
 
