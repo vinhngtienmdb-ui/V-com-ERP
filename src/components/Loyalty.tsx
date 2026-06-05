@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sendZnsNotification } from '../services/znsService';
 import { 
  Trophy, 
  Gift, 
@@ -68,6 +69,52 @@ const REWARDS = [
 
 export function LoyaltyManagement() {
  const [activeTab, setActiveTab] = useState<'tiers' | 'missions' | 'rewards' | 'gamification'>('tiers');
+ const [vipMembers, setVipMembers] = useState([
+  { id: 'M-001', name: 'Nguyễn Bích Phương', phone: '0987654321', tier: 'Bạc', points: 2400, birthday: '03/06' },
+  { id: 'M-002', name: 'Phạm Minh Chính', phone: '0912345678', tier: 'Vàng', points: 8200, birthday: '12/10' },
+  { id: 'M-003', name: 'Lê Thùy Trang', phone: '0977889900', tier: 'Kim cương', points: 15400, birthday: '05/09' }
+ ]);
+
+ const handleRankUp = (memberId: string) => {
+  setVipMembers(prev => prev.map(m => {
+    if (m.id === memberId) {
+      let nextTier = '';
+      let voucher = '';
+      if (m.tier === 'Bạc') {
+        nextTier = 'Vàng';
+        voucher = 'GOLD2026';
+      } else if (m.tier === 'Vàng') {
+        nextTier = 'Kim cương';
+        voucher = 'DIAMOND2026';
+      } else {
+        alert('Khách hàng đã đạt hạng cao nhất!');
+        return m;
+      }
+      
+      sendZnsNotification(m.phone, 'ZNS_LOYALTY_RANK_UP', {
+        'Tên_Khách_Hàng': m.name,
+        'Hạng_Mới': nextTier,
+        'Mã_Voucher': voucher
+      }, {
+        customerName: m.name
+      });
+      
+      alert("Đã thăng hạng " + m.name + " lên " + nextTier + " và tự động gửi tin nhắn Zalo ZNS thông báo thăng hạng!");
+      return { ...m, tier: nextTier, points: m.points + 5000 };
+    }
+    return m;
+  }));
+ };
+
+ const handleSendBirthdayMsg = (member: any) => {
+  sendZnsNotification(member.phone, 'ZNS_LOYALTY_BIRTHDAY', {
+    'Tên_Khách_Hàng': member.name,
+    'Trị_Giá_Quà': 'Voucher 500.000đ'
+  }, {
+    customerName: member.name
+  });
+  alert("Đã gửi Zalo ZNS chúc mừng sinh nhật tới khách hàng " + member.name + " thành công!");
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -132,74 +179,141 @@ export function LoyaltyManagement() {
  <div className="p-6">
  <AnimatePresence mode="wait">
  {activeTab === 'tiers' && (
- <motion.div 
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- exit={{ opacity: 0, scale: 1.05 }}
- className="grid grid-cols-1 lg:grid-cols-3 gap-6"
- >
- {MOCK_LOYALTY.map(tier => (
- <div key={tier.id} className={cn(
- "relative h-[450px] rounded-lg p-6 flex flex-col justify-between overflow-hidden group shadow-sm transition-transform ",
- tier.color
- )}>
- {/* Background pattern */}
- <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
- {tier.tier === 'diamond' ? <Gem className="w-48 h-48 rotate-12" /> : <Star className="w-48 h-48 rotate-12" />}
- </div>
- 
- <div className="relative z-10">
- <div className="flex justify-between items-start">
- <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center">
- {tier.tier === 'diamond' ? <Gem className="w-6 h-6 text-[#FAF9F5]" /> : <Star className="w-6 h-6 text-[#FAF9F5]" />}
- </div>
- <div className="text-right">
- <p className="text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">Available Points</p>
- <p className="text-xl font-bold text-[#FAF9F5]">{tier.points.toLocaleString()}</p>
- </div>
- </div>
- 
- <div className="mt-8">
- <h4 className="text-2xl font-black italic uppercase tracking-tighter text-[#FAF9F5]">{tier.tier} CLUB</h4>
- <p className={cn("text-xs font-bold mt-1", tier.textColor)}>TIER STATUS: {tier.points >= 15000 ? 'ELITE' : 'ACTIVE'}</p>
- </div>
- </div>
+  <>
+  <motion.div 
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 1.05 }}
+  className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+  >
+  {MOCK_LOYALTY.map(tier => (
+  <div key={tier.id} className={cn(
+  "relative h-[450px] rounded-lg p-6 flex flex-col justify-between overflow-hidden group shadow-sm transition-transform ",
+  tier.color
+  )}>
+  {/* Background pattern */}
+  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+  {tier.tier === 'diamond' ? <Gem className="w-48 h-48 rotate-12" /> : <Star className="w-48 h-48 rotate-12" />}
+  </div>
+  
+  <div className="relative z-10">
+  <div className="flex justify-between items-start">
+  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center">
+  {tier.tier === 'diamond' ? <Gem className="w-6 h-6 text-[#FAF9F5]" /> : <Star className="w-6 h-6 text-[#FAF9F5]" />}
+  </div>
+  <div className="text-right">
+  <p className="text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">Available Points</p>
+  <p className="text-xl font-bold text-[#FAF9F5]">{tier.points.toLocaleString()}</p>
+  </div>
+  </div>
+  
+  <div className="mt-8">
+  <h4 className="text-2xl font-black italic uppercase tracking-tighter text-[#FAF9F5]">{tier.tier.toUpperCase()} CLUB</h4>
+  <p className={cn("text-xs font-bold mt-1", tier.textColor)}>TIER STATUS: {tier.points >= 15000 ? 'ELITE' : 'ACTIVE'}</p>
+  </div>
+  </div>
 
- <div className="relative z-10 space-y-4">
- <div className="space-y-2">
- <div className="flex justify-between text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">
- <span>Tiến trình nâng hạng</span>
- <span>{tier.nextTierPoints.toLocaleString()} PTS</span>
- </div>
- <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
- <motion.div 
- initial={{ width: 0 }}
- animate={{ width: `${(tier.points / tier.nextTierPoints) * 100}%` }}
- className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
- />
- </div>
- </div>
+  <div className="relative z-10 space-y-4">
+  <div className="space-y-2">
+  <div className="flex justify-between text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">
+  <span>Tiến trình nâng hạng</span>
+  <span>{tier.nextTierPoints.toLocaleString()} PTS</span>
+  </div>
+  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+  <motion.div 
+  initial={{ width: 0 }}
+  animate={{ width: `${(tier.points / tier.nextTierPoints) * 100}%` }}
+  className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+  />
+  </div>
+  </div>
 
- <div className="space-y-2">
- <p className="text-[10px] font-bold text-[#FAF9F5]/40 uppercase tracking-widest border-b border-white/10 pb-1">Đặc quyền Tier</p>
- <div className="space-y-1.5">
- {tier.privileges.slice(0, 3).map((p, i) => (
- <div key={i} className="flex items-center gap-2 text-[11px] font-medium text-[#FAF9F5]/80">
- <CheckCircle2 className="w-3 h-3 text-[#FAF9F5]/40" />
- {p}
- </div>
- ))}
- </div>
- </div>
+  <div className="space-y-2">
+  <p className="text-[10px] font-bold text-[#FAF9F5]/40 uppercase tracking-widest border-b border-white/10 pb-1">Đặc quyền Tier</p>
+  <div className="space-y-1.5">
+  {tier.privileges.slice(0, 3).map((p, i) => (
+  <div key={i} className="flex items-center gap-2 text-[11px] font-medium text-[#FAF9F5]/80">
+  <CheckCircle2 className="w-3 h-3 text-[#FAF9F5]/40" />
+  {p}
+  </div>
+  ))}
+  </div>
+  </div>
 
- <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-[#FAF9F5] py-3 rounded-lg font-bold text-sm transition-all border border-white/10 flex items-center justify-center gap-2">
- Chi tiết đặc quyền <ArrowRight className="w-4 h-4" />
- </button>
- </div>
- </div>
- ))}
- </motion.div>
- )}
+  <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-[#FAF9F5] py-3 rounded-lg font-bold text-sm transition-all border border-white/10 flex items-center justify-center gap-2">
+  Chi tiết đặc quyền <ArrowRight className="w-4 h-4" />
+  </button>
+  </div>
+  </div>
+  ))}
+  </motion.div>
+
+  {/* VIP Members Management Table */}
+  <div className="mt-8 bg-slate-50 border border-slate-200 rounded-xl p-6 space-y-4 shadow-sm">
+    <div className="flex justify-between items-center">
+      <div>
+        <h3 className="text-base font-bold text-slate-900">Quản lý Thành viên VIP & Tự động hóa ZNS</h3>
+        <p className="text-xs text-slate-500">Mô phỏng thăng cấp thành viên hoặc gửi tin nhắn chăm sóc khách hàng tự động.</p>
+      </div>
+      <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 border border-blue-200 rounded">LOYALTY ZNS ACTIVE</span>
+    </div>
+    
+    <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-xs">
+      <table className="w-full text-left text-xs border-collapse whitespace-nowrap">
+        <thead className="bg-slate-50 text-slate-650 font-bold border-b border-slate-200">
+          <tr>
+            <th className="p-3">Mã KH</th>
+            <th className="p-3">Họ và tên</th>
+            <th className="p-3">Số điện thoại</th>
+            <th className="p-3">Hạng hiện tại</th>
+            <th className="p-3">Điểm tích lũy</th>
+            <th className="p-3 text-center">Thao tác tự động hóa</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-150">
+          {vipMembers.map(m => (
+            <tr key={m.id} className="hover:bg-slate-50/50">
+              <td className="p-3 font-mono font-semibold text-slate-800">{m.id}</td>
+              <td className="p-3 font-bold text-slate-900">{m.name}</td>
+              <td className="p-3 font-mono text-slate-600">{m.phone}</td>
+              <td className="p-3">
+                <span className={cn(
+                  "px-2 py-0.5 rounded font-bold text-[10px]",
+                  m.tier === 'Kim cương' ? "bg-slate-900 text-orange-500" :
+                  m.tier === 'Vàng' ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"
+                )}>
+                  {m.tier}
+                </span>
+              </td>
+              <td className="p-3 font-mono font-bold text-slate-900">{m.points.toLocaleString()} PTS</td>
+              <td className="p-3 text-center flex justify-center gap-2">
+                <button
+                  onClick={() => handleRankUp(m.id)}
+                  disabled={m.tier === 'Kim cương'}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-2xs cursor-pointer",
+                    m.tier === 'Kim cương' 
+                      ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed" 
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  )}
+                >
+                  Thăng hạng 👑
+                </button>
+                <button
+                  onClick={() => handleSendBirthdayMsg(m)}
+                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold transition-all shadow-2xs cursor-pointer"
+                >
+                  Chúc mừng sinh nhật 🎂
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </>
+)}
 
  {activeTab === 'missions' && (
  <motion.div 

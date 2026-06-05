@@ -18,6 +18,8 @@ interface PreferencesContextType {
  setBorderRadius: (radius: BorderRadius) => void;
  holidayTheme: HolidayTheme;
  setHolidayTheme: (theme: HolidayTheme) => void;
+ layoutEditable: boolean;
+ setLayoutEditable: (editable: boolean) => void;
 }
 
 const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);
@@ -41,6 +43,10 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
 
  const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => {
  return (safeLocalStorage.getItem('app_holiday_theme') as HolidayTheme) || 'none';
+ });
+
+ const [layoutEditable, setLayoutEditable] = useState<boolean>(() => {
+ return safeLocalStorage.getItem('app_layout_editable') === 'true';
  });
 
  useEffect(() => {
@@ -67,13 +73,18 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
  document.documentElement.setAttribute('data-holiday-theme', holidayTheme);
  }, [holidayTheme]);
 
+ useEffect(() => {
+ safeLocalStorage.setItem('app_layout_editable', String(layoutEditable));
+ }, [layoutEditable]);
+
  return (
  <PreferencesContext.Provider value={{
   theme, setTheme,
   language, setLanguage,
   primaryColor, setPrimaryColor,
   borderRadius, setBorderRadius,
-  holidayTheme, setHolidayTheme
+  holidayTheme, setHolidayTheme,
+  layoutEditable, setLayoutEditable
  }}>
   {children}
  </PreferencesContext.Provider>

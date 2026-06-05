@@ -29,7 +29,9 @@ import {
  ShieldAlert,
  Sparkles,
  Scale,
- BookOpen
+ BookOpen,
+ Loader2,
+ Calculator
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -40,6 +42,7 @@ import { TemplateGalleryModal } from './TemplateGalleryModal';
 import { FormConfigModal } from './FormConfigModal';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { syncTransactionToMisa } from '../services/misaService';
 
 const INITIAL_REQUESTS = [
  { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -104,6 +107,56 @@ export function RequestHub() {
  });
  const [signatureMethod, setSignatureMethod] = useState<'company_ca' | 'personal_ca' | 'personal_image'>('company_ca');
  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
+
+ // MISA Sync State
+  const [syncedMisaRequests, setSyncedMisaRequests] = useState<Record<string, boolean>>({});
+  const [syncingMisaId, setSyncingMisaId] = useState<string | null>(null);
+
+  const handleSyncRequestToMisa = async (req: any) => {
+    setSyncingMisaId(req.id);
+    try {
+      let category = 'Operational';
+      let debitAccount = '6422';
+      let creditAccount = '1121';
+
+      if (req.subtype.includes('Tạm ứng') || req.subtype.includes('tạm ứng')) {
+        category = 'Tạm ứng';
+        debitAccount = '141';
+      } else if (req.subtype.includes('Quyết toán') || req.subtype.includes('Hoàn ứng') || req.subtype.includes('hoàn ứng')) {
+        category = 'Quyết toán tạm ứng';
+        debitAccount = '6422';
+        creditAccount = '141';
+      } else if (req.subtype.includes('Thêm giờ') || req.subtype.includes('OT')) {
+        category = 'Operational';
+        debitAccount = '6422';
+      }
+
+      const amount = req.formData?.amount || req.formData?.cost || req.value || 500000;
+      const description = req.title || req.subtype;
+
+      const result = await syncTransactionToMisa(req.id, {
+        amount,
+        description,
+        type: 'expense',
+        category,
+        debitAccount,
+        creditAccount,
+        accountingObjectCode: 'NCCLE'
+      });
+
+      if (result && result.status === 'success') {
+        setSyncedMisaRequests(prev => ({ ...prev, [req.id]: true }));
+        addNotification('Ghi sổ thành công', `Đề xuất ${req.id} đã được ghi sổ chi phí.`);
+      } else {
+        throw new Error(result.message || 'Lỗi không xác định khi ghi sổ');
+      }
+    } catch (err: any) {
+      console.error('Failed to sync:', err);
+      addNotification('Lỗi Ghi sổ', `Không thể ghi sổ đề xuất ${req.id}: ${err.message || err}`);
+    } finally {
+      setSyncingMisaId(null);
+    }
+  };
 
  // Printing State
  const [showPrintModal, setShowPrintModal] = useState(false);
@@ -1517,6 +1570,27 @@ export function RequestHub() {
                  >
                    <RefreshCw className="w-4 h-4" /> Reset trạng thái
                  </button>
+              )}
+
+              {selectedRequestForView.status === 'approved' && (
+                syncedMisaRequests[selectedRequestForView.id] ? (
+                  <span className="px-4 py-2 bg-emerald-50 text-emerald-700 text-[13px] font-bold border border-emerald-200 rounded-lg flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" /> Đã ghi sổ Chi phí 🟢
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => handleSyncRequestToMisa(selectedRequestForView)}
+                    disabled={syncingMisaId === selectedRequestForView.id}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {syncingMisaId === selectedRequestForView.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Calculator className="w-4 h-4" />
+                    )}
+                    Ghi sổ Chi phí
+                  </button>
+                )
               )}
 
             </div>

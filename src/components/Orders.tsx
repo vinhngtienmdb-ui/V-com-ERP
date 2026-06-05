@@ -21,6 +21,8 @@ import {
   PieChart as PieIcon,
   Sparkles,
   Printer,
+  Loader2,
+  CheckCircle2,
 } from 'lucide-react';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
@@ -29,15 +31,20 @@ import { generateRMAResponse } from '../services/geminiService';
 import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from '../lib/firebase';
 import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
+import { syncOrderToMisa } from '../services/misaService';
 
 const OrderDetailModal = ({
   order,
   onClose,
   onUpdateStatus,
+  onSyncMisa,
+  isSyncingMisa,
 }: {
   order: any;
   onClose: () => void;
   onUpdateStatus: (id: string, s: string) => void;
+  onSyncMisa: (id: string) => Promise<void>;
+  isSyncingMisa: boolean;
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
@@ -149,6 +156,50 @@ const OrderDetailModal = ({
                   : 'ZNS_ORDER_CONFIRMED'}
             </span>
           </div>
+        </div>
+
+        {/* Trạng thái Ghi sổ Kế toán */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                Trạng thái Ghi sổ Kế toán
+              </p>
+              <div className="flex items-center gap-2">
+                {order.misaSynced ? (
+                  <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 rounded-full flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    Đã ghi sổ chứng từ: {order.misaVoucherId} 🟢
+                  </span>
+                ) : order.misaSyncError ? (
+                  <span className="px-3 py-1 bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200 rounded-full flex items-center gap-1.5 cursor-help" title={order.misaSyncError}>
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                    Lỗi kiểm tra 🔴
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 rounded-full flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                    Chờ ghi sổ 🟡
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {!order.misaSynced && (
+              <button
+                onClick={() => onSyncMisa(order.id)}
+                disabled={isSyncingMisa}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-lg flex items-center gap-2 shadow-sm transition-all"
+              >
+                {isSyncingMisa ? 'Đang ghi sổ...' : 'Ghi sổ Kế toán'}
+              </button>
+            )}
+          </div>
+          {order.misaSyncError && (
+            <p className="text-xs text-rose-600 mt-2 bg-rose-50/50 p-2 rounded border border-rose-100 font-mono">
+              Lỗi chi tiết: {order.misaSyncError}
+            </p>
+          )}
         </div>
 
         <div className="space-y-4 mb-8">
@@ -388,6 +439,41 @@ const paymentMethodLabels: Record<string, string> = {
 export function Orders() {
   const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
   const [mockOrders, setMockOrders] = useState<any[]>(MOCK_ORDERS);
+  const [syncingOrderId, setSyncingOrderId] = useState<string | null>(null);
+
+  const handleSyncOrderToMisa = async (orderId: string) => {
+    setSyncingOrderId(orderId);
+    try {
+      const res = await syncOrderToMisa(orderId);
+      const isMock = mockOrders.some(o => o.id === orderId);
+      if (isMock) {
+        setMockOrders(prev => prev.map(o => o.id === orderId ? { ...o, misaSynced: true, misaVoucherId: 'VOUCHER-' + orderId.substring(0, 8), misaSyncError: '' } : o));
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(prev => ({ ...prev, misaSynced: true, misaVoucherId: 'VOUCHER-' + orderId.substring(0, 8), misaSyncError: '' }));
+        }
+      } else {
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(prev => ({ ...prev, misaSynced: true, misaVoucherId: res.voucherId || 'VOUCHER-MISA', misaSyncError: '' }));
+        }
+      }
+    } catch (err: any) {
+      console.error('Failed to sync order to MISA:', err);
+      const isMock = mockOrders.some(o => o.id === orderId);
+      if (isMock) {
+        setMockOrders(prev => prev.map(o => o.id === orderId ? { ...o, misaSynced: false, misaSyncError: err.message || err } : o));
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(prev => ({ ...prev, misaSynced: false, misaSyncError: err.message || err }));
+        }
+      } else {
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(prev => ({ ...prev, misaSynced: false, misaSyncError: err.message || err }));
+        }
+      }
+      alert('Đồng bộ MISA thất bại: ' + (err.message || err));
+    } finally {
+      setSyncingOrderId(null);
+    }
+  };
   const [znsToast, setZnsToast] = useState<{
     show: boolean;
     message: string;
@@ -753,6 +839,9 @@ export function Orders() {
                 <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center bg-[#F9FAFB]">
                   Trạng thái
                 </th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center bg-[#F9FAFB]">
+                  Trạng thái Ghi sổ
+                </th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right bg-[#F9FAFB]">
                   Thao tác
                 </th>
@@ -830,6 +919,50 @@ export function Orders() {
                     </span>
                   </div>
                 </td>
+                <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-center gap-2">
+                    {order.misaSynced ? (
+                      <span 
+                        title={'Mã chứng từ: ' + order.misaVoucherId}
+                        className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full animate-in fade-in"
+                      >
+                        Đã ghi sổ 🟢
+                      </span>
+                    ) : order.misaSyncError ? (
+                      <div className="flex items-center gap-1.5 animate-in fade-in">
+                        <span 
+                          title={'Lỗi: ' + order.misaSyncError}
+                          className="px-2.5 py-1 bg-rose-50 text-rose-700 text-[10px] font-bold border border-rose-200 rounded-full cursor-help"
+                        >
+                          Lỗi kiểm tra 🔴
+                        </span>
+                        <button
+                          onClick={() => handleSyncOrderToMisa(order.id)}
+                          disabled={syncingOrderId === order.id}
+                          className="px-2 py-1 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-semibold rounded-lg shadow-xs flex items-center gap-1 disabled:opacity-50 cursor-pointer"
+                        >
+                          {syncingOrderId === order.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            'Thử lại 🔄'
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleSyncOrderToMisa(order.id)}
+                        disabled={syncingOrderId === order.id}
+                        className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-xs flex items-center gap-1 disabled:opacity-50 cursor-pointer animate-in fade-in"
+                      >
+                        {syncingOrderId === order.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          'Ghi sổ'
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-all">
                     <button
@@ -861,6 +994,8 @@ export function Orders() {
             order={selectedOrder}
             onClose={() => setSelectedOrder(null)}
             onUpdateStatus={handleUpdateStatus}
+            onSyncMisa={handleSyncOrderToMisa}
+            isSyncingMisa={syncingOrderId === selectedOrder.id}
           />
         )}
 

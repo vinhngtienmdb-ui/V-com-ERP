@@ -29,10 +29,12 @@ import {
  Camera,
  Maximize2,
  Eye,
- EyeOff
+ EyeOff,
+ Loader2
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
+import { syncProductToMisa } from '../services/misaService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { db, serverTimestamp, handleFirestoreError } from '../lib/firebase';
 import { 
@@ -50,6 +52,7 @@ import {
 
 export function PIM() {
  const [products, setProducts] = useState<Product[]>([]);
+  const [syncingProductId, setSyncingProductId] = useState<string | null>(null);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
  const [loading, setLoading] = useState(true);
  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
@@ -1199,11 +1202,43 @@ export function PIM() {
  type="number"
  defaultValue={product.hiddenCosts || 0}
  onBlur={(e) => updateHiddenCost(product, Number(e.target.value))}
- className="w-28 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
- placeholder="VD: 15000"
- />
- </div>
- </div>
+                      className="w-28 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
+                      placeholder="VD: 15000"
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 mt-2 px-3 py-2">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trạng thái Ghi sổ</span>
+                    <div className="flex items-center gap-1.5">
+                      {product.misaSynced ? (
+                        <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 uppercase tracking-wider">Đã ghi sổ 🟢</span>
+                      ) : product.misaSyncError ? (
+                        <span className="text-[9px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 uppercase tracking-wider" title={product.misaSyncError}>Lỗi kiểm tra 🔴</span>
+                      ) : (
+                        <span className="text-[9px] font-black text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider">Chờ ghi sổ 🟡</span>
+                      )}
+                      <button
+                        disabled={syncingProductId === product.id}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          setSyncingProductId(product.id);
+                          try {
+                            await syncProductToMisa(product.id);
+                            alert("Ghi sổ sản phẩm thành công!");
+                          } catch (err) {
+                            alert("Ghi sổ thất bại: " + err.message);
+                          } finally {
+                            setSyncingProductId(null);
+                          }
+                        }}
+                        className="px-1.5 py-0.5 bg-slate-900 text-white rounded text-[9px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-1"
+                      >
+                        {syncingProductId === product.id && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
+                        Sync
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
  {/* Footer Metrics */}
  <div className="mt-auto pt-5 border-t border-slate-200 flex items-center justify-between">

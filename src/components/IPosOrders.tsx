@@ -60,60 +60,69 @@ export function IPosOrders({ activeStore }: { activeStore: any }) {
              ) : (
                 <div className="overflow-x-auto min-w-0">
                 <table className="w-full text-left text-sm whitespace-nowrap">
-                   <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
-                       <tr>
-                           <th className="px-4 py-3">Mã KH/Nguồn</th>
-                           <th className="px-4 py-3">Thông tin Đơn</th>
-                           <th className="px-4 py-3">Trạng thái & Đối soát</th>
-                           <th className="px-4 py-3 text-right">Tổng thanh toán</th>
-                           <th className="px-4 py-3 text-center">Thao tác</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                       {[1,2,3,4,5].map(i => (
-                           <tr key={i} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
-                               <td className="px-4 py-4">
-                                   <p className="font-bold text-slate-900">#ORD-00{i}</p>
-                                   <p className="text-xs text-slate-600 mt-0.5">{i%2===0 ? 'Lazada' : 'ShopeeFood'}</p>
-                               </td>
-                               <td className="px-4 py-4">
-                                   <p className="font-semibold text-slate-900">Khách hàng {i}</p>
-                                   <p className="text-[10px] bg-slate-100 px-2 py-0.5 rounded w-fit mt-1">SĐT: 091234567{i}</p>
-                               </td>
-                               <td className="px-4 py-4">
-                                   <div className="flex flex-col gap-1">
-                                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
-                                          {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
-                                      </span>
-                                      <span className="text-[10px] font-bold text-slate-500">COD: Đã đối soát</span>
-                                   </div>
-                               </td>
-                               <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(150000 * i)}</td>
-                               <td className="px-4 py-4 text-center space-x-2">
-                                   <button 
-                                      onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        setPrintingOrder({
-                                          id: `ORD-00${i}`,
-                                          customerName: `Khách hàng ${i}`,
-                                          date: new Date().toLocaleString('vi-VN'),
-                                          total: 150000 * i,
-                                          paymentMethod: i % 2 === 0 ? 'cash' : 'qr',
-                                          status: i % 3 === 0 ? 'pending' : 'delivered',
-                                          items: [
-                                            { name: `Sản phẩm mẫu ${i}A`, price: 100000 },
-                                            { name: `Sản phẩm mẫu ${i}B`, price: 50000 * (i - 1) || 50000 }
-                                          ]
-                                        }); 
-                                      }}
-                                      className="p-1.5 bg-white border border-slate-300 text-slate-600 rounded hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition-colors shadow-sm" 
-                                      title="In nhanh Biên lai"
-                                    >
-                                      <Printer className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
-                                   <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>
-                               </td>
+                    <thead className="bg-slate-50 border-b border-slate-300 text-slate-600 font-bold">
+                        <tr>
+                            <th className="px-4 py-3">Mã KH/Nguồn</th>
+                            <th className="px-4 py-3">Thông tin Đơn</th>
+                            <th className="px-4 py-3">Trạng thái & Đối soát</th>
+                            <th className="px-4 py-3 text-right">Tổng thanh toán</th>
+                            <th className="px-4 py-3 text-center">Trạng thái Ghi sổ</th>
+                            <th className="px-4 py-3 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {[1,2,3,4,5].map(i => (
+                            <tr key={i} className="border-b last:border-0 border-slate-200 hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-4">
+                                    <p className="font-bold text-slate-900">#ORD-00{i}</p>
+                                    <p className="text-xs text-slate-600 mt-0.5">{i%2===0 ? 'Lazada' : 'ShopeeFood'}</p>
+                                </td>
+                                <td className="px-4 py-4">
+                                    <p className="font-semibold text-slate-900">Khách hàng {i}</p>
+                                    <p className="text-[10px] bg-slate-100 px-2 py-0.5 rounded w-fit mt-1">SĐT: 091234567{i}</p>
+                                </td>
+                                <td className="px-4 py-4">
+                                    <div className="flex flex-col gap-1">
+                                       <span className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider w-fit", i%3===0 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
+                                           {i%3===0 ? 'Chờ lấy hàng' : 'Đã giao'}
+                                       </span>
+                                       <span className="text-[10px] font-bold text-slate-500">COD: Đã đối soát</span>
+                                    </div>
+                                </td>
+                                <td className="px-4 py-4 text-right font-black text-primary-600">{formatCurrency(150000 * i)}</td>
+                                <td className="px-4 py-4 text-center">
+                                   <span className={cn(
+                                       "px-2.5 py-1 rounded-full text-[10px] font-bold border",
+                                       i%3===0 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                   )}>
+                                       {i%3===0 ? 'Chờ ghi sổ 🟡' : 'Đã ghi sổ 🟢'}
+                                   </span>
+                                </td>
+                                <td className="px-4 py-4 text-center space-x-2">
+                                    <button 
+                                       onClick={(e) => { 
+                                         e.stopPropagation(); 
+                                         setPrintingOrder({
+                                           id: `ORD-00${i}`,
+                                           customerName: `Khách hàng ${i}`,
+                                           date: new Date().toLocaleString('vi-VN'),
+                                           total: 150000 * i,
+                                           paymentMethod: i % 2 === 0 ? 'cash' : 'qr',
+                                           status: i % 3 === 0 ? 'pending' : 'delivered',
+                                           items: [
+                                             { name: `Sản phẩm mẫu ${i}A`, price: 100000 },
+                                             { name: `Sản phẩm mẫu ${i}B`, price: 50000 * (i - 1) || 50000 }
+                                           ]
+                                         }); 
+                                       }}
+                                       className="p-1.5 bg-white border border-slate-300 text-slate-600 rounded hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition-colors shadow-sm" 
+                                       title="In nhanh Biên lai"
+                                     >
+                                       <Printer className="w-4 h-4" />
+                                     </button>
+                                     <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="In Biên bản Bàn Giao"><FileText className="w-4 h-4" /></button>
+                                    <button className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-primary-50 hover:text-primary-600 transition-colors" title="Đóng Gói & Chờ VC"><Truck className="w-4 h-4" /></button>
+                                </td>
                            </tr>
                        ))}
                    </tbody>

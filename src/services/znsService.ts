@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export interface ZnsTemplate {
   id: string;
   name: string;
@@ -62,6 +64,22 @@ export const DEFAULT_TEMPLATES: ZnsTemplate[] = [
     description: 'Tự động gửi khi phiếu hỗ trợ của khách hàng được đóng.',
     contentTemplate: 'Kính gửi [Tên_Khách_Hàng], phiếu hỗ trợ [Mã_Phiếu] đã được xử lý hoàn tất và đóng lại. Xin chân thành cảm ơn ý kiến đóng góp của quý khách giúp chúng tôi nâng cao chất lượng dịch vụ!',
     isActive: true
+  },
+  {
+    id: 'ZNS-006',
+    name: 'Thăng hạng Thành viên',
+    code: 'ZNS_LOYALTY_RANK_UP',
+    description: 'Tự động gửi khi khách hàng được thăng hạng thành viên.',
+    contentTemplate: 'Chúc mừng khách hàng [Tên_Khách_Hàng] đã được thăng hạng thành viên lên [Hạng_Mới]! Nhận ngay voucher giảm giá [Mã_Voucher] cho lần mua sắm tiếp theo.',
+    isActive: true
+  },
+  {
+    id: 'ZNS-007',
+    name: 'Chúc mừng Sinh nhật',
+    code: 'ZNS_LOYALTY_BIRTHDAY',
+    description: 'Tự động gửi thông báo chúc mừng sinh nhật khách hàng.',
+    contentTemplate: 'VComm chúc mừng sinh nhật khách hàng [Tên_Khách_Hàng]! Chúc quý khách tuổi mới tràn đầy niềm vui. Nhận ngay quà tặng sinh nhật đặc biệt trị giá [Trị_Giá_Quà] tại cửa hàng gần nhất.',
+    isActive: true
   }
 ];
 
@@ -75,31 +93,96 @@ export interface ZnsConfig {
   oaId: string;
   appId: string;
   accessToken: string;
+  refreshToken?: string;
   autoRefresh: boolean;
   isActive: boolean;
 }
 
+let isSynced = false;
+
 export const getZnsConfig = (): ZnsConfig => {
   const data = localStorage.getItem(STORAGE_KEYS.CONFIG);
+  let config: ZnsConfig;
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      config = {
+        ...parsed,
+        refreshToken: parsed.refreshToken || ''
+      };
     } catch {
-      // Use default fallback
+      config = {
+        oaId: '2938475928374928',
+        appId: '142345234523',
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zns_simulated_token_2026',
+        refreshToken: 'simulated_refresh_token_2026',
+        autoRefresh: true,
+        isActive: true
+      };
     }
+  } else {
+    config = {
+      oaId: '2938475928374928',
+      appId: '142345234523',
+      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zns_simulated_token_2026',
+      refreshToken: 'simulated_refresh_token_2026',
+      autoRefresh: true,
+      isActive: true
+    };
   }
-  return {
-    oaId: '2938475928374928',
-    appId: '142345234523',
-    accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zns_simulated_token_2026',
-    autoRefresh: true,
-    isActive: true
-  };
+
+  if (!isSynced && typeof window !== 'undefined') {
+    isSynced = true;
+    axios.post('/api/zns/config', config).catch(() => {});
+  }
+  return config;
 };
 
 export const saveZnsConfig = (config: ZnsConfig): void => {
   localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(config));
   window.dispatchEvent(new Event('zns-config-updated'));
+  
+  // Sync to server cache for background refresh job
+  axios.post('/api/zns/config', config).catch(err => {
+    console.warn('[ZNS] Failed to sync config to server cache:', err);
+  });
+};
+
+export const refreshZnsToken = async (): Promise<ZnsConfig> => {
+  const config = getZnsConfig();
+  
+  // Trạng thái giả lập hoặc không có refresh token thực tế
+  if (!config.refreshToken || config.accessToken.includes('simulated') || config.refreshToken.includes('simulated')) {
+    const updatedConfig: ZnsConfig = {
+      ...config,
+      accessToken: 'simulated_refreshed_token_' + Math.floor(Math.random() * 100000),
+      refreshToken: 'simulated_refreshed_refresh_token_' + Math.floor(Math.random() * 100000),
+    };
+    saveZnsConfig(updatedConfig);
+    return updatedConfig;
+  }
+
+  try {
+    const response = await axios.post('/api/zns/refresh', {
+      refreshToken: config.refreshToken,
+      appId: config.appId
+    });
+
+    if (response.data && response.data.access_token) {
+      const updatedConfig: ZnsConfig = {
+        ...config,
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token || config.refreshToken
+      };
+      saveZnsConfig(updatedConfig);
+      return updatedConfig;
+    } else {
+      throw new Error(response.data.message || 'Không thể làm mới token Zalo OA');
+    }
+  } catch (error: any) {
+    console.error('[ZNS-Refresh] Lỗi làm mới Zalo ZNS Token:', error);
+    throw error;
+  }
 };
 
 export const getZnsTemplates = (): ZnsTemplate[] => {
@@ -185,9 +268,11 @@ export const sendZnsNotification = (
     formattedPhone = '09' + Math.floor(10000000 + Math.random() * 90000000); // Random visual phone
   }
 
-  // Determine realistic random statuses
-  const statuses: ZnsLog['status'][] = ['sent', 'delivered', 'read'];
-  const finalStatus = config.isActive ? statuses[Math.floor(Math.random() * statuses.length)] : 'failed';
+  // Create initial log
+  const logId = `ZNS-LOG-${Math.floor(100000 + Math.random() * 900000)}`;
+  
+  // Determine initial status based on config
+  const initialStatus = config.isActive ? 'sent' : 'failed';
   const statusLabels: Record<ZnsLog['status'], string> = {
     sent: 'Đã chuyển tiếp',
     delivered: 'Đã nhận',
@@ -196,14 +281,14 @@ export const sendZnsNotification = (
   };
 
   const newLog: ZnsLog = {
-    id: `ZNS-LOG-${Math.floor(100000 + Math.random() * 900000)}`,
+    id: logId,
     recipientPhone: formattedPhone,
     customerName: meta.customerName,
     templateCode,
     templateName: targetTemplate ? targetTemplate.name : 'Unknown Template',
     content,
-    status: finalStatus,
-    statusLabel: statusLabels[finalStatus],
+    status: initialStatus,
+    statusLabel: statusLabels[initialStatus],
     sentAt: new Date().toLocaleString('vi-VN', { 
       day: '2-digit', 
       month: '2-digit', 
@@ -223,6 +308,76 @@ export const sendZnsNotification = (
   
   // Custom event trigger
   window.dispatchEvent(new CustomEvent('zns-log-added', { detail: newLog }));
+
+  // Fire-and-forget actual HTTP call if live token is configured
+  const isLive = config.isActive && config.accessToken && !config.accessToken.includes('simulated');
+  
+  if (isLive) {
+    // Prepare variables for Zalo ZNS Template payload
+    const zaloTemplateData: Record<string, string> = {};
+    Object.entries(variables).forEach(([k, v]) => {
+      const cleanKey = k.replace(/[^a-zA-Z0-9_]/g, '');
+      zaloTemplateData[cleanKey] = v;
+    });
+
+    let zaloPhone = formattedPhone;
+    if (zaloPhone.startsWith('0')) {
+      zaloPhone = '84' + zaloPhone.slice(1);
+    }
+
+    axios.post('/api/zns/send', {
+      phone: zaloPhone,
+      templateId: targetTemplate?.id || templateCode,
+      templateData: zaloTemplateData,
+      trackingId: logId,
+      accessToken: config.accessToken
+    })
+    .then(response => {
+      const data = response.data;
+      const allLogs = getZnsLogs();
+      const targetIndex = allLogs.findIndex(l => l.id === logId);
+      
+      if (targetIndex !== -1) {
+        if (data.error === 0) {
+          allLogs[targetIndex].status = 'delivered';
+          allLogs[targetIndex].statusLabel = statusLabels['delivered'];
+        } else {
+          allLogs[targetIndex].status = 'failed';
+          allLogs[targetIndex].statusLabel = statusLabels['failed'];
+          allLogs[targetIndex].errorMessage = data.message || `Zalo Error Code: ${data.error}`;
+        }
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(allLogs));
+        window.dispatchEvent(new Event('zns-log-updated'));
+      }
+    })
+    .catch(err => {
+      console.error('[ZNS] Live notification send failed:', err);
+      const allLogs = getZnsLogs();
+      const targetIndex = allLogs.findIndex(l => l.id === logId);
+      if (targetIndex !== -1) {
+        allLogs[targetIndex].status = 'failed';
+        allLogs[targetIndex].statusLabel = statusLabels['failed'];
+        allLogs[targetIndex].errorMessage = err.message || 'Network error sending via proxy';
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(allLogs));
+        window.dispatchEvent(new Event('zns-log-updated'));
+      }
+    });
+  } else if (config.isActive) {
+    // Simulated delivery workflow
+    setTimeout(() => {
+      const statuses: ZnsLog['status'][] = ['delivered', 'read'];
+      const finalStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      
+      const allLogs = getZnsLogs();
+      const targetIndex = allLogs.findIndex(l => l.id === logId);
+      if (targetIndex !== -1) {
+        allLogs[targetIndex].status = finalStatus;
+        allLogs[targetIndex].statusLabel = statusLabels[finalStatus];
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(allLogs));
+        window.dispatchEvent(new Event('zns-log-updated'));
+      }
+    }, 1500);
+  }
   
   return newLog;
 };

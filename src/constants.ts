@@ -34,22 +34,17 @@ import {
 
 export const navGroups = [
  {
- title: 'Hệ thống chính',
+ title: 'Tổng quan & Điều hành',
  items: [
  { icon: Home, label: 'Trang chủ', path: '/', color: 'blue', description: 'Tổng quan và truy cập nhanh tất cả module' },
  { icon: LayoutDashboard, label: 'Bảng điều khiển', path: '/dashboard', color: 'indigo', description: 'Báo cáo và thông số vận hành realtime' },
- ]
- },
- {
- title: 'Điều hành & Hệ thống',
- items: [
  { icon: PieChart, label: 'Phân tích dữ liệu', path: '/bi', color: 'violet', description: 'Công cụ BI và phân tích chuyên sâu' },
  { icon: Sparkles, label: 'Trung tâm vận hành AI', path: '/ai-ops', color: 'cyan', description: 'Tối ưu vận hành bằng trí tuệ nhân tạo' },
  { icon: Activity, label: 'Điều hành & Workflow', path: '/workflow', color: 'emerald', description: 'Quản lý quy trình và luồng công việc' },
  ]
  },
  {
- title: 'Hành chính, Pháp lý & Ký số',
+ title: 'Hành chính & Pháp lý',
  items: [
  { icon: Briefcase, label: 'Đề xuất & Trình ký', path: '/requests', color: 'amber', description: 'Hệ thống phê duyệt và trình ký điện tử' },
  { icon: Scale, label: 'Hợp đồng & Pháp chế', path: '/contracts', color: 'slate', description: 'Quản lý kho hợp đồng và tuân thủ' },
@@ -58,18 +53,13 @@ export const navGroups = [
  ]
  },
  {
- title: 'Kinh doanh Đa kênh',
+ title: 'Kinh doanh & Tiếp thị',
  items: [
  { icon: Monitor, label: 'iPOS Phần mềm bán hàng', path: '/ipos', color: 'sky', description: 'Hệ thống bán hàng tại quầy và thiết bị' },
  { icon: Store, label: 'Siêu thị VComm (Offline)', path: '/vcomm-supermarket', color: 'emerald', description: 'Quản lý bán hàng offline và tồn kho siêu thị VComm' },
  { icon: ShoppingBag, label: 'Quản lý Đơn hàng', path: '/orders', color: 'rose', description: 'Xử lý đơn hàng đa nền tảng tập trung' },
  { icon: Video, label: 'Quản lý Livestream', path: '/live', color: 'pink', description: 'Giải pháp bán hàng qua video trực tiếp' },
  { icon: MessageCircle, label: 'Mạng xã hội người dùng', path: '/social', color: 'indigo', description: 'Tương tác cộng đồng và Social Commerce' },
- ]
- },
- {
- title: 'Sản phẩm & Marketing',
- items: [
  { icon: Box, label: 'Quản lý sản phẩm', path: '/pim', color: 'teal', description: 'Thông tin sản phẩm tập trung (PIM)' },
  { icon: Megaphone, label: 'Marketing & Social', path: '/marketing', color: 'red', description: 'Chiến dịch tiếp thị và quảng bá' },
  { icon: Zap, label: 'Flash Sale & Mua chung', path: '/flash-sale', color: 'yellow', description: 'Quản lý chương trình khuyến mãi giờ vàng' },
@@ -79,7 +69,7 @@ export const navGroups = [
  ]
  },
  {
- title: 'Chuỗi cung ứng & Kho',
+ title: 'Kho & Chuỗi cung ứng',
  items: [
  { icon: Warehouse, label: 'Quản trị Kho vận', path: '/warehouse', color: 'amber', description: 'Tối ưu tồn kho và quản lý kho bãi' },
  { icon: ShoppingBag, label: 'Mua hàng & NCC', path: '/scm', color: 'lime', description: 'Quản lý nhà cung cấp và thu mua' },
@@ -97,17 +87,12 @@ export const navGroups = [
  ]
  },
  {
- title: 'Đối tác & Khách hàng',
+ title: 'Khách hàng & Nhân sự',
  items: [
  { icon: Store, label: 'Nhà bán hàng', path: '/sellers', color: 'cyan', description: 'Hệ thống quản lý đối tác nhà bán hàng' },
  { icon: Users, label: 'Khách hàng (CRM)', path: '/customers', color: 'indigo', description: 'Quản lý quan hệ khách hàng đa kênh' },
  { icon: Headphones, label: 'Chăm sóc Khách hàng', path: '/cskh', color: 'blue', description: 'Tổng đài và hỗ trợ sau bán hàng' },
  { icon: UserPlus2, label: 'Đội ngũ Kinh doanh', path: '/sales', color: 'teal', description: 'Quản lý sales và chỉ tiêu doanh số' },
- ]
- },
- {
- title: 'Nhân sự & Tổ chức',
- items: [
  { icon: UserCircle, label: 'Quản trị Nhân sự (HRM)', path: '/hr', color: 'rose', description: 'Tuyển dụng, hồ sơ và chế độ nhân viên' },
  { icon: Building2, label: 'Sơ đồ tổ chức', path: '/org', color: 'slate', description: 'Quản lý cấu trúc và phân quyền tổ chức' },
  { icon: Trophy, label: 'Hiệu suất & Đào tạo', path: '/performance', color: 'amber', description: 'Đánh giá KPI và lộ trình phát triển' },

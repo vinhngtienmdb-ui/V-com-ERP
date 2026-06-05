@@ -8,6 +8,16 @@ vi.mock('../lib/firebase', () => ({
   logout: vi.fn(),
   signIn: vi.fn(),
   createUser: vi.fn(),
+  collection: vi.fn(() => ({})),
+  addDoc: vi.fn(() => Promise.resolve({ id: 'new-doc-id' })),
+  getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => ({}) })),
+  getDocs: vi.fn(() => Promise.resolve({ empty: true, size: 0, docs: [] })),
+  updateDoc: vi.fn(() => Promise.resolve()),
+  serverTimestamp: vi.fn(() => new Date()),
+  doc: vi.fn(() => ({})),
+  query: vi.fn((col) => col),
+  where: vi.fn(),
+  limit: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({

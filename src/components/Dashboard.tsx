@@ -63,6 +63,7 @@ function ResponsiveGridLayout({ children, ...props }: any) {
 import { formatCurrency, cn } from '../lib/utils';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, limit } from 'firebase/firestore';
+import { usePreferences } from '../context/PreferencesContext';
 
 const data = [
  { name: 'T1', gmv: 4.5, traffic: 120000 },
@@ -213,6 +214,7 @@ const defaultOverviewLayout = {
 
 export function Dashboard() {
  const navigate = useNavigate();
+ const { layoutEditable } = usePreferences();
  const [activeTab, setActiveTab] = useState<'overview'|'performance'|'finance'>('overview');
  const [dbOrdersLength, setDbOrdersLength] = useState(0);
  const [dbGMV, setDbGMV] = useState(0);
@@ -616,6 +618,8 @@ export function Dashboard() {
   rowHeight={100}
   draggableHandle=".drag-handle"
   margin={[24, 24]}
+  isDraggable={layoutEditable}
+  isResizable={layoutEditable}
  >
   {config.showMainChart && (
   <div key="mainChart" className="bg-white rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
@@ -739,6 +743,8 @@ export function Dashboard() {
   rowHeight={100}
   draggableHandle=".drag-handle"
   margin={[24, 24]}
+  isDraggable={layoutEditable}
+  isResizable={layoutEditable}
  >
   {config.showSLA && (
   <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
@@ -840,6 +846,8 @@ export function Dashboard() {
   rowHeight={100}
   draggableHandle=".drag-handle"
   margin={[24, 24]}
+  isDraggable={layoutEditable}
+  isResizable={layoutEditable}
  >
   {config.showFinanceStats && (
   <div key="financeStats" className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full w-full drag-handle cursor-move">

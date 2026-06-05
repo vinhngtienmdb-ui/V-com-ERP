@@ -1,0 +1,294 @@
+	{activeTab === 'saas_subscription' && (
+		<div className="animate-in fade-in duration-350 space-y-7">
+			{/* Gói hiện tại và thông báo chúc mừng */}
+			<div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg">
+				<div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+				<div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+
+				<div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+					<div className="space-y-2">
+						<div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/20 border border-indigo-400/30 rounded-full text-indigo-300 text-xs font-semibold uppercase tracking-wider">
+							<Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" /> Bản Quyền SaaS Enterprise
+						</div>
+						<h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+							VComm Enterprise ERP
+						</h3>
+						<p className="text-slate-300 text-sm max-w-xl leading-relaxed">
+							Doanh nghiệp của bạn đang vận hành trên cụm máy chủ đám mây chuyên dụng với hiệu năng tối đa, không giới hạn quyền năng quản trị.
+						</p>
+					</div>
+					<div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col items-center shrink-0 w-full md:w-auto text-center">
+						<span className="text-[10px] text-slate-300 uppercase tracking-widest font-semibold">Chu kỳ thanh toán tiếp theo</span>
+						<span className="text-2xl font-black text-amber-300 mt-1">20 / 06 / 2026</span>
+						<span className="text-[11px] text-slate-400 mt-1">Số tiền: 15,000,000đ / Năm (Trực động)</span>
+					</div>
+				</div>
+			</div>
+
+			{/* Grid của hạn mức và Cụm Tenants */}
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				{/* Cột Trái: Hạn mức Hệ thống (SaaS Quotas) */}
+				<div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+					<div>
+						<h4 className="font-bold text-slate-900 flex items-center gap-2">
+							<CreditCard className="w-5 h-5 text-blue-600" /> Hạn mức Tài nguyên SaaS (Resource Quotas)
+						</h4>
+						<p className="text-xs text-slate-500 mt-0.5">Các thông số giới hạn dịch vụ dựa theo gói đăng ký hiện tại.</p>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						{[
+							{ title: 'Nhân viên hệ thống (Staff)', current: 45, max: 100, unit: 'Tài khoản', percent: 45, color: 'from-blue-500 to-indigo-600' },
+							{ title: 'API Webhooks & Events', current: 30420, max: 100000, unit: 'Yêu cầu / Tháng', percent: 30.4, color: 'from-purple-500 to-pink-600' },
+							{ title: 'Danh mục Sản phẩm (PIM)', current: 842, max: 5000, unit: 'Sản phẩm lưu trữ', percent: 16.8, color: 'from-emerald-500 to-teal-600' },
+							{ title: 'Dung lượng đám mây (Storage)', current: 1.2, max: 50, unit: 'GB lưu trữ media', percent: 2.4, color: 'from-amber-500 to-orange-600' }
+						].map((quota, idx) => (
+							<div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+								<div className="flex justify-between items-start mb-2">
+									<span className="text-xs font-bold text-slate-800 uppercase tracking-tight">{quota.title}</span>
+									<span className="text-[11px] font-mono text-slate-500">
+										{quota.current.toLocaleString()} / {quota.max.toLocaleString()} {quota.unit}
+									</span>
+								</div>
+								<div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+									<div 
+										className={"h-full bg-linear-to-r " + quota.color + " rounded-full transition-all duration-500"}
+										style={{ width: `${quota.percent}%` }}
+									/>
+								</div>
+								<div className="flex justify-between items-center mt-1.5 text-[10px] text-slate-400 font-semibold">
+									<span>Đã dùng: {quota.percent}%</span>
+									<span className="text-slate-500">Còn lại: {(100 - quota.percent).toFixed(1)}%</span>
+								</div>
+							</div>
+						))}
+					</div>
+
+					<div className="p-4 bg-blue-50 border border-blue-150 rounded-2xl flex items-start gap-3">
+						<AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+						<div className="text-xs leading-relaxed text-blue-800">
+							<span className="font-bold">Mở rộng hạn mức linh hoạt:</span> Hệ thống SaaS được thiết kế để mở rộng tài nguyên tự động. Khi chạm ngưỡng 90% dung lượng hoặc giới hạn, quản trị viên có thể bấm đề xuất mua thêm gói lẻ hoặc đăng ký nâng thêm gói Enterprise Plus trực tiếp để tránh gián đoạn dịch vụ.
+						</div>
+					</div>
+				</div>
+
+				{/* Cột Phải: Cấu hình Tenant & Cloud Node */}
+				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+					<div>
+						<h4 className="font-bold text-slate-900 flex items-center gap-2">
+							<Database className="w-5 h-5 text-indigo-600" /> Hệ thống Tenant & Nodes
+						</h4>
+						<p className="text-xs text-slate-500 mt-0.5">Thông tin máy chủ cô lập dữ liệu cho Doanh nghiệp.</p>
+					</div>
+
+					<div className="space-y-4">
+						<div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+							<div className="flex justify-between items-center text-xs">
+								<span className="text-slate-500">Mã định danh Tenant ID</span>
+								<span className="font-mono font-bold text-slate-800">tenant-vcomm-prod-01</span>
+							</div>
+							<div className="flex justify-between items-center text-xs">
+								<span className="text-slate-500">Phân vùng CSDL (Schema)</span>
+								<span className="bg-indigo-100 text-indigo-700 font-mono text-[10px] font-bold px-2 py-0.5 border border-indigo-250 rounded">Isolate DB Node</span>
+							</div>
+							<div className="flex justify-between items-center text-xs">
+								<span className="text-slate-500">Vị trí địa lý (Region)</span>
+								<span className="text-slate-800 font-medium">Asia-Southeast1 (Singapore)</span>
+							</div>
+							<div className="flex justify-between items-center text-xs">
+								<span className="text-slate-500">Uptime Đám Mây</span>
+								<span className="text-emerald-600 font-bold flex items-center gap-1">
+									<span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 99.99% Uptime
+								</span>
+							</div>
+						</div>
+
+						<div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+							<span className="text-xs font-bold text-slate-800 uppercase tracking-widest block font-mono">Tính năng Sao lưu (Backups)</span>
+							<div className="flex justify-between items-center text-xs text-slate-600">
+								<span>Tự động sao lưu mỗi ngày</span>
+								<span className="text-slate-800 font-medium">02:00 AM (GMT+7)</span>
+							</div>
+							<button onClick={() => alert('Đang tải bản sau lưu cấu hình và CSDL...')} className="w-full mt-2 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-800 text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer">
+								Tải Bản Sao Lưu Gần Nhất (.tar.gz)
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Gói dịch vụ so sánh (Subscription Plans Simulator) */}
+			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+				<div>
+					<h4 className="font-bold text-slate-900 flex items-center gap-2">
+						<Sparkles className="w-5 h-5 text-amber-500" /> Các gói dịch vụ SaaS Toàn Diện (SaaS Pricing Matrix)
+					</h4>
+					<p className="text-xs text-slate-500 mt-0.5">So sánh tính năng giữa các gói giải pháp SaaS để quản lý phân quyền tính năng trong doanh nghiệp.</p>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+					{[
+						{ 
+							name: 'Starter Trial', 
+							price: 'Miễn phí', 
+							desc: 'Dành cho doanh nghiệp siêu nhỏ trải nghiệm đầu tiên.',
+							features: ['Tối đa 3 Nhân viên', '1 Chi nhánh duy nhất', 'Hạn mức PIM: 100 sản phẩm', 'Hạn mức lưu trữ: 1GB', 'Không hỗ trợ API, Custom Domain'],
+							active: false,
+							btnText: 'Hạ gói về Starter',
+							color: 'slate'
+						},
+						{ 
+							name: 'Professional', 
+							price: '5,000,000đ / Năm', 
+							desc: 'Doanh nghiệp SMEs có nhu cầu mở rộng quy mô vận hành.',
+							features: ['Tối đa 15 Nhân viên', 'Lên đến 3 Chi nhánh', 'Hạn mức PIM: 1,000 sản phẩm', 'Hạn mức lưu trữ: 10GB', 'Mở khoá API & 1 Custom Domain'],
+							active: false,
+							btnText: 'Chuyển đổi đăng ký',
+							color: 'blue'
+						},
+						{ 
+							name: 'Enterprise ERP', 
+							price: '15,000,050đ / Năm', 
+							desc: 'Bản đầy đủ cao cấp dành cho mô hình chuỗi phân phối đa kênh.',
+							features: ['Tối đa 100 Nhân viên', 'Không giới hạn Chi nhánh', 'Hạn mức PIM: 5,000 sản phẩm', 'Hạn mức lưu trữ: 50GB', 'Mở khoá full Webhooks, API, Domain phụ'],
+							active: true,
+							btnText: 'Đang Sử Dụng',
+							color: 'indigo'
+						},
+						{ 
+							name: 'Custom Corporate', 
+							price: 'Liên hệ hỗ trợ', 
+							desc: 'Dành riêng cho tập đoàn cực lớn, tùy chỉnh sâu CSDL.',
+							features: ['Không giới hạn Nhân viên', 'Hạ tầng máy chủ Bare-metal riêng', 'Tùy chỉnh full nghiệp vụ mã nguồn', 'Hỗ trợ kỹ thuật 24/7 SLA 99.99%', 'Tích hợp SAP/Oracle song song'],
+							active: false,
+							btnText: 'Liên hệ nâng cấp sâu',
+							color: 'amber'
+						}
+					].map((plan, idx) => (
+						<div 
+							key={idx} 
+							className={`border rounded-3xl p-5 flex flex-col justify-between transition-all relative overflow-hidden ${plan.active ? 'border-blue-600 bg-blue-50/20 ring-2 ring-blue-600/30 shadow-md' : 'border-slate-200 hover:border-slate-300 bg-white'}`}
+						>
+							{plan.active && (
+								<div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl tracking-widest uppercase">
+									Active
+								</div>
+							)}
+							<div>
+								<h5 className="font-extrabold text-slate-900 text-base">{plan.name}</h5>
+								<div className="mt-2 flex items-baseline">
+									<span className="text-lg font-black text-slate-900 tracking-tight">{plan.price}</span>
+								</div>
+								<p className="text-xs text-slate-500 mt-2 leading-relaxed min-h-[48px]">{plan.desc}</p>
+
+								<div className="mt-4 pt-4 border-t border-slate-200 space-y-2 flex-grow">
+									<span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tính năng đi kèm:</span>
+									<ul className="space-y-1.5">
+										{plan.features.map((feat, fidx) => (
+											<li key={fidx} className="flex items-start gap-1.5 text-xs text-slate-600 leading-tight">
+												<Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+												<span>{feat}</span>
+											</li>
+										))}
+									</ul>
+								</div>
+							</div>
+
+							<button 
+								className={`w-full mt-6 py-2.5 rounded-xl text-xs font-bold transition duration-200 cursor-pointer ${
+									plan.active 
+										? 'bg-blue-600 hover:bg-blue-700 text-white cursor-default' 
+										: 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
+								}`}
+								onClick={() => {
+									if (!plan.active) {
+										alert(`Hệ thống mô phỏng Sandbox: Bạn đã gửi yêu cầu chuyển đổi lên gói "${plan.name}". Kỹ sư giải pháp của chúng tôi sẽ liên hệ phê duyệt sớm nhất.`);
+									}
+								}}
+							>
+								{plan.btnText}
+							</button>
+						</div>
+					))}
+				</div>
+			</div>
+
+			{/* Lịch sử hoá đơn & và Custom Domains đại lý */}
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				{/* Danh sách hoá đơn */}
+				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
+					<div>
+						<h4 className="font-bold text-slate-900 flex items-center gap-2">
+							<FileText className="w-5 h-5 text-indigo-600" /> Bản kê Hoá đơn Thuê bao SaaS
+						</h4>
+						<p className="text-xs text-slate-500 mt-0.5">Lịch sử thanh toán định kỳ cho tài nguyên SaaS và giấy phép sử dụng.</p>
+					</div>
+
+					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
+						<table className="w-full text-left text-xs border-collapse">
+							<thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+								<tr>
+									<th className="p-3">Mã hoá đơn</th>
+									<th className="p-3">Ngày lập</th>
+									<th className="p-3">Số tiền</th>
+									<th className="p-3">Trạng thái</th>
+									<th className="p-3 text-right">Hành động</th>
+								</tr>
+							</thead>
+							<tbody className="divide-y divide-slate-100">
+								{[
+									{ id: 'INV-2026-001', date: '21/05/2026', amt: '15,000,000đ', pMethod: 'MoMo Corp', status: 'Đã thanh toán' },
+									{ id: 'INV-2025-002', date: '20/06/2025', amt: '15,000,000đ', pMethod: 'ZaloPay Business', status: 'Đã thanh toán' },
+									{ id: 'INV-2024-003', date: '19/06/2024', amt: '15,000,000đ', pMethod: 'Chuyển khoản Bank', status: 'Đã thanh toán' }
+								].map((invoice, i) => (
+									<tr key={i} className="hover:bg-slate-50/50">
+										<td className="p-3 font-mono font-bold text-slate-800">{invoice.id}</td>
+										<td className="p-3 text-slate-500">{invoice.date}</td>
+										<td className="p-3 text-slate-900 font-bold">{invoice.amt}</td>
+										<td className="p-3">
+											<span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-semibold border border-emerald-150 rounded">
+												{invoice.status}
+											</span>
+										</td>
+										<td className="p-3 text-right">
+											<button onClick={() => alert('Đang tải hóa đơn VAT bản PDF...')} className="text-blue-600 hover:underline font-bold cursor-pointer">PDF 💾</button>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				{/* DNS Custom Domain For Tenants */}
+				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
+					<div>
+						<h4 className="font-bold text-slate-900 flex items-center gap-2">
+							<Globe className="w-5 h-5 text-indigo-600" /> Tên miền đại lý & Cài đặt DNS
+						</h4>
+						<p className="text-xs text-slate-500 mt-0.5">Trỏ tên miền thương hiệu riêng của doanh nghiệp về trung tâm phân phối SaaS.</p>
+					</div>
+
+					<div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+						<div className="text-xs font-semibold text-slate-700 uppercase tracking-wider font-mono">Hướng dẫn cấu hình DNS:</div>
+						<p className="text-xs text-slate-650 leading-relaxed">
+							Tại trang quản trị nhà đăng ký tên miền của bạn (Mắt Bão, Pavietnam, Cloudflare, v.v.), hãy cấu hình bản ghi sau để kích hoạt SSL tự động:
+						</p>
+						<div className="bg-white border border-slate-200 rounded-xl p-3 text-xs font-mono space-y-1">
+							<div><span className="text-slate-400">Loại bản ghi (Type):</span> <span className="font-bold text-blue-600">CNAME</span></div>
+							<div><span className="text-slate-400">Tên (Name / Host):</span> <span className="font-bold text-slate-800">erp</span> hoặc <span className="font-bold text-slate-800">@</span></div>
+							<div><span className="text-slate-400">Giá trị (Points to):</span> <span className="font-bold text-emerald-600 font-semibold">saas.vcommerp.com</span></div>
+							<div><span className="text-slate-400">TTL:</span> <span className="font-bold text-slate-800">3600 (1 hour)</span></div>
+						</div>
+
+						<div className="pt-2 flex items-center justify-between text-xs font-medium border-t border-slate-200">
+							<span className="text-slate-500">Trạng thái kết nối</span>
+							<span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded flex items-center gap-1 border border-blue-150">
+								<span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Đang trỏ: erp.vcom.vn
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	)}

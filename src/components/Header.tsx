@@ -12,7 +12,7 @@ import { useStore } from '../context/StoreContext';
 export function Header() {
   const { staffInfo } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
-  const { language } = usePreferences();
+  const { language, layoutEditable, setLayoutEditable } = usePreferences();
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showViewSettings, setShowViewSettings] = useState(false);
@@ -130,6 +130,17 @@ export function Header() {
                         <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideTables ? 'translate-x-5' : 'translate-x-0'}`}></div>
                      </div>
                      <input type="checkbox" className="sr-only" checked={!hideTables} onChange={() => setHideTables(!hideTables)} />
+                  </label>
+
+                  <label className="flex items-center justify-between cursor-pointer">
+                     <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        {layoutEditable ? <Eye className="w-4 h-4 text-emerald-600" /> : <EyeOff className="w-4 h-4 text-slate-500" />}
+                        Sắp xếp thẻ báo cáo
+                     </span>
+                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${layoutEditable ? 'bg-emerald-600' : 'bg-slate-300'}`}>
+                        <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${layoutEditable ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                     </div>
+                     <input type="checkbox" className="sr-only" checked={layoutEditable} onChange={() => setLayoutEditable(!layoutEditable)} />
                   </label>
                </div>
              </div>

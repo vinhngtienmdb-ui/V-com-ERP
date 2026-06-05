@@ -1,12 +1,14 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import { useState } from 'react';
 import { 
- Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
- Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
- Briefcase, Search, Filter, BadgeDollarSign, Phone, Mail, 
- Plus, Clock, CheckCircle2, AlertCircle
+  Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
+  Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
+  Briefcase, Search, Filter, BadgeDollarSign, Phone, Mail, 
+  Plus, Clock, CheckCircle2, AlertCircle, Loader2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { syncVendorToMisa, syncTransactionToMisa } from '../services/misaService';
+import axios from 'axios';
 
 const PURCHASING_MODULE_GROUPS = [
  {
@@ -69,6 +71,21 @@ const MOCK_PURCHASE_REQUESTS = [
 function SupplierManagement({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [categoryFilter, setCategoryFilter] = useState('all');
+ const [syncedSuppliers, setSyncedSuppliers] = useState<Record<string, boolean>>({});
+ const [syncingSupplierId, setSyncingSupplierId] = useState<string | null>(null);
+
+ const handleSyncSupplier = async (sup: any) => {
+   setSyncingSupplierId(sup.id);
+   try {
+      await syncVendorToMisa(sup.id, sup.name, '', sup.phone, sup.email);
+      setSyncedSuppliers(prev => ({ ...prev, [sup.id]: true }));
+    } catch (err) {
+      console.error('Failed to sync supplier to MISA:', err);
+      alert('Có lỗi xảy ra khi ghi sổ nhà cung cấp.');
+    } finally {
+      setSyncingSupplierId(null);
+    }
+ };
 
  const filteredSuppliers = MOCK_SUPPLIERS.filter(sup => {
  const matchesSearch = sup.name.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -135,6 +152,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -188,11 +206,27 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  {supplier.status === 'active' ? 'Đang hợp tác' : 'Tạm dừng'}
  </span>
  </td>
+ <td className="px-6 py-4 text-center">
+    {syncedSuppliers[supplier.id] ? (
+      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+        Đã ghi sổ 🟢
+      </span>
+    ) : (
+      <button
+        onClick={() => handleSyncSupplier(supplier)}
+        disabled={syncingSupplierId === supplier.id}
+        className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg disabled:opacity-50 flex items-center gap-1 mx-auto"
+      >
+        {syncingSupplierId === supplier.id && <Loader2 className="w-3 h-3 animate-spin" />}
+        Ghi sổ
+      </button>
+    )}
+  </td>
  </tr>
  ))}
  {filteredSuppliers.length === 0 && (
  <tr>
- <td colSpan={6} className="px-6 py-6 text-center text-slate-600">
+ <td colSpan={7} className="px-6 py-6 text-center text-slate-600">
  <Building2 className="w-10 h-10 mx-auto text-slate-500 mb-3" />
  <p className="text-sm font-medium">Không tìm thấy nhà cung cấp nào phù hợp.</p>
  </td>
@@ -208,6 +242,31 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
 function PurchaseRequests({ onBack }: { onBack: () => void }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
+ const [syncedRequests, setSyncedRequests] = useState<Record<string, boolean>>({});
+ const [syncingRequestId, setSyncingRequestId] = useState<string | null>(null);
+
+  const handleSyncRequest = async (req: any) => {
+    setSyncingRequestId(req.id);
+    try {
+      const result = await syncTransactionToMisa(req.id, {
+        amount: req.value,
+        description: req.title,
+        type: 'expense',
+        category: 'Inventory',
+        accountingObjectCode: 'SUP-001'
+      });
+      if (result && result.status === 'success') {
+        setSyncedRequests(prev => ({ ...prev, [req.id]: true }));
+      } else {
+        throw new Error(result.message || 'Lỗi không xác định khi ghi sổ');
+      }
+    } catch (err: any) {
+      console.error('Failed to sync purchase requests:', err);
+      alert('Có lỗi xảy ra khi ghi sổ mua hàng: ' + (err.message || err));
+    } finally {
+      setSyncingRequestId(null);
+    }
+  };
 
  const filteredRequests = MOCK_PURCHASE_REQUESTS.filter(req => {
  const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -285,11 +344,12 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[20%]">Mã Phiếu / Khối</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[15%]">Mã Phiếu / Khối</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
  <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
+ <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -322,11 +382,31 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
  <td className="px-6 py-4 text-right">
  <p className="text-sm text-slate-700 font-mono">{req.date}</p>
  </td>
+ <td className="px-6 py-4 text-center">
+    {req.status === 'approved' ? (
+      syncedRequests[req.id] ? (
+        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+          Đã ghi sổ 🟢
+        </span>
+      ) : (
+        <button
+          onClick={() => handleSyncRequest(req)}
+          disabled={syncingRequestId === req.id}
+          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg disabled:opacity-50 flex items-center gap-1 mx-auto"
+        >
+          {syncingRequestId === req.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          Ghi sổ Mua
+        </button>
+      )
+    ) : (
+      <span className="text-slate-400 text-xs italic">-</span>
+    )}
+  </td>
  </tr>
  ))}
  {filteredRequests.length === 0 && (
  <tr>
- <td colSpan={5} className="px-6 py-6 text-center text-slate-600">
+ <td colSpan={6} className="px-6 py-6 text-center text-slate-600">
  <FileSignature className="w-10 h-10 mx-auto text-slate-500 mb-3" />
  <p className="text-sm font-medium">Không tìm thấy phiếu đề xuất nào phù hợp.</p>
  </td>

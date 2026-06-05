@@ -43,11 +43,11 @@ class SePayService {
   }
 
  /**
- * Bank Hub: Get transaction history
+ * Bank Hub: Get transaction history (routed via local API proxy to prevent CORS)
  */
  async getTransactions(params?: { limit?: number; page?: number; bank_account?: string }) {
  try {
- const response = await axios.get(`${SEPAY_BASE_URL}/bank/transactions`, {
+ const response = await axios.get('/api/sepay/transactions', {
  headers: this.headers,
  params,
  });
@@ -59,11 +59,11 @@ class SePayService {
  }
 
  /**
- * SoundBox API: Trigger a notification sound
+ * SoundBox API: Trigger a notification sound (routed via local API proxy to prevent CORS)
  */
  async triggerSoundBox(amount: number, content: string, boxId: string) {
  try {
- const response = await axios.post(`${SEPAY_BASE_URL}/soundbox/trigger`, {
+ const response = await axios.post('/api/sepay/soundbox/trigger', {
  amount,
  content,
  box_id: boxId,
@@ -76,11 +76,11 @@ class SePayService {
  }
 
  /**
- * eInvoice API: Create a new invoice
+ * eInvoice API: Create a new invoice (routed via local API proxy to prevent CORS)
  */
  async createInvoice(invoiceData: any) {
  try {
- const response = await axios.post(`${SEPAY_BASE_URL}/einvoice/create`, invoiceData, {
+ const response = await axios.post('/api/sepay/einvoice/create', invoiceData, {
  headers: this.headers,
  });
  return response.data;
@@ -91,11 +91,11 @@ class SePayService {
  }
 
  /**
- * Virtual Account: Create a virtual account for a specific order
+ * Virtual Account: Create a virtual account for a specific order (routed via local API proxy to prevent CORS)
  */
  async createVirtualAccount(orderId: string, amount: number) {
  try {
- const response = await axios.post(`${SEPAY_BASE_URL}/virtual-account/create`, {
+ const response = await axios.post('/api/sepay/virtual-account/create', {
  order_id: orderId,
  amount,
  }, { headers: this.headers });
@@ -104,6 +104,31 @@ class SePayService {
  console.error('SePay createVirtualAccount error:', error);
  throw error;
  }
+ }
+
+ /**
+ * Get simulated/live webhook events from local backend
+ */
+ async getWebhookEvents() {
+   try {
+     const response = await axios.get('/api/sepay/webhook-events');
+     return response.data.events || [];
+   } catch (error) {
+     console.error('SePay getWebhookEvents error:', error);
+     return [];
+   }
+ }
+
+ /**
+ * Clear processed webhook events on backend
+ */
+ async clearWebhookEvents(ids: number[]) {
+   try {
+     const response = await axios.post('/api/sepay/webhook-events/clear', { ids });
+     return response.data;
+   } catch (error) {
+     console.error('SePay clearWebhookEvents error:', error);
+   }
  }
 
  /**

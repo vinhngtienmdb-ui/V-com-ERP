@@ -60,6 +60,7 @@ import {
   Gift,
   Receipt,
   ChefHat,
+  Loader2,
 } from "lucide-react";
 import {
   BarChart,
@@ -97,6 +98,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
 import { sePayService } from "../services/sepayService";
+import { syncOrderToMisa } from "../services/misaService";
 
 import { StoreSelector } from "./StoreSelector";
 import { IPosInventory } from "./IPosInventory";
@@ -620,6 +622,7 @@ export function IPosModule() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
   const [completedOrderData, setCompletedOrderData] = useState<any>(null);
+  const [isSyncingMisa, setIsSyncingMisa] = useState(false);
   const [invoiceEmail, setInvoiceEmail] = useState("");
   const [invoiceTaxCode, setInvoiceTaxCode] = useState("");
   const [invoiceCompanyName, setInvoiceCompanyName] = useState("");
@@ -643,6 +646,7 @@ export function IPosModule() {
   const [customPromoAmount, setCustomPromoAmount] = useState<number>(0);
   const [guestCash, setGuestCash] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [currentPaymentCode, setCurrentPaymentCode] = useState<string>("");
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -1189,6 +1193,44 @@ export function IPosModule() {
     }
   }, [cart, subtotal, discount, loyaltyDiscount, promoWalletDiscount, total, setIposCartCount, setIposCartSubtotal, setIposCartDiscount, setIposCartTotal]);
 
+  // Sync SePay payment code on modal open or payment method change
+  useEffect(() => {
+    if (showPaymentModal && (paymentMethod === "qr" || paymentMethod === "promo_qr")) {
+      setCurrentPaymentCode(`IPOS_PAY_${Math.floor(Date.now() / 1000)}`);
+    } else if (!showPaymentModal) {
+      setCurrentPaymentCode("");
+    }
+  }, [showPaymentModal, paymentMethod]);
+
+  // SePay Webhook Auto-Verification Event Listener
+  useEffect(() => {
+    const handlePaymentReceived = async (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const { transactionContent, amount } = customEvent.detail;
+      
+      if (
+        showPaymentModal && 
+        (paymentMethod === "qr" || paymentMethod === "promo_qr") &&
+        currentPaymentCode &&
+        transactionContent.toLowerCase().includes(currentPaymentCode.toLowerCase()) &&
+        amount >= total
+      ) {
+        console.log(`[POS] Payment auto-verified via SePay Webhook! Completing order...`);
+        try {
+          // Trigger SoundBox notification for checkout confirmation
+          await sePayService.triggerSoundBox(amount, `IPOS thanh toan don hang`, "box-ipos");
+        } catch(e) {}
+        
+        await completeOrder();
+      }
+    };
+    
+    window.addEventListener('sepay-payment-received', handlePaymentReceived);
+    return () => {
+      window.removeEventListener('sepay-payment-received', handlePaymentReceived);
+    };
+  }, [showPaymentModal, paymentMethod, currentPaymentCode, total]);
+
   useEffect(() => {
     if (linkedTableId !== null) {
       setTables((prevTables) =>
@@ -1449,7 +1491,7 @@ export function IPosModule() {
         updatedAt: serverTimestamp(),
       };
 
-      await addDoc(collection(db, "orders"), orderData);
+      const docRef = await addDoc(collection(db, "orders"), orderData);
 
       // Update shift data
       if (shiftData) {
@@ -1581,6 +1623,7 @@ export function IPosModule() {
 
       setCompletedOrderData({
         ...orderData,
+        id: docRef.id,
         orderId: `ORD-${Date.now()}`, // Mock ID for printing display
         cartItems: [...cart]
       });
@@ -1880,7 +1923,7 @@ export function IPosModule() {
   return (
     <div
       className={cn(
-        "ipos-modernized h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
+        "h-full flex flex-col gap-5 animate-in fade-in duration-700 pb-6 relative font-sans",
         isDarkMode && "dark bg-[#0f172a] text-slate-300",
       )}
     >
@@ -2562,7 +2605,7 @@ export function IPosModule() {
                     <img
                       src={sePayService.createPaymentQR(
                         total,
-                        `IPOS_PAY_${Math.floor(Date.now() / 10000)}`,
+                        currentPaymentCode || `IPOS_PAY_${Math.floor(Date.now() / 10000)}`,
                       )}
                       alt="Payment QR"
                       className="w-44 h-44 object-contain mix-blend-darken"
@@ -2911,7 +2954,7 @@ export function IPosModule() {
                         <img
                           src={sePayService.createPaymentQR(
                             total,
-                            `IPOS_PAY_${Date.now()}`,
+                            currentPaymentCode || `IPOS_PAY_${Date.now()}`,
                           )}
                           alt="Payment QR"
                           className="w-40 h-40 relative z-10 object-contain drop-shadow-sm mix-blend-darken"
@@ -3261,11 +3304,26 @@ export function IPosModule() {
                             </div>
                         </div>
                         
-                        <button disabled={!invoiceTaxCode || !invoiceEmail} onClick={() => {
-                            alert("Yêu cầu phát hành HĐĐT đã được gửi lên hệ thống!");
-                            setShowPaymentSuccessModal(false);
-                            setActiveTab("history");
-                        }} className="w-full py-3 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2">
+                        <button disabled={!invoiceTaxCode || !invoiceEmail || isSyncingMisa} onClick={async () => {
+                            if (completedOrderData?.id) {
+                              setIsSyncingMisa(true);
+                              try {
+                                await syncOrderToMisa(completedOrderData.id);
+                                alert("Đã ghi sổ hóa đơn thành công! 🟢");
+                              } catch (err: any) {
+                                alert("Ghi sổ thất bại: " + (err.message || err));
+                              } finally {
+                                setIsSyncingMisa(false);
+                                setShowPaymentSuccessModal(false);
+                                setActiveTab("history");
+                              }
+                            } else {
+                              alert("Yêu cầu phát hành HĐĐT đã được gửi lên hệ thống!");
+                              setShowPaymentSuccessModal(false);
+                              setActiveTab("history");
+                            }
+                        }} className="w-full py-3 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2 flex items-center justify-center gap-2">
+                            {isSyncingMisa && <Loader2 className="w-4 h-4 animate-spin" />}
                             Xác nhận xuất HĐĐT
                         </button>
                     </div>
@@ -6235,6 +6293,70 @@ export function IPosModule() {
                         {formatCurrency(selectedTxForDetail.total)}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Trạng thái Ghi sổ inside Receipt Details */}
+                  <div className="mt-6 pt-4 border-t border-slate-200">
+                    <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
+                          Trạng thái Ghi sổ
+                        </p>
+                        {selectedTxForDetail.misaSynced ? (
+                          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            Đã ghi sổ ({selectedTxForDetail.misaVoucherId || 'SaleVoucher'})
+                          </span>
+                        ) : selectedTxForDetail.misaSyncError ? (
+                          <span className="text-xs font-bold text-rose-600 flex items-center gap-1 cursor-help" title={selectedTxForDetail.misaSyncError}>
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                            Lỗi kiểm tra
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                            Chờ ghi sổ
+                          </span>
+                        )}
+                      </div>
+
+                      {!selectedTxForDetail.misaSynced && (
+                        <button
+                          disabled={isSyncingMisa}
+                          onClick={async () => {
+                            setIsSyncingMisa(true);
+                            try {
+                              const res = await syncOrderToMisa(selectedTxForDetail.id);
+                              alert("Ghi sổ thành công! 🟢");
+                              setSelectedTxForDetail((prev: any) => ({
+                                ...prev,
+                                misaSynced: true,
+                                misaVoucherId: res.voucherId || 'SaleVoucher',
+                                misaSyncError: ''
+                              }));
+                            } catch (err: any) {
+                              alert("Ghi sổ thất bại: " + (err.message || err));
+                              setSelectedTxForDetail((prev: any) => ({
+                                ...prev,
+                                misaSynced: false,
+                                misaSyncError: err.message || err
+                              }));
+                            } finally {
+                              setIsSyncingMisa(false);
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
+                        >
+                          {isSyncingMisa && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          Ghi sổ
+                        </button>
+                      )}
+                    </div>
+                    {selectedTxForDetail.misaSyncError && (
+                      <p className="text-[10px] text-rose-600 mt-2 font-mono bg-rose-50 p-2 rounded border border-rose-100 max-h-20 overflow-y-auto">
+                        Lỗi: {selectedTxForDetail.misaSyncError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="mt-12 pt-8 border-t border-slate-200 text-center space-y-6">

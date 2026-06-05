@@ -36,6 +36,7 @@ import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { syncCustomerToMisa } from '../services/misaService';
 
 const CopyButton = ({ value }: { value: string }) => {
  const [copied, setCopied] = useState(false);
@@ -744,6 +745,7 @@ export function Customers() {
  const [loading, setLoading] = useState(true);
  const [searchQuery, setSearchQuery] = useState('');
  const [orders, setOrders] = useState<any[]>([]);
+  const [syncingCustomerId, setSyncingCustomerId] = useState<string | null>(null);
 
  const [aiPipelineInsights, setAiPipelineInsights] = useState<string | null>(null);
  const [pipelineStages, setPipelineStages] = useState([
@@ -1085,6 +1087,7 @@ export function Customers() {
  <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
  <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
  <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+	<th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
  <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
  </tr>
  </thead>
@@ -1154,6 +1157,43 @@ export function Customers() {
  </span>
  </div>
  </td>
+              <td className="px-4 py-4 text-center">
+                <div className="flex flex-col items-center justify-center gap-1">
+                  {customer.misaSynced ? (
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                      Đã ghi sổ 🟢
+                    </span>
+                  ) : customer.misaSyncError ? (
+                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold flex items-center gap-1 shadow-sm" title={customer.misaSyncError}>
+                      Lỗi kiểm tra 🔴
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                      Chờ ghi sổ 🟡
+                    </span>
+                  )}
+                  <button
+                    disabled={syncingCustomerId === customer.id}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!customer.id) return;
+                      setSyncingCustomerId(customer.id);
+                      try {
+                        await syncCustomerToMisa(customer.id);
+                        alert("Ghi sổ khách hàng thành công!");
+                      } catch (err) {
+                        alert("Đồng bộ thất bại: " + err.message);
+                      } finally {
+                        setSyncingCustomerId(null);
+                      }
+                    }}
+                    className="px-2 py-1 bg-slate-900 text-white rounded text-[10px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-1"
+                  >
+                    {syncingCustomerId === customer.id && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
+                    Đồng bộ
+                  </button>
+                </div>
+              </td>
  <td className="px-4 py-4 text-right">
  <div className="flex justify-end gap-2">
  <button 

@@ -13,6 +13,9 @@ export interface Product {
  hiddenCosts: number; // Chi phí ẩn (shipping, packing, etc)
  margin: number; // Biên lợi nhuận
  profit: number; // Lợi nhuận thực tế
+ misaSynced?: boolean;
+ misaSyncedAt?: string;
+ misaSyncError?: string;
 }
 
 export interface SellerMetric {
@@ -60,6 +63,9 @@ export interface Customer {
  referrerName?: string;
  walletBalance?: number;
  downlineCount?: number;
+ misaSynced?: boolean;
+ misaSyncedAt?: string;
+ misaSyncError?: string;
 }
 
 export interface ShippingInfo {
@@ -159,6 +165,18 @@ export interface FinanceTransaction {
  dateStr?: string;
  createdAt?: any;
  createdBy?: string;
+ debitAccount?: string;
+ creditAccount?: string;
+ accountingObjectCode?: string;
+ taxRate?: number;
+ vatAmount?: number;
+ orderId?: string;
+ referenceNumber?: string;
+ bankAccount?: string;
+ misaSynced?: boolean;
+ misaVoucherId?: string;
+ misaSyncError?: string;
+ misaSyncedAt?: string;
 }
 
 export interface AccountEntry {

@@ -49,22 +49,37 @@ export function Sidebar() {
 
   const iposNavGroups = [
     {
-      title: 'Hệ thống iPOS Terminal',
+      title: 'Vận hành Quầy',
       items: [
         { icon: LayoutDashboard, label: 'Tổng quan', path: '/ipos', tab: 'dashboard' },
         { icon: ShoppingCart, label: 'Bán hàng', path: '/ipos', tab: 'sales' },
         { icon: ClipboardCheck, label: 'Bàn giao ca', path: '/ipos', tab: 'handover' },
         { icon: Grid3x3, label: 'Sơ đồ bàn/phòng', path: '/ipos', tab: 'tables' },
-        { icon: ShieldCheck, label: 'Quản trị iPOS', path: '/ipos', tab: 'management' },
-        { icon: Building2, label: 'Đối tác Giao hàng', path: '/ipos', tab: 'delivery' },
         { icon: Search, label: 'Tra cứu nhanh', path: '/ipos', tab: 'lookup' },
+      ]
+    },
+    {
+      title: 'Sản phẩm & Kho hàng',
+      items: [
         { icon: Boxes, label: 'Kho hàng iPOS', path: '/ipos', tab: 'inventory' },
         { icon: Tag, label: 'Sản phẩm', path: '/ipos', tab: 'products' },
-        { icon: DollarSign, label: 'Tính lương nhân viên', path: '/ipos', tab: 'payroll' },
-        { icon: ShoppingBag, label: 'Đơn hàng', path: '/ipos', tab: 'orders' },
-        { icon: Users, label: 'Khách hàng (CRM)', path: '/ipos', tab: 'customers' },
-        { icon: BarChart4, label: 'Báo cáo doanh thu', path: '/ipos', tab: 'reports' },
         { icon: Gift, label: 'Khuyến mại & Quà tặng', path: '/ipos', tab: 'promotions' },
+      ]
+    },
+    {
+      title: 'Khách hàng & Đơn vận',
+      items: [
+        { icon: Users, label: 'Khách hàng (CRM)', path: '/ipos', tab: 'customers' },
+        { icon: Building2, label: 'Đối tác Giao hàng', path: '/ipos', tab: 'delivery' },
+        { icon: ShoppingBag, label: 'Đơn hàng', path: '/ipos', tab: 'orders' },
+      ]
+    },
+    {
+      title: 'Quản trị & Báo cáo',
+      items: [
+        { icon: ShieldCheck, label: 'Quản trị iPOS', path: '/ipos', tab: 'management' },
+        { icon: DollarSign, label: 'Tính lương nhân viên', path: '/ipos', tab: 'payroll' },
+        { icon: BarChart4, label: 'Báo cáo doanh thu', path: '/ipos', tab: 'reports' },
       ]
     },
     {

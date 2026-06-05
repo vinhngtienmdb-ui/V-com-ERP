@@ -30,10 +30,12 @@ import {
  Upload,
  FileSearch,
  CheckCircle2,
- AlertCircle,
- Sparkles,
- Zap
+  AlertCircle,
+  Sparkles,
+  Zap,
+  Loader2
 } from 'lucide-react';
+import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
 import { db, auth } from '../lib/firebase';
 import { collection, onSnapshot, query, addDoc, serverTimestamp, limit } from 'firebase/firestore';
 import { formatCurrency, cn } from '../lib/utils';
@@ -84,6 +86,33 @@ export function Finance() {
  const [ocrFile, setOcrFile] = useState<File | null>(null);
  const [isScanning, setIsScanning] = useState(false);
  const [scanResult, setScanResult] = useState<any>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [unpostingId, setUnpostingId] = useState<string | null>(null);
+  const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('1121');
+
+  const handleSyncToMisa = async (txId: string) => {
+    setSyncingId(txId);
+    try {
+      await syncTransactionToMisa(txId);
+    } catch (err) {
+      console.error('[Finance] MISA sync failed:', err);
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const handleUnpost = async (txId: string) => {
+    setUnpostingId(txId);
+    try {
+      await unpostTransaction(txId);
+    } catch (err) {
+      console.error('[Finance] Unpost failed:', err);
+    } finally {
+      setUnpostingId(null);
+    }
+  };
+
+  const misaConfig = getMisaConfig();
 
  useEffect(() => {
  const q = query(collection(db, 'finance_transactions'), limit(50));
@@ -388,85 +417,443 @@ export function Finance() {
  </div>
  )}
 
- {activeTab === 'journal' && (
- <div className="animate-in fade-in duration-300">
- <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
- <div className="flex gap-4">
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input type="text" placeholder="Tìm kiếm bút toán..." className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-64" />
- </div>
- <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <Filter className="w-4 h-4 text-slate-500" /> Lọc kỳ
- </button>
- </div>
- </div>
- <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
- <div className="overflow-x-auto min-w-0">
-<table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Phân loại</th>
- <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-[#F3F4F6]">
- {transactions.map((tx) => (
- <tr key={tx.id} className="hover:bg-[#F9FAFB] transition-colors">
- <td className="px-6 py-4">
- <div className="flex items-center gap-2">
- <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
- <span className="text-sm text-[#111827] font-medium">{tx.date}</span>
- </div>
- </td>
- <td className="px-6 py-4">
- <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
- </td>
- <td className="px-6 py-4">
- <span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-full uppercase">
- {tx.category}
- </span>
- </td>
- <td className="px-6 py-4 text-right">
- <span className={cn(
- "text-xs font-bold",
- tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
- )}>
- {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
- </span>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- </div>
- )}
+   {activeTab === 'journal' && (
+  <div className="animate-in fade-in duration-300">
+  <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center">
+  <div className="flex gap-4">
+  <div className="relative">
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+  <input type="text" placeholder="Tìm kiếm bút toán..." className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-64" />
+  </div>
+  <button className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+  <Filter className="w-4 h-4 text-slate-500" /> Lọc kỳ
+  </button>
+  </div>
+  </div>
+  <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
+  <div className="overflow-x-auto min-w-0">
+  <table className="w-full text-left border-collapse whitespace-nowrap">
+  <thead>
+  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Nợ (Debit)</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Có (Credit)</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Đối tượng</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
+  <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-center">
+    {misaConfig.localAccountingMode ? 'Trạng thái Ghi sổ' : 'Đồng bộ MISA'}
+  </th>
+  </tr>
+  </thead>
+  <tbody className="divide-y divide-[#F3F4F6]">
+  {transactions.map((tx) => (
+  <tr key={tx.id} className="hover:bg-[#F9FAFB] transition-colors">
+  <td className="px-6 py-4">
+  <div className="flex items-center gap-2">
+  <Calendar className="w-3.5 h-3.5 text-[#9CA3AF]" />
+  <span className="text-sm text-[#111827] font-medium">{tx.date}</span>
+  </div>
+  </td>
+  <td className="px-6 py-4">
+  <span className="text-sm text-[#111827] font-medium">{tx.description}</span>
+  </td>
+  <td className="px-6 py-4">
+  <span className="font-mono text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 border border-blue-100 rounded">
+    {tx.debitAccount || (tx.type === 'income' ? '1121' : '1111')}
+  </span>
+  </td>
+  <td className="px-6 py-4">
+    {tx.type === 'income' && misaConfig.enableMarketplaceSplit ? (
+      <div className="flex flex-col gap-1">
+        <span className="font-mono text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 border border-purple-100 rounded w-fit">
+          {misaConfig.revenueAccountDefault || '5111'} (10% Phí)
+        </span>
+        <span className="font-mono text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 border border-purple-100 rounded w-fit">
+          {misaConfig.partnerLiabilitiesAccount || '3388'} (90% Sàn)
+        </span>
+      </div>
+    ) : (
+      <span className="font-mono text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 border border-purple-100 rounded">
+        {tx.creditAccount || (tx.type === 'income' ? '5111' : '1311')}
+      </span>
+    )}
+  </td>
+  <td className="px-6 py-4">
+  <span className="font-mono text-xs text-slate-700 bg-slate-100 px-2 py-0.5 border border-slate-200 rounded">
+    {tx.accountingObjectCode || 'KHLE'}
+  </span>
+  </td>
+  <td className="px-6 py-4 text-right">
+  <span className={cn(
+  "text-xs font-bold",
+  tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
+  )}>
+  {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+  </span>
+  </td>
+  <td className="px-6 py-4 text-center">
+    <div className="flex items-center justify-center gap-2">
+      {tx.misaSynced ? (
+        <div className="flex items-center gap-2">
+          <span 
+            title={'Mã chứng từ: ' + tx.misaVoucherId}
+            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full"
+          >
+            {misaConfig.localAccountingMode ? 'Đã ghi sổ 🟢' : 'Đã đồng bộ 🟢'}
+          </span>
+          <button
+            onClick={() => handleUnpost(tx.id)}
+            disabled={unpostingId === tx.id}
+            className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold rounded-lg border border-slate-200 cursor-pointer flex items-center gap-1 disabled:opacity-50"
+          >
+            {unpostingId === tx.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            Hủy ghi sổ ↩️
+          </button>
+        </div>
+      ) : tx.misaSyncError ? (
+        <div className="flex items-center gap-1.5">
+          <span 
+            title={'Lỗi: ' + tx.misaSyncError}
+            className="px-2.5 py-1 bg-rose-50 text-rose-700 text-[10px] font-bold border border-rose-200 rounded-full cursor-help"
+          >
+            {misaConfig.localAccountingMode ? 'Lỗi kiểm tra 🔴' : 'Lỗi đồng bộ 🔴'}
+          </span>
+          <button
+            onClick={() => handleSyncToMisa(tx.id)}
+            disabled={syncingId === tx.id}
+            className="px-2 py-1 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-semibold rounded-lg shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+          >
+            {syncingId === tx.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {misaConfig.localAccountingMode ? 'Hạch toán lại 🔄' : 'Thử lại 🔄'}
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => handleSyncToMisa(tx.id)}
+          disabled={syncingId === tx.id}
+          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+        >
+          {syncingId === tx.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {misaConfig.localAccountingMode ? 'Ghi sổ Kế toán' : 'Đồng bộ MISA'}
+        </button>
+      )}
+    </div>
+  </td>
+  </tr>
+  ))}
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+  )}
 
- {activeTab === 'reports' && (
- <div className="p-6 space-y-8 animate-in fade-in duration-300">
- <div className="max-w-4xl mx-auto space-y-6">
- {[
- { title: 'Bảng Cân đối Kế toán', desc: 'Phản ánh tình hình tài sản, nợ phải trả và vốn chủ sở hữu tại một thời điểm.' },
- { title: 'Báo cáo Kết quả Hoạt động Kinh doanh', desc: 'Phản ánh doanh thu, chi phí và lợi nhuận của doanh nghiệp trong kỳ.' },
- { title: 'Báo cáo Lưu chuyển Tiền tệ', desc: 'Theo dõi dòng tiền vào và ra từ hoạt động KD, đầu tư và tài chính.' }
- ].map((report) => (
- <div key={report.title} className="bg-[#F9FAFB] p-6 rounded-lg border border-slate-300 flex justify-between items-center group cursor-pointer hover:border-[#2563EB] transition-all">
- <div className="space-y-1">
- <h4 className="text-base font-bold text-[#111827]">{report.title}</h4>
- <p className="text-sm text-[#6B7280]">{report.desc}</p>
- </div>
- <div className="p-3 bg-white rounded-lg shadow-sm group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all">
- <ArrowUpRight className="w-5 h-5" />
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
+  {activeTab === 'ledger' && (
+    <div className="p-6 space-y-6 animate-in fade-in duration-350 bg-slate-50 min-h-[600px]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <div>
+          <h3 className="font-bold text-slate-900 text-sm">Sổ cái chi tiết Tài khoản (Ledger Accounts)</h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">Truy vấn biến động và số dư lũy kế của tài khoản kế toán nội bộ.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-slate-700">Chọn tài khoản:</label>
+          <select 
+            value={selectedLedgerAccount} 
+            onChange={(e) => setSelectedLedgerAccount(e.target.value)}
+            className="p-2 border border-slate-300 rounded-lg text-sm bg-white font-mono font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="1111">1111 - Tiền mặt tại quỹ</option>
+            <option value="1121">1121 - Tiền gửi ngân hàng VND</option>
+            <option value="1311">1311 - Phải thu khách hàng</option>
+            <option value="141">141 - Tạm ứng nhân viên</option>
+            <option value="331">331 - Phải trả người bán</option>
+            <option value="3341">3341 - Phải trả người lao động</option>
+            <option value="3388">3388 - Phải trả khác (Thu hộ đối tác)</option>
+            <option value="5111">5111 - Doanh thu bán hàng</option>
+            <option value="632">632 - Giá vốn hàng bán</option>
+            <option value="6421">6421 - Chi phí bán hàng</option>
+            <option value="6422">6422 - Chi phí quản lý doanh nghiệp</option>
+          </select>
+        </div>
+      </div>
+
+      {(() => {
+        const isAsset = ['1111', '1121', '1311', '141'].includes(selectedLedgerAccount);
+        const isExpense = ['632', '6421', '6422'].includes(selectedLedgerAccount);
+        const startingBalance = isAsset ? 100000000 : 0;
+
+        const postedTxs = transactions.filter(t => t.misaSynced);
+
+        const ledgerEntries = postedTxs.map(tx => {
+          let debit = 0;
+          let credit = 0;
+          let counterAccount = '';
+
+          const defaultDebit = tx.debitAccount || (tx.type === 'income' ? '1121' : '1111');
+          const isSplit = tx.type === 'income' && misaConfig.enableMarketplaceSplit;
+
+          if (defaultDebit === selectedLedgerAccount) {
+            debit = tx.amount;
+            counterAccount = isSplit ? `${misaConfig.revenueAccountDefault || '5111'} / ${misaConfig.partnerLiabilitiesAccount || '3388'}` : (tx.creditAccount || '5111');
+          }
+
+          if (isSplit) {
+            const revAcc = misaConfig.revenueAccountDefault || '5111';
+            const partnerAcc = misaConfig.partnerLiabilitiesAccount || '3388';
+            const commissionAmount = Math.round(tx.amount * 0.1);
+            const partnerAmount = tx.amount - commissionAmount;
+
+            if (revAcc === selectedLedgerAccount) {
+              credit = commissionAmount;
+              counterAccount = defaultDebit;
+            }
+            if (partnerAcc === selectedLedgerAccount) {
+              credit = partnerAmount;
+              counterAccount = defaultDebit;
+            }
+          } else {
+            const defaultCredit = tx.creditAccount || (tx.type === 'income' ? '5111' : '1311');
+            if (defaultCredit === selectedLedgerAccount) {
+              credit = tx.amount;
+              counterAccount = defaultDebit;
+            }
+          }
+
+          return {
+            id: tx.id,
+            date: tx.date,
+            description: tx.description,
+            debit,
+            credit,
+            counterAccount
+          };
+        }).filter(entry => entry.debit > 0 || entry.credit > 0);
+
+        ledgerEntries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        let currentBalance = startingBalance;
+        let totalDebit = 0;
+        let totalCredit = 0;
+
+        const ledgerWithBalance = ledgerEntries.map(entry => {
+          totalDebit += entry.debit;
+          totalCredit += entry.credit;
+
+          if (isAsset || isExpense) {
+            currentBalance += entry.debit - entry.credit;
+          } else {
+            currentBalance += entry.credit - entry.debit;
+          }
+
+          return { ...entry, runningBalance: currentBalance };
+        });
+
+        const displayLedger = [...ledgerWithBalance].reverse();
+
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-xs">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Số dư đầu kỳ</span>
+                <p className="text-lg font-black text-slate-800 mt-1">{formatCurrency(startingBalance)}</p>
+              </div>
+              <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-xs">
+                <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Tổng phát sinh NỢ</span>
+                <p className="text-lg font-black text-emerald-600 mt-1">+{formatCurrency(totalDebit)}</p>
+              </div>
+              <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-xs">
+                <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Tổng phát sinh CÓ</span>
+                <p className="text-lg font-black text-rose-600 mt-1">-{formatCurrency(totalCredit)}</p>
+              </div>
+              <div className="bg-white p-5 border border-indigo-200 bg-indigo-50/20 rounded-xl shadow-xs">
+                <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider">Số dư cuối kỳ</span>
+                <p className="text-lg font-black text-indigo-700 mt-1">{formatCurrency(currentBalance)}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase">
+                      <th className="px-5 py-3">Ngày</th>
+                      <th className="px-5 py-3">Diễn giải</th>
+                      <th className="px-5 py-3">Tài khoản đối ứng</th>
+                      <th className="px-5 py-3 text-right">Phát sinh Nợ</th>
+                      <th className="px-5 py-3 text-right">Phát sinh Có</th>
+                      <th className="px-5 py-3 text-right">Số dư lũy kế</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {displayLedger.map((entry, idx) => (
+                      <tr key={entry.id + '-' + idx} className="hover:bg-slate-50/50">
+                        <td className="px-5 py-3 text-slate-500">{entry.date}</td>
+                        <td className="px-5 py-3 text-slate-800">{entry.description}</td>
+                        <td className="px-5 py-3 font-mono text-slate-600 font-bold">{entry.counterAccount}</td>
+                        <td className="px-5 py-3 text-right font-mono text-emerald-600 font-semibold">{entry.debit > 0 ? formatCurrency(entry.debit) : '-'}</td>
+                        <td className="px-5 py-3 text-right font-mono text-rose-600 font-semibold">{entry.credit > 0 ? formatCurrency(entry.credit) : '-'}</td>
+                        <td className="px-5 py-3 text-right font-mono font-bold text-slate-900">{formatCurrency(entry.runningBalance)}</td>
+                      </tr>
+                    ))}
+                    {displayLedger.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="px-5 py-8 text-center text-slate-400 italic">Không có nghiệp vụ phát sinh của tài khoản này trong kỳ.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  )}
+
+  {activeTab === 'reports' && (
+    <div className="p-6 space-y-6 animate-in fade-in duration-350 bg-slate-50 min-h-[600px]">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {(() => {
+          const postedTxs = transactions.filter(t => t.misaSynced);
+
+          let revenue = 0;
+          let cogs = 0;
+          let sellingExpense = 0;
+          let adminExpense = 0;
+
+          postedTxs.forEach(tx => {
+            const defaultDebit = tx.debitAccount || (tx.type === 'income' ? '1121' : '1111');
+            const isSplit = tx.type === 'income' && misaConfig.enableMarketplaceSplit;
+
+            if (isSplit) {
+              const revAcc = misaConfig.revenueAccountDefault || '5111';
+              if (revAcc === '5111') {
+                revenue += Math.round(tx.amount * 0.1);
+              }
+            } else {
+              const defaultCredit = tx.creditAccount || (tx.type === 'income' ? '5111' : '1311');
+              if (defaultCredit === '5111') {
+                revenue += tx.amount;
+              }
+            }
+
+            if (defaultDebit === '632') {
+              cogs += tx.amount;
+            }
+
+            if (defaultDebit === '6421') {
+              sellingExpense += tx.amount;
+            }
+
+            if (defaultDebit === '6422') {
+              adminExpense += tx.amount;
+            }
+          });
+
+          const grossProfit = revenue - cogs;
+          const operatingProfit = grossProfit - sellingExpense - adminExpense;
+
+          return (
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex justify-between items-center border-b border-slate-250 pb-4">
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">Báo cáo Kết quả Hoạt động Kinh doanh (P&L)</h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Trích xuất số liệu phát sinh từ tài khoản 5111, 632, 6421, 6422 đã ghi sổ.</p>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded font-mono">Real-time Accounting</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
+                      <th className="px-4 py-2.5">Chỉ tiêu</th>
+                      <th className="px-4 py-2.5 text-center">Mã số</th>
+                      <th className="px-4 py-2.5 text-center">Thuyết minh</th>
+                      <th className="px-4 py-2.5 text-right">Số phát sinh kỳ này (VND)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                    <tr className="hover:bg-slate-50/50">
+                      <td className="px-4 py-3">1. Doanh thu bán hàng và cung cấp dịch vụ (Có TK 5111)</td>
+                      <td className="px-4 py-3 text-center font-mono">01</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">{formatCurrency(revenue)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50">
+                      <td className="px-4 py-3">2. Các khoản giảm trừ doanh thu</td>
+                      <td className="px-4 py-3 text-center font-mono">02</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono text-slate-400">0</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50 bg-slate-50/30">
+                      <td className="px-4 py-3 font-bold text-slate-800">3. Doanh thu thuần về bán hàng và cung cấp dịch vụ (10 = 01 - 02)</td>
+                      <td className="px-4 py-3 text-center font-mono font-bold">10</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-indigo-700">{formatCurrency(revenue)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50">
+                      <td className="px-4 py-3">4. Giá vốn hàng bán (Nợ TK 632)</td>
+                      <td className="px-4 py-3 text-center font-mono">11</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-rose-600">{formatCurrency(cogs)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50 bg-slate-50/30">
+                      <td className="px-4 py-3 font-bold text-slate-800">5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ (20 = 10 - 11)</td>
+                      <td className="px-4 py-3 text-center font-mono font-bold">20</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-indigo-700">{formatCurrency(grossProfit)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50">
+                      <td className="px-4 py-3">6. Chi phí bán hàng (Nợ TK 6421)</td>
+                      <td className="px-4 py-3 text-center font-mono">25</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono text-slate-800">{formatCurrency(sellingExpense)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50">
+                      <td className="px-4 py-3">7. Chi phí quản lý doanh nghiệp (Nợ TK 6422)</td>
+                      <td className="px-4 py-3 text-center font-mono">26</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className="px-4 py-3 text-right font-mono text-slate-800">{formatCurrency(adminExpense)}</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/50 bg-indigo-50/15">
+                      <td className="px-4 py-3 font-bold text-indigo-900">8. Lợi nhuận thuần từ hoạt động kinh doanh (30 = 20 - 25 - 26)</td>
+                      <td className="px-4 py-3 text-center font-mono font-bold text-indigo-900">30</td>
+                      <td className="px-4 py-3 text-center font-mono">-</td>
+                      <td className={cn("px-4 py-3 text-right font-mono font-black text-sm", operatingProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
+                        {formatCurrency(operatingProfit)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
+
+        <div className="space-y-4">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Các biểu mẫu báo cáo khác</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { title: 'Bảng Cân đối Kế toán', desc: 'Phản ánh tình hình tài sản, nợ phải trả và vốn chủ sở hữu tại một thời điểm.' },
+              { title: 'Báo cáo Lưu chuyển Tiền tệ', desc: 'Theo dõi dòng tiền vào và ra từ hoạt động KD, đầu tư và tài chính.' }
+            ].map((report) => (
+              <div key={report.title} className="bg-white p-5 rounded-xl border border-slate-200 flex justify-between items-center group cursor-pointer hover:border-indigo-500 hover:shadow-xs transition-all">
+                <div className="space-y-1">
+                  <h5 className="text-xs font-bold text-[#111827]">{report.title}</h5>
+                  <p className="text-[11px] text-[#6B7280]">{report.desc}</p>
+                </div>
+                <div className="p-2.5 bg-slate-50 text-slate-500 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs shrink-0">
+                  <ArrowUpRight className="w-4 h-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
  </div>
  </div>
  )}

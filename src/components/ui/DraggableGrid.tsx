@@ -6,6 +6,7 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { cn } from "../../lib/utils";
 import { GripHorizontal, Save, RotateCcw } from "lucide-react";
+import { usePreferences } from '../../context/PreferencesContext';
 
 export function DraggableGrid({ 
   children, 
@@ -22,6 +23,7 @@ export function DraggableGrid({
   className?: string,
   id?: string
 }) {
+  const { layoutEditable } = usePreferences();
   const { width, containerRef } = useContainerWidth();
   const [layouts, setLayouts] = useState<any>({ lg: [] });
   const [originalLayouts, setOriginalLayouts] = useState<any>({ lg: [] });
@@ -30,6 +32,14 @@ export function DraggableGrid({
   
   const items = React.Children.toArray(children).filter(React.isValidElement);
   const itemKeys = useMemo(() => items.map((c: any) => c.key).join(','), [items]);
+  
+  if (!layoutEditable) {
+    return (
+      <div className={className} style={{ gap: gap ? `${gap}px` : undefined }}>
+        {items}
+      </div>
+    );
+  }
   
   const gridId = id || useMemo(() => {
     const strToHash = className + itemKeys;
