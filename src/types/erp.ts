@@ -66,6 +66,7 @@ export interface Customer {
  misaSynced?: boolean;
  misaSyncedAt?: string;
  misaSyncError?: string;
+ promoBalance?: number;
 }
 
 export interface ShippingInfo {

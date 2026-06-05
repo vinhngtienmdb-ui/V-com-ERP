@@ -108,6 +108,13 @@ export function SellerFinance() {
   const [otpCode, setOtpCode] = useState('');
   const [isSigning, setIsSigning] = useState(false);
 
+  // Loan Calculator states
+  const [calcSellerId, setCalcSellerId] = useState('SEL-001');
+  const [calcAmount, setCalcAmount] = useState(100000000);
+  const [calcTerm, setCalcTerm] = useState(6);
+  const [calcCollateral, setCalcCollateral] = useState<'inventory' | 'revenue' | 'guarantee'>('revenue');
+  const [isSyncedLedger, setIsSyncedLedger] = useState(false);
+
   // Helpers for calculations
   const totalWeight = weights.gmvGrowth + weights.refundRate + weights.buyerRating + weights.complianceIndex;
 
@@ -507,6 +514,186 @@ export function SellerFinance() {
           {/* TAB 2: Early Payouts Requests */}
           {activeTab === 'early_payout' && (
             <div className="space-y-6 animate-in fade-in duration-300">
+              
+              {/* Interactive Loan Calculator & Credit Agreement Generator */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-5 rounded-2xl border border-slate-200">
+                
+                {/* 1. Loan Calculator */}
+                <div className="space-y-4 bg-white p-5 rounded-xl border border-slate-200 shadow-3xs">
+                  <div>
+                    <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <Settings2 className="w-4.5 h-4.5 text-blue-650" />
+                      Công cụ Tính toán Lãi suất & Hạn mức vay Seller
+                    </h3>
+                    <p className="text-[10px] text-slate-500 mt-0.5">
+                      Tính toán lãi suất ưu đãi động dựa trên xếp hạng tín dụng AI và tài sản thế chấp.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Chọn Nhà bán hàng:</label>
+                      <select
+                        value={calcSellerId}
+                        onChange={e => setCalcSellerId(e.target.value)}
+                        className="w-full p-2 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white font-medium"
+                      >
+                        {sellers.map(s => (
+                          <option key={s.sellerId} value={s.sellerId}>{s.sellerName} ({s.tier})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Số tiền vay (VND):</label>
+                      <input
+                        type="number"
+                        value={calcAmount}
+                        onChange={e => setCalcAmount(Math.max(0, Number(e.target.value)))}
+                        className="w-full p-1.5 border border-slate-255 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Kỳ hạn vay:</label>
+                      <select
+                        value={calcTerm}
+                        onChange={e => setCalcTerm(Number(e.target.value))}
+                        className="w-full p-2 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white font-medium"
+                      >
+                        <option value={1}>1 tháng (Ứng ngắn hạn)</option>
+                        <option value={3}>3 tháng (Xoay vòng nhanh)</option>
+                        <option value={6}>6 tháng (Trung hạn sản xuất)</option>
+                        <option value={12}>12 tháng (Dài hạn mở rộng)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Tài sản bảo đảm:</label>
+                      <select
+                        value={calcCollateral}
+                        onChange={e => setCalcCollateral(e.target.value as any)}
+                        className="w-full p-2 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white font-medium"
+                      >
+                        <option value="revenue">Doanh thu tương lai trên sàn</option>
+                        <option value="inventory">Hàng tồn kho ký gửi VComm</option>
+                        <option value="guarantee">Bảo lãnh tài chính ngân hàng</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Calculator Outputs */}
+                  {(() => {
+                    const sel = sellers.find(s => s.sellerId === calcSellerId) || sellers[0];
+                    const baseRate = sel.tier === 'AAA' ? 5.5 : sel.tier === 'AA' ? 6.8 : sel.tier === 'A' ? 7.5 : sel.tier === 'B' ? 9.0 : 12.0;
+                    const modifier = calcCollateral === 'inventory' ? -0.5 : calcCollateral === 'guarantee' ? -1.0 : 0;
+                    const finalRate = Math.max(4.5, baseRate + modifier);
+                    const interest = calcAmount * (finalRate / 100) * (calcTerm / 12);
+                    const serviceFee = calcAmount * 0.01;
+                    const totalPayable = calcAmount + interest;
+
+                    return (
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 font-medium">
+                        <div className="flex justify-between text-[10.5px]">
+                          <span className="text-slate-450">Xếp hạng tín nhiệm AI:</span>
+                          <span className="font-bold text-emerald-600">Tier {sel.tier} (Điểm: {sel.score})</span>
+                        </div>
+                        <div className="flex justify-between text-[10.5px]">
+                          <span className="text-slate-450">Lãi suất áp dụng:</span>
+                          <span className="font-bold text-slate-900">{finalRate}% / năm</span>
+                        </div>
+                        <div className="flex justify-between text-[10.5px]">
+                          <span className="text-slate-450">Chi phí lãi vay dự kiến:</span>
+                          <span className="font-bold text-red-650">+{formatCurrency(interest)}</span>
+                        </div>
+                        <div className="flex justify-between text-[10.5px]">
+                          <span className="text-slate-450">Phí quản trị dịch vụ (1%):</span>
+                          <span className="font-bold text-slate-700">{formatCurrency(serviceFee)}</span>
+                        </div>
+                        <div className="flex justify-between text-xs font-bold pt-2 border-t border-slate-200 text-slate-905">
+                          <span>Tổng số tiền gốc & lãi phải trả:</span>
+                          <span className="text-blue-600">{formatCurrency(totalPayable)}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-400 italic">
+                          <span>Trả hàng tháng:</span>
+                          <span>~{formatCurrency(totalPayable / calcTerm)} / tháng</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* 2. Contract Preview */}
+                {(() => {
+                  const sel = sellers.find(s => s.sellerId === calcSellerId) || sellers[0];
+                  const baseRate = sel.tier === 'AAA' ? 5.5 : sel.tier === 'AA' ? 6.8 : sel.tier === 'A' ? 7.5 : sel.tier === 'B' ? 9.0 : 12.0;
+                  const modifier = calcCollateral === 'inventory' ? -0.5 : calcCollateral === 'guarantee' ? -1.0 : 0;
+                  const finalRate = Math.max(4.5, baseRate + modifier);
+                  const interest = calcAmount * (finalRate / 100) * (calcTerm / 12);
+                  const totalPayable = calcAmount + interest;
+                  const collateralName = calcCollateral === 'inventory' ? 'Hàng tồn kho ký gửi VComm' : calcCollateral === 'guarantee' ? 'Bảo lãnh ngân hàng' : 'Doanh thu tương lai trên sàn';
+
+                  return (
+                    <div className="space-y-4 bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xs font-extrabold text-slate-905 uppercase tracking-wide">
+                            Xem trước Hợp đồng Tín dụng số
+                          </h3>
+                          <span className="text-[9px] bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded">Được bảo vệ 🔒</span>
+                        </div>
+                        
+                        <div className="p-3 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-xl font-mono text-[9px] leading-relaxed max-h-[160px] overflow-y-auto select-text">
+                          <p className="text-center font-bold text-amber-500">HỢP ĐỒNG TÍN DỤNG HẠN MỨC DOANH NGHIỆP</p>
+                          <p className="text-center font-bold">Số: HĐTD/VCOMM/{Date.now().toString().slice(-5)}</p>
+                          <p className="mt-2 text-slate-400">Bên Cho Vay: CỔNG TÀI CHÍNH VCOMM PLATFORM (VComm ERP)</p>
+                          <p className="text-slate-400">Bên Vay: {sel.sellerName}</p>
+                          <p className="mt-2">• Số tiền gốc vay: {formatCurrency(calcAmount)} (VNĐ)</p>
+                          <p className="mt-1">• Thời hạn vay: {calcTerm} tháng kể từ ngày ký.</p>
+                          <p className="mt-1">• Lãi suất áp dụng: {finalRate}% / năm (Tính trên dư nợ ban đầu).</p>
+                          <p className="mt-1">• Tài sản bảo đảm thế chấp: {collateralName}.</p>
+                          <p className="mt-1">• Tổng gốc & lãi phải trả: {formatCurrency(totalPayable)} (VNĐ).</p>
+                          <p className="mt-3 text-slate-500">// Chữ ký số HSM xác minh của VComm Platform //</p>
+                          <p className="text-emerald-500">KÝ BỞI: GIÁM ĐỐC TÀI CHÍNH (CFO) VCOMM ERP</p>
+                          <p className="text-slate-500">Thời gian ký: {new Date().toLocaleDateString('vi-VN')}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            alert(`Đang tải xuống hợp đồng tín dụng số của ${sel.sellerName} thành công!`);
+                          }}
+                          className="flex-1 py-2 border border-slate-300 text-slate-700 bg-white hover:bg-slate-100 font-bold rounded-lg cursor-pointer border-0 text-xs flex items-center justify-center gap-1.5"
+                        >
+                          Tải Hợp đồng (.PDF)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsSyncedLedger(true);
+                            addNotification(
+                              'Đồng bộ Kế toán',
+                              `Đã tạo bút toán hạch toán tự động giải ngân hạn mức vay thấu chi của ${sel.sellerName} thành công.`
+                            );
+                            alert(`Đồng bộ bút toán kế toán thành công:\n- Nợ TK 1121 (Tiền gửi ngân hàng): ${formatCurrency(calcAmount - calcAmount*0.01)}\n- Nợ TK 635 (Chi phí tài chính - Lãi vay): ${formatCurrency(interest)}\n- Có TK 341 (Vay ngắn hạn): ${formatCurrency(calcAmount)}`);
+                          }}
+                          className={cn(
+                            "flex-1 py-2 font-bold rounded-lg cursor-pointer border-0 text-xs flex items-center justify-center gap-1.5 text-white transition",
+                            isSyncedLedger ? "bg-emerald-600 hover:bg-emerald-700" : "bg-slate-900 hover:bg-slate-800"
+                          )}
+                        >
+                          {isSyncedLedger ? '✓ Đã đồng bộ Kế toán' : 'Đồng bộ hạch toán'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
               <div className="flex justify-between items-center pb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
                   Danh sách yêu cầu rút tiền sớm từ đơn hàng đã hoàn thành

@@ -79,6 +79,7 @@ interface LeaseApplication {
   cicGroup?: number;
   cicScore?: number;
   cicNotes?: string;
+  autoLockOverdue?: boolean;
 }
 
 // Define colors for Pie charts
@@ -175,6 +176,218 @@ const SAMPLE_DEVICES = [
   { name: 'MacBook Pro 14-inch M3 Max (36GB/1TB)', type: 'laptop', price: 79990000, monthlyBase: 4450000 },
   { name: 'Asus ROG Strix G16 Gaming Laptop', type: 'laptop', price: 38990000, monthlyBase: 2150000 }
 ];
+
+function GpsTrackerCanvas() {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [currentPosInfo, setCurrentPosInfo] = useState({
+    lat: 10.7760,
+    lng: 106.6672,
+    address: "142/4 Ba Tháng Hai, Phường 12, Quận 10, TP. Hồ Chí Minh"
+  });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Handle high DPI screens
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    ctx.scale(dpr, dpr);
+
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+
+    // HCMC Route nodes
+    const route = [
+      { x: 30, y: 90, lat: 10.7720, lng: 106.6610, name: "Vòng xoay Dân Chủ" },
+      { x: 90, y: 75, lat: 10.7735, lng: 106.6635, name: "Cao Thắng" },
+      { x: 150, y: 85, lat: 10.7760, lng: 106.6672, name: "142/4 Ba Tháng Hai" },
+      { x: 220, y: 40, lat: 10.7785, lng: 106.6695, name: "Cách Mạng Tháng Tám" },
+      { x: 280, y: 30, lat: 10.7810, lng: 106.6730, name: "Điện Biên Phủ" }
+    ];
+
+    let progress = 0; // 0 to route.length - 1
+    let speed = 0.005; // movement speed
+    let pingRadius = 0;
+    let animationId: number;
+
+    const draw = () => {
+      // Clear canvas
+      ctx.fillStyle = '#0b0f19'; // Slate-950
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw grid overlay
+      ctx.strokeStyle = '#1e293b'; // Slate-800
+      ctx.lineWidth = 0.5;
+      const gridSize = 16;
+      for (let x = 0; x < width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      // Draw HCMC Road Map Layout (background roads)
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      // Road 1: 3/2 Street
+      ctx.beginPath();
+      ctx.moveTo(10, 100);
+      ctx.lineTo(160, 90);
+      ctx.lineTo(310, 60);
+      ctx.stroke();
+
+      // Road 2: CMT8 Street
+      ctx.beginPath();
+      ctx.moveTo(80, 10);
+      ctx.lineTo(100, 110);
+      ctx.stroke();
+
+      // Road 3: Dien Bien Phu Street
+      ctx.beginPath();
+      ctx.moveTo(10, 30);
+      ctx.lineTo(310, 30);
+      ctx.stroke();
+
+      // Draw tracking route (path connecting nodes)
+      ctx.strokeStyle = '#4f46e5'; // Indigo-600
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      ctx.moveTo(route[0].x, route[0].y);
+      for (let i = 1; i < route.length; i++) {
+        ctx.lineTo(route[i].x, route[i].y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset dash
+
+      // Draw route node points
+      route.forEach((node) => {
+        ctx.fillStyle = '#312e81'; // Deep Indigo
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#4f46e5';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // Calculate current animated position
+      const currentSegment = Math.floor(progress);
+      const nextSegment = Math.min(currentSegment + 1, route.length - 1);
+      const segmentProgress = progress - currentSegment;
+
+      const startNode = route[currentSegment];
+      const endNode = route[nextSegment];
+
+      const curX = startNode.x + (endNode.x - startNode.x) * segmentProgress;
+      const curY = startNode.y + (endNode.y - startNode.y) * segmentProgress;
+
+      const curLat = startNode.lat + (endNode.lat - startNode.lat) * segmentProgress;
+      const curLng = startNode.lng + (endNode.lng - startNode.lng) * segmentProgress;
+
+      // Draw traveled path (solid line)
+      ctx.strokeStyle = '#10b981'; // Emerald-500
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(route[0].x, route[0].y);
+      for (let i = 1; i <= currentSegment; i++) {
+        ctx.lineTo(route[i].x, route[i].y);
+      }
+      ctx.lineTo(curX, curY);
+      ctx.stroke();
+
+      // Draw pulsing ping dot
+      pingRadius = (pingRadius + 0.3) % 15;
+      ctx.fillStyle = `rgba(239, 68, 68, ${1 - pingRadius / 15})`; // Rose pulsing wave
+      ctx.beginPath();
+      ctx.arc(curX, curY, pingRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ef4444'; // Solid Rose inner circle
+      ctx.beginPath();
+      ctx.arc(curX, curY, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(curX, curY, 4, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Draw text label next to dot
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 8px monospace';
+      ctx.shadowColor = 'black';
+      ctx.shadowBlur = 4;
+      ctx.fillText(`TARGET: ${startNode.name}`, curX + 8, curY + 3);
+      ctx.shadowBlur = 0; // Reset shadow
+
+      // Draw overlay stats
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)'; // Transparent black panel
+      ctx.fillRect(8, 8, 95, 20);
+      ctx.strokeStyle = 'rgba(79, 70, 229, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(8, 8, 95, 20);
+
+      ctx.fillStyle = '#10b981';
+      ctx.font = 'bold 7px monospace';
+      ctx.fillText(`● CELL PING ACTIVE`, 12, 16);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(`ACCURACY: ±4M`, 12, 24);
+
+      // Update coordinates state (throttle state updates to avoid React render spam)
+      if (Math.random() < 0.05) {
+        const roundedLat = curLat.toFixed(4);
+        const roundedLng = curLng.toFixed(4);
+        setCurrentPosInfo({
+          lat: parseFloat(roundedLat),
+          lng: parseFloat(roundedLng),
+          address: `Đang di chuyển gần ${startNode.name}, Quận 10, TP. Hồ Chí Minh`
+        });
+      }
+
+      // Advance progress
+      progress += speed;
+      if (progress >= route.length - 1) {
+        progress = 0; // Loop back
+      }
+
+      animationId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  return (
+    <div className="space-y-2 animate-in slide-in-from-bottom-2 duration-200">
+      <div className="relative h-28 rounded-lg overflow-hidden border border-slate-800">
+        <canvas ref={canvasRef} className="w-full h-full block" />
+      </div>
+      <div className="bg-slate-900 text-slate-300 p-2 rounded-lg font-mono text-[9px] space-y-0.5 leading-snug">
+        <p className="font-bold text-indigo-300">Toạ độ hiện tại: {currentPosInfo.lat}° N, {currentPosInfo.lng}° E</p>
+        <p className="text-slate-400">Vị trí ước tính: {currentPosInfo.address}</p>
+      </div>
+    </div>
+  );
+}
 
 export function DeviceLeasing() {
   const [activeTab, setActiveTab] = useState<'applications' | 'active-leases' | 'analytics' | 'history'>('applications');
@@ -284,6 +497,55 @@ export function DeviceLeasing() {
     setGpsFetched(false);
     setDetailTab('schedule');
   }, [selectedLease]);
+
+  // Automated Knox MDM Auto-Locking rule: If checked and payment is overdue by 30+ days, lock the device.
+  useEffect(() => {
+    if (loading) return;
+
+    const now = new Date();
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+    applications.forEach(async (app) => {
+      if (app.autoLockOverdue && app.knoxStatus !== 'locked' && ['active', 'late'].includes(app.status)) {
+        const hasThirtyDaysOverdue = app.installments.some(inst => {
+          if (inst.status === 'overdue' || inst.status === 'unpaid') {
+            const dueTime = new Date(inst.dueDate).getTime();
+            return (now.getTime() - dueTime) >= thirtyDaysMs;
+          }
+          return false;
+        });
+
+        if (hasThirtyDaysOverdue) {
+          const updatedHistory = [...app.history, {
+            timestamp: new Date().toLocaleString('vi-VN'),
+            action: "Tự động khóa Knox (30+ ngày trễ hạn)",
+            actor: "Hệ thống Knox MDM Tự động",
+            notes: "Thiết bị bị tự động khóa do có kỳ thanh toán quá hạn trên 30 ngày và kích hoạt quy tắc Auto-Lock."
+          }];
+
+          try {
+            const leaseRef = doc(db, 'device_leases', app.id);
+            await updateDoc(leaseRef, {
+              knoxStatus: 'locked',
+              history: updatedHistory
+            });
+          } catch (err) {
+            // Fallback for offline / local-only tests
+            setApplications(prev => prev.map(a => {
+              if (a.id === app.id) {
+                return { ...a, knoxStatus: 'locked', history: updatedHistory };
+              }
+              return a;
+            }));
+          }
+
+          if (selectedLease?.id === app.id) {
+            setSelectedLease(prev => prev ? { ...prev, knoxStatus: 'locked', history: updatedHistory } : null);
+          }
+        }
+      }
+    });
+  }, [applications, loading, selectedLease]);
 
   const generateMockLeases = (): LeaseApplication[] => {
     return [
@@ -1398,6 +1660,34 @@ export function DeviceLeasing() {
                       </div>
                     </div>
 
+                    {/* Auto-Locking rule checkbox */}
+                    <div className="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                      <input
+                        type="checkbox"
+                        id="autoLockRule"
+                        checked={selectedLease.autoLockOverdue || false}
+                        onChange={async (e) => {
+                          const checked = e.target.checked;
+                          try {
+                            const leaseRef = doc(db, 'device_leases', selectedLease.id);
+                            await updateDoc(leaseRef, {
+                              autoLockOverdue: checked
+                            });
+                          } catch (err) {
+                            // Fallback
+                          }
+                          setApplications(prev => prev.map(a => 
+                            a.id === selectedLease.id ? { ...a, autoLockOverdue: checked } : a
+                          ));
+                          setSelectedLease(prev => prev ? { ...prev, autoLockOverdue: checked } : null);
+                        }}
+                        className="w-4 h-4 text-indigo-600 border-slate-350 rounded focus:ring-indigo-500 cursor-pointer"
+                      />
+                      <label htmlFor="autoLockRule" className="text-xs font-bold text-slate-700 cursor-pointer select-none">
+                        Tự động khóa nếu nợ trễ hạn trên 30 ngày (Auto-lock Knox)
+                      </label>
+                    </div>
+
                     {/* Knox Lock Visual Overlay Simulator */}
                     <div className="relative mx-auto" style={{ width: '140px' }}>
                       {/* Phone frame */}
@@ -1472,23 +1762,7 @@ export function DeviceLeasing() {
                       </div>
 
                       {gpsFetched ? (
-                        <div className="space-y-2 animate-in slide-in-from-bottom-2 duration-200">
-                          {/* Nigeria / Vietnam styled visual map marker */}
-                          <div className="relative h-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center">
-                            {/* Stylized visual map grid lines */}
-                            <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-60"></div>
-                            <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-rose-500 rounded-full animate-ping"></div>
-                            <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-rose-600 rounded-full border border-white"></div>
-                            <span className="absolute top-2 right-2 font-mono text-[8.5px] text-slate-500">ACCURACY: ±4 METERS</span>
-                            <span className="absolute bottom-1.5 left-2 font-mono text-[9px] text-emerald-400 uppercase tracking-widest flex items-center gap-1 font-bold">
-                              <span className="h-1 w-1 bg-emerald-400 rounded-full"></span> CELL_TOWER_PING
-                            </span>
-                          </div>
-                          <div className="bg-slate-900 text-slate-300 p-2 rounded-lg font-mono text-[9px] space-y-0.5 leading-snug">
-                            <p className="font-bold text-indigo-300">Toạ độ: 10.7760° N, 106.6672° E</p>
-                            <p className="text-slate-400">Vị trí: 142/4 Ba Tháng Hai, Phường 12, Quận 10, TP. Hồ Chí Minh</p>
-                          </div>
-                        </div>
+                        <GpsTrackerCanvas />
                       ) : (
                         <div className="h-28 border border-dashed border-slate-200 rounded-lg flex flex-col justify-center items-center text-center text-slate-400 p-3 bg-white">
                           {locatingGps ? (

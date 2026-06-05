@@ -1,66 +1,13 @@
-import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Users, 
-  MessageSquare, 
-  Facebook, 
-  PhoneCall, 
-  Globe, 
-  Search, 
-  Filter, 
-  MoreHorizontal,
-  ShoppingCart,
-  DollarSign,
-  History,
-  ExternalLink,
-  LifeBuoy,
-  X,
-  Mail,
-  Smartphone,
-  Sparkles,
-  Trophy,
-  Loader2,
-  Copy,
-  Check,
-  Send,
-  Settings,
-  Lock,
-  Unlock,
-  Wallet,
-  Kanban,
-  List,
-  BadgeDollarSign,
-  ShieldCheck,
-  Clock,
-  FileText
-} from 'lucide-react';
-import { formatCurrency, cn } from '../lib/utils';
-import { Customer } from '../types/erp';
-import { generateCustomerCareMessage } from '../services/geminiService';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { syncCustomerToMisa } from '../services/misaService';
+const fs = require('fs');
+const path = require('path');
 
-const CopyButton = ({ value }: { value: string }) => {
- const [copied, setCopied] = useState(false);
- const handleCopy = () => {
- navigator.clipboard.writeText(value);
- setCopied(true);
- setTimeout(() => setCopied(false), 2000);
- };
- return (
- <button 
- onClick={handleCopy}
- className="p-1 hover:bg-slate-100 rounded-md transition-colors text-slate-500 hover:text-orange-700"
- title="Copy"
- >
- {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
- </button>
- );
-};
+const targetFile = path.join(__dirname, '..', 'src', 'components', 'Customers.tsx');
+let content = fs.readFileSync(targetFile, 'utf8');
 
-const CustomerDetailModal = ({ 
+// 1. Replace the entire CustomerDetailModal implementation
+const customerDetailModalRegex = /const\s+CustomerDetailModal\s*=\s*\(\{\s*customer,\s*onClose\s*\}\s*:\s*\{\s*customer:\s*Customer;\s*onClose:\s*\(\)\s*=>\s*void\s*\}\)\s*=>\s*\{[\s\S]*?className="lg:col-span-2\s+space-y-6"[\s\S]*?<\/div>\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;\s*\}\s*;/;
+
+const newCustomerDetailModal = `const CustomerDetailModal = ({ 
   customer, 
   onClose,
   leases = [],
@@ -111,7 +58,7 @@ const CustomerDetailModal = ({
         id: 'act_' + Date.now(),
         type: 'other' as const,
         title: 'Quy đổi Cashback sang Khuyến mại',
-        description: `Quy đổi thành công ${formatCurrency(cashbackDeducted)} Cashback sang ${formatCurrency(promoAdded)} ví Khuyến mại (tỷ lệ 1.1).`,
+        description: \`Quy đổi thành công \${formatCurrency(cashbackDeducted)} Cashback sang \${formatCurrency(promoAdded)} ví Khuyến mại (tỷ lệ 1.1).\`,
         date: new Date().toISOString().split('T')[0],
         status: 'Hoàn thành'
       };
@@ -124,7 +71,7 @@ const CustomerDetailModal = ({
         activities: updatedActivities
       });
 
-      alert(`Chuyển đổi thành công! Trừ ${formatCurrency(cashbackDeducted)} Cashback, cộng ${formatCurrency(promoAdded)} vào ví Khuyến mại.`);
+      alert(\`Chuyển đổi thành công! Trừ \${formatCurrency(cashbackDeducted)} Cashback, cộng \${formatCurrency(promoAdded)} vào ví Khuyến mại.\`);
       setShowConvertPanel(false);
       setConvertAmount(0);
     } catch (err) {
@@ -140,12 +87,12 @@ const CustomerDetailModal = ({
     try {
       const msg = await generateCustomerCareMessage(customer);
       // Try to parse a subject if AI returned something like "Subject: ..." or "Tiêu đề: ..."
-      const subjectMatch = msg.match(/^(?:Tiêu đề|Subject):\s*(.+?)(?:\n|$)/i);
+      const subjectMatch = msg.match(/^(?:Tiêu đề|Subject):\\s*(.+?)(?:\\n|$)/i);
       if (subjectMatch) {
         setEmailSubject(subjectMatch[1].trim());
         setEmailContent(msg.replace(subjectMatch[0], '').trim());
       } else {
-        setEmailSubject(`Chương trình tri ân khách hàng ${customer.name}`);
+        setEmailSubject(\`Chương trình tri ân khách hàng \${customer.name}\`);
         setEmailContent(msg.trim());
       }
     } finally {
@@ -206,10 +153,10 @@ const CustomerDetailModal = ({
         <div className="flex border-b border-slate-200 bg-slate-50 shrink-0 overflow-x-auto">
           {[
             { id: 'overview', label: 'Tổng quan & Ví' },
-            { id: 'leasing', label: `Thuê thiết bị (${customerLeases.length})` },
-            { id: 'seller', label: customerSeller ? `Tín nhiệm Nhà bán (${customerSeller.tier})` : 'Tín nhiệm Nhà bán' },
-            { id: 'contracts', label: `Hợp đồng (${customerContracts.length})` },
-            { id: 'ledger', label: `Sổ cái Tài chính (${customerTransactions.length})` }
+            { id: 'leasing', label: \`Thuê thiết bị (\${customerLeases.length})\` },
+            { id: 'seller', label: customerSeller ? \`Tín nhiệm Nhà bán (\${customerSeller.tier})\` : 'Tín nhiệm Nhà bán' },
+            { id: 'contracts', label: \`Hợp đồng (\${customerContracts.length})\` },
+            { id: 'ledger', label: \`Sổ cái Tài chính (\${customerTransactions.length})\` }
           ].map(tab => (
             <button
               key={tab.id}
@@ -248,7 +195,7 @@ const CustomerDetailModal = ({
                 <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
               </div>
               <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="h-full bg-primary-600 transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
+                <div className="h-full bg-primary-600 transition-all duration-1000" style={{ width: \`\${progressPercent}%\` }}></div>
               </div>
               <p className="text-[10px] text-slate-500 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-slate-700">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
             </div>
@@ -269,7 +216,7 @@ const CustomerDetailModal = ({
                       <span className="font-black text-blue-900">{item.score}/5</span>
                     </div>
                     <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-slate-800 transition-all" style={{ width: `${(item.score / 5) * 100}%` }} />
+                      <div className="h-full bg-slate-800 transition-all" style={{ width: \`\${(item.score / 5) * 100}%\` }} />
                     </div>
                   </div>
                 ))}
@@ -606,7 +553,7 @@ const CustomerDetailModal = ({
                                     inst.status === 'paid' ? "bg-emerald-500" : 
                                     inst.status === 'overdue' ? "bg-red-500 animate-pulse" : "bg-slate-300"
                                   )}
-                                  title={`Kỳ ${inst.periodNum}: ${formatCurrency(inst.amount)} - ${inst.dueDate} (${inst.status})`}
+                                  title={\`Kỳ \${inst.periodNum}: \${formatCurrency(inst.amount)} - \${inst.dueDate} (\${inst.status})\`}
                                 />
                               ))}
                             </div>
@@ -660,7 +607,7 @@ const CustomerDetailModal = ({
                             <span>{Math.round((customerSeller.outstandingDebt / customerSeller.maxCreditLimit) * 100)}%</span>
                           </div>
                           <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-600" style={{ width: `${(customerSeller.outstandingDebt / customerSeller.maxCreditLimit) * 100}%` }}></div>
+                            <div className="h-full bg-indigo-600" style={{ width: \`\${(customerSeller.outstandingDebt / customerSeller.maxCreditLimit) * 100}%\` }}></div>
                           </div>
                           <div className="flex justify-between text-[10px] text-slate-500 pt-1">
                             <span>Đã dùng: {formatCurrency(customerSeller.outstandingDebt)}</span>
@@ -852,444 +799,25 @@ const CustomerDetailModal = ({
       </div>
     </div>
   );
-};const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
- const [aiMessage, setAiMessage] = useState<string | null>(null);
- const [loadingAi, setLoadingAi] = useState(false);
+};`;
 
- const handleGenerate = async () => {
- setLoadingAi(true);
- try {
- const msg = await generateCustomerCareMessage(customer);
- setAiMessage(msg);
- } finally {
- setLoadingAi(false);
- }
- };
+content = content.replace(customerDetailModalRegex, newCustomerDetailModal);
 
- return (
- <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
- <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-sm animate-in zoom-in-95 duration-200">
- <div className="flex justify-between items-start mb-6">
- <div>
- <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
- <p className="text-xs text-slate-600 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
- </div>
- <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
- <X className="w-6 h-6" />
- </button>
- </div>
-
- <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
- {loadingAi ? (
- <div className="flex flex-col items-center gap-3">
- <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
- <p className="text-xs font-bold text-primary-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
- </div>
- ) : aiMessage ? (
- <div className="w-full">
- <p className="text-sm text-slate-800 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
- </div>
- ) : (
- <div className="flex flex-col items-center gap-4">
- <Sparkles className="w-10 h-10 text-primary-300" />
- <button 
- onClick={handleGenerate}
- className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-primary-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
- >
- <Sparkles className="w-4 h-4" /> Soạn tin nhắn cá nhân hóa
- </button>
- </div>
- )}
- </div>
-
- {aiMessage && (
- <div className="flex gap-3">
- <button 
- onClick={() => {
- navigator.clipboard.writeText(aiMessage);
- alert('Đã copy tin nhắn!');
- }}
- className="flex-1 py-3 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
- >
- Sao chép nội dung
- </button>
- <button 
- className="flex-1 py-3 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100"
- onClick={() => {
- alert('Tin nhắn đã được chuyển sang module Omnichannel Chat!');
- onClose();
- }}
- >
- Dùng tin nhắn này
- </button>
- </div>
- )}
- </div>
- </div>
- );
-};
-
-const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
- const [activeTab, setActiveTab] = useState<'tier' | 'points' | 'tags' | 'sources'>('tier');
- return (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-xl w-full max-w-3xl shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div className="flex items-center gap-3">
- <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
- <Settings className="w-5 h-5" />
- </div>
- <div>
- <h2 className="text-xl font-bold text-slate-900">Cấu hình Khách hàng (CRM)</h2>
- <p className="text-xs text-slate-600">Quản lý hạng thẻ, phân nhóm và cấu hình thu thập dữ liệu</p>
- </div>
- </div>
- <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
- <X className="w-6 h-6" />
- </button>
- </div>
- 
- <div className="flex border-b border-slate-300">
- {[
- { id: 'tier', label: 'Hạng thành viên' },
- { id: 'points', label: 'Tích điểm' },
- { id: 'tags', label: 'Thẻ phân loại' },
- { id: 'sources', label: 'Nguồn khách hàng' }
- ].map((tab) => (
- <button
- key={tab.id}
- onClick={() => setActiveTab(tab.id as any)}
- className={cn(
- "px-6 py-4 text-sm font-bold border-b-2 transition-all",
- activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
- )}
- >
- {tab.label}
- </button>
- ))}
- </div>
-
- <div className="p-6 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
- {activeTab === 'tier' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center">
- <h3 className="font-bold text-slate-900">Danh sách Hạng thành viên</h3>
- <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
- + Thêm hạng thành viên
- </button>
- </div>
- <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-slate-500" /> Hạng Bạc (Mặc định)
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 0đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-yellow-500" /> Hạng Vàng
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 10,000,000đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-sky-400" /> Hạng Kim Cương
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 50,000,000đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- </div>
- </div>
- )}
-
- {activeTab === 'points' && (
- <div className="space-y-6">
- <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
- <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
- <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
- <div>
- <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
- <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
- <div className="flex items-center gap-2 mt-1">
- <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- <span className="text-sm font-bold text-slate-700">=</span>
- <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-slate-500" />
- <span className="text-xs text-slate-600">Điểm</span>
- </div>
- </div>
- </div>
- <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
- <div>
- <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
- <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
- <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- </div>
- </DraggableGrid>
- <div className="flex justify-end">
- <button onClick={onClose} className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800">Lưu cấu hình</button>
- </div>
- </div>
- )}
-
- {activeTab === 'tags' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <div>
- <h3 className="font-bold text-slate-900">Thẻ phân loại ưu tiên (VIP, Fraud...)</h3>
- <p className="text-xs text-slate-600 mt-1">Cấu hình các tag màu để làm nổi bật khách hàng trong hệ thống.</p>
- </div>
- <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
- + Thêm thẻ
- </button>
- </div>
- <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
- <div className="flex items-center gap-3">
- <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">#FRAUD / SPAM</span>
- <p className="text-xs text-slate-600">Khách hàng có lịch sử bom hàng, lừa đảo.</p>
- </div>
- <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
- <div className="flex items-center gap-3">
- <span className="px-3 py-1 bg-[#EAE7DF] text-orange-800 rounded-full text-xs font-bold border border-orange-200">#KOL / INFLUENCER</span>
- <p className="text-xs text-slate-600">Người có ảnh hưởng, cần chăm sóc đặc biệt.</p>
- </div>
- <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
- </div>
- </div>
- </div>
- )}
- 
- {activeTab === 'sources' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <div>
- <h3 className="font-bold text-slate-900">Cấu hình Nguồn Tracking</h3>
- <p className="text-xs text-slate-600 mt-1">Đồng bộ dữ liệu khách hàng từ các nền tảng tự động.</p>
- </div>
- <button className="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">
- + Kết nối Nguồn mới
- </button>
- </div>
- 
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
- <div className="p-4 rounded-lg border border-emerald-500 bg-emerald-50 relative overflow-hidden group">
- <h4 className="font-bold text-emerald-900">Landing Page Nệm Foam</h4>
- <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-emerald-600 bg-white px-2 py-1 rounded">240 Leads</span>
- <button className="text-emerald-700 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
- </div>
- </div>
- <div className="p-4 rounded-lg border border-slate-300 bg-white relative overflow-hidden group">
- <h4 className="font-bold text-slate-900">Chiến dịch Mùa Hè - Zalo Ads</h4>
- <p className="text-xs text-slate-600 mt-1">Tạm dừng (Mất kết nối API)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">0 Leads</span>
- <button className="text-orange-700 text-[10px] font-bold uppercase hover:underline">Kết nối lại</button>
- </div>
- </div>
- <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
- <h4 className="font-bold text-blue-900">Facebook Shop</h4>
- <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-orange-700 bg-white px-2 py-1 rounded">1,250 Leads</span>
- <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
- </div>
- </div>
- </DraggableGrid>
- </div>
- )}
- </div>
- </div>
- </div>
- );
-};
-
-const AddCustomerModal = ({ onClose }: { onClose: () => void }) => {
- const [formData, setFormData] = useState({
- name: '',
- phone: '',
- email: '',
- channels: ['web']
- });
- const [isSubmitting, setIsSubmitting] = useState(false);
-
- const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- setIsSubmitting(true);
- try {
- await addDoc(collection(db, 'customers'), {
- ...formData,
- status: 'active',
- totalSpent: 0,
- orderCount: 0,
- points: 0
- });
- onClose();
- } catch (error) {
- console.error(error);
- alert('Thêm khách hàng thất bại!');
- }
- setIsSubmitting(false);
- };
-
- return (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h2 className="text-xl font-bold text-slate-900">Thêm Khách hàng mới</h2>
- <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
- <X className="w-5 h-5" />
- </button>
- </div>
- <form onSubmit={handleSubmit} className="p-6 space-y-4">
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Họ và tên *</label>
- <input 
- required
- type="text" 
- value={formData.name}
- onChange={e => setFormData({...formData, name: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="Nguyễn Văn A"
- />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Số điện thoại *</label>
- <input 
- required
- type="text" 
- value={formData.phone}
- onChange={e => setFormData({...formData, phone: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="0901234567"
- />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Email</label>
- <input 
- type="email" 
- value={formData.email}
- onChange={e => setFormData({...formData, email: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="email@example.com"
- />
- </div>
- <div className="pt-4 flex justify-end gap-3">
- <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-800 font-bold text-sm rounded-lg hover:bg-slate-200">Hủy</button>
- <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2">
- {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
- Lưu Khách hàng
- </button>
- </div>
- </form>
- </div>
- </div>
- );
-};
-
-export function Customers() {
- const navigate = useNavigate();
- const [activeView, setActiveView] = useState<'list' | 'pipeline'>('list');
- const [activeChannel, setActiveChannel] = useState<'all' | 'zalo' | 'facebook' | 'web' | 'hotline'>('all');
- const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
- const [aiQuickModalCustomer, setAiQuickModalCustomer] = useState<Customer | null>(null);
- const [showConfigModal, setShowConfigModal] = useState(false);
- const [showAddModal, setShowAddModal] = useState(false);
- const [adjustingCustomer, setAdjustingCustomer] = useState<Customer | null>(null);
- const [adjustAmount, setAdjustAmount] = useState('');
- const [adjustType, setAdjustType] = useState<'wallet' | 'points'>('wallet');
- const [customers, setCustomers] = useState<Customer[]>([]);
- const [loading, setLoading] = useState(true);
- const [searchQuery, setSearchQuery] = useState('');
- const [orders, setOrders] = useState<any[]>([]);
-  const [syncingCustomerId, setSyncingCustomerId] = useState<string | null>(null);
+// 2. Add states at the beginning of export function Customers()
+const newStatesRegex = /const\s+\[selectedRfmFilter,\s*setSelectedRfmFilter\]\s*=\s*useState<[^>]+>\('all'\);/;
+const extraStates = `
   const [selectedRfmFilter, setSelectedRfmFilter] = useState<'all' | 'core' | 'old' | 'potential' | 'new'>('all');
   const [leases, setLeases] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [contracts, setContracts] = useState<any[]>([]);
   const [sellers, setSellers] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
+`;
+content = content.replace(newStatesRegex, extraStates);
 
- const [aiPipelineInsights, setAiPipelineInsights] = useState<string | null>(null);
- const [pipelineStages, setPipelineStages] = useState([
- { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-slate-800', 
- deals: [
- { id: 'd1', client: 'Công ty Cổ phần Sữa TH', val: 50000000, pd: 'Giày đồng phục 500 đôi' },
- { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS' }
- ] 
- },
- { id: 'qualified', name: 'Đã Thẩm Định', count: 0, color: 'bg-primary-500', 
- deals: [
- { id: 'd3', client: 'Kangaroo Việt Nam', val: 80000000, pd: 'Quà tặng Tết' }
- ] 
- },
- { id: 'proposal', name: 'Gửi Báo Giá', count: 0, color: 'bg-amber-500', 
- deals: [
- { id: 'd4', client: 'Viettel Telecom', val: 350000000, pd: 'Gói combo đồng phục' },
- { id: 'd5', client: 'FPT Software', val: 45000000, pd: 'Balo laptop' }
- ] 
- },
- { id: 'negotiation', name: 'Thương Lượng', count: 0, color: 'bg-orange-500', 
- deals: [
- { id: 'd6', client: 'Bệnh viện Tâm Anh', val: 210000000, pd: 'Khẩu trang Y tế sỉ' }
- ] 
- },
- { id: 'won', name: 'Chốt - Đoạt HĐ', count: 0, color: 'bg-emerald-500', 
- deals: [
- { id: 'd7', client: 'Techcombank', val: 560000000, pd: 'Đồng phục Giao dịch viên' }
- ] 
- }
- ]);
-
- const handleDragStartPipeline = (e: React.DragEvent, dealId: string, sourceStageId: string) => {
- e.dataTransfer.setData('dealId', dealId);
- e.dataTransfer.setData('sourceStageId', sourceStageId);
- };
-
- const handleDropPipeline = (e: React.DragEvent, targetStageId: string) => {
- const dealId = e.dataTransfer.getData('dealId');
- const sourceStageId = e.dataTransfer.getData('sourceStageId');
- if (sourceStageId === targetStageId) return;
-
- setPipelineStages(prev => {
- const newStages = [...prev];
- const sIdx = newStages.findIndex(s => s.id === sourceStageId);
- const tIdx = newStages.findIndex(s => s.id === targetStageId);
- 
- const dealIdx = newStages[sIdx].deals.findIndex(d => d.id === dealId);
- const [dealToMove] = newStages[sIdx].deals.splice(dealIdx, 1);
- newStages[tIdx].deals.push(dealToMove);
- return newStages;
- });
- };
-
- useEffect(() => {
+// 3. Update useEffect to fetch leases, transactions, contracts, credit scores, and payouts
+const useEffectRegex = /useEffect\(\(\)\s*=>\s*\{[\s\S]*?unsubCustomers\(\);\s*unsubOrders\(\);\s*unsubDeals\(\);\s*\}\s*;\s*\}\s*,\s*\[\]\)/;
+const newUseEffect = `useEffect(() => {
     // Fetch customers
     const unsubCustomers = onSnapshot(collection(db, 'customers'), (snap) => {
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
@@ -1301,6 +829,54 @@ export function Customers() {
     const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
       const ordersData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
       setOrders(ordersData.filter(o => o.status === 'completed' && o.customerId));
+    });
+
+    const defaultDeals = [
+      { id: 'd1', client: 'Công ty Cổ phần Sữa TH', val: 50000000, pd: 'Giày đồng phục 500 đôi', stage: 'new' },
+      { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS', stage: 'new' },
+      { id: 'd3', client: 'Kangaroo Việt Nam', val: 80000000, pd: 'Quà tặng Tết', stage: 'qualified' },
+      { id: 'd4', client: 'Viettel Telecom', val: 350000000, pd: 'Gói combo đồng phục', stage: 'proposal' },
+      { id: 'd5', client: 'FPT Software', val: 45000000, pd: 'Balo laptop', stage: 'proposal' },
+      { id: 'd6', client: 'Bệnh viện Tâm Anh', val: 210000000, pd: 'Khẩu trang Y tế sỉ', stage: 'negotiation' },
+      { id: 'd7', client: 'Techcombank', val: 560000000, pd: 'Đồng phục Giao dịch viên', stage: 'won' }
+    ];
+
+    // Fetch deals
+    const unsubDeals = onSnapshot(collection(db, 'crm_deals'), (snap) => {
+      if (snap.empty) {
+        const local = localStorage.getItem('vcomm_crm_deals');
+        if (local) {
+          setDeals(JSON.parse(local));
+        } else {
+          defaultDeals.forEach(async (d) => {
+            try {
+              await addDoc(collection(db, 'crm_deals'), {
+                client: d.client,
+                val: d.val,
+                pd: d.pd,
+                stage: d.stage
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          });
+          setDeals(defaultDeals);
+          localStorage.setItem('vcomm_crm_deals', JSON.stringify(defaultDeals));
+        }
+      } else {
+        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+        setDeals(data);
+        localStorage.setItem('vcomm_crm_deals', JSON.stringify(data));
+      }
+    }, (err) => {
+      console.warn('Firestore offline or failed, using localStorage', err);
+      const local = localStorage.getItem('vcomm_crm_deals');
+      if (local) {
+        setDeals(JSON.parse(local));
+      } else {
+        setDeals(defaultDeals);
+        localStorage.setItem('vcomm_crm_deals', JSON.stringify(defaultDeals));
+      }
     });
 
     // Fetch leases
@@ -1323,12 +899,11 @@ export function Customers() {
     const DEFAULT_CONTRACTS = [
       { id: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'labor', subtype: 'Chính thức', status: 'active', party: 'Nguyễn Văn A', expiry: '01/01/2025', value: '-', signatureStatus: 'signed', signers: [{role: 'Người sử dụng lao động', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Nguyễn Văn A', status: 'signed'}], file: { name: 'HDLD_NguyenVanA.docx', type: 'docx' }, comments: [ { id: 1, author: 'Nhân sự', time: '10:00 01/02', content: 'Đã cập nhật phụ lục đính kèm.' } ] },
       { id: 'HDTV-002', title: 'Hợp đồng thử việc - Trần Thái B', type: 'labor', subtype: 'Thử việc', status: 'expiring_soon', signatureStatus: 'signed', party: 'Trần Thái B', expiry: '10/05/2024', value: '-', signers: [{role: 'Người sử dụng ND', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Trần Thái B', status: 'signed'}], file: { name: 'HDTV_TranThaiB_v2.pdf', type: 'pdf' }, comments: [] },
-      { id: 'HDMB-HM-01', title: 'Hợp đồng Mua bán Sỉ Thời trang - H&M Vietnam', type: 'sales', subtype: 'Mua bán', status: 'active', signatureStatus: 'signed', party: 'Thời Trang H&M Vietnam', expiry: '15/05/2027', value: '450,000,000 ₫', signers: [{role: 'Bên mua', name: 'Thời Trang H&M Vietnam', status: 'signed'}, {role: 'Bên bán', name: 'VComm ERP', status: 'signed'}], file: { name: 'HDMB_HM_Vietnam_signed.pdf', type: 'pdf' }, comments: [] },
-      { id: 'HDDV-LL-01', title: 'Hợp đồng Dịch vụ Hợp tác Phân phối - LockLock', type: 'service', subtype: 'Dịch vụ', status: 'pending', signatureStatus: 'pending', party: 'Gia Dụng LockLock', expiry: '20/05/2027', value: '180,000,000 ₫', signers: [{role: 'Bên mua', name: 'VComm ERP', status: 'signed'}, {role: 'Bên bán', name: 'Gia Dụng LockLock', status: 'pending'}], file: { name: 'HDDV_LockLock_Draft.docx', type: 'docx' }, comments: [{ id: 1, author: 'Pháp chế', time: '11:00 20/05', content: 'Cần xác thực chữ ký số SmartCA của đại diện LockLock.' }] },
-      { id: 'HDMB-CC-01', title: 'Hợp đồng Đại lý Phân phối Mỹ phẩm - Coco Lux', type: 'sales', subtype: 'Mua bán', status: 'active', signatureStatus: 'signed', party: 'Mỹ Phẩm Coco Lux', expiry: '01/06/2028', value: '850,000,000 ₫', signers: [{role: 'Bên mua', name: 'Mỹ Phẩm Coco Lux', status: 'signed'}, {role: 'Bên bán', name: 'VComm ERP', status: 'signed'}], file: { name: 'HDMB_CocoLux_Final.pdf', type: 'pdf' }, comments: [] }
+      { id: 'HDMB-001', title: 'Hợp đồng mua bán thiết bị VP', type: 'sales', subtype: 'Mua bán', status: 'pending', signatureStatus: 'pending', party: 'Công ty ABC', expiry: '31/12/2024', value: '50,000,000 ₫', signers: [{role: 'Bên mua', name: 'Giám đốc', status: 'pending'}, {role: 'Bên bán', name: 'Đại diện bên bán', status: 'pending'}], file: { name: 'HDMB_ThietBi_VP.xlsx', type: 'xlsx' }, comments: [ { id: 2, author: 'Kế toán', time: '09:15 10/05', content: 'Nhờ xem lại điều khoản thanh toán mục 3.2.' } ] },
+      { id: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'service', subtype: 'Dịch vụ', status: 'expired', signatureStatus: 'signed', party: 'AI Partner LLC', expiry: '01/02/2024', value: '120,000,000 ₫', signers: [{role: 'Bên thuê', name: 'Giám đốc', status: 'signed'}, {role: 'Bên tư vấn', name: 'AI Partner LLC', status: 'signed'}], file: { name: 'HDDV_AI_Partner.pptx', type: 'pptx' }, comments: [] }
     ];
     const localContracts = localStorage.getItem('vcomm_contracts');
-    if (localContracts && localContracts.includes('HDMB-HM-01')) {
+    if (localContracts) {
       setContracts(JSON.parse(localContracts));
     } else {
       setContracts(DEFAULT_CONTRACTS);
@@ -1369,578 +944,27 @@ export function Customers() {
     return () => {
       unsubCustomers();
       unsubOrders();
+      unsubDeals();
       unsubLeases();
       unsubTransactions();
     };
-  }, []);
+  }, [])`;
 
- const handleToggleLock = async (id: string, currentStatus: string, e: React.MouseEvent) => {
- e.stopPropagation();
- try {
- await updateDoc(doc(db, 'customers', id), {
- status: currentStatus === 'locked' ? 'active' : 'locked'
- });
- } catch(err) {
- console.error('Error toggling lock state', err);
- }
- };
+content = content.replace(useEffectRegex, newUseEffect);
 
- const submitAdjust = async (e: React.FormEvent) => {
- e.preventDefault();
- if (!adjustingCustomer || !adjustAmount) return;
- 
- try {
- const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
- const currentVal = (adjustingCustomer as any)[field] || 0;
- await updateDoc(doc(db, 'customers', adjustingCustomer.id), {
- [field]: currentVal + Number(adjustAmount)
- });
- setAdjustingCustomer(null);
- setAdjustAmount('');
- } catch(err) {
- console.error('Error adjusting balance', err);
- }
- };
+// 4. Update the CustomerDetailModal instantiation inside Customers component return
+const detailModalRenderRegex = /customer=\{dynamicCustomers\.find\(c\s*=>\s*c\.id\s*===\s*selectedCustomer\.id\)\s*\|\|\s*selectedCustomer\}\s*onClose=\{\(\)\s*=>\s*setSelectedCustomer\(null\)\}\s*\/>/;
 
- // Compute dynamic fields
- const dynamicCustomers = customers.map(c => {
- const customerOrders = orders.filter(o => o.customerId === c.id);
- const totalSpent = customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
- const orderCount = customerOrders.length;
- 
- // Simulate active status based on recent purchase or base status
- // If they have any orders in the system they are active
- const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive';
-
- return { ...c, totalSpent, orderCount, status } as Customer;
- });
-
- const filteredCustomers = dynamicCustomers.filter(c => {
- const matchesChannel = activeChannel === 'all' || (c.channels && c.channels.includes(activeChannel as any));
- const matchesSearch = c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
- c.phone?.includes(searchQuery) || 
- c.email?.toLowerCase().includes(searchQuery.toLowerCase());
- return matchesChannel && matchesSearch;
- });
-
- return (
- <div className="max-w-[1440px] mx-auto space-y-6 animate-in fade-in slide-in- duration-500 overflow-hidden pb-10">
- {selectedCustomer && (
- <CustomerDetailModal 
- customer={dynamicCustomers.find(c => c.id === selectedCustomer.id) || selectedCustomer}
+const newDetailModalRender = `customer={dynamicCustomers.find(c => c.id === selectedCustomer.id) || selectedCustomer}
   onClose={() => setSelectedCustomer(null)}
   leases={leases}
   transactions={transactions}
   contracts={contracts}
   sellers={sellers}
   payouts={payouts}
-  />
- )}
- {aiQuickModalCustomer && (
- <AiMessageQuickModal 
- customer={aiQuickModalCustomer} 
- onClose={() => setAiQuickModalCustomer(null)} 
- />
- )}
- {showConfigModal && (
- <CustomerConfigModal onClose={() => setShowConfigModal(false)} />
- )}
- {showAddModal && (
- <AddCustomerModal onClose={() => setShowAddModal(false)} />
- )}
- <div className="flex items-center justify-between">
- <div className="header-title">
- <div className="flex items-center gap-2 mb-1">
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Khách hàng & CRM</h1>
- </div>
- <p className="text-sm text-[#6B7280]">Hệ thống chăm sóc khách hàng đa kênh, quản lý Loyalty & Pipeline.</p>
- </div>
- <div className="flex gap-3 items-center">
- <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-300 mr-2">
- <button 
- onClick={() => setActiveView('list')}
- className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'list' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- <List className="w-4 h-4" /> Danh sách
- </button>
- <button 
- onClick={() => setActiveView('pipeline')}
- className={cn("px-3 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-2", activeView === 'pipeline' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- <Kanban className="w-4 h-4" /> Pipeline
- </button>
- </div>
- <button 
- onClick={() => setShowAddModal(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
- >
- <Users className="w-4 h-4" /> Thêm Khách hàng
- </button>
- <button 
- onClick={() => navigate('/omnichat')}
- className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2"
- >
- <MessageSquare className="w-4 h-4 text-emerald-500" /> Omni Chat
- </button>
- </div>
- </div>
+  />`;
 
- {activeView === 'list' ? (
- <>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.length}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{dynamicCustomers.filter(c => c.status === 'active').length}</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(dynamicCustomers.length ? dynamicCustomers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / dynamicCustomers.length : 0)}</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-amber-600">{dynamicCustomers.filter(c => (c.totalSpent || 0) > 10000000).length}</span>
- <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
- </div>
- </div>
- </DraggableGrid>
+content = content.replace(detailModalRenderRegex, newDetailModalRender);
 
- {/* CRM Intelligence & RFM Segmentation */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute top-0 right-0 p-4">
- <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
- </div>
- <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
- <Users className="w-5 h-5 text-primary-600" /> Phân đoạn Khách hàng (RFM Segmentation)
- </h3>
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
- {[
- { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
- { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
- { name: 'Tiềm năng', val: 28, color: 'bg-slate-800', desc: 'Sẵn sàng Upsell' },
- { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
- ].map((seg, i) => (
- <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
- <div className="flex justify-between items-start mb-2">
- <div className={cn("w-2 h-2 rounded-full", seg.color)} />
- <span className="text-xl font-black text-slate-900">{seg.val}%</span>
- </div>
- <p className="text-xs font-bold text-slate-900 mb-1">{seg.name}</p>
- <p className="text-[10px] text-slate-500 leading-tight">{seg.desc}</p>
- </div>
- ))}
- </div>
- 
- <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-xl flex items-center justify-between">
- <div className="flex items-center gap-4">
- <div className="p-3 bg-white text-primary-600 rounded-lg shadow-sm">
- <Mail className="w-5 h-5" />
- </div>
- <div>
- <h4 className="text-xs font-bold text-primary-900">Chiến dịch tự động (Marketing Automation)</h4>
- <p className="text-[10px] text-primary-700/70">Đang có 12 khách hàng thuộc nhóm "Tiềm năng" có thể gửi Voucher.</p>
- </div>
- </div>
- <button className="px-5 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-primary-700 transition-all shadow-sm">Kích hoạt Campaign</button>
- </div>
- </div>
-
- <div className="bg-slate-900 p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
- <div className="relative z-10">
- <div className="flex items-center gap-3 mb-6">
- <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
- <Trophy className="w-6 h-6 text-amber-400" />
- </div>
- <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
- </div>
- <div className="space-y-6">
- <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
- <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
- <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
- </div>
- <div className="flex gap-4">
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
- <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Số dư Ví khách</p>
- <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
- </div>
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
- <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Hạng Kim Cương</p>
- <p className="text-lg font-bold text-sky-400">08 KH</p>
- </div>
- </div>
- </div>
- </div>
- <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
- <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
- </button>
- <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
- </div>
- </DraggableGrid>
-
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
- <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
- <div className="flex gap-4">
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input 
- type="text" 
- placeholder="Tìm tên, SĐT, Email..." 
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
- />
- </div>
- <div className="flex gap-1 bg-white border border-slate-300 p-1 rounded-lg">
- <button 
- onClick={() => setActiveChannel('all')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'all' ? "bg-slate-100 text-[#111827]" : "text-[#9CA3AF]")}
- >
- <Globe className="w-4 h-4" />
- </button>
- <button 
- onClick={() => setActiveChannel('zalo')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'zalo' ? "bg-slate-100 text-orange-700" : "text-[#9CA3AF]")}
- >
- <MessageSquare className="w-4 h-4" />
- </button>
- <button 
- onClick={() => setActiveChannel('facebook')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'facebook' ? "bg-slate-900 text-[#FAF9F5]" : "text-[#9CA3AF]")}
- >
- <Facebook className="w-4 h-4" />
- </button>
- <button 
- onClick={() => setActiveChannel('hotline')}
- className={cn("p-1.5 rounded-md transition-all", activeChannel === 'hotline' ? "bg-emerald-50 text-emerald-600" : "text-[#9CA3AF]")}
- >
- <PhoneCall className="w-4 h-4" />
- </button>
- </div>
- </div>
- <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
- Xuất tệp CRM <ExternalLink className="w-3 h-3" />
- </button>
- </div>
-
- <div className="overflow-x-auto bg-white border-t border-slate-200 min-w-0">
-<table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Liên hệ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Kênh</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
-	<th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-50">
- {loading ? (
- <tr>
- <td colSpan={7} className="px-6 py-6 text-center bg-white">
- <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-1" />
- <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
- </td>
- </tr>
- ) : filteredCustomers.map((customer) => (
- <tr key={customer.id} className="hover:bg-primary-50/30 group transition-all duration-200">
- <td className="px-4 py-4">
- <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px] shrink-0 border border-primary-100  transition-transform">
- {customer.name?.split(' ').pop()?.charAt(0) || 'U'}
- </div>
- <div className="min-w-0">
- <p onClick={() => setSelectedCustomer(customer)} className="text-sm font-bold text-slate-900 truncate cursor-pointer hover:text-primary-600 transition-colors uppercase tracking-tight">{customer.name}</p>
- <p className="text-[9px] text-slate-500 font-mono tracking-tighter">ID: {customer.id.slice(-8).toUpperCase()}</p>
- </div>
- </div>
- </td>
- <td className="px-4 py-4">
- <div className="space-y-1">
- <div className="flex items-center justify-between group/copy text-[11px]">
- <span className="text-slate-700 font-bold tracking-tight">{customer.phone}</span>
- <CopyButton value={customer.phone} />
- </div>
- <div className="flex items-center justify-between group/copy text-[10px]">
- <span className="text-slate-500 truncate max-w-[120px] italic">{customer.email}</span>
- <CopyButton value={customer.email} />
- </div>
- </div>
- </td>
- <td className="px-4 py-4 text-center">
- <div className="flex justify-center flex-wrap gap-1">
- {customer.channels && customer.channels.slice(0, 3).map(channel => (
- <span key={channel} className="p-1 rounded bg-white border border-slate-200 shadow-sm" title={channel.toUpperCase()}>
- {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-orange-600" />}
- {channel === 'facebook' && <Facebook className="w-3 h-3 text-orange-800" />}
- {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
- {channel === 'web' && <Globe className="w-3 h-3 text-slate-500" />}
- </span>
- ))}
- {customer.channels && customer.channels.length > 3 && (
- <span className="text-[8px] font-bold text-slate-500 self-center">+{customer.channels.length - 3}</span>
- )}
- </div>
- </td>
- <td className="px-4 py-4 text-right">
- <p className="text-sm font-black text-slate-900">{formatCurrency(customer.totalSpent || 0)}</p>
- <p className="text-[9px] text-slate-500">Đơn hàng: <span className="font-bold text-slate-700">{customer.orderCount || 0}</span></p>
- </td>
- <td className="px-4 py-4 text-right">
- <p className="text-sm font-bold text-emerald-600">{formatCurrency(customer.walletBalance || 0)}</p>
- <p className="text-[9px] font-bold text-amber-600 flex items-center justify-end gap-1"><Trophy className="w-2.5 h-2.5" /> {customer.points || 0} pts</p>
- </td>
- <td className="px-4 py-4 text-center">
- <div className="flex justify-center">
- <span className={cn(
- "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
- customer.status === 'active' ? "bg-emerald-500 text-[#FAF9F5]" : customer.status === 'locked' ? "bg-red-500 text-[#FAF9F5]" : "bg-slate-100 text-slate-700"
- )}>
- {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
- </span>
- </div>
- </td>
-              <td className="px-4 py-4 text-center">
-                <div className="flex flex-col items-center justify-center gap-1">
-                  {customer.misaSynced ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                      Đã ghi sổ 🟢
-                    </span>
-                  ) : customer.misaSyncError ? (
-                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold flex items-center gap-1 shadow-sm" title={customer.misaSyncError}>
-                      Lỗi kiểm tra 🔴
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                      Chờ ghi sổ 🟡
-                    </span>
-                  )}
-                  <button
-                    disabled={syncingCustomerId === customer.id}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!customer.id) return;
-                      setSyncingCustomerId(customer.id);
-                      try {
-                        await syncCustomerToMisa(customer.id);
-                        alert("Ghi sổ khách hàng thành công!");
-                      } catch (err) {
-                        alert("Đồng bộ thất bại: " + err.message);
-                      } finally {
-                        setSyncingCustomerId(null);
-                      }
-                    }}
-                    className="px-2 py-1 bg-slate-900 text-white rounded text-[10px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-1"
-                  >
-                    {syncingCustomerId === customer.id && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
-                    Đồng bộ
-                  </button>
-                </div>
-              </td>
- <td className="px-4 py-4 text-right">
- <div className="flex justify-end gap-2">
- <button 
- onClick={(e) => { e.stopPropagation(); setAdjustingCustomer(customer); }}
- className="p-1.5 bg-green-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-[#FAF9F5] transition-all shadow-sm"
- title="Cộng/Trừ Điểm & Tiền"
- >
- <Wallet className="w-3.5 h-3.5" />
- </button>
- <button 
- onClick={(e) => handleToggleLock(customer.id!, customer.status, e)}
- className={cn("p-1.5 rounded-lg transition-all shadow-sm", customer.status === 'locked' ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-[#FAF9F5]" : "bg-red-50 text-red-600 hover:bg-red-600 hover:text-[#FAF9F5]")}
- title={customer.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
- >
- {customer.status === 'locked' ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
- </button>
- <button 
- onClick={() => setAiQuickModalCustomer(customer)}
- className="p-1.5 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm"
- title="Soạn tin AI nhanh"
- >
- <Sparkles className="w-3.5 h-3.5" />
- </button>
- <button 
- onClick={() => setSelectedCustomer(customer)}
- className="p-1.5 bg-slate-50 text-slate-500 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm"
- >
- <ExternalLink className="w-3.5 h-3.5" />
- </button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- </>
- ) : (
- <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
- <div className="p-4 border-b border-slate-300 bg-white flex justify-between items-center z-10 relative w-full">
- <div className="flex items-center gap-3">
- <h2 className="font-bold text-slate-900">Sales Pipeline B2B (Mẫu)</h2>
- <button 
- onClick={() => {
- const totalDeals = pipelineStages.reduce((sum, stage) => sum + stage.deals.length, 0);
- const wonDeals = pipelineStages.find(s => s.id === 'won')?.deals.length || 0;
- const valWon = pipelineStages.find(s => s.id === 'won')?.deals.reduce((acc, d) => acc + d.val, 0) || 0;
- 
- let insights = `• Tổng số Deal đang xử lý: ${totalDeals}.\n`;
- insights += `• Tỷ lệ chuyển đổi (Đoạt HĐ): ${Math.round((wonDeals / (totalDeals || 1)) * 100)}% (${wonDeals} deals).\n`;
- insights += `• Giá trị HĐ đã chốt: ${formatCurrency(valWon)}.\n`;
- if ((pipelineStages.find(s => s.id === 'proposal')?.deals.length || 0) > 1) {
- insights += `• Gợi ý: Có khá nhiều Deal ở bước "Gửi Báo Giá", hãy theo dõi sát sao để tăng khả năng chốt sale.`;
- }
- if ((pipelineStages.find(s => s.id === 'negotiation')?.deals.length || 0) > 0) {
- insights += `\n• Sales đang trong giai đoạn "Thương Lượng", tập trung resources hỗ trợ chốt nhanh.`;
- }
- setAiPipelineInsights(insights);
- }}
- className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold flex items-center gap-1.5 hover:bg-purple-100 transition-colors shadow-sm cursor-pointer"
- >
- <Sparkles className="w-3.5 h-3.5" /> Phân tích Pipeline (AI)
- </button>
- </div>
- <button className="text-xs px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 shadow-sm">+ Thêm Deal mới</button>
- </div>
- {aiPipelineInsights && (
- <div className="m-4 mb-0 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-start gap-3 relative animate-in slide-in-">
- <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
- <div>
- <h4 className="font-bold text-purple-900 text-sm mb-1">AI Phân tích Pipeline</h4>
- <div className="text-sm text-purple-800 whitespace-pre-line leading-relaxed">{aiPipelineInsights}</div>
- </div>
- <button onClick={() => setAiPipelineInsights(null)} className="ml-auto text-purple-400 hover:text-purple-600">
- <X className="w-4 h-4" />
- </button>
- </div>
- )}
- <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal min-w-0">
- <div className="flex gap-6 h-full items-start">
- {pipelineStages.map(stage => (
- <div 
- key={stage.id} 
- className="w-80 shrink-0 bg-slate-100 rounded-xl flex flex-col max-h-full border border-slate-300 shadow-sm"
- onDragOver={(e) => e.preventDefault()}
- onDrop={(e) => handleDropPipeline(e, stage.id)}
- >
- <div className="p-3 border-b border-slate-300 flex justify-between items-center bg-white rounded-t-xl shrink-0">
- <div className="flex items-center gap-2">
- <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
- <span className="font-bold text-sm text-slate-900">{stage.name}</span>
- </div>
- <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{stage.deals.length}</span>
- </div>
- <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
- {stage.deals.map((deal) => (
- <div 
- key={deal.id} 
- draggable
- onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
- className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-300 cursor-grab hover:shadow-sm transition-all group"
- >
- <h4 className="font-bold text-sm text-slate-900 group-hover:text-orange-700 transition-colors">{deal.client}</h4>
- <p className="text-xs text-slate-600 mt-1 line-clamp-2">{deal.pd}</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>
- <div className="flex -space-x-1.5">
- <div className="w-5 h-5 rounded-full bg-[#EAE7DF] text-[8px] font-bold text-orange-800 flex items-center justify-center border border-white">S1</div>
- </div>
- </div>
- </div>
- ))}
- <button className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 rounded-lg transition-colors border border-dashed border-slate-400">
- + Thêm Deal
- </button>
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- )}
-
- {adjustingCustomer && (
- <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg w-full max-w-md overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div>
- <h2 className="text-lg font-bold text-slate-900">Điều chỉnh Điểm / Ví</h2>
- <p className="text-xs text-slate-600">Khách hàng: {adjustingCustomer.name}</p>
- </div>
- <button onClick={() => setAdjustingCustomer(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
- </div>
- <form onSubmit={submitAdjust} className="p-6 space-y-6">
- <div>
- <label className="text-xs font-bold text-slate-800 uppercase mb-2 block">Loại điều chỉnh</label>
- <select 
- value={adjustType}
- onChange={(e) => setAdjustType(e.target.value as any)}
- className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
- >
- <option value="wallet">Ví Điện Tử (VNĐ)</option>
- <option value="points">Điểm Thưởng (Points)</option>
- </select>
- </div>
- <div>
- <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>
- </div>
- <div className="text-xl font-bold text-slate-900">
- {adjustType === 'wallet' ? formatCurrency(adjustingCustomer.walletBalance || 0) : (adjustingCustomer.points || 0) + ' pts'}
- </div>
- </div>
- <div>
- <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số tiền/điểm cộng hoặc trừ</label>
- </div>
- <input 
- type="number" 
- required
- value={adjustAmount}
- onChange={(e) => setAdjustAmount(e.target.value)}
- placeholder="VD: 500000 (cộng) hoặc -1000 (trừ)"
- className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono" 
- />
- <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
- </div>
- <div className="flex gap-4 pt-4 border-t border-slate-200">
- <button 
- type="button"
- onClick={() => setAdjustingCustomer(null)}
- className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
- >
- Hủy
- </button>
- <button 
- type="submit"
- className="flex-1 py-2.5 bg-emerald-600 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-sm"
- >
- Xác nhận
- </button>
- </div>
- </form>
- </div>
- </div>
- )}
-
- </div>
- );
-}
+fs.writeFileSync(targetFile, content, 'utf8');
+console.log('Successfully applied CRM multi-service integrations to Customers.tsx');

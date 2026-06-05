@@ -94,6 +94,8 @@ export function InternalChat() {
   const [inputValue, setInputValue] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [messageSearchQuery, setMessageSearchQuery] = useState('');
+  const [previewAttachment, setPreviewAttachment] = useState<{ name: string; type: 'file' | 'image'; size: string } | null>(null);
   
   // Group creation modal state
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
@@ -295,6 +297,9 @@ export function InternalChat() {
   const filteredChannels = channels.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const currentMessages = messages[activeChannelId] || [];
+  const filteredMessages = currentMessages.filter(msg =>
+    msg.text.toLowerCase().includes(messageSearchQuery.toLowerCase())
+  );
 
   return (
     <div className="bg-white rounded-2xl border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden flex animate-in fade-in duration-500 font-sans text-xs">
@@ -449,17 +454,39 @@ export function InternalChat() {
                   </p>
                 </div>
               </div>
+
+              {/* Message Search box */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={messageSearchQuery}
+                  onChange={e => setMessageSearchQuery(e.target.value)}
+                  placeholder="Tìm tin nhắn..."
+                  className="bg-slate-50 border border-slate-350 rounded-lg pl-8 pr-7 py-1.5 text-[10px] focus:outline-none focus:ring-1 focus:ring-blue-500 w-36 sm:w-48 transition-all"
+                />
+                {messageSearchQuery && (
+                  <button 
+                    onClick={() => setMessageSearchQuery('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 hover:bg-slate-200 rounded-full border-0 bg-transparent cursor-pointer"
+                  >
+                    <X className="w-3 h-3 text-slate-400" />
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Messages Feed */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
-              {currentMessages.length === 0 ? (
+              {filteredMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-slate-450 font-medium select-none space-y-1">
-                  <span>💬 Bắt đầu cuộc trò chuyện</span>
-                  <span className="text-[9.5px] text-slate-400">Gửi tin nhắn hoặc đính kèm tài liệu trao đổi công tác.</span>
+                  <span>💬 {messageSearchQuery ? "Không tìm thấy kết quả" : "Bắt đầu cuộc trò chuyện"}</span>
+                  <span className="text-[9.5px] text-slate-400">
+                    {messageSearchQuery ? "Thử nhập từ khóa tìm kiếm khác." : "Gửi tin nhắn hoặc đính kèm tài liệu trao đổi công tác."}
+                  </span>
                 </div>
               ) : (
-                currentMessages.map((msg, idx) => (
+                filteredMessages.map((msg, idx) => (
                   <div 
                     key={msg.id} 
                     className={cn(
@@ -494,13 +521,16 @@ export function InternalChat() {
                       >
                         {/* Render attachment card if exists */}
                         {msg.attachment && (
-                          <div className={cn(
-                            "p-2.5 rounded-xl border mb-2.5 flex items-center justify-between gap-3 text-left",
-                            msg.isSelf ? "bg-blue-700/50 border-blue-500 text-white" : "bg-slate-50 border-slate-200"
-                          )}>
+                          <div 
+                            onClick={() => setPreviewAttachment(msg.attachment!)}
+                            className={cn(
+                              "p-2.5 rounded-xl border mb-2.5 flex items-center justify-between gap-3 text-left cursor-pointer hover:opacity-90 transition duration-150",
+                              msg.isSelf ? "bg-blue-700/50 border-blue-500 text-white" : "bg-slate-50 border-slate-200"
+                            )}
+                          >
                             <div className="min-w-0 flex items-center gap-2">
                               {msg.attachment.type === 'image' ? (
-                                <ImageIcon className="w-5 h-5 text-indigo-500 shrink-0" />
+                                <ImageIcon className="w-5 h-5 text-indigo-550 shrink-0" />
                               ) : (
                                 <FileText className="w-5 h-5 text-blue-500 shrink-0" />
                               )}
@@ -525,7 +555,7 @@ export function InternalChat() {
                       {/* Msg footer: time & reactions */}
                       <div className="flex flex-wrap items-center gap-2 px-1">
                         <span className="text-[8.5px] text-slate-400 font-semibold">{msg.timestamp}</span>
-                        {msg.isSelf && <CheckCheck className="w-3 h-3 text-blue-600 shrink-0" />}
+                        {msg.isSelf && <CheckCheck className="w-3 h-3 text-emerald-500 shrink-0" />}
                         
                         {/* Reaction badges */}
                         {msg.reactions && msg.reactions.length > 0 && (
@@ -711,6 +741,79 @@ export function InternalChat() {
                 className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
               >
                 Lưu & Tạo nhóm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 5. ATTACHMENT PREVIEW MODAL ── */}
+      {previewAttachment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Xem trước tài liệu đính kèm</h3>
+              </div>
+              <button 
+                onClick={() => setPreviewAttachment(null)}
+                className="p-1.5 hover:bg-slate-200 rounded-full cursor-pointer border-0 bg-transparent text-slate-550"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 flex-1 overflow-y-auto space-y-4 text-center">
+              <div className="mx-auto w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 text-slate-405">
+                {previewAttachment.type === 'image' ? (
+                  <ImageIcon className="w-8 h-8 text-indigo-500" />
+                ) : (
+                  <FileText className="w-8 h-8 text-blue-500" />
+                )}
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">{previewAttachment.name}</h4>
+                <p className="text-[10px] text-slate-500 mt-1">Dung lượng: {previewAttachment.size} • Định dạng: {previewAttachment.type.toUpperCase()}</p>
+              </div>
+
+              {previewAttachment.type === 'image' ? (
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center min-h-[160px] border-dashed">
+                  <div className="text-center space-y-2">
+                    <ImageIcon className="w-10 h-10 text-slate-300 mx-auto animate-pulse" />
+                    <p className="text-[10px] text-slate-400 font-medium">Bản xem trước hình ảnh độ phân giải cao (Mocked Image Canvas)</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-left font-mono text-[10px] text-slate-650 space-y-2 leading-relaxed bg-slate-900/5 select-text shadow-inner">
+                  <p className="font-bold border-b border-slate-200 pb-1.5 text-[9px] uppercase tracking-wider text-slate-400">Nội dung văn bản trích xuất (AI Document OCR Preview):</p>
+                  <p>1. CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                  <p>2. Đơn vị đề xuất: Bộ phận Vận hành sàn VComm ERP</p>
+                  <p>3. Người thực hiện: Lê Hoàng Minh</p>
+                  <p>4. Nội dung báo cáo/chi phí: Chi tiết đối soát công nợ tuần 22 và đề xuất duyệt tài chính nhà bán tương đương.</p>
+                  <p>5. ... [Nhấp tải xuống để đọc toàn văn tài liệu gốc] ...</p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 shrink-0">
+              <button 
+                onClick={() => setPreviewAttachment(null)}
+                className="px-4 py-1.5 border border-slate-305 text-slate-700 bg-white text-xs font-bold rounded-lg hover:bg-slate-100 cursor-pointer border-0"
+              >
+                Đóng
+              </button>
+              <button 
+                onClick={() => {
+                  alert(`Đang tải xuống tệp: ${previewAttachment.name}`);
+                  setPreviewAttachment(null);
+                }}
+                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
+              >
+                Tải xuống tệp
               </button>
             </div>
           </div>

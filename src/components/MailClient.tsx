@@ -18,7 +18,12 @@ import {
   Folder,
   AlertCircle,
   Paperclip,
-  CheckCircle2
+  CheckCircle2,
+  Settings,
+  Bold,
+  Italic,
+  Underline,
+  Palette
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNotifications } from '../context/NotificationContext';
@@ -125,6 +130,15 @@ export function MailClient() {
   });
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [showOauthPopup, setShowOauthPopup] = useState<boolean>(false);
+
+  // Live/Mock config states
+  const [apiMode, setApiMode] = useState<'mock' | 'live'>(() => {
+    return localStorage.getItem('vcomm_mail_api_mode') as any || 'mock';
+  });
+  const [clientId, setClientId] = useState(() => localStorage.getItem('vcomm_mail_client_id') || '');
+  const [clientSecret, setClientSecret] = useState(() => localStorage.getItem('vcomm_mail_client_secret') || '');
+  const [tenantId, setTenantId] = useState(() => localStorage.getItem('vcomm_mail_tenant_id') || '');
+  const [scope, setScope] = useState(() => localStorage.getItem('vcomm_mail_scope') || 'https://graph.microsoft.com/Mail.ReadWrite');
   
   // Mailbox states
   const [emails, setEmails] = useState<EmailItem[]>(() => {
@@ -139,7 +153,7 @@ export function MailClient() {
     return INITIAL_EMAILS;
   });
   
-  const [activeFolder, setActiveFolder] = useState<'inbox' | 'sent' | 'drafts' | 'trash' | 'flagged'>('inbox');
+  const [activeFolder, setActiveFolder] = useState<'inbox' | 'sent' | 'drafts' | 'trash' | 'flagged' | 'settings'>('inbox');
   const [selectedMailId, setSelectedMailId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterUnread, setFilterUnread] = useState<boolean>(false);
@@ -165,7 +179,12 @@ export function MailClient() {
     if (accountType) localStorage.setItem('vcomm_mail_account_type', accountType);
     else localStorage.removeItem('vcomm_mail_account_type');
     localStorage.setItem('vcomm_mail_user_email', userEmail);
-  }, [isConnected, accountType, userEmail]);
+    localStorage.setItem('vcomm_mail_api_mode', apiMode);
+    localStorage.setItem('vcomm_mail_client_id', clientId);
+    localStorage.setItem('vcomm_mail_client_secret', clientSecret);
+    localStorage.setItem('vcomm_mail_tenant_id', tenantId);
+    localStorage.setItem('vcomm_mail_scope', scope);
+  }, [isConnected, accountType, userEmail, apiMode, clientId, clientSecret, tenantId, scope]);
 
   // Connect Simulation
   const handleStartConnection = (type: 'google' | 'microsoft') => {
@@ -395,7 +414,8 @@ export function MailClient() {
                     { id: 'flagged', label: 'Gắn dấu sao', icon: Star },
                     { id: 'sent', label: 'Đã gửi', icon: Send },
                     { id: 'drafts', label: 'Bản nháp', icon: FileText },
-                    { id: 'trash', label: 'Thùng rác', icon: Trash2 }
+                    { id: 'trash', label: 'Thùng rác', icon: Trash2 },
+                    { id: 'settings', label: 'Cấu hình kết nối', icon: Settings }
                   ].map(item => (
                     <button
                       key={item.id}
@@ -452,181 +472,353 @@ export function MailClient() {
             </div>
           </div>
 
-          {/* 2. Mail List Pane */}
-          <div className="w-[300px] border-r border-slate-200 flex flex-col shrink-0">
-            {/* Search and filters */}
-            <div className="p-4 border-b border-slate-150 space-y-3 bg-slate-50/50">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Tìm email, người gửi..."
-                  className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setFilterUnread(false)} 
-                  className={cn("px-2.5 py-1 text-[9.5px] font-bold rounded-lg transition-colors cursor-pointer", !filterUnread ? "bg-slate-200 text-slate-800" : "bg-transparent text-slate-450 hover:bg-slate-100")}
-                >
-                  Tất cả
-                </button>
-                <button 
-                  onClick={() => setFilterUnread(true)} 
-                  className={cn("px-2.5 py-1 text-[9.5px] font-bold rounded-lg transition-colors cursor-pointer", filterUnread ? "bg-slate-200 text-slate-800" : "bg-transparent text-slate-450 hover:bg-slate-100")}
-                >
-                  Chưa đọc
-                </button>
-              </div>
-            </div>
-
-            {/* Emails list view */}
-            <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
-              {searchedEmails.length === 0 ? (
-                <div className="p-8 text-center text-slate-450 space-y-1 bg-slate-50/20 h-full flex flex-col justify-center select-none font-medium">
-                  <span>📭 Hộp thư trống</span>
-                  <span className="text-[10px] text-slate-400">Không có email nào khớp với điều kiện lọc.</span>
+          {activeFolder === 'settings' ? (
+            <div className="flex-1 bg-slate-50 p-6 overflow-y-auto space-y-6">
+              <div className="max-w-2xl mx-auto space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-blue-650" />
+                    Cấu hình Kết nối API Hộp thư cá nhân
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Thiết lập kết nối bảo mật tới hộp thư doanh nghiệp của bạn thông qua giao thức OAuth/API của Google Workspace hoặc Microsoft Azure AD.
+                  </p>
                 </div>
-              ) : (
-                searchedEmails.map(mail => (
-                  <div
-                    key={mail.id}
-                    onClick={() => handleSelectMail(mail.id)}
-                    className={cn(
-                      "p-3.5 hover:bg-slate-50/70 transition duration-150 cursor-pointer flex flex-col gap-1.5 relative border-l-4",
-                      selectedMailId === mail.id ? "bg-blue-50/30 border-blue-600" : "border-transparent",
-                      !mail.isRead && "font-bold bg-slate-50/30"
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nhà cung cấp:</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountType('google');
+                          setUserEmail('support@vcomm.vn');
+                        }}
+                        className={cn(
+                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          accountType === 'google' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                        )}
+                      >
+                        Google Workspace
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountType('microsoft');
+                          setUserEmail('vinhnt@vcomm.vn');
+                        }}
+                        className={cn(
+                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          accountType === 'microsoft' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                        )}
+                      >
+                        Microsoft 365
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Chế độ hoạt động:</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setApiMode('mock')}
+                        className={cn(
+                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          apiMode === 'mock' ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                        )}
+                      >
+                        Mô phỏng (Mock)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setApiMode('live')}
+                        className={cn(
+                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          apiMode === 'live' ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                        )}
+                      >
+                        Live API
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Client ID (Application ID):</label>
+                      <input
+                        type="text"
+                        value={clientId}
+                        onChange={e => setClientId(e.target.value)}
+                        placeholder="Ví dụ: 8a7d3910-349c-4621-a1b0-2b10df04acb2"
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Client Secret (Mã khóa bảo mật):</label>
+                      <input
+                        type="password"
+                        value={clientSecret}
+                        onChange={e => setClientSecret(e.target.value)}
+                        placeholder="••••••••••••••••••••••••"
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {accountType === 'microsoft' && (
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tenant ID (Azure AD):</label>
+                        <input
+                          type="text"
+                          value={tenantId}
+                          onChange={e => setTenantId(e.target.value)}
+                          placeholder="Ví dụ: common hoặc ID thư mục"
+                          className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                        />
+                      </div>
                     )}
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs text-slate-805 truncate flex-1 pr-2">{mail.senderName}</span>
-                      <span className="text-[9px] text-slate-400 font-semibold shrink-0">{mail.timestamp}</span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <h4 className="text-[11.5px] text-slate-905 truncate leading-snug">{mail.subject}</h4>
-                      <p className="text-[10px] text-slate-450 line-clamp-2 leading-relaxed font-medium">{mail.preview}</p>
-                    </div>
-                    <div className="flex justify-between items-center pt-1.5">
-                      <div className="flex gap-1.5 items-center">
-                        {mail.attachments && mail.attachments.length > 0 && (
-                          <span className="text-[9px] bg-slate-105 border border-slate-200 text-slate-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-bold">
-                            <Paperclip className="w-2.5 h-2.5" />
-                            {mail.attachments.length}
-                          </span>
-                        )}
-                        {!mail.isRead && (
-                          <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        )}
-                      </div>
-                      <button 
-                        onClick={(e) => toggleFlag(mail.id, e)}
-                        className="p-1 hover:bg-slate-100 rounded cursor-pointer border-0 bg-transparent"
-                      >
-                        <Star className={cn("w-3.5 h-3.5", mail.isFlagged ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* 3. Mail Reader Pane */}
-          <div className="flex-1 bg-slate-50/40 flex flex-col overflow-hidden">
-            {selectedMail ? (
-              <div className="flex-1 flex flex-col overflow-hidden bg-white animate-in fade-in duration-200">
-                {/* Mail Reader Header */}
-                <div className="p-6 border-b border-slate-200 space-y-4">
-                  <div className="flex justify-between items-start gap-4">
-                    <h2 className="text-sm font-bold text-slate-905 leading-snug">{selectedMail.subject}</h2>
-                    <div className="flex gap-1 shrink-0">
-                      <button 
-                        onClick={() => handleReply('reply', selectedMail)}
-                        className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition-colors cursor-pointer border-0 bg-transparent"
-                        title="Trả lời"
-                      >
-                        <CornerUpLeft className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleReply('forward', selectedMail)}
-                        className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition-colors cursor-pointer border-0 bg-transparent"
-                        title="Chuyển tiếp"
-                      >
-                        <CornerUpRight className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={(e) => deleteMail(selectedMail.id, e)}
-                        className="p-2 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-colors cursor-pointer border-0 bg-transparent"
-                        title="Xóa"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Sender details */}
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-605 border border-slate-300 select-none">
-                        {selectedMail.senderName[0]?.toUpperCase()}
-                      </div>
-                      <div className="text-left leading-tight">
-                        <span className="text-xs font-bold text-slate-900 block">{selectedMail.senderName}</span>
-                        <span className="text-[10px] text-slate-450 font-mono">{selectedMail.senderEmail}</span>
-                      </div>
-                    </div>
-                    <div className="text-right leading-tight text-slate-450">
-                      <span className="text-[10px] font-semibold block">{selectedMail.timestamp}</span>
-                      <span className="text-[9px] block mt-0.5">Tới: {selectedMail.recipientEmail}</span>
+                    <div className="space-y-1 col-span-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">API Scope Permissions:</label>
+                      <input
+                        type="text"
+                        value={scope}
+                        onChange={e => setScope(e.target.value)}
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Mail Reader Body */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6 font-sans">
-                  <div className="text-xs text-slate-800 leading-relaxed whitespace-pre-line font-medium">
-                    {selectedMail.body}
-                  </div>
-
-                  {/* Attachments Section */}
-                  {selectedMail.attachments && selectedMail.attachments.length > 0 && (
-                    <div className="border-t border-slate-200 pt-5 space-y-3">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Tệp đính kèm ({selectedMail.attachments.length})</span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {selectedMail.attachments.map((file, idx) => (
-                          <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center gap-3 group hover:border-blue-400 transition-colors">
-                            <div className="min-w-0">
-                              <span className="text-xs font-bold text-slate-805 block truncate">{file.name}</span>
-                              <span className="text-[10px] text-slate-450 font-semibold block">{file.size} • {file.type.toUpperCase()}</span>
-                            </div>
-                            <button 
-                              onClick={() => {
-                                alert(`Đang giả lập tải xuống file: ${file.name}`);
-                                addNotification('Tải tệp', `Đã tải thành công tệp tin ${file.name}`);
-                              }}
-                              className="p-2 bg-white hover:bg-slate-100 border border-slate-250 text-slate-650 hover:text-slate-900 rounded-lg shadow-3xs cursor-pointer"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className={cn(
+                      "w-3 h-3 rounded-full flex shrink-0",
+                      isConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+                    )} />
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">
+                        Trạng thái: {isConnected ? `Đã liên kết qua ${accountType === 'google' ? 'Google Workspace' : 'Microsoft 365'}` : 'Chưa liên kết'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium">
+                        {isConnected ? `Địa chỉ email hoạt động: ${userEmail}` : 'Cung cấp Client ID & Secret để kích hoạt kết nối API.'}
+                      </span>
                     </div>
+                  </div>
+                  {isConnected ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsConnected(false);
+                        setAccountType(null);
+                        setUserEmail('');
+                        addNotification('Hộp thư', 'Đã ngắt kết nối tài khoản email cá nhân.');
+                      }}
+                      className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg text-xs cursor-pointer border-0"
+                    >
+                      Hủy liên kết
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!clientId) {
+                          alert('Vui lòng điền Client ID trước khi kích hoạt.');
+                          return;
+                        }
+                        setIsConnected(true);
+                        addNotification('Hộp thư', 'Đã kích hoạt kết nối tài khoản thành công.');
+                      }}
+                      className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs cursor-pointer border-0"
+                    >
+                      Kích hoạt
+                    </button>
                   )}
                 </div>
               </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-450 select-none space-y-2 font-medium">
-                <Mail className="w-10 h-10 text-slate-300 stroke-[1.5]" />
-                <div className="space-y-0.5">
-                  <span className="text-xs block">Chọn một email để đọc nội dung</span>
-                  <span className="text-[10px] text-slate-400">Hộp thư cá nhân được bảo vệ bằng mã hóa đầu cuối.</span>
+            </div>
+          ) : (
+            <>
+              {/* 2. Mail List Pane */}
+              <div className="w-[300px] border-r border-slate-200 flex flex-col shrink-0">
+                {/* Search and filters */}
+                <div className="p-4 border-b border-slate-150 space-y-3 bg-slate-50/50">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      placeholder="Tìm email, người gửi..."
+                      className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setFilterUnread(false)} 
+                      className={cn("px-2.5 py-1 text-[9.5px] font-bold rounded-lg transition-colors cursor-pointer", !filterUnread ? "bg-slate-200 text-slate-805" : "bg-transparent text-slate-450 hover:bg-slate-100")}
+                    >
+                      Tất cả
+                    </button>
+                    <button 
+                      onClick={() => setFilterUnread(true)} 
+                      className={cn("px-2.5 py-1 text-[9.5px] font-bold rounded-lg transition-colors cursor-pointer", filterUnread ? "bg-slate-200 text-slate-805" : "bg-transparent text-slate-450 hover:bg-slate-100")}
+                    >
+                      Chưa đọc
+                    </button>
+                  </div>
+                </div>
+
+                {/* Emails list view */}
+                <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
+                  {searchedEmails.length === 0 ? (
+                    <div className="p-8 text-center text-slate-450 space-y-1 bg-slate-50/20 h-full flex flex-col justify-center select-none font-medium">
+                      <span>📭 Hộp thư trống</span>
+                      <span className="text-[10px] text-slate-400">Không có email nào khớp với điều kiện lọc.</span>
+                    </div>
+                  ) : (
+                    searchedEmails.map(mail => (
+                      <div
+                        key={mail.id}
+                        onClick={() => handleSelectMail(mail.id)}
+                        className={cn(
+                          "p-3.5 hover:bg-slate-50/70 transition duration-150 cursor-pointer flex flex-col gap-1.5 relative border-l-4",
+                          selectedMailId === mail.id ? "bg-blue-50/30 border-blue-600" : "border-transparent",
+                          !mail.isRead && "font-bold bg-slate-50/30"
+                        )}
+                      >
+                        <div className="flex justify-between items-start">
+                          <span className="text-xs text-slate-805 truncate flex-1 pr-2">{mail.senderName}</span>
+                          <span className="text-[9px] text-slate-400 font-semibold shrink-0">{mail.timestamp}</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <h4 className="text-[11.5px] text-slate-955 truncate leading-snug">{mail.subject}</h4>
+                          <p className="text-[10px] text-slate-450 line-clamp-2 leading-relaxed font-medium">{mail.preview}</p>
+                        </div>
+                        <div className="flex justify-between items-center pt-1.5">
+                          <div className="flex gap-1.5 items-center">
+                            {mail.attachments && mail.attachments.length > 0 && (
+                              <span className="text-[9px] bg-slate-105 border border-slate-200 text-slate-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-bold">
+                                <Paperclip className="w-2.5 h-2.5" />
+                                {mail.attachments.length}
+                              </span>
+                            )}
+                            {!mail.isRead && (
+                              <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                            )}
+                          </div>
+                          <button 
+                            onClick={(e) => toggleFlag(mail.id, e)}
+                            className="p-1 hover:bg-slate-100 rounded cursor-pointer border-0 bg-transparent"
+                          >
+                            <Star className={cn("w-3.5 h-3.5", mail.isFlagged ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* 3. Mail Reader Pane */}
+              <div className="flex-1 bg-slate-50/40 flex flex-col overflow-hidden">
+                {selectedMail ? (
+                  <div className="flex-1 flex flex-col overflow-hidden bg-white animate-in fade-in duration-200">
+                    {/* Mail Reader Header */}
+                    <div className="p-6 border-b border-slate-200 space-y-4">
+                      <div className="flex justify-between items-start gap-4">
+                        <h2 className="text-sm font-bold text-slate-905 leading-snug">{selectedMail.subject}</h2>
+                        <div className="flex gap-1 shrink-0">
+                          <button 
+                            onClick={() => handleReply('reply', selectedMail)}
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition-colors cursor-pointer border-0 bg-transparent"
+                            title="Trả lời"
+                          >
+                            <CornerUpLeft className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleReply('forward', selectedMail)}
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition-colors cursor-pointer border-0 bg-transparent"
+                            title="Chuyển tiếp"
+                          >
+                            <CornerUpRight className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={(e) => deleteMail(selectedMail.id, e)}
+                            className="p-2 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-colors cursor-pointer border-0 bg-transparent"
+                            title="Xóa"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Sender details */}
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-700 text-xs">
+                            {selectedMail.senderName[0]?.toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-slate-900 block leading-tight">{selectedMail.senderName}</span>
+                            <span className="text-[9.5px] text-slate-450 leading-none">&lt;{selectedMail.senderEmail}&gt; tới {selectedMail.recipientEmail}</span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-semibold">{selectedMail.timestamp}</span>
+                      </div>
+                    </div>
+
+                    {/* Mail Reader Body */}
+                    <div className="flex-1 p-6 overflow-y-auto space-y-6 select-text">
+                      <div className="text-xs text-slate-700 whitespace-pre-line leading-relaxed font-sans">
+                        {selectedMail.body}
+                      </div>
+
+                      {selectedMail.attachments && selectedMail.attachments.length > 0 && (
+                        <div className="pt-6 border-t border-slate-150 space-y-3">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tài liệu đính kèm ({selectedMail.attachments.length})</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {selectedMail.attachments.map((file, idx) => (
+                              <div 
+                                key={idx} 
+                                className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between hover:bg-slate-100/60 transition duration-150 group"
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
+                                  <div className="min-w-0">
+                                    <span className="text-[10.5px] font-bold text-slate-805 block truncate">{file.name}</span>
+                                    <span className="text-[9px] text-slate-450 leading-none">{file.size}</span>
+                                  </div>
+                                </div>
+                                <button 
+                                  onClick={() => alert(`Bắt đầu tải tệp: ${file.name}`)}
+                                  className="p-1.5 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-800 hover:shadow-2xs transition cursor-pointer"
+                                >
+                                  <Download className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-450 select-none space-y-2 font-medium">
+                    <Mail className="w-10 h-10 text-slate-300 stroke-[1.5]" />
+                    <div className="space-y-0.5">
+                      <span className="text-xs block">Chọn một email để đọc nội dung</span>
+                      <span className="text-[10px] text-slate-400">Hộp thư cá nhân được bảo vệ bằng mã hóa đầu cuối.</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -700,12 +892,55 @@ export function MailClient() {
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nội dung (Message Body):</label>
+                <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-b-0 border-slate-250 rounded-t-xl">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewMail(prev => ({ ...prev, body: prev.body + ' **văn bản đậm**' }));
+                    }}
+                    className="p-1.5 hover:bg-slate-200 rounded text-slate-605 cursor-pointer border-0 bg-transparent flex items-center justify-center"
+                    title="In đậm"
+                  >
+                    <Bold className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewMail(prev => ({ ...prev, body: prev.body + ' *văn bản nghiêng*' }));
+                    }}
+                    className="p-1.5 hover:bg-slate-200 rounded text-slate-605 cursor-pointer border-0 bg-transparent flex items-center justify-center"
+                    title="In nghiêng"
+                  >
+                    <Italic className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewMail(prev => ({ ...prev, body: prev.body + ' <u>văn bản gạch chân</u>' }));
+                    }}
+                    className="p-1.5 hover:bg-slate-200 rounded text-slate-605 cursor-pointer border-0 bg-transparent flex items-center justify-center"
+                    title="Gạch chân"
+                  >
+                    <Underline className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-px h-4 bg-slate-300 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewMail(prev => ({ ...prev, body: prev.body + ' <span style="color:red">văn bản đỏ</span>' }));
+                    }}
+                    className="p-1.5 hover:bg-slate-200 rounded text-slate-605 cursor-pointer border-0 bg-transparent flex items-center gap-1"
+                    title="Màu chữ"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-red-500" />
+                  </button>
+                </div>
                 <textarea
                   value={newMail.body}
                   onChange={e => setNewMail(prev => ({ ...prev, body: e.target.value }))}
                   rows={8}
                   placeholder="Nhập nội dung thư điện tử của bạn tại đây..."
-                  className="w-full p-3 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none leading-relaxed"
+                  className="w-full p-3 border border-slate-250 rounded-b-xl rounded-t-none text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none leading-relaxed border-t-0"
                 />
               </div>
 

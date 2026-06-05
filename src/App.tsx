@@ -64,6 +64,159 @@ function AppLayout() {
   useSepayListener();
 
   React.useEffect(() => {
+    // Seed offline-first Firestore localStorage mock caches if not present or outdated
+    const seedLocalStorageDemoData = () => {
+      const CUSTOMERS_DATA = [
+        {
+          id: 'CUST-001',
+          name: 'Thời Trang H&M Vietnam',
+          email: 'hm@vietnam.com',
+          phone: '0987654321',
+          walletBalance: 25000000,
+          promoBalance: 3000000,
+          totalSpent: 45000000,
+          orderCount: 12,
+          points: 1250,
+          status: 'active',
+          segment: 'core',
+          rfmScore: { recency: 5, frequency: 5, monetary: 4 },
+          activities: [
+            { id: 'act_1', type: 'purchase', title: 'Đơn hàng sỉ quần áo nam', description: 'Đã hoàn thành giao dịch sỉ thời trang thu đông trị giá 45M.', date: '2026-05-15', status: 'Hoàn thành' },
+            { id: 'act_2', type: 'consultation', title: 'Tư vấn hạn mức tín dụng', description: 'Tư vấn đăng ký hạn mức vay B2B Seller và giải ngân sớm.', date: '2026-05-10', status: 'Hoàn thành' }
+          ]
+        },
+        {
+          id: 'CUST-002',
+          name: 'Gia Dụng LockLock',
+          email: 'locklock@vietnam.com',
+          phone: '0912345678',
+          walletBalance: 1500000,
+          promoBalance: 200000,
+          totalSpent: 18000000,
+          orderCount: 5,
+          points: 180,
+          status: 'active',
+          segment: 'potential',
+          rfmScore: { recency: 4, frequency: 3, monetary: 3 },
+          activities: [
+            { id: 'act_3', type: 'purchase', title: 'Đơn hàng mua sắm đồ gia dụng', description: 'Đã giao thành công bộ hộp cơm giữ nhiệt.', date: '2026-05-20', status: 'Hoàn thành' }
+          ]
+        },
+        {
+          id: 'CUST-003',
+          name: 'Mỹ Phẩm Coco Lux',
+          email: 'cocolux@vietnam.com',
+          phone: '0900112233',
+          walletBalance: 12500000,
+          promoBalance: 4500000,
+          totalSpent: 85000000,
+          orderCount: 22,
+          points: 3400,
+          status: 'active',
+          segment: 'core',
+          rfmScore: { recency: 5, frequency: 5, monetary: 5 },
+          activities: [
+            { id: 'act_4', type: 'purchase', title: 'Mua sắm mỹ phẩm sỉ đợt 3', description: 'Hoàn thành đơn hàng son môi và kem chống nắng thương hiệu.', date: '2026-06-01', status: 'Hoàn thành' }
+          ]
+        }
+      ];
+
+      const LEASES_DATA = [
+        {
+          id: 'LEAS-001',
+          phone: '0987654321',
+          email: 'hm@vietnam.com',
+          deviceModel: 'iPhone 15 Pro Max 256GB (Knox MDM)',
+          devicePrice: 35000000,
+          upfrontFee: 7000000,
+          monthlyFee: 2800000,
+          durationMonths: 12,
+          knoxStatus: 'normal',
+          status: 'active',
+          installments: [
+            { periodNum: 1, amount: 2800000, dueDate: '2026-04-05', status: 'paid' },
+            { periodNum: 2, amount: 2800000, dueDate: '2026-05-05', status: 'paid' },
+            { periodNum: 3, amount: 2800000, dueDate: '2026-06-05', status: 'unpaid' }
+          ]
+        },
+        {
+          id: 'LEAS-002',
+          phone: '0912345678',
+          email: 'locklock@vietnam.com',
+          deviceModel: 'iPad Pro 11-inch M2 (Knox MDM)',
+          devicePrice: 24000000,
+          upfrontFee: 4800000,
+          monthlyFee: 1900000,
+          durationMonths: 12,
+          knoxStatus: 'warning',
+          status: 'late',
+          installments: [
+            { periodNum: 1, amount: 1900000, dueDate: '2026-04-10', status: 'paid' },
+            { periodNum: 2, amount: 1900000, dueDate: '2026-05-10', status: 'overdue' }
+          ]
+        }
+      ];
+
+      const TRANSACTIONS_DATA = [
+        {
+          id: 'TX-HM-01',
+          date: '2026-06-01',
+          description: 'Thanh toán công nợ Thời Trang H&M Vietnam',
+          category: 'Thu tiền khách B2B',
+          accountingObjectCode: 'CUST-001',
+          debitAccount: '1121',
+          creditAccount: '131',
+          type: 'income',
+          amount: 150000000
+        },
+        {
+          id: 'TX-HM-02',
+          date: '2026-05-15',
+          description: 'Chi giải ngân thanh toán sớm cho Thời Trang H&M Vietnam',
+          category: 'Chi trả B2B',
+          accountingObjectCode: 'CUST-001',
+          debitAccount: '1388',
+          creditAccount: '1121',
+          type: 'expense',
+          amount: 120000000
+        },
+        {
+          id: 'TX-LL-01',
+          date: '2026-05-25',
+          description: 'Thu tiền bán hàng Gia Dụng LockLock',
+          category: 'Thu tiền mặt',
+          accountingObjectCode: 'CUST-002',
+          debitAccount: '1111',
+          creditAccount: '131',
+          type: 'income',
+          amount: 18000000
+        }
+      ];
+
+      const checkAndSeed = (key: string, dataArray: any[]) => {
+        const cached = safeLocalStorage.getItem(key);
+        const needsSeed = !cached || 
+          (key === 'fs_cache_docs_customers' && !cached.includes('CUST-001')) ||
+          (key === 'fs_cache_docs_device_leases' && !cached.includes('LEAS-001')) ||
+          (key === 'fs_cache_docs_finance_transactions' && !cached.includes('TX-HM-01'));
+          
+        if (needsSeed) {
+          const docsData = dataArray.map(item => ({
+            id: item.id,
+            data: item
+          }));
+          safeLocalStorage.setItem(key, JSON.stringify(docsData));
+          console.log(`[Demo-Seeding] Seeded ${key} to localStorage successfully.`);
+        }
+      };
+
+      checkAndSeed('fs_cache_docs_customers', CUSTOMERS_DATA);
+      checkAndSeed('fs_cache_docs_device_leases', LEASES_DATA);
+      checkAndSeed('fs_cache_docs_finance_transactions', TRANSACTIONS_DATA);
+    };
+
+    seedLocalStorageDemoData();
+
     const defaultFavicon = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='8' height='4' x='8' y='2' rx='1' ry='1'/><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><path d='M9 12h6'/><path d='M9 16h6'/></svg>`;
     const savedFavicon = safeLocalStorage.getItem('system-favicon') || defaultFavicon;
     const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
