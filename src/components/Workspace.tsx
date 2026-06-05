@@ -44,6 +44,8 @@ import { TaskReports } from './TaskReports';
 import { TaskDelegation } from './TaskDelegation';
 import { TaskMyTasks } from './TaskMyTasks';
 import { TaskKanban } from './TaskKanban';
+import { MailClient } from './MailClient';
+import { InternalChat } from './InternalChat';
 
 function getColorClasses(color: string) {
   switch (color) {
@@ -91,6 +93,13 @@ const MODULE_GROUPS = [
       { id: 'asset_list', label: 'Danh sách tài sản', desc: 'Quản lý kho tài sản cơ quan.', icon: Monitor, color: 'blue' },
       { id: 'asset_assign', label: 'Cấp phát & Bàn giao', desc: 'Luân chuyển tài sản nội bộ.', icon: ArrowRightLeft, color: 'emerald' },
       { id: 'asset_maintenance', label: 'Bảo trì sửa chữa', desc: 'Lịch sử bảo dưỡng tài sản.', icon: Wrench, color: 'orange' },
+    ]
+  },
+  {
+    title: 'Liên lạc & Cộng tác (eOffice Pack)',
+    items: [
+      { id: 'mail_client', label: 'Hộp thư cá nhân', desc: 'Quản lý Gmail hoặc Outlook 365', icon: Mail, color: 'blue' },
+      { id: 'internal_chat', label: 'Chat nội bộ', desc: 'Nhắn tin cá nhân, nhóm & phòng ban', icon: MessageSquare, color: 'indigo' },
     ]
   }
 ];
@@ -195,7 +204,7 @@ export function Workspace() {
               {activeModule === 'work_mine' && "Công việc của tôi"}
               {activeModule === 'work_manage' && "Giao việc và Giám sát"}
               {activeModule === 'work_report' && "Báo cáo hiệu suất"}
-              {['calendar', 'meeting_rooms', 'vehicles', 'doc_list', 'doc_archive', 'asset_list', 'asset_assign', 'asset_maintenance'].includes(activeModule) && `Tiện ích eOffice: ${MODULE_GROUPS.flatMap(g => g.items).find(i => i.id === activeModule)?.label}`}
+              {['calendar', 'meeting_rooms', 'vehicles', 'doc_list', 'doc_archive', 'asset_list', 'asset_assign', 'asset_maintenance', 'mail_client', 'internal_chat'].includes(activeModule) && `Tiện ích eOffice: ${MODULE_GROUPS.flatMap(g => g.items).find(i => i.id === activeModule)?.label}`}
             </h1>
           </div>
           <p className="text-xs text-[#6B7280]">
@@ -204,7 +213,7 @@ export function Workspace() {
             {activeModule === 'work_mine' && "Quản lý danh sách nhiệm vụ được ủy thác riêng cho bạn trong năm 2026."}
             {activeModule === 'work_manage' && "Phần quyền điều hành, giao chỉ tiêu KPI và giám sát tiến độ SLA phòng ban."}
             {activeModule === 'work_report' && "Biểu đồ phân tích dữ liệu hiệu quả SLA hoàn thành công việc của toàn tổ chức."}
-            {['calendar', 'meeting_rooms', 'vehicles', 'doc_list', 'doc_archive', 'asset_list', 'asset_assign', 'asset_maintenance'].includes(activeModule) && "Hệ thống hỗ trợ tự động hóa các hoạt động hậu cần, tài liệu của văn phòng cơ quan."}
+            {['calendar', 'meeting_rooms', 'vehicles', 'doc_list', 'doc_archive', 'asset_list', 'asset_assign', 'asset_maintenance', 'mail_client', 'internal_chat'].includes(activeModule) && "Hệ thống hỗ trợ tự động hóa các hoạt động hậu cần, tài liệu và liên lạc của văn phòng cơ quan."}
           </p>
         </div>
 
@@ -356,6 +365,16 @@ export function Workspace() {
       {/* 4. Statistics SLA Analytics Dashboard */}
       {activeModule === 'work_report' && (
         <TaskReports tasks={tasks} />
+      )}
+
+      {/* 4.5 Mail Client */}
+      {activeModule === 'mail_client' && (
+        <MailClient />
+      )}
+
+      {/* 4.6 Internal Chat */}
+      {activeModule === 'internal_chat' && (
+        <InternalChat />
       )}
 
       {/* 5. Placeholder screens representing secondary features in high-fidelity */}
