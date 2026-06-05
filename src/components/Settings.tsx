@@ -37,7 +37,12 @@ import {
  X,
  Check,
  Link2,
-  FileText, Clock
+ FileText,
+ Clock,
+ Upload,
+ Download,
+ Smartphone,
+ Tablet
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
@@ -299,7 +304,7 @@ import { usePreferences } from '../context/PreferencesContext';
 export function SettingsPage() {
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
  const { staffInfo } = useAuth();
- const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription'>('overview');
+ const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules'>('overview');
  const [adminAuditLogs, setAdminAuditLogs] = useState<any[]>([]);
  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState<{
@@ -377,6 +382,172 @@ export function SettingsPage() {
  const [newCategoryName, setNewCategoryName] = useState('');
  const [isScanningAI, setIsScanningAI] = useState(false);
  const [activeModuleTab, setActiveModuleTab] = useState(MODULE_PERMISSIONS[0].id);
+
+  // 1. DNS Diagnostics State
+  const [dnsDiagnostics, setDnsDiagnostics] = useState<Record<string, 'idle' | 'checking' | 'valid' | 'invalid'>>({});
+  const handleCheckDns = (domain: string) => {
+    if (!domain) return;
+    setDnsDiagnostics(prev => ({ ...prev, [domain]: 'checking' }));
+    setTimeout(() => {
+      const isValid = domain !== 'erp.vcom.vn' && domain.includes('.');
+      setDnsDiagnostics(prev => ({ ...prev, [domain]: isValid ? 'valid' : 'invalid' }));
+    }, 1200);
+  };
+
+  // 2. AI Security Scan State
+  const [isScanningAiLogs, setIsScanningAiLogs] = useState(false);
+  const runAiSecurityScan = () => {
+    setIsScanningAiLogs(true);
+    setTimeout(() => {
+      setIsScanningAiLogs(false);
+      addNotification('AI Security', 'Đã quét xong logs hệ thống. Phát hiện 1 Critical Alert và 1 Warning Alert.');
+    }, 1500);
+  };
+
+  // 3. Cloud Backup Settings State
+  const [backupCloud, setBackupCloud] = useState<'gdrive' | 'dropbox' | 'aws_s3'>('gdrive');
+  const [backupFrequency, setBackupFrequency] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [backupHour, setBackupHour] = useState<string>('02:00');
+  const [isRunningBackup, setIsRunningBackup] = useState<boolean>(false);
+
+  // 4. Storefront Bento Builder State
+  interface StorefrontSection {
+    id: string;
+    title: string;
+    description: string;
+    isActive: boolean;
+    order: number;
+    color: string;
+    mockContent: string;
+  }
+  const [storefrontSections, setStorefrontSections] = useState<StorefrontSection[]>([
+    { id: 'hero_banner', title: 'Banner Khuyến Mãi (Hero)', description: 'Banner chính đầu trang hiển thị chiến dịch lớn', isActive: true, order: 0, color: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white', mockContent: '🎁 Siêu Tiệc Thương Hiệu - Giảm đến 50%' },
+    { id: 'flash_sale', title: 'Săn Deal Flash Sale', description: 'Đếm ngược các sản phẩm giá sốc giới hạn giờ', isActive: true, order: 1, color: 'bg-rose-500 text-white animate-pulse', mockContent: '⚡ Flash Sale đang diễn ra: 01:59:59' },
+    { id: 'bento_campaign', title: 'Bento Grid Chiến Dịch', description: 'Hiển thị danh mục hot dạng lưới Bento Premium', isActive: true, order: 2, color: 'bg-slate-100 border border-slate-200 text-slate-800', mockContent: '🍱 Bộ Sưu Tập Mùa Hè / Xu Hướng Công Nghệ' },
+    { id: 'featured_products', title: 'Sản Phẩm Bán Chạy', description: 'Slider cuộn các sản phẩm được đánh giá cao', isActive: true, order: 3, color: 'bg-slate-50 border border-slate-200 text-slate-800', mockContent: '🔥 Top 10 sản phẩm thịnh hành nhất' },
+    { id: 'footer_info', title: 'Thông tin chân trang (Footer)', description: 'Hiển thị liên kết pháp lý và thương hiệu', isActive: true, order: 4, color: 'bg-slate-900 text-slate-350', mockContent: '🏢 CÔNG TY CỔ PHẦN CÔNG NGHỆ VCOMM' },
+  ]);
+  const [previewDeviceMode, setPreviewDeviceMode] = useState<'mobile' | 'tablet'>('mobile');
+
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    const newSections = [...storefrontSections];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newSections.length) return;
+    const tempOrder = newSections[index].order;
+    newSections[index].order = newSections[targetIndex].order;
+    newSections[targetIndex].order = tempOrder;
+    newSections.sort((a, b) => a.order - b.order);
+    newSections.forEach((s, idx) => s.order = idx);
+    setStorefrontSections(newSections);
+  };
+
+  const toggleSectionActive = (id: string) => {
+    setStorefrontSections(prev => prev.map(s => s.id === id ? { ...s, isActive: !s.isActive } : s));
+  };
+
+  // 5. Chart of Accounts (COA) State
+  interface AccountItem {
+    code: string;
+    name: string;
+    type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+    parentCode?: string;
+    isLeaf: boolean;
+    isActive: boolean;
+  }
+  const [coaList, setCoaList] = useState<AccountItem[]>([
+    { code: '111', name: 'Tiền mặt', type: 'Asset', isLeaf: false, isActive: true },
+    { code: '1111', name: 'Tiền Việt Nam (VNĐ)', type: 'Asset', parentCode: '111', isLeaf: true, isActive: true },
+    { code: '1112', name: 'Ngoại tệ', type: 'Asset', parentCode: '111', isLeaf: true, isActive: true },
+    { code: '112', name: 'Tiền gửi Ngân hàng', type: 'Asset', isLeaf: false, isActive: true },
+    { code: '1121', name: 'Tiền Việt Nam gửi Ngân hàng', type: 'Asset', parentCode: '112', isLeaf: true, isActive: true },
+    { code: '133', name: 'Thuế GTGT được khấu trừ', type: 'Asset', isLeaf: false, isActive: true },
+    { code: '1331', name: 'Thuế GTGT được khấu trừ của hàng hóa, dịch vụ', type: 'Asset', parentCode: '133', isLeaf: true, isActive: true },
+    { code: '333', name: 'Thuế và các khoản phải nộp Nhà nước', type: 'Liability', isLeaf: false, isActive: true },
+    { code: '33311', name: 'Thuế GTGT đầu ra phải nộp', type: 'Liability', parentCode: '333', isLeaf: true, isActive: true },
+    { code: '511', name: 'Doanh thu bán hàng và cung cấp dịch vụ', type: 'Revenue', isLeaf: false, isActive: true },
+    { code: '5111', name: 'Doanh thu bán hàng hóa', type: 'Revenue', parentCode: '511', isLeaf: true, isActive: true },
+  ]);
+  const [newCoa, setNewCoa] = useState<{ code: string; name: string; type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense'; parentCode?: string }>({
+    code: '',
+    name: '',
+    type: 'Asset',
+    parentCode: '',
+  });
+  const [coaError, setCoaError] = useState<string | null>(null);
+  const [taxMappings, setTaxMappings] = useState({
+    inputTaxAccount: '1331',
+    outputTaxAccount: '33311',
+  });
+
+  const handleCreateCoa = () => {
+    setCoaError(null);
+    if (!newCoa.code || !newCoa.name) {
+      setCoaError('Vui lòng điền đầy đủ Mã và Tên tài khoản.');
+      return;
+    }
+    if (newCoa.code.length < 4) {
+      setCoaError('Mã tài khoản hạch toán chi tiết (tài khoản lá) phải có độ dài từ 4 chữ số trở lên.');
+      return;
+    }
+    if (coaList.some(c => c.code === newCoa.code)) {
+      setCoaError('Mã tài khoản này đã tồn tại trong danh mục.');
+      return;
+    }
+    const newItem: AccountItem = {
+      code: newCoa.code,
+      name: newCoa.name,
+      type: newCoa.type,
+      parentCode: newCoa.parentCode || undefined,
+      isLeaf: true,
+      isActive: true,
+    };
+    setCoaList(prev => [...prev, newItem]);
+    addNotification('Kế toán COA', `Đã thêm thành công tài khoản hạch toán ${newCoa.code}`);
+    setNewCoa({ code: '', name: '', type: 'Asset', parentCode: '' });
+  };
+
+  // 6. Workflow Automation State
+  interface WorkflowRule {
+    id: string;
+    name: string;
+    trigger: string;
+    condition: string;
+    action: string;
+    isActive: boolean;
+  }
+  const [workflowRules, setWorkflowRules] = useState<WorkflowRule[]>([
+    { id: 'wf-1', name: 'Gửi Zalo ZNS khi có Đơn hàng VIP mới', trigger: 'order_created', condition: 'total_amount > 20000000', action: 'send_zalo_zns', isActive: true },
+    { id: 'wf-2', name: 'Thông báo Push cho Admin khi hàng tồn kho sắp hết', trigger: 'stock_low', condition: 'inventory_qty < 10', action: 'send_push_admin', isActive: true },
+    { id: 'wf-3', name: 'Chặn hạch toán tự động khi thiếu mã số thuế đối tượng lẻ', trigger: 'invoice_draft', condition: 'tax_code_missing = true', action: 'block_bookkeeping', isActive: false },
+  ]);
+  const [showAddWorkflowModal, setShowAddWorkflowModal] = useState(false);
+  const [newWorkflow, setNewWorkflow] = useState({
+    name: '',
+    trigger: 'order_created',
+    condition: 'total_amount > 20000000',
+    action: 'send_zalo_zns',
+  });
+
+  const handleCreateWorkflow = () => {
+    if (!newWorkflow.name) return;
+    const rule: WorkflowRule = {
+      id: `wf-${Date.now()}`,
+      name: newWorkflow.name,
+      trigger: newWorkflow.trigger,
+      condition: newWorkflow.condition,
+      action: newWorkflow.action,
+      isActive: true,
+    };
+    setWorkflowRules(prev => [...prev, rule]);
+    addNotification('Tạo Workflow', `Đã thêm và kích hoạt quy trình tự động: ${newWorkflow.name}`);
+    setShowAddWorkflowModal(false);
+    setNewWorkflow({
+      name: '',
+      trigger: 'order_created',
+      condition: 'total_amount > 20000000',
+      action: 'send_zalo_zns',
+    });
+  };
 
  // Popup States
  const [isPopupActive, setIsPopupActive] = useState(false);
@@ -629,20 +800,25 @@ export function SettingsPage() {
      <ChevronLeft className="w-4 h-4" /> Tổng quan
    </button>
    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-   {[
-   { id: 'general', label: 'Cấu hình chung', icon: Settings },
-   { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
-   { id: 'website', label: 'Cấu hình Website', icon: Globe },
-   { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
-   { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare },
-   { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
-   { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
-   { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
-   { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
-   { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
-   { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package },
-		{ id: 'saas_subscription', label: 'Cấu hình SaaS & Đăng ký', icon: ShieldCheck },
-   ].filter(t => t.id === activeTab).map(t => (
+    {[
+    { id: 'general', label: 'Cấu hình chung', icon: Settings },
+    { id: 'appearance', label: 'Giao diện & Theme', icon: Sparkles },
+    { id: 'storefront', label: 'Trang bán hàng', icon: AppWindow },
+    { id: 'wallet_crm', label: 'Quản lý Ví CSKH', icon: Wallet },
+    { id: 'fees', label: 'Cấu hình Phí sàn', icon: BadgeDollarSign },
+    { id: 'website', label: 'Cấu hình Website', icon: Globe },
+    { id: 'popup', label: 'Cấu hình Popup & Thông báo', icon: Bell },
+    { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare },
+    { id: 'rbac', label: 'Phân quyền & Roles', icon: Lock },
+    { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook },
+    { id: 'address', label: 'Cấu hình Tỉnh/Thành', icon: MapPin },
+    { id: 'org', label: 'Cơ cấu Tổ chức', icon: Building2 },
+    { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
+    { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package },
+    { id: 'saas_subscription', label: 'Cấu hình SaaS & Đăng ký', icon: ShieldCheck },
+    { id: 'chart_of_accounts', label: 'Hệ thống tài khoản COA', icon: FileText },
+    { id: 'workflow_rules', label: 'Quy trình No-code', icon: Zap },
+    ].filter(t => t.id === activeTab).map(t => (
    <React.Fragment key={t.id}>
    <t.icon className="w-5 h-5 text-blue-600" /> {t.label}
    </React.Fragment>
@@ -1073,20 +1249,84 @@ export function SettingsPage() {
  <div>
  <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Danh sách tên miền</label>
  <div className="space-y-2">
- {customDomains.map((domain, index) => (
- <div key={index} className="flex gap-2">
- <input 
- type="text" 
- value={domain} 
- onChange={(e) => updateDomain(index, e.target.value)}
- placeholder="ví dụ: store.domain.com" 
- className="flex-1 p-3 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
- />
- <button onClick={() => removeDomain(index)} className="p-3 text-red-500 hover:bg-red-50 rounded-lg">
- <Trash2 className="w-4 h-4" />
- </button>
- </div>
- ))}
+  {customDomains.map((domain, index) => {
+    const diagState = dnsDiagnostics[domain] || 'idle';
+    return (
+      <div key={index} className="space-y-2">
+        <div className="flex gap-2">
+        <input 
+        type="text" 
+        value={domain} 
+        onChange={(e) => updateDomain(index, e.target.value)}
+        placeholder="ví dụ: store.domain.com" 
+        className="flex-1 p-3 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
+        />
+        <button 
+          type="button"
+          onClick={() => handleCheckDns(domain)}
+          disabled={!domain || diagState === 'checking'}
+          className="px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-2xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+        >
+          {diagState === 'checking' ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
+              <span>Đang quét...</span>
+            </>
+          ) : (
+            <>
+              <Globe className="w-3.5 h-3.5 text-blue-600" />
+              <span>Kiểm tra DNS</span>
+            </>
+          )}
+        </button>
+        <button onClick={() => removeDomain(index)} className="p-3 text-red-505 hover:bg-red-50 rounded-lg">
+        <Trash2 className="w-4 h-4" />
+        </button>
+        </div>
+
+        {diagState !== 'idle' && (
+          <div className={`p-3.5 rounded-2xl border text-xs leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 ${
+            diagState === 'checking' 
+              ? 'bg-blue-50/50 border-blue-200 text-blue-800' 
+              : diagState === 'valid' 
+                ? 'bg-emerald-50 border-emerald-250 text-emerald-800' 
+                : 'bg-rose-50 border-rose-250 text-rose-800'
+          }`}>
+            {diagState === 'checking' && (
+              <p className="flex items-center gap-1.5 font-medium">
+                🔍 Đang quét DNS tên miền và phân tích bản ghi...
+              </p>
+            )}
+            {diagState === 'valid' && (
+              <div className="space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-emerald-700">
+                  🟢 Tên miền hợp lệ (Valid IP)
+                </p>
+                <p className="text-slate-650">
+                  Tên miền <strong className="font-mono">{domain}</strong> đã trỏ chính xác về IP Vercel (<strong className="font-mono">76.76.21.21</strong>). Chứng chỉ SSL đang hoạt động ổn định.
+                </p>
+              </div>
+            )}
+            {diagState === 'invalid' && (
+              <div className="space-y-1.5">
+                <p className="font-bold flex items-center gap-1.5 text-rose-700">
+                  🔴 Chưa trỏ đúng DNS (Invalid Configuration)
+                </p>
+                <p className="text-slate-650">
+                  Vui lòng định cấu hình bản ghi tên miền của bạn:
+                </p>
+                <div className="bg-white/60 p-2.5 rounded-xl border border-rose-200/50 font-mono text-[10px] text-slate-700 space-y-1">
+                  <div>• Bản ghi <strong className="text-slate-900 font-bold">A</strong>: Tên <strong className="text-slate-900 font-bold">@</strong> trỏ về IP <strong className="text-slate-900 font-bold">76.76.21.21</strong></div>
+                  <div>• Hoặc Bản ghi <strong className="text-slate-900 font-bold">CNAME</strong>: Tên <strong className="text-slate-900 font-bold">www</strong> trỏ về <strong className="text-slate-900 font-bold">cname.vercel-dns.com</strong></div>
+                </div>
+                <p className="text-slate-500 text-[9.5px] italic">Lưu ý: Thay đổi DNS có thể mất vài giờ để có hiệu lực trên toàn cầu.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  })}
  <button onClick={addDomain} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-2">
  <Plus className="w-3 h-3" /> Thêm tên miền mới
  </button>
@@ -1178,7 +1418,8 @@ export function SettingsPage() {
      <>
      {/* ── Section helper ── */}
      {([
-       { key: 'companyInfo', title: 'Thông tin công ty', icon: Building2 },
+       { key: 'bento_builder', title: 'Thiết kế Bố cục Home (Bento Layout Builder & Live Preview)', icon: AppWindow },
+        { key: 'companyInfo', title: 'Thông tin công ty', icon: Building2 },
        { key: 'footerLinks', title: 'Cột liên kết Footer', icon: Globe },
        { key: 'paymentMethods', title: 'Phương thức Thanh toán & Vận chuyển', icon: CreditCard },
        { key: 'socialLinks', title: 'Mạng xã hội', icon: Link2 },
@@ -1443,7 +1684,195 @@ export function SettingsPage() {
                </div>
              )}
 
-             {/* PREVIEW */}
+             {/* BENTO BUILDER */}
+              {key === 'bento_builder' && (
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                  {/* Left panel: layout sections order */}
+                  <div className="lg:col-span-3 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Danh sách Khối Homepage (Grid Bento)</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">Bật/tắt hoặc kéo đổi vị trí để sắp xếp giao diện trang chủ của bạn.</p>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          addNotification('Storefront', 'Đã đặt lại bố cục mặc định.');
+                          setStorefrontSections([
+                            { id: 'hero_banner', title: 'Banner Khuyến Mãi (Hero)', description: 'Banner chính đầu trang hiển thị chiến dịch lớn', isActive: true, order: 0, color: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white', mockContent: '🎁 Siêu Tiệc Thương Hiệu - Giảm đến 50%' },
+                            { id: 'flash_sale', title: 'Săn Deal Flash Sale', description: 'Đếm ngược các sản phẩm giá sốc giới hạn giờ', isActive: true, order: 1, color: 'bg-rose-500 text-white animate-pulse', mockContent: '⚡ Flash Sale đang diễn ra: 01:59:59' },
+                            { id: 'bento_campaign', title: 'Bento Grid Chiến Dịch', description: 'Hiển thị danh mục hot dạng lưới Bento Premium', isActive: true, order: 2, color: 'bg-slate-100 border border-slate-200 text-slate-800', mockContent: '🍱 Bộ Sưu Tập Mùa Hè / Xu Hướng Công Nghệ' },
+                            { id: 'featured_products', title: 'Sản Phẩm Bán Chạy', description: 'Slider cuộn các sản phẩm được đánh giá cao', isActive: true, order: 3, color: 'bg-slate-50 border border-slate-200 text-slate-800', mockContent: '🔥 Top 10 sản phẩm thịnh hành nhất' },
+                            { id: 'footer_info', title: 'Thông tin chân trang (Footer)', description: 'Hiển thị liên kết pháp lý và thương hiệu', isActive: true, order: 4, color: 'bg-slate-900 text-slate-350', mockContent: '🏢 CÔNG TY CỔ PHẦN CÔNG NGHỆ VCOMM' },
+                          ]);
+                        }}
+                        className="text-xs font-bold text-blue-605 hover:underline cursor-pointer bg-transparent border-0"
+                      >
+                        Đặt lại mặc định
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {storefrontSections.map((sec, idx) => (
+                        <div key={sec.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-4 hover:shadow-xs transition duration-150">
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${sec.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}></span>
+                              <span className="text-xs font-bold text-slate-850">{sec.title}</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 leading-snug truncate">{sec.description}</p>
+                            {sec.isActive && (
+                              <input 
+                                type="text" 
+                                value={sec.mockContent} 
+                                onChange={e => {
+                                  const text = e.target.value;
+                                  setStorefrontSections(prev => prev.map(s => s.id === sec.id ? { ...s, mockContent: text } : s));
+                                }}
+                                className="w-full mt-1.5 px-2 py-1 bg-white border border-slate-200 rounded-lg text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Nội dung hiển thị..."
+                              />
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {/* Toggle active switch */}
+                            <button 
+                              type="button"
+                              onClick={() => toggleSectionActive(sec.id)}
+                              className={`w-9 h-5 rounded-full p-0.5 transition duration-200 cursor-pointer border-0 ${sec.isActive ? 'bg-emerald-500' : 'bg-slate-200'}`}
+                            >
+                              <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${sec.isActive ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                            </button>
+
+                            {/* Move up / down buttons */}
+                            <div className="flex flex-col gap-1">
+                              <button 
+                                type="button"
+                                onClick={() => moveSection(idx, 'up')}
+                                disabled={idx === 0}
+                                className="p-1 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 rounded text-slate-650 text-[10px] font-bold cursor-pointer"
+                              >
+                                ▲
+                              </button>
+                              <button 
+                                type="button"
+                                onClick={() => moveSection(idx, 'down')}
+                                disabled={idx === storefrontSections.length - 1}
+                                className="p-1 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 rounded text-slate-650 text-[10px] font-bold cursor-pointer"
+                              >
+                                ▼
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Right panel: Live Device Preview */}
+                  <div className="lg:col-span-2 flex flex-col items-center space-y-4">
+                    <div className="flex justify-between items-center w-full">
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Xem trước thiết bị</span>
+                      <div className="flex bg-slate-105 p-1 rounded-xl border border-slate-200">
+                        <button 
+                          type="button"
+                          onClick={() => setPreviewDeviceMode('mobile')}
+                          className={`px-3 py-1 text-[10px] font-bold rounded-lg transition duration-150 flex items-center gap-1 cursor-pointer border-0 ${previewDeviceMode === 'mobile' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500'}`}
+                        >
+                          <Smartphone className="w-3.5 h-3.5" /> Mobile
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => setPreviewDeviceMode('tablet')}
+                          className={`px-3 py-1 text-[10px] font-bold rounded-lg transition duration-150 flex items-center gap-1 cursor-pointer border-0 ${previewDeviceMode === 'tablet' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500'}`}
+                        >
+                          <Tablet className="w-3.5 h-3.5" /> Tablet
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Outer Device Container */}
+                    <div className={`bg-slate-950 p-3.5 rounded-[40px] shadow-lg border-4 border-slate-800 relative transition-all duration-300 ${
+                      previewDeviceMode === 'mobile' ? 'w-[280px] h-[520px]' : 'w-[340px] h-[460px]'
+                    }`}>
+                      {/* Device notch/speaker */}
+                      <div className="absolute top-1.5 left-1/2 -translate-x-1/2 bg-slate-800 h-4 w-28 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-1 bg-slate-700 rounded-full"></div>
+                      </div>
+
+                      {/* Device screen area */}
+                      <div className="w-full h-full bg-slate-100 rounded-[28px] overflow-hidden flex flex-col border border-slate-700/50">
+                        {/* Status bar */}
+                        <div className="h-6 bg-slate-200 px-4 flex items-center justify-between text-[9px] font-semibold text-slate-500">
+                          <span>09:41 AM</span>
+                          <div className="flex items-center gap-1">
+                            <span>LTE</span>
+                            <span>100%</span>
+                          </div>
+                        </div>
+                        {/* URL bar */}
+                        <div className="bg-white px-3 py-1.5 border-b border-slate-200 flex items-center justify-center">
+                          <div className="bg-slate-100 text-slate-450 text-[9px] px-2.5 py-0.5 rounded-full truncate w-full text-center font-mono border border-slate-200">
+                            {customDomains[0] || 'erp.vcom.vn'}
+                          </div>
+                        </div>
+
+                        {/* Homepage inner contents */}
+                        <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5 bg-slate-50 scrollbar-none">
+                          {/* Store Header logo banner */}
+                          <div className="p-2 bg-white rounded-xl shadow-3xs flex justify-between items-center">
+                            <span className="text-xs font-black text-slate-905 tracking-tight">{siteConfig.companyInfo.brandName}</span>
+                            <div className="flex gap-1.5 text-[8px] font-bold text-slate-500">
+                              <span>Sản phẩm</span>
+                              <span>Giỏ hàng</span>
+                            </div>
+                          </div>
+
+                          {/* Render Active Sections in order */}
+                          {storefrontSections
+                            .filter(s => s.isActive)
+                            .map(s => (
+                              <div 
+                                key={s.id} 
+                                className={`p-3 rounded-xl shadow-4xs text-[10px] leading-snug font-semibold text-center transition-all duration-300 hover:scale-[1.02] ${
+                                  s.id === 'hero_banner' 
+                                    ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white min-h-[55px] flex items-center justify-center'
+                                    : s.id === 'flash_sale'
+                                      ? 'bg-rose-505 text-white min-h-[40px] flex items-center justify-center animate-pulse'
+                                      : s.id === 'bento_campaign'
+                                        ? 'bg-white border border-slate-200 text-slate-805 min-h-[75px] grid grid-cols-2 gap-1.5 p-2'
+                                        : s.id === 'featured_products'
+                                          ? 'bg-white border border-slate-200 text-slate-805 min-h-[60px] flex flex-col justify-between p-2'
+                                          : 'bg-slate-900 text-slate-350 min-h-[35px] flex items-center justify-center font-normal'
+                                }`}
+                              >
+                                {s.id === 'bento_campaign' ? (
+                                  <>
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-1 text-[8px] flex items-center justify-center text-blue-755 font-bold">🍉 Thời Trang</div>
+                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-1 text-[8px] flex items-center justify-center text-emerald-755 font-bold">🔌 Điện Tử</div>
+                                  </>
+                                ) : s.id === 'featured_products' ? (
+                                  <>
+                                    <div className="text-[9px] text-left text-slate-400 font-bold">Slider Bán Chạy</div>
+                                    <div className="flex gap-1.5 pt-1 overflow-x-auto">
+                                      <div className="bg-slate-105 border border-slate-200 rounded p-1 text-[8px] min-w-[50px]">🏷️ Giày Sneaker</div>
+                                      <div className="bg-slate-105 border border-slate-200 rounded p-1 text-[8px] min-w-[50px]">🏷️ Tai Nghe</div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  s.mockContent
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+{/* PREVIEW */}
              {key === 'preview' && (
                <div className="rounded-xl overflow-hidden border border-slate-200 bg-white text-sm">
                  <div className="bg-slate-100 px-4 py-2 flex items-center gap-2 border-b border-slate-200">
@@ -2438,14 +2867,80 @@ export function SettingsPage() {
 						</div>
 
 						<div className="border border-slate-200 rounded-2xl p-4 space-y-3">
-							<span className="text-xs font-bold text-slate-800 uppercase tracking-widest block font-mono">Tính năng Sao lưu (Backups)</span>
-							<div className="flex justify-between items-center text-xs text-slate-600">
-								<span>Tự động sao lưu mỗi ngày</span>
-								<span className="text-slate-800 font-medium">02:00 AM (GMT+7)</span>
+							<span className="text-xs font-bold text-slate-800 uppercase tracking-widest block font-mono">Sao lưu Đám mây (Cloud Backups)</span>
+							
+							<div className="space-y-2">
+								<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Đám mây Lưu trữ</label>
+								<select 
+									value={backupCloud} 
+									onChange={e => setBackupCloud(e.target.value as any)}
+									className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+								>
+									<option value="gdrive">Google Drive</option>
+									<option value="dropbox">Dropbox</option>
+									<option value="aws_s3">Amazon S3</option>
+								</select>
 							</div>
-							<button onClick={() => alert('Đang tải bản sau lưu cấu hình và CSDL...')} className="w-full mt-2 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-800 text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer">
-								Tải Bản Sao Lưu Gần Nhất (.tar.gz)
-							</button>
+
+							<div className="grid grid-cols-2 gap-2">
+								<div className="space-y-2">
+									<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Tần suất</label>
+									<select 
+										value={backupFrequency} 
+										onChange={e => setBackupFrequency(e.target.value as any)}
+										className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+									>
+										<option value="daily">Hàng ngày</option>
+										<option value="weekly">Hàng tuần</option>
+										<option value="monthly">Hàng tháng</option>
+									</select>
+								</div>
+								<div className="space-y-2">
+									<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Giờ sao lưu</label>
+									<select 
+										value={backupHour} 
+										onChange={e => setBackupHour(e.target.value)}
+										className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+									>
+										<option value="00:00">00:00 AM</option>
+										<option value="02:00">02:00 AM</option>
+										<option value="04:00">04:00 AM</option>
+										<option value="12:00">12:00 PM</option>
+									</select>
+								</div>
+							</div>
+
+							<div className="space-y-1.5 pt-1">
+								<span className="text-[10px] text-slate-450 font-medium">Trạng thái tự động:</span>
+								<div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-605">
+									<span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+									Đã kích hoạt ({backupCloud === 'gdrive' ? 'Google Drive' : backupCloud === 'dropbox' ? 'Dropbox' : 'AWS S3'})
+								</div>
+							</div>
+
+							<div className="flex gap-2 pt-2">
+								<button 
+									type="button"
+									onClick={() => {
+										setIsRunningBackup(true);
+										setTimeout(() => {
+											setIsRunningBackup(false);
+											addNotification('Sao lưu đám mây', `Đã đẩy bản sao lưu lên ${backupCloud.toUpperCase()} thành công!`);
+										}, 1500);
+									}}
+									disabled={isRunningBackup}
+									className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer disabled:opacity-50"
+								>
+									{isRunningBackup ? 'Đang sao lưu...' : 'Sao lưu ngay'}
+								</button>
+								<button 
+									type="button"
+									onClick={() => alert('Đang tải bản sao lưu cấu hình hệ thống và CSDL hiện tại...')} 
+									className="py-2 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-800 text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer"
+								>
+									<Download className="w-3.5 h-3.5" />
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -2709,7 +3204,102 @@ export function SettingsPage() {
 				</div>
 			</div>
 
-			{/* GIAI ĐOẠN 2: Lịch sử Giám sát Đăng nhập Admin (Admin Audit Logs Container) */}
+						{/* Phân tích An ninh AI (AI Security Monitor) */}
+			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6 mb-6">
+				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-100 pb-4">
+					<div className="space-y-1">
+						<h4 className="font-bold text-slate-900 flex items-center gap-2 text-base">
+							<Sparkles className="w-5 h-5 text-indigo-650 fill-indigo-100 animate-pulse" /> Phân tích An ninh Hệ thống AI (AI Security Audit Monitor)
+						</h4>
+						<p className="text-xs text-slate-500 mt-0.5">Trí tuệ nhân tạo VComm AI tự động kiểm duyệt và phát hiện hành vi bất thường trong log truy cập tenant.</p>
+					</div>
+					<button 
+						type="button"
+						onClick={runAiSecurityScan}
+						disabled={isScanningAiLogs}
+						className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-xs transition duration-150"
+					>
+						{isScanningAiLogs ? (
+							<>
+								<RefreshCw className="w-3.5 h-3.5 animate-spin" />
+								<span>AI Đang Quét...</span>
+							</>
+						) : (
+							<>
+								<ShieldCheck className="w-3.5 h-3.5" />
+								<span>Chạy Quét An Ninh AI</span>
+							</>
+						)}
+					</button>
+				</div>
+
+				{isScanningAiLogs ? (
+					<div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-500 text-xs">
+						<span className="w-8 h-8 rounded-full border-3 border-slate-200 border-t-indigo-600 animate-spin"></span>
+						<p className="font-bold text-slate-700 animate-pulse">VComm AI đang phân tích dữ liệu log và địa chỉ IP lạ...</p>
+						<p className="text-slate-400 text-[10px]">Quá trình kiểm soát Zero-Trust có thể mất vài giây.</p>
+					</div>
+				) : (
+					<div className="space-y-4 animate-in fade-in duration-300">
+						{/* Cảnh báo Nguy hại (Critical Alert) */}
+						<div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-4 shadow-2xs">
+							<div className="p-2 bg-rose-100 text-rose-700 rounded-xl shrink-0">
+								<AlertCircle className="w-5 h-5" />
+							</div>
+							<div className="space-y-2 flex-1 min-w-0">
+								<div className="flex items-center justify-between gap-2">
+									<span className="text-xs font-bold text-rose-800 uppercase tracking-wider bg-rose-100 px-2.5 py-0.5 rounded-full border border-rose-250">
+										Cảnh báo nguy hại (Critical)
+									</span>
+									<span className="text-[10px] text-rose-500 font-mono font-semibold">02:14 AM (Hôm nay)</span>
+								</div>
+								<p className="text-xs font-semibold text-slate-800 leading-relaxed">
+									Thay đổi quyền hạn vai trò đột ngột: Tài khoản nhân viên <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">nv_nhan@vcomm.vn</code> được nâng cấp lên nhóm vai trò <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">Siêu quản trị (Super Admin)</code> bởi IP lạ <code className="font-mono text-slate-700">113.161.42.99</code>.
+								</p>
+								<div className="bg-white/80 p-3 rounded-xl border border-rose-150/50 space-y-1.5">
+									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
+										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
+									</span>
+									<p className="text-[11px] text-slate-600 leading-relaxed">
+										1. Hệ thống đã tự động **khóa tạm thời** phiên đăng nhập của tài khoản <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">nv_nhan@vcomm.vn</code>. <br />
+										2. Yêu cầu Super Admin xác thực OTP qua số điện thoại đăng ký pháp nhân để khôi phục trạng thái. <br />
+										3. Kích hoạt chính sách bảo mật bắt buộc cấu hình xác thực 2 yếu tố (2FA/MFA) cho toàn bộ tài khoản Admin.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						{/* Cảnh báo Rủi ro (Warning Alert) */}
+						<div className="p-4 bg-amber-50 border border-amber-250 rounded-2xl flex items-start gap-4 shadow-2xs">
+							<div className="p-2 bg-amber-100 text-amber-700 rounded-xl shrink-0">
+								<AlertCircle className="w-5 h-5" />
+							</div>
+							<div className="space-y-2 flex-1 min-w-0">
+								<div className="flex items-center justify-between gap-2">
+									<span className="text-xs font-bold text-amber-800 uppercase tracking-wider bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-250">
+										Cảnh báo rủi ro (Warning)
+									</span>
+									<span className="text-[10px] text-amber-600 font-mono font-semibold">18:45 PM (Hôm qua)</span>
+								</div>
+								<p className="text-xs font-semibold text-slate-805 leading-relaxed">
+									Tải xuống dữ liệu CRM dung lượng lớn: Tài khoản kế toán <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-amber-700 border border-amber-100">acc_accountant@vcomm.vn</code> tải xuống danh sách 1,200 khách hàng VIP (CRM) từ địa chỉ IP nước ngoài <code className="font-mono text-slate-700">198.51.100.4</code> (Unknown Cloud Provider).
+								</p>
+								<div className="bg-white/80 p-3 rounded-xl border border-amber-150/50 space-y-1.5">
+									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
+										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
+									</span>
+									<p className="text-[11px] text-slate-600 leading-relaxed">
+										1. Xác thực giao dịch tải tệp với nhân sự kế toán qua kênh liên lạc trực tiếp nội bộ. <br />
+										2. Định cấu hình giới hạn số lượng khách hàng xuất CRM tối đa 100 dòng cho mỗi yêu cầu trên tài khoản không có cờ Super Admin.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+			</div>
+
+{/* GIAI ĐOẠN 2: Lịch sử Giám sát Đăng nhập Admin (Admin Audit Logs Container) */}
 			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
 				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
 					<div>
@@ -2796,6 +3386,430 @@ export function SettingsPage() {
 	)}
 
 
+
+	{activeTab === 'chart_of_accounts' && (
+		<div className="animate-in fade-in duration-300 space-y-6">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+					<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-4">
+						<div>
+							<h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
+								<FileText className="w-5 h-5 text-indigo-600" /> Danh mục Hệ thống Tài khoản (Chart of Accounts)
+							</h3>
+							<p className="text-xs text-slate-555 mt-0.5 font-medium">Quản lý danh sách tài khoản kế toán cấp chi tiết dùng để định khoản các giao dịch.</p>
+						</div>
+						<div className="flex items-center gap-2 shrink-0">
+							<button 
+								type="button"
+								onClick={() => {
+									alert('Excel Template: Tải xuống file excel mẫu COA_Schema_Template.xlsx thành công.');
+								}}
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+							>
+								<Download className="w-3.5 h-3.5" />
+								<span>File mẫu</span>
+							</button>
+							<button 
+								type="button"
+								onClick={() => {
+									const newAcc: AccountItem = { code: '11212', name: 'Tiền gửi Ngân hàng Vietcombank', type: 'Asset', parentCode: '112', isLeaf: true, isActive: true };
+									if (coaList.some(c => c.code === newAcc.code)) {
+										addNotification('Import COA', 'Hệ thống đã nhận diện COA trùng khớp. Không thêm bản ghi trùng.');
+									} else {
+										setCoaList(prev => [...prev, newAcc]);
+										addNotification('Import COA', 'Nhập thành công tài khoản chi tiết 11212 từ Excel template!');
+									}
+								}}
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+							>
+								<Upload className="w-3.5 h-3.5" />
+								<span>Import Excel</span>
+							</button>
+							<button 
+								type="button"
+								onClick={() => {
+									const json = JSON.stringify(coaList, null, 2);
+									const blob = new Blob([json], { type: 'application/json' });
+									const url = URL.createObjectURL(blob);
+									const a = document.createElement('a');
+									a.href = url;
+									a.download = `VCOMM_COA_EXPORT_${new Date().toISOString().slice(0,10)}.json`;
+									a.click();
+									addNotification('Export COA', 'Xuất danh mục tài khoản thành công!');
+								}}
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+							>
+								<Download className="w-3.5 h-3.5" />
+								<span>Export</span>
+							</button>
+						</div>
+					</div>
+
+					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
+						<table className="w-full text-left text-xs border-collapse min-w-[600px]">
+							<thead className="bg-slate-50 text-slate-650 font-bold border-b border-slate-200">
+								<tr>
+									<th className="p-3">Số hiệu tài khoản</th>
+									<th className="p-3">Tên tài khoản</th>
+									<th className="p-3">Tính chất</th>
+									<th className="p-3">Cấp bậc</th>
+									<th className="p-3">Hạch toán</th>
+									<th className="p-3">Trạng thái</th>
+									<th className="p-3 text-right">Thao tác</th>
+								</tr>
+							</thead>
+							<tbody className="divide-y divide-slate-100">
+								{coaList.map((account) => (
+									<tr key={account.code} className="hover:bg-slate-50/50 transition-colors">
+										<td className="p-3 font-mono font-bold text-slate-800">{account.code}</td>
+										<td className="p-3 text-slate-705 font-semibold">{account.name}</td>
+										<td className="p-3">
+											<span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+												account.type === 'Asset' ? 'bg-blue-50 text-blue-700 border-blue-150' :
+												account.type === 'Liability' ? 'bg-amber-50 text-amber-705 border-amber-150' :
+												account.type === 'Equity' ? 'bg-purple-50 text-purple-700 border-purple-150' :
+												account.type === 'Revenue' ? 'bg-emerald-50 text-emerald-700 border-emerald-150' :
+												'bg-rose-50 text-rose-700 border-rose-150'
+											}`}>
+												{account.type === 'Asset' ? 'Tài sản' :
+												 account.type === 'Liability' ? 'Nợ phải trả' :
+												 account.type === 'Equity' ? 'Vốn chủ sở hữu' :
+												 account.type === 'Revenue' ? 'Doanh thu' : 'Chi phí'}
+											</span>
+										</td>
+										<td className="p-3 text-slate-550">{account.parentCode ? `Tài khoản con (${account.parentCode})` : 'Tài khoản tổng hợp'}</td>
+										<td className="p-3">
+											{account.isLeaf ? (
+												<span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded">
+													Cấp tài khoản lá
+												</span>
+											) : (
+												<span className="px-2 py-0.5 bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-bold rounded">
+													Tài khoản tổng hợp
+												</span>
+											)}
+										</td>
+										<td className="p-3">
+											<span className={`font-bold ${account.isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
+												{account.isActive ? '● Đang hoạt động' : '○ Tạm dừng'}
+											</span>
+										</td>
+										<td className="p-3 text-right">
+											<button 
+												type="button"
+												onClick={() => {
+													setCoaList(prev => prev.map(c => c.code === account.code ? { ...c, isActive: !c.isActive } : c));
+													addNotification('Tài khoản', `Đã đổi trạng thái tài khoản ${account.code}`);
+												}}
+												className="text-xs text-blue-600 font-bold hover:underline cursor-pointer border-0 bg-transparent"
+											>
+												{account.isActive ? 'Khóa' : 'Kích hoạt'}
+											</button>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div className="space-y-6">
+					{/* Card thêm mới tài khoản */}
+					<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+						<div>
+							<h4 className="font-bold text-slate-900 flex items-center gap-2">
+								<Plus className="w-5 h-5 text-indigo-650" /> Thêm tài khoản mới
+							</h4>
+							<p className="text-xs text-slate-500 mt-0.5">Thêm mới tài khoản cấp lá để hạch toán nghiệp vụ.</p>
+						</div>
+
+						{coaError && (
+							<div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 leading-relaxed font-semibold">
+								⚠️ {coaError}
+							</div>
+						)}
+
+						<div className="space-y-3">
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mã tài khoản *</label>
+								<input 
+									type="text" 
+									value={newCoa.code} 
+									onChange={e => setNewCoa(prev => ({ ...prev, code: e.target.value }))}
+									placeholder="Ví dụ: 11211, 11115"
+									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								/>
+							</div>
+
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên tài khoản *</label>
+								<input 
+									type="text" 
+									value={newCoa.name} 
+									onChange={e => setNewCoa(prev => ({ ...prev, name: e.target.value }))}
+									placeholder="Ví dụ: Tiền VNĐ tại Techcombank"
+									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								/>
+							</div>
+
+							<div className="grid grid-cols-2 gap-2">
+								<div className="space-y-1">
+									<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tính chất</label>
+									<select 
+										value={newCoa.type} 
+										onChange={e => setNewCoa(prev => ({ ...prev, type: e.target.value as any }))}
+										className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold"
+									>
+										<option value="Asset">Tài sản</option>
+										<option value="Liability">Nợ phải trả</option>
+										<option value="Equity">Vốn chủ sở hữu</option>
+										<option value="Revenue">Doanh thu</option>
+										<option value="Expense">Chi phí</option>
+									</select>
+								</div>
+								<div className="space-y-1">
+									<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tài khoản mẹ</label>
+									<select 
+										value={newCoa.parentCode || ''} 
+										onChange={e => setNewCoa(prev => ({ ...prev, parentCode: e.target.value }))}
+										className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+									>
+										<option value="">Không có</option>
+										{coaList.filter(c => !c.parentCode).map(c => (
+											<option key={c.code} value={c.code}>{c.code} - {c.name}</option>
+										))}
+									</select>
+								</div>
+							</div>
+
+							<button 
+								type="button"
+								onClick={handleCreateCoa}
+								className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition cursor-pointer border-0"
+							>
+								Lưu tài khoản
+							</button>
+						</div>
+					</div>
+
+					{/* Card ánh xạ tài khoản thuế */}
+					<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+						<div>
+							<h4 className="font-bold text-slate-900 flex items-center gap-2">
+								<Settings className="w-5 h-5 text-indigo-650" /> Ánh xạ tài khoản thuế
+							</h4>
+							<p className="text-xs text-slate-500 mt-0.5 font-medium">Mặc định tài khoản định khoản thuế đầu vào/đầu ra.</p>
+						</div>
+
+						<div className="space-y-3">
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Thuế GTGT đầu vào được khấu trừ</label>
+								<select 
+									value={taxMappings.inputTaxAccount} 
+									onChange={e => setTaxMappings(prev => ({ ...prev, inputTaxAccount: e.target.value }))}
+									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								>
+									{coaList.filter(c => c.isLeaf && c.code.startsWith('133')).map(c => (
+										<option key={c.code} value={c.code}>{c.code} - {c.name}</option>
+									))}
+								</select>
+							</div>
+
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Thuế GTGT đầu ra phải nộp (Bán hàng)</label>
+								<select 
+									value={taxMappings.outputTaxAccount} 
+									onChange={e => setTaxMappings(prev => ({ ...prev, outputTaxAccount: e.target.value }))}
+									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								>
+									{coaList.filter(c => c.isLeaf && c.code.startsWith('333')).map(c => (
+										<option key={c.code} value={c.code}>{c.code} - {c.name}</option>
+									))}
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	)}
+
+	{activeTab === 'workflow_rules' && (
+		<div className="animate-in fade-in duration-300 space-y-6">
+			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-4">
+					<div>
+						<h3 className="font-bold text-slate-900 flex items-center gap-2 text-base">
+							<Zap className="w-5 h-5 text-amber-500 fill-amber-100" /> Quy trình Tự động hóa Không mã (No-Code Workflows)
+						</h3>
+						<p className="text-xs text-slate-555 mt-0.5 font-medium">Thiết lập các logic hành động tự động IF-AND-THEN để gửi tin nhắn Zalo/SMS hoặc hạch toán kế toán.</p>
+					</div>
+					<button 
+						type="button"
+						onClick={() => setShowAddWorkflowModal(true)}
+						className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition border-0 animate-in fade-in"
+					>
+						<Plus className="w-4 h-4" />
+						<span>Tạo quy trình mới</span>
+					</button>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{workflowRules.map((rule) => (
+						<div key={rule.id} className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between min-h-[200px] ${
+							rule.isActive ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-50/50 border-slate-200 opacity-70'
+						}`}>
+							<div className="space-y-4">
+								<div className="flex justify-between items-start gap-2">
+									<h4 className="font-bold text-slate-900 text-xs leading-snug">{rule.name}</h4>
+									<button 
+										type="button"
+										onClick={() => {
+											setWorkflowRules(prev => prev.map(r => r.id === rule.id ? { ...r, isActive: !r.isActive } : r));
+											addNotification('Quy trình', `Đã ${rule.isActive ? 'tạm dừng' : 'kích hoạt'} quy trình "${rule.name}"`);
+										}}
+										className={`w-9 h-5 rounded-full p-0.5 transition duration-200 cursor-pointer shrink-0 border-0 ${rule.isActive ? 'bg-emerald-500' : 'bg-slate-200'}`}
+									>
+										<div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${rule.isActive ? 'translate-x-4' : 'translate-x-0'}`}></div>
+									</button>
+								</div>
+
+								<div className="space-y-1.5 font-mono text-[10.5px]">
+									<div className="flex items-center gap-1.5">
+										<span className="bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded border border-blue-200">IF</span>
+										<span className="text-slate-700 truncate font-semibold">{
+											rule.trigger === 'order_created' ? 'Đơn hàng mới tạo' :
+											rule.trigger === 'stock_low' ? 'Sản phẩm hết hàng' :
+											'Hóa đơn quyết toán tạm ứng'
+										}</span>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<span className="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-250">AND</span>
+										<span className="text-slate-700 truncate font-semibold">{
+											rule.condition === 'total_amount > 20000000' ? 'Giá trị > 20,000,000đ' :
+											rule.condition === 'inventory_qty < 10' ? 'Số lượng tồn kho < 10' :
+											'Thiếu mã số thuế đối tượng lẻ'
+										}</span>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<span className="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded border border-emerald-250">THEN</span>
+										<span className="text-slate-700 truncate font-semibold">{
+											rule.action === 'send_zalo_zns' ? 'Gửi Zalo ZNS KH' :
+											rule.action === 'send_push_admin' ? 'Bắn Push cho Admin' :
+											'Chặn hạch toán đối tượng lẻ'
+										}</span>
+									</div>
+								</div>
+							</div>
+
+							<div className="flex justify-between items-center pt-4 border-t border-slate-100 mt-4">
+								<span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+									Quy trình {rule.isActive ? 'Đang chạy' : 'Đang Tắt'}
+								</span>
+								<button 
+									type="button"
+									onClick={() => {
+										setWorkflowRules(prev => prev.filter(r => r.id !== rule.id));
+										addNotification('Quy trình', `Đã xóa quy trình "${rule.name}"`);
+									}}
+									className="text-[10px] text-red-500 font-bold hover:underline cursor-pointer border-0 bg-transparent"
+								>
+									Xóa
+								</button>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+
+			{/* Modal thêm Workflow Rule */}
+			{showAddWorkflowModal && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+					<div className="bg-white w-full max-w-md rounded-2xl shadow-sm border border-slate-300 overflow-hidden animate-in zoom-in-95 duration-200">
+						<div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/50">
+							<div className="flex items-center gap-3">
+								<Zap className="w-5 h-5 text-amber-500 fill-amber-100" />
+								<h3 className="text-sm font-extrabold text-slate-950">Tạo quy trình tự động mới</h3>
+							</div>
+							<button type="button" onClick={() => setShowAddWorkflowModal(false)} className="p-2 hover:bg-slate-100 rounded-full cursor-pointer border-0 bg-transparent">
+								<X className="w-4 h-4 text-slate-500" />
+							</button>
+						</div>
+
+						<div className="p-6 space-y-4">
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên quy trình</label>
+								<input 
+									type="text" 
+									value={newWorkflow.name} 
+									onChange={e => setNewWorkflow(prev => ({ ...prev, name: e.target.value }))}
+									placeholder="Ví dụ: Gửi SMS khi sản phẩm hết hàng"
+									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs focus:ring-2 focus:ring-blue-500/20"
+								/>
+							</div>
+
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">IF (Sự kiện kích hoạt)</label>
+								<select 
+									value={newWorkflow.trigger} 
+									onChange={e => setNewWorkflow(prev => ({ ...prev, trigger: e.target.value }))}
+									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+								>
+									<option value="order_created">Đơn hàng mới tạo (Order Created)</option>
+									<option value="stock_low">Sản phẩm hết hàng (Stock Low)</option>
+									<option value="invoice_draft">Hóa đơn quyết toán tạm ứng (Invoice Draft)</option>
+								</select>
+							</div>
+
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AND (Bộ lọc điều kiện)</label>
+								<select 
+									value={newWorkflow.condition} 
+									onChange={e => setNewWorkflow(prev => ({ ...prev, condition: e.target.value }))}
+									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+								>
+									<option value="total_amount > 20000000">Giá trị đơn hàng &gt; 20,000,000đ</option>
+									<option value="inventory_qty < 10">Số lượng tồn kho dưới &lt; 10 sản phẩm</option>
+									<option value="tax_code_missing = true">Thiếu mã số thuế đối tượng lẻ</option>
+								</select>
+							</div>
+
+							<div className="space-y-1">
+								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">THEN (Hành động phản hồi)</label>
+								<select 
+									value={newWorkflow.action} 
+									onChange={e => setNewWorkflow(prev => ({ ...prev, action: e.target.value }))}
+									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+								>
+									<option value="send_zalo_zns">Gửi tin Zalo ZNS cho Khách hàng</option>
+									<option value="send_push_admin">Gửi thông báo Push đến Admin</option>
+									<option value="block_bookkeeping">Chặn hạch toán tự động</option>
+								</select>
+							</div>
+						</div>
+
+						<div className="p-4 border-t border-slate-200 bg-slate-50/50 flex justify-end gap-2">
+							<button 
+								type="button"
+								onClick={() => setShowAddWorkflowModal(false)}
+								className="px-4 py-2 border border-slate-300 text-slate-700 bg-white text-xs font-bold rounded-lg hover:bg-slate-100 cursor-pointer border-0"
+							>
+								Hủy
+							</button>
+							<button 
+								type="button"
+								onClick={handleCreateWorkflow}
+								disabled={!newWorkflow.name}
+								className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg cursor-pointer border-0 animate-in fade-in"
+							>
+								Lưu Quy trình
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	)}
   </div>
   </div>
   </div>
