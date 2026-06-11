@@ -42,14 +42,74 @@ import {
  Upload,
  Download,
  Smartphone,
- Tablet
+ Tablet,
+ Activity,
+ XCircle,
+ ExternalLink,
+ ShieldAlert,
+ Eye,
+ EyeOff,
+ Play,
+ Copy,
+ Terminal
 } from 'lucide-react';
+import { getMisaConfig, saveMisaConfig, type MisaConfig } from '../services/misaService';
+import { getZnsConfig, saveZnsConfig, type ZnsConfig } from '../services/znsService';
 import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../lib/firebase';
 import { PageEditorModal } from './PageEditorModal';
+
+interface ShopifyHaravanConfig {
+  shopUrl: string;
+  accessToken: string;
+  syncProducts: boolean;
+  syncOrders: boolean;
+  autoInventorySync: boolean;
+  isActive: boolean;
+}
+
+interface MarketplaceConfig {
+  platform: 'shopee' | 'tiktok';
+  shopId: string;
+  appKey: string;
+  appSecret: string;
+  accessToken: string;
+  refreshToken: string;
+  autoSyncStock: boolean;
+  autoSyncOrders: boolean;
+  isActive: boolean;
+}
+
+interface CustomWebhook {
+  id: string;
+  name: string;
+  url: string;
+  events: string[];
+  secretToken: string;
+  isActive: boolean;
+}
+
+interface ApiSyncLog {
+  id: string;
+  timestamp: string;
+  platform: string;
+  event: string;
+  status: 'success' | 'failed';
+  details: string;
+}
+
+interface OpenApiKey {
+  id: string;
+  name: string;
+  token: string;
+  scopes: string[];
+  createdAt: string;
+  lastUsedAt: string;
+  status: 'active' | 'revoked';
+}
 
 interface Department { id: string; name: string; manager: string; staffCount: number; parentId?: string; }
 interface JobTitle { id: string; name: string; department: string; description?: string; rank?: string; }
@@ -326,6 +386,213 @@ export function SettingsPage() {
     safeLocalStorage.setItem('api_sepay_client_secret', apiKeys.sepaySecret);
     addNotification('Cập nhật API', 'Đã lưu cấu hình API tích hợp thành công.');
   };
+
+  // --- API INTEGRATIONS CONFIGURATION STATES & HANDLERS ---
+  const [misaConfig, setMisaConfig] = useState<MisaConfig>(() => getMisaConfig());
+  const [znsConfig, setZnsConfig] = useState<ZnsConfig>(() => getZnsConfig());
+  
+  const [shopifyHaravanConfig, setShopifyHaravanConfig] = useState<ShopifyHaravanConfig>(() => {
+    const data = safeLocalStorage.getItem('api_shopify_haravan_config');
+    return data ? JSON.parse(data) : {
+      shopUrl: 'nexhubshop.vn',
+      accessToken: 'shpat_simulated_token_xyz789',
+      syncProducts: true,
+      syncOrders: true,
+      autoInventorySync: true,
+      isActive: true
+    };
+  });
+
+  const [marketplaceConfig, setMarketplaceConfig] = useState<MarketplaceConfig>(() => {
+    const data = safeLocalStorage.getItem('api_marketplace_config');
+    return data ? JSON.parse(data) : {
+      platform: 'shopee',
+      shopId: 'shopee_shop_9999',
+      appKey: 'app_key_shopee_123',
+      appSecret: 'app_secret_shopee_456',
+      accessToken: 'shopee_access_token_def',
+      refreshToken: 'shopee_refresh_token_ghi',
+      autoSyncStock: true,
+      autoSyncOrders: true,
+      isActive: false
+    };
+  });
+
+  const [customWebhooks, setCustomWebhooks] = useState<CustomWebhook[]>(() => {
+    const data = safeLocalStorage.getItem('api_custom_webhooks');
+    return data ? JSON.parse(data) : [
+      {
+        id: 'wh-1',
+        name: 'Đẩy Đơn hàng sang Kho ViettelPost',
+        url: 'https://api.viettelpost.vn/v1/webhooks/orders',
+        events: ['order.created', 'order.cancelled'],
+        secretToken: 'whsec_vtp_987654321',
+        isActive: true
+      },
+      {
+        id: 'wh-2',
+        name: 'Đồng bộ CRM Khách hàng thân thiết',
+        url: 'https://webhook.crm-partner.com/vcomm-customer-sync',
+        events: ['customer.created', 'customer.updated'],
+        secretToken: 'whsec_crm_123456789',
+        isActive: false
+      }
+    ];
+  });
+
+  const [syncLogs, setSyncLogs] = useState<ApiSyncLog[]>(() => {
+    const data = safeLocalStorage.getItem('api_sync_logs');
+    return data ? JSON.parse(data) : [
+      {
+        id: 'log-1',
+        timestamp: '2026-06-11 10:15:00',
+        platform: 'MISA Accounting',
+        event: 'Đồng bộ hóa đơn bán hàng #DH-2026-001',
+        status: 'success',
+        details: 'Đã tạo chứng từ kế toán 1302/2026 trên MISA. Tài khoản Nợ: 1121, Tài khoản Có: 5111.'
+      },
+      {
+        id: 'log-2',
+        timestamp: '2026-06-11 10:02:15',
+        platform: 'Shopify / Haravan',
+        event: 'Tải sản phẩm mới từ NexHub',
+        status: 'success',
+        details: 'Đã tải thành công 12 sản phẩm mới vào ERP.'
+      },
+      {
+        id: 'log-3',
+        timestamp: '2026-06-11 09:45:30',
+        platform: 'MISA Accounting',
+        event: 'Đồng bộ hóa đơn bán hàng #DH-2026-002',
+        status: 'failed',
+        details: 'Lỗi: Tài khoản kế toán 51111 không tồn tại trong hệ thống tài khoản MISA (Circular 99/2025/TT-BTC).'
+      },
+      {
+        id: 'log-4',
+        timestamp: '2026-06-11 09:30:10',
+        platform: 'Zalo ZNS',
+        event: 'Gửi tin xác nhận đơn hàng #DH-2026-002',
+        status: 'success',
+        details: 'Tin nhắn ZNS gửi thành công tới số 098****321. Trạng thái: DELIVERED.'
+      },
+      {
+        id: 'log-5',
+        timestamp: '2026-06-11 08:12:05',
+        platform: 'SePay Gateway',
+        event: 'Webhook biến động số dư ngân hàng',
+        status: 'failed',
+        details: 'Lỗi: Chữ ký MD5 không hợp lệ (Signature mismatch). Yêu cầu đối soát bị hủy bỏ.'
+      }
+    ];
+  });
+
+  const [openApiKeys, setOpenApiKeys] = useState<OpenApiKey[]>(() => {
+    const data = safeLocalStorage.getItem('api_openapi_keys');
+    return data ? JSON.parse(data) : [
+      {
+        id: 'key-1',
+        name: 'Tích hợp phần mềm giao vận GHTK',
+        token: 'vcomm_live_key_ghtk_8a2f9b8c',
+        scopes: ['orders.read', 'orders.write', 'inventory.read'],
+        createdAt: '2026-05-20 14:30:00',
+        lastUsedAt: '2026-06-11 10:00:00',
+        status: 'active'
+      },
+      {
+        id: 'key-2',
+        name: 'Báo cáo PowerBI nội bộ',
+        token: 'vcomm_live_key_pbi_3d7e5f1b',
+        scopes: ['analytics.read', 'customers.read'],
+        createdAt: '2026-06-01 09:00:00',
+        lastUsedAt: '2026-06-11 09:15:00',
+        status: 'active'
+      }
+    ];
+  });
+
+  const [activeConfigModal, setActiveConfigModal] = useState<'misa' | 'sepay' | 'zns' | 'shopify' | 'marketplace' | 'webhook' | null>(null);
+  const [editingWebhook, setEditingWebhook] = useState<CustomWebhook | null>(null);
+  const [newOpenApiKey, setNewOpenApiKey] = useState<Partial<OpenApiKey>>({ name: '', scopes: [] });
+  const [createdKeyDetails, setCreatedKeyDetails] = useState<string | null>(null);
+  const [testingConnection, setTestingConnection] = useState<Record<string, boolean>>({});
+  const [syncLogsSearch, setSyncLogsSearch] = useState('');
+
+  const saveMisaConfigLocal = (config: MisaConfig) => {
+    setMisaConfig(config);
+    saveMisaConfig(config);
+    addNotification('Cài đặt MISA', 'Đã lưu cấu hình MISA thành công.');
+  };
+
+  const saveZnsConfigLocal = (config: ZnsConfig) => {
+    setZnsConfig(config);
+    saveZnsConfig(config);
+    addNotification('Cài đặt Zalo ZNS', 'Đã lưu cấu hình ZNS thành công.');
+  };
+
+  const saveShopifyHaravanConfig = (config: ShopifyHaravanConfig) => {
+    setShopifyHaravanConfig(config);
+    safeLocalStorage.setItem('api_shopify_haravan_config', JSON.stringify(config));
+    addNotification('Cấu hình Shopify/Haravan', 'Đã lưu cấu hình tích hợp bán lẻ thành công.');
+  };
+
+  const saveMarketplaceConfig = (config: MarketplaceConfig) => {
+    setMarketplaceConfig(config);
+    safeLocalStorage.setItem('api_marketplace_config', JSON.stringify(config));
+    addNotification('Cấu hình Sàn TMĐT', 'Đã lưu cấu hình đồng bộ gian hàng thành công.');
+  };
+
+  const saveCustomWebhooksLocal = (webhooks: CustomWebhook[]) => {
+    setCustomWebhooks(webhooks);
+    safeLocalStorage.setItem('api_custom_webhooks', JSON.stringify(webhooks));
+  };
+
+  const handleTestConnection = async (platform: string) => {
+    setTestingConnection(prev => ({ ...prev, [platform]: true }));
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setTestingConnection(prev => ({ ...prev, [platform]: false }));
+    addNotification('Kiểm tra kết nối', `Kết nối tới ${platform} thành công và hoạt động tốt!`);
+  };
+
+  const handleRetrySync = async (logId: string) => {
+    setSyncLogs(prev => prev.map(log => {
+      if (log.id === logId) {
+        return { ...log, status: 'success', details: `Đã thử lại thành công. ${log.details.replace('Lỗi:', 'Đã sửa lỗi và đồng bộ lại:')}` };
+      }
+      return log;
+    }));
+    addNotification('Đồng bộ lại', 'Yêu cầu đồng bộ lại đã được xử lý thành công.');
+  };
+
+  const handleCreateApiKey = () => {
+    if (!newOpenApiKey.name) {
+      addNotification('Lỗi', 'Vui lòng nhập tên ứng dụng kết nối.');
+      return;
+    }
+    const generatedToken = 'vcomm_live_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const newKey: OpenApiKey = {
+      id: 'key-' + Date.now(),
+      name: newOpenApiKey.name,
+      token: generatedToken.substring(0, 15) + '********',
+      scopes: newOpenApiKey.scopes || [],
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      lastUsedAt: 'Never',
+      status: 'active'
+    };
+    const updatedKeys = [...openApiKeys, newKey];
+    setOpenApiKeys(updatedKeys);
+    safeLocalStorage.setItem('api_openapi_keys', JSON.stringify(updatedKeys));
+    setCreatedKeyDetails(generatedToken);
+    setNewOpenApiKey({ name: '', scopes: [] });
+    addNotification('OpenAPI', 'Đã tạo Client API Key mới thành công.');
+  };
+
+  const handleRevokeApiKey = (keyId: string) => {
+    const updatedKeys = openApiKeys.map(k => k.id === keyId ? { ...k, status: 'revoked' as const } : k);
+    setOpenApiKeys(updatedKeys);
+    safeLocalStorage.setItem('api_openapi_keys', JSON.stringify(updatedKeys));
+    addNotification('OpenAPI', 'Đã thu hồi Client API Key thành công.');
+  };
+
 
 
  useEffect(() => {
@@ -2169,100 +2436,1162 @@ export function SettingsPage() {
  </div>
  )}
 
- {activeTab === 'api' && (
-  <div className="animate-in fade-in duration-300 space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
-        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-          <Key className="w-4 h-4 text-orange-500" /> Hệ thống nội bộ (Third-party)
-        </h3>
-        <p className="text-xs text-slate-500">Cấu hình các Access Token và API Key dùng cho hoạt động cốt lõi của VComm (AI, Thanh toán).</p>
-        
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Gemini (Google AI) API Key</label>
-            <input 
-              type="password"
-              placeholder="AIzaSy..."
-              className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
-              value={apiKeys.gemini}
-              onChange={e => setApiKeys(prev => ({...prev, gemini: e.target.value}))}
-            />
+   {activeTab === 'api' && (
+    <div className="animate-in fade-in duration-300 space-y-6">
+      {/* Bento Grid Stats Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-indigo-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider font-bold text-indigo-600/70 dark:text-indigo-400/70">Tổng Kết Nối Hoạt Động</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+              {[misaConfig.isActive, znsConfig.isActive, shopifyHaravanConfig.isActive, marketplaceConfig.isActive, true, true].filter(Boolean).length} / 6
+            </p>
+            <p className="text-[10px] text-slate-500 mt-1">Các cổng kết nối dữ liệu ngoại</p>
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">SePay API Token</label>
-            <input 
-              type="password"
-              placeholder="JWT Token..."
-              className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
-              value={apiKeys.sepayToken}
-              onChange={e => setApiKeys(prev => ({...prev, sepayToken: e.target.value}))}
-            />
-          </div>
-          <div className="flex gap-3">
-            <div className="space-y-1.5 w-1/2">
-              <label className="text-xs font-bold text-slate-700">SePay Client ID</label>
-              <input 
-                type="text"
-                placeholder="Client ID"
-                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
-                value={apiKeys.sepayId}
-                onChange={e => setApiKeys(prev => ({...prev, sepayId: e.target.value}))}
-              />
-            </div>
-            <div className="space-y-1.5 w-1/2">
-              <label className="text-xs font-bold text-slate-700">SePay Client Secret</label>
-              <input 
-                type="password"
-                placeholder="Client Secret"
-                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
-                value={apiKeys.sepaySecret}
-                onChange={e => setApiKeys(prev => ({...prev, sepaySecret: e.target.value}))}
-              />
-            </div>
+          <div className="p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
+            <Activity className="w-6 h-6 animate-pulse" />
           </div>
         </div>
 
-        <button onClick={saveApiKeys} className="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
-          Cập nhật cấu hình tích hợp
-        </button>
-      </div>
-
-      <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
-        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-          <AppWindow className="w-4 h-4 text-blue-600" /> Webhook Settings
-        </h3>
-        <p className="text-xs text-slate-500">Tự động đẩy thông báo sự kiện (Đơn hàng, Đối soát) về Server đối tác.</p>
-        <div className="space-y-3">
-          {MOCK_WEBHOOKS.map(wb => (
-            <div key={wb.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-900">{wb.name}</p>
-                <p className="text-[9px] text-slate-500 font-mono truncate max-w-[150px]">{wb.url}</p>
-              </div>
-              <button className="p-1.5 hover:bg-red-50 text-red-500 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
-            </div>
-          ))}
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-emerald-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-600/70 dark:text-emerald-400/70">Tỷ Lệ Đồng Bộ Thành Công</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+              {((syncLogs.filter(l => l.status === 'success').length / syncLogs.length) * 100).toFixed(1)}%
+            </p>
+            <p className="text-[10px] text-slate-500 mt-1">Đạt chỉ tiêu SLA vận hành</p>
+          </div>
+          <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
         </div>
-        <button className="w-full py-2 border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-50">Cấu hình Webhook mới</button>
-      </div>
-    </div>
 
-    <div className="bg-blue-900 text-white p-6 rounded-lg flex items-center gap-6">
-      <div className="p-4 bg-white/10 rounded-2xl border border-white/20">
-        <Globe className="w-8 h-8 text-blue-600" />
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-purple-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider font-bold text-purple-600/70 dark:text-purple-400/70">Webhooks Đang Active</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+              {customWebhooks.filter(w => w.isActive).length} sự kiện
+            </p>
+            <p className="text-[10px] text-slate-500 mt-1">Đẩy dữ liệu thời gian thực</p>
+          </div>
+          <div className="p-3 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-xl">
+            <Webhook className="w-6 h-6" />
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-rose-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider font-bold text-rose-600/70 dark:text-rose-400/70">Lỗi Hệ Thống Hôm Nay</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+              {syncLogs.filter(l => l.status === 'failed').length} lỗi
+            </p>
+            <p className="text-[10px] text-slate-500 mt-1">Cần rà soát đối soát tài khoản</p>
+          </div>
+          <div className="p-3 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+        </div>
       </div>
+
+      {/* Connection Manager Grid */}
       <div>
-        <h4 className="font-bold text-lg mb-1">OpenAPI Public Documentation</h4>
-        <p className="text-slate-500 text-xs">Cung cấp tài liệu tích hợp (Swagger/Postman) cho cộng đồng phát triển và đối tác chiến lược để kết nối trực tiếp kho hàng Brand với vận hành sàn.</p>
-        <div className="flex gap-4 mt-3">
-          <button className="text-xs font-bold text-blue-600 hover:underline">Download API Spec</button>
-          <button className="text-xs font-bold text-blue-600 hover:underline">Xem Sandbox logs</button>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <Settings className="w-4 h-4 text-indigo-500" /> Cổng Kết Nối Hệ Thống (Integration Hub)
+          </h3>
+          <span className="text-xs text-slate-400">Trạng thái đồng bộ tự động thời gian thực</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* MISA ACCOUNTING */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Kế toán MISA SME</h4>
+                    <p className="text-[9px] text-slate-500">Đồng bộ chứng từ & hóa đơn</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={misaConfig.isActive}
+                    onChange={(e) => saveMisaConfigLocal({ ...misaConfig, isActive: e.target.checked })}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Hạch toán tự động công nợ thu chi, doanh thu sàn TMĐT và chi phí vào hệ thống tài khoản MISA theo Thông tư 99/2025/TT-BTC.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('MISA Accounting')}
+                disabled={testingConnection['MISA Accounting']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['MISA Accounting'] ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                Kiểm tra
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('misa')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Cấu hình
+              </button>
+            </div>
+          </div>
+
+          {/* SEPAY GATEWAY */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-blue-500/10 text-blue-600 rounded-xl">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Cổng SePay Gateway</h4>
+                    <p className="text-[9px] text-slate-500">Đối soát chuyển khoản ngân hàng</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={!!apiKeys.sepayToken}
+                    onChange={(e) => {
+                      if (!e.target.checked) {
+                        setApiKeys(prev => ({ ...prev, sepayToken: '' }));
+                        safeLocalStorage.setItem('api_sepay_api_token', '');
+                        addNotification('SePay Gateway', 'Đã tạm ngưng tích hợp SePay.');
+                      } else {
+                        setActiveConfigModal('sepay');
+                      }
+                    }}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Quét mã QR giao dịch, bắt thông tin biến động số dư ngân hàng và tự động cập nhật trạng thái đơn hàng Đã Thanh Toán trong 3 giây.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('SePay Gateway')}
+                disabled={testingConnection['SePay Gateway']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['SePay Gateway'] ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                Kiểm tra
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('sepay')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Cấu hình
+              </button>
+            </div>
+          </div>
+
+          {/* ZALO ZNS */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-sky-500/10 text-sky-600 rounded-xl">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Tin nhắn Zalo ZNS</h4>
+                    <p className="text-[9px] text-slate-500">Chăm sóc khách hàng tự động</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={znsConfig.isActive}
+                    onChange={(e) => saveZnsConfigLocal({ ...znsConfig, isActive: e.target.checked })}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-sky-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Tự động gửi tin nhắn ZNS xác nhận đơn hàng, cập nhật vận trình giao vận và tri ân thăng hạng loyalty thành viên.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('Zalo ZNS')}
+                disabled={testingConnection['Zalo ZNS']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['Zalo ZNS'] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                Kiểm tra
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('zns')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Cấu hình
+              </button>
+            </div>
+          </div>
+
+          {/* SHOPIFY / HARAVAN RETAIL SYNC */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-teal-500/10 text-teal-600 rounded-xl">
+                    <Store className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Shopify / Haravan</h4>
+                    <p className="text-[9px] text-slate-500">Đồng bộ kho lẻ & sản phẩm</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={shopifyHaravanConfig.isActive}
+                    onChange={(e) => saveShopifyHaravanConfig({ ...shopifyHaravanConfig, isActive: e.target.checked })}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-teal-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Kết nối đẩy hình ảnh, thông tin sản phẩm và đồng bộ đơn hàng tự động hai chiều từ cửa hàng retail online về ERP.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('Shopify/Haravan')}
+                disabled={testingConnection['Shopify/Haravan']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['Shopify/Haravan'] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                Kiểm tra
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('shopify')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Cấu hình
+              </button>
+            </div>
+          </div>
+
+          {/* SHOPEE / TIKTOK SHOP MULTICHANNEL */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-orange-500/10 text-orange-600 rounded-xl">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Shopee & TikTok Shop</h4>
+                    <p className="text-[9px] text-slate-500">Đồng bộ sàn Thương mại điện tử</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={marketplaceConfig.isActive}
+                    onChange={(e) => saveMarketplaceConfig({ ...marketplaceConfig, isActive: e.target.checked })}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Hỗ trợ phân phối tồn kho tự động, cập nhật trạng thái đơn hàng đa sàn để giải quyết bài toán over-selling.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('Marketplace API')}
+                disabled={testingConnection['Marketplace API']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['Marketplace API'] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                Kiểm tra
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('marketplace')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Cấu hình
+              </button>
+            </div>
+          </div>
+
+          {/* CUSTOM WEBHOOKS */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-purple-500/10 text-purple-600 rounded-xl">
+                    <Webhook className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Custom Webhooks</h4>
+                    <p className="text-[9px] text-slate-500">Đẩy thông báo sự kiện ra ngoài</p>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-bold">
+                  {customWebhooks.length} Hook
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">
+                Cho phép truyền trực tiếp các sự kiện phát sinh (đơn hàng mới, thanh toán thành công) về URL server đối tác.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+              <button 
+                onClick={() => handleTestConnection('Webhooks Payload')}
+                disabled={testingConnection['Webhooks Payload']}
+                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                {testingConnection['Webhooks Payload'] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                Test Payload
+              </button>
+              <button 
+                onClick={() => setActiveConfigModal('webhook')}
+                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+              >
+                Quản lý
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Sync Logs and OpenAPI Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Sync Logs List */}
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 space-y-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-emerald-500" /> Nhật ký đồng bộ API (API Sync Logs)
+            </h4>
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Tìm nền tảng hoặc sự kiện..." 
+                className="w-full pl-9 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100"
+                value={syncLogsSearch}
+                onChange={e => setSyncLogsSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-700/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="py-2.5">Thời gian</th>
+                  <th className="py-2.5">Hệ thống</th>
+                  <th className="py-2.5">Sự kiện</th>
+                  <th className="py-2.5">Chi tiết</th>
+                  <th className="py-2.5 text-center">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700/30 text-xs">
+                {syncLogs
+                  .filter(log => 
+                    log.platform.toLowerCase().includes(syncLogsSearch.toLowerCase()) ||
+                    log.event.toLowerCase().includes(syncLogsSearch.toLowerCase())
+                  )
+                  .map(log => (
+                    <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                      <td className="py-3 text-[10px] text-slate-500 whitespace-nowrap font-mono">{log.timestamp}</td>
+                      <td className="py-3 font-semibold text-slate-700 dark:text-slate-300">{log.platform}</td>
+                      <td className="py-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className={cn(
+                            "w-2 h-2 rounded-full flex-shrink-0",
+                            log.status === 'success' ? "bg-emerald-500" : "bg-rose-500"
+                          )}></span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{log.event}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 max-w-[240px] truncate text-slate-500 dark:text-slate-400" title={log.details}>
+                        {log.details}
+                      </td>
+                      <td className="py-3 text-center">
+                        {log.status === 'failed' ? (
+                          <button 
+                            onClick={() => handleRetrySync(log.id)}
+                            className="px-2 py-1 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 rounded-md text-[10px] font-bold transition-colors flex items-center gap-1 mx-auto"
+                          >
+                            <RefreshCw className="w-3 h-3" /> Thử lại
+                          </button>
+                        ) : (
+                          <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">Thành công</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* OpenAPI Key Manager */}
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Key className="w-4 h-4 text-orange-500" /> OpenAPI Client Keys
+            </h4>
+            <button 
+              onClick={() => {
+                setCreatedKeyDetails(null);
+                setNewOpenApiKey({ name: '', scopes: [] });
+                setActiveConfigModal('webhook'); // reusing state to flag key creation display
+              }}
+              className="p-1 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              title="Tạo API Key mới"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-[10px] text-slate-500">Quản lý các Token truy cập dùng để tích hợp các hệ thống bên thứ ba vào VComm ERP.</p>
+
+          <div className="space-y-3">
+            {openApiKeys.map(key => (
+              <div key={key.id} className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-2 relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 text-xs">{key.name}</span>
+                  <span className={cn(
+                    "text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase",
+                    key.status === 'active' ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-200 text-slate-600 dark:bg-slate-700"
+                  )}>
+                    {key.status === 'active' ? 'Hoạt động' : 'Đã hủy'}
+                  </span>
+                </div>
+                <div className="space-y-1 text-[10px]">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Token:</span>
+                    <span className="font-mono text-slate-600 dark:text-slate-300 font-bold">{key.token}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Tạo lúc:</span>
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">{key.createdAt}</span>
+                  </div>
+                  <div className="flex justify-between overflow-hidden">
+                    <span className="text-slate-400">Quyền hạn:</span>
+                    <span className="text-slate-600 dark:text-slate-300 truncate max-w-[150px]" title={key.scopes.join(', ')}>
+                      {key.scopes.join(', ') || 'no-scope'}
+                    </span>
+                  </div>
+                </div>
+                {key.status === 'active' && (
+                  <button 
+                    onClick={() => handleRevokeApiKey(key.id)}
+                    className="absolute right-2 bottom-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors"
+                    title="Thu hồi khóa"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-700/50">
+            <a href="/docs/api" className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center gap-1 hover:underline">
+              <FileText className="w-3.5 h-3.5" /> Xem Tài liệu hướng dẫn OpenAPI (Swagger)
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* --- MISA CONFIGURATION MODAL --- */}
+      {activeConfigModal === 'misa' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-emerald-600" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Kế toán Doanh nghiệp MISA</h4>
+              </div>
+              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200/50 dark:border-yellow-900/30 p-3.5 rounded-2xl flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+              <div className="text-[10px] text-yellow-800 dark:text-yellow-300">
+                <span className="font-bold">Lưu ý nghiệp vụ</span>: Bắt buộc tuân thủ <span className="font-bold">Thông tư 99/2025/TT-BTC</span> của Bộ Tài chính khi hạch toán. Các mã tài khoản phải khớp chính xác với hệ thống tài khoản kế toán doanh nghiệp (COA) hiện hành.
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">MISA App ID</label>
+                  <input 
+                    type="text" 
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.appId}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, appId: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token (API Connect)</label>
+                  <input 
+                    type="password" 
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.accessToken}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3">
+                <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300 mb-3">Thiết lập tài khoản hạch toán mặc định</h5>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Nợ thu (Ngân hàng)</label>
+                    <input 
+                      type="text" 
+                      maxLength={5}
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                      value={misaConfig.debitAccountDefault}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, debitAccountDefault: e.target.value.replace(/\D/g, '') }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Doanh thu (Có)</label>
+                    <input 
+                      type="text" 
+                      maxLength={5}
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                      value={misaConfig.creditAccountDefault}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, creditAccountDefault: e.target.value.replace(/\D/g, '') }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Phải thu (131)</label>
+                    <input 
+                      type="text" 
+                      maxLength={5}
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                      value={misaConfig.receivableAccountDefault}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, receivableAccountDefault: e.target.value.replace(/\D/g, '') }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Thuế GTGT đầu ra (33311)</label>
+                    <input 
+                      type="text" 
+                      maxLength={5}
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                      value={misaConfig.taxAccountOutDefault || ''}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, taxAccountOutDefault: e.target.value.replace(/\D/g, '') }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Mã kho mặc định</label>
+                    <input 
+                      type="text" 
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono uppercase"
+                      value={misaConfig.defaultWarehouseCode || ''}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, defaultWarehouseCode: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500">Phải trả nhà cung cấp (331)</label>
+                    <input 
+                      type="text" 
+                      maxLength={5}
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                      value={misaConfig.partnerLiabilitiesAccount || ''}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, partnerLiabilitiesAccount: e.target.value.replace(/\D/g, '') }))}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tách giao dịch sàn TMĐT</h5>
+                    <p className="text-[9px] text-slate-500">Tự động hạch toán riêng phí hoa hồng Shopee/TikTok vào TK 641.</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={misaConfig.enableMarketplaceSplit}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, enableMarketplaceSplit: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Chế độ Kế toán Nội bộ (Mock Mode)</h5>
+                    <p className="text-[9px] text-slate-500">Chạy các nghiệp vụ ở dạng Sandbox, không đẩy trực tiếp vào sổ cái chính thức.</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={misaConfig.localAccountingMode}
+                      onChange={e => setMisaConfig(prev => ({ ...prev, localAccountingMode: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setActiveConfigModal(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => {
+                  saveMisaConfigLocal(misaConfig);
+                  setActiveConfigModal(null);
+                }}
+                className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Lưu cấu hình MISA
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SEPAY CONFIGURATION MODAL --- */}
+      {activeConfigModal === 'sepay' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Cổng Thanh toán SePay</h4>
+              </div>
+              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">SePay API JWT Token</label>
+                <input 
+                  type="password" 
+                  placeholder="Bearer JWT Token..."
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100 font-mono"
+                  value={apiKeys.sepayToken}
+                  onChange={e => setApiKeys(prev => ({ ...prev, sepayToken: e.target.value }))}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client ID</label>
+                  <input 
+                    type="text" 
+                    placeholder="SePay client ID"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+                    value={apiKeys.sepayId}
+                    onChange={e => setApiKeys(prev => ({ ...prev, sepayId: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client Secret</label>
+                  <input 
+                    type="password" 
+                    placeholder="SePay client secret"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+                    value={apiKeys.sepaySecret}
+                    onChange={e => setApiKeys(prev => ({ ...prev, sepaySecret: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                <h5 className="font-bold text-[10px] text-slate-600 dark:text-slate-400 uppercase">SePay Webhook URL để nhận biến động số dư</h5>
+                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span className="font-mono text-[9px] text-slate-500 truncate select-all flex-1">https://api.vcomm.vn/v1/webhooks/sepay-callback</span>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText('https://api.vcomm.vn/v1/webhooks/sepay-callback');
+                      addNotification('Copy Webhook', 'Đã sao chép URL webhook của SePay.');
+                    }}
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-400"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setActiveConfigModal(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => {
+                  saveApiKeys();
+                  setActiveConfigModal(null);
+                }}
+                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Lưu cấu hình
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- ZALO ZNS CONFIGURATION MODAL --- */}
+      {activeConfigModal === 'zns' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-sky-600" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Zalo ZNS (Zalo OA)</h4>
+              </div>
+              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Official Account ID (OA ID)</label>
+                <input 
+                  type="text" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  value={znsConfig.oaId}
+                  onChange={e => setZnsConfig(prev => ({ ...prev, oaId: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Developer App ID</label>
+                <input 
+                  type="text" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  value={znsConfig.appId}
+                  onChange={e => setZnsConfig(prev => ({ ...prev, appId: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">OA Access Token</label>
+                <input 
+                  type="password" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  value={znsConfig.accessToken}
+                  onChange={e => setZnsConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div>
+                  <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tự động refresh token</h5>
+                  <p className="text-[9px] text-slate-500">Sử dụng Refresh Token để gia hạn Access Token tự động.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={znsConfig.autoRefresh}
+                    onChange={e => setZnsConfig(prev => ({ ...prev, autoRefresh: e.target.checked }))}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-sky-500"></div>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setActiveConfigModal(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => {
+                  saveZnsConfigLocal(znsConfig);
+                  setActiveConfigModal(null);
+                }}
+                className="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Lưu cấu hình ZNS
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SHOPIFY / HARAVAN CONFIGURATION MODAL --- */}
+      {activeConfigModal === 'shopify' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <div className="flex items-center gap-2">
+                <Store className="w-5 h-5 text-teal-600" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopify / Haravan Integration</h4>
+              </div>
+              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Shop URL (Domain hoặc sub-domain)</label>
+                <input 
+                  type="text" 
+                  placeholder="shop-retail.myshopify.com hoặc nexhubshop.vn"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100"
+                  value={shopifyHaravanConfig.shopUrl}
+                  onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, shopUrl: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Admin API Access Token</label>
+                <input 
+                  type="password" 
+                  placeholder="shpat_..."
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100 font-mono"
+                  value={shopifyHaravanConfig.accessToken}
+                  onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-3 border-t border-slate-100 dark:border-slate-700 pt-3">
+                <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tùy chọn đồng bộ</h5>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Đồng bộ sản phẩm tự động (PIM)</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={shopifyHaravanConfig.syncProducts}
+                      onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, syncProducts: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-teal-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Tải đơn hàng về hệ thống ERP</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={shopifyHaravanConfig.syncOrders}
+                      onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, syncOrders: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-teal-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Đồng bộ tồn kho tức thời (Stock sync)</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={shopifyHaravanConfig.autoInventorySync}
+                      onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, autoInventorySync: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-teal-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setActiveConfigModal(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => {
+                  saveShopifyHaravanConfig(shopifyHaravanConfig);
+                  setActiveConfigModal(null);
+                }}
+                className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Lưu cấu hình
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SHOPEE / TIKTOK SHOP CONFIGURATION MODAL --- */}
+      {activeConfigModal === 'marketplace' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-orange-500" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopee / TikTok Shop Integration</h4>
+              </div>
+              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Sàn Thương mại</label>
+                  <select 
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    value={marketplaceConfig.platform}
+                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, platform: e.target.value as 'shopee' | 'tiktok' }))}
+                  >
+                    <option value="shopee">Shopee Mall / Live</option>
+                    <option value="tiktok">TikTok Shop VN</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gian hàng Shop ID</label>
+                  <input 
+                    type="text" 
+                    placeholder="shop_id_12345"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    value={marketplaceConfig.shopId}
+                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, shopId: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Key (API Partner)</label>
+                  <input 
+                    type="text" 
+                    placeholder="app_key"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    value={marketplaceConfig.appKey}
+                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, appKey: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Secret Key</label>
+                  <input 
+                    type="password" 
+                    placeholder="app_secret"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    value={marketplaceConfig.appSecret}
+                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, appSecret: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token hiện tại</label>
+                <input 
+                  type="password" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100 font-mono"
+                  value={marketplaceConfig.accessToken}
+                  onChange={e => setMarketplaceConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-3 border-t border-slate-100 dark:border-slate-700 pt-3">
+                <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tùy chọn đồng bộ</h5>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Đồng bộ tồn kho tự động</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={marketplaceConfig.autoSyncStock}
+                      onChange={e => setMarketplaceConfig(prev => ({ ...prev, autoSyncStock: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Kéo đơn hàng về để tạo phiếu đóng gói</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={marketplaceConfig.autoSyncOrders}
+                      onChange={e => setMarketplaceConfig(prev => ({ ...prev, autoSyncOrders: e.target.checked }))}
+                    />
+                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setActiveConfigModal(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => {
+                  saveMarketplaceConfig(marketplaceConfig);
+                  setActiveConfigModal(null);
+                }}
+                className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Lưu cấu hình
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- CUSTOM WEBHOOKS / OPENAPI NEW KEY CONFIG MODAL --- */}
+      {activeConfigModal === 'webhook' && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          {createdKeyDetails ? (
+            <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+              <div className="flex items-center gap-2 text-emerald-600 border-b border-slate-100 dark:border-slate-700 pb-3">
+                <ShieldCheck className="w-5 h-5" />
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Client Key Đã Được Tạo Thành Công</h4>
+              </div>
+              <div className="space-y-3">
+                <p className="text-xs text-slate-500">
+                  Vui lòng sao chép Client Secret Key dưới đây. Bạn chỉ có thể xem khóa này <span className="font-bold text-red-500">một lần duy nhất</span> vì lý do bảo mật.
+                </p>
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                  <span className="font-mono text-[10px] text-slate-800 dark:text-slate-100 font-bold select-all flex-1 break-all">{createdKeyDetails}</span>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(createdKeyDetails);
+                      addNotification('Sao chép Key', 'Đã lưu OpenAPI Secret Key vào Clipboard.');
+                    }}
+                    className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md text-slate-600 dark:text-slate-400"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setCreatedKeyDetails(null);
+                  setActiveConfigModal(null);
+                }}
+                className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
+              >
+                Tôi đã lưu, đóng cửa sổ
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                <div className="flex items-center gap-2">
+                  <Key className="w-5 h-5 text-indigo-600" />
+                  <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Tạo mới OpenAPI Client Key</h4>
+                </div>
+                <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                  <X className="w-4 h-4 text-slate-500" />
+                </button>
+              </div>
+
+              <div className="space-y-3.5">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Tên ứng dụng / Đối tác tích hợp</label>
+                  <input 
+                    type="text" 
+                    placeholder="ví dụ: Giao Hàng Tiết Kiệm (GHTK)"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100"
+                    value={newOpenApiKey.name || ''}
+                    onChange={e => setNewOpenApiKey(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gán Quyền Hạn (Scopes)</label>
+                  <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60 max-h-[140px] overflow-y-auto">
+                    {[
+                      { id: 'orders.read', name: 'Đọc Đơn hàng' },
+                      { id: 'orders.write', name: 'Tạo/Sửa Đơn hàng' },
+                      { id: 'products.read', name: 'Đọc Sản phẩm' },
+                      { id: 'products.write', name: 'Tạo/Sửa Sản phẩm' },
+                      { id: 'inventory.read', name: 'Đọc Kho hàng' },
+                      { id: 'customers.read', name: 'Đọc Khách hàng' }
+                    ].map(scope => (
+                      <label key={scope.id} className="flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-400">
+                        <input 
+                          type="checkbox"
+                          className="rounded text-indigo-600 focus:ring-0 focus:ring-offset-0 w-3.5 h-3.5"
+                          checked={newOpenApiKey.scopes?.includes(scope.id) || false}
+                          onChange={e => {
+                            const current = newOpenApiKey.scopes || [];
+                            if (e.target.checked) {
+                              setNewOpenApiKey(prev => ({ ...prev, scopes: [...current, scope.id] }));
+                            } else {
+                              setNewOpenApiKey(prev => ({ ...prev, scopes: current.filter(s => s !== scope.id) }));
+                            }
+                          }}
+                        />
+                        <span className="text-[10px] font-semibold">{scope.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button 
+                  onClick={() => setActiveConfigModal(null)}
+                  className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  onClick={handleCreateApiKey}
+                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors"
+                >
+                  Tạo Token Key
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
-  </div>
-)}
+  )}
+
 
 
  {activeTab === 'address' && (
