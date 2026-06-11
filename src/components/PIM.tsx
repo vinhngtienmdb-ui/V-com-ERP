@@ -57,20 +57,27 @@ export function PIM() {
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
  const [loading, setLoading] = useState(true);
  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
+ const seedingRef = useRef(false);
  
  useEffect(() => {
  const unsub = onSnapshot(collection(db, 'products'), (snap) => {
  let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
  data = data.filter(p => !['Đồ ăn', 'Đồ uống', 'Thức ăn', 'Cà phê', 'Trà'].includes(p.category));
  setProducts(data);
- if (data.length === 0) seedDemoPimProducts();
+ 
+ const hasNexhub = data.some(p => p.sku === 'bundle-16' || p.sku === '8934669241349x2');
+ if ((data.length === 0 || !hasNexhub) && !seedingRef.current) {
+ seedingRef.current = true;
+ seedDemoPimProducts(data);
+ }
  setLoading(false);
  });
  return () => unsub();
  }, []);
 
- const seedDemoPimProducts = async () => {
+ const seedDemoPimProducts = async (existingProducts: Product[] = []) => {
  console.log("Seeding PIM products...");
+ const existingSkus = new Set(existingProducts.map(p => p.sku));
  const demoItems = [
  {
  name: 'iPhone 15 Pro Max 256GB - VN/A',
@@ -150,11 +157,13 @@ export function PIM() {
  ...nexhubProducts
  ];
  for (const item of demoItems) {
+ if (!existingSkus.has(item.sku)) {
  await addDoc(collection(db, 'products'), {
  ...item,
  createdAt: serverTimestamp(),
  updatedAt: serverTimestamp()
  });
+ }
  }
  };
 
