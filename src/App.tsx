@@ -294,7 +294,7 @@ function AppLayout() {
           (key === 'fs_cache_docs_customers' && !cached.includes('CUST-001')) ||
           (key === 'fs_cache_docs_device_leases' && !cached.includes('LEAS-001')) ||
           (key === 'fs_cache_docs_finance_transactions' && !cached.includes('TX-HM-01')) ||
-          (key === 'fs_cache_docs_products' && !cached.includes('APP-IP15PM-256'));
+          (key === 'fs_cache_docs_products' && !cached.includes('8934669241349x2'));
           
         if (needsSeed) {
           const docsData = dataArray.map(item => ({
