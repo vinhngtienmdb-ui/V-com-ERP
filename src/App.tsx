@@ -37,7 +37,6 @@ const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m =
 const AIOperations = React.lazy(() => import('./components/AIOperations').then(m => ({ default: m.AIOperations })));
 const AIChatBot = React.lazy(() => import('./components/AIChatBot').then(m => ({ default: m.AIChatBot })));
 const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m => ({ default: m.OrgStructure })));
-const IPosModule = React.lazy(() => import('./components/IPos').then(m => ({ default: m.IPosModule })));
 const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
 const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
 const RequestHub = React.lazy(() => import('./components/RequestHub').then(m => ({ default: m.RequestHub })));
@@ -46,8 +45,6 @@ const DocumentManager = React.lazy(() => import('./components/DocumentManager').
 const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
 const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
 const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
-
-const IPosSettings = React.lazy(() => import('./components/IPosSettings').then(m => ({ default: m.IPosSettings })));
 
 import { useAuth } from './context/AuthContext';
 import { useSepayListener } from './hooks/useSepayListener';
@@ -248,7 +245,6 @@ function AppLayout() {
   <Suspense fallback={<LoadingScreen />}>
             <Routes>
     <Route path="/" element={<Home />} />
-    <Route path="/ipos" element={<IPosModule />} />
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/orders" element={<Orders />} />
     <Route path="/pim" element={<PIM />} />
@@ -279,7 +275,6 @@ function AppLayout() {
     <Route path="/contracts" element={<ContractManager />} />
     <Route path="/documents" element={<DocumentManager />} />
     <Route path="/signature" element={<SignatureHub />} />
-    <Route path="/ipos-settings" element={<IPosSettings />} />
     <Route path="/ai-ops" element={<AIOperations />} />
     <Route path="/org" element={<OrgStructure />} />
     <Route path="/vcomm-supermarket" element={<VCommSupermarket />} />

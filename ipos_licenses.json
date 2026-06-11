@@ -1,0 +1,24 @@
+[
+  {
+    "id": "LIC-001",
+    "storeId": "ST-01",
+    "storeName": "VComm Retail - Chi nhánh Quận 1",
+    "licenseType": "SaaS Premium",
+    "statusLabel": "Hoạt động",
+    "expiresAt": "2027-12-31 23:59:59",
+    "customDomain": "pos.q1.vcommretail.vn",
+    "apiToken": "vcomm_live_ipos_key_xyz123",
+    "maxRegisters": 5
+  },
+  {
+    "id": "LIC-002",
+    "storeId": "ST-02",
+    "storeName": "VComm SmartMart - Cầu Giấy",
+    "licenseType": "SaaS Standard",
+    "statusLabel": "Hoạt động",
+    "expiresAt": "2026-12-31 23:59:59",
+    "customDomain": "pos.caugiay.smartmart.vn",
+    "apiToken": "vcomm_live_ipos_key_cg456",
+    "maxRegisters": 2
+  }
+]

@@ -21,9 +21,8 @@ export function Header() {
   const viewSettingsRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
-  const { activeStore } = useStore();
-  const isIPos = location.pathname.startsWith('/ipos');
-
+  // Removed activeStore and isIPos since iPOS is now a standalone application
+  
   useEffect(() => {
     if (hideCharts) {
       document.body.classList.add('hide-app-charts');
@@ -57,20 +56,6 @@ export function Header() {
   return (
   <header className="h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-slate-300/50">
   <div className="header-title">
-  {isIPos ? (
-    <div>
-      <h1 className="font-serif tracking-tight text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-        VComm <span className="text-[#2563EB]">iPOS Terminal</span>
-        <span className="text-[10px] px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-sans font-bold flex items-center gap-1.5 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          ONLINE SYNC
-        </span>
-      </h1>
-      <p className="text-[11px] md:text-xs text-slate-600 font-medium mt-1">
-        Cửa hàng đang vận hành: <strong className="text-[#2563EB]">{activeStore?.name || 'Chi nhánh mặc định'}</strong>
-      </p>
-    </div>
-  ) : (
     <div>
       <h1 className="font-serif tracking-tight text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
       {'Chào buổi sáng'}, {staffInfo?.name || ('Quản trị hệ thống')}
@@ -79,7 +64,6 @@ export function Header() {
       {`Hệ thống vận hành ổn định. Có ${unreadCount} thông báo mới.`}
       </p>
     </div>
-  )}
   </div>
 
   <div className="flex items-center gap-4 md:gap-6">

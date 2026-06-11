@@ -323,6 +323,7 @@ const SETTINGS_MODULE_GROUPS = [
  { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cấp API token và bắn sự kiện Server', color: 'rose' },
  { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare, desc: 'Cấu hình API gửi tin nhắn Zalo/SMS', color: 'cyan' },
 	{ id: 'saas_subscription', label: 'Quản lý SaaS', icon: ShieldCheck, desc: 'Giấy phép thuê bao SaaS, hạn mức tài nguyên hệ thống, dữ liệu cô lập và hóa đơn', color: 'emerald' },
+		{ id: 'ipos_licenses', label: 'Bản quyền iPOS', icon: Tablet, desc: 'Quản lý bản quyền theo chi nhánh, thiết lập custom domain và token API đối soát', color: 'blue' },
  ]
  }
 ];
@@ -364,7 +365,7 @@ import { usePreferences } from '../context/PreferencesContext';
 export function SettingsPage() {
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
  const { staffInfo } = useAuth();
- const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules'>('overview');
+ const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules' | 'ipos_licenses'>('overview');
  const [adminAuditLogs, setAdminAuditLogs] = useState<any[]>([]);
  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState<{
@@ -1083,6 +1084,7 @@ export function SettingsPage() {
     { id: 'stores', label: 'Quản lý Chuỗi cửa hàng', icon: Store },
     { id: 'inventory', label: 'Hàng hóa & Kho', icon: Package },
     { id: 'saas_subscription', label: 'Cấu hình SaaS & Đăng ký', icon: ShieldCheck },
+		{ id: 'ipos_licenses', label: 'Quản lý Bản quyền iPOS', icon: Tablet },
     { id: 'chart_of_accounts', label: 'Hệ thống tài khoản COA', icon: FileText },
     { id: 'workflow_rules', label: 'Quy trình No-code', icon: Zap },
     ].filter(t => t.id === activeTab).map(t => (
@@ -4716,6 +4718,10 @@ export function SettingsPage() {
 
 
 
+	{activeTab === 'ipos_licenses' && (
+		<IPosLicensesPanel />
+	)}
+
 	{activeTab === 'chart_of_accounts' && (
 		<div className="animate-in fade-in duration-300 space-y-6">
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -5406,3 +5412,460 @@ export function SettingsPage() {
  </>
  );
 }
+
+
+// ==========================================================
+// IPOS LICENSE MANAGEMENT PANEL COMPONENT
+// ==========================================================
+function IPosLicensesPanel() {
+  const [licenses, setLicenses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingLicense, setEditingLicense] = useState<any | null>(null);
+
+  // Modal Form States
+  const [formStoreName, setFormStoreName] = useState('');
+  const [formLicenseType, setFormLicenseType] = useState('SaaS Premium');
+  const [formCustomDomain, setFormCustomDomain] = useState('');
+  const [formApiToken, setFormApiToken] = useState('');
+  const [formMaxRegisters, setFormMaxRegisters] = useState(5);
+  const [formExpiresAt, setFormExpiresAt] = useState('2027-12-31');
+  const [formStatus, setFormStatus] = useState('Hoạt động');
+
+  useEffect(() => {
+    fetchLicenses();
+  }, []);
+
+  const fetchLicenses = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/ipos/licenses');
+      const data = await response.json();
+      if (data.status === 'success') {
+        setLicenses(data.licenses);
+      }
+    } catch (e) {
+      console.error('Failed to load licenses:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingLicense(null);
+    setFormStoreName('');
+    setFormLicenseType('SaaS Premium');
+    setFormCustomDomain('');
+    setFormApiToken(generateToken());
+    setFormMaxRegisters(5);
+    setFormExpiresAt('2027-12-31');
+    setFormStatus('Hoạt động');
+    setShowModal(true);
+  };
+
+  const handleOpenEditModal = (lic: any) => {
+    setEditingLicense(lic);
+    setFormStoreName(lic.storeName);
+    setFormLicenseType(lic.licenseType);
+    setFormCustomDomain(lic.customDomain || '');
+    setFormApiToken(lic.apiToken);
+    setFormMaxRegisters(lic.maxRegisters || 5);
+    setFormExpiresAt(lic.expiresAt.substring(0, 10));
+    setFormStatus(lic.statusLabel);
+    setShowModal(true);
+  };
+
+  const generateToken = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let rand = '';
+    for (let i = 0; i < 16; i++) {
+      rand += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return `vcomm_live_ipos_key_${rand}`;
+  };
+
+  const handleSaveLicense = async () => {
+    if (!formStoreName.trim() || !formApiToken.trim()) {
+      alert('Vui lòng nhập tên chi nhánh và khóa Token.');
+      return;
+    }
+
+    let updatedLicenses = [...licenses];
+    const newExpiresAt = formExpiresAt.includes(' ') ? formExpiresAt : `${formExpiresAt} 23:59:59`;
+
+    if (editingLicense) {
+      updatedLicenses = updatedLicenses.map(l => {
+        if (l.id === editingLicense.id) {
+          return {
+            ...l,
+            storeName: formStoreName,
+            licenseType: formLicenseType,
+            customDomain: formCustomDomain,
+            apiToken: formApiToken,
+            maxRegisters: Number(formMaxRegisters),
+            expiresAt: newExpiresAt,
+            statusLabel: formStatus
+          };
+        }
+        return l;
+      });
+    } else {
+      const newLicense = {
+        id: `LIC-${Math.floor(1000 + Math.random() * 9000)}`,
+        storeId: `ST-${Math.floor(10 + Math.random() * 89)}`,
+        storeName: formStoreName,
+        licenseType: formLicenseType,
+        customDomain: formCustomDomain,
+        apiToken: formApiToken,
+        maxRegisters: Number(formMaxRegisters),
+        expiresAt: newExpiresAt,
+        statusLabel: formStatus
+      };
+      updatedLicenses.push(newLicense);
+    }
+
+    try {
+      const response = await fetch('/api/ipos/licenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenses: updatedLicenses })
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        setLicenses(updatedLicenses);
+        setShowModal(false);
+      } else {
+        alert('Lưu bản quyền thất bại.');
+      }
+    } catch (e) {
+      console.error('Failed to save license:', e);
+      alert('Đã xảy ra lỗi khi kết nối máy chủ.');
+    }
+  };
+
+  const handleDeleteLicense = async (licId: string) => {
+    if (!confirm('Bạn có chắc chắn muốn xóa bản quyền này? Kết nối từ cửa hàng này sẽ bị cắt.')) {
+      return;
+    }
+
+    const updatedLicenses = licenses.filter(l => l.id !== licId);
+    try {
+      const response = await fetch('/api/ipos/licenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenses: updatedLicenses })
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        setLicenses(updatedLicenses);
+      }
+    } catch (e) {
+      console.error('Failed to delete license:', e);
+    }
+  };
+
+  const filteredLicenses = licenses.filter(l => 
+    l.storeName.toLowerCase().includes(search.toLowerCase()) ||
+    (l.customDomain || '').toLowerCase().includes(search.toLowerCase()) ||
+    l.apiToken.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="animate-in fade-in duration-350 space-y-6">
+      {/* Top Header Card */}
+      <div className="bg-white border border-slate-300 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
+            <Tablet className="w-5 h-5 text-blue-600" />
+            Danh sách Bản quyền & Chi nhánh iPOS
+          </h3>
+          <p className="text-xs text-slate-500 mt-0.5 font-medium">
+            Cấp phép sử dụng cho từng chi nhánh, cấu hình tên miền riêng và cấp khoá API Token xác thực.
+          </p>
+        </div>
+        <button
+          onClick={handleOpenAddModal}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border-0"
+        >
+          <Plus className="w-4 h-4" /> Cấp bản quyền mới
+        </button>
+      </div>
+
+      {/* Table Card */}
+      <div className="bg-white border border-slate-300 rounded-2xl shadow-sm overflow-hidden">
+        {/* Search Bar */}
+        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <input
+              type="text"
+              placeholder="Tìm theo tên chi nhánh, tên miền hoặc token..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full text-xs pl-9 pr-4 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none transition-all placeholder:text-slate-400 bg-white"
+            />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          </div>
+          <button
+            onClick={fetchLicenses}
+            className="p-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
+            title="Làm mới"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* License Table */}
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="p-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
+              <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
+              <span className="text-xs font-bold">Đang tải dữ liệu...</span>
+            </div>
+          ) : filteredLicenses.length === 0 ? (
+            <div className="p-12 text-center text-slate-500">
+              <p className="text-sm font-bold">Không tìm thấy bản quyền nào</p>
+              <p className="text-xs mt-1">Vui lòng bấm nút cấp bản quyền mới ở trên để bắt đầu.</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[80px]">Mã ID</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Chi nhánh / Cửa hàng</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Gói SaaS</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Tên miền riêng</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Khóa API Token</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Hạn sử dụng</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[100px]">Trạng thái</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px] text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLicenses.map((lic) => (
+                  <tr key={lic.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="p-4 text-xs font-mono font-bold text-slate-600">{lic.id}</td>
+                    <td className="p-4">
+                      <p className="text-xs font-bold text-slate-800">{lic.storeName}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Mã: {lic.storeId}</p>
+                    </td>
+                    <td className="p-4">
+                      <span className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider",
+                        lic.licenseType === 'SaaS Premium' 
+                          ? "bg-blue-50 border-blue-200 text-blue-700" 
+                          : "bg-slate-50 border-slate-200 text-slate-700"
+                      )}>
+                        {lic.licenseType}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      {lic.customDomain ? (
+                        <span className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                          <Link2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          {lic.customDomain}
+                        </span>
+                      ) : (
+                        <span className="text-xs italic text-slate-400">Mặc định</span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2 max-w-[150px]">
+                        <code className="text-xs text-slate-600 font-mono truncate" title={lic.apiToken}>{lic.apiToken}</code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(lic.apiToken);
+                            alert('Đã sao chép token thành công!');
+                          }}
+                          className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 cursor-pointer border-0 bg-transparent"
+                          title="Sao chép"
+                        >
+                          <Copy className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <p className="text-xs font-semibold text-slate-700">{lic.expiresAt.substring(0, 10)}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Máy POS: Max {lic.maxRegisters || 5}</p>
+                    </td>
+                    <td className="p-4">
+                      <span className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded-full inline-block text-center",
+                        lic.statusLabel === 'Hoạt động' 
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                          : lic.statusLabel === 'Tạm dừng'
+                            ? "bg-amber-50 text-amber-700 border border-amber-100"
+                            : "bg-rose-50 text-rose-700 border border-rose-100"
+                      )}>
+                        {lic.statusLabel}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right flex justify-end gap-1.5">
+                      <button
+                        onClick={() => handleOpenEditModal(lic)}
+                        className="p-1.5 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-lg transition-all cursor-pointer border-0 bg-transparent"
+                        title="Chỉnh sửa"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLicense(lic.id)}
+                        className="p-1.5 hover:bg-rose-50 text-slate-500 hover:text-rose-600 rounded-lg transition-all cursor-pointer border-0 bg-transparent"
+                        title="Xóa bản quyền"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* Add / Edit License Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] animate-in fade-in duration-200 p-4">
+          <div className="bg-white border border-slate-300 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Tablet className="w-5 h-5 text-blue-600" />
+                {editingLicense ? 'Chỉnh sửa Bản quyền iPOS' : 'Cấp Bản quyền iPOS Mới'}
+              </h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-1 hover:bg-slate-200 rounded text-slate-400 hover:text-slate-600 cursor-pointer border-0 bg-transparent"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              {/* Store Name */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Tên Chi nhánh / Cửa hàng</label>
+                <input
+                  type="text"
+                  value={formStoreName}
+                  onChange={(e) => setFormStoreName(e.target.value)}
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                  placeholder="Ví dụ: VComm Retail - Chi nhánh Hà Nội"
+                />
+              </div>
+
+              {/* License Type */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Gói Dịch vụ SaaS</label>
+                <select
+                  value={formLicenseType}
+                  onChange={(e) => setFormLicenseType(e.target.value)}
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                >
+                  <option value="SaaS Standard">SaaS Standard (Giới hạn máy)</option>
+                  <option value="SaaS Premium">SaaS Premium (Đầy đủ tính năng)</option>
+                </select>
+              </div>
+
+              {/* Custom Domain */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Tên miền riêng (Custom Domain)</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formCustomDomain}
+                    onChange={(e) => setFormCustomDomain(e.target.value)}
+                    className="w-full text-xs font-semibold text-slate-800 pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                    placeholder="Ví dụ: pos.hanoi.brand.vn"
+                  />
+                  <Globe className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Để trống nếu muốn sử dụng tên miền mặc định của hệ thống.</p>
+              </div>
+
+              {/* API Token Key */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Khóa OpenAPI Token</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={formApiToken}
+                      onChange={(e) => setFormApiToken(e.target.value)}
+                      className="w-full text-xs text-slate-800 font-mono pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                      placeholder="vcomm_live_ipos_key_..."
+                    />
+                    <Key className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
+                  <button
+                    onClick={() => setFormApiToken(generateToken())}
+                    className="px-3 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-white"
+                  >
+                    Tạo khóa
+                  </button>
+                </div>
+              </div>
+
+              {/* Max registers & Expiry Date row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Số máy POS tối đa</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={formMaxRegisters}
+                    onChange={(e) => setFormMaxRegisters(Number(e.target.value))}
+                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Hết hạn vào ngày</label>
+                  <input
+                    type="date"
+                    value={formExpiresAt}
+                    onChange={(e) => setFormExpiresAt(e.target.value)}
+                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Status */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Trạng thái Bản quyền</label>
+                <select
+                  value={formStatus}
+                  onChange={(e) => setFormStatus(e.target.value)}
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                >
+                  <option value="Hoạt động">Hoạt động (Active)</option>
+                  <option value="Tạm dừng">Tạm dừng (Suspended)</option>
+                  <option value="Hết hạn">Hết hạn (Expired)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-5 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleSaveLicense}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer border-0"
+              >
+                Lưu lại
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

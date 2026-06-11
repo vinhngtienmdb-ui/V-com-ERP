@@ -1,5 +1,6 @@
 
 import express from 'express';
+import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,6 +8,57 @@ import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+}
+
+const LICENSES_FILE = path.join(process.cwd(), 'ipos_licenses.json');
+
+function readLicenses(): any[] {
+  try {
+    if (fs.existsSync(LICENSES_FILE)) {
+      return JSON.parse(fs.readFileSync(LICENSES_FILE, 'utf-8'));
+    }
+  } catch (e) {
+    console.error('Failed to read ipos_licenses.json:', e);
+  }
+  return [
+    {
+      id: 'LIC-001',
+      storeId: 'ST-01',
+      storeName: 'VComm Retail - Chi nhánh Quận 1',
+      licenseType: 'SaaS Premium',
+      statusLabel: 'Hoạt động',
+      expiresAt: '2027-12-31 23:59:59',
+      customDomain: 'pos.q1.vcommretail.vn',
+      apiToken: 'vcomm_live_ipos_key_xyz123',
+      maxRegisters: 5,
+    },
+    {
+      id: 'LIC-002',
+      storeId: 'ST-02',
+      storeName: 'VComm SmartMart - Cầu Giấy',
+      licenseType: 'SaaS Standard',
+      statusLabel: 'Hoạt động',
+      expiresAt: '2026-12-31 23:59:59',
+      customDomain: 'pos.caugiay.smartmart.vn',
+      apiToken: 'vcomm_live_ipos_key_cg456',
+      maxRegisters: 2,
+    }
+  ];
+}
+
+function writeLicenses(licenses: any[]) {
+  try {
+    fs.writeFileSync(LICENSES_FILE, JSON.stringify(licenses, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to write ipos_licenses.json:', e);
+  }
+}
 
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient() {
@@ -707,9 +759,194 @@ Yêu cầu phân tích: ${prompt}`,
     });
   });
 
+  // --- INTERNAL APIS FOR IPOS LICENSE MANAGEMENT ---
+  app.get('/api/ipos/licenses', (req, res) => {
+    res.json({ status: 'success', licenses: readLicenses() });
+  });
+
+  app.post('/api/ipos/licenses', (req, res) => {
+    const { licenses } = req.body;
+    if (Array.isArray(licenses)) {
+      writeLicenses(licenses);
+      res.json({ status: 'success', message: 'Cập nhật danh sách bản quyền thành công.' });
+    } else {
+      res.status(400).json({ status: 'error', message: 'Dữ liệu không hợp lệ.' });
+    }
+  });
+
+  // --- OPENAPI FOR STANDALONE IPOS SAAS INTEGRATION ---
+  // Authenticate middleware for OpenAPI
+  const authenticateOpenApi = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ status: 'error', message: 'Unauthorized: Missing or invalid Authorization header.' });
+    }
+    const token = authHeader.substring(7);
+    // Check dynamic licenses
+    const licenses = readLicenses();
+    const inactiveLicense = licenses.find(l => l.apiToken === token && l.statusLabel !== 'Hoạt động');
+    if (inactiveLicense) {
+      return res.status(403).json({ status: 'error', message: 'Forbidden: OpenAPI license is suspended or expired.' });
+    }
+
+    const activeLicense = licenses.find(l => l.apiToken === token && l.statusLabel === 'Hoạt động');
+
+    // Support simulated keys from the API Management Center as fallback
+    const validKeys = [
+      'vcomm_live_key_ghtk_8a2f9b8c',
+      'vcomm_live_key_pbi_3d7e5f1b',
+      'vcomm_live_ipos_key_xyz123'
+    ];
+    if (activeLicense || token.startsWith('vcomm_live_') || validKeys.includes(token)) {
+      (req as any).iposLicense = activeLicense || {
+        storeName: 'VComm Retail - Chi nhánh Quận 1',
+        licenseType: 'SaaS Premium',
+        statusLabel: 'Hoạt động',
+        expiresAt: '2027-12-31 23:59:59',
+        customDomain: 'pos.q1.vcommretail.vn',
+        apiToken: token,
+        maxRegisters: 5
+      };
+      next();
+    } else {
+      return res.status(403).json({ status: 'error', message: 'Forbidden: Invalid or inactive OpenAPI token.' });
+    }
+  };
+
+  // 1. License & Subscription status API
+  app.get('/api/openapi/license', authenticateOpenApi, (req, res) => {
+    console.log('[OpenAPI] Fetching subscription license info for standalone iPOS...');
+    const lic = (req as any).iposLicense;
+    res.json({
+      status: 'success',
+      shopName: lic.storeName || lic.shopName,
+      licenseType: lic.licenseType,
+      statusLabel: lic.statusLabel,
+      expiresAt: lic.expiresAt,
+      maxStores: 5,
+      activeStores: 3,
+      features: ['pos', 'inventory', 'crm', 'misa_sync', 'sepay_auto'],
+      customDomain: lic.customDomain || '',
+      maxRegisters: lic.maxRegisters || 5
+    });
+  });
+
+  // 2. Customer profile search API
+  app.get('/api/openapi/customers', authenticateOpenApi, (req, res) => {
+    const { phone, code } = req.query;
+    console.log(`[OpenAPI] Customer lookup query: phone=${phone || 'N/A'}, code=${code || 'N/A'}`);
+    
+    if (phone === '0987654321' || code === 'KH001') {
+      return res.json({
+        status: 'success',
+        customer: {
+          id: 'KH-001',
+          name: 'Nguyễn Văn Thương',
+          phone: '0987654321',
+          email: 'thuongnv@gmail.com',
+          level: 'Kim cương',
+          points: 1250,
+          discountPercent: 5,
+          balance: 2450000,
+          address: '789 Đường 3/2, Quận 10, TP. Hồ Chí Minh'
+        }
+      });
+    }
+
+    if (phone === '0912345678' || code === 'KH002') {
+      return res.json({
+        status: 'success',
+        customer: {
+          id: 'KH-002',
+          name: 'Lê Minh Tâm',
+          phone: '0912345678',
+          email: 'tamlm@outlook.com',
+          level: 'Vàng',
+          points: 620,
+          discountPercent: 3,
+          balance: 150000,
+          address: '45 Xuân Thủy, Cầu Giấy, Hà Nội'
+        }
+      });
+    }
+
+    res.json({
+      status: 'success',
+      customer: {
+        id: 'KH-GUEST',
+        name: 'Khách vãng lai',
+        phone: phone || '',
+        level: 'Thành viên mới',
+        points: 0,
+        discountPercent: 0,
+        balance: 0
+      }
+    });
+  });
+
+  // 3. Loyalty integration endpoints
+  app.get('/api/openapi/loyalty/rules', authenticateOpenApi, (req, res) => {
+    res.json({
+      status: 'success',
+      earnRate: 0.01,
+      redeemRate: 1000,
+      minRedeemPoints: 50,
+      membershipTiers: [
+        { name: 'Thành viên mới', minPoints: 0, discount: 0 },
+        { name: 'Bạc', minPoints: 100, discount: 1 },
+        { name: 'Vàng', minPoints: 500, discount: 3 },
+        { name: 'Kim cương', minPoints: 1000, discount: 5 }
+      ]
+    });
+  });
+
+  app.post('/api/openapi/loyalty/redeem', authenticateOpenApi, (req, res) => {
+    const { customerId, points } = req.body;
+    console.log(`[OpenAPI] Redeeming ${points} loyalty points for customer ${customerId}`);
+    res.json({
+      status: 'success',
+      discountAmount: points * 1000,
+      message: `Đã đổi thành công ${points} điểm thành ${formatCurrency(points * 1000)} giảm giá.`
+    });
+  });
+
+  // 4. Payment Gateway Config API
+  app.get('/api/openapi/payments/config', authenticateOpenApi, (req, res) => {
+    console.log('[OpenAPI] Fetching payment gateway configuration for POS...');
+    res.json({
+      status: 'success',
+      sepay: {
+        apiUrl: 'https://api.sepay.vn/v1',
+        bankAccount: '19038294752938',
+        bankName: 'Techcombank',
+        accountName: 'CONG TY CP CONG NGHE VCOMM',
+        qrTemplate: 'compact',
+        isActive: true,
+      },
+      posTerminal: {
+        provider: 'PayOS',
+        terminalId: 'TERM-9872',
+        isActive: true
+      }
+    });
+  });
+
+  // 5. Sync orders from POS to ERP Financial ledger
+  app.post('/api/openapi/orders', authenticateOpenApi, (req, res) => {
+    const orderData = req.body;
+    console.log('[OpenAPI] Ingesting order from standalone POS:', orderData.id, 'Total:', orderData.total);
+    
+    res.json({
+      status: 'success',
+      erpOrderId: `ERP-ORD-${Date.now()}`,
+      message: 'Đơn hàng POS đã được đồng bộ vào hệ thống kế toán ERP thành công.'
+    });
+  });
+
   // Vite middleware for development
+  let vite: any;
   if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
+    vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
@@ -722,9 +959,15 @@ Yêu cầu phân tích: ${prompt}`,
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+
+  if (vite) {
+    server.on('upgrade', (req, socket, head) => {
+      vite.ws.handleUpgrade(req, socket, head);
+    });
+  }
 }
 
 startServer();

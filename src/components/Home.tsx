@@ -74,10 +74,10 @@ const FUNCTIONAL_GROUPS: FunctionalGroup[] = [
   {
     id: 'kinh_doanh_da_kenh',
     title: 'Kinh doanh Đa kênh',
-    desc: 'Bán hàng POS, đơn hàng, livestream và mạng xã hội.',
+    desc: 'Đơn hàng, livestream và mạng xã hội.',
     icon: ShoppingBag,
     color: 'indigo',
-    modulePaths: ['/ipos', '/orders', '/live', '/social']
+    modulePaths: ['/orders', '/live', '/social']
   },
   {
     id: 'san_pham_marketing',
