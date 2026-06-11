@@ -1,0 +1,479 @@
+[
+  {
+    "sku": "p_nex_1",
+    "id": "p_nex_1",
+    "name": "Combo 2 Túi 5,5Kg Bột Giặt Lix Đậm Đặc - Gấp Đôi Sức Mạnh Tẩy Sạch Vết Bẩn, Khửi Mùi Ẩm Mốc, Dùng Cho Giặt Máy & Tay",
+    "price": 378250,
+    "stock": 95,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_2",
+    "id": "p_nex_2",
+    "name": "Combo 2 Túi 5,5Kg Bột Giặt Lix Extra Hương Chanh - Làm Sạch Vết Bẩn Giúp Quần Áo Trắng Sáng, Dùng Cho Giặt Tay & Máy",
+    "price": 370005,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_3",
+    "id": "p_nex_3",
+    "name": "Combo 2 Túi 5,5Kg Bột Giặt Lix Sạch Thơm Hương Hoa - Khửi Mùi Ẩm Mốc, Lưu Hương Cả Ngày, Dùng Giặt Tay & Máy",
+    "price": 598000,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_4",
+    "id": "p_nex_4",
+    "name": "Combo 2 Túi 5.5KG Bột Giặt Lix Extra Hương Nước Hoa Gấp Đôi Sức Mạnh Giặt Tẩy, Quần Ao Sạch Thơm,Dùng Giặt Tay & Máy",
+    "price": 370140,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_5",
+    "id": "p_nex_5",
+    "name": "Combo 3 Can 3,3Kg Nước Giặt Lix Siêu Sạch Hương Hoàng Hôn Tím - Tẩy Sạch Vết Bẩn, Quần Áo Trắng Sáng, Không Bám Bẩn",
+    "price": 387600,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_6",
+    "id": "p_nex_6",
+    "name": "Combo 3 Can 3,5Kg Nước Rửa Chén Lix Siêu Đậm Đặc Hương Quế Và Cam Thơm Ấm Làm Sạch Bóng Vết Bẩn Dầu Mỡ, Bảo Vệ Da Tay",
+    "price": 268800,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_7",
+    "id": "p_nex_7",
+    "name": "Combo 3 Can 3,6L Nước Lau Sàn Lix Sạch Thơm Linh Lan & Cam Bergamot - Công Thức Đậm Đặc Giúp Đuổi Côn Trùng Hiệu Quả",
+    "price": 450000,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_8",
+    "id": "p_nex_8",
+    "name": "Combo 3 Túi 3,2Kg Nước Giặt On1 Chống Lem Màu - Tẩy Sạch Mọi Vết Bẩn Giúp Quần Áo Mềm Mại, Chuyên Dùng Cho Máy Giặt",
+    "price": 654000,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_9",
+    "id": "p_nex_9",
+    "name": "Combo 10 Gói 33GR Chân Gà Ăn Liền Gu Trội - Vị Tùy Chọn Siêu Ngon, Dai Giòn Sựt Sựt, Ăn Liền Tiện Lợi",
+    "price": 105840,
+    "stock": 100,
+    "category": "c_okenki",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_10",
+    "id": "p_nex_10",
+    "name": "Combo Mix 50 Gói 33GR Chân Gà Ăn Liền Gu Trội - Nhiều Vị Siêu Ngon, Dai Giòn Sựt Sựt, Ăn Liền Tiện Lợi",
+    "price": 331200,
+    "stock": 100,
+    "category": "c_okenki",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_11",
+    "id": "p_nex_11",
+    "name": "Gói Ăn Vặt Giải Trí Tiện Lợi - Chân Gà Nhiều Vị Thích Hợp Cho Những Buổi Xem Phim",
+    "price": 66240,
+    "stock": 100,
+    "category": "c_okenki",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_12",
+    "id": "p_nex_12",
+    "name": "Gói Ăn Vặt Giòn Ngon Gu Trội & Okenki Tiện Lợi – Chân Gà & Rong Biển Nhiều Vị, Giòn Ngon Khó Cưỡng",
+    "price": 139000,
+    "stock": 100,
+    "category": "c_okenki",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_13",
+    "id": "p_nex_13",
+    "name": "Gói Bột Giặt Đại Gia Đình Tiện Lợi - Giặt Sạch Nhanh Chóng Và Tiết Kiệm Hơn Mỗi Ngày",
+    "price": 332640,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_14",
+    "id": "p_nex_14",
+    "name": "Gói Chăm Sóc Da Colorkey & Alba Tiện Lợi - Làm Sạch Và Cấp Ẩm Dịu Nhẹ Cho Da",
+    "price": 360740,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_15",
+    "id": "p_nex_15",
+    "name": "Gói Chăm Sóc Gia Đình & Nhà Cửa Lix Tiện Lợi – Làm Sạch Từ Quần Áo Đến Gian Bếp Gia Đình Bạn",
+    "price": 492150,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_16",
+    "id": "p_nex_16",
+    "name": "Gói Chăm Sóc Nhà Cửa Lix & On1 Tiện Lợi - Giải Pháp Làm Sạch Toàn Diện Cho Gia Đình",
+    "price": 277200,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_17",
+    "id": "p_nex_17",
+    "name": "Combo 3 Can 3,5Kg Nước Rửa Chén Lix Siêu Đậm Đặc Hương Bưởi Hồng & Hoa Anh Đào, Sạch Bóng Vết Bẩn Dầu Mỡ, Bảo Vệ Da Tay",
+    "price": 268800,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_18",
+    "id": "p_nex_18",
+    "name": "Combo 3 Can 3,5KG Nước Rửa Chén Lix Siêu Sạch Hương Chanh Làm Sạch Vết Bẩn Dầu Mỡ, Khử Mùi Tanh Trên Chén Dĩa",
+    "price": 328440,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_19",
+    "id": "p_nex_19",
+    "name": "Combo 3 Túi 3,2Kg Nước Giặt Xả On1 - Bảo Vệ Sợi Vải, Lưu Hương Lâu, Giúp Quần Áo Mềm Mại, Chuyên Dùng Cho Máy Giặt",
+    "price": 601680,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_20",
+    "id": "p_nex_20",
+    "name": "Combo 3 Túi 3,2Kg Nước Rửa Chén On1 Tinh Dầu Chanh Xả - Làm Sạch Vết Bẩn Dầu Mỡ Trên Chén Dĩa, Mùi Hương Thiên Nhiên",
+    "price": 441600,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_21",
+    "id": "p_nex_21",
+    "name": "Combo 4 Chai 1KG Nước Rửa Chén On1 Tinh Dầu Gừng Xả - Làm Sạch Vết Bẩn Dầu Mỡ, Khử Mùi Tanh Khi Sử Dụng",
+    "price": 282256,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_22",
+    "id": "p_nex_22",
+    "name": "Combo 4 Chai 500G Gel Tẩy Bồn Cầu Và Nhà Tắm On1 - Diệt Sạch Vi Khuẩn, Tẩy Ố, Làm Trắng Nhà Tắm Hiệu Quả",
+    "price": 182000,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_23",
+    "id": "p_nex_23",
+    "name": "Combo 4 Chai 500ml Nước Lau Bếp On1 Tinh Dầu Chanh Yuzu - Tẩy Sạch Mảng Bám Dầu Mỡ, Khửi Mùi Hiệu Quả",
+    "price": 215280,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_24",
+    "id": "p_nex_24",
+    "name": "Combo 4 Chai 500ml Nước Lau Đa Năng On1 Hương Bamboo Charcoal, Sạch Nhanh Vết Bẩn, Dùng Trên Nhiều Bề Mặt",
+    "price": 220800,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_25",
+    "id": "p_nex_25",
+    "name": "Combo 4 Chai 500ml Nước Lau Kính On1 Tinh Dầu Trà Tràm Làm Sạch Bề Măt Kính, Tạo Bề Mặt Ngăn Bám Bụi",
+    "price": 205712,
+    "stock": 100,
+    "category": "c_on1",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_26",
+    "id": "p_nex_26",
+    "name": "Combo 2 Mascara COLORKEY - Giúp Mi Dài & Tơi, Tạo Cảm Giác Tự Nhiên, Nhanh Khô, Không Lem Khi Sử Dụng",
+    "price": 311040,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_27",
+    "id": "p_nex_27",
+    "name": "Combo 2 Son Bóng COLORKEY Airy - Chất Son Bền Màu Lâu Trôi, Tạo Hiệu Ứng Gương",
+    "price": 388800,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_28",
+    "id": "p_nex_28",
+    "name": "Combo 2 Son Kem Lì COLORKEY Airy Velvet - Chất Kem Mỏng Mịn, Bền Màu Lâu Trôi",
+    "price": 418000,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_29",
+    "id": "p_nex_29",
+    "name": "Gói Kết Hợp Son Airy Velvet & Son Bouncy Creamy COLORKEY - Chất Kem Mỏng Mịn, Dành Cho Môi Khô & Dạng Hũ Tiện Lợi",
+    "price": 432855,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_30",
+    "id": "p_nex_30",
+    "name": "Gói Kết Hợp Son Airy Velvet & Son Bouncy Creamy COLORKEY Tiện Lợi – Kết Cấu Mềm Mượt, Che Phủ Môi Khô Hiệu Quả",
+    "price": 346284,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_31",
+    "id": "p_nex_31",
+    "name": "Gói Kết Hợp Son Water Tint & Lip Mud COLORKEY Tiện Lợi - Dưỡng Ẩm, Lên Màu Chuẩn, Chất Nhung Mềm Mịn, Che Vân Môi",
+    "price": 639000,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_32",
+    "id": "p_nex_32",
+    "name": "Gói Son COLORKEY Water Tint & Lip Mud Tiện Lợi – Mềm Mịn, Che Vân Môi, Giữ Màu Bền Lâu",
+    "price": 523980,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_33",
+    "id": "p_nex_33",
+    "name": "Gói Son Kem Lì & Son Bóng COLORKEY Tiện Lợi - Chất Son Bền Màu Lâu Trôi, Dễ Phối Nhiều Tone Makeup Khác Nhau",
+    "price": 322720,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_34",
+    "id": "p_nex_34",
+    "name": "Combo 3 Hũ 230G Sa Tế Bào Ngư Dầu Oliu Ông Chà Và - Vị Cay Hài Hòa Kết Hợp Nguyên Liệu Hải Sản Cao Cấp",
+    "price": 303600,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_35",
+    "id": "p_nex_35",
+    "name": "Combo 3 Hũ 230G Sa Tế Sò Điệp XO Dầu Oliu Ông Chà Và - Vị Cay Ngon Đậm Đà Từ Hải Sản Cao Cấp",
+    "price": 270480,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_36",
+    "id": "p_nex_36",
+    "name": "Gói Gia Vị & Đồ Cay Ông Chà Và Tiện Lợi - Phù Hợp Ăn Vặt, Nấu Nướng, Trộn Món Cay, Mang Đến Trải Nghiệm Cay Đậm Đà",
+    "price": 232000,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_37",
+    "id": "p_nex_37",
+    "name": "Gói Gia Vị Bếp Ông Chà Và Tiện Lợi - Sa Tế, Tương Ớt, Muối Kim Sa Mang Lại Vị Ngon Cho Mâm Cơm Ngày Tết",
+    "price": 139000,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_38",
+    "id": "p_nex_38",
+    "name": "Gói Gia Vị Tết Sum Vầy Ông Chà Và Tiện Lợi – Đủ Vị Cay Mặn Ngọt Cho Mâm Cơm Tết Đoàn Viên",
+    "price": 428000,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_39",
+    "id": "p_nex_39",
+    "name": "Gói Gia Vị Và Mì Udon Ông Chà Và Tiện Lợi - Mì Udon Khô Kết Hợp Sa Tế Bào Ngư & Rong Biển Thơm Giòn",
+    "price": 203000,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_40",
+    "id": "p_nex_40",
+    "name": "Gói Sa Tế Và Tương Chấm Ông Chà Và Tiện Lợi - Đa Dạng Gia Vị Cho Gian Bếp Việt",
+    "price": 131750,
+    "stock": 100,
+    "category": "c_ongchava",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_41",
+    "id": "p_nex_41",
+    "name": "Voucher B",
+    "price": 39000,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_42",
+    "id": "p_nex_42",
+    "name": "Gói voucher A",
+    "price": 39000,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_43",
+    "id": "p_nex_43",
+    "name": "Gói Vệ Sinh Đa Năng Lix & On1 Tiện Lợi - Hỗ Trợ Lau Dọn Và Tẩy Rửa Hiệu Quả",
+    "price": 240300,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_44",
+    "id": "p_nex_44",
+    "name": "Combo 2 Chai 50ml  Xịt Khoáng Alba Baby - Hỗ Trợ Làm Dịu Da, Giảm Hăm Và Bảo Vệ Da Nhạy Cảm Cho Bé",
+    "price": 255000,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_45",
+    "id": "p_nex_45",
+    "name": "Gói Snack Rong Biển Và Chân Gà Tiện Lợi - Kết Hợp Ăn Vặt Đậm Vị Và Giòn Ngon",
+    "price": 159800,
+    "stock": 100,
+    "category": "c_okenki",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_46",
+    "id": "p_nex_46",
+    "name": "Gói Kẻ Mắt Và Chuốt Mi Colorkey Tiện Lợi - Hoàn Thiện Makeup Mắt Nhanh Gọn",
+    "price": 280407,
+    "stock": 100,
+    "category": "c_colorkey",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_47",
+    "id": "p_nex_47",
+    "name": "Gói Giặt Xả Và Lau Sàn Tiện Lợi - Nhà Cửa Sạch Thơm Mỗi Ngày",
+    "price": 391000,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_48",
+    "id": "p_nex_48",
+    "name": "Combo 3 Túi 2Kg Bột Giặt Lix Extra Hương Chanh Làm Sạch Vết Bẩn Giúp Quần Áo Trắng Sáng, Dùng Cho Giặt Tay & Máy",
+    "price": 175950,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_49",
+    "id": "p_nex_49",
+    "name": "Gói Xịt Khoáng Alba Skincare & Baby Tiện Lợi - Kết Hợp Chăm Sóc Da Cho Bé Và Người Lớn",
+    "price": 454750,
+    "stock": 100,
+    "category": "c_other",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_50",
+    "id": "p_nex_50",
+    "name": "Combo 2 Túi 3,2Kg Nước Giặt Lix Đậm Đặc -Gấp Đôi Sức Mạnh Tẩy Sạch Vết Bẩn, Khửi Mùi Ẩm Mốc, Bảo Vệ Da Tay",
+    "price": 225000,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_51",
+    "id": "p_nex_51",
+    "name": "Gói Giặt Giũ Và Vệ Sinh Lix & On1 Tiện Lợi - Làm Sạch Nhà Cửa Hiệu Quả Mỗi Ngày",
+    "price": 184500,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_52",
+    "id": "p_nex_52",
+    "name": "Gói Nhà Sạch Và Quần Áo Thơm Lix & On1 Tiện Lợi - Kết Hợp Giặt Giũ Và Lau Dọn",
+    "price": 225000,
+    "stock": 100,
+    "category": "c_lix",
+    "status": "in_stock"
+  },
+  {
+    "sku": "p_nex_53",
+    "id": "p_nex_53",
+    "name": "Gói Thực Phẩm Ăn Liền Bích Chi Tiện Lợi - Nhanh Gọn Và Dễ Chuẩn Bị",
+    "price": 143500,
+    "stock": 100,
+    "category": "c_bichchi",
+    "status": "in_stock"
+  }
+]
