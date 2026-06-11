@@ -79,81 +79,6 @@ export function PIM() {
  console.log("Seeding PIM products...");
  const existingSkus = new Set(existingProducts.map(p => p.sku));
  const demoItems = [
- {
- name: 'iPhone 15 Pro Max 256GB - VN/A',
- sku: 'APP-IP15PM-256',
- price: 34990000,
- costPrice: 31000000,
- margin: 11.4,
- stock: 45,
- category: 'Thiết bị số',
- brand: 'Apple',
- sellerName: 'VComm Electronics',
- status: 'in_stock',
- image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80',
- weight: '221',
- dimensions: '159.9 x 76.7 x 8.25'
- },
- {
- name: 'MacBook Air M2 13.6" 8CPU 8GPU 8GB/256GB',
- sku: 'APP-MBA-M2-8-256',
- price: 26490000,
- costPrice: 23500000,
- margin: 11.2,
- stock: 20,
- category: 'Thiết bị số',
- brand: 'Apple',
- sellerName: 'VComm Electronics',
- status: 'in_stock',
- image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80',
- weight: '1240',
- dimensions: '304.1 x 215 x 11.3'
- },
- {
- name: 'Bàn phím cơ không dây Logitech MX Mechanical Mini',
- sku: 'LOG-MX-MECH-MINI',
- price: 3590000,
- costPrice: 2800000,
- margin: 22,
- stock: 120,
- category: 'Phụ kiện',
- brand: 'Logitech',
- sellerName: 'VComm Accessories',
- status: 'in_stock',
- image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400&q=80',
- weight: '612',
- dimensions: '312.6 x 131.5 x 26.1'
- },
- {
- name: 'Chuột không dây Logitech MX Master 3S',
- sku: 'LOG-MX-MASTER-3S',
- price: 2590000,
- costPrice: 1900000,
- margin: 26.6,
- stock: 85,
- category: 'Phụ kiện',
- brand: 'Logitech',
- sellerName: 'VComm Accessories',
- status: 'pending_approval',
- image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&q=80',
- weight: '141',
- dimensions: '124.9 x 84.3 x 51'
- },
- {
- name: 'Sony FE 24-70mm f/2.8 GM II',
- sku: 'SONY-SEL2470GM2',
- price: 45990000,
- costPrice: 40000000,
- margin: 13,
- stock: 8,
- category: 'Nhiếp ảnh',
- brand: 'Sony',
- sellerName: 'Camera Pro Studio',
- status: 'in_stock',
- image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80',
- weight: '695',
- dimensions: '87.8 x 119.9 x 87.8'
- },
  ...nexhubProducts
  ];
  for (const item of demoItems) {
@@ -1114,9 +1039,9 @@ export function PIM() {
  </div>
  </div>
 
- <div className="p-6 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+ <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
  {filteredProducts.map((product) => (
- <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-6 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
+ <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-4 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
  <div className="absolute top-4 left-4 z-20">
   <input 
     type="checkbox" 
@@ -1144,15 +1069,15 @@ export function PIM() {
  </div>
 
  {/* Image & Badges */}
- <div className="relative h-60 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-6 group-hover:shadow-sm transition-all">
+ <div className="relative h-44 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-4 group-hover:shadow-sm transition-all">
  <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover  transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
- <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[9px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
+ <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-[8px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
  {product.id}
  </div>
  {/* Status Badge */}
- <div className="absolute bottom-3 left-3 flex gap-2 z-10">
+ <div className="absolute bottom-2 left-2 flex gap-2 z-10">
  <span className={cn(
- "px-4 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-2 shadow-sm uppercase tracking-widest border backdrop-blur-md",
+ "px-2 py-1 rounded-md text-[8px] font-black flex items-center gap-1.5 shadow-sm uppercase tracking-wider border backdrop-blur-md",
  product.status === 'hidden' ? "bg-slate-600/90 text-[#FAF9F5] border-slate-500" :
  product.status === 'in_stock' ? "bg-emerald-500/90 text-[#FAF9F5] border-emerald-400" : "bg-amber-500/90 text-[#FAF9F5] border-amber-400"
  )}>
@@ -1166,67 +1091,67 @@ export function PIM() {
 
  {/* Info Area */}
  <div className="flex flex-col flex-1">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] font-black text-orange-700 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300 uppercase tracking-widest shadow-sm inline-block">
+ <div className="flex justify-between items-start mb-2">
+ <span className="text-[8px] font-black text-orange-700 bg-slate-100 px-2 py-1 rounded-md border border-slate-200 uppercase tracking-wider shadow-sm inline-block">
  {product.category}
  </span>
  </div>
- <h3 className="text-xl font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-5 flex-1">
+ <h3 className="text-sm font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-3 flex-1 h-10">
  {product.name}
  </h3>
 
- <div className="space-y-4 mb-6">
- <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg border border-slate-200">
- <div className="flex items-center gap-2.5 text-xs text-[#4B5563] font-bold">
- <ShieldCheck className="w-5 h-5 text-emerald-500" />
- <span className="truncate max-w-[120px]">{product.sellerName}</span>
+ <div className="space-y-2 mb-4">
+ <div className="flex justify-between items-center bg-slate-50 p-2.5 rounded-md border border-slate-200">
+ <div className="flex items-center gap-1.5 text-[10px] text-[#4B5563] font-bold">
+ <ShieldCheck className="w-4 h-4 text-emerald-500" />
+ <span className="truncate max-w-[90px]">{product.sellerName}</span>
  </div>
- <div className="flex items-center gap-2 text-xs text-[#6B7280] font-medium">
- <Hash className="w-4 h-4 text-orange-500" />
- <span className="font-mono text-[11px] uppercase font-black">{product.sku}</span>
+ <div className="flex items-center gap-1.5 text-[10px] text-[#6B7280] font-medium">
+ <Hash className="w-3.5 h-3.5 text-orange-500" />
+ <span className="font-mono text-[10px] uppercase font-black">{product.sku}</span>
  </div>
  </div>
 
- <div className="flex justify-between items-end px-2">
- <div className="space-y-1.5">
- <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest">Giá bán</p>
- <p className="text-2xl font-black text-[#111827] font-mono leading-none">
+ <div className="flex justify-between items-end px-1.5">
+ <div className="space-y-1">
+ <p className="text-[8px] text-[#6B7280] font-black uppercase tracking-widest">Giá bán</p>
+ <p className="text-lg font-black text-[#111827] font-mono leading-none">
  {formatCurrency(product.price)}
  </p>
  </div>
- <div className="text-right space-y-1.5">
- <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest flex items-center justify-end gap-1">
- <Target className="w-3.5 h-3.5" /> Profit
+ <div className="text-right space-y-1">
+ <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest flex items-center justify-end gap-0.5">
+ <Target className="w-3 h-3" /> Profit
  </p>
- <div className="flex items-baseline gap-2">
- <p className="text-lg font-black text-emerald-600 font-mono leading-none">
+ <div className="flex items-baseline gap-1">
+ <p className="text-sm font-black text-emerald-600 font-mono leading-none">
  +{formatCurrency(product.profit)}
  </p>
- <span className="text-[10px] font-black text-emerald-500/80 bg-emerald-50 px-1.5 py-0.5 rounded-lg border border-emerald-100">+{product.margin}%</span>
+ <span className="text-[8px] font-black text-emerald-500/80 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100">+{product.margin}%</span>
  </div>
  </div>
  </div>
 
- <div className="border-t border-slate-200 pt-4 mt-4 flex justify-between items-center px-2 relative z-20">
- <p className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest" title="Bao gồm phí vận chuyển, đóng gói,...">Chi phí ẩn (VC, Đóng gói...)</p>
+ <div className="border-t border-slate-200 pt-2.5 mt-2.5 flex justify-between items-center px-1.5 relative z-20">
+ <p className="text-[9px] text-[#6B7280] font-black uppercase tracking-widest" title="Bao gồm phí vận chuyển, đóng gói,...">Chi phí ẩn</p>
  <input 
  type="number"
  defaultValue={product.hiddenCosts || 0}
  onBlur={(e) => updateHiddenCost(product, Number(e.target.value))}
-                      className="w-28 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
+                      className="w-20 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-md px-2 py-1 text-[10px] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
                       placeholder="VD: 15000"
                     />
                   </div>
                   
-                  <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 mt-2 px-3 py-2">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trạng thái Ghi sổ</span>
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex justify-between items-center bg-slate-50 p-2 rounded-md border border-slate-200 mt-1.5 px-2 py-1.5">
+                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Ghi sổ</span>
+                    <div className="flex items-center gap-1">
                       {product.misaSynced ? (
-                        <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 uppercase tracking-wider">Đã ghi sổ 🟢</span>
+                        <span className="text-[8px] font-black text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded border border-emerald-200 uppercase tracking-wider">Đã ghi sổ 🟢</span>
                       ) : product.misaSyncError ? (
-                        <span className="text-[9px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 uppercase tracking-wider" title={product.misaSyncError}>Lỗi kiểm tra 🔴</span>
+                        <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1 py-0.5 rounded border border-rose-200 uppercase tracking-wider" title={product.misaSyncError}>Lỗi 🔴</span>
                       ) : (
-                        <span className="text-[9px] font-black text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider">Chờ ghi sổ 🟡</span>
+                        <span className="text-[8px] font-black text-slate-500 bg-slate-50 px-1 py-0.5 rounded border border-slate-200 uppercase tracking-wider">Chờ 🟡</span>
                       )}
                       <button
                         disabled={syncingProductId === product.id}
@@ -1242,9 +1167,9 @@ export function PIM() {
                             setSyncingProductId(null);
                           }
                         }}
-                        className="px-1.5 py-0.5 bg-slate-900 text-white rounded text-[9px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-1"
+                        className="px-1 py-0.5 bg-slate-900 text-white rounded text-[8px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-0.5"
                       >
-                        {syncingProductId === product.id && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
+                        {syncingProductId === product.id && <Loader2 className="w-2 h-2 animate-spin" />}
                         Sync
                       </button>
                     </div>
