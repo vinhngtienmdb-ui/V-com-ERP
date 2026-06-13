@@ -58,8 +58,7 @@ service cloud.firestore {
        allow get: if isSignedIn();
        allow list: if isSignedIn() && (
          isAdmin() || 
-         resource.data.email == request.auth.token.email ||
-         resource.data.assignedStoreId == request.headers.get('x-store-id', '') // Optional header if user implements it, but for now:
+         resource.data.email == request.auth.token.email
        );
        // Allow querying by email for RBAC check
        allow list: if isSignedIn() && resource.data.email == request.auth.token.email;
@@ -82,7 +81,7 @@ service cloud.firestore {
       allow read: if true; // Publicly readable for eMenu
       allow create: if isStaff();
       allow update: if isStaff() && isValidProduct(incoming()) && (
-        (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'price', 'name', 'category', 'updatedAt', 'sku'])) ||
+        isAdmin() ||
         (isStaff() && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'updatedAt']))
       );
       allow delete: if isAdmin();
@@ -161,6 +160,12 @@ service cloud.firestore {
     }
 
     // 5. Finance Transactions
+    match /finance_transactions/{txId} {
+      allow read: if isAdmin() || isStaff();
+      allow create: if isStaff() && (
+        incoming().createdAt is timestamp
+      );
+    }
     match /transactions/{txId} {
       allow read: if isAdmin() || isStaff();
       allow create: if isStaff() && (

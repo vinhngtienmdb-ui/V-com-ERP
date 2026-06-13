@@ -3,6 +3,7 @@
   "appId": "1:144075211960:web:0f40485758673843fda04d",
   "apiKey": "AIzaSyA6KACmjKFQNiZJyMlIuYn2S_TssIM4TWo",
   "authDomain": "multichat-1f8da.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-1e3b12e5-a3ed-4efd-9a51-f5e787287778",
   "storageBucket": "multichat-1f8da.firebasestorage.app",
   "messagingSenderId": "144075211960",
   "measurementId": ""
