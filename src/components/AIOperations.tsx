@@ -35,7 +35,7 @@ import { cn } from '../lib/utils';
 import { AiTaskResult } from '../types/erp';
 import { db, collection, addDoc } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const MOCK_AI_LOGS: AiTaskResult[] = [
  { id: 'AI-101', type: 'image_moderation', targetId: 'PRD-002', confidence: 0.98, status: 'flagged', result: { reason: 'Hình ảnh chứa watermark thương hiệu khác' }, timestamp: '10 phút trước' },
@@ -815,41 +815,16 @@ function AiDatabaseInspector() {
     }
   };
 
-  const detectChartKeys = (rows: any[]) => {
-    if (!rows || rows.length === 0) return null;
-    const firstRow = rows[0];
-    const keys = Object.keys(firstRow);
-    let labelKey = '';
-    let valueKey = '';
-
-    for (const k of keys) {
-      const val = firstRow[k];
-      if (typeof val === 'string' && !labelKey && k !== 'id' && k !== 'tenant_id') {
-        labelKey = k;
-      } else if ((typeof val === 'number' || (!isNaN(Number(val)) && typeof val !== 'boolean')) && !valueKey && k !== 'tenant_id') {
-        valueKey = k;
+  const chartConfig = (result as any)?.chartConfig;
+  const chartData = result?.rows.map(row => {
+    if (!chartConfig || chartConfig.type === 'none') return row;
+    const updatedRow = { ...row };
+    for (const key of chartConfig.yKeys || []) {
+      if (updatedRow[key] !== undefined) {
+        updatedRow[key] = Number(updatedRow[key]);
       }
     }
-    
-    // Fallbacks
-    if (!labelKey) {
-      labelKey = keys.find(k => typeof firstRow[k] === 'string') || keys[0];
-    }
-    if (!valueKey) {
-      valueKey = keys.find(k => typeof firstRow[k] === 'number' || (!isNaN(Number(firstRow[k])) && typeof firstRow[k] !== 'boolean')) || keys[1];
-    }
-
-    return labelKey && valueKey && labelKey !== valueKey ? { labelKey, valueKey } : null;
-  };
-
-  const chartKeys = result?.rows ? detectChartKeys(result.rows) : null;
-  // Convert numeric strings to numbers for charts
-  const chartData = result?.rows.map(row => {
-    if (!chartKeys) return row;
-    return {
-      ...row,
-      [chartKeys.valueKey]: Number(row[chartKeys.valueKey])
-    };
+    return updatedRow;
   }) || [];
 
   return (
@@ -935,31 +910,77 @@ function AiDatabaseInspector() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs flex flex-col min-h-[300px]">
               <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Đồ thị hóa kết quả (Visualizer)</h4>
               
-              {chartKeys ? (
+              {chartConfig && chartConfig.type !== 'none' && chartData.length > 0 ? (
                 <div className="flex-1 w-full min-h-[200px]">
                   <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                      <XAxis dataKey={chartKeys.labelKey} tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
-                      <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          fontSize: '11px', 
-                          fontWeight: 700, 
-                          borderRadius: '8px', 
-                          border: '1px solid #CBD5E1',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                        }} 
-                      />
-                      <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
-                      <Bar name={chartKeys.valueKey.toUpperCase()} dataKey={chartKeys.valueKey} fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                    {chartConfig.type === 'bar' && (
+                      <BarChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                        <XAxis dataKey={chartConfig.xKey} tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <Tooltip contentStyle={{ fontSize: '11px', fontWeight: 700, borderRadius: '8px' }} />
+                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                        {chartConfig.yKeys.map((yKey: string, index: number) => (
+                          <Bar key={yKey} name={yKey.toUpperCase()} dataKey={yKey} fill={index === 0 ? "#3B82F6" : index === 1 ? "#10B981" : "#F59E0B"} radius={[4, 4, 0, 0]} />
+                        ))}
+                      </BarChart>
+                    )}
+                    {chartConfig.type === 'line' && (
+                      <LineChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                        <XAxis dataKey={chartConfig.xKey} tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <Tooltip contentStyle={{ fontSize: '11px', fontWeight: 700, borderRadius: '8px' }} />
+                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                        {chartConfig.yKeys.map((yKey: string, index: number) => (
+                          <Line key={yKey} type="monotone" name={yKey.toUpperCase()} dataKey={yKey} stroke={index === 0 ? "#3B82F6" : index === 1 ? "#10B981" : "#F59E0B"} strokeWidth={2} activeDot={{ r: 6 }} />
+                        ))}
+                      </LineChart>
+                    )}
+                    {chartConfig.type === 'area' && (
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                        <XAxis dataKey={chartConfig.xKey} tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                        <Tooltip contentStyle={{ fontSize: '11px', fontWeight: 700, borderRadius: '8px' }} />
+                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                        {chartConfig.yKeys.map((yKey: string) => (
+                          <Area key={yKey} type="monotone" name={yKey.toUpperCase()} dataKey={yKey} stroke="#3B82F6" fillOpacity={1} fill="url(#colorArea)" strokeWidth={2} />
+                        ))}
+                      </AreaChart>
+                    )}
+                    {chartConfig.type === 'pie' && (
+                      <PieChart>
+                        <Tooltip contentStyle={{ fontSize: '11px', fontWeight: 700, borderRadius: '8px' }} />
+                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                        <Pie
+                          data={chartData}
+                          dataKey={chartConfig.yKeys[0]}
+                          nameKey={chartConfig.xKey}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={70}
+                          fill="#3B82F6"
+                          label={{ fontSize: 8, fontWeight: 700 }}
+                        >
+                          {chartData.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"][index % 6]} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    )}
                   </ResponsiveContainer>
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-2">
                   <BarChart4 className="w-12 h-12 stroke-1 opacity-50" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider">Không đủ dữ liệu dạng số để vẽ đồ thị</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider">Không có cấu hình biểu đồ phù hợp</p>
                 </div>
               )}
             </div>

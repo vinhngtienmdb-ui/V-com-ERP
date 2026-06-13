@@ -803,62 +803,59 @@ Yêu cầu phân tích: ${prompt}`,
 
     const systemPrompt = `
 You are the Database RAG Assistant for the V-com-ERP system.
-Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query.
+Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query and suggest the best chart type to visualize the results.
 
 ### Rules:
-1. Return ONLY a JSON object with two fields:
+1. Return ONLY a JSON object with three fields:
    - "sql": the generated SQL query string.
    - "explanation": a brief explanation of how you constructed the query and what it does.
+   - "chartConfig": an object configuring how to visualize the results. It must contain:
+     - "type": one of "bar" (for categorical comparisons), "line" (for time series/trends), "area" (for cumulative trends), "pie" (for parts-of-a-whole distributions), or "none" (if the data is just text, a list of strings, a single value, or not suitable for charts).
+     - "xKey": the column name to use as the X-axis (labels). Should be a string column, a date, or an ID.
+     - "yKeys": an array of column names (numeric) to use as the Y-axis values (metrics).
+     - "title": a recommended title for the chart (in Vietnamese).
    Do not wrap the response in markdown blocks like \`\`\`json. Return a raw JSON string.
 
 2. The SQL query must ONLY be a READ-ONLY SELECT statement.
    Strictly deny any statements that modify data, such as: INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, CREATE, GRANT, REVOKE, etc.
-   If the user asks for a modification, return {"sql": "", "explanation": "Tôi chỉ có thể thực hiện các câu lệnh đọc dữ liệu (SELECT)."}
+   If the user asks for a modification, return {"sql": "", "explanation": "Tôi chỉ có thể thực hiện các câu lệnh đọc dữ liệu (SELECT).", "chartConfig": {"type": "none", "xKey": "", "yKeys": [], "title": ""}}
 
 3. Multi-tenancy isolation:
    You must filter by "tenant_id" on every table queried.
-   The active tenant_id is "\${tenantId}".
-   If a table has a "tenant_id" column, you must add "tenant_id = '\${tenantId}'" in the WHERE clause (or JOIN condition).
+   The active tenant_id is "${tenantId}".
+   If a table has a "tenant_id" column, you must add "tenant_id = '${tenantId}'" in the WHERE clause (or JOIN condition).
 
 4. Database Schema:
    Our database has the following tables and schemas:
    
    - "products":
-     Emulates Firestore. Main data is inside a JSONB column "data".
-     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level), "created_at" (timestamp), "updated_at" (timestamp), "description_embedding" (vector(768))
-     Data JSONB fields: "name" (text), "sku" (text), "price" (numeric), "category" (text), "description" (text)
-     Example: SELECT data->>'name' as name, (data->>'price')::numeric as price FROM products WHERE tenant_id = '\${tenantId}'
+     Columns: "id" (text, primary key), "tenant_id" (text), "name" (text), "description" (text), "price" (numeric), "sku" (text), "category" (text), "image_url" (text), "created_at" (timestamp), "description_embedding" (vector(768))
+     Example: SELECT name, price FROM products WHERE tenant_id = '${tenantId}'
      
    - "customers":
-     Emulates Firestore. Main data is inside a JSONB column "data".
-     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
-     Data JSONB fields: "name" (text), "phone" (text), "email" (text), "walletBalance" (numeric), "points" (numeric), "status" (text), "tier" (text)
-     Example: SELECT data->>'name' as name, (data->>'walletBalance')::numeric as balance FROM customers WHERE tenant_id = '\${tenantId}'
+     Columns: "id" (text, primary key), "tenant_id" (text), "name" (text), "email" (text), "phone" (text), "address" (text), "created_at" (timestamp)
+     Example: SELECT name, phone FROM customers WHERE tenant_id = '${tenantId}'
      
    - "orders":
-     Emulates Firestore. Main data is inside a JSONB column "data".
-     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
-     Data JSONB fields: "customerName" (text), "customerId" (text), "total" (numeric), "status" (text) - e.g. 'pending', 'paid', "createdAt" (text)
-     Example: SELECT (data->>'total')::numeric as total FROM orders WHERE data->>'status' = 'paid' AND tenant_id = '\${tenantId}'
+     Columns: "id" (text, primary key), "tenant_id" (text), "customer_id" (text), "customer_name" (text), "total" (numeric), "status" (text, e.g. 'pending', 'paid'), "items" (jsonb array of ordered products), "created_at" (timestamp)
+     Example: SELECT customer_name, total FROM orders WHERE status = 'paid' AND tenant_id = '${tenantId}'
      
    - "warehouse_stock":
-     Emulates Firestore. Main data is inside a JSONB column "data".
-     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
-     Data JSONB fields: "productId" (text), "productName" (text), "quantity" (numeric), "minAlertLevel" (numeric), "sku" (text)
-     Example: SELECT data->>'productName' as name, (data->>'quantity')::numeric as qty FROM warehouse_stock WHERE tenant_id = '\${tenantId}'
+     Columns: "id" (text, primary key), "tenant_id" (text), "store_id" (text), "product_id" (text), "product_name" (text), "quantity" (numeric), "safety_stock" (numeric), "updated_at" (timestamp)
+     Example: SELECT product_name, quantity FROM warehouse_stock WHERE tenant_id = '${tenantId}'
      
-   - "requests":
-     Emulates Firestore. Main data is inside a JSONB column "data".
-     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
-     Data JSONB fields: "productId" (text), "productName" (text), "quantity" (numeric), "status" (text)
+   - "requests" (Purchase/Procurement requests):
+     Columns: "id" (text, primary key), "tenant_id" (text), "data" (jsonb), "created_at" (timestamp)
+     Data JSONB fields: "title" (text), "type" (text - e.g. 'procurement'), "status" (text - e.g. 'pending', 'approved'), "content" (text), "createdAt" (text), "createdBy" (text)
+     Example: SELECT id, data->>'title' as title FROM requests WHERE tenant_id = '${tenantId}'
      
-   - "accounts" (Chart of Accounts - clean PostgreSQL table, NO "data" column):
-     Columns: "id" (text, primary key - eg '1111', '1121'), "name" (text), "type" (text), "parent_id" (text), "tenant_id" (text), "created_at" (timestamp)
+   - "accounts" (Chart of Accounts):
+     Columns: "id" (text, primary key - eg '1111', '1121'), "name" (text), "type" (text - 'asset'|'liability'|'equity'|'revenue'|'expense'), "parent_id" (text), "tenant_id" (text), "created_at" (timestamp)
      
-   - "journal_entries" (Clean PostgreSQL table, NO "data" column):
+   - "journal_entries" (Double-entry journal vouchers):
      Columns: "id" (text, primary key), "date" (timestamp), "ref" (text), "description" (text), "tenant_id" (text)
      
-   - "journal_items" (Double entry ledger rows - clean PostgreSQL table, NO "data" column):
+   - "journal_items" (Debit/Credit postings):
      Columns: "id" (uuid, primary key), "entry_id" (text, FK to journal_entries), "account_id" (text, FK to accounts), "debit" (numeric), "credit" (numeric), "partner_id" (text), "tenant_id" (text)
 
 5. Output ONLY a valid JSON string. Do not include markdown code block syntax around the JSON output.
@@ -880,9 +877,10 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
 
       const generatedSql = parsed.sql;
       const explanation = parsed.explanation || '';
+      const chartConfig = parsed.chartConfig || { type: 'none', xKey: '', yKeys: [], title: '' };
 
       if (!generatedSql || generatedSql.trim() === '') {
-        return res.json({ sql: '', explanation, rows: [] });
+        return res.json({ sql: '', explanation, chartConfig, rows: [] });
       }
 
       // Read-only SQL safety checks
@@ -917,11 +915,199 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
       res.json({
         sql: generatedSql,
         explanation,
+        chartConfig,
         rows: dbRes.rows
       });
     } catch (err: any) {
       console.error('[DB-Query-RAG] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý truy vấn AI RAG' });
+    }
+  });
+
+  // API Route: AI Demand Forecasting for Warehouse
+  app.post('/api/ai/demand-forecasting', async (req, res) => {
+    const { tenantId: reqTenantId, storeId } = req.body;
+    const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
+
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+    }
+
+    const pgClient = new pg.Client({
+      connectionString: dbUrl,
+      ssl: { rejectUnauthorized: false }
+    });
+
+    try {
+      await pgClient.connect();
+
+      // 1. Lấy thông tin tồn kho hiện tại
+      let stockQuery = 'SELECT id, product_id, product_name, quantity, safety_stock, store_id FROM public.warehouse_stock WHERE tenant_id = $1';
+      let stockParams = [tenantId];
+      if (storeId) {
+        stockQuery += ' AND store_id = $2';
+        stockParams.push(storeId);
+      }
+      const stockRes = await pgClient.query(stockQuery, stockParams);
+      const stockItems = stockRes.rows;
+
+      // 2. Lấy dữ liệu bán hàng 30 ngày qua
+      const ordersRes = await pgClient.query(
+        `SELECT id, items, created_at FROM public.orders 
+         WHERE tenant_id = $1 AND status = 'paid' AND created_at >= NOW() - INTERVAL '30 days'
+         ORDER BY created_at ASC`,
+        [tenantId]
+      );
+      const paidOrders = ordersRes.rows;
+      await pgClient.end();
+
+      // 3. Tính toán thống kê lượng tiêu thụ
+      const consumptionMap: Record<string, { totalSold: number; dailyDetail: Record<string, number> }> = {};
+      
+      // Khởi tạo map cho các sản phẩm trong kho
+      for (const item of stockItems) {
+        if (item.product_id) {
+          consumptionMap[item.product_id] = { totalSold: 0, dailyDetail: {} };
+        }
+      }
+
+      // Duyệt qua các đơn hàng để tính toán lượng bán
+      for (const order of paidOrders) {
+        const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+        const items = Array.isArray(order.items) ? order.items : [];
+        for (const item of items) {
+          const prodId = item.productId || item.product_id;
+          const qty = Number(item.quantity || 0);
+          if (prodId && qty > 0) {
+            if (!consumptionMap[prodId]) {
+              consumptionMap[prodId] = { totalSold: 0, dailyDetail: {} };
+            }
+            consumptionMap[prodId].totalSold += qty;
+            consumptionMap[prodId].dailyDetail[orderDate] = (consumptionMap[prodId].dailyDetail[orderDate] || 0) + qty;
+          }
+        }
+      }
+
+      // Xây dựng dữ liệu dự báo cho từng sản phẩm
+      const forecastData = stockItems.map(item => {
+        const prodId = item.product_id;
+        const currentQty = Number(item.quantity || 0);
+        const safety = Number(item.safety_stock || 0);
+        const stats = consumptionMap[prodId] || { totalSold: 0, dailyDetail: {} };
+        
+        const dailyConsumption = Number((stats.totalSold / 30).toFixed(2));
+        const daysLeft = dailyConsumption > 0 ? Number((currentQty / dailyConsumption).toFixed(1)) : 999;
+        
+        // Dự báo nhu cầu 14 ngày tới
+        const forecastDemand14d = Number((dailyConsumption * 14).toFixed(2));
+        
+        const reorderPoint = Math.max(safety, dailyConsumption * 7);
+        const needsReorder = currentQty < reorderPoint;
+        const recommendedQty = needsReorder 
+          ? Math.max(0, Math.ceil(forecastDemand14d + safety - currentQty)) 
+          : 0;
+
+        // Xây dựng chuỗi lịch sử 4 tuần qua
+        const weeklyHistory = [0, 0, 0, 0];
+        const nowMs = Date.now();
+        for (const [dateStr, qty] of Object.entries(stats.dailyDetail)) {
+          const dateMs = new Date(dateStr).getTime();
+          const diffDays = Math.floor((nowMs - dateMs) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 0 && diffDays < 7) weeklyHistory[3] += qty;
+          else if (diffDays >= 7 && diffDays < 14) weeklyHistory[2] += qty;
+          else if (diffDays >= 14 && diffDays < 21) weeklyHistory[1] += qty;
+          else if (diffDays >= 21 && diffDays < 30) weeklyHistory[0] += qty;
+        }
+
+        return {
+          productId: prodId,
+          productName: item.product_name,
+          currentStock: currentQty,
+          safetyStock: safety,
+          dailyConsumption,
+          daysOfStockLeft: daysLeft,
+          recommendedOrderQty: recommendedQty,
+          weeklyHistory: weeklyHistory.map((val, idx) => ({ name: `W${idx + 1}`, sold: val })),
+          forecastFuture: [
+            { name: 'W1', sold: weeklyHistory[3] },
+            { name: 'W2', sold: weeklyHistory[3] },
+            { name: 'W3 (AI)', sold: Number((dailyConsumption * 7).toFixed(1)) },
+            { name: 'W4 (AI)', sold: Number((dailyConsumption * 7).toFixed(1)) }
+          ]
+        };
+      });
+
+      // 4. Gọi Gemini AI để lấy khuyến nghị thông minh bằng tiếng Việt
+      const client = getGeminiClient();
+      let aiRecommendations = [];
+
+      if (client) {
+        const summaryText = forecastData.map(d => 
+          `- SKU: ${d.productId} | Tên: ${d.productName} | Tồn kho: ${d.currentStock} | Ngưỡng an toàn: ${d.safetyStock} | Tiêu thụ 30 ngày: ${consumptionMap[d.productId]?.totalSold || 0} (tb ${d.dailyConsumption}/ngày) | Tồn còn lại: ${d.daysOfStockLeft} ngày.`
+        ).join('\n');
+
+        const forecastingPrompt = `
+You are the Inventory Planner AI for the V-com-ERP system.
+Your job is to analyze the inventory status and sales trend data, and provide smart, actionable recommendations in Vietnamese.
+
+For each item:
+1. Decide whether the action should be "buy" (if stock is below safety levels or daysOfStockLeft < 10) or "hold" (if stock is sufficient).
+2. Propose a suggested order quantity (integer).
+3. Write a concise explanation (1-2 sentences in Vietnamese) describing why this action is recommended (e.g., "Mặt hàng này đang bán rất chạy, tồn kho chỉ đủ dùng trong 3 ngày. Đề xuất nhập thêm 50 đơn vị để kịp bán").
+
+Return ONLY a JSON array of objects. Do not include markdown code block syntax.
+Format:
+[
+  {
+    "productId": "MAT-001",
+    "productName": "Tên sản phẩm",
+    "action": "buy" | "hold",
+    "reason": "Khuyến nghị chi tiết...",
+    "qty": 50
+  }
+]
+`;
+
+        try {
+          console.log('[AI-Forecasting] Requesting Gemini Recommendations...');
+          const response = await client.models.generateContent({
+            model: 'gemini-3.5-flash',
+            contents: [forecastingPrompt, 'Dữ liệu Tồn kho & Tiêu thụ:\n' + summaryText],
+          });
+
+          let responseText = response.text || '[]';
+          responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+          console.log('[AI-Forecasting] Gemini response:', responseText);
+          aiRecommendations = JSON.parse(responseText);
+        } catch (geminiErr) {
+          console.error('[AI-Forecasting] Gemini error, falling back to local heuristic:', geminiErr);
+        }
+      }
+
+      if (!aiRecommendations || aiRecommendations.length === 0) {
+        aiRecommendations = forecastData.map(d => {
+          const needBuy = d.currentStock < Math.max(d.safetyStock, d.dailyConsumption * 7);
+          return {
+            productId: d.productId,
+            productName: d.productName,
+            action: needBuy ? 'buy' : 'hold',
+            reason: needBuy 
+              ? `Tồn kho hiện tại (${d.currentStock}) thấp hơn mức an toàn (${d.safetyStock}). Lượng tiêu thụ trung bình ${d.dailyConsumption}/ngày. Khuyến nghị nhập thêm hàng.` 
+              : `Tồn kho hiện tại (${d.currentStock}) ở mức an toàn. Số ngày sử dụng dự kiến là ${d.daysOfStockLeft} ngày. Khuyến nghị tiếp tục theo dõi.`,
+            qty: d.recommendedOrderQty
+          };
+        });
+      }
+
+      res.json({
+        forecastData,
+        recommendations: aiRecommendations
+      });
+
+    } catch (err: any) {
+      console.error('[AI-Forecasting] Endpoint error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi xử lý dự báo nhu cầu tồn kho.' });
     }
   });
 

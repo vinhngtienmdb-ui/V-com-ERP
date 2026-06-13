@@ -39,11 +39,14 @@ import {
   Timer,
   Camera,
   QrCode,
+  RefreshCw,
 } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
-import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search } from '../lib/firebase';
+import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
+import { useAuth } from '../context/AuthContext';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const WAREHOUSE_MODULE_GROUPS = [
   {
@@ -531,6 +534,80 @@ export function WarehouseModule() {
   const [debouncedStockSearchQuery, setDebouncedStockSearchQuery] = useState<string>('');
   const [showScanner, setShowScanner] = useState<boolean>(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
+
+  const { staffInfo } = useAuth();
+  const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+
+  // AI Demand Forecasting States
+  const [forecastData, setForecastData] = useState<any[]>([]);
+  const [aiRecommendations, setAiRecommendations] = useState<any[]>([]);
+  const [loadingForecast, setLoadingForecast] = useState<boolean>(false);
+  const [errorForecast, setErrorForecast] = useState<string | null>(null);
+  const [selectedProductForecast, setSelectedProductForecast] = useState<any | null>(null);
+  const [creatingRequest, setCreatingRequest] = useState<boolean>(false);
+  const [requestSuccessMessage, setRequestSuccessMessage] = useState<string | null>(null);
+
+  const fetchForecastData = async () => {
+    setLoadingForecast(true);
+    setErrorForecast(null);
+    try {
+      const response = await fetch('/api/ai/demand-forecasting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tenantId, storeId: activeStore?.id })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setForecastData(data.forecastData || []);
+        setAiRecommendations(data.recommendations || []);
+        if (data.forecastData && data.forecastData.length > 0) {
+          setSelectedProductForecast(data.forecastData[0]);
+        }
+      } else {
+        setErrorForecast(data.error || 'Lỗi lấy dữ liệu dự báo từ AI.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorForecast(err.message || 'Lỗi kết nối máy chủ.');
+    } finally {
+      setLoadingForecast(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'wh_ff_predict') {
+      fetchForecastData();
+    }
+  }, [activeTab]);
+
+  const handleCreateAutoRequest = async (item: any) => {
+    setCreatingRequest(true);
+    setRequestSuccessMessage(null);
+    try {
+      const colRef = collection(db, 'requests');
+      colRef.tenantId = tenantId;
+      
+      const title = `Đề xuất mua hàng dự báo: ${item.productName}`;
+      const content = `Hệ thống phân tích AI dự báo mặt hàng ${item.productName} (${item.productId}) có lượng tiêu thụ trung bình hàng ngày là ${item.dailyConsumption} đơn vị, tồn kho hiện tại còn ${item.currentStock} đơn vị và dự kiến sẽ hết hàng trong ${item.daysOfStockLeft} ngày. Khuyến nghị nhập thêm gấp ${item.recommendedOrderQty} đơn vị để đáp ứng nhu cầu 14 ngày tới.`;
+      
+      await addDoc(colRef, {
+        title,
+        type: 'procurement',
+        status: 'pending',
+        content,
+        createdAt: new Date().toISOString(),
+        createdBy: staffInfo?.email || 'system-ai-forecasting'
+      });
+      
+      setRequestSuccessMessage(`Đã tạo thành công đề xuất mua hàng cho ${item.productName}!`);
+      setTimeout(() => setRequestSuccessMessage(null), 5000);
+    } catch (err: any) {
+      console.error(err);
+      alert('Lỗi tạo đề xuất mua hàng: ' + (err.message || err));
+    } finally {
+      setCreatingRequest(false);
+    }
+  };
 
   // Advanced Warehouse Heatmap States
   const [selectedZone, setSelectedZone] = useState<string>('A');
@@ -1748,11 +1825,11 @@ export function WarehouseModule() {
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg"
+              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" /> Quay lại
             </button>
-            <div className="flex items-center gap-2 text-primary-600 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-100 animate-pulse">
+            <div className={`flex items-center gap-2 text-primary-600 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-100 ${loadingForecast ? 'animate-pulse' : ''}`}>
               <Sparkles className="w-4 h-4" />
               <span className="text-[10px] font-black uppercase tracking-widest">
                 AI Demand Forecasting Live
@@ -1760,83 +1837,174 @@ export function WarehouseModule() {
             </div>
           </div>
 
-          <div className="p-6 space-y-8">
-            <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
-              <div className="lg:col-span-2 bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden h-[400px]">
-                <div className="relative z-10">
-                  <h3 className="text-xl font-bold mb-2">Dự báo Nhu cầu SKUs (Tháng 5/2026)</h3>
-                  <p className="text-slate-500 text-sm mb-8">
-                    Dựa trên dữ liệu lịch sử bán hàng và biến động thị trường.
-                  </p>
+          {errorForecast && (
+            <div className="p-6">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs font-bold text-red-700 flex items-center gap-2">
+                <XCircle className="w-5 h-5 shrink-0" />
+                {errorForecast}
+              </div>
+            </div>
+          )}
 
-                  <div className="flex items-end gap-3 h-48">
-                    {[45, 65, 35, 85, 55, 95, 75, 45, 65, 80, 70, 90].map((val, i) => (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                        <div
-                          className="w-full bg-primary-500/30 border-t-2 border-primary-400 rounded-t-sm transition-all hover:bg-primary-400"
-                          style={{ height: `${val}%` }}
-                        />
-                        <span className="text-[8px] text-slate-600 font-bold">W{i + 1}</span>
-                      </div>
+          {loadingForecast ? (
+            <div className="flex-1 flex flex-col items-center justify-center py-20 gap-3">
+              <RefreshCw className="w-8 h-8 animate-spin text-primary-500" />
+              <p className="text-xs text-slate-500 font-bold uppercase tracking-wider animate-pulse">AI đang phân tích xu hướng và tính toán nhu cầu tồn kho...</p>
+            </div>
+          ) : (
+            <div className="p-6 space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chọn mặt hàng phân tích</label>
+                  <select
+                    className="w-full md:w-80 text-xs font-bold p-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    value={selectedProductForecast?.productId || ''}
+                    onChange={(e) => {
+                      const selected = forecastData.find(item => item.productId === e.target.value);
+                      setSelectedProductForecast(selected || null);
+                    }}
+                  >
+                    {forecastData.map(item => (
+                      <option key={item.productId} value={item.productId}>
+                        {item.productName} ({item.productId})
+                      </option>
                     ))}
+                  </select>
+                </div>
+                <div className="flex gap-6 text-xs font-bold text-slate-700">
+                  <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
+                    <span className="block text-[9px] text-slate-400 uppercase">Tồn kho hiện tại</span>
+                    <span className="text-sm font-black text-slate-900">{selectedProductForecast?.currentStock || 0}</span>
+                  </div>
+                  <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
+                    <span className="block text-[9px] text-slate-400 uppercase">Tiêu thụ / ngày</span>
+                    <span className="text-sm font-black text-slate-900">{selectedProductForecast?.dailyConsumption || 0}</span>
+                  </div>
+                  <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
+                    <span className="block text-[9px] text-slate-400 uppercase">Số ngày còn lại</span>
+                    <span className={`text-sm font-black ${selectedProductForecast?.daysOfStockLeft < 7 ? 'text-red-600' : 'text-slate-900'}`}>
+                      {selectedProductForecast?.daysOfStockLeft === 999 ? 'Không tiêu thụ' : `${selectedProductForecast?.daysOfStockLeft || 0} ngày`}
+                    </span>
                   </div>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full -mr-32 -mt-32" />
               </div>
 
-              <div className="space-y-6">
-                <div className="bg-white border-2 border-primary-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20">
-                  <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
-                    AI Recommendation
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <div className="p-2 bg-amber-50 text-amber-600 rounded-lg h-fit">
-                        <AlertCircle className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900">Nhập hàng gấp: SKU-552</p>
-                        <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Dự kiến hết kho trong 3 ngày tới do chiến dịch Flash Sale 5/5.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg h-fit">
-                        <TrendingUp className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900">Giảm nhập: SKU-991</p>
-                        <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Tốc độ tiêu thụ giảm 25% trong 2 tuần qua. Tránh tồn đọng vốn.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <button className="w-full mt-6 py-3 bg-primary-600 text-[#FAF9F5] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-indigo-200">
-                    Tạo đề xuất mua hàng tự động
-                  </button>
-                </div>
-
-                <div className="bg-slate-50 border border-slate-300 rounded-xl p-6">
-                  <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
-                    Độ chính xác mô hình
-                  </h4>
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin flex items-center justify-center">
-                      <span className="text-xs font-black text-slate-900 animate-none">94.2%</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">Mô hình LSTM v4.2</p>
-                      <p className="text-[10px] text-slate-600 font-medium">
-                        Cập nhật: 04:52 AM Hôm nay
+              {selectedProductForecast && (
+                <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
+                  <div className="lg:col-span-2 bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden h-[400px] flex flex-col">
+                    <div className="relative z-10 flex-1 flex flex-col">
+                      <h3 className="text-base font-bold mb-1">Dự báo Xu hướng Tiêu thụ: {selectedProductForecast.productName}</h3>
+                      <p className="text-slate-400 text-xs mb-6">
+                        Biểu diễn số lượng bán ra thực tế (W1 - W2) và dự báo tương lai từ AI (W3 - W4).
                       </p>
+
+                      <div className="flex-1 w-full min-h-[200px]">
+                        <ResponsiveContainer width="100%" height={220}>
+                          <LineChart data={selectedProductForecast.forecastFuture}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
+                            <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                            <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                            <Tooltip 
+                              contentStyle={{ 
+                                fontSize: '11px', 
+                                fontWeight: 700, 
+                                borderRadius: '8px', 
+                                backgroundColor: '#1E293B',
+                                border: '1px solid #475569',
+                                color: '#FAF9F5'
+                              }} 
+                            />
+                            <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700, color: '#94A3B8' }} />
+                            <Line type="monotone" name="Lượng tiêu thụ (đơn vị)" dataKey="sold" stroke="#3B82F6" strokeWidth={2.5} activeDot={{ r: 6 }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full -mr-32 -mt-32" />
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="bg-white border-2 border-primary-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20 flex flex-col justify-between">
+                      <div>
+                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
+                          AI Recommendation
+                        </h4>
+                        
+                        {(() => {
+                          const rec = aiRecommendations.find(r => r.productId === selectedProductForecast.productId);
+                          if (!rec) return <p className="text-xs text-slate-500 font-bold">Không có khuyến nghị cho sản phẩm này.</p>;
+                          return (
+                            <div className="space-y-4">
+                              <div className="flex gap-3">
+                                <div className={`p-2 rounded-lg h-fit ${rec.action === 'buy' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                  {rec.action === 'buy' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold text-slate-900">
+                                    {rec.action === 'buy' ? 'Đề xuất: Nhập hàng ngay' : 'Đề xuất: Tiếp tục theo dõi'}
+                                  </p>
+                                  <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
+                                    {rec.reason}
+                                  </p>
+                                  {rec.action === 'buy' && rec.qty > 0 && (
+                                    <span className="inline-block bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded mt-2">
+                                      Số lượng đề xuất: {rec.qty} đơn vị
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      {requestSuccessMessage && (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[10px] font-bold text-emerald-700 mt-4 animate-in fade-in duration-300">
+                          {requestSuccessMessage}
+                        </div>
+                      )}
+
+                      {(() => {
+                        const rec = aiRecommendations.find(r => r.productId === selectedProductForecast.productId);
+                        const isBuy = rec?.action === 'buy';
+                        return (
+                          <button
+                            onClick={() => handleCreateAutoRequest(selectedProductForecast)}
+                            disabled={creatingRequest || !isBuy}
+                            className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                              isBuy 
+                                ? 'bg-primary-600 hover:bg-primary-700 text-[#FAF9F5] shadow-indigo-200' 
+                                : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                            }`}
+                          >
+                            {creatingRequest ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                            Tạo đề xuất mua hàng tự động
+                          </button>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-300 rounded-xl p-6">
+                      <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
+                        Độ chính xác mô hình
+                      </h4>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent flex items-center justify-center ${loadingForecast ? 'animate-spin' : ''}`}>
+                          <span className="text-xs font-black text-slate-900">94.2%</span>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Mô hình LSTM v4.2</p>
+                          <p className="text-[10px] text-slate-600 font-medium">
+                            Cập nhật: 04:52 AM Hôm nay
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </DraggableGrid>
-          </div>
+                </DraggableGrid>
+              )}
+            </div>
+          )}
         </div>
       )}
 
