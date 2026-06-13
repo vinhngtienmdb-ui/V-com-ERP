@@ -2,12 +2,6 @@
 -- SQL DDL: TRÌNH CÀI ĐẶT TRIGGER TỰ ĐỘNG LIÊN KẾT ĐA MODULE (CROSS-MODULE INTEGRATIONS)
 -- =============================================================================
 
--- Kích hoạt extension pgvector phục vụ tìm kiếm tương đồng ngữ nghĩa bằng AI
-CREATE EXTENSION IF NOT EXISTS vector;
-
--- Thêm cột description_embedding vector (768 chiều) vào bảng products nếu chưa có
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description_embedding vector(768);
-
 -- =============================================================================
 -- 1. TRIGGER LIÊN KẾT 3 PHÂN HỆ: Orders -> Warehouse -> Finance
 -- =============================================================================
@@ -23,25 +17,21 @@ DECLARE
   v_tenant_id TEXT;
 BEGIN
   -- Kiểm tra nếu trạng thái chuyển sang 'paid'
-  IF (NEW.data->>'status') = 'paid' AND (OLD.data IS NULL OR (OLD.data->>'status') IS DISTINCT FROM 'paid') THEN
+  IF NEW.status = 'paid' AND (OLD IS NULL OR OLD.status IS DISTINCT FROM 'paid') THEN
     
-    v_order_items := NEW.data->'items';
-    v_total_amount := COALESCE((NEW.data->>'total')::numeric, 0);
-    v_customer_name := COALESCE(NEW.data->>'customerName', 'KHLE');
+    v_order_items := NEW.items;
+    v_total_amount := COALESCE(NEW.total, 0);
+    v_customer_name := COALESCE(NEW.customer_name, 'KHLE');
     v_tenant_id := COALESCE(NEW.tenant_id, 'tenant-vcomm-prod-01');
 
     -- A. TRỪ TỒN KHO TỰ ĐỘNG TRONG WAREHOUSE (warehouse_stock)
     IF v_order_items IS NOT NULL AND jsonb_array_length(v_order_items) > 0 THEN
       FOR r_item IN SELECT * FROM jsonb_array_elements(v_order_items) LOOP
-        -- Trừ kho nguyên tử trên JSONB data->quantity
+        -- Trừ kho nguyên tử trên cột quantity quan hệ thực tế
         UPDATE public.warehouse_stock
-        SET data = jsonb_set(
-          data, 
-          '{quantity}', 
-          to_jsonb(GREATEST(0, COALESCE((data->>'quantity')::numeric, 0) - (r_item->>'quantity')::numeric))
-        ),
-        updated_at = now()
-        WHERE (data->>'productId') = (r_item->>'productId') 
+        SET quantity = GREATEST(0.00, COALESCE(quantity, 0.00) - (r_item->>'quantity')::numeric),
+            updated_at = now()
+        WHERE product_id = (r_item->>'productId') 
           AND tenant_id = v_tenant_id;
       END LOOP;
     END IF;
@@ -89,7 +79,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Gắn trigger xử lý thanh toán cho bảng orders
 DROP TRIGGER IF EXISTS trg_order_paid_processor ON public.orders;
 CREATE TRIGGER trg_order_paid_processor
-  AFTER INSERT OR UPDATE OF data ON public.orders
+  AFTER INSERT OR UPDATE OF status ON public.orders
   FOR EACH ROW
   EXECUTE FUNCTION public.fn_process_paid_order_integration();
 
@@ -107,14 +97,14 @@ DECLARE
   v_safety_stock NUMERIC;
   v_tenant_id TEXT;
 BEGIN
-  v_product_name := COALESCE(NEW.data->>'productName', 'Sản phẩm hết hàng');
-  v_product_id := NEW.data->>'productId';
-  v_quantity := COALESCE((NEW.data->>'quantity')::numeric, 0);
-  v_safety_stock := COALESCE((NEW.data->>'safetyStock')::numeric, 0);
+  v_product_name := COALESCE(NEW.product_name, 'Sản phẩm hết hàng');
+  v_product_id := NEW.product_id;
+  v_quantity := COALESCE(NEW.quantity, 0);
+  v_safety_stock := COALESCE(NEW.safety_stock, 0);
   v_tenant_id := COALESCE(NEW.tenant_id, 'tenant-vcomm-prod-01');
 
   -- Kích hoạt đề xuất tự động nếu tồn kho giảm xuống dưới ngưỡng an toàn
-  IF v_quantity < v_safety_stock AND (OLD.data IS NULL OR COALESCE((OLD.data->>'quantity')::numeric, 0) >= v_safety_stock) THEN
+  IF v_quantity < v_safety_stock AND (OLD IS NULL OR COALESCE(OLD.quantity, 0) >= v_safety_stock) THEN
     
     -- Tạo phiếu đề xuất thu mua tự động (Draft) trong bảng requests
     INSERT INTO public.requests (id, tenant_id, data, created_at)
@@ -140,48 +130,13 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Gắn trigger giám sát tồn kho cho bảng warehouse_stock
 DROP TRIGGER IF EXISTS trg_warehouse_safety_stock_check ON public.warehouse_stock;
 CREATE TRIGGER trg_warehouse_safety_stock_check
-  AFTER UPDATE OF data ON public.warehouse_stock
+  AFTER UPDATE OF quantity ON public.warehouse_stock
   FOR EACH ROW
   EXECUTE FUNCTION public.fn_check_warehouse_safety_stock_trigger();
 
 
 -- =============================================================================
--- 3. HÀM RPC TÌM KIẾM TƯƠNG ĐỒNG NGỮ NGHĨA (pgvector & Gemini AI)
--- =============================================================================
-
-CREATE OR REPLACE FUNCTION match_products (
-  query_embedding vector(768),
-  match_threshold float,
-  match_count int,
-  p_tenant_id text
-)
-RETURNS TABLE (
-  id text,
-  name text,
-  description text,
-  price numeric,
-  similarity float
-)
-AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    p.id,
-    COALESCE(p.data->>'name', ''),
-    COALESCE(p.data->>'description', ''),
-    COALESCE((p.data->>'price')::numeric, 0),
-    1 - (p.description_embedding <=> query_embedding) AS similarity
-  FROM public.products p
-  WHERE p.tenant_id = p_tenant_id 
-    AND p.description_embedding IS NOT NULL
-    AND 1 - (p.description_embedding <=> query_embedding) > match_threshold
-  ORDER BY p.description_embedding <=> query_embedding
-  LIMIT match_count;
-END;
-$$ LANGUAGE plpgsql;
-
--- =============================================================================
--- 4. ĐỒNG BỘ CUSTOM CLAIMS TỚI auth.users TỪ NHÂN VIÊN
+-- 3. ĐỒNG BỘ CUSTOM CLAIMS TỚI auth.users TỪ NHÂN VIÊN
 -- =============================================================================
 
 CREATE TABLE IF NOT EXISTS public.employees (

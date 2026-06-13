@@ -112,8 +112,8 @@ describe('AI Vector Search & Custom Claims Integration Tests', () => {
 
     // 1. Insert product with embedding
     await pgClient.query(`
-      INSERT INTO public.products (id, tenant_id, data, description_embedding)
-      VALUES ($1, $2, '{"name": "Sản phẩm test vector AI", "description": "Mô tả test"}'::jsonb, $3::vector)
+      INSERT INTO public.products (id, tenant_id, name, description, price, description_embedding)
+      VALUES ($1, $2, 'Sản phẩm test vector AI', 'Mô tả test', 0.00, $3::vector)
     `, [prodId, tenantId, vectorStr]);
 
     try {

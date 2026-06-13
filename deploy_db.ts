@@ -54,6 +54,7 @@ async function run() {
     const scripts = [
       { name: 'setup_accounting.sql', file: path.join(__dirname, 'scripts', 'setup_accounting.sql') },
       { name: 'setup_tenant_settings.sql', file: path.join(__dirname, 'scripts', 'setup_tenant_settings.sql') },
+      { name: 'normalize_relational_schema.sql', file: path.join(__dirname, 'scripts', 'normalize_relational_schema.sql') },
       { name: 'setup_cross_module_triggers.sql', file: path.join(__dirname, 'scripts', 'setup_cross_module_triggers.sql') },
       { name: 'setup_digital_signatures.sql', file: path.join(__dirname, 'scripts', 'setup_digital_signatures.sql') }
     ];

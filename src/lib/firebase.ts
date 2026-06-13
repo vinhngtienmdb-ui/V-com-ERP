@@ -2,6 +2,95 @@ import { supabase } from './supabase';
 import { safeLocalStorage } from './storage';
 
 // -----------------------------------------------------------------------------
+// Relational Database Mapping Configuration & Helpers
+// -----------------------------------------------------------------------------
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock'];
+
+export function toRelationalPayload(tableName: string, docId: string, tenantId: string | null, jsData: any) {
+  const payload: any = {
+    id: docId,
+    tenant_id: tenantId || jsData.tenantId || 'tenant-vcomm-prod-01'
+  };
+
+  if (tableName === 'products') {
+    payload.name = jsData.name || '';
+    payload.description = jsData.description || null;
+    payload.price = Number(jsData.price) || 0.00;
+    payload.sku = jsData.sku || null;
+    payload.category = jsData.category || null;
+    payload.image_url = jsData.imageUrl || jsData.image_url || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    if (jsData.description_embedding) {
+      payload.description_embedding = jsData.description_embedding;
+    }
+  } else if (tableName === 'customers') {
+    payload.name = jsData.name || '';
+    payload.email = jsData.email || null;
+    payload.phone = jsData.phone || null;
+    payload.address = jsData.address || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'orders') {
+    payload.customer_id = jsData.customerId || jsData.customer_id || null;
+    payload.customer_name = jsData.customerName || jsData.customer_name || 'KHLE';
+    payload.total = Number(jsData.total) || 0.00;
+    payload.status = jsData.status || 'pending';
+    payload.items = jsData.items || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'warehouse_stock') {
+    payload.product_id = jsData.productId || jsData.product_id || null;
+    payload.product_name = jsData.productName || jsData.product_name || null;
+    payload.quantity = Number(jsData.quantity) || 0.00;
+    payload.safety_stock = Number(jsData.safetyStock || jsData.safety_stock) || 0.00;
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  }
+
+  return payload;
+}
+
+export function fromRelationalRow(tableName: string, row: any) {
+  if (!row) return row;
+  
+  const jsData: any = {
+    id: row.id,
+    tenantId: row.tenant_id
+  };
+
+  if (tableName === 'products') {
+    jsData.name = row.name;
+    jsData.description = row.description;
+    jsData.price = Number(row.price);
+    jsData.sku = row.sku;
+    jsData.category = row.category;
+    jsData.imageUrl = row.image_url;
+    jsData.createdAt = row.created_at;
+    if (row.description_embedding) {
+      jsData.description_embedding = row.description_embedding;
+    }
+  } else if (tableName === 'customers') {
+    jsData.name = row.name;
+    jsData.email = row.email;
+    jsData.phone = row.phone;
+    jsData.address = row.address;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'orders') {
+    jsData.customerId = row.customer_id;
+    jsData.customerName = row.customer_name;
+    jsData.total = Number(row.total);
+    jsData.status = row.status;
+    jsData.items = row.items;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'warehouse_stock') {
+    jsData.productId = row.product_id;
+    jsData.productName = row.product_name;
+    jsData.quantity = Number(row.quantity);
+    jsData.safetyStock = Number(row.safety_stock);
+    jsData.updatedAt = row.updated_at;
+  }
+
+  return jsData;
+}
+
+// -----------------------------------------------------------------------------
 // Firestore Timestamp Compatibility Class
 // -----------------------------------------------------------------------------
 export class Timestamp {
@@ -237,12 +326,24 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       const value = c.value;
 
       // Primary keys and tenant partitions are mapped as top-level table columns.
-      // All other fields are inside the JSONB 'data' column.
+      // All other fields are inside the JSONB 'data' column, unless it is a relational table.
       let targetColumn = `data->>${field}`;
       if (field === 'id') {
         targetColumn = 'id';
       } else if (field === 'tenantId') {
         targetColumn = 'tenant_id';
+      } else if (RELATIONAL_TABLES.includes(tableName)) {
+        if (field === 'customerId') targetColumn = 'customer_id';
+        else if (field === 'customerName') targetColumn = 'customer_name';
+        else if (field === 'productId') targetColumn = 'product_id';
+        else if (field === 'productName') targetColumn = 'product_name';
+        else if (field === 'safetyStock') targetColumn = 'safety_stock';
+        else if (field === 'imageUrl') targetColumn = 'image_url';
+        else if (field === 'createdAt') targetColumn = 'created_at';
+        else if (field === 'updatedAt') targetColumn = 'updated_at';
+        else {
+          targetColumn = field;
+        }
       }
 
       if (op === '==' || op === '===') {
@@ -259,7 +360,11 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
         builder = builder.in(targetColumn, value);
       } else if (op === 'array-contains') {
         // Safe JSONB containment
-        builder = builder.contains(`data->${field}`, [value]);
+        if (RELATIONAL_TABLES.includes(tableName)) {
+          builder = builder.contains(targetColumn, [value]);
+        } else {
+          builder = builder.contains(`data->${field}`, [value]);
+        }
       }
     } else if (c.type === 'orderBy') {
       const field = c.field!;
@@ -269,7 +374,19 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else if (field === 'created_at' || field === 'createdAt' || field === 'timestamp') {
         builder = builder.order('created_at', { ascending });
       } else {
-        builder = builder.order(`data->>${field}`, { ascending });
+        let orderCol = `data->>${field}`;
+        if (RELATIONAL_TABLES.includes(tableName)) {
+          if (field === 'customerId') orderCol = 'customer_id';
+          else if (field === 'customerName') orderCol = 'customer_name';
+          else if (field === 'productId') orderCol = 'product_id';
+          else if (field === 'productName') orderCol = 'product_name';
+          else if (field === 'safetyStock') orderCol = 'safety_stock';
+          else if (field === 'imageUrl') orderCol = 'image_url';
+          else if (field === 'createdAt') orderCol = 'created_at';
+          else if (field === 'updatedAt') orderCol = 'updated_at';
+          else orderCol = field;
+        }
+        builder = builder.order(orderCol, { ascending });
       }
     } else if (c.type === 'limit') {
       builder = builder.limit(c.value!);
@@ -283,6 +400,16 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       let targetColumn = `data->>${field}`;
       if (field === 'id') {
         targetColumn = 'id';
+      } else if (RELATIONAL_TABLES.includes(tableName)) {
+        if (field === 'customerId') targetColumn = 'customer_id';
+        else if (field === 'customerName') targetColumn = 'customer_name';
+        else if (field === 'productId') targetColumn = 'product_id';
+        else if (field === 'productName') targetColumn = 'product_name';
+        else if (field === 'safetyStock') targetColumn = 'safety_stock';
+        else if (field === 'imageUrl') targetColumn = 'image_url';
+        else if (field === 'createdAt') targetColumn = 'created_at';
+        else if (field === 'updatedAt') targetColumn = 'updated_at';
+        else targetColumn = field;
       }
       builder = builder.ilike(targetColumn, `%${value}%`);
     } else if (c.type === 'search') {
@@ -292,6 +419,17 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
         const orConditions = fields.map(f => {
           let col = `data->>${f}`;
           if (f === 'id') col = 'id';
+          else if (RELATIONAL_TABLES.includes(tableName)) {
+            if (f === 'customerId') col = 'customer_id';
+            else if (f === 'customerName') col = 'customer_name';
+            else if (f === 'productId') col = 'product_id';
+            else if (f === 'productName') col = 'product_name';
+            else if (f === 'safetyStock') col = 'safety_stock';
+            else if (f === 'imageUrl') col = 'image_url';
+            else if (f === 'createdAt') col = 'created_at';
+            else if (f === 'updatedAt') col = 'updated_at';
+            else col = f;
+          }
           return `${col}.ilike.%${queryText}%`;
         }).join(',');
         builder = builder.or(orConditions);
@@ -367,7 +505,14 @@ export const getDoc = async (docRef: SupabaseDocRef): Promise<any> => {
     if (error) throw error;
 
     const exists = !!data;
-    const docData = exists ? data.data : null;
+    let docData = null;
+    if (exists) {
+      if (RELATIONAL_TABLES.includes(docRef.tableName)) {
+        docData = fromRelationalRow(docRef.tableName, data);
+      } else {
+        docData = data.data;
+      }
+    }
 
     if (exists) {
       if (docRef.tableName === 'journal_entries') {
@@ -423,7 +568,10 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
   try {
     const { data: rows, count } = await executeQuery(queryRef);
     const docs = await Promise.all(rows.map(async (row) => {
-      const data = deserializeTimestamps(row.data);
+      const rawData = RELATIONAL_TABLES.includes(queryRef.tableName)
+        ? fromRelationalRow(queryRef.tableName, row)
+        : row.data;
+      const data = deserializeTimestamps(rawData);
       if (queryRef.tableName === 'journal_entries') {
         const { data: items, error: itemsError } = await supabase
           .from('journal_items')
@@ -445,7 +593,13 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
       };
     }));
 
-    safeLocalStorage.setItem(cacheKey, JSON.stringify(rows.map(r => ({ id: r.id, data: r.data }))));
+    const cachedRows = rows.map(r => {
+      const rowData = RELATIONAL_TABLES.includes(queryRef.tableName)
+        ? fromRelationalRow(queryRef.tableName, r)
+        : r.data;
+      return { id: r.id, data: rowData };
+    });
+    safeLocalStorage.setItem(cacheKey, JSON.stringify(cachedRows));
 
     return {
       docs,
@@ -495,12 +649,14 @@ export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): 
       return true;
     }
 
-    const dbPayload = {
-      id: docRef.id,
-      tenant_id: tenantId,
-      data: serializedData,
-      updated_at: new Date().toISOString()
-    };
+    const dbPayload = RELATIONAL_TABLES.includes(docRef.tableName)
+      ? toRelationalPayload(docRef.tableName, docRef.id, tenantId, serializedData)
+      : {
+          id: docRef.id,
+          tenant_id: tenantId,
+          data: serializedData,
+          updated_at: new Date().toISOString()
+        };
 
     safeLocalStorage.setItem(cacheKey, JSON.stringify({ exists: true, data: serializedData }));
 
@@ -524,13 +680,16 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
     if (cached) {
       try { currentData = JSON.parse(cached).data; } catch (e) {}
     } else {
+      const selectFields = RELATIONAL_TABLES.includes(docRef.tableName) ? '*' : 'data';
       const { data: row } = await supabase
         .from(docRef.tableName)
-        .select('data')
+        .select(selectFields)
         .eq('id', docRef.id)
         .maybeSingle();
       if (row) {
-        currentData = row.data;
+        currentData = RELATIONAL_TABLES.includes(docRef.tableName)
+          ? fromRelationalRow(docRef.tableName, row)
+          : row.data;
       }
     }
 
@@ -559,12 +718,14 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
       return true;
     }
 
-    const dbPayload = {
-      id: docRef.id,
-      tenant_id: tenantId,
-      data: mergedData,
-      updated_at: new Date().toISOString()
-    };
+    const dbPayload = RELATIONAL_TABLES.includes(docRef.tableName)
+      ? toRelationalPayload(docRef.tableName, docRef.id, tenantId, mergedData)
+      : {
+          id: docRef.id,
+          tenant_id: tenantId,
+          data: mergedData,
+          updated_at: new Date().toISOString()
+        };
 
     safeLocalStorage.setItem(cacheKey, JSON.stringify({ exists: true, data: mergedData }));
 
