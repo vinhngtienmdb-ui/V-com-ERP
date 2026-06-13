@@ -1,13 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Resolve environment variables supporting both Node.js (scripts/server) and Vite browser context
-if (typeof process !== 'undefined' && process.env) {
-  try {
-    const dotenv = await import('dotenv');
-    dotenv.config();
-  } catch (e) {}
-}
-
 const supabaseUrl = (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_URL) || 
                     (import.meta.env?.VITE_SUPABASE_URL) ||
                     "";
