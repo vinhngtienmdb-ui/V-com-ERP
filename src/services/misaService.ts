@@ -293,6 +293,35 @@ export const syncTransactionToMisa = async (transactionId: string, fallbackTxDat
     }
   }
 
+  // Kiểm tra ngày khóa sổ trước khi ghi sổ
+  try {
+    const settingsSnap = await getDoc(doc(db, 'tenant_settings', 'config'));
+    if (settingsSnap.exists()) {
+      const lockDateStr = settingsSnap.data().closingLockDate;
+      if (lockDateStr) {
+        const lockDate = new Date(lockDateStr);
+        const parseDate = (dStr: string) => {
+          if (!dStr) return new Date();
+          const parts = dStr.split('/');
+          if (parts.length === 3) {
+            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+          }
+          return new Date(dStr);
+        };
+        const compareTxDate = parseDate(txData.date || txData.dateStr || '');
+
+        if (compareTxDate.getTime() <= lockDate.getTime()) {
+          throw new Error(`Giao dịch ngày ${compareTxDate.toLocaleDateString('vi-VN')} thuộc kỳ kế toán đã khóa sổ (Ngày khóa sổ cuối cùng: ${lockDate.toLocaleDateString('vi-VN')}). Không thể sửa đổi!`);
+        }
+      }
+    }
+  } catch (err: any) {
+    if (err.message && err.message.includes('đã khóa sổ')) {
+      throw err;
+    }
+    console.warn('[MisaService] Lỗi kiểm tra ngày khóa sổ:', err.message || err);
+  }
+
   // 1. Xác định Tài khoản Nợ và Có chi tiết dựa theo loại giao dịch
   let debitAccount = txData.debitAccount;
   let creditAccount = txData.creditAccount;
@@ -641,9 +670,75 @@ export const syncTransactionToMisa = async (transactionId: string, fallbackTxDat
   try {
     let responseData;
     if (config.localAccountingMode) {
+      // Tự động hạch toán sổ kép nội bộ vào Supabase
+      const journalEntryId = `JE-TX-${transactionId.substring(0, 8).toUpperCase()}`;
+      
+      const items = [];
+      const commissionRate = 10;
+      if (txData.type === 'income' && config.enableMarketplaceSplit) {
+        const commissionAmount = Math.round(txData.amount * (commissionRate / 100));
+        const partnerAmount = txData.amount - commissionAmount;
+        
+        items.push({
+          accountId: debitAccount,
+          debit: txData.amount,
+          credit: 0,
+          partnerId: objectCode
+        });
+        items.push({
+          accountId: config.revenueAccountDefault || '5111',
+          debit: 0,
+          credit: commissionAmount,
+          partnerId: objectCode
+        });
+        items.push({
+          accountId: config.partnerLiabilitiesAccount || '3388',
+          debit: 0,
+          credit: partnerAmount,
+          partnerId: objectCode
+        });
+      } else {
+        items.push({
+          accountId: debitAccount,
+          debit: txData.amount,
+          credit: 0,
+          partnerId: objectCode
+        });
+        items.push({
+          accountId: creditAccount,
+          debit: 0,
+          credit: txData.amount,
+          partnerId: objectCode
+        });
+      }
+
+      // Check balance check to avoid adapter rounding errors
+      const totalDebit = items.reduce((sum, item) => sum + item.debit, 0);
+      const totalCredit = items.reduce((sum, item) => sum + item.credit, 0);
+      if (Math.abs(totalDebit - totalCredit) > 0.01) {
+        const diff = totalDebit - totalCredit;
+        if (diff > 0) {
+          items[items.length - 1].credit += diff;
+        } else {
+          items[items.length - 1].debit -= diff;
+        }
+      }
+
+      const journalEntry = {
+        id: journalEntryId,
+        date: txData.date || new Date().toISOString(),
+        ref: txData.orderId || txData.referenceNumber || '',
+        description: txData.description || 'Ghi sổ tự động từ giao dịch',
+        tenantId: txData.tenantId || 'tenant-vcomm-prod-01',
+        items
+      };
+
+      const { setDoc: fbSetDoc, doc: fbDoc } = await import('../lib/firebase');
+      await fbSetDoc(fbDoc(db, 'journal_entries', journalEntryId), journalEntry);
+
       responseData = {
         status: 'success',
-        voucherId: `VCOMM-${voucherNo}`,
+        voucherId: journalEntryId,
         syncedAt: new Date().toISOString()
       };
     } else {
@@ -1037,6 +1132,32 @@ export const syncPayrollToMisa = async (
 export const unpostTransaction = async (transactionId: string): Promise<any> => {
   const docRef = doc(db, 'finance_transactions', transactionId);
   try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const txData = docSnap.data();
+      // Kiểm tra ngày khóa sổ
+      const settingsSnap = await getDoc(doc(db, 'tenant_settings', 'config'));
+      if (settingsSnap.exists()) {
+        const lockDateStr = settingsSnap.data().closingLockDate;
+        if (lockDateStr) {
+          const lockDate = new Date(lockDateStr);
+          const parseDate = (dStr: string) => {
+            if (!dStr) return new Date();
+            const parts = dStr.split('/');
+            if (parts.length === 3) {
+              return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+            }
+            return new Date(dStr);
+          };
+          const compareTxDate = parseDate(txData.date || txData.dateStr || '');
+
+          if (compareTxDate.getTime() <= lockDate.getTime()) {
+            throw new Error(`Giao dịch ngày ${compareTxDate.toLocaleDateString('vi-VN')} thuộc kỳ kế toán đã khóa sổ (Ngày khóa sổ cuối cùng: ${lockDate.toLocaleDateString('vi-VN')}). Không thể sửa đổi!`);
+          }
+        }
+      }
+    }
+
     const updateData = {
       misaSynced: false,
       misaVoucherId: null,

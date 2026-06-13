@@ -12,6 +12,7 @@ vi.mock('../lib/firebase', () => ({
   addDoc: vi.fn(() => Promise.resolve({ id: 'new-doc-id' })),
   getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => ({}) })),
   getDocs: vi.fn(() => Promise.resolve({ empty: true, size: 0, docs: [] })),
+  setDoc: vi.fn(() => Promise.resolve()),
   updateDoc: vi.fn(() => Promise.resolve()),
   serverTimestamp: vi.fn(() => new Date()),
   doc: vi.fn(() => ({})),

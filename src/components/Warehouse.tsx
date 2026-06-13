@@ -39,8 +39,7 @@ import {
   Timer,
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db, collection, onSnapshot, query, where } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
 
 const WAREHOUSE_MODULE_GROUPS = [

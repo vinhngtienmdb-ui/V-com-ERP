@@ -39,8 +39,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
-import { db } from '../lib/firebase';
-import { collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from 'firebase/firestore';
+import { db, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from '../lib/firebase';
 import { getAiChatResponse } from '../services/geminiService';
 import {
   ResponsiveContainer,

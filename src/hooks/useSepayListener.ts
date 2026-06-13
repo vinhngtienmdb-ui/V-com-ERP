@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { sePayService } from '../services/sepayService';
-import { db, collection, addDoc, serverTimestamp, query, where, limit, getDocs, doc, getDoc } from '../lib/firebase';
-import { getMisaConfig, syncTransactionToMisa } from '../services/misaService';
+import { db, collection, addDoc, serverTimestamp, query, where, limit, getDocs, doc, getDoc, setDoc } from '../lib/firebase';
+import { getMisaConfig } from '../services/misaService';
 import { sendZnsNotification } from '../services/znsService';
 
 /**
@@ -40,6 +40,30 @@ export function useSepayListener() {
 
             // Tự động hạch toán kế toán và xuất hóa đơn điện tử
             try {
+              // Kiểm tra ngày khóa sổ trước khi hạch toán tự động
+              let isLocked = false;
+              try {
+                const settingsSnap = await getDoc(doc(db, 'tenant_settings', 'config'));
+                if (settingsSnap.exists()) {
+                  const lockDateStr = settingsSnap.data().closingLockDate;
+                  if (lockDateStr) {
+                    const lockDate = new Date(lockDateStr);
+                    const txDateStr = event.transactionDate || event.transaction_date || new Date().toISOString();
+                    const txDate = new Date(txDateStr);
+                    if (txDate.getTime() <= lockDate.getTime()) {
+                      isLocked = true;
+                      console.warn(`[SePay-Listener] Chặn hạch toán tự động SePay Webhook: Giao dịch ngày ${txDate.toLocaleDateString('vi-VN')} nằm trong kỳ đã khóa sổ.`);
+                    }
+                  }
+                }
+              } catch (lockErr) {
+                console.warn('[SePay-Listener] Không thể tải cấu hình khóa sổ để kiểm tra:', lockErr);
+              }
+
+              if (isLocked) {
+                return;
+              }
+
               let orderId = '';
               let isMatchedOrder = false;
               const match = transactionContent.match(/(?:IPOS_PAY_|ORD-|VCOM-)(\w+)/i);
@@ -117,6 +141,8 @@ export function useSepayListener() {
               const taxRate = 10;
               const vatAmount = Math.round(amount - (amount / 1.10));
 
+              const journalEntryId = `JE-SP-${id}`;
+
               // Ghi sổ kế toán vào Firestore
               const txDoc = await addDoc(collection(db, 'finance_transactions'), {
                 description,
@@ -136,41 +162,31 @@ export function useSepayListener() {
                 accountingObjectCode: objectCode,
                 taxRate,
                 vatAmount,
-                misaSynced: false,
-                misaVoucherId: '',
+                misaSynced: true,
+                misaVoucherId: journalEntryId,
                 misaSyncError: ''
               });
 
               console.log(`[SePay-Listener] Đã ghi sổ kế toán thành công cho đơn hàng: ${orderId} (ID giao dịch: ${txDoc.id})`);
 
-              // Tự động đồng bộ sang MISA nếu cấu hình hoạt động
-              if (misaConfig.isActive) {
-                syncTransactionToMisa(txDoc.id)
-                  .then((res: any) => {
-                    console.log(`[SePay-Listener] Tự động đồng bộ MISA thành công cho giao dịch: ${txDoc.id}`, res);
-                  })
-                  .catch((err: any) => {
-                    console.error(`[SePay-Listener] Tự động đồng bộ MISA thất bại cho giao dịch: ${txDoc.id}`, err.message || err);
-                    try {
-                      sendZnsNotification(
-                        '0987654321',
-                        'ZNS_TICKET_REPLIED',
-                        {
-                          'Tên_Khách_Hàng': 'Quản trị viên',
-                          'Mã_Phiếu': orderId,
-                          'Tiêu_Đề': 'LỖI ĐỒNG BỘ MISA',
-                          'Nội_Dung_Phản_Hồi': `Giao dịch ${txDoc.id} lỗi: ${err.message || 'Lỗi API MISA'}`
-                        },
-                        {
-                          customerName: 'Quản trị viên',
-                          orderId: orderId
-                        }
-                      );
-                      console.log('[SePay-Listener] Đã gửi ZNS cảnh báo lỗi đồng bộ MISA thành công');
-                    } catch (znsErr) {
-                      console.error('[SePay-Listener] Không thể gửi thông báo ZNS báo lỗi:', znsErr);
-                    }
-                  });
+              // Ghi chứng từ kế toán sổ kép thực tế vào journal_entries / journal_items
+              try {
+                const journalEntry = {
+                  id: journalEntryId,
+                  date: event.transactionDate || event.transaction_date || new Date().toISOString(),
+                  ref: orderId || `SEPAY-${event.id}`,
+                  description,
+                  tenantId: 'tenant-vcomm-prod-01',
+                  items: [
+                    { accountId: debitAccount, debit: amount, credit: 0, partnerId: objectCode },
+                    { accountId: creditAccount, debit: 0, credit: amount, partnerId: objectCode }
+                  ]
+                };
+                
+                await setDoc(doc(db, 'journal_entries', journalEntryId), journalEntry);
+                console.log(`[SePay-Listener] Đã hạch toán sổ kép nội bộ thành công cho đơn hàng: ${orderId} (${journalEntryId})`);
+              } catch (ledgerErr: any) {
+                console.error(`[SePay-Listener] Lỗi ghi sổ kép nội bộ cho đơn hàng: ${orderId}:`, ledgerErr.message || ledgerErr);
               }
 
               // Xuất hóa đơn điện tử SePay

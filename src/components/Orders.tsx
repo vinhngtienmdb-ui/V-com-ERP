@@ -500,7 +500,7 @@ export function Orders() {
       setMockOrders(updated);
     } else {
       try {
-        const { doc, updateDoc } = await import('firebase/firestore');
+        const { doc, updateDoc } = await import('../lib/firebase');
         await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
         matchedOrder = dbOrders.find(o => o.id === orderId);
         if (matchedOrder) {
@@ -616,7 +616,7 @@ export function Orders() {
       },
     ];
 
-    const { getAuth } = await import('firebase/auth');
+    const { getAuth } = await import('../lib/firebase');
     const auth = getAuth();
     const currentUser = auth.currentUser;
     if (!currentUser) {

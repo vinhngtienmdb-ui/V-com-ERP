@@ -178,6 +178,7 @@ export interface FinanceTransaction {
  misaVoucherId?: string;
  misaSyncError?: string;
  misaSyncedAt?: string;
+ tenantId?: string;
 }
 
 export interface AccountEntry {

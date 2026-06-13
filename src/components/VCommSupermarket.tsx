@@ -27,8 +27,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
-import { db } from '../lib/firebase';
-import { collection, addDoc, onSnapshot, query, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { db, collection, addDoc, onSnapshot, query, doc, updateDoc, arrayUnion } from '../lib/firebase';
 
 interface SupermarketProduct {
   id: string;

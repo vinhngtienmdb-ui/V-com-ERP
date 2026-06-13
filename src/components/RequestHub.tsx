@@ -40,8 +40,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { TemplateGalleryModal } from './TemplateGalleryModal';
 import { FormConfigModal } from './FormConfigModal';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../lib/firebase';
 import { syncTransactionToMisa } from '../services/misaService';
 
 const INITIAL_REQUESTS = [
@@ -72,7 +71,7 @@ export function RequestHub() {
  const unsub = onSnapshot(q, (snap) => {
   if (snap.empty) return;
   const dbReqs = snap.docs.map(d => ({ id: d.id, ...d.data() as any }));
-  const ids = new Set(dbReqs.map((r: any) => r.id));
+  const ids = new Set<string>(dbReqs.map((r: any) => r.id));
   setDbRequestIds(ids);
   setRequests(prev => {
   const mockOnly = prev.filter(r => !ids.has(r.id));

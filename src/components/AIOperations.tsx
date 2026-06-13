@@ -33,8 +33,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { AiTaskResult } from '../types/erp';
-import { db } from '../lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { db, collection, addDoc } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 
 const MOCK_AI_LOGS: AiTaskResult[] = [

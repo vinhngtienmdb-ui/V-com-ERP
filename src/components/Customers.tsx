@@ -38,8 +38,7 @@ import {
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { db, collection, onSnapshot, addDoc, doc, updateDoc } from '../lib/firebase';
 import { syncCustomerToMisa } from '../services/misaService';
 
 const CopyButton = ({ value }: { value: string }) => {

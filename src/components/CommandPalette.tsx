@@ -2,8 +2,7 @@ import { safeLocalStorage } from '../lib/storage';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowRight, Hash, Package, Users, ShoppingCart, X, Clock, Keyboard } from 'lucide-react';
-import { db } from '../lib/firebase';
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db, collection, query, where, orderBy, limit, getDocs } from '../lib/firebase';
 import { navGroups } from '../constants';
 import { cn } from '../lib/utils';
 

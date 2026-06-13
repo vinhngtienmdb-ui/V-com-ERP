@@ -17,8 +17,7 @@ import {
  QrCode,
  Info
 } from 'lucide-react';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, collection, onSnapshot, addDoc, serverTimestamp } from '../lib/firebase';
 import { formatCurrency, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 

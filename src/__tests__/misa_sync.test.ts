@@ -688,13 +688,13 @@ describe('MISA Accounting Mapping & Sync Integration Tests', () => {
         expect.any(Object),
         expect.objectContaining({
           misaSynced: true,
-          misaVoucherId: expect.stringContaining('VCOMM-PC-'),
+          misaVoucherId: expect.stringContaining('JE-TX-'),
           debitAccount: '6422',
           creditAccount: '1111'
         })
       );
       expect(result.status).toBe('success');
-      expect(result.voucherId).toContain('VCOMM-PC-');
+      expect(result.voucherId).toContain('JE-TX-');
     });
 
     it('nên hủy ghi sổ kế toán nội bộ thành công cập nhật Firestore', async () => {

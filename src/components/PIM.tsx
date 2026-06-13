@@ -36,20 +36,22 @@ import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
 import { syncProductToMisa } from '../services/misaService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { db, serverTimestamp, handleFirestoreError } from '../lib/firebase';
-import nexhubProducts from '../constants/nexhub_products.json';
 import { 
- collection, 
- onSnapshot, 
- addDoc, 
- query, 
- orderBy, 
- limit,
- doc,
- updateDoc,
- deleteDoc,
- where
-} from 'firebase/firestore';
+  db, 
+  serverTimestamp, 
+  handleFirestoreError,
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  query, 
+  orderBy, 
+  limit,
+  doc,
+  updateDoc,
+  deleteDoc,
+  where
+} from '../lib/firebase';
+import nexhubProducts from '../constants/nexhub_products.json';
 
 export function PIM() {
  const [products, setProducts] = useState<Product[]>([]);

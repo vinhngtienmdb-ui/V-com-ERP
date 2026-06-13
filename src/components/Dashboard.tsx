@@ -61,8 +61,7 @@ function ResponsiveGridLayout({ children, ...props }: any) {
   );
 }
 import { formatCurrency, cn } from '../lib/utils';
-import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, limit } from 'firebase/firestore';
+import { db, collection, onSnapshot, query, limit } from '../lib/firebase';
 import { usePreferences } from '../context/PreferencesContext';
 
 const data = [

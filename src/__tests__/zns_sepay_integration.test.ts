@@ -3,7 +3,7 @@ import { sePayService } from '../services/sepayService';
 import { sendZnsNotification, getZnsConfig, saveZnsConfig, refreshZnsToken } from '../services/znsService';
 import { safeLocalStorage } from '../lib/storage';
 import axios from 'axios';
-import { addDoc } from '../lib/firebase';
+import { addDoc, setDoc } from '../lib/firebase';
 
 vi.mock('axios');
 
@@ -146,8 +146,9 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
       return 123 as any;
     });
 
-    // Clear addDoc mock calls
+    // Clear addDoc & setDoc mock calls
     (addDoc as any).mockClear();
+    (setDoc as any).mockClear();
 
     const { getDoc } = await import('../lib/firebase');
     vi.mocked(getDoc).mockResolvedValue({
@@ -195,6 +196,19 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
       })
     );
 
+    // Verify native double-entry ledger hạch toán in journal_entries
+    expect(setDoc).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        id: 'JE-SP-901',
+        ref: 'IPOS_PAY_ORD123',
+        items: expect.arrayContaining([
+          expect.objectContaining({ accountId: '1121', debit: 250000, credit: 0 }),
+          expect.objectContaining({ accountId: '1311', debit: 0, credit: 250000 })
+        ])
+      })
+    );
+
     // Verify SePay invoice creation
     expect(axios.post).toHaveBeenCalledWith(
       '/api/sepay/einvoice/create',
@@ -223,8 +237,9 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
       return 456 as any;
     });
 
-    // Clear addDoc mock calls
+    // Clear addDoc & setDoc mock calls
     (addDoc as any).mockClear();
+    (setDoc as any).mockClear();
 
     const { getDoc } = await import('../lib/firebase');
     vi.mocked(getDoc).mockResolvedValue({
@@ -278,6 +293,19 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
         type: 'income',
         category: 'Doanh thu bán hàng',
         creditAccount: '3388' // Hạch toán tạm treo
+      })
+    );
+
+    // Verify native double-entry ledger hạch toán in journal_entries (tạm treo Có 3388)
+    expect(setDoc).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        id: 'JE-SP-902',
+        ref: 'SEPAY-902',
+        items: expect.arrayContaining([
+          expect.objectContaining({ accountId: '1121', debit: 500000, credit: 0 }),
+          expect.objectContaining({ accountId: '3388', debit: 0, credit: 500000 })
+        ])
       })
     );
 
