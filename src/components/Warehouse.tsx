@@ -39,7 +39,7 @@ import {
   Timer,
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
-import { db, collection, onSnapshot, query, where, getDocs, range, orderBy } from '../lib/firebase';
+import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
 
 const WAREHOUSE_MODULE_GROUPS = [
@@ -524,6 +524,8 @@ export function WarehouseModule() {
   const pageSize = 10;
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [stockSearchQuery, setStockSearchQuery] = useState<string>('');
+  const [debouncedStockSearchQuery, setDebouncedStockSearchQuery] = useState<string>('');
 
   // Advanced Warehouse Heatmap States
   const [selectedZone, setSelectedZone] = useState<string>('A');
@@ -1191,6 +1193,15 @@ export function WarehouseModule() {
     }, 1500);
   };
 
+  // Debounce stock search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedStockSearchQuery(stockSearchQuery);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [stockSearchQuery]);
+
   useEffect(() => {
     if (!activeStore) return;
     let active = true;
@@ -1201,11 +1212,19 @@ export function WarehouseModule() {
         const from = (currentPage - 1) * pageSize;
         const to = from + pageSize - 1;
         
-        const q = query(
-          collection(db, 'warehouse_stock'),
+        const qConstraints: any[] = [
           where('storeId', '==', activeStore.id),
           orderBy('id', 'asc'),
           range(from, to)
+        ];
+
+        if (debouncedStockSearchQuery.trim() !== '') {
+          qConstraints.push(search(debouncedStockSearchQuery, ['productId', 'productName']));
+        }
+        
+        const q = query(
+          collection(db, 'warehouse_stock'),
+          ...qConstraints
         );
         
         const snap = await getDocs(q);
@@ -1223,7 +1242,7 @@ export function WarehouseModule() {
     
     load();
     return () => { active = false; };
-  }, [activeStore, currentPage]);
+  }, [activeStore, currentPage, debouncedStockSearchQuery]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -2683,6 +2702,20 @@ export function WarehouseModule() {
           </div>
 
           <div className="p-6">
+            {/* Thanh Tìm kiếm Tồn kho */}
+            <div className="flex justify-between items-center gap-4 mb-6">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm mã nguyên liệu hoặc tên sản phẩm..."
+                  value={stockSearchQuery}
+                  onChange={(e) => setStockSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-orange-600 outline-none transition-all font-sans"
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {stockItems.slice(0, 3).map(item => (
                 <div

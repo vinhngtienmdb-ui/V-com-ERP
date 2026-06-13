@@ -37,8 +37,9 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.items = jsData.items || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
   } else if (tableName === 'warehouse_stock') {
-    payload.product_id = jsData.productId || jsData.product_id || null;
-    payload.product_name = jsData.productName || jsData.product_name || null;
+    payload.store_id = jsData.storeId || jsData.store_id || null;
+    payload.product_id = jsData.productId || jsData.materialId || jsData.product_id || null;
+    payload.product_name = jsData.productName || jsData.materialName || jsData.product_name || null;
     payload.quantity = Number(jsData.quantity) || 0.00;
     payload.safety_stock = Number(jsData.safetyStock || jsData.safety_stock) || 0.00;
     payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
@@ -80,8 +81,11 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.items = row.items;
     jsData.createdAt = row.created_at;
   } else if (tableName === 'warehouse_stock') {
+    jsData.storeId = row.store_id;
     jsData.productId = row.product_id;
+    jsData.materialId = row.product_id; // backward compatibility for UI
     jsData.productName = row.product_name;
+    jsData.materialName = row.product_name; // backward compatibility
     jsData.quantity = Number(row.quantity);
     jsData.safetyStock = Number(row.safety_stock);
     jsData.updatedAt = row.updated_at;
@@ -333,10 +337,11 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else if (field === 'tenantId') {
         targetColumn = 'tenant_id';
       } else if (RELATIONAL_TABLES.includes(tableName)) {
-        if (field === 'customerId') targetColumn = 'customer_id';
+        if (field === 'storeId') targetColumn = 'store_id';
+        else if (field === 'customerId') targetColumn = 'customer_id';
         else if (field === 'customerName') targetColumn = 'customer_name';
-        else if (field === 'productId') targetColumn = 'product_id';
-        else if (field === 'productName') targetColumn = 'product_name';
+        else if (field === 'productId' || field === 'materialId') targetColumn = 'product_id';
+        else if (field === 'productName' || field === 'materialName') targetColumn = 'product_name';
         else if (field === 'safetyStock') targetColumn = 'safety_stock';
         else if (field === 'imageUrl') targetColumn = 'image_url';
         else if (field === 'createdAt') targetColumn = 'created_at';
@@ -376,10 +381,11 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else {
         let orderCol = `data->>${field}`;
         if (RELATIONAL_TABLES.includes(tableName)) {
-          if (field === 'customerId') orderCol = 'customer_id';
+          if (field === 'storeId') orderCol = 'store_id';
+          else if (field === 'customerId') orderCol = 'customer_id';
           else if (field === 'customerName') orderCol = 'customer_name';
-          else if (field === 'productId') orderCol = 'product_id';
-          else if (field === 'productName') orderCol = 'product_name';
+          else if (field === 'productId' || field === 'materialId') orderCol = 'product_id';
+          else if (field === 'productName' || field === 'materialName') orderCol = 'product_name';
           else if (field === 'safetyStock') orderCol = 'safety_stock';
           else if (field === 'imageUrl') orderCol = 'image_url';
           else if (field === 'createdAt') orderCol = 'created_at';
@@ -401,10 +407,11 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       if (field === 'id') {
         targetColumn = 'id';
       } else if (RELATIONAL_TABLES.includes(tableName)) {
-        if (field === 'customerId') targetColumn = 'customer_id';
+        if (field === 'storeId') targetColumn = 'store_id';
+        else if (field === 'customerId') targetColumn = 'customer_id';
         else if (field === 'customerName') targetColumn = 'customer_name';
-        else if (field === 'productId') targetColumn = 'product_id';
-        else if (field === 'productName') targetColumn = 'product_name';
+        else if (field === 'productId' || field === 'materialId') targetColumn = 'product_id';
+        else if (field === 'productName' || field === 'materialName') targetColumn = 'product_name';
         else if (field === 'safetyStock') targetColumn = 'safety_stock';
         else if (field === 'imageUrl') targetColumn = 'image_url';
         else if (field === 'createdAt') targetColumn = 'created_at';
@@ -420,10 +427,11 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
           let col = `data->>${f}`;
           if (f === 'id') col = 'id';
           else if (RELATIONAL_TABLES.includes(tableName)) {
-            if (f === 'customerId') col = 'customer_id';
+            if (f === 'storeId') col = 'store_id';
+            else if (f === 'customerId') col = 'customer_id';
             else if (f === 'customerName') col = 'customer_name';
-            else if (f === 'productId') col = 'product_id';
-            else if (f === 'productName') col = 'product_name';
+            else if (f === 'productId' || f === 'materialId') col = 'product_id';
+            else if (f === 'productName' || f === 'materialName') col = 'product_name';
             else if (f === 'safetyStock') col = 'safety_stock';
             else if (f === 'imageUrl') col = 'image_url';
             else if (f === 'createdAt') col = 'created_at';

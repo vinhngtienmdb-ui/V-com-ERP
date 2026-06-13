@@ -73,6 +73,7 @@ CREATE POLICY orders_isolation ON public.orders
 CREATE TABLE public.warehouse_stock (
   id TEXT PRIMARY KEY,
   tenant_id TEXT NOT NULL,
+  store_id TEXT,
   product_id TEXT,
   product_name TEXT,
   quantity NUMERIC(15, 2) DEFAULT 0.00,
@@ -86,6 +87,22 @@ ALTER TABLE public.warehouse_stock ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS warehouse_stock_isolation ON public.warehouse_stock;
 CREATE POLICY warehouse_stock_isolation ON public.warehouse_stock
   FOR ALL USING (tenant_id = (auth.jwt() ->> 'tenant_id') OR tenant_id = 'tenant-vcomm-prod-01');
+
+-- Seed dữ liệu mẫu cho warehouse_stock tương thích ngược với UI materialId
+INSERT INTO public.warehouse_stock (id, tenant_id, store_id, product_id, product_name, quantity, safety_stock, updated_at)
+VALUES 
+  ('ws-001', 'tenant-vcomm-prod-01', 'STORE_001', 'MAT-001', 'Cà phê hạt Robusta', 150.00, 20.00, now()),
+  ('ws-002', 'tenant-vcomm-prod-01', 'STORE_001', 'MAT-002', 'Sữa tươi tiệt trùng', 180.00, 30.00, now()),
+  ('ws-003', 'tenant-vcomm-prod-01', 'STORE_001', 'MAT-003', 'Trà đen Phúc Long', 90.00, 15.00, now()),
+  ('ws-004', 'tenant-vcomm-prod-01', 'STORE_001', 'MAT-004', 'Ly giấy VComm 350ml', 12.00, 50.00, now()),
+  ('ws-005', 'tenant-vcomm-prod-01', 'STORE_001', 'MAT-005', 'Đường cát trắng Biên Hòa', 250.00, 10.00, now())
+ON CONFLICT (id) DO UPDATE 
+SET store_id = EXCLUDED.store_id,
+    product_id = EXCLUDED.product_id,
+    product_name = EXCLUDED.product_name,
+    quantity = EXCLUDED.quantity, 
+    safety_stock = EXCLUDED.safety_stock,
+    updated_at = now();
 
 
 -- 6. HÀM RPC TÌM KIẾM TƯƠNG ĐỒNG NGỮ NGHĨA (match_products) trên relational cột chuẩn

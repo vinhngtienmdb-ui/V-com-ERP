@@ -28,7 +28,7 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where } from '../lib/firebase';
+import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where, search } from '../lib/firebase';
 import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
 import { syncOrderToMisa } from '../services/misaService';
@@ -508,6 +508,8 @@ export function Orders() {
   } | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateQuery, setDateQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [printingOrder, setPrintingOrder] = useState<any | null>(null);
   const [dbOrders, setDbOrders] = useState<any[]>([]);
@@ -569,6 +571,15 @@ export function Orders() {
     }
   };
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -585,6 +596,10 @@ export function Orders() {
         
         if (statusFilter !== 'all') {
           qConstraints.push(where('status', '==', statusFilter));
+        }
+
+        if (debouncedSearchQuery.trim() !== '') {
+          qConstraints.push(search(debouncedSearchQuery, ['id', 'customerName']));
         }
         
         const q = query(
@@ -616,7 +631,7 @@ export function Orders() {
     
     load();
     return () => { active = false; };
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, debouncedSearchQuery]);
 
   const allOrders = useMemo(() => {
     return dbOrders;
@@ -792,7 +807,9 @@ export function Orders() {
               <input
                 type="text"
                 placeholder="Mã đơn, Mã Tracking, SĐT..."
-                className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72 font-sans"
               />
             </div>
 
