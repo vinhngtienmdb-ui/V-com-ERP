@@ -49,14 +49,17 @@ ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE journal_items ENABLE ROW LEVEL SECURITY;
 
 -- 1. Chính sách cho bảng accounts
+DROP POLICY IF EXISTS accounts_tenant_isolation ON accounts;
 CREATE POLICY accounts_tenant_isolation ON accounts
   FOR ALL USING (tenant_id = (auth.jwt() ->> 'tenant_id') OR tenant_id = 'tenant-vcomm-prod-01');
 
 -- 2. Chính sách cho bảng journal_entries
+DROP POLICY IF EXISTS journal_entries_tenant_isolation ON journal_entries;
 CREATE POLICY journal_entries_tenant_isolation ON journal_entries
   FOR ALL USING (tenant_id = (auth.jwt() ->> 'tenant_id') OR tenant_id = 'tenant-vcomm-prod-01');
 
 -- 3. Chính sách cho bảng journal_items
+DROP POLICY IF EXISTS journal_items_tenant_isolation ON journal_items;
 CREATE POLICY journal_items_tenant_isolation ON journal_items
   FOR ALL USING (tenant_id = (auth.jwt() ->> 'tenant_id') OR tenant_id = 'tenant-vcomm-prod-01');
 
