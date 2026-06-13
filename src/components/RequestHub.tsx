@@ -164,9 +164,60 @@ export function RequestHub() {
  // Detail View State
  const [selectedRequestForView, setSelectedRequestForView] = useState<any>(null);
 
- useEffect(() => {
-  setLegalAuditResult(null);
- }, [selectedRequestForView]);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'verified' | 'tampered'>('unverified');
+  const [verificationDetails, setVerificationDetails] = useState<any>(null);
+
+  const verifyRequestSignature = async (reqItem: any) => {
+    if (reqItem.signatureStatus !== 'signed') {
+      setVerificationStatus('unverified');
+      return;
+    }
+    setVerificationLoading(true);
+    try {
+      const documentData = {
+        id: reqItem.id,
+        title: reqItem.title,
+        type: reqItem.type,
+        date: reqItem.date
+      };
+
+      const res = await fetch('/api/signatures/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentId: reqItem.id,
+          documentData
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setVerificationDetails(data);
+        if (data.verified) {
+          setVerificationStatus('verified');
+        } else {
+          setVerificationStatus('tampered');
+        }
+      } else {
+        setVerificationStatus('tampered');
+      }
+    } catch (err) {
+      console.error('Verify error:', err);
+      setVerificationStatus('tampered');
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setLegalAuditResult(null);
+    if (selectedRequestForView) {
+      verifyRequestSignature(selectedRequestForView);
+    } else {
+      setVerificationStatus('unverified');
+      setVerificationDetails(null);
+    }
+  }, [selectedRequestForView]);
 
  // Routing State
  const [showRouteModal, setShowRouteModal] = useState(false);
@@ -551,70 +602,102 @@ export function RequestHub() {
  };
  // --- END OF LEGAL AI AUDITOR ENGINE ---
 
- const executeSignature = async () => {
-  if (!signingRequestId) return;
-  setIsSigningInProcess(true);
-  try {
-   const sigImage = signatureMethod === 'personal_image' ? drawnSignatureData : null;
-   const bodyPayload: any = {
-    requestId: signingRequestId,
-    provider: signatureMethod,
-    signerName: user?.displayName || user?.email || 'Unknown'
-   };
-   if (sigImage) {
-    bodyPayload.signatureDraw = sigImage;
-   }
+   const executeSignature = async () => {
+    if (!signingRequestId) return;
+    setIsSigningInProcess(true);
+    try {
+      const sigImage = signatureMethod === 'personal_image' ? drawnSignatureData : null;
+      
+      const userEmail = user?.email || 'admin@vcomm-erp.vn';
+      let privateKey = localStorage.getItem(`vcomm_private_key_${userEmail}`);
+      if (!privateKey) {
+        console.log('[Auto-CA] Generating RSA keypair for user:', userEmail);
+        const genRes = await fetch('/api/signatures/generate-keypair', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userEmail,
+            tenantId: 'tenant-vcomm-prod-01',
+            certSubject: `CN=${user?.displayName || userEmail}, O=VComm ERP, C=VN`
+          })
+        });
+        if (genRes.ok) {
+          const genData = await genRes.json();
+          privateKey = genData.privateKey;
+          localStorage.setItem(`vcomm_private_key_${userEmail}`, genData.privateKey);
+          console.log('[Auto-CA] Automatic keypair registered and stored.');
+        } else {
+          throw new Error('Auto key generation failed.');
+        }
+      }
 
-   const res = await fetch('/api/signature/sign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(bodyPayload),
-   });
-   
-   if (!res.ok) throw new Error(`Signature API error: ${res.status}`);
-   const resData = await res.json();
-   const secureHash = resData.secureHash || ('AES-' + Math.random().toString(36).substring(2, 10).toUpperCase());
+      const reqObj = requests.find(r => r.id === signingRequestId);
+      if (!reqObj) throw new Error('Không tìm thấy thông tin đề xuất.');
 
-   const signedData = {
-    signatureStatus: 'signed',
-    status: 'approved',
-    signedBy: user?.displayName || 'User',
-    signedAt: new Date().toLocaleString('vi-VN'),
-    caProvider: signatureMethod.toUpperCase().replace('_', ' '),
-    secureHash: secureHash,
-    signatureDraw: sigImage
-   };
+      const documentData = {
+        id: reqObj.id,
+        title: reqObj.title,
+        type: reqObj.type,
+        date: reqObj.date
+      };
 
-   setRequests(prev => prev.map(req =>
-    req.id === signingRequestId ? { ...req, ...signedData } : req
-   ));
+      const signRes = await fetch('/api/signatures/sign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          privateKey: privateKey,
+          documentId: reqObj.id,
+          documentType: 'request',
+          signerEmail: userEmail,
+          signerName: user?.displayName || userEmail,
+          tenantId: 'tenant-vcomm-prod-01',
+          documentData
+        })
+      });
 
-   // If current detail view is open, update its state too
-   if (selectedRequestForView && selectedRequestForView.id === signingRequestId) {
-    setSelectedRequestForView({ ...selectedRequestForView, ...signedData });
-   }
+      if (!signRes.ok) {
+        const signErr = await signRes.json();
+        throw new Error(signErr.error || 'Lỗi ký số bảo mật.');
+      }
 
-   // If print view is open, update it
-   if (selectedRequestForPrint && selectedRequestForPrint.id === signingRequestId) {
-    setSelectedRequestForPrint({ ...selectedRequestForPrint, ...signedData });
-   }
+      const resData = await signRes.json();
+      const secureHash = resData.signature.substring(0, 24) + '...';
 
-   if (dbRequestIds.has(signingRequestId)) {
-    updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() })
-    .catch(err => console.error('Signature updateDoc error:', err));
-   }
+      const signedData = {
+        signatureStatus: 'signed',
+        status: 'approved',
+        signedBy: user?.displayName || userEmail,
+        signedAt: new Date().toLocaleString('vi-VN'),
+        caProvider: 'RSA 2048-bit (Auto-CA)',
+        secureHash: secureHash,
+        signatureDraw: sigImage
+      };
 
-   addNotification('Ký số thành công', `Đề xuất mã ${signingRequestId} đã được ký niêm phong điện tử.`);
-  } catch (err) {
-   console.error('executeSignature error:', err);
-   addNotification('Lỗi kết nối ký số', 'Không thể kết nối cổng xác thực CA chữ ký điện tử.');
-  } finally {
-   setIsSigningInProcess(false);
-   setSigningRequestId(null);
-  }
- };
+      setRequests(prev => prev.map(req =>
+        req.id === signingRequestId ? { ...req, ...signedData } : req
+      ));
 
+      if (selectedRequestForView && selectedRequestForView.id === signingRequestId) {
+        setSelectedRequestForView({ ...selectedRequestForView, ...signedData });
+      }
 
+      if (selectedRequestForPrint && selectedRequestForPrint.id === signingRequestId) {
+        setSelectedRequestForPrint({ ...selectedRequestForPrint, ...signedData });
+      }
+
+      if (dbRequestIds.has(signingRequestId)) {
+        await updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() });
+      }
+
+      addNotification('Ký số thành công', `Đề xuất mã ${signingRequestId} đã được niêm phong điện tử bằng thuật toán RSA.`);
+    } catch (err: any) {
+      console.error('executeSignature error:', err);
+      addNotification('Lỗi ký số', err.message || 'Không thể thực thi ký số điện tử.');
+    } finally {
+      setIsSigningInProcess(false);
+      setSigningRequestId(null);
+    }
+  };
  return (
  <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
  <div className="flex items-center justify-between">
@@ -1419,46 +1502,71 @@ export function RequestHub() {
 
           {/* Chứng thư tài liệu / Security Sealed block */}
           {selectedRequestForView.signatureStatus === 'signed' && (
-            <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-950 shadow-sm space-y-4">
-              <div className="flex justify-between items-start border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-emerald-950 text-emerald-400 border border-emerald-900/50 rounded-lg">
-                    <ShieldCheck className="w-4 h-4 animate-pulse" />
+            <div className="space-y-3">
+              {/* Integrity status alert banners */}
+              {verificationLoading ? (
+                <div className="bg-slate-100 border border-slate-300 text-slate-700 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold animate-pulse">
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+                  Đang xác thực tính toàn vẹn chữ ký số...
+                </div>
+              ) : verificationStatus === 'verified' ? (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold shadow-sm">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 animate-pulse" />
+                  Chữ ký số hợp lệ: Nội dung văn bản nguyên vẹn (Verified).
+                </div>
+              ) : verificationStatus === 'tampered' ? (
+                <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold shadow-sm border-l-4 border-l-rose-600 animate-bounce">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  CẢNH BÁO LỖI TOÀN VẸN: Dữ liệu đã bị thay đổi trái phép sau khi ký số!
+                </div>
+              ) : null}
+
+              <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-950 shadow-sm space-y-4">
+                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-emerald-950 text-emerald-400 border border-emerald-900/50 rounded-lg">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-100 font-sans leading-none">Chứng Thư Niêm Phong Điện Tử</h4>
+                      <span className="text-[9px] text-slate-400 font-medium">Xác thực mã hóa qua {selectedRequestForView.caProvider || 'CA'}</span>
+                    </div>
+                  </div>
+                  <span className={cn(
+                    "text-[10px] font-bold px-2 py-0.5 rounded border",
+                    verificationStatus === 'verified' 
+                      ? "bg-emerald-950 text-emerald-400 border-emerald-900/40" 
+                      : "bg-rose-950 text-rose-400 border-rose-900/40"
+                  )}>
+                    {verificationStatus === 'verified' ? 'SECURE INTEGRITY' : 'TAMPERED ALERT'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-[11px] leading-tight font-medium pb-2">
+                  <div>
+                    <p className="text-slate-400 mb-0.5">Xác thực chứng thư:</p>
+                    <p className="font-bold text-slate-100">{selectedRequestForView.signedBy || 'Quản trị viên'}</p>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-100 font-sans leading-none">Chứng Thư Niêm Phong Điện Tử</h4>
-                    <span className="text-[9px] text-slate-400 font-medium">Đối soát bảo mật AES-256 mã hóa qua {selectedRequestForView.caProvider || 'CA'}</span>
+                    <p className="text-slate-400 mb-0.5">Thời gian ký số:</p>
+                    <p className="font-bold text-slate-100">{selectedRequestForView.signedAt || '---'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-slate-400 mb-0.5">Mã định danh bảo mật SHA-256 Seal:</p>
+                    <p className="font-bold text-slate-100 text-[10px] font-mono tracking-tight bg-slate-950 p-2 rounded-lg border border-slate-800 truncate">
+                      {selectedRequestForView.secureHash || 'AES-SHA256-D93B8C1D0F1C3E4'}
+                    </p>
                   </div>
                 </div>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-900/40">
-                  SECURE INTEGRITY
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-[11px] leading-tight font-medium pb-2">
-                <div>
-                  <p className="text-slate-400 mb-0.5">Xác thực chứng thư:</p>
-                  <p className="font-bold text-slate-100">{selectedRequestForView.signedBy || 'Quản trị viên'}</p>
-                </div>
-                <div>
-                  <p className="text-slate-400 mb-0.5">Thời gian ký số:</p>
-                  <p className="font-bold text-slate-100">{selectedRequestForView.signedAt || '---'}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-slate-400 mb-0.5">Mã định danh bảo mật SHA-256 Seal:</p>
-                  <p className="font-bold text-slate-100 text-[10px] font-mono tracking-tight bg-slate-950 p-2 rounded-lg border border-slate-800 truncate">
-                    {selectedRequestForView.secureHash || 'AES-SHA256-D93B8C1D0F1C3E4'}
-                  </p>
-                </div>
-              </div>
-              
-              {selectedRequestForView.signatureDraw && (
-                <div className="border-t border-slate-800 pt-3">
-                  <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
-                  <div className="bg-white p-2 rounded-xl flex items-center justify-center max-w-[200px] border border-slate-700">
-                    <img src={selectedRequestForView.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
+                
+                {selectedRequestForView.signatureDraw && (
+                  <div className="border-t border-slate-800 pt-3">
+                    <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
+                    <div className="bg-white p-2 rounded-xl flex items-center justify-center max-w-[200px] border border-slate-700">
+                      <img src={selectedRequestForView.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 

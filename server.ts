@@ -1,5 +1,6 @@
 import express from 'express';
 import fs from 'fs';
+import crypto from 'crypto';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -1047,6 +1048,184 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
     } catch (err: any) {
       console.error('[Embed-All] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý tạo mã nhúng sản phẩm' });
+    }
+  });
+
+  // API Route: RSA Digital Signatures - Generate Keypair
+  app.post('/api/signatures/generate-keypair', async (req, res) => {
+    const { userId, tenantId, certSubject } = req.body;
+    if (!userId || !tenantId || !certSubject) {
+      return res.status(400).json({ error: 'Thiếu thông tin người dùng, tenant hoặc tiêu đề chứng thư.' });
+    }
+    try {
+      const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: 'spki', format: 'pem' },
+        privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+      });
+
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) {
+        return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+      }
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      await pgClient.connect();
+      await pgClient.query(
+        `INSERT INTO public.user_keypairs (user_id, tenant_id, public_key, cert_subject, updated_at)
+         VALUES ($1, $2, $3, $4, now())
+         ON CONFLICT (user_id) DO UPDATE 
+         SET public_key = EXCLUDED.public_key, cert_subject = EXCLUDED.cert_subject, updated_at = now()`,
+        [userId, tenantId, publicKey, certSubject]
+      );
+      await pgClient.end();
+
+      res.json({
+        success: true,
+        privateKey: privateKey,
+        publicKey: publicKey
+      });
+    } catch (err: any) {
+      console.error('[Keypair-Gen] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi tạo cặp khóa' });
+    }
+  });
+
+  // API Route: RSA Digital Signatures - Sign Document
+  app.post('/api/signatures/sign', async (req, res) => {
+    const { privateKey, documentId, documentType, signerEmail, signerName, tenantId, documentData } = req.body;
+    if (!privateKey || !documentId || !documentType || !signerEmail || !signerName || !tenantId || !documentData) {
+      return res.status(400).json({ error: 'Thiếu tham số bắt buộc để thực hiện ký số.' });
+    }
+    try {
+      const docStr = JSON.stringify(documentData);
+      const docHash = crypto.createHash('sha256').update(docStr).digest('hex');
+
+      const sign = crypto.createSign('SHA256');
+      sign.update(docStr);
+      const signature = sign.sign(privateKey, 'base64');
+
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) {
+        return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+      }
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      await pgClient.connect();
+      
+      await pgClient.query(
+        `INSERT INTO public.document_signatures (tenant_id, document_id, document_type, signer_email, signer_name, signature_hash, document_hash, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, now())`,
+         [tenantId, documentId, documentType, signerEmail, signerName, signature, docHash]
+      );
+      await pgClient.end();
+
+      res.json({
+        success: true,
+        documentHash: docHash,
+        signature: signature
+      });
+    } catch (err: any) {
+      console.error('[Sign-Doc] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi thực thi ký số' });
+    }
+  });
+
+  // API Route: RSA Digital Signatures - Verify Document
+  app.post('/api/signatures/verify', async (req, res) => {
+    const { documentId, documentData } = req.body;
+    if (!documentId || !documentData) {
+      return res.status(400).json({ error: 'Thiếu mã tài liệu hoặc dữ liệu kiểm tra.' });
+    }
+    try {
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) {
+        return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+      }
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      await pgClient.connect();
+
+      const sigRes = await pgClient.query(
+        `SELECT * FROM public.document_signatures WHERE document_id = $1 ORDER BY created_at DESC`,
+        [documentId]
+      );
+      
+      const signatures = sigRes.rows;
+      if (signatures.length === 0) {
+        await pgClient.end();
+        return res.json({ success: true, verified: false, message: 'Tài liệu chưa được ký số.', signatures: [] });
+      }
+
+      const docStr = JSON.stringify(documentData);
+      const currentHash = crypto.createHash('sha256').update(docStr).digest('hex');
+
+      const verificationResults = [];
+      let overallVerified = true;
+
+      for (const sig of signatures) {
+        const keyRes = await pgClient.query(
+          `SELECT public_key FROM public.user_keypairs WHERE user_id = $1 OR user_id = $2`,
+          [sig.signer_email, sig.signer_email.split('@')[0]]
+        );
+
+        if (keyRes.rows.length === 0) {
+          verificationResults.push({
+            signerEmail: sig.signer_email,
+            signerName: sig.signer_name,
+            verified: false,
+            reason: 'Không tìm thấy chứng thư khóa công khai.'
+          });
+          overallVerified = false;
+          continue;
+        }
+
+        const publicKey = keyRes.rows[0].public_key;
+
+        try {
+          const verify = crypto.createVerify('SHA256');
+          verify.update(docStr);
+          const isVerified = verify.verify(publicKey, sig.signature_hash, 'base64');
+          const hashMatches = sig.document_hash === currentHash;
+
+          verificationResults.push({
+            signerEmail: sig.signer_email,
+            signerName: sig.signer_name,
+            verified: isVerified && hashMatches,
+            hashMatches,
+            date: sig.created_at
+          });
+
+          if (!isVerified || !hashMatches) {
+            overallVerified = false;
+          }
+        } catch (verErr) {
+          verificationResults.push({
+            signerEmail: sig.signer_email,
+            signerName: sig.signer_name,
+            verified: false,
+            reason: 'Lỗi giải mã chữ ký.'
+          });
+          overallVerified = false;
+        }
+      }
+
+      await pgClient.end();
+      res.json({
+        success: true,
+        verified: overallVerified,
+        currentHash: currentHash,
+        signatures: verificationResults
+      });
+    } catch (err: any) {
+      console.error('[Verify-Doc] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi xác thực chữ ký' });
     }
   });
 
