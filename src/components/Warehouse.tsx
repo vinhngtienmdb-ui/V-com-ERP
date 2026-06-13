@@ -37,7 +37,10 @@ import {
   TrendingUp,
   LayoutGrid,
   Timer,
+  Camera,
+  QrCode,
 } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
@@ -526,6 +529,8 @@ export function WarehouseModule() {
   const [loading, setLoading] = useState(false);
   const [stockSearchQuery, setStockSearchQuery] = useState<string>('');
   const [debouncedStockSearchQuery, setDebouncedStockSearchQuery] = useState<string>('');
+  const [showScanner, setShowScanner] = useState<boolean>(false);
+  const [scannerError, setScannerError] = useState<string | null>(null);
 
   // Advanced Warehouse Heatmap States
   const [selectedZone, setSelectedZone] = useState<string>('A');
@@ -1243,6 +1248,49 @@ export function WarehouseModule() {
     load();
     return () => { active = false; };
   }, [activeStore, currentPage, debouncedStockSearchQuery]);
+
+  useEffect(() => {
+    let html5QrCode: Html5Qrcode | null = null;
+
+    if (showScanner) {
+      setScannerError(null);
+      
+      const timer = setTimeout(() => {
+        const element = document.getElementById('reader');
+        if (!element) {
+          setScannerError('Không tìm thấy vùng hiển thị camera (#reader).');
+          return;
+        }
+
+        html5QrCode = new Html5Qrcode('reader');
+        html5QrCode.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: (width, height) => {
+              const size = Math.min(width, height) * 0.7;
+              return { width: size, height: size };
+            }
+          },
+          (decodedText) => {
+            setStockSearchQuery(decodedText);
+            setShowScanner(false);
+          },
+          () => {}
+        ).catch((err: any) => {
+          console.error('[WarehouseScanner] Camera error:', err);
+          setScannerError('Không thể truy cập camera. Vui lòng kiểm tra quyền thiết bị.');
+        });
+      }, 300);
+
+      return () => {
+        clearTimeout(timer);
+        if (html5QrCode) {
+          html5QrCode.stop().catch(err => console.warn('[WarehouseScanner] Stop failed:', err));
+        }
+      };
+    }
+  }, [showScanner]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -2704,17 +2752,71 @@ export function WarehouseModule() {
           <div className="p-6">
             {/* Thanh Tìm kiếm Tồn kho */}
             <div className="flex justify-between items-center gap-4 mb-6">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm mã nguyên liệu hoặc tên sản phẩm..."
-                  value={stockSearchQuery}
-                  onChange={(e) => setStockSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-orange-600 outline-none transition-all font-sans"
-                />
+              <div className="relative flex-1 max-w-md flex items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm mã nguyên liệu hoặc tên sản phẩm..."
+                    value={stockSearchQuery}
+                    onChange={(e) => setStockSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-orange-600 outline-none transition-all font-sans"
+                  />
+                  <button
+                    onClick={() => setShowScanner(true)}
+                    title="Quét mã QR/Barcode"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-orange-700 transition-colors p-1"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Modal Quét Mã QR/Barcode */}
+            {showScanner && (
+              <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 font-sans">
+                <div className="bg-white rounded-2xl border border-slate-300 shadow-xl max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-5 border-b border-[#F3F4F6] bg-slate-50 flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-slate-900">
+                      <QrCode className="w-5 h-5 text-orange-600 animate-pulse" />
+                      <span className="font-bold text-sm">Quét mã QR / Barcode</span>
+                    </div>
+                    <button
+                      onClick={() => setShowScanner(false)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-900 uppercase tracking-wider"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                  
+                  <div className="p-6 flex flex-col items-center gap-4">
+                    {scannerError ? (
+                      <div className="text-center py-8 px-4 bg-rose-50 rounded-xl border border-rose-200 text-rose-600 w-full">
+                        <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
+                        <p className="text-xs font-bold mb-1">Lỗi Máy Quét</p>
+                        <p className="text-xs font-medium">{scannerError}</p>
+                      </div>
+                    ) : (
+                      <div className="w-full relative bg-slate-950 rounded-xl overflow-hidden border border-slate-300 aspect-square flex items-center justify-center">
+                        <div id="reader" className="w-full h-full"></div>
+                        {/* Khung ngắm quét */}
+                        <div className="absolute inset-0 border-[30px] border-slate-950/40 pointer-events-none flex items-center justify-center">
+                          <div className="w-full h-full border-2 border-dashed border-orange-500 rounded-lg relative">
+                            {/* Tia quét */}
+                            <div className="absolute left-0 right-0 h-0.5 bg-orange-500/80 shadow-[0_0_8px_rgba(249,115,22,0.8)] top-1/2 -translate-y-1/2 animate-bounce"></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider text-center max-w-xs leading-relaxed">
+                      Vui lòng căn chỉnh mã QR / Barcode vào giữa khung hình để tự động nhận dạng và đối sánh dữ liệu tồn kho.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {stockItems.slice(0, 3).map(item => (
