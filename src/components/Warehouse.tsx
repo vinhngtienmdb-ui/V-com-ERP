@@ -39,7 +39,7 @@ import {
   Timer,
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
-import { db, collection, onSnapshot, query, where } from '../lib/firebase';
+import { db, collection, onSnapshot, query, where, getDocs, range, orderBy } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
 
 const WAREHOUSE_MODULE_GROUPS = [
@@ -520,6 +520,10 @@ export function WarehouseModule() {
     notes: '',
   });
   const [stockItems, setStockItems] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // Advanced Warehouse Heatmap States
   const [selectedZone, setSelectedZone] = useState<string>('A');
@@ -1189,12 +1193,37 @@ export function WarehouseModule() {
 
   useEffect(() => {
     if (!activeStore) return;
-    const q = query(collection(db, 'warehouse_stock'), where('storeId', '==', activeStore.id));
-    const unsub = onSnapshot(q, snap => {
-      setStockItems(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return () => unsub();
-  }, [activeStore]);
+    let active = true;
+    setLoading(true);
+    
+    const load = async () => {
+      try {
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        
+        const q = query(
+          collection(db, 'warehouse_stock'),
+          where('storeId', '==', activeStore.id),
+          orderBy('id', 'asc'),
+          range(from, to)
+        );
+        
+        const snap = await getDocs(q);
+        if (active) {
+          const data = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+          setStockItems(data);
+          setTotalCount(snap.count || 0);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Error loading warehouse stock:', err);
+        if (active) setLoading(false);
+      }
+    };
+    
+    load();
+    return () => { active = false; };
+  }, [activeStore, currentPage]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -2734,6 +2763,31 @@ export function WarehouseModule() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              {/* Phân trang Server-side */}
+              <div className="p-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans shrink-0">
+                <div className="text-xs text-slate-500 font-bold uppercase">
+                  Hiển thị {totalCount ? ((currentPage - 1) * pageSize) + 1 : 0} - {Math.min(currentPage * pageSize, totalCount)} trong số {totalCount} mặt hàng
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    disabled={currentPage === 1 || loading}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    Trang trước
+                  </button>
+                  <span className="px-4 py-2 text-xs font-bold text-slate-900 self-center">
+                    Trang {currentPage} / {Math.ceil(totalCount / pageSize) || 1}
+                  </span>
+                  <button
+                    disabled={currentPage >= Math.ceil(totalCount / pageSize) || loading}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    Trang sau
+                  </button>
+                </div>
               </div>
             </div>
           </div>

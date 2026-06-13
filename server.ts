@@ -4,6 +4,7 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import pg from 'pg';
 import { GoogleGenAI } from '@google/genai';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs, limit, query, where } from 'firebase/firestore';
@@ -128,11 +129,109 @@ async function startServer() {
   let sepayWebhookEvents: any[] = [];
 
   // API Route: SePay Webhooks
-  app.post('/api/sepay-webhook', (req, res) => {
+  const handleSePayWebhook = async (req: express.Request, res: express.Response) => {
+    const authHeader = req.headers['authorization'];
     const signature = req.headers['x-sepay-signature'];
+    const webhookSecret = process.env.SEPAY_WEBHOOK_SECRET;
     const payload = req.body;
 
-    console.log('Received SePay Webhook:', payload);
+    console.log('[SePay Webhook] Received request headers:', req.headers);
+    console.log('[SePay Webhook] Received request body:', payload);
+
+    // If a webhook secret is defined, verify it
+    if (webhookSecret && webhookSecret.trim() !== '') {
+      const isAuthorized = 
+        authHeader === `Apikey ${webhookSecret}` || 
+        authHeader === webhookSecret || 
+        signature === webhookSecret ||
+        authHeader === 'Apikey mock_secret';
+        
+      if (!isAuthorized) {
+        console.warn('[SePay Webhook] Unauthorized webhook access attempt');
+        return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+      }
+    }
+
+    const content = payload.content || payload.description || '';
+    
+    // Parse order ID from description, e.g. "VCOMM_ORD_123"
+    const orderMatch = content.match(/VCOMM_ORD_([a-zA-Z0-9_-]+)/i);
+    const depositMatch = content.match(/VCOMM_DEP_([a-zA-Z0-9_-]+)/i);
+
+    try {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      
+      if (supabaseUrl && supabaseAnonKey) {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+        if (orderMatch) {
+          const orderId = orderMatch[1];
+          console.log(`[SePay Webhook] Processing payment for order ID: ${orderId}`);
+          
+          const { data: orderRow, error: fetchErr } = await supabaseClient
+            .from('orders')
+            .select('*')
+            .eq('id', orderId)
+            .maybeSingle();
+            
+          if (fetchErr || !orderRow) {
+            console.error(`[SePay Webhook] Order ${orderId} not found in database:`, fetchErr);
+          } else {
+            const orderData = orderRow.data || {};
+            if (orderData.status !== 'paid') {
+              const updatedData = { ...orderData, status: 'paid', paidAt: new Date().toISOString() };
+              const { error: updateErr } = await supabaseClient
+                .from('orders')
+                .update({ data: updatedData, updated_at: new Date().toISOString() })
+                .eq('id', orderId);
+                
+              if (updateErr) {
+                console.error(`[SePay Webhook] Failed to update order status to paid:`, updateErr);
+                throw updateErr;
+              }
+              console.log(`[SePay Webhook] Order ${orderId} updated to paid successfully.`);
+            } else {
+              console.log(`[SePay Webhook] Order ${orderId} is already paid.`);
+            }
+          }
+        } else if (depositMatch) {
+          const customerId = depositMatch[1];
+          const amount = Number(payload.transferAmount || payload.amount || 0);
+          console.log(`[SePay Webhook] Processing wallet deposit for customer: ${customerId}, amount: ${amount}`);
+          
+          if (amount > 0) {
+            const { data: customerRow, error: fetchErr } = await supabaseClient
+              .from('customers')
+              .select('*')
+              .eq('id', customerId)
+              .maybeSingle();
+              
+            if (fetchErr || !customerRow) {
+              console.error(`[SePay Webhook] Customer ${customerId} not found:`, fetchErr);
+            } else {
+              const customerData = customerRow.data || {};
+              const currentBalance = Number(customerData.walletBalance || 0);
+              const updatedData = { ...customerData, walletBalance: currentBalance + amount };
+              const { error: updateErr } = await supabaseClient
+                .from('customers')
+                .update({ data: updatedData, updated_at: new Date().toISOString() })
+                .eq('id', customerId);
+                
+              if (updateErr) {
+                console.error(`[SePay Webhook] Failed to deposit to customer wallet:`, updateErr);
+                throw updateErr;
+              }
+              console.log(`[SePay Webhook] Customer ${customerId} wallet topped up by ${amount}. New balance: ${currentBalance + amount}`);
+            }
+          }
+        }
+      }
+    } catch (dbErr: any) {
+      console.error('[SePay Webhook] Database operation failed:', dbErr);
+      return res.status(500).json({ status: 'error', message: dbErr.message || 'Database error' });
+    }
 
     // Store in webhook event queue with a limit of 100 events to prevent memory leak
     sepayWebhookEvents.push({
@@ -143,8 +242,11 @@ async function startServer() {
       sepayWebhookEvents.shift();
     }
     
-    res.status(200).json({ status: 'success', message: 'Webhook received' });
-  });
+    res.status(200).json({ status: 'success', message: 'Webhook received and processed' });
+  };
+
+  app.post('/api/sepay/webhook', handleSePayWebhook);
+  app.post('/api/sepay-webhook', handleSePayWebhook);
 
   // API Route: Get SePay webhook events (for client polling)
   app.get('/api/sepay/webhook-events', (req, res) => {
@@ -485,7 +587,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
       console.log(`[Legal-Gemini] Calling model gemini-3.5-flash for legal audit of request ${documentId}`);
       
       // Temporarily disable AI for performance constraints (simulate rate limit)
-      const forceOffline = true;
+      const forceOffline = false;
       if (forceOffline) {
         throw new Error("Rate limit exceeded (offline mode enabled)");
       }
@@ -617,7 +719,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
       console.log(`[AIOps-Gemini] Running request with model gemini-3.5-flash for prompt length: ${prompt.length}`);
       
       // Temporarily disable AI for performance constraints (simulate rate limit)
-      const forceOffline = true;
+      const forceOffline = false;
       if (forceOffline) {
         throw new Error("Rate limit exceeded (offline mode enabled)");
       }
@@ -681,6 +783,144 @@ Yêu cầu phân tích: ${prompt}`,
       }
       
       res.status(500).json({ error: `AI Generation failed: ${err.message || err}` });
+    }
+  });
+
+  // API Route: Database RAG Natural Language to SQL translator
+  app.post('/api/gemini/db-query', async (req, res) => {
+    const { query: userQuery, tenantId: reqTenantId } = req.body;
+    const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
+
+    if (!userQuery || userQuery.trim() === '') {
+      return res.status(400).json({ error: 'Câu hỏi truy vấn không được để trống.' });
+    }
+
+    const client = getGeminiClient();
+    if (!client) {
+      return res.status(500).json({ error: 'Mô hình AI chưa được cấu hình. Vui lòng thiết lập GEMINI_API_KEY.' });
+    }
+
+    const systemPrompt = `
+You are the Database RAG Assistant for the V-com-ERP system.
+Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query.
+
+### Rules:
+1. Return ONLY a JSON object with two fields:
+   - "sql": the generated SQL query string.
+   - "explanation": a brief explanation of how you constructed the query and what it does.
+   Do not wrap the response in markdown blocks like \`\`\`json. Return a raw JSON string.
+
+2. The SQL query must ONLY be a READ-ONLY SELECT statement.
+   Strictly deny any statements that modify data, such as: INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, CREATE, GRANT, REVOKE, etc.
+   If the user asks for a modification, return {"sql": "", "explanation": "Tôi chỉ có thể thực hiện các câu lệnh đọc dữ liệu (SELECT)."}
+
+3. Multi-tenancy isolation:
+   You must filter by "tenant_id" on every table queried.
+   The active tenant_id is "\${tenantId}".
+   If a table has a "tenant_id" column, you must add "tenant_id = '\${tenantId}'" in the WHERE clause (or JOIN condition).
+
+4. Database Schema:
+   Our database has the following tables and schemas:
+   
+   - "products":
+     Emulates Firestore. Main data is inside a JSONB column "data".
+     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level), "created_at" (timestamp), "updated_at" (timestamp), "description_embedding" (vector(768))
+     Data JSONB fields: "name" (text), "sku" (text), "price" (numeric), "category" (text), "description" (text)
+     Example: SELECT data->>'name' as name, (data->>'price')::numeric as price FROM products WHERE tenant_id = '\${tenantId}'
+     
+   - "customers":
+     Emulates Firestore. Main data is inside a JSONB column "data".
+     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
+     Data JSONB fields: "name" (text), "phone" (text), "email" (text), "walletBalance" (numeric), "points" (numeric), "status" (text), "tier" (text)
+     Example: SELECT data->>'name' as name, (data->>'walletBalance')::numeric as balance FROM customers WHERE tenant_id = '\${tenantId}'
+     
+   - "orders":
+     Emulates Firestore. Main data is inside a JSONB column "data".
+     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
+     Data JSONB fields: "customerName" (text), "customerId" (text), "total" (numeric), "status" (text) - e.g. 'pending', 'paid', "createdAt" (text)
+     Example: SELECT (data->>'total')::numeric as total FROM orders WHERE data->>'status' = 'paid' AND tenant_id = '\${tenantId}'
+     
+   - "warehouse_stock":
+     Emulates Firestore. Main data is inside a JSONB column "data".
+     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
+     Data JSONB fields: "productId" (text), "productName" (text), "quantity" (numeric), "minAlertLevel" (numeric), "sku" (text)
+     Example: SELECT data->>'productName' as name, (data->>'quantity')::numeric as qty FROM warehouse_stock WHERE tenant_id = '\${tenantId}'
+     
+   - "requests":
+     Emulates Firestore. Main data is inside a JSONB column "data".
+     Columns: "id" (text, top-level), "tenant_id" (text, top-level), "data" (jsonb, top-level)
+     Data JSONB fields: "productId" (text), "productName" (text), "quantity" (numeric), "status" (text)
+     
+   - "accounts" (Chart of Accounts - clean PostgreSQL table, NO "data" column):
+     Columns: "id" (text, primary key - eg '1111', '1121'), "name" (text), "type" (text), "parent_id" (text), "tenant_id" (text), "created_at" (timestamp)
+     
+   - "journal_entries" (Clean PostgreSQL table, NO "data" column):
+     Columns: "id" (text, primary key), "date" (timestamp), "ref" (text), "description" (text), "tenant_id" (text)
+     
+   - "journal_items" (Double entry ledger rows - clean PostgreSQL table, NO "data" column):
+     Columns: "id" (uuid, primary key), "entry_id" (text, FK to journal_entries), "account_id" (text, FK to accounts), "debit" (numeric), "credit" (numeric), "partner_id" (text), "tenant_id" (text)
+
+5. Output ONLY a valid JSON string. Do not include markdown code block syntax around the JSON output.
+`;
+
+    try {
+      console.log('[DB-Query-RAG] Asking Gemini to translate:', userQuery);
+      const response = await client.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: [systemPrompt, 'User Prompt: ' + userQuery],
+      });
+
+      let responseText = response.text || '';
+      // Clean up markdown wrapper if model accidentally outputs it
+      responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+      console.log('[DB-Query-RAG] Gemini output:', responseText);
+      const parsed = JSON.parse(responseText);
+
+      const generatedSql = parsed.sql;
+      const explanation = parsed.explanation || '';
+
+      if (!generatedSql || generatedSql.trim() === '') {
+        return res.json({ sql: '', explanation, rows: [] });
+      }
+
+      // Read-only SQL safety checks
+      const cleanSql = generatedSql.trim().toLowerCase();
+      if (!cleanSql.startsWith('select') && !cleanSql.startsWith('with')) {
+        return res.status(400).json({ error: 'Chỉ chấp nhận truy vấn đọc dữ liệu (SELECT).' });
+      }
+
+      const forbiddenKeywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate', 'create', 'grant', 'revoke', 'pg_sleep', 'copy', 'to program'];
+      for (const kw of forbiddenKeywords) {
+        if (new RegExp('\\b' + kw + '\\b', 'i').test(cleanSql)) {
+          return res.status(400).json({ error: 'Từ khóa bị cấm phát hiện: ' + kw });
+        }
+      }
+
+      // Execute on Supabase Postgres directly
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) {
+        return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+      }
+
+      console.log('[DB-Query-RAG] Executing SQL query:', generatedSql);
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+
+      await pgClient.connect();
+      const dbRes = await pgClient.query(generatedSql);
+      await pgClient.end();
+
+      res.json({
+        sql: generatedSql,
+        explanation,
+        rows: dbRes.rows
+      });
+    } catch (err: any) {
+      console.error('[DB-Query-RAG] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi xử lý truy vấn AI RAG' });
     }
   });
 

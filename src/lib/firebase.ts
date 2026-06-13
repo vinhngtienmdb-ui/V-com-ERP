@@ -95,7 +95,7 @@ function serializeTimestamps(obj: any): any {
 // Database Query Interface and References
 // -----------------------------------------------------------------------------
 export interface QueryConstraint {
-  type: 'where' | 'orderBy' | 'limit';
+  type: 'where' | 'orderBy' | 'limit' | 'range' | 'ilike' | 'search';
   field?: string;
   op?: string;
   value?: any;
@@ -193,6 +193,18 @@ export const limit = (value: number): QueryConstraint => {
   return { type: 'limit', value };
 };
 
+export const range = (from: number, to: number): QueryConstraint => {
+  return { type: 'range', field: from.toString(), value: to };
+};
+
+export const ilike = (field: string, value: string): QueryConstraint => {
+  return { type: 'ilike', field, value };
+};
+
+export const search = (queryText: string, fields: string[]): QueryConstraint => {
+  return { type: 'search', field: fields.join(','), value: queryText };
+};
+
 export const arrayUnion = (...elements: any[]) => {
   return {
     _methodName: 'arrayUnion',
@@ -209,7 +221,7 @@ export const serverTimestamp = () => {
 // Internal query engine that maps constraints to Supabase filters
 async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
   const tableName = q instanceof SupabaseCollectionRef ? q.tableName : q.tableName;
-  let builder = supabase.from(tableName).select('*');
+  let builder = supabase.from(tableName).select('*', { count: 'exact' });
 
   const constraints = q instanceof SupabaseQuery ? q.constraints : [];
   const tenantId = q instanceof SupabaseCollectionRef ? q.tenantId : q.collectionRef.tenantId;
@@ -261,15 +273,38 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       }
     } else if (c.type === 'limit') {
       builder = builder.limit(c.value!);
+    } else if (c.type === 'range') {
+      const from = parseInt(c.field!);
+      const to = c.value as number;
+      builder = builder.range(from, to);
+    } else if (c.type === 'ilike') {
+      const field = c.field!;
+      const value = c.value as string;
+      let targetColumn = `data->>${field}`;
+      if (field === 'id') {
+        targetColumn = 'id';
+      }
+      builder = builder.ilike(targetColumn, `%${value}%`);
+    } else if (c.type === 'search') {
+      const fields = c.field!.split(',');
+      const queryText = c.value as string;
+      if (queryText && queryText.trim() !== '') {
+        const orConditions = fields.map(f => {
+          let col = `data->>${f}`;
+          if (f === 'id') col = 'id';
+          return `${col}.ilike.%${queryText}%`;
+        }).join(',');
+        builder = builder.or(orConditions);
+      }
     }
   }
 
-  const { data, error } = await builder;
+  const { data, error, count } = await builder;
   if (error) {
     console.error(`[SupabaseAdapter] executeQuery failed for table ${tableName}:`, error);
     throw error;
   }
-  return data || [];
+  return { data: data || [], count: count || 0 };
 }
 
 // Helper to write normalized journal entries and items with balance checks
@@ -386,7 +421,7 @@ export const getDocFromServer = getDoc;
 export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): Promise<any> => {
   const cacheKey = `fs_cache_docs_${queryRef.path}`;
   try {
-    const rows = await executeQuery(queryRef);
+    const { data: rows, count } = await executeQuery(queryRef);
     const docs = await Promise.all(rows.map(async (row) => {
       const data = deserializeTimestamps(row.data);
       if (queryRef.tableName === 'journal_entries') {
@@ -416,6 +451,7 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
       docs,
       empty: docs.length === 0,
       size: docs.length,
+      count,
       forEach: (cb: any) => docs.forEach(cb)
     };
   } catch (error: any) {
@@ -433,6 +469,7 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
           docs,
           empty: docs.length === 0,
           size: docs.length,
+          count: docs.length,
           forEach: (cb: any) => docs.forEach(cb)
         };
       } catch (e) {}
@@ -441,6 +478,7 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
       docs: [],
       empty: true,
       size: 0,
+      count: 0,
       forEach: () => {}
     };
   }

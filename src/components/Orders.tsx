@@ -28,7 +28,7 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 import { generateRMAResponse } from '../services/geminiService';
-import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from '../lib/firebase';
+import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where } from '../lib/firebase';
 import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
 import { syncOrderToMisa } from '../services/misaService';
@@ -96,6 +96,29 @@ const OrderDetailModal = ({
             </div>
           </div>
         </div>
+
+        {order.status === 'pending' && (
+          <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-4 mb-6 text-center font-sans">
+            <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2.5">Thanh toán chuyển khoản VietQR</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm shrink-0">
+                <img
+                  src={`https://api.vietqr.io/image/970415-1020088998-qr_only.jpg?amount=${order.total}&addInfo=VCOMM_ORD_${order.id}`}
+                  alt="VietQR Payment Code"
+                  className="w-40 h-40 object-contain mx-auto"
+                />
+              </div>
+              <div className="text-left space-y-2 text-xs">
+                <p className="text-slate-700">Ngân hàng: <strong>VietinBank (ICB)</strong></p>
+                <p className="text-slate-700">Số tài khoản: <strong>1020088998</strong></p>
+                <p className="text-slate-700">Chủ tài khoản: <strong>CONG TY CỔ PHẦN VCOMM</strong></p>
+                <p className="text-slate-700">Số tiền: <strong className="text-emerald-700 text-sm">{formatCurrency(order.total)}</strong></p>
+                <p className="text-slate-700">Nội dung chuyển khoản: <strong className="font-mono text-emerald-800 bg-emerald-100/50 px-1.5 py-0.5 rounded border border-emerald-200">VCOMM_ORD_{order.id}</strong></p>
+                <p className="text-[10px] text-slate-500 italic mt-2.5">* Hệ thống sẽ tự động xác nhận qua webhook SePay sau khi nhận được tiền.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Zalo ZNS Order Status Workflow */}
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
@@ -440,6 +463,10 @@ export function Orders() {
   const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
   const [mockOrders, setMockOrders] = useState<any[]>(MOCK_ORDERS);
   const [syncingOrderId, setSyncingOrderId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleSyncOrderToMisa = async (orderId: string) => {
     setSyncingOrderId(orderId);
@@ -543,25 +570,56 @@ export function Orders() {
   };
 
   useEffect(() => {
-    const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
-    const unsub = onSnapshot(q, snap => {
-      const data = snap.docs.map(doc => {
-        const d = doc.data();
-        return {
-          id: doc.id,
-          ...d,
-          date: d.createdAt?.toDate
-            ? d.createdAt.toDate().toLocaleString('vi-VN')
-            : new Date().toLocaleString('vi-VN'),
-        };
-      });
-      setDbOrders(data);
-    });
-    return () => unsub();
-  }, []);
+    let active = true;
+    setLoading(true);
+    
+    const load = async () => {
+      try {
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        
+        let qConstraints: any[] = [
+          orderBy('createdAt', 'desc'),
+          range(from, to)
+        ];
+        
+        if (statusFilter !== 'all') {
+          qConstraints.push(where('status', '==', statusFilter));
+        }
+        
+        const q = query(
+          collection(db, 'orders'),
+          ...qConstraints
+        );
+        
+        const snap = await getDocs(q);
+        if (active) {
+          const data = snap.docs.map((doc: any) => {
+            const d = doc.data();
+            return {
+              id: doc.id,
+              ...d,
+              date: d.createdAt?.toDate
+                ? d.createdAt.toDate().toLocaleString('vi-VN')
+                : new Date().toLocaleString('vi-VN'),
+            };
+          });
+          setDbOrders(data);
+          setTotalCount(snap.count || 0);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        if (active) setLoading(false);
+      }
+    };
+    
+    load();
+    return () => { active = false; };
+  }, [currentPage, statusFilter]);
 
   const allOrders = useMemo(() => {
-    return [...MOCK_ORDERS, ...dbOrders];
+    return dbOrders;
   }, [dbOrders]);
 
   const filteredOrders = useMemo(() => {
@@ -786,9 +844,10 @@ export function Orders() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4 h-[600px]">
+        <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4 h-[600px] flex flex-col">
           <TableVirtuoso
             data={filteredOrders}
+            style={{ height: '100%', flex: 1 }}
             components={{
               Scroller: React.forwardRef((props, ref) => (
                 <div {...props} ref={ref} className="overflow-auto custom-scrollbar" />
@@ -988,6 +1047,31 @@ export function Orders() {
               </>
             )}
           />
+          {/* Phân trang Server-side */}
+          <div className="p-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans shrink-0 border-l border-r border-b rounded-b-xl animate-in fade-in">
+            <div className="text-xs text-slate-500 font-bold uppercase">
+              Hiển thị {totalCount ? ((currentPage - 1) * pageSize) + 1 : 0} - {Math.min(currentPage * pageSize, totalCount)} trong số {totalCount} đơn hàng
+            </div>
+            <div className="flex gap-2">
+              <button
+                disabled={currentPage === 1 || loading}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+              >
+                Trang trước
+              </button>
+              <span className="px-4 py-2 text-xs font-bold text-slate-900 self-center">
+                Trang {currentPage} / {Math.ceil(totalCount / pageSize) || 1}
+              </span>
+              <button
+                disabled={currentPage >= Math.ceil(totalCount / pageSize) || loading}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+              >
+                Trang sau
+              </button>
+            </div>
+          </div>
         </div>
         {selectedOrder && (
           <OrderDetailModal

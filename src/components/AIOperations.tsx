@@ -35,6 +35,7 @@ import { cn } from '../lib/utils';
 import { AiTaskResult } from '../types/erp';
 import { db, collection, addDoc } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const MOCK_AI_LOGS: AiTaskResult[] = [
  { id: 'AI-101', type: 'image_moderation', targetId: 'PRD-002', confidence: 0.98, status: 'flagged', result: { reason: 'Hình ảnh chứa watermark thương hiệu khác' }, timestamp: '10 phút trước' },
@@ -71,7 +72,7 @@ const MOCK_HUMAN_QUEUE = [
 ];
 
 export function AIOperations() {
- const [activeModel, setActiveModel] = useState<'moderation' | 'pricing' | 'fraud' | 'recommendation' | 'chatbot' | 'review'>('moderation');
+  const [activeModel, setActiveModel] = useState<'moderation' | 'pricing' | 'fraud' | 'recommendation' | 'chatbot' | 'review' | 'db_inspector'>('moderation');
  const { staffInfo, user } = useAuth();
  
  // Custom neural diagnostics states
@@ -248,7 +249,8 @@ export function AIOperations() {
  { id: 'fraud', label: 'Phát hiện Gian lận', icon: AlertTriangle },
  { id: 'recommendation', label: 'Gợi ý Sản phẩm', icon: Network },
  { id: 'chatbot', label: 'CSKH (Bot AI)', icon: Bot },
- { id: 'review', label: 'Human-in-the-loop', icon: UserCheck }
+ { id: 'review', label: 'Human-in-the-loop', icon: UserCheck },
+ { id: 'db_inspector', label: 'AI Database Inspector', icon: Terminal }
  ].map((tab) => (
  <button 
  key={tab.id}
@@ -284,7 +286,9 @@ export function AIOperations() {
  </div>
 
  <div className="space-y-4">
- {activeModel === 'review' ? (
+ {activeModel === 'db_inspector' ? (
+ <AiDatabaseInspector />
+ ) : activeModel === 'review' ? (
  MOCK_HUMAN_QUEUE.map((item) => (
  <div key={item.id} className="p-6 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-6 group">
  <div className="p-5 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100  transition-transform">
@@ -770,3 +774,235 @@ export function AIOperations() {
  </div>
  );
 }
+
+function AiDatabaseInspector() {
+  const [queryText, setQueryText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ sql: string; explanation: string; rows: any[] } | null>(null);
+  const { staffInfo } = useAuth();
+  const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+
+  const sampleQueries = [
+    'Liệt kê các tài khoản kế toán và tên của chúng',
+    'Hiển thị 5 sản phẩm đắt nhất',
+    'Tính tổng giá trị các đơn hàng ở trạng thái paid',
+    'Có những mặt hàng nào tồn kho dưới mức an toàn?',
+    'Hiển thị các đề xuất mua sắm đang chờ duyệt'
+  ];
+
+  const handleQuery = async (q: string) => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const response = await fetch('/api/gemini/db-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, tenantId })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setResult(data);
+      } else {
+        setError(data.error || 'Lỗi không xác định khi truy xuất cơ sở dữ liệu AI.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Lỗi kết nối máy chủ.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const detectChartKeys = (rows: any[]) => {
+    if (!rows || rows.length === 0) return null;
+    const firstRow = rows[0];
+    const keys = Object.keys(firstRow);
+    let labelKey = '';
+    let valueKey = '';
+
+    for (const k of keys) {
+      const val = firstRow[k];
+      if (typeof val === 'string' && !labelKey && k !== 'id' && k !== 'tenant_id') {
+        labelKey = k;
+      } else if ((typeof val === 'number' || (!isNaN(Number(val)) && typeof val !== 'boolean')) && !valueKey && k !== 'tenant_id') {
+        valueKey = k;
+      }
+    }
+    
+    // Fallbacks
+    if (!labelKey) {
+      labelKey = keys.find(k => typeof firstRow[k] === 'string') || keys[0];
+    }
+    if (!valueKey) {
+      valueKey = keys.find(k => typeof firstRow[k] === 'number' || (!isNaN(Number(firstRow[k])) && typeof firstRow[k] !== 'boolean')) || keys[1];
+    }
+
+    return labelKey && valueKey && labelKey !== valueKey ? { labelKey, valueKey } : null;
+  };
+
+  const chartKeys = result?.rows ? detectChartKeys(result.rows) : null;
+  // Convert numeric strings to numbers for charts
+  const chartData = result?.rows.map(row => {
+    if (!chartKeys) return row;
+    return {
+      ...row,
+      [chartKeys.valueKey]: Number(row[chartKeys.valueKey])
+    };
+  }) || [];
+
+  return (
+    <div className="space-y-6 font-sans">
+      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
+        <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-blue-500 animate-pulse" />
+          AI Database RAG Inspector (Hỏi đáp SQL Tiếng Việt)
+        </h3>
+        
+        <p className="text-xs text-slate-500 leading-relaxed">
+          Nhập câu hỏi của bạn bằng ngôn ngữ tự nhiên (tiếng Việt). AI sẽ phân tích cấu trúc cơ sở dữ liệu Supabase, tự động chuyển dịch thành truy vấn SQL PostgreSQL an toàn, thực thi và trực quan hóa kết quả cho bạn.
+        </p>
+
+        <div className="flex flex-wrap gap-2 pt-1">
+          {sampleQueries.map((q, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setQueryText(q);
+                handleQuery(q);
+              }}
+              className="text-[10px] font-bold bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <input
+            type="text"
+            placeholder="Ví dụ: Liệt kê các đơn hàng đã thanh toán có tổng tiền lớn hơn 1 triệu đồng..."
+            className="flex-1 text-xs p-3.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+            value={queryText}
+            onChange={e => setQueryText(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleQuery(queryText);
+            }}
+          />
+          <button
+            onClick={() => handleQuery(queryText)}
+            disabled={loading || !queryText}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-6 py-3.5 rounded-xl text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+          >
+            {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Truy vấn 🔍'}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs font-bold text-red-700 flex items-center gap-2">
+          <XCircle className="w-5 h-5 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-10 gap-3">
+          <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider animate-pulse">AI đang phân tích và thực thi truy vấn...</p>
+        </div>
+      )}
+
+      {result && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* SQL & Explanation Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Phân tích & SQL từ AI</h4>
+              
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <p className="text-xs text-slate-700 font-bold leading-relaxed">{result.explanation}</p>
+              </div>
+
+              <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-emerald-400 overflow-x-auto border border-slate-950 relative">
+                <div className="absolute right-3 top-3 bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[8px] font-sans font-bold uppercase">SQL (Read-only)</div>
+                <pre>{result.sql}</pre>
+              </div>
+            </div>
+
+            {/* Visualizer Chart Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs flex flex-col min-h-[300px]">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Đồ thị hóa kết quả (Visualizer)</h4>
+              
+              {chartKeys ? (
+                <div className="flex-1 w-full min-h-[200px]">
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                      <XAxis dataKey={chartKeys.labelKey} tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                      <YAxis tick={{ fontSize: 9, fontWeight: 700 }} stroke="#94A3B8" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          fontSize: '11px', 
+                          fontWeight: 700, 
+                          borderRadius: '8px', 
+                          border: '1px solid #CBD5E1',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                        }} 
+                      />
+                      <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                      <Bar name={chartKeys.valueKey.toUpperCase()} dataKey={chartKeys.valueKey} fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <BarChart4 className="w-12 h-12 stroke-1 opacity-50" />
+                  <p className="text-[10px] font-bold uppercase tracking-wider">Không đủ dữ liệu dạng số để vẽ đồ thị</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Database Table Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+            <div className="p-5 border-b border-slate-200">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Kết quả truy xuất ({result.rows.length} dòng)</h4>
+            </div>
+            
+            {result.rows.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      {Object.keys(result.rows[0]).map((key) => (
+                        <th key={key} className="px-6 py-4 font-black uppercase text-slate-500 tracking-wider">{key}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.rows.map((row, idx) => (
+                      <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                        {Object.values(row).map((val: any, cellIdx) => (
+                          <td key={cellIdx} className="px-6 py-4 font-bold text-slate-700 font-mono">
+                            {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-10 text-center text-slate-500 font-bold text-xs uppercase tracking-wider">
+                Truy vấn hoàn thành nhưng không trả về dữ liệu.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

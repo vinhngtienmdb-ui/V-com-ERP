@@ -385,7 +385,47 @@ export function SettingsPage() {
     safeLocalStorage.setItem('api_sepay_api_token', apiKeys.sepayToken);
     safeLocalStorage.setItem('api_sepay_client_id', apiKeys.sepayId);
     safeLocalStorage.setItem('api_sepay_client_secret', apiKeys.sepaySecret);
-    addNotification('Cập nhật API', 'Đã lưu cấu hình API tích hợp thành công.');
+  };
+
+  const [simCode, setSimCode] = useState('VCOMM_ORD_');
+  const [simAmount, setSimAmount] = useState('500000');
+  const [simulating, setSimulating] = useState(false);
+
+  const handleSimulateWebhook = async () => {
+    if (!simCode) return;
+    setSimulating(true);
+    try {
+      const response = await fetch('/api/sepay/webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Apikey mock_secret'
+        },
+        body: JSON.stringify({
+          gateway: 'SimulatedBank',
+          transactionDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
+          accountNumber: '1020088998',
+          transferType: 'in',
+          transferAmount: Number(simAmount),
+          accumulated: 50000000,
+          code: 'SIM_FT_' + Date.now(),
+          content: simCode,
+          referenceCode: 'SIM_FT_' + Date.now(),
+          description: simCode
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        addNotification('Giả lập Webhook', 'Giao dịch giả lập thành công: ' + simCode);
+      } else {
+        addNotification('Giả lập Webhook', 'Thất bại: ' + (data.error || data.message || response.statusText));
+      }
+    } catch (err: any) {
+      console.error(err);
+      addNotification('Giả lập Webhook', 'Lỗi kết nối: ' + err.message);
+    } finally {
+      setSimulating(false);
+    }
   };
 
   // --- API INTEGRATIONS CONFIGURATION STATES & HANDLERS ---
@@ -3146,6 +3186,43 @@ export function SettingsPage() {
                     className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-400"
                   >
                     <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Webhook Simulator Section */}
+              <div className="p-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
+                <h5 className="font-bold text-[10.5px] text-blue-800 dark:text-blue-400 uppercase tracking-wider">Bộ Giả Lập Webhook (Webhook Simulator)</h5>
+                
+                <div className="space-y-2.5">
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase">Nội dung chuyển khoản (Content)</label>
+                    <input 
+                      type="text" 
+                      placeholder="Ví dụ: VCOMM_ORD_123 hoặc VCOMM_DEP_cust123"
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none dark:text-slate-100 font-mono"
+                      value={simCode}
+                      onChange={e => setSimCode(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase">Số tiền chuyển khoản (Amount)</label>
+                    <input 
+                      type="number" 
+                      placeholder="Số tiền (VND)"
+                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none dark:text-slate-100"
+                      value={simAmount}
+                      onChange={e => setSimAmount(e.target.value)}
+                    />
+                  </div>
+
+                  <button 
+                    onClick={handleSimulateWebhook}
+                    disabled={simulating || !simCode}
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    {simulating ? 'Đang giả lập...' : 'Kích hoạt Webhook giả lập 🚀'}
                   </button>
                 </div>
               </div>

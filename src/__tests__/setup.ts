@@ -19,6 +19,10 @@ vi.mock('../lib/firebase', () => ({
   query: vi.fn((col) => col),
   where: vi.fn(),
   limit: vi.fn(),
+  orderBy: vi.fn((field, direction) => ({ type: 'orderBy', field, direction })),
+  range: vi.fn((from, to) => ({ type: 'range', field: from.toString(), value: to })),
+  ilike: vi.fn((field, value) => ({ type: 'ilike', field, value })),
+  search: vi.fn((queryText, fields) => ({ type: 'search', field: fields.join(','), value: queryText })),
 }));
 
 vi.mock('firebase/firestore', () => ({
