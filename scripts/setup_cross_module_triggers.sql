@@ -37,26 +37,32 @@ BEGIN
     END IF;
 
     -- B. TỰ ĐỘNG HẠCH TOÁN SỔ KÉP NỘI BỘ (journal_entries & journal_items)
-    v_je_id := 'JE-AUTO-' || NEW.id;
+    -- Tránh trùng lặp nếu đơn hàng đã được đối soát & hạch toán qua SePay Webhook từ trước
+    IF NOT EXISTS (
+      SELECT 1 FROM public.journal_entries 
+      WHERE ref = NEW.id AND tenant_id = v_tenant_id
+    ) THEN
+      v_je_id := 'JE-AUTO-' || NEW.id;
 
-    -- 1. Tạo chứng từ journal_entries
-    INSERT INTO public.journal_entries (id, date, ref, description, tenant_id, created_at, updated_at)
-    VALUES (
-      v_je_id,
-      now(),
-      NEW.id,
-      'Hạch toán doanh thu tự động từ Đơn hàng bán lẻ #' || NEW.id || ' (' || v_customer_name || ')',
-      v_tenant_id,
-      now(),
-      now()
-    ) ON CONFLICT (id) DO NOTHING;
+      -- 1. Tạo chứng từ journal_entries
+      INSERT INTO public.journal_entries (id, date, ref, description, tenant_id, created_at, updated_at)
+      VALUES (
+        v_je_id,
+        now(),
+        NEW.id,
+        'Hạch toán doanh thu tự động từ Đơn hàng bán lẻ #' || NEW.id || ' (' || v_customer_name || ')',
+        v_tenant_id,
+        now(),
+        now()
+      ) ON CONFLICT (id) DO NOTHING;
 
-    -- 2. Hạch toán Nợ 1121 (Tiền gửi ngân hàng) / Có 5111 (Doanh thu bán hàng hóa)
-    IF v_total_amount > 0 THEN
-      INSERT INTO public.journal_items (id, entry_id, account_id, debit, credit, partner_id, tenant_id, created_at)
-      VALUES 
-        (gen_random_uuid(), v_je_id, '1121', v_total_amount, 0.00, v_customer_name, v_tenant_id, now()),
-        (gen_random_uuid(), v_je_id, '5111', 0.00, v_total_amount, v_customer_name, v_tenant_id, now());
+      -- 2. Hạch toán Nợ 1121 (Tiền gửi ngân hàng) / Có 5111 (Doanh thu bán hàng hóa)
+      IF v_total_amount > 0 THEN
+        INSERT INTO public.journal_items (id, entry_id, account_id, debit, credit, partner_id, tenant_id, created_at)
+        VALUES 
+          (gen_random_uuid(), v_je_id, '1121', v_total_amount, 0.00, v_customer_name, v_tenant_id, now()),
+          (gen_random_uuid(), v_je_id, '5111', 0.00, v_total_amount, v_customer_name, v_tenant_id, now());
+      END IF;
     END IF;
 
     -- C. Ghi nhật ký kiểm toán hành chính (admin_audit_logs)

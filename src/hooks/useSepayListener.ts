@@ -111,6 +111,15 @@ export function useSepayListener() {
               if (isMatchedOrder) {
                 creditAccount = misaConfig.receivableAccountDefault || '1311';
                 description = `Hạch toán tự động SePay - Đối soát khớp thành công đơn hàng ${orderId}`;
+                
+                // Cập nhật trạng thái đơn hàng sang 'paid' để kích hoạt trigger trừ kho và hạch toán tự động
+                try {
+                  const { updateDoc: firebaseUpdateDoc } = await import('../lib/firebase');
+                  await firebaseUpdateDoc(doc(db, 'orders', orderId), { status: 'paid' });
+                  console.log(`[SePay-Listener] Đã cập nhật trạng thái đơn hàng ${orderId} sang 'paid'`);
+                } catch (updateErr: any) {
+                  console.error(`[SePay-Listener] Không thể cập nhật trạng thái đơn hàng ${orderId} sang 'paid':`, updateErr.message || updateErr);
+                }
               } else {
                 // Áp dụng Phương án A (An toàn): Hạch toán tạm treo vào tài khoản Có 3388 và gửi cảnh báo ZNS
                 creditAccount = misaConfig.partnerLiabilitiesAccount || '3388';
