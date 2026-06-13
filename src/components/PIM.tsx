@@ -141,9 +141,76 @@ export function PIM() {
  }
  };
 
- const [filterCategory, setFilterCategory] = useState<string>('all');
- const [filterBrand, setFilterBrand] = useState<string>('all');
- const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  
+  // AI Semantic Search States
+  const [isAiSearch, setIsAiSearch] = useState<boolean>(false);
+  const [aiSearchResults, setAiSearchResults] = useState<{ id: string; similarity: number }[] | null>(null);
+  const [aiSearchLoading, setAiSearchLoading] = useState<boolean>(false);
+  const [isEmbedding, setIsEmbedding] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isAiSearch) {
+      setAiSearchResults(null);
+    }
+  }, [isAiSearch]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setAiSearchResults(null);
+    }
+  }, [searchQuery]);
+
+  const handleAiSearch = async (queryText?: string) => {
+    const q = queryText !== undefined ? queryText : searchQuery;
+    if (!q.trim()) {
+      setAiSearchResults(null);
+      return;
+    }
+    setAiSearchLoading(true);
+    try {
+      const res = await fetch('/api/gemini/vector-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, tenantId: 'tenant-vcomm-prod-01' })
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.products)) {
+        setAiSearchResults(data.products);
+      } else {
+        alert(data.error || 'Lỗi tìm kiếm ngữ nghĩa AI');
+      }
+    } catch (err: any) {
+      console.error('[PIM-AI-Search] Error:', err);
+      alert('Không thể kết nối tới AI Server');
+    } finally {
+      setAiSearchLoading(false);
+    }
+  };
+
+  const handleEmbedAllProducts = async () => {
+    setIsEmbedding(true);
+    try {
+      const res = await fetch('/api/gemini/embed-all-products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tenantId: 'tenant-vcomm-prod-01' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message || 'Đồng bộ vector thành công!');
+      } else {
+        alert(data.error || 'Lỗi đồng bộ vector');
+      }
+    } catch (err: any) {
+      console.error('[PIM-AI-Embed] Error:', err);
+      alert('Không thể kết nối tới AI Server');
+    } finally {
+      setIsEmbedding(false);
+    }
+  };
  
  const [isScanning, setIsScanning] = useState(false);
  const [isScanMode, setIsScanMode] = useState(false);
@@ -396,25 +463,45 @@ export function PIM() {
  setNewProduct({ name: '', category: 'Điện thoại', brand: '', price: '', costPrice: '', hiddenCosts: '', stock: '', sku: '', description: '', weight: '', dimensions: '' });
  };
 
- const categories = Array.from(new Set(products.map(p => p.category)));
- const brands = Array.from(new Set(products.map(p => p.brand).filter(Boolean)));
+  const categories = Array.from(new Set(products.map(p => p.category)));
+  const brands = Array.from(new Set(products.map(p => p.brand).filter(Boolean)));
 
- const filteredProducts = products.filter(p => {
- const matchStatus = filterStatus === 'all' || p.status === filterStatus;
- const matchCategory = filterCategory === 'all' || p.category === filterCategory;
- const matchBrand = filterBrand === 'all' || p.brand === filterBrand;
- 
- const queries = searchQuery.split(',').map(q => q.trim().toLowerCase()).filter(Boolean);
- const matchSearch = queries.length === 0 || queries.some(q =>
- p.name.toLowerCase().includes(q) ||
- p.sku.toLowerCase().includes(q) ||
- p.sellerName.toLowerCase().includes(q) ||
- (p.brand && p.brand.toLowerCase().includes(q)) ||
- p.id.toLowerCase().includes(q)
- );
+  const filteredProducts = React.useMemo(() => {
+    if (isAiSearch && aiSearchResults) {
+      return aiSearchResults
+        .map(res => {
+          const prod = products.find(p => p.id === res.id);
+          if (prod) {
+            return { ...prod, similarity: res.similarity };
+          }
+          return null;
+        })
+        .filter((p): p is (Product & { similarity: number }) => p !== null)
+        .filter(p => {
+          const matchStatus = filterStatus === 'all' || p.status === filterStatus;
+          const matchCategory = filterCategory === 'all' || p.category === filterCategory;
+          const matchBrand = filterBrand === 'all' || p.brand === filterBrand;
+          return matchStatus && matchCategory && matchBrand;
+        });
+    }
 
- return matchStatus && matchCategory && matchBrand && matchSearch;
- });
+    return products.filter(p => {
+      const matchStatus = filterStatus === 'all' || p.status === filterStatus;
+      const matchCategory = filterCategory === 'all' || p.category === filterCategory;
+      const matchBrand = filterBrand === 'all' || p.brand === filterBrand;
+      
+      const queries = searchQuery.split(',').map(q => q.trim().toLowerCase()).filter(Boolean);
+      const matchSearch = queries.length === 0 || queries.some(q =>
+        p.name.toLowerCase().includes(q) ||
+        p.sku.toLowerCase().includes(q) ||
+        p.sellerName.toLowerCase().includes(q) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        p.id.toLowerCase().includes(q)
+      );
+
+      return matchStatus && matchCategory && matchBrand && matchSearch;
+    });
+  }, [products, isAiSearch, aiSearchResults, filterStatus, filterCategory, filterBrand, searchQuery]);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -920,11 +1007,19 @@ export function PIM() {
  disabled={isScanning}
  className={cn(
  "bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm",
- isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
+isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
  )}
  >
  <Sparkles className={cn("w-4 h-4 text-[#2563EB] group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
  {isScanning ? "AI đang quét dữ liệu..." : "AI Auto-Scan SP"}
+ </button>
+ <button 
+ onClick={handleEmbedAllProducts}
+ disabled={isEmbedding}
+ className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-orange-600 disabled:opacity-50"
+ >
+ {isEmbedding ? <Loader2 className="w-4 h-4 animate-spin text-orange-600" /> : <Sparkles className="w-4 h-4 text-orange-600 group-hover:rotate-12 transition-transform" />}
+ {isEmbedding ? "Đang đồng bộ..." : "Đồng bộ Vector AI"}
  </button>
  <button 
  onClick={() => setIsUploadModalOpen(true)}
@@ -984,16 +1079,50 @@ export function PIM() {
 
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-6 border-b border-[#F3F4F6] space-y-4">
- <div className="flex flex-col xl:flex-row gap-4 justify-between items-start">
- <div className="relative flex-1 max-w-2xl">
- <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
- <input 
- type="text" 
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- placeholder="Tìm sản phẩm (Tên, SKU, ID, Nhà bán, Thương hiệu)..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-4 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
- />
+ <div className="flex flex-col xl:flex-row gap-4 justify-between items-start w-full">
+ <div className="flex flex-col sm:flex-row gap-3 w-full xl:flex-1 max-w-3xl">
+  <div className="relative flex-1">
+   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+   <input 
+    type="text" 
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        if (isAiSearch) {
+          handleAiSearch();
+        }
+      }
+    }}
+    placeholder={isAiSearch ? "Tìm kiếm bằng AI (VD: giày thể thao chống trượt đi mưa)..." : "Tìm sản phẩm (Tên, SKU, ID, Nhà bán, Thương hiệu)..."} 
+    className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-12 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
+   />
+   {isAiSearch && (
+    <button
+     type="button"
+     onClick={() => handleAiSearch()}
+     disabled={aiSearchLoading}
+     className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-blue-600 rounded-lg transition-all"
+     title="Tìm kiếm AI"
+    >
+     {aiSearchLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+    </button>
+   )}
+  </div>
+  
+  <button
+   type="button"
+   onClick={() => setIsAiSearch(!isAiSearch)}
+   className={cn(
+    "px-5 py-3 sm:py-3.5 rounded-lg border text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shrink-0 shadow-sm active:scale-95",
+    isAiSearch 
+     ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20" 
+     : "bg-white border-slate-300 text-slate-600 hover:bg-slate-50"
+   )}
+  >
+   <Sparkles className={cn("w-4 h-4", isAiSearch && "animate-pulse")} />
+   {isAiSearch ? "AI Search: BẬT" : "Tìm bằng AI"}
+  </button>
  </div>
  <div className="flex p-1.5 bg-slate-100 rounded-lg w-full xl:w-auto overflow-x-auto custom-scrollbar flex-nowrap min-w-0">
  <button 
@@ -1076,6 +1205,12 @@ export function PIM() {
  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-[8px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
  {product.id}
  </div>
+ {isAiSearch && product.similarity !== undefined && (
+ <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-blue-600/95 text-white rounded-lg text-[8px] font-black shadow-sm z-10 flex items-center gap-1 uppercase tracking-wider">
+ <Sparkles className="w-2.5 h-2.5 text-white animate-pulse" />
+ {(product.similarity * 100).toFixed(1)}% Match
+ </div>
+ )}
  {/* Status Badge */}
  <div className="absolute bottom-2 left-2 flex gap-2 z-10">
  <span className={cn(

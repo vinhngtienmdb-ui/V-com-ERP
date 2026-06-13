@@ -179,3 +179,54 @@ BEGIN
   LIMIT match_count;
 END;
 $$ LANGUAGE plpgsql;
+
+-- =============================================================================
+-- 4. ĐỒNG BỘ CUSTOM CLAIMS TỚI auth.users TỪ NHÂN VIÊN
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.employees (
+  id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  email TEXT UNIQUE,
+  role TEXT,
+  department_id TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS employees_isolation ON public.employees;
+CREATE POLICY employees_isolation ON public.employees
+  FOR ALL USING (tenant_id = (auth.jwt() ->> 'tenant_id') OR tenant_id = 'tenant-vcomm-prod-01');
+
+CREATE OR REPLACE FUNCTION public.fn_sync_employee_custom_claims()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_user_id UUID;
+BEGIN
+  SELECT id INTO v_user_id 
+  FROM auth.users 
+  WHERE email = NEW.email OR id::text = NEW.id;
+  
+  IF v_user_id IS NOT NULL THEN
+    UPDATE auth.users
+    SET raw_app_meta_data = 
+      COALESCE(raw_app_meta_data, '{}'::jsonb) || 
+      jsonb_build_object(
+        'role', NEW.role,
+        'department_id', NEW.department_id,
+        'tenant_id', NEW.tenant_id
+      )
+    WHERE id = v_user_id;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_employee_auth_sync ON public.employees;
+CREATE TRIGGER trg_employee_auth_sync
+  AFTER INSERT OR UPDATE OF role, department_id, tenant_id ON public.employees
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_sync_employee_custom_claims();

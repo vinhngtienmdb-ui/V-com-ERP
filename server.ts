@@ -924,6 +924,132 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
     }
   });
 
+  // API Route: AI Product Semantic Vector Search
+  app.post('/api/gemini/vector-search', async (req, res) => {
+    const { query: searchQuery, tenantId: reqTenantId } = req.body;
+    const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
+
+    if (!searchQuery || searchQuery.trim() === '') {
+      return res.status(400).json({ error: 'Từ khóa tìm kiếm không được trống.' });
+    }
+
+    const client = getGeminiClient();
+    if (!client) {
+      return res.status(500).json({ error: 'Mô hình AI chưa được cấu hình.' });
+    }
+
+    try {
+      console.log('[Vector-Search] Generating embedding for query:', searchQuery);
+      const embedResponse = await client.models.embedContent({
+        model: 'text-embedding-004',
+        contents: searchQuery
+      });
+
+      const queryVector = embedResponse.embeddings?.[0]?.values;
+      if (!queryVector || queryVector.length === 0) {
+        throw new Error('Gemini failed to generate embedding values');
+      }
+
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) {
+        return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+      }
+
+      console.log('[Vector-Search] Querying similar products from database...');
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+
+      await pgClient.connect();
+      const vectorStr = '[' + queryVector.join(',') + ']';
+      const dbRes = await pgClient.query(
+        'SELECT * FROM match_products($1::vector, $2::float, $3::integer, $4::text)',
+        [vectorStr, 0.1, 10, tenantId]
+      );
+      await pgClient.end();
+
+      res.json({
+        success: true,
+        products: dbRes.rows
+      });
+    } catch (err: any) {
+      console.error('[Vector-Search] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi tìm kiếm ngữ nghĩa AI' });
+    }
+  });
+
+  // API Route: Generate missing embeddings for products
+  app.post('/api/gemini/embed-all-products', async (req, res) => {
+    const { tenantId: reqTenantId } = req.body;
+    const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
+
+    const client = getGeminiClient();
+    if (!client) {
+      return res.status(500).json({ error: 'Mô hình AI chưa được cấu hình.' });
+    }
+
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
+    }
+
+    try {
+      const pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      await pgClient.connect();
+
+      // Get products without embeddings
+      const { rows: products } = await pgClient.query(
+        "SELECT id, data FROM products WHERE tenant_id = $1 AND (description_embedding IS NULL)",
+        [tenantId]
+      );
+
+      console.log(`[Embed-All] Found ${products.length} products needing vector embeddings.`);
+      let count = 0;
+
+      for (const prod of products) {
+        const data = prod.data || {};
+        const name = data.name || '';
+        const desc = data.description || '';
+        const textToEmbed = `${name} ${desc}`.trim();
+
+        if (textToEmbed !== '') {
+          try {
+            console.log(`[Embed-All] Embedding product ${prod.id}: "${name}"`);
+            const embedResponse = await client.models.embedContent({
+              model: 'text-embedding-004',
+              contents: textToEmbed
+            });
+            const vector = embedResponse.embeddings?.[0]?.values;
+            if (vector && vector.length > 0) {
+              const vectorStr = '[' + vector.join(',') + ']';
+              await pgClient.query(
+                "UPDATE products SET description_embedding = $1::vector, updated_at = now() WHERE id = $2",
+                [vectorStr, prod.id]
+              );
+              count++;
+            }
+          } catch (embedErr) {
+            console.error(`[Embed-All] Failed to embed product ${prod.id}:`, embedErr);
+          }
+        }
+      }
+
+      await pgClient.end();
+      res.json({
+        success: true,
+        message: `Đã cập nhật mã nhúng vector cho ${count} sản phẩm.`,
+        updatedCount: count
+      });
+    } catch (err: any) {
+      console.error('[Embed-All] Error:', err);
+      res.status(500).json({ error: err.message || 'Lỗi xử lý tạo mã nhúng sản phẩm' });
+    }
+  });
+
   // API Route: Proxy MISA AMIS sync voucher (phiếu thu / chi / thu tiền gửi)
   app.post('/api/misa/sync-voucher', (req, res) => {
     const { 

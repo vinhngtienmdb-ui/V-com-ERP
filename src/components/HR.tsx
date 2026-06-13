@@ -65,6 +65,7 @@ import {
 import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
 import { EmployeeDetailModal } from './EmployeeDetailModal';
+import { supabase } from '../lib/supabase';
 import { db, collection, addDoc, serverTimestamp } from '../lib/firebase';
 import {
  BarChart,
@@ -513,39 +514,62 @@ export function HumanResources() {
   setModalTab('job');
  }, [editingEmployee, showEmployeeModal]);
 
- const handleSaveEmployee = (updatedFormState: any) => {
-  if (!updatedFormState.fullName?.trim()) {
-   alert('Vui lòng điền Họ tên nhân viên');
-   return;
-  }
-  
-  if (editingEmployee) {
-   // Update
-   const updated = { ...editingEmployee, ...updatedFormState } as Employee;
-   setEmployees(prev => prev.map(emp => emp.id === editingEmployee.id ? updated : emp));
-   if (selectedEmployee && selectedEmployee.id === editingEmployee.id) {
-    setSelectedEmployee(updated);
+  const syncToSupabaseEmployees = async (emp: any) => {
+    try {
+      const { error } = await supabase
+        .from('employees')
+        .upsert({
+          id: emp.id,
+          tenant_id: emp.tenantId || 'tenant-vcomm-prod-01',
+          email: emp.email || emp.username || `${emp.id}@v-erp.com`,
+          role: emp.role || 'staff',
+          department_id: emp.department || 'Vận hành Sản'
+        });
+      if (error) {
+        console.error('[Supabase Claims Sync] Error syncing employee:', error);
+      } else {
+        console.log('[Supabase Claims Sync] Synced employee custom claims successfully!');
+      }
+    } catch (err) {
+      console.error('[Supabase Claims Sync] Exception syncing employee:', err);
+    }
+  };
+
+  const handleSaveEmployee = (updatedFormState: any) => {
+   if (!updatedFormState.fullName?.trim()) {
+    alert('Vui lòng điền Họ tên nhân viên');
+    return;
    }
-   alert('Đã cập nhật thông tin nhân viên thành công!');
-  } else {
-   // Create new
-   const lastIdNum = employees.reduce((max, emp) => {
-    const num = parseInt(emp.id.replace('EMP-', '').replace('LKS', ''));
-    return isNaN(num) ? max : Math.max(max, num);
-   }, 2);
-   const nextId = updatedFormState.id || `EMP-${String(lastIdNum + 1).padStart(3, '0')}`;
    
-   const newEmp = {
-    ...updatedFormState,
-    id: nextId,
-   } as Employee;
-   
-   setEmployees(prev => [...prev, newEmp]);
-   alert('Đã thêm mới nhân viên thành công!');
-  }
-  setShowEmployeeModal(false);
-  setEditingEmployee(null);
- };
+   if (editingEmployee) {
+    // Update
+    const updated = { ...editingEmployee, ...updatedFormState } as Employee;
+    setEmployees(prev => prev.map(emp => emp.id === editingEmployee.id ? updated : emp));
+    if (selectedEmployee && selectedEmployee.id === editingEmployee.id) {
+     setSelectedEmployee(updated);
+    }
+    syncToSupabaseEmployees(updated);
+    alert('Đã cập nhật thông tin nhân viên thành công!');
+   } else {
+    // Create new
+    const lastIdNum = employees.reduce((max, emp) => {
+     const num = parseInt(emp.id.replace('EMP-', '').replace('LKS', ''));
+     return isNaN(num) ? max : Math.max(max, num);
+    }, 2);
+    const nextId = updatedFormState.id || `EMP-${String(lastIdNum + 1).padStart(3, '0')}`;
+    
+    const newEmp = {
+     ...updatedFormState,
+     id: nextId,
+    } as Employee;
+    
+    setEmployees(prev => [...prev, newEmp]);
+    syncToSupabaseEmployees(newEmp);
+    alert('Đã thêm mới nhân viên thành công!');
+   }
+   setShowEmployeeModal(false);
+   setEditingEmployee(null);
+  };
  const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
  
  // Payroll state
@@ -635,30 +659,37 @@ export function HumanResources() {
  setCopilotInput('');
  };
 
- const handleRoleChange = (employeeId: string, newRole: string) => {
- if (!isAdmin) return;
- 
- // Auto-assign permissions based on role
- const newPerms: Record<string, { read: boolean; create: boolean; update: boolean; delete: boolean }> = {};
- const categories = ['personnel', 'attendance', 'payroll', 'kpi', 'rewards'];
- 
- categories.forEach(cat => {
- if (newRole === 'Admin') {
- newPerms[cat] = { read: true, create: true, update: true, delete: true };
- } else if (newRole === 'Quản lý') {
- // Managers can read/create/update but not delete, maybe full for specific things
- newPerms[cat] = { read: true, create: true, update: true, delete: false };
- } else {
- // Employees can only read (or maybe minimal access)
- newPerms[cat] = { read: true, create: false, update: false, delete: false };
- }
- });
+  const handleRoleChange = (employeeId: string, newRole: string) => {
+  if (!isAdmin) return;
+  
+  // Auto-assign permissions based on role
+  const newPerms: Record<string, { read: boolean; create: boolean; update: boolean; delete: boolean }> = {};
+  const categories = ['personnel', 'attendance', 'payroll', 'kpi', 'rewards'];
+  
+  categories.forEach(cat => {
+  if (newRole === 'Admin') {
+  newPerms[cat] = { read: true, create: true, update: true, delete: true };
+  } else if (newRole === 'Quản lý') {
+  // Managers can read/create/update but not delete, maybe full for specific things
+  newPerms[cat] = { read: true, create: true, update: true, delete: false };
+  } else {
+  // Employees can only read (or maybe minimal access)
+  newPerms[cat] = { read: true, create: false, update: false, delete: false };
+  }
+  });
 
- setEmployees(prev => prev.map(emp => emp.id === employeeId ? { ...emp, role: newRole as any, permissions: newPerms } : emp));
- if (selectedEmployee?.id === employeeId) {
- setSelectedEmployee(prev => prev ? { ...prev, role: newRole as any, permissions: newPerms } : null);
- }
- };
+  setEmployees(prev => prev.map(emp => {
+    if (emp.id === employeeId) {
+      const updated = { ...emp, role: newRole as any, permissions: newPerms };
+      syncToSupabaseEmployees(updated);
+      return updated;
+    }
+    return emp;
+  }));
+  if (selectedEmployee?.id === employeeId) {
+  setSelectedEmployee(prev => prev ? { ...prev, role: newRole as any, permissions: newPerms } : null);
+  }
+  };
 
  const handlePermissionChange = (employeeId: string, category: string, perm: 'read' | 'create' | 'update' | 'delete', checked: boolean) => {
  if (!isAdmin) return;

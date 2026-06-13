@@ -16,6 +16,7 @@ export interface Product {
  misaSynced?: boolean;
  misaSyncedAt?: string;
  misaSyncError?: string;
+ similarity?: number; // Điểm tương đồng cho AI Vector Search
 }
 
 export interface SellerMetric {
