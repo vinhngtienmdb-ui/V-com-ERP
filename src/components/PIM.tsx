@@ -126,6 +126,18 @@ export function PIM() {
  }
  };
 
+ const approveProduct = async (id: string) => {
+    try {
+      await updateDoc(doc(db, 'products', id), {
+        status: 'in_stock',
+        updatedAt: serverTimestamp()
+      });
+      alert('Phê duyệt sản phẩm thành công!');
+    } catch (error) {
+      handleFirestoreError(error, 'update', 'products');
+    }
+  };
+
  const updateHiddenCost = async (product: Product, value: number) => {
  try {
  const newProfit = product.price - (product.costPrice || 0) - value;
@@ -363,13 +375,36 @@ export function PIM() {
   const performBulkDelete = async () => { if (window.confirm("Xác nhận xóa?")) { for (const id of selectedProductIds) { await deleteProduct(id); } setSelectedProductIds([]); } }; 
   const performBulkHide = async () => { if (window.confirm("Xác nhận đổi trạng thái?")) { for (const id of selectedProductIds) { const p = products.find(prod => prod.id === id); if (p) await toggleVisibility(id, p.status); } setSelectedProductIds([]); } };
 
-  const handleBulkApprove = () => {
- setIsScanning(true);
- setTimeout(() => {
- setIsScanning(false);
- alert('Đã phê duyệt toàn bộ 245 sản phẩm từ các Seller (Bulk Approve Success)');
- }, 2000);
- };
+  const handleBulkApprove = async () => {
+    setIsScanning(true);
+    try {
+      const pendingProds = products.filter(p => p.status === 'pending_approval');
+      const targetIds = selectedProductIds.length > 0
+        ? selectedProductIds.filter(id => products.find(p => p.id === id)?.status === 'pending_approval')
+        : pendingProds.map(p => p.id);
+
+      if (targetIds.length === 0) {
+        alert("Không có sản phẩm nào đang chờ duyệt.");
+        setIsScanning(false);
+        return;
+      }
+
+      for (const id of targetIds) {
+        await updateDoc(doc(db, 'products', id), {
+          status: 'in_stock',
+          updatedAt: serverTimestamp()
+        });
+      }
+      
+      setSelectedProductIds([]);
+      alert(`Đã phê duyệt thành công ${targetIds.length} sản phẩm!`);
+    } catch (error) {
+      console.error(error);
+      alert("Đã xảy ra lỗi khi duyệt sản phẩm.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
  const file = e.target.files?.[0];
@@ -1183,6 +1218,15 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
  {/* Actions - Hover only */}
  <div className="absolute top-8 right-8 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+ {product.status === 'pending_approval' && (
+   <button 
+     onClick={() => approveProduct(product.id)}
+     className="p-3 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white shadow-sm transition-all"
+     title="Phê duyệt sản phẩm"
+   >
+     <CheckCircle2 className="w-5 h-5" />
+   </button>
+ )}
  <button 
  onClick={() => toggleVisibility(product.id, product.status)}
  className="p-3 bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-200 shadow-sm transition-all"
