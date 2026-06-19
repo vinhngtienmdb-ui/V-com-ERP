@@ -35,7 +35,8 @@ const SocialCommerce = React.lazy(() => import('./components/SocialCommerce').th
 const OmniChat = React.lazy(() => import('./components/OmniChat').then(m => ({ default: m.OmniChat })));
 const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m => ({ default: m.WorkflowHub })));
 const AIOperations = React.lazy(() => import('./components/AIOperations').then(m => ({ default: m.AIOperations })));
-const AIChatBot = React.lazy(() => import('./components/AIChatBot').then(m => ({ default: m.AIChatBot })));
+const AIPredictions = React.lazy(() => import('./components/AIPredictions').then(m => ({ default: m.AIPredictions })));
+const ErpCopilot = React.lazy(() => import('./components/ErpCopilot').then(m => ({ default: m.ErpCopilot })));
 const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m => ({ default: m.OrgStructure })));
 const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
 const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
@@ -45,6 +46,8 @@ const DocumentManager = React.lazy(() => import('./components/DocumentManager').
 const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
 const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
 const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
+const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
+
 
 import { useAuth } from './context/AuthContext';
 import { useSepayListener } from './hooks/useSepayListener';
@@ -54,12 +57,60 @@ import { LoginPage } from './components/LoginPage';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AccessDenied } from './components/AccessDenied';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { supabase } from './lib/supabase';
+import { useNotifications } from './context/NotificationContext';
 
 function AppLayout() {
   const location = useLocation();
+  const { addNotification } = useNotifications();
   
   // Start SePay Webhook event polling globally
   useSepayListener();
+
+  React.useEffect(() => {
+    // 1. Listen for new orders on Supabase Realtime
+    const ordersChannel = supabase
+      .channel('realtime-orders')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'orders' },
+        (payload) => {
+          console.log('[Realtime] New order received:', payload.new);
+          const order = payload.new;
+          addNotification(
+            'Đơn hàng mới',
+            `Đơn hàng ${order.id || ''} trị giá ${Number(order.total || 0).toLocaleString('vi-VN')}đ đã được tạo.`
+          );
+        }
+      )
+      .subscribe();
+
+    // 2. Listen for safety stock alerts on warehouse_stock
+    const stockChannel = supabase
+      .channel('realtime-stock')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'warehouse_stock' },
+        (payload) => {
+          const stock = payload.new;
+          const quantity = Number(stock.quantity || 0);
+          const safetyStock = Number(stock.safety_stock || 0);
+          if (quantity < safetyStock) {
+            console.log('[Realtime] Low stock warning:', stock);
+            addNotification(
+              'Cảnh báo tồn kho',
+              `Sản phẩm "${stock.product_name || stock.product_id}" có lượng tồn kho (${quantity}) thấp hơn ngưỡng an toàn (${safetyStock}).`
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(stockChannel);
+    };
+  }, [addNotification]);
 
   React.useEffect(() => {
     // Seed offline-first Firestore localStorage mock caches if not present or outdated
@@ -276,6 +327,7 @@ function AppLayout() {
     <Route path="/documents" element={<DocumentManager />} />
     <Route path="/signature" element={<SignatureHub />} />
     <Route path="/ai-ops" element={<AIOperations />} />
+    <Route path="/ai-predictions" element={<AIPredictions />} />
     <Route path="/org" element={<OrgStructure />} />
     <Route path="/vcomm-supermarket" element={<VCommSupermarket />} />
     <Route path="/device-leasing" element={<DeviceLeasing />} />
@@ -286,7 +338,7 @@ function AppLayout() {
   </Routes>
   </Suspense>        
         </ErrorBoundary>
-  <AIChatBot />
+  <ErpCopilot />
   </div>
   </main>
   </div>
@@ -297,21 +349,36 @@ function AppLayout() {
 function AppContent() {
   const { user, loading, isStaff } = useAuth();
   
-  // Public E-Menu route bypasses auth
+  // Public E-Menu and Supplier Portal routes bypass standard staff-only authentication checks
   const isPublicEMenu = window.location.pathname.startsWith('/emenu/');
+  const isSupplierPortal = window.location.pathname.startsWith('/supplier-portal');
 
   if (isPublicEMenu) {
-  return (
-  <Router>
-  <ErrorBoundary>
-  <Suspense fallback={<LoadingScreen />}>
+    return (
+      <Router>
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingScreen />}>
             <Routes>
-  <Route path="/emenu/:tableId" element={<EMenu />} />
-  </Routes>
-  </Suspense>        
+              <Route path="/emenu/:tableId" element={<EMenu />} />
+            </Routes>
+          </Suspense>        
         </ErrorBoundary>
-  </Router>
-  );
+      </Router>
+    );
+  }
+
+  if (isSupplierPortal) {
+    return (
+      <Router>
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              <Route path="/supplier-portal" element={<SupplierPortal />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
+      </Router>
+    );
   }
 
   if (loading) return <LoadingScreen />;
@@ -319,9 +386,9 @@ function AppContent() {
   if (!isStaff) return <AccessDenied />;
 
   return (
-  <Router>
-  <AppLayout />
-  </Router>
+    <Router>
+      <AppLayout />
+    </Router>
   );
 }
 

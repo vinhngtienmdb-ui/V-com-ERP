@@ -20,7 +20,7 @@ import {
  Server,
  Network,
  DollarSign,
- LineChart,
+ LineChart as LineChartIcon,
  UserCheck,
  Globe,
  Clock,
@@ -588,7 +588,7 @@ export function AIOperations() {
  <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
- <LineChart className="w-6 h-6 text-orange-700" /> Multi-Model Arena Performance
+ <LineChartIcon className="w-6 h-6 text-orange-700" /> Multi-Model Arena Performance
  </h3>
  <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
  </div>

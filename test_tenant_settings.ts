@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { supabase } from './src/lib/supabase';
 
 async function run() {
+  const { supabase } = await import('./src/lib/supabase');
   const { data: accountsData, error: accountsError } = await supabase.from('accounts').select('*');
   if (accountsError) {
     console.error('Table accounts check failed:', accountsError.message || accountsError);

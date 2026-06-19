@@ -46,7 +46,39 @@ export function Sidebar() {
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab') || 'dashboard';
 
-  const activeGroups = navGroups;
+  const { staffInfo } = useAuth();
+  const role = staffInfo?.role || 'super_admin';
+
+  const activeGroups = React.useMemo(() => {
+    if (role === 'super_admin' || role === 'admin') return navGroups;
+
+    return navGroups.map(group => {
+      const filteredItems = group.items.filter(item => {
+        if (role === 'cashier') {
+          const allowedPaths = ['/', '/vcomm-supermarket', '/orders', '/loyalty', '/customers'];
+          return allowedPaths.includes(item.path);
+        }
+        if (role === 'accountant') {
+          const allowedPaths = ['/', '/dashboard', '/bi', '/finance', '/settlement', '/wallet', '/seller-finance', '/customers'];
+          return allowedPaths.includes(item.path);
+        }
+        if (role === 'procurement_officer') {
+          const allowedPaths = ['/', '/warehouse', '/scm', '/compliance', '/requests'];
+          return allowedPaths.includes(item.path);
+        }
+        if (role === 'store_manager') {
+          const deniedPaths = ['/finance', '/settlement', '/seller-finance', '/signature', '/org'];
+          return !deniedPaths.includes(item.path);
+        }
+        return false;
+      });
+
+      return {
+        ...group,
+        items: filteredItems
+      };
+    }).filter(group => group.items.length > 0);
+  }, [role]);
 
   return (
   <aside className="w-[280px] bg-white border-r border-slate-300 flex flex-col h-full py-6">

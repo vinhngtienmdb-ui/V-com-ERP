@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
  user: User | null;
@@ -82,24 +83,46 @@ const logAdminAudit = async (
  }, 5000);
 
  const unsubscribe = onAuthStateChanged(auth, async (user) => {
- setUser(user);
- if (user) {
- try {
- const staffDoc = await Promise.race([
-  getDoc(doc(db, 'staff', user.uid)),
-  new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
- ]);
- if (staffDoc.exists()) {
- const data = staffDoc.data();
- setIsStaff(true);
- const isUserAdmin = data.role === 'admin';
- setIsAdmin(isUserAdmin);
- setStaffInfo(data);
- 
- if (isUserAdmin) {
-   logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01').catch(console.error);
- }
- } else {
+  setUser(user);
+  if (user) {
+  try {
+    // 1. Fetch role from user_roles in Supabase
+    const { data: roleRow } = await supabase
+      .from('user_roles')
+      .select('*')
+      .eq('user_id', user.uid)
+      .maybeSingle();
+
+    if (roleRow) {
+      setIsStaff(true);
+      const isUserAdmin = roleRow.role === 'super_admin' || roleRow.role === 'store_manager';
+      setIsAdmin(isUserAdmin);
+      setStaffInfo({
+        name: user.displayName || (roleRow.role === 'super_admin' ? 'Super Admin' : 'Staff Member'),
+        role: roleRow.role,
+        username: user.email?.split('@')[0] || 'staff',
+        tenantId: roleRow.tenant_id
+      });
+      if (isUserAdmin) {
+        logAdminAudit(user.email || 'Admin', 'Login', 'Success', user.uid, roleRow.tenant_id).catch(console.error);
+      }
+    } else {
+      // Fallback: Check staff Firestore document
+      const staffDoc = await Promise.race([
+       getDoc(doc(db, 'staff', user.uid)),
+       new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+      ]);
+      if (staffDoc.exists()) {
+        const data = staffDoc.data();
+        setIsStaff(true);
+        const isUserAdmin = data.role === 'admin';
+        setIsAdmin(isUserAdmin);
+        setStaffInfo(data);
+        
+        if (isUserAdmin) {
+          logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01').catch(console.error);
+        }
+      } else {
   // Check if it's the bootstrapped admin
   const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
   if (isBootstrapped) {
@@ -117,6 +140,7 @@ const logAdminAudit = async (
   setIsStaff(false);
   setIsAdmin(false);
   setStaffInfo(null);
+  }
   }
   }
   } catch (error: any) {

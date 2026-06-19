@@ -36,8 +36,16 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.status = jsData.status || 'pending';
     payload.items = jsData.items || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.routed_warehouse = jsData.routedWarehouse || null;
+    payload.einvoice_status = jsData.einvoiceStatus || 'pending';
+    payload.einvoice_xml = jsData.einvoiceXml || null;
+    payload.einvoice_lookup_code = jsData.einvoiceLookupCode || null;
+    payload.einvoice_signed_at = jsData.einvoiceSignedAt || null;
+    payload.carrier = jsData.carrier || null;
+    payload.tracking = jsData.tracking || null;
+    payload.shipping_cost = Number(jsData.shippingCost || jsData.shipping_cost) || 0.00;
   } else if (tableName === 'warehouse_stock') {
-    payload.store_id = jsData.storeId || jsData.store_id || null;
+    payload.warehouse_id = jsData.warehouseId || jsData.warehouse_id || jsData.storeId || jsData.store_id || null;
     payload.product_id = jsData.productId || jsData.materialId || jsData.product_id || null;
     payload.product_name = jsData.productName || jsData.materialName || jsData.product_name || null;
     payload.quantity = Number(jsData.quantity) || 0.00;
@@ -80,8 +88,17 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.status = row.status;
     jsData.items = row.items;
     jsData.createdAt = row.created_at;
+    jsData.routedWarehouse = row.routed_warehouse;
+    jsData.einvoiceStatus = row.einvoice_status;
+    jsData.einvoiceXml = row.einvoice_xml;
+    jsData.einvoiceLookupCode = row.einvoice_lookup_code;
+    jsData.einvoiceSignedAt = row.einvoice_signed_at;
+    jsData.carrier = row.carrier;
+    jsData.tracking = row.tracking;
+    jsData.shippingCost = Number(row.shipping_cost || 0);
   } else if (tableName === 'warehouse_stock') {
-    jsData.storeId = row.store_id;
+    jsData.warehouseId = row.warehouse_id || row.store_id;
+    jsData.storeId = row.warehouse_id || row.store_id; // Keep storeId for backward compatibility
     jsData.productId = row.product_id;
     jsData.materialId = row.product_id; // backward compatibility for UI
     jsData.productName = row.product_name;
@@ -337,7 +354,7 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else if (field === 'tenantId') {
         targetColumn = 'tenant_id';
       } else if (RELATIONAL_TABLES.includes(tableName)) {
-        if (field === 'storeId') targetColumn = 'store_id';
+        if (field === 'storeId' || field === 'warehouseId') targetColumn = 'warehouse_id';
         else if (field === 'customerId') targetColumn = 'customer_id';
         else if (field === 'customerName') targetColumn = 'customer_name';
         else if (field === 'productId' || field === 'materialId') targetColumn = 'product_id';
@@ -346,6 +363,12 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
         else if (field === 'imageUrl') targetColumn = 'image_url';
         else if (field === 'createdAt') targetColumn = 'created_at';
         else if (field === 'updatedAt') targetColumn = 'updated_at';
+        else if (field === 'routedWarehouse') targetColumn = 'routed_warehouse';
+        else if (field === 'einvoiceStatus') targetColumn = 'einvoice_status';
+        else if (field === 'einvoiceXml') targetColumn = 'einvoice_xml';
+        else if (field === 'einvoiceLookupCode') targetColumn = 'einvoice_lookup_code';
+        else if (field === 'einvoiceSignedAt') targetColumn = 'einvoice_signed_at';
+        else if (field === 'shippingCost') targetColumn = 'shipping_cost';
         else {
           targetColumn = field;
         }
@@ -381,7 +404,7 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else {
         let orderCol = `data->>${field}`;
         if (RELATIONAL_TABLES.includes(tableName)) {
-          if (field === 'storeId') orderCol = 'store_id';
+          if (field === 'storeId' || field === 'warehouseId') orderCol = 'warehouse_id';
           else if (field === 'customerId') orderCol = 'customer_id';
           else if (field === 'customerName') orderCol = 'customer_name';
           else if (field === 'productId' || field === 'materialId') orderCol = 'product_id';
@@ -390,6 +413,9 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
           else if (field === 'imageUrl') orderCol = 'image_url';
           else if (field === 'createdAt') orderCol = 'created_at';
           else if (field === 'updatedAt') orderCol = 'updated_at';
+          else if (field === 'routedWarehouse') orderCol = 'routed_warehouse';
+          else if (field === 'einvoiceStatus') orderCol = 'einvoice_status';
+          else if (field === 'shippingCost') orderCol = 'shipping_cost';
           else orderCol = field;
         }
         builder = builder.order(orderCol, { ascending });

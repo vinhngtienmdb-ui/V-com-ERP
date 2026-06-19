@@ -59,29 +59,29 @@ const ANALYTICS_TRENDS = [
 ];
 
 const CHANNEL_DATA_7_DAYS = [
-  { epoch: '27/05', 'iPOS (Tại quầy)': 45000000, 'Shopee': 38000000, 'Lazada': 18000000, 'TikTok Shop': 28000000, 'Delivery (App)': 12000000 },
-  { epoch: '28/05', 'iPOS (Tại quầy)': 48000000, 'Shopee': 42000000, 'Lazada': 19000000, 'TikTok Shop': 32000000, 'Delivery (App)': 14000000 },
-  { epoch: '29/05', 'iPOS (Tại quầy)': 52000000, 'Shopee': 40000000, 'Lazada': 15000000, 'TikTok Shop': 35000000, 'Delivery (App)': 15000000 },
-  { epoch: '30/05', 'iPOS (Tại quầy)': 68000000, 'Shopee': 54000000, 'Lazada': 24000000, 'TikTok Shop': 52000000, 'Delivery (App)': 28000000 },
-  { epoch: '31/05', 'iPOS (Tại quầy)': 85000000, 'Shopee': 68000000, 'Lazada': 31000000, 'TikTok Shop': 65000000, 'Delivery (App)': 35000000 },
-  { epoch: '01/06', 'iPOS (Tại quầy)': 95000000, 'Shopee': 72000000, 'Lazada': 28000000, 'TikTok Shop': 70000000, 'Delivery (App)': 38000000 },
-  { epoch: '02/06', 'iPOS (Tại quầy)': 50000000, 'Shopee': 45000000, 'Lazada': 22000000, 'TikTok Shop': 31000000, 'Delivery (App)': 16500000 },
+  { epoch: '27/05', 'iPOS (Tại quầy)': 45000000, 'Shopee': 38000000, 'Lazada': 18000000, 'TikTok Shop': 28000000, 'Delivery (App)': 12000000, 'eCommerce (Website)': 25000000, 'NextHub (B2B)': 15000000 },
+  { epoch: '28/05', 'iPOS (Tại quầy)': 48000000, 'Shopee': 42000000, 'Lazada': 19000000, 'TikTok Shop': 32000000, 'Delivery (App)': 14000000, 'eCommerce (Website)': 28000000, 'NextHub (B2B)': 18000000 },
+  { epoch: '29/05', 'iPOS (Tại quầy)': 52000000, 'Shopee': 40000000, 'Lazada': 15000000, 'TikTok Shop': 35000000, 'Delivery (App)': 15000000, 'eCommerce (Website)': 31000000, 'NextHub (B2B)': 19000000 },
+  { epoch: '30/05', 'iPOS (Tại quầy)': 68000000, 'Shopee': 54000000, 'Lazada': 24000000, 'TikTok Shop': 52000000, 'Delivery (App)': 28000000, 'eCommerce (Website)': 45000000, 'NextHub (B2B)': 28000000 },
+  { epoch: '31/05', 'iPOS (Tại quầy)': 85000000, 'Shopee': 68000000, 'Lazada': 31000000, 'TikTok Shop': 65000000, 'Delivery (App)': 35000000, 'eCommerce (Website)': 59000000, 'NextHub (B2B)': 36000000 },
+  { epoch: '01/06', 'iPOS (Tại quầy)': 95000000, 'Shopee': 72000000, 'Lazada': 28000000, 'TikTok Shop': 70000000, 'Delivery (App)': 38000000, 'eCommerce (Website)': 64000000, 'NextHub (B2B)': 42000000 },
+  { epoch: '02/06', 'iPOS (Tại quầy)': 50000000, 'Shopee': 45000000, 'Lazada': 22000000, 'TikTok Shop': 31000000, 'Delivery (App)': 16500000, 'eCommerce (Website)': 33000000, 'NextHub (B2B)': 22000000 },
 ];
 
 const CHANNEL_DATA_30_DAYS = [
-  { epoch: 'Tuần 1', 'iPOS (Tại quầy)': 312000000, 'Shopee': 288000000, 'Lazada': 124000000, 'TikTok Shop': 195000000, 'Delivery (App)': 88000000 },
-  { epoch: 'Tuần 2', 'iPOS (Tại quầy)': 345000000, 'Shopee': 310000000, 'Lazada': 118000000, 'TikTok Shop': 240000000, 'Delivery (App)': 92000000 },
-  { epoch: 'Tuần 3', 'iPOS (Tại quầy)': 328000000, 'Shopee': 345000000, 'Lazada': 142000000, 'TikTok Shop': 295000000, 'Delivery (App)': 105000000 },
-  { epoch: 'Tuần 4', 'iPOS (Tại quầy)': 443000000, 'Shopee': 359000000, 'Lazada': 157000000, 'TikTok Shop': 343000000, 'Delivery (App)': 158500000 },
+  { epoch: 'Tuần 1', 'iPOS (Tại quầy)': 312000000, 'Shopee': 288000000, 'Lazada': 124000000, 'TikTok Shop': 195000000, 'Delivery (App)': 88000000, 'eCommerce (Website)': 175000000, 'NextHub (B2B)': 112000000 },
+  { epoch: 'Tuần 2', 'iPOS (Tại quầy)': 345000000, 'Shopee': 310000000, 'Lazada': 118000000, 'TikTok Shop': 240000000, 'Delivery (App)': 92000000, 'eCommerce (Website)': 190000000, 'NextHub (B2B)': 125000000 },
+  { epoch: 'Tuần 3', 'iPOS (Tại quầy)': 328000000, 'Shopee': 345000000, 'Lazada': 142000000, 'TikTok Shop': 295000000, 'Delivery (App)': 105000000, 'eCommerce (Website)': 215000000, 'NextHub (B2B)': 138000000 },
+  { epoch: 'Tuần 4', 'iPOS (Tại quầy)': 443000000, 'Shopee': 359000000, 'Lazada': 157000000, 'TikTok Shop': 343000000, 'Delivery (App)': 158500000, 'eCommerce (Website)': 298000000, 'NextHub (B2B)': 188000000 },
 ];
 
 const CHANNEL_DATA_6_MONTHS = [
-  { epoch: 'Tháng 1', 'iPOS (Tại quầy)': 1250000000, 'Shopee': 1120000000, 'Lazada': 480000000, 'TikTok Shop': 750000000, 'Delivery (App)': 340000000 },
-  { epoch: 'Tháng 2', 'iPOS (Tại quầy)': 1180000000, 'Shopee': 1190000000, 'Lazada': 450000000, 'TikTok Shop': 890000000, 'Delivery (App)': 350000000 },
-  { epoch: 'Tháng 3', 'iPOS (Tại quầy)': 1450000000, 'Shopee': 1350000000, 'Lazada': 540000000, 'TikTok Shop': 1120000000, 'Delivery (App)': 420000000 },
-  { epoch: 'Tháng 4', 'iPOS (Tại quầy)': 1410000000, 'Shopee': 1390000000, 'Lazada': 510000000, 'TikTok Shop': 1360000000, 'Delivery (App)': 440000000 },
-  { epoch: 'Tháng 5', 'iPOS (Tại quầy)': 1720000000, 'Shopee': 1650000000, 'Lazada': 620000000, 'TikTok Shop': 1880000000, 'Delivery (App)': 590000000 },
-  { epoch: 'Tháng 6', 'iPOS (Tại quầy)': 1850000000, 'Shopee': 1780000000, 'Lazada': 680000000, 'TikTok Shop': 2250000000, 'Delivery (App)': 640000000 },
+  { epoch: 'Tháng 1', 'iPOS (Tại quầy)': 1250000000, 'Shopee': 1120000000, 'Lazada': 480000000, 'TikTok Shop': 750000000, 'Delivery (App)': 340000000, 'eCommerce (Website)': 720000000, 'NextHub (B2B)': 480000000 },
+  { epoch: 'Tháng 2', 'iPOS (Tại quầy)': 1180000000, 'Shopee': 1190000000, 'Lazada': 450000000, 'TikTok Shop': 890000000, 'Delivery (App)': 350000000, 'eCommerce (Website)': 690000000, 'NextHub (B2B)': 490000000 },
+  { epoch: 'Tháng 3', 'iPOS (Tại quầy)': 1450000000, 'Shopee': 1350000000, 'Lazada': 540000000, 'TikTok Shop': 1120000000, 'Delivery (App)': 420000000, 'eCommerce (Website)': 880000000, 'NextHub (B2B)': 590000000 },
+  { epoch: 'Tháng 4', 'iPOS (Tại quầy)': 1410000000, 'Shopee': 1390000000, 'Lazada': 510000000, 'TikTok Shop': 1360000000, 'Delivery (App)': 440000000, 'eCommerce (Website)': 910000000, 'NextHub (B2B)': 640000000 },
+  { epoch: 'Tháng 5', 'iPOS (Tại quầy)': 1720000000, 'Shopee': 1650000000, 'Lazada': 620000000, 'TikTok Shop': 1880000000, 'Delivery (App)': 590000000, 'eCommerce (Website)': 1120000000, 'NextHub (B2B)': 780000000 },
+  { epoch: 'Tháng 6', 'iPOS (Tại quầy)': 1850000000, 'Shopee': 1780000000, 'Lazada': 680000000, 'TikTok Shop': 2250000000, 'Delivery (App)': 640000000, 'eCommerce (Website)': 1250000000, 'NextHub (B2B)': 890000000 },
 ];
 
 const CHANNEL_METADATA = [
@@ -93,6 +93,24 @@ const CHANNEL_METADATA = [
     growth: '+8.4%',
     avgOrder: 185000,
     ordersCount: 4210
+  },
+  {
+    name: 'eCommerce (Website)',
+    color: '#3B82F6',
+    commissionFee: '1.5%',
+    desc: 'Website thương mại điện tử chính hãng VComm. Tối ưu chi phí hoa hồng, dữ liệu khách hàng sở hữu.',
+    growth: '+18.5%',
+    avgOrder: 350000,
+    ordersCount: 1820
+  },
+  {
+    name: 'NextHub (B2B)',
+    color: '#EC4899',
+    commissionFee: '5%',
+    desc: 'Kênh cộng tác viên bán chéo NextHub. Tận dụng mạng lưới bán hàng xã hội quy mô lớn.',
+    growth: '+22.4%',
+    avgOrder: 450000,
+    ordersCount: 950
   },
   {
     name: 'Shopee',
@@ -136,7 +154,7 @@ export function AnalyticsBI() {
   const [timeRange, setTimeRange] = React.useState<'7days' | '30days' | '6months'>('7days');
   const [chartType, setChartType] = React.useState<'stacked' | 'grouped' | 'line'>('stacked');
   const [activeChannels, setActiveChannels] = React.useState<string[]>([
-    'iPOS (Tại quầy)', 'Shopee', 'Lazada', 'TikTok Shop', 'Delivery (App)'
+    'iPOS (Tại quầy)', 'eCommerce (Website)', 'NextHub (B2B)', 'Shopee', 'Lazada', 'TikTok Shop', 'Delivery (App)'
   ]);
 
   const currentData = timeRange === '7days' 

@@ -1,5 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
   Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
@@ -240,11 +240,33 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
 }
 
 function PurchaseRequests({ onBack }: { onBack: () => void }) {
- const [searchTerm, setSearchTerm] = useState('');
- const [statusFilter, setStatusFilter] = useState('all');
- const [syncedRequests, setSyncedRequests] = useState<Record<string, boolean>>({});
- const [syncingRequestId, setSyncingRequestId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [syncedRequests, setSyncedRequests] = useState<Record<string, boolean>>({});
+  const [syncingRequestId, setSyncingRequestId] = useState<string | null>(null);
+  
+  // Phase 3 stateful requests and PO email triggers
+  const [requests, setRequests] = useState<any[]>(() => {
+    const cached = localStorage.getItem('vcomm_purchase_requests');
+    if (cached) return JSON.parse(cached);
+    
+    // Add default supplier mappings & delivery status for Phase 3 PO tracking
+    return MOCK_PURCHASE_REQUESTS.map(req => ({
+      ...req,
+      supplierId: req.id === 'PR-20240402' ? 'SUP-001' : 
+                  req.id === 'PR-20240410' ? 'SUP-002' : 'SUP-003',
+      deliveryStatus: req.status === 'approved' ? 'pending' : 'none'
+    }));
+  });
 
+  const [selectedRequestForPo, setSelectedRequestForPo] = useState<any | null>(null);
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('vcomm_purchase_requests', JSON.stringify(requests));
+  }, [requests]);
+
+  // Sync to MISA API
   const handleSyncRequest = async (req: any) => {
     setSyncingRequestId(req.id);
     try {
@@ -253,7 +275,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
         description: req.title,
         type: 'expense',
         category: 'Inventory',
-        accountingObjectCode: 'SUP-001'
+        accountingObjectCode: req.supplierId || 'SUP-001'
       });
       if (result && result.status === 'success') {
         setSyncedRequests(prev => ({ ...prev, [req.id]: true }));
@@ -268,155 +290,382 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
     }
   };
 
- const filteredRequests = MOCK_PURCHASE_REQUESTS.filter(req => {
- const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
- const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
- return matchesSearch && matchesStatus;
- });
+  const handleApprove = (id: string) => {
+    const updated = requests.map(req => {
+      if (req.id === id) {
+        return { ...req, status: 'approved', deliveryStatus: 'pending' };
+      }
+      return req;
+    });
+    setRequests(updated);
+  };
 
- return (
- <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
- <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
- <div className="flex items-center gap-4">
- <button 
- onClick={onBack} 
- className="flex items-center justify-center p-2 text-slate-500 hover:text-orange-700 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-300"
- title="Quay lại"
- >
- <ArrowLeft className="w-5 h-5" />
- </button>
- <div>
- <h2 className="text-lg font-bold text-slate-900">Phiếu Đề xuất mua hàng</h2>
- <p className="text-xs text-slate-600 mt-0.5">Quản lý các yêu cầu sắm tài sản, thiết bị, dịch vụ</p>
- </div>
- </div>
+  const handleReject = (id: string) => {
+    const updated = requests.map(req => {
+      if (req.id === id) {
+        return { ...req, status: 'rejected', deliveryStatus: 'none' };
+      }
+      return req;
+    });
+    setRequests(updated);
+  };
 
- <div className="flex items-center gap-3 w-full md:w-auto">
- <div className="relative flex-1 md:w-64">
- <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
- <input 
- type="text" 
- placeholder="Tìm theo tiêu đề, ID..." 
- value={searchTerm}
- onChange={(e) => setSearchTerm(e.target.value)}
- className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
- />
- </div>
- <div className="relative">
- <select
- value={statusFilter}
- onChange={(e) => setStatusFilter(e.target.value)}
- className="appearance-none bg-white border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
- >
- <option value="all">Tất cả trạng thái</option>
- <option value="pending">Chờ phê duyệt</option>
- <option value="approved">Đã duyệt</option>
- <option value="rejected">Từ chối</option>
- </select>
- <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
- </div>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Plus className="w-4 h-4" /> Tạo Đề xuất
- </button>
- </div>
- </div>
+  // Simulate calling Supabase Edge Function to email the PO PDF to the Supplier
+  const handleSendPoEmail = async (req: any) => {
+    setSendingEmail(true);
+    try {
+      // Simulate API call to Supabase Edge Function
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const supplierEmail = req.id === 'PR-20240402' ? 'sales@lg.com.vn' : 
+                            req.id === 'PR-20240410' ? 'contact@yody.vn' : 'partner@sunhouse.com';
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50" columns={4} gap={16}>
- <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-orange-600" /> Tổng phiếu</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ duyệt</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'pending').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
- <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><BadgeDollarSign className="w-4 h-4 text-purple-500" /> Tổng kinh phí duyệt</h3>
- <p className="text-2xl font-black text-slate-900 mt-2">{formatCurrency(MOCK_PURCHASE_REQUESTS.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
- </div>
- </DraggableGrid>
+      alert(`[Supabase Edge Function] Đã tự động tạo và gửi Đơn mua hàng PO PDF thành công tới email nhà cung cấp (${supplierEmail}).`);
+      
+      // Update PO delivery status to 'pending' if it was 'none'
+      const updated = requests.map(r => {
+        if (r.id === req.id) {
+          return { ...r, deliveryStatus: 'pending' };
+        }
+        return r;
+      });
+      setRequests(updated);
+      setSelectedRequestForPo(null);
+    } catch (err) {
+      console.error(err);
+      alert('Có lỗi xảy ra khi gọi Edge Function gửi email PO.');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
- <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[15%]">Mã Phiếu / Khối</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Ngày gửi</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-100 bg-white">
- {filteredRequests.map((req) => (
- <tr key={req.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-6 py-4">
- <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">{req.id}</p>
- <span className="mt-1 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">{req.department}</span>
- </td>
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-orange-700 transition-colors">{req.title}</p>
- <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
- </td>
- <td className="px-6 py-4 text-right">
- <p className="text-sm font-black text-rose-600">{formatCurrency(req.value)}</p>
- <p className="text-[10px] text-slate-600 font-medium">{req.itemsCount} Danh mục mặt hàng</p>
- </td>
- <td className="px-6 py-4 text-center">
- <span className={cn(
- "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
- req.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
- req.status === 'pending' ? "bg-amber-50 text-amber-600" : "bg-rose-50 text-rose-600"
- )}>
- {req.status === 'approved' && <CheckCircle2 className="w-3 h-3" />}
- {req.status === 'pending' && <Clock className="w-3 h-3" />}
- {req.status === 'rejected' && <AlertCircle className="w-3 h-3" />}
- {req.status === 'approved' ? 'Đã duyệt' : req.status === 'pending' ? 'Chờ duyệt' : 'Từ chối'}
- </span>
- </td>
- <td className="px-6 py-4 text-right">
- <p className="text-sm text-slate-700 font-mono">{req.date}</p>
- </td>
- <td className="px-6 py-4 text-center">
-    {req.status === 'approved' ? (
-      syncedRequests[req.id] ? (
-        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
-          Đã ghi sổ 🟢
-        </span>
-      ) : (
-        <button
-          onClick={() => handleSyncRequest(req)}
-          disabled={syncingRequestId === req.id}
-          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg disabled:opacity-50 flex items-center gap-1 mx-auto"
-        >
-          {syncingRequestId === req.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-          Ghi sổ Mua
-        </button>
-      )
-    ) : (
-      <span className="text-slate-400 text-xs italic">-</span>
-    )}
-  </td>
- </tr>
- ))}
- {filteredRequests.length === 0 && (
- <tr>
- <td colSpan={6} className="px-6 py-6 text-center text-slate-600">
- <FileSignature className="w-10 h-10 mx-auto text-slate-500 mb-3" />
- <p className="text-sm font-medium">Không tìm thấy phiếu đề xuất nào phù hợp.</p>
- </td>
- </tr>
- )}
- </tbody>
- </table>
- </div>
- </div>
- );
+  const filteredRequests = requests.filter(req => {
+    const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) || req.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
+      <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onBack} 
+            className="flex items-center justify-center p-2 text-slate-500 hover:text-orange-700 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-300"
+            title="Quay lại"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Phiếu Đề xuất mua hàng</h2>
+            <p className="text-xs text-slate-600 mt-0.5">Quản lý các yêu cầu sắm tài sản, thiết bị, dịch vụ và phê duyệt luồng PO</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input 
+              type="text" 
+              placeholder="Tìm theo tiêu đề, ID..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+            />
+          </div>
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="appearance-none bg-white border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 cursor-pointer"
+            >
+              <option value="all">Tất cả trạng thái</option>
+              <option value="pending">Chờ phê duyệt</option>
+              <option value="approved">Đã duyệt</option>
+              <option value="rejected">Từ chối</option>
+            </select>
+            <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          </div>
+          <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Tạo Đề xuất
+          </button>
+        </div>
+      </div>
+
+      <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50" columns={4} gap={16}>
+        <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-orange-600" /> Tổng phiếu</h3>
+          <p className="text-2xl font-black text-slate-900 mt-2">{requests.length}</p>
+        </div>
+        <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ duyệt</h3>
+          <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
+        </div>
+        <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
+          <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
+        </div>
+        <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><BadgeDollarSign className="w-4 h-4 text-purple-500" /> Tổng kinh phí duyệt</h3>
+          <p className="text-2xl font-black text-slate-900 mt-2">{formatCurrency(requests.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
+        </div>
+      </DraggableGrid>
+
+      <div className="overflow-x-auto min-w-0">
+        <table className="w-full text-left border-collapse whitespace-nowrap">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-300">
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[15%]">Mã Phiếu / Khối</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái duyệt</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Hành động phê duyệt</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đơn hàng PO</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white">
+            {filteredRequests.map((req) => (
+              <tr key={req.id} className="hover:bg-slate-50/50 transition-colors group">
+                <td className="px-6 py-4">
+                  <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">{req.id}</p>
+                  <span className="mt-1 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">{req.department}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <p className="text-sm font-bold text-slate-900 cursor-pointer hover:text-orange-700 transition-colors">{req.title}</p>
+                  <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <p className="text-sm font-black text-rose-600">{formatCurrency(req.value)}</p>
+                  <p className="text-[10px] text-slate-600 font-medium">{req.itemsCount} đơn vị</p>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span className={cn(
+                    "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+                    req.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
+                    req.status === 'pending' ? "bg-amber-50 text-amber-600" : "bg-rose-50 text-rose-600"
+                  )}>
+                    {req.status === 'approved' && <CheckCircle2 className="w-3 h-3" />}
+                    {req.status === 'pending' && <Clock className="w-3 h-3" />}
+                    {req.status === 'rejected' && <AlertCircle className="w-3 h-3" />}
+                    {req.status === 'approved' ? 'Đã duyệt' : req.status === 'pending' ? 'Chờ duyệt' : 'Từ chối'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  {req.status === 'pending' ? (
+                    <div className="flex gap-2 justify-center">
+                      <button 
+                        onClick={() => handleApprove(req.id)}
+                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-[#FAF9F5] text-[10px] font-bold rounded"
+                      >
+                        Duyệt
+                      </button>
+                      <button 
+                        onClick={() => handleReject(req.id)}
+                        className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-[#FAF9F5] text-[10px] font-bold rounded"
+                      >
+                        Từ chối
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 text-xs italic">Đã xử lý</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  {req.status === 'approved' ? (
+                    <div className="space-y-1.5">
+                      <button
+                        onClick={() => setSelectedRequestForPo(req)}
+                        className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-all flex items-center gap-1 mx-auto"
+                      >
+                        Xem PO (PDF)
+                      </button>
+                      {req.deliveryStatus && req.deliveryStatus !== 'none' && (
+                        <span className={cn(
+                          "px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider block w-fit mx-auto",
+                          req.deliveryStatus === 'delivered' ? "bg-emerald-50 text-emerald-600" :
+                          req.deliveryStatus === 'shipping' ? "bg-blue-50 text-blue-600 animate-pulse" :
+                          "bg-amber-50 text-amber-600"
+                        )}>
+                          NCC: {req.deliveryStatus === 'delivered' ? 'Đã giao' : req.deliveryStatus === 'shipping' ? 'Đang giao' : 'Đã xác nhận'}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 text-xs italic">-</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  {req.status === 'approved' ? (
+                    syncedRequests[req.id] ? (
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+                        Đã ghi sổ 🟢
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleSyncRequest(req)}
+                        disabled={syncingRequestId === req.id}
+                        className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg disabled:opacity-50 flex items-center gap-1 mx-auto"
+                      >
+                        {syncingRequestId === req.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                        Ghi sổ Mua
+                      </button>
+                    )
+                  ) : (
+                    <span className="text-slate-400 text-xs italic">-</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {filteredRequests.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-6 text-center text-slate-600">
+                  <FileSignature className="w-10 h-10 mx-auto text-slate-500 mb-3" />
+                  <p className="text-sm font-medium">Không tìm thấy phiếu đề xuất nào phù hợp.</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* PO PDF visualizer modal */}
+      {selectedRequestForPo && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Chi tiết Đơn đặt hàng (Purchase Order PDF)</h3>
+                <p className="text-xs text-slate-600 mt-0.5">Xuất PO mẫu chuẩn và mô phỏng tự động hóa quy trình</p>
+              </div>
+              <button 
+                onClick={() => setSelectedRequestForPo(null)} 
+                className="p-1 hover:bg-slate-100 rounded text-slate-600"
+              >
+                Đóng
+              </button>
+            </div>
+
+            {/* Visual PDF Body */}
+            <div className="flex-1 overflow-y-auto my-6 p-6 border border-slate-350 bg-slate-50 rounded-xl font-mono text-slate-800 text-xs space-y-6">
+              
+              {/* PDF Header */}
+              <div className="flex justify-between items-start pb-4 border-b border-dashed border-slate-400">
+                <div>
+                  <h4 className="font-serif font-black text-sm text-slate-900">CÔNG TY CỔ PHẦN VCOMM</h4>
+                  <p className="text-[10px] text-slate-600 mt-1">15 Cầu Giấy, Quan Hoa, Cầu Giấy, Hà Nội</p>
+                  <p className="text-[10px] text-slate-600">Mã số thuế: 0102030405</p>
+                </div>
+                <div className="text-right">
+                  <h4 className="font-bold text-slate-900 text-sm">ĐƠN ĐẶT HÀNG (PO)</h4>
+                  <p className="text-[10px] font-bold text-orange-700 mt-1">Số PO: PO-{selectedRequestForPo.id.replace('PR-', '')}</p>
+                  <p className="text-[10px] text-slate-600">Ngày tạo: {selectedRequestForPo.date}</p>
+                </div>
+              </div>
+
+              {/* Vendor & Delivery details */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-bold text-slate-900 mb-1">ĐƠN VỊ BÁN HÀNG (NCC):</p>
+                  <p className="font-bold text-slate-800">
+                    {selectedRequestForPo.id === 'PR-20240402' ? 'Công ty CP Điện tử LG Việt Nam' :
+                     selectedRequestForPo.id === 'PR-20240410' ? 'Nhà phân phối Thời trang Yody' : 'Sunhouse VN'}
+                  </p>
+                  <p className="text-[10px] text-slate-600">Điện thoại: {selectedRequestForPo.id === 'PR-20240402' ? '0901234567' : '0987654321'}</p>
+                  <p className="text-[10px] text-slate-600">Email: {
+                    selectedRequestForPo.id === 'PR-20240402' ? 'sales@lg.com.vn' :
+                    selectedRequestForPo.id === 'PR-20240410' ? 'contact@yody.vn' : 'partner@sunhouse.com'
+                  }</p>
+                </div>
+                <div>
+                  <p className="font-bold text-slate-900 mb-1">ĐƠN VỊ MUA HÀNG (GIAO ĐẾN):</p>
+                  <p className="font-bold text-slate-800">Kho Trung Tâm VComm Hà Nội</p>
+                  <p className="text-[10px] text-slate-600">Người nhận: {selectedRequestForPo.requester}</p>
+                  <p className="text-[10px] text-slate-600">Phòng ban: {selectedRequestForPo.department}</p>
+                </div>
+              </div>
+
+              {/* PO Items Table */}
+              <div>
+                <table className="w-full text-left border-collapse border border-slate-400">
+                  <thead>
+                    <tr className="bg-slate-200 border-b border-slate-400 font-bold text-slate-900">
+                      <th className="p-2 border-r border-slate-400">Mô tả mặt hàng</th>
+                      <th className="p-2 text-right border-r border-slate-400 w-20">SL</th>
+                      <th className="p-2 text-right border-r border-slate-400 w-32">Đơn giá</th>
+                      <th className="p-2 text-right w-32">Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-slate-400">
+                      <td className="p-2 border-r border-slate-400 leading-normal font-sans font-bold text-slate-900">
+                        {selectedRequestForPo.title}
+                      </td>
+                      <td className="p-2 text-right border-r border-slate-400 font-bold">{selectedRequestForPo.itemsCount}</td>
+                      <td className="p-2 text-right border-r border-slate-400">{formatCurrency(selectedRequestForPo.value / (selectedRequestForPo.itemsCount || 1))}</td>
+                      <td className="p-2 text-right font-bold">{formatCurrency(selectedRequestForPo.value)}</td>
+                    </tr>
+                    <tr className="bg-slate-100 font-bold text-slate-900">
+                      <td colSpan={3} className="p-2 text-right border-r border-slate-400">TỔNG CỘNG THANH TOÁN (ĐÃ VAT)</td>
+                      <td className="p-2 text-right text-rose-600 font-black">{formatCurrency(selectedRequestForPo.value)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Signatures */}
+              <div className="flex justify-between pt-12 text-center text-[10px] font-bold text-slate-700">
+                <div>
+                  <p>NGƯỜI LẬP BIỂU</p>
+                  <p className="mt-8 italic text-slate-500 font-sans font-normal">(Đã duyệt điện tử)</p>
+                  <p className="mt-2 text-slate-800">{selectedRequestForPo.requester}</p>
+                </div>
+                <div>
+                  <p>GIÁM ĐỐC PHÊ DUYỆT</p>
+                  <p className="mt-8 text-emerald-600 border border-emerald-500 bg-emerald-50/50 px-2 py-0.5 rounded inline-block font-sans font-bold text-[9px]">
+                    VCOMM CA SIGNED ✔
+                  </p>
+                  <p className="mt-2 text-slate-800">Hệ thống VComm</p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex justify-between items-center pt-4 border-t border-slate-200">
+              <span className="text-[10px] text-slate-500 font-medium">
+                NCC có thể truy cập Cổng thông tin tại <code className="bg-slate-100 px-1 py-0.5 rounded font-bold">/supplier-portal</code> để xử lý.
+              </span>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSelectedRequestForPo(null)}
+                  className="bg-white border border-slate-355 hover:bg-slate-100 text-slate-800 px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                >
+                  Quay lại
+                </button>
+                <button
+                  onClick={() => handleSendPoEmail(selectedRequestForPo)}
+                  disabled={sendingEmail}
+                  className="bg-[#2563EB] hover:bg-slate-900 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-blue-500/10"
+                >
+                  {sendingEmail ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Đang kết nối Supabase Edge...
+                    </>
+                  ) : (
+                    'Gửi Email PO tự động 📧'
+                  )}
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
 }
 
 export function Procurement() {
