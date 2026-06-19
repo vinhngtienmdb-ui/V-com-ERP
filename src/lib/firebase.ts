@@ -18,7 +18,7 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.price = Number(jsData.price) || 0.00;
     payload.sku = jsData.sku || null;
     payload.category = jsData.category || null;
-    payload.image_url = jsData.imageUrl || jsData.image_url || null;
+    payload.image_url = jsData.image || jsData.imageUrl || jsData.image_url || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
     if (jsData.description_embedding) {
       payload.description_embedding = jsData.description_embedding;
@@ -71,6 +71,7 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.sku = row.sku;
     jsData.category = row.category;
     jsData.imageUrl = row.image_url;
+    jsData.image = row.image_url;
     jsData.createdAt = row.created_at;
     if (row.description_embedding) {
       jsData.description_embedding = row.description_embedding;
