@@ -1,5 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import { 
  Users, 
  ShieldCheck, 
@@ -172,65 +173,182 @@ export const MOCK_SELLERS: PartnerData[] = [
 ];
 
 export function SellerManagement() {
- const [sellers, setSellers] = useState<PartnerData[]>(MOCK_SELLERS);
- const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer' | 'factory'>('all');
- const [showConfig, setShowConfig] = useState(false);
- const [selectedSeller, setSelectedSeller] = useState<PartnerData | null>(null);
- const [approvingSeller, setApprovingSeller] = useState<PartnerData | null>(null);
- const [adjustingSeller, setAdjustingSeller] = useState<PartnerData | null>(null);
- const [adjustAmount, setAdjustAmount] = useState('');
- const [approvalType, setApprovalType] = useState<'seller' | 'dealer' | 'factory'>('seller');
- const [iposFeeStatus, setIposFeeStatus] = useState<string>('paid');
+  const [sellers, setSellers] = useState<PartnerData[]>(MOCK_SELLERS);
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'seller' | 'dealer' | 'factory'>('all');
+  const [showConfig, setShowConfig] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState<PartnerData | null>(null);
+  const [approvingSeller, setApprovingSeller] = useState<PartnerData | null>(null);
+  const [adjustingSeller, setAdjustingSeller] = useState<PartnerData | null>(null);
+  const [adjustAmount, setAdjustAmount] = useState('');
+  const [approvalType, setApprovalType] = useState<'seller' | 'dealer' | 'factory'>('seller');
+  const [iposFeeStatus, setIposFeeStatus] = useState<string>('paid');
 
- // Seller config states
- const [sellerAutoApprove, setSellerAutoApprove] = useState(false);
- const [sellerRequireTaxId, setSellerRequireTaxId] = useState(true);
- const [sellerRequireLicense, setSellerRequireLicense] = useState(true);
- const [sellerUploadLimit, setSellerUploadLimit] = useState('1000');
- const [sellerPayoutSchedule, setSellerPayoutSchedule] = useState('weekly');
+  // Seller config states
+  const [sellerAutoApprove, setSellerAutoApprove] = useState(false);
+  const [sellerRequireTaxId, setSellerRequireTaxId] = useState(true);
+  const [sellerRequireLicense, setSellerRequireLicense] = useState(true);
+  const [sellerUploadLimit, setSellerUploadLimit] = useState('1000');
+  const [sellerPayoutSchedule, setSellerPayoutSchedule] = useState('weekly');
 
- // Aditional config states
- const [productModeration, setProductModeration] = useState('auto');
- const [minRatingActive, setMinRatingActive] = useState('4.0');
- const [maxPenaltyPoints, setMaxPenaltyPoints] = useState('12');
- const [requiredFulfillment, setRequiredFulfillment] = useState(false);
- const [sellerAllowCod, setSellerAllowCod] = useState(true);
+  // Aditional config states
+  const [productModeration, setProductModeration] = useState('auto');
+  const [minRatingActive, setMinRatingActive] = useState('4.0');
+  const [maxPenaltyPoints, setMaxPenaltyPoints] = useState('12');
+  const [requiredFulfillment, setRequiredFulfillment] = useState(false);
+  const [sellerAllowCod, setSellerAllowCod] = useState(true);
 
- // Advanced config states
- const [sellerShippingMode, setSellerShippingMode] = useState('platform');
- const [slaHours, setSlaHours] = useState('24');
- const [autoReturnLimit, setAutoReturnLimit] = useState('200000');
+  // Advanced config states
+  const [sellerShippingMode, setSellerShippingMode] = useState('platform');
+  const [slaHours, setSlaHours] = useState('24');
+  const [autoReturnLimit, setAutoReturnLimit] = useState('200000');
 
- const handleToggleLock = (id: string, e: React.MouseEvent) => {
- e.stopPropagation();
- setSellers(sellers.map(s => {
- if (s.id === id) {
- return { ...s, status: s.status === 'suspended' ? 'active' : 'suspended' as any };
- }
- return s;
- }));
- };
+  const fetchDbSellers = async () => {
+    try {
+      const { data: sbSellers, error } = await supabase.from('sellers').select('*');
+      if (error) throw error;
 
- const submitAdjustBalance = (e: React.FormEvent) => {
- e.preventDefault();
- if (!adjustingSeller || !adjustAmount) return;
- 
- setSellers(sellers.map(s => {
- if (s.id === adjustingSeller.id) {
- return { ...s, walletBalance: (s.walletBalance || 0) + Number(adjustAmount) };
- }
- return s;
- }));
- setAdjustingSeller(null);
- setAdjustAmount('');
- };
+      const { data: sbWallets } = await supabase.from('seller_wallets').select('*');
+      const walletMap = new Map((sbWallets || []).map(w => [w.seller_id, w]));
+
+      const { data: sbTaxes } = await supabase.from('seller_taxes').select('*');
+      const taxMap = new Map((sbTaxes || []).map(t => [t.seller_id, t]));
+
+      const mapped: PartnerData[] = (sbSellers || []).map(s => {
+        const wallet = walletMap.get(s.id);
+        const tax = taxMap.get(s.id);
+        return {
+          id: s.id,
+          name: s.shop_name,
+          totalProducts: 0,
+          rating: Number(s.rating || 5),
+          gmv: Number(s.revenue || 0),
+          status: s.status === 'APPROVED' ? 'active' : s.status === 'PENDING' ? 'pending' : 'suspended',
+          taxCode: tax?.tax_id_number || 'N/A',
+          identityCard: 'N/A',
+          address: 'N/A',
+          representative: tax?.representative_name || 'N/A',
+          commissionRate: 3.5,
+          joinDate: new Date(s.created_at).toLocaleDateString('vi-VN'),
+          onboardingStep: s.status === 'APPROVED' ? 'completed' : 'verification',
+          partnerType: 'seller',
+          activeModules: ['orders', 'pim', 'marketing', 'flashsale', 'affiliate'],
+          walletBalance: Number(wallet?.balance || 0)
+        };
+      });
+
+      const filteredMocks = MOCK_SELLERS.filter(mock => !mapped.some(m => m.id === mock.id));
+      setSellers([...mapped, ...filteredMocks]);
+    } catch (err) {
+      console.error("Failed to fetch Supabase sellers:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchDbSellers();
+  }, []);
+
+  const handleApproveSeller = async (id: string) => {
+    try {
+      const { error: err1 } = await supabase
+        .from('sellers')
+        .update({ status: 'APPROVED' })
+        .eq('id', id);
+      if (err1) throw err1;
+
+      await supabase
+        .from('seller_taxes')
+        .update({ tax_status: 'VERIFIED' })
+        .eq('seller_id', id);
+
+      alert('Đã phê duyệt và kích hoạt tài khoản nhà bán hàng!');
+      setApprovingSeller(null);
+      fetchDbSellers();
+    } catch (e: any) {
+      alert('Không thể phê duyệt: ' + (e.message || e));
+    }
+  };
+
+  const handleRejectSeller = async (id: string) => {
+    try {
+      const { error: err1 } = await supabase
+        .from('sellers')
+        .update({ status: 'SUSPENDED' })
+        .eq('id', id);
+      if (err1) throw err1;
+
+      alert('Đã từ chối hồ sơ nhà bán hàng.');
+      setApprovingSeller(null);
+      fetchDbSellers();
+    } catch (e: any) {
+      alert('Không thể từ chối: ' + (e.message || e));
+    }
+  };
+
+  const handleToggleLock = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const currentSeller = sellers.find(s => s.id === id);
+    if (!currentSeller) return;
+
+    if (id.startsWith('SEL-00')) {
+      setSellers(sellers.map(s => {
+        if (s.id === id) {
+          return { ...s, status: s.status === 'suspended' ? 'active' : 'suspended' as any };
+        }
+        return s;
+      }));
+    } else {
+      const nextStatus = currentSeller.status === 'suspended' ? 'APPROVED' : 'SUSPENDED';
+      try {
+        await supabase
+          .from('sellers')
+          .update({ status: nextStatus })
+          .eq('id', id);
+        fetchDbSellers();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const submitAdjustBalance = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adjustingSeller || !adjustAmount) return;
+
+    if (adjustingSeller.id.startsWith('SEL-00')) {
+      setSellers(sellers.map(s => {
+        if (s.id === adjustingSeller.id) {
+          return { ...s, walletBalance: (s.walletBalance || 0) + Number(adjustAmount) };
+        }
+        return s;
+      }));
+    } else {
+      try {
+        const { data: w } = await supabase
+          .from('seller_wallets')
+          .select('balance')
+          .eq('seller_id', adjustingSeller.id)
+          .single();
+        const currentBal = w ? Number(w.balance) : 0;
+        await supabase
+          .from('seller_wallets')
+          .update({ balance: currentBal + Number(adjustAmount) })
+          .eq('seller_id', adjustingSeller.id);
+        fetchDbSellers();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    
+    setAdjustingSeller(null);
+    setAdjustAmount('');
+  };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
  <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản lý Seller / Vendor</h1>
- <p className="text-sm text-[#6B7280] mt-1">Hồ sơ nhà bán, đối soát MST/CCCD và quản lý hoa hồng.</p>
+ <p className="text-sm text-[#6B7280] mt-1">Hồ sơ nhà bán, đối soát MST/CCCD và quản lý hoa hồng. <span className="text-xs text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 ml-2">Đăng ký tại eCommerce • ERP chỉ duyệt & quản lý</span></p>
  </div>
  <div className="flex gap-3">
  <button 
@@ -240,11 +358,7 @@ export function SellerManagement() {
  <Settings2 className="w-4 h-4" />
  {showConfig ? 'Quay lại Quản lý' : 'Cấu hình'}
  </button>
- {!showConfig && (
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
- Kích hoạt Seller nhanh
- </button>
- )}
+ 
  </div>
  </div>
 
@@ -1114,13 +1228,13 @@ export function SellerManagement() {
 
  <div className="flex gap-4">
  <button 
- onClick={() => setApprovingSeller(null)}
+ onClick={() => handleRejectSeller(approvingSeller.id)}
  className="flex-1 py-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-sm transition-all"
  >
  Từ chối Hồ sơ
  </button>
  <button 
- onClick={() => setApprovingSeller(null)}
+ onClick={() => handleApproveSeller(approvingSeller.id)}
  className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm .5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt

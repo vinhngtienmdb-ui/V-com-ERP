@@ -93,8 +93,11 @@ const logAdminAudit = async (
       .eq('user_id', user.uid)
       .maybeSingle();
 
-    if (roleRow) {
-      setIsStaff(true);
+    const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+
+    if (roleRow && !isBootstrapped) {
+      const isStaffRole = roleRow.role !== 'customer';
+      setIsStaff(isStaffRole);
       const isUserAdmin = roleRow.role === 'super_admin' || roleRow.role === 'store_manager';
       setIsAdmin(isUserAdmin);
       setStaffInfo({

@@ -831,6 +831,7 @@ export function SettingsPage() {
  const [newCategoryName, setNewCategoryName] = useState('');
  const [isScanningAI, setIsScanningAI] = useState(false);
  const [activeModuleTab, setActiveModuleTab] = useState(MODULE_PERMISSIONS[0].id);
+  const [isSavingFee, setIsSavingFee] = useState(false);
 
   // 1. DNS Diagnostics State
   const [dnsDiagnostics, setDnsDiagnostics] = useState<Record<string, 'idle' | 'checking' | 'valid' | 'invalid'>>({});
@@ -1155,12 +1156,78 @@ export function SettingsPage() {
  };
 
  const handleSave = () => {
- setIsSaving(true);
- setTimeout(() => {
- setIsSaving(false);
- alert('Đã lưu các thay đổi cấu hình thành công!');
- }, 1000);
- };
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      alert('Đã lưu các thay đổi cấu hình thành công!');
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (activeTab !== 'fees') return;
+    
+    async function loadFeeConfig() {
+      try {
+        const { data, error } = await supabase
+          .from('tenant_settings')
+          .select('data')
+          .eq('id', 'config')
+          .single();
+        if (error) throw error;
+        
+        if (data?.data?.feeConfig) {
+          const fc = data.data.feeConfig;
+          if (fc.systemFees) {
+            setSystemFees(fc.systemFees);
+          }
+          if (fc.categoryFees) {
+            setCategoryFees(fc.categoryFees);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading fee config from Supabase:", err);
+      }
+    }
+    
+    loadFeeConfig();
+  }, [activeTab]);
+
+  const handleSaveFeeConfig = async () => {
+    setIsSavingFee(true);
+    try {
+      const { data: current, error: getErr } = await supabase
+        .from('tenant_settings')
+        .select('data')
+        .eq('id', 'config')
+        .single();
+      if (getErr) throw getErr;
+
+      const currentData = current.data || {};
+      const updatedData = {
+        ...currentData,
+        feeConfig: {
+          ...currentData.feeConfig,
+          systemFees,
+          categoryFees,
+          commissionRate: 3.5
+        }
+      };
+
+      const { error: updateErr } = await supabase
+        .from('tenant_settings')
+        .update({ data: updatedData })
+        .eq('id', 'config');
+
+      if (updateErr) throw updateErr;
+      addNotification('Đã lưu cấu hình', 'Cấu hình Phí sàn đã được cập nhật lên hệ thống thành công.');
+      alert('Đã lưu cấu hình Phí sàn thành công!');
+    } catch (err) {
+      console.error("Error saving fee config:", err);
+      addNotification('Lỗi lưu cấu hình', 'Không thể lưu cấu hình — vui lòng thử lại.');
+    } finally {
+      setIsSavingFee(false);
+    }
+  };
 
  const handleApplyAiSuggestion = (id: string) => {
  setCategoryFees(prev => prev.map(cf => {
@@ -1681,13 +1748,24 @@ export function SettingsPage() {
  </tr>
  ))}
  </tbody>
- </table>
- </div>
- </div>
- </div>
- )}
+  </table>
+  </div>
+  
+  <div className="flex justify-end pt-4">
+    <button 
+      onClick={handleSaveFeeConfig} 
+      disabled={isSavingFee} 
+      className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 shadow-sm"
+    >
+      <Save className="w-4 h-4" />{isSavingFee ? 'Đang lưu...' : 'Lưu cấu hình Phí sàn'}
+    </button>
+  </div>
+  
+  </div>
+  </div>
+  )}
 
- {activeTab === 'website' && (
+  {activeTab === 'website' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
@@ -5677,6 +5755,10 @@ function IPosLicensesPanel() {
   const [showModal, setShowModal] = useState(false);
   const [editingLicense, setEditingLicense] = useState<any | null>(null);
 
+  // iPOS Cashier Accounts States
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+
   // Modal Form States
   const [formStoreName, setFormStoreName] = useState('');
   const [formLicenseType, setFormLicenseType] = useState('SaaS Premium');
@@ -5688,7 +5770,65 @@ function IPosLicensesPanel() {
 
   useEffect(() => {
     fetchLicenses();
+    fetchAccounts();
   }, []);
+
+  const fetchAccounts = async () => {
+    setLoadingAccounts(true);
+    try {
+      const response = await fetch('/api/ipos/accounts');
+      const data = await response.json();
+      if (data.status === 'success') {
+        setAccounts(data.accounts);
+      }
+    } catch (e) {
+      console.error('Failed to load iPOS accounts:', e);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
+
+  const handleApproveAccount = async (userId: string) => {
+    if (!confirm('Bạn có chắc chắn muốn phê duyệt tài khoản thu ngân này?')) return;
+    try {
+      const response = await fetch('/api/ipos/accounts/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        alert('Đã phê duyệt tài khoản thành công!');
+        fetchAccounts();
+      } else {
+        alert(data.message || 'Phê duyệt thất bại.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Lỗi kết nối máy chủ.');
+    }
+  };
+
+  const handleRejectAccount = async (userId: string) => {
+    if (!confirm('Bạn có chắc chắn muốn từ chối tài khoản này?')) return;
+    try {
+      const response = await fetch('/api/ipos/accounts/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        alert('Đã từ chối tài khoản!');
+        fetchAccounts();
+      } else {
+        alert(data.message || 'Từ chối thất bại.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Lỗi kết nối máy chủ.');
+    }
+  };
 
   const fetchLicenses = async () => {
     setLoading(true);
@@ -5968,6 +6108,114 @@ function IPosLicensesPanel() {
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* iPOS Accounts Approvals Section */}
+      <div className="bg-white border border-slate-300 rounded-2xl shadow-sm overflow-hidden mt-6">
+        <div className="p-5 border-b border-slate-200 bg-slate-50">
+          <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
+            <Users className="w-5 h-5 text-blue-600" />
+            Danh sách Đăng ký Tài khoản iPOS Chờ duyệt
+          </h3>
+          <p className="text-xs text-slate-500 mt-0.5 font-medium">
+            Phê duyệt nhân viên thu ngân hoặc quản lý cửa hàng đăng ký trực tiếp trên ứng dụng iPOS vệ tinh.
+          </p>
+        </div>
+
+        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-600">Tài khoản trên hệ thống</span>
+          <button
+            onClick={fetchAccounts}
+            className="p-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
+            title="Làm mới tài khoản"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          {loadingAccounts ? (
+            <div className="p-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
+              <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
+              <span className="text-xs font-bold">Đang tải tài khoản...</span>
+            </div>
+          ) : accounts.length === 0 ? (
+            <div className="p-12 text-center text-slate-500">
+              <p className="text-sm font-bold">Không có tài khoản đăng ký nào</p>
+              <p className="text-xs mt-1">Các yêu cầu đăng ký mới từ quầy iPOS sẽ xuất hiện ở đây.</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Họ tên / Email</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Số điện thoại</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Cửa hàng đăng ký</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Vai trò</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Ngày đăng ký</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Trạng thái</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[180px] text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map((acc) => (
+                  <tr key={acc.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="p-4">
+                      <p className="text-xs font-bold text-slate-800">{acc.fullName}</p>
+                      <p className="text-[10px] font-mono text-slate-500 mt-0.5">{acc.email}</p>
+                    </td>
+                    <td className="p-4 text-xs font-semibold text-slate-700">{acc.phone || 'N/A'}</td>
+                    <td className="p-4">
+                      <p className="text-xs font-bold text-slate-800">{acc.storeName}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{acc.storeAddress}</p>
+                    </td>
+                    <td className="p-4">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700 capitalize">
+                        {acc.role === 'manager' ? 'Quản lý' : 'Thu ngân'}
+                      </span>
+                    </td>
+                    <td className="p-4 text-xs text-slate-600 font-medium">
+                      {acc.registeredAt ? new Date(acc.registeredAt).toLocaleString('vi-VN') : 'N/A'}
+                    </td>
+                    <td className="p-4">
+                      <span className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded-full inline-block text-center",
+                        acc.status === 'approved' 
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                          : acc.status === 'rejected'
+                            ? "bg-rose-50 text-rose-700 border border-rose-100"
+                            : "bg-amber-50 text-amber-700 border border-amber-100"
+                      )}>
+                        {acc.status === 'approved' ? 'Đã phê duyệt' : acc.status === 'rejected' ? 'Bị từ chối' : 'Chờ duyệt'}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right flex justify-end gap-1.5">
+                      {acc.status === 'pending_approval' && (
+                        <>
+                          <button
+                            onClick={() => handleApproveAccount(acc.id)}
+                            className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold shadow-xs transition-all cursor-pointer border-0"
+                          >
+                            Phê duyệt
+                          </button>
+                          <button
+                            onClick={() => handleRejectAccount(acc.id)}
+                            className="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold shadow-xs transition-all cursor-pointer border-0"
+                          >
+                            Từ chối
+                          </button>
+                        </>
+                      )}
+                      {acc.status !== 'pending_approval' && (
+                        <span className="text-[10px] text-slate-400 italic font-medium">Đã xử lý</span>
+                      )}
                     </td>
                   </tr>
                 ))}

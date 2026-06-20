@@ -851,7 +851,7 @@ export const onSnapshot = (
   const tableName = queryRef instanceof SupabaseCollectionRef ? queryRef.tableName : queryRef.collectionRef.tableName;
 
   const channel = supabase
-    .channel(`realtime-${tableName}-${Date.now()}`)
+    .channel(`realtime-${tableName}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: tableName }, async () => {
       try {
         const snap = await getDocs(queryRef);
