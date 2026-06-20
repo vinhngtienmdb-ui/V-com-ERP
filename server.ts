@@ -2139,6 +2139,99 @@ Format:
     });
   });
 
+  // 4.5 Administrative Address Configuration API for eCommerce
+  app.get('/api/openapi/address-config', authenticateOpenApi, async (req, res) => {
+    console.log('[OpenAPI] Fetching administrative address configuration...');
+    try {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      
+      let addressConfig = { activeProvinces: [] as number[], activeWards: [] as number[] };
+      
+      if (supabaseUrl && supabaseAnonKey) {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+        
+        const { data, error } = await supabaseClient
+          .from('tenant_settings')
+          .select('data')
+          .eq('id', 'config')
+          .single();
+          
+        if (!error && data?.data?.addressConfig) {
+          addressConfig = data.data.addressConfig;
+        }
+      }
+      
+      const apiResponse = await fetch('https://provinces.open-api.vn/api/v2/?depth=2');
+      if (!apiResponse.ok) throw new Error('Failed to fetch from provinces API');
+      const allProvinces = await apiResponse.json() as any[];
+      
+      const cities: any[] = [];
+      const districts: Record<string, any[]> = {};
+      const wards: Record<string, any[]> = {};
+      
+      const activeProvinces = addressConfig.activeProvinces || [];
+      const activeWards = addressConfig.activeWards || [];
+      
+      allProvinces.forEach((p: any) => {
+        const isProvinceActive = activeProvinces.length === 0 || activeProvinces.includes(p.code);
+        
+        if (isProvinceActive) {
+          const cityId = String(p.code);
+          cities.push({
+            id: cityId,
+            name: p.name
+          });
+          
+          const districtId = `${cityId}-default`;
+          districts[cityId] = [{
+            id: districtId,
+            name: 'Quận/Huyện'
+          }];
+          
+          const provinceWards = p.wards || [];
+          const activeProvinceWards = provinceWards.filter((w: any) => {
+            return activeWards.length === 0 || activeWards.includes(w.code);
+          }).map((w: any) => ({
+            id: String(w.code),
+            name: w.name
+          }));
+          
+          wards[districtId] = activeProvinceWards;
+        }
+      });
+      
+      res.json({
+        status: 'success',
+        cities,
+        districts,
+        wards
+      });
+    } catch (e: any) {
+      console.error('[OpenAPI] Failed to fetch address config:', e);
+      res.json({
+        status: 'error',
+        message: e.message || 'Failed to resolve address configuration',
+        cities: [
+          { id: '79', name: 'Thành phố Hồ Chí Minh' },
+          { id: '1', name: 'Thành phố Hà Nội' },
+          { id: '48', name: 'Thành phố Đà Nẵng' }
+        ],
+        districts: {
+          '79': [{ id: '79-default', name: 'Quận/Huyện' }],
+          '1': [{ id: '1-default', name: 'Quận/Huyện' }],
+          '48': [{ id: '48-default', name: 'Quận/Huyện' }]
+        },
+        wards: {
+          '79-default': [{ id: '25747', name: 'Phường Thủ Dầu Một' }],
+          '1-default': [{ id: '4', name: 'Phường Ba Đình' }],
+          '48-default': [{ id: '25813', name: 'Phường Bến Cát' }]
+        }
+      });
+    }
+  });
+
   // 5. Sync orders from POS to ERP Financial ledger (with auto inventory deduction)
   app.post('/api/openapi/orders', authenticateOpenApi, async (req, res) => {
     const orderData = req.body;

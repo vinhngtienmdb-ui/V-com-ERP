@@ -1,4 +1,5 @@
 import { safeLocalStorage } from '../lib/storage';
+import { supabase } from '../lib/supabase';
 import { Wallet , Save } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { VietnamAddressSelector, VietnamProvinceBrowser, type VietnamAddress, EMPTY_ADDRESS, formatAddress } from './VietnamAddressSelector';
@@ -366,6 +367,146 @@ export function SettingsPage() {
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
  const { staffInfo } = useAuth();
  const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules' | 'ipos_licenses'>('overview');
+
+  const [addressConfig, setAddressConfig] = useState<{
+    activeProvinces: number[];
+    activeWards: number[];
+  }>({ activeProvinces: [], activeWards: [] });
+  const [loadingAddressConfig, setLoadingAddressConfig] = useState(false);
+  const [savingAddressConfig, setSavingAddressConfig] = useState(false);
+  const [addressSaveMessage, setAddressSaveMessage] = useState('');
+
+  useEffect(() => {
+    if (activeTab !== 'address') return;
+    
+    async function loadConfig() {
+      setLoadingAddressConfig(true);
+      try {
+        const { data, error } = await supabase
+          .from('tenant_settings')
+          .select('data')
+          .eq('id', 'config')
+          .single();
+        if (error) throw error;
+        
+        if (data?.data?.addressConfig) {
+          setAddressConfig(data.data.addressConfig);
+        } else {
+          const res = await fetch('https://provinces.open-api.vn/api/v2/?depth=1');
+          const provs = await res.json();
+          setAddressConfig({
+            activeProvinces: provs.map((p: any) => p.code),
+            activeWards: []
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load address config:", e);
+      } finally {
+        setLoadingAddressConfig(false);
+      }
+    }
+    
+    loadConfig();
+  }, [activeTab]);
+
+  const handleToggleProvince = React.useCallback(async (code: number, checked: boolean) => {
+    setAddressConfig(prev => {
+      let nextProvinces = [...prev.activeProvinces];
+      if (checked) {
+        if (!nextProvinces.includes(code)) nextProvinces.push(code);
+      } else {
+        nextProvinces = nextProvinces.filter(c => c !== code);
+      }
+      return {
+        ...prev,
+        activeProvinces: nextProvinces
+      };
+    });
+
+    try {
+      const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`);
+      const data = await res.json();
+      const wardCodes = (data.wards ?? []).map((w: any) => w.code);
+      
+      setAddressConfig(prev => {
+        let nextWards = [...prev.activeWards];
+        if (checked) {
+          wardCodes.forEach((wc: number) => {
+            if (!nextWards.includes(wc)) nextWards.push(wc);
+          });
+        } else {
+          nextWards = nextWards.filter((wc: number) => !wardCodes.includes(wc));
+        }
+        return {
+          ...prev,
+          activeWards: nextWards
+        };
+      });
+    } catch (e) {
+      console.error("Failed to toggle wards:", e);
+    }
+  }, []);
+
+  const handleToggleWard = React.useCallback((code: number, checked: boolean) => {
+    setAddressConfig(prev => {
+      let nextWards = [...prev.activeWards];
+      if (checked) {
+        if (!nextWards.includes(code)) nextWards.push(code);
+      } else {
+        nextWards = nextWards.filter(c => c !== code);
+      }
+      return {
+        ...prev,
+        activeWards: nextWards
+      };
+    });
+  }, []);
+
+  const handleSelectAll = React.useCallback((allCodes: number[]) => {
+    setAddressConfig({
+      activeProvinces: allCodes,
+      activeWards: []
+    });
+  }, []);
+
+  const handleDeselectAll = React.useCallback(() => {
+    setAddressConfig({
+      activeProvinces: [],
+      activeWards: []
+    });
+  }, []);
+
+  const handleSaveAddressConfig = async () => {
+    setSavingAddressConfig(true);
+    setAddressSaveMessage('');
+    try {
+      const { data: current, error: getErr } = await supabase
+        .from('tenant_settings')
+        .select('data')
+        .eq('id', 'config')
+        .single();
+      if (getErr) throw getErr;
+
+      const updatedData = {
+        ...current.data,
+        addressConfig
+      };
+
+      const { error: updateErr } = await supabase
+        .from('tenant_settings')
+        .update({ data: updatedData })
+        .eq('id', 'config');
+
+      if (updateErr) throw updateErr;
+      setAddressSaveMessage('Đã lưu cấu hình địa chỉ hành chính thành công!');
+      setTimeout(() => setAddressSaveMessage(''), 4000);
+    } catch (e: any) {
+      console.error(e);
+      setAddressSaveMessage('Lỗi khi lưu cấu hình: ' + (e.message || e));
+    } finally {
+      setSavingAddressConfig(false);
+    }
+  };
  const [adminAuditLogs, setAdminAuditLogs] = useState<any[]>([]);
  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState<{
@@ -3691,12 +3832,47 @@ export function SettingsPage() {
 
  {/* Full province browser from API */}
  <div className="bg-white p-4 border border-slate-200">
- <div className="flex items-center gap-2 mb-3">
+ <div className="flex justify-between items-center mb-3">
+ <div className="flex items-center gap-2">
  <MapPin className="w-4 h-4 text-blue-600" />
  <h3 className="text-sm font-bold text-slate-800">Danh sách Tỉnh/Thành phố</h3>
  <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Nguồn: provinces.open-api.vn</span>
  </div>
- <VietnamProvinceBrowser />
+ <div className="flex items-center gap-2">
+ {addressSaveMessage && (
+ <span className={cn(
+ "text-xs font-medium px-2 py-1 rounded",
+ addressSaveMessage.includes('Lỗi') ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"
+ )}>
+ {addressSaveMessage}
+ </span>
+ )}
+ <button
+ onClick={handleSaveAddressConfig}
+ disabled={savingAddressConfig || loadingAddressConfig}
+ className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors disabled:opacity-50 cursor-pointer"
+ >
+ {savingAddressConfig ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+ Lưu cấu hình Địa chỉ
+ </button>
+ </div>
+ </div>
+ {loadingAddressConfig ? (
+ <div className="py-8 text-center text-slate-400 text-sm">
+ <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-500" />
+ Đang tải cấu hình địa chỉ...
+ </div>
+ ) : (
+ <VietnamProvinceBrowser
+ isConfigMode={true}
+ activeProvinces={addressConfig.activeProvinces}
+ activeWards={addressConfig.activeWards}
+ onToggleProvince={handleToggleProvince}
+ onToggleWard={handleToggleWard}
+ onSelectAll={handleSelectAll}
+ onDeselectAll={handleDeselectAll}
+ />
+ )}
  </div>
  </div>
  )}

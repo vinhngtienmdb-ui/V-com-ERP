@@ -188,7 +188,25 @@ export function VietnamAddressSelector({
 /* ─────────────────────────────────────────────────────────────────────────
    Province Browser — bảng 63 tỉnh/thành, click để xem phường/xã trực tiếp
 ───────────────────────────────────────────────────────────────────────── */
-export function VietnamProvinceBrowser() {
+export interface ProvinceBrowserProps {
+  isConfigMode?: boolean;
+  activeProvinces?: number[];
+  activeWards?: number[];
+  onToggleProvince?: (code: number, checked: boolean) => void;
+  onToggleWard?: (code: number, checked: boolean) => void;
+  onSelectAll?: (allProvinces: number[]) => void;
+  onDeselectAll?: () => void;
+}
+
+export function VietnamProvinceBrowser({
+  isConfigMode = false,
+  activeProvinces = [],
+  activeWards = [],
+  onToggleProvince,
+  onToggleWard,
+  onSelectAll,
+  onDeselectAll,
+}: ProvinceBrowserProps = {}) {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [error,     setError]     = useState(false);
@@ -242,6 +260,22 @@ export function VietnamProvinceBrowser() {
             className="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 bg-white focus:outline-none focus:border-blue-500"
           />
         </div>
+        {isConfigMode && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => onSelectAll?.(provinces.map(p => p.code))}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold border border-slate-200 bg-white hover:bg-slate-50 transition-colors"
+            >
+              Chọn tất cả
+            </button>
+            <button
+              onClick={onDeselectAll}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold border border-slate-200 bg-white hover:bg-slate-50 transition-colors"
+            >
+              Bỏ chọn tất cả
+            </button>
+          </div>
+        )}
         <button
           onClick={load}
           disabled={loading}
@@ -268,7 +302,9 @@ export function VietnamProvinceBrowser() {
           <span>
             <span className="font-bold text-slate-700">{provinces.length}</span> tỉnh/thành phố
             <span className="text-slate-300 mx-1">·</span>
-            <span className="text-slate-500">Địa chỉ hành chính 2 cấp (sau cải cách 2025)</span>
+            <span className="text-slate-500">
+              {isConfigMode ? "Chế độ cấu hình: Tích chọn để hiển thị trên eCommerce" : "Địa chỉ hành chính 2 cấp (sau cải cách 2025)"}
+            </span>
           </span>
           {search && <span>· Lọc: <span className="font-bold text-blue-600">{filtered.length}</span> kết quả</span>}
           <span className="ml-auto">provinces.open-api.vn</span>
@@ -280,6 +316,7 @@ export function VietnamProvinceBrowser() {
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
+              {isConfigMode && <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 w-10">Kích hoạt</th>}
               <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 w-16">Mã</th>
               <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Tên Tỉnh / Thành phố</th>
               <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 w-24">Đơn vị HC</th>
@@ -289,7 +326,7 @@ export function VietnamProvinceBrowser() {
           <tbody className="divide-y divide-slate-100 bg-white">
             {loading && (
               <tr>
-                <td colSpan={4} className="py-6 text-center">
+                <td colSpan={isConfigMode ? 5 : 4} className="py-6 text-center">
                   <Loader2 className="w-5 h-5 animate-spin text-blue-500 mx-auto mb-2" />
                   <p className="text-[12px] text-slate-400">Đang tải dữ liệu từ API...</p>
                 </td>
@@ -301,6 +338,16 @@ export function VietnamProvinceBrowser() {
                   onClick={() => expandProvince(prov.code)}
                   className="hover:bg-slate-50 cursor-pointer transition-colors"
                 >
+                  {isConfigMode && (
+                    <td className="px-3 py-2 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={activeProvinces.includes(prov.code)}
+                        onChange={(e) => onToggleProvince?.(prov.code, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                      />
+                    </td>
+                  )}
                   <td className="px-3 py-2">
                     <span className="font-mono text-[11px] text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5">
                       {prov.code}
@@ -329,19 +376,40 @@ export function VietnamProvinceBrowser() {
                 {/* Wards panel */}
                 {expanded === prov.code && wardMap[prov.code] !== undefined && (
                   <tr>
-                    <td colSpan={4} className="bg-slate-50 border-t border-slate-100 px-4 py-3">
+                    <td colSpan={isConfigMode ? 5 : 4} className="bg-slate-50 border-t border-slate-100 px-4 py-3">
                       {wardMap[prov.code].length === 0 ? (
                         <p className="text-[12px] text-slate-400 italic">Không có dữ liệu phường/xã</p>
                       ) : (
                         <div className="flex flex-wrap gap-1.5">
-                          {wardMap[prov.code].map(w => (
-                            <span
-                              key={w.code}
-                              className="text-[11px] font-medium text-slate-700 bg-white border border-slate-200 px-2 py-0.5 hover:border-blue-400 hover:text-blue-700 transition-colors cursor-default"
-                            >
-                              {w.name}
-                            </span>
-                          ))}
+                          {wardMap[prov.code].map(w => {
+                            const isChecked = activeWards.includes(w.code);
+                            return isConfigMode ? (
+                              <label
+                                key={w.code}
+                                className={cn(
+                                  "inline-flex items-center gap-1.5 text-[11px] font-medium border px-2 py-0.5 rounded transition-colors cursor-pointer select-none",
+                                  isChecked 
+                                    ? "bg-blue-50 border-blue-200 text-blue-700" 
+                                    : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
+                                )}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(e) => onToggleWard?.(w.code, e.target.checked)}
+                                  className="w-3 h-3 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                                />
+                                {w.name}
+                              </label>
+                            ) : (
+                              <span
+                                key={w.code}
+                                className="text-[11px] font-medium text-slate-700 bg-white border border-slate-200 px-2 py-0.5 hover:border-blue-400 hover:text-blue-700 transition-colors cursor-default"
+                              >
+                                {w.name}
+                              </span>
+                            );
+                          })}
                         </div>
                       )}
                     </td>
@@ -351,7 +419,7 @@ export function VietnamProvinceBrowser() {
             ))}
             {!loading && filtered.length === 0 && !error && (
               <tr>
-                <td colSpan={4} className="py-6 text-center text-[12px] text-slate-400">
+                <td colSpan={isConfigMode ? 5 : 4} className="py-6 text-center text-[12px] text-slate-400">
                   Không có kết quả phù hợp
                 </td>
               </tr>
