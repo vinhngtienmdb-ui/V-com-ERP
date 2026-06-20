@@ -2168,7 +2168,6 @@ Format:
       const allProvinces = await apiResponse.json() as any[];
       
       const cities: any[] = [];
-      const districts: Record<string, any[]> = {};
       const wards: Record<string, any[]> = {};
       
       const activeProvinces = addressConfig.activeProvinces || [];
@@ -2184,12 +2183,6 @@ Format:
             name: p.name
           });
           
-          const districtId = `${cityId}-default`;
-          districts[cityId] = [{
-            id: districtId,
-            name: 'Quận/Huyện'
-          }];
-          
           const provinceWards = p.wards || [];
           const activeProvinceWards = provinceWards.filter((w: any) => {
             return activeWards.length === 0 || activeWards.includes(w.code);
@@ -2198,14 +2191,13 @@ Format:
             name: w.name
           }));
           
-          wards[districtId] = activeProvinceWards;
+          wards[cityId] = activeProvinceWards;
         }
       });
       
       res.json({
         status: 'success',
         cities,
-        districts,
         wards
       });
     } catch (e: any) {
@@ -2218,15 +2210,18 @@ Format:
           { id: '1', name: 'Thành phố Hà Nội' },
           { id: '48', name: 'Thành phố Đà Nẵng' }
         ],
-        districts: {
-          '79': [{ id: '79-default', name: 'Quận/Huyện' }],
-          '1': [{ id: '1-default', name: 'Quận/Huyện' }],
-          '48': [{ id: '48-default', name: 'Quận/Huyện' }]
-        },
         wards: {
-          '79-default': [{ id: '25747', name: 'Phường Thủ Dầu Một' }],
-          '1-default': [{ id: '4', name: 'Phường Ba Đình' }],
-          '48-default': [{ id: '25813', name: 'Phường Bến Cát' }]
+          '79': [
+            { id: '25747', name: 'Phường Thủ Dầu Một' },
+            { id: '25750', name: 'Phường Phú Lợi' }
+          ],
+          '1': [
+            { id: '4', name: 'Phường Ba Đình' },
+            { id: '8', name: 'Phường Ngọc Hà' }
+          ],
+          '48': [
+            { id: '25813', name: 'Phường Bến Cát' }
+          ]
         }
       });
     }
