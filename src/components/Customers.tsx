@@ -40,6 +40,7 @@ import { Customer } from '../types/erp';
 import { generateCustomerCareMessage } from '../services/geminiService';
 import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../lib/firebase';
 import { syncCustomerToMisa } from '../services/misaService';
+import { supabase } from '../lib/supabase';
 
 const CopyButton = ({ value }: { value: string }) => {
  const [copied, setCopied] = useState(false);
@@ -66,7 +67,8 @@ const CustomerDetailModal = ({
   transactions = [],
   contracts = [],
   sellers = [],
-  payouts = []
+  payouts = [],
+  onSuccess
 }: { 
   customer: Customer; 
   onClose: () => void;
@@ -75,6 +77,7 @@ const CustomerDetailModal = ({
   contracts?: any[];
   sellers?: any[];
   payouts?: any[];
+  onSuccess?: () => void;
 }) => {
   const [emailSubject, setEmailSubject] = useState<string>('');
   const [emailContent, setEmailContent] = useState<string>('');
@@ -101,34 +104,50 @@ const CustomerDetailModal = ({
       const cashbackDeducted = convertAmount;
       const promoAdded = Math.round(convertAmount * 1.1);
 
-      const currentWallet = customer.walletBalance || 0;
-      const currentPromo = customer.promoBalance || 0;
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', customer.id)
+        .maybeSingle();
 
-      const customerRef = doc(db, 'customers', customer.id);
-      
-      const newActivity = {
-        id: 'act_' + Date.now(),
-        type: 'other' as const,
-        title: 'Quy đổi Cashback sang Khuyến mại',
-        description: `Quy đổi thành công ${formatCurrency(cashbackDeducted)} Cashback sang ${formatCurrency(promoAdded)} ví Khuyến mại (tỷ lệ 1.1).`,
-        date: new Date().toISOString().split('T')[0],
-        status: 'Hoàn thành'
-      };
+      if (userRow) {
+        const userData = userRow.data || {};
+        const currentWallet = Number(userData.balance || userData.walletBalance || 0);
+        const currentPromo = Number(userData.promoBalance || 0);
 
-      const updatedActivities = customer.activities ? [newActivity, ...customer.activities] : [newActivity];
+        const newActivity = {
+          id: 'act_' + Date.now(),
+          type: 'other' as const,
+          title: 'Quy đổi Cashback sang Khuyến mại',
+          description: `Quy đổi thành công ${formatCurrency(cashbackDeducted)} Cashback sang ${formatCurrency(promoAdded)} ví Khuyến mại (tỷ lệ 1.1).`,
+          date: new Date().toISOString().split('T')[0],
+          status: 'Hoàn thành'
+        };
 
-      await updateDoc(customerRef, {
-        walletBalance: currentWallet - cashbackDeducted,
-        promoBalance: currentPromo + promoAdded,
-        activities: updatedActivities
-      });
+        const updatedActivities = userData.activities ? [newActivity, ...userData.activities] : [newActivity];
 
-      alert(`Chuyển đổi thành công! Trừ ${formatCurrency(cashbackDeducted)} Cashback, cộng ${formatCurrency(promoAdded)} vào ví Khuyến mại.`);
-      setShowConvertPanel(false);
-      setConvertAmount(0);
-    } catch (err) {
+        userData.balance = currentWallet - cashbackDeducted;
+        userData.walletBalance = currentWallet - cashbackDeducted;
+        userData.promoBalance = currentPromo + promoAdded;
+        userData.activities = updatedActivities;
+
+        const { error } = await supabase
+          .from('users')
+          .update({ data: userData, updated_at: new Date().toISOString() })
+          .eq('id', customer.id);
+
+        if (error) throw error;
+
+        alert(`Chuyển đổi thành công! Trừ ${formatCurrency(cashbackDeducted)} Cashback, cộng ${formatCurrency(promoAdded)} vào ví Khuyến mại.`);
+        setShowConvertPanel(false);
+        setConvertAmount(0);
+        onSuccess?.();
+      } else {
+        throw new Error("Không tìm thấy thông tin khách hàng trên hệ thống.");
+      }
+    } catch (err: any) {
       console.error(err);
-      alert('Chuyển đổi thất bại!');
+      alert('Chuyển đổi thất bại: ' + (err.message || 'Lỗi cơ sở dữ liệu'));
     } finally {
       setConverting(false);
     }
@@ -851,7 +870,9 @@ const CustomerDetailModal = ({
       </div>
     </div>
   );
-};const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
+};
+
+const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
  const [aiMessage, setAiMessage] = useState<string | null>(null);
  const [loadingAi, setLoadingAi] = useState(false);
 
@@ -1129,35 +1150,55 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
  );
 };
 
-const AddCustomerModal = ({ onClose }: { onClose: () => void }) => {
- const [formData, setFormData] = useState({
- name: '',
- phone: '',
- email: '',
- channels: ['web']
- });
- const [isSubmitting, setIsSubmitting] = useState(false);
+const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    channels: ['web']
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
- const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- setIsSubmitting(true);
- try {
- await addDoc(collection(db, 'customers'), {
- ...formData,
- status: 'active',
- totalSpent: 0,
- orderCount: 0,
- points: 0
- });
- onClose();
- } catch (error) {
- console.error(error);
- alert('Thêm khách hàng thất bại!');
- }
- setIsSubmitting(false);
- };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const customerId = 'cust_' + Date.now();
+      const userData = {
+        id: customerId,
+        tenant_id: 'tenant-vcomm-prod-01',
+        data: {
+          userId: customerId,
+          displayName: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          role: 'user',
+          channels: formData.channels || ['web'],
+          status: 'active',
+          points: 0,
+          walletBalance: 0,
+          totalSpent: 0,
+          orderCount: 0
+        },
+        updated_at: new Date().toISOString()
+      };
 
- return (
+      const { error } = await supabase
+        .from('users')
+        .insert(userData);
+
+      if (error) throw error;
+      
+      onSuccess?.();
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      alert('Thêm khách hàng thất bại: ' + (error.message || 'Lỗi kết nối CSDL'));
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
  <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in duration-300">
  <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
@@ -1223,8 +1264,10 @@ export function Customers() {
  const [adjustingCustomer, setAdjustingCustomer] = useState<Customer | null>(null);
  const [adjustAmount, setAdjustAmount] = useState('');
  const [adjustType, setAdjustType] = useState<'wallet' | 'points'>('wallet');
- const [customers, setCustomers] = useState<Customer[]>([]);
- const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshCount, setRefreshCount] = useState(0);
+  const triggerRefresh = () => setRefreshCount(prev => prev + 1);
  const [searchQuery, setSearchQuery] = useState('');
  const [orders, setOrders] = useState<any[]>([]);
   const [syncingCustomerId, setSyncingCustomerId] = useState<string | null>(null);
@@ -1312,26 +1355,61 @@ export function Customers() {
         const from = (currentPage - 1) * pageSize;
         const to = from + pageSize - 1;
         
-        let qConstraints: any[] = [
-          orderBy('id', 'asc'),
-          range(from, to)
-        ];
-        
+        let queryBuilder = supabase
+          .from('customers')
+          .select('*', { count: 'exact' });
+
         if (debouncedSearchQuery.trim() !== '') {
-          qConstraints.push(search(debouncedSearchQuery, ['name', 'phone', 'email']));
+          queryBuilder = queryBuilder.or(`name.ilike.%${debouncedSearchQuery}%,phone.ilike.%${debouncedSearchQuery}%,email.ilike.%${debouncedSearchQuery}%`);
         }
-        
-        if (activeChannel !== 'all') {
-          qConstraints.push(where('channels', 'array-contains', activeChannel));
-        }
-        
-        const q = query(collection(db, 'customers'), ...qConstraints);
-        const snap = await getDocs(q);
+
+        queryBuilder = queryBuilder
+          .order('name', { ascending: true })
+          .range(from, to);
+
+        const { data: custRows, count, error } = await queryBuilder;
+        if (error) throw error;
         
         if (active) {
-          const data = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-          setCustomers(data);
-          setTotalCount(snap.count || 0);
+          if (custRows && custRows.length > 0) {
+            const userIds = custRows.map(c => c.id);
+            const { data: userRows } = await supabase
+              .from('users')
+              .select('*')
+              .in('id', userIds);
+              
+            const userMap = new Map();
+            if (userRows) {
+              userRows.forEach(u => userMap.set(u.id, u.data || {}));
+            }
+            
+            const customersList = custRows.map(c => {
+              const uData = userMap.get(c.id) || {};
+              return {
+                id: c.id,
+                name: c.name || uData.displayName || uData.username || 'Khách hàng mới',
+                email: c.email || uData.email || '',
+                phone: c.phone || uData.phone || '',
+                address: c.address || uData.address || '',
+                totalSpent: Number(uData.totalSpent || 0),
+                orderCount: Number(uData.orderCount || 0),
+                lastOrderDate: uData.lastOrderDate || '',
+                status: c.status || uData.status || 'active',
+                channels: c.channels || uData.channels || ['web'],
+                points: Number(uData.points || uData.vXu || 0),
+                walletBalance: Number(uData.balance || uData.walletBalance || 0),
+                promoBalance: Number(uData.promoBalance || 0),
+                tier: uData.level || uData.tier || 'Thành viên mới',
+                activities: uData.activities || []
+              };
+            });
+            
+            setCustomers(customersList);
+            setTotalCount(count || 0);
+          } else {
+            setCustomers([]);
+            setTotalCount(0);
+          }
           setLoading(false);
         }
       } catch (err) {
@@ -1342,7 +1420,7 @@ export function Customers() {
     
     load();
     return () => { active = false; };
-  }, [currentPage, debouncedSearchQuery, activeChannel]);
+  }, [currentPage, debouncedSearchQuery, refreshCount]);
 
   useEffect(() => {
     // Fetch all completed orders to aggregate totalSpent per customer
@@ -1421,33 +1499,69 @@ export function Customers() {
     };
   }, []);
 
- const handleToggleLock = async (id: string, currentStatus: string, e: React.MouseEvent) => {
- e.stopPropagation();
- try {
- await updateDoc(doc(db, 'customers', id), {
- status: currentStatus === 'locked' ? 'active' : 'locked'
- });
- } catch(err) {
- console.error('Error toggling lock state', err);
- }
- };
+  const handleToggleLock = async (id: string, currentStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
 
- const submitAdjust = async (e: React.FormEvent) => {
- e.preventDefault();
- if (!adjustingCustomer || !adjustAmount) return;
- 
- try {
- const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
- const currentVal = (adjustingCustomer as any)[field] || 0;
- await updateDoc(doc(db, 'customers', adjustingCustomer.id), {
- [field]: currentVal + Number(adjustAmount)
- });
- setAdjustingCustomer(null);
- setAdjustAmount('');
- } catch(err) {
- console.error('Error adjusting balance', err);
- }
- };
+      if (userRow) {
+        const userData = userRow.data || {};
+        userData.status = currentStatus === 'locked' ? 'active' : 'locked';
+        
+        const { error } = await supabase
+          .from('users')
+          .update({ data: userData, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        
+        triggerRefresh();
+      }
+    } catch(err) {
+      console.error('Error toggling lock state', err);
+    }
+  };
+
+  const submitAdjust = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adjustingCustomer || !adjustAmount) return;
+    
+    try {
+      const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
+      const userField = adjustType === 'wallet' ? 'balance' : 'points';
+      
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', adjustingCustomer.id)
+        .maybeSingle();
+
+      if (userRow) {
+        const userData = userRow.data || {};
+        const currentVal = Number(userData[userField] || userData[field] || 0);
+        
+        userData[userField] = currentVal + Number(adjustAmount);
+        userData[field] = currentVal + Number(adjustAmount);
+
+        const { error } = await supabase
+          .from('users')
+          .update({ data: userData, updated_at: new Date().toISOString() })
+          .eq('id', adjustingCustomer.id);
+
+        if (error) throw error;
+
+        triggerRefresh();
+      }
+      setAdjustingCustomer(null);
+      setAdjustAmount('');
+    } catch(err) {
+      console.error('Error adjusting balance', err);
+    }
+  };
 
  // Compute dynamic fields
  const dynamicCustomers = customers.map(c => {

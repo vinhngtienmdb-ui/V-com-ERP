@@ -180,12 +180,11 @@ async function startServer() {
           if (fetchErr || !orderRow) {
             console.error(`[SePay Webhook] Order ${orderId} not found in database:`, fetchErr);
           } else {
-            const orderData = orderRow.data || {};
-            if (orderData.status !== 'paid') {
-              const updatedData = { ...orderData, status: 'paid', paidAt: new Date().toISOString() };
+            const orderStatus = orderRow.status;
+            if (orderStatus !== 'paid') {
               const { error: updateErr } = await supabaseClient
                 .from('orders')
-                .update({ data: updatedData, updated_at: new Date().toISOString() })
+                .update({ status: 'paid' })
                 .eq('id', orderId);
                 
               if (updateErr) {
@@ -1987,9 +1986,63 @@ Format:
   });
 
   // 2. Customer profile search API
-  app.get('/api/openapi/customers', authenticateOpenApi, (req, res) => {
+  app.get('/api/openapi/customers', authenticateOpenApi, async (req, res) => {
     const { phone, code } = req.query;
     console.log(`[OpenAPI] Customer lookup query: phone=${phone || 'N/A'}, code=${code || 'N/A'}`);
+    
+    try {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      
+      if (supabaseUrl && supabaseAnonKey) {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+        let userRow = null;
+        let fetchErr = null;
+
+        if (phone) {
+          const { data, error } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('data->>phone', phone)
+            .maybeSingle();
+          userRow = data;
+          fetchErr = error;
+        } else if (code) {
+          const { data, error } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('id', code)
+            .maybeSingle();
+          userRow = data;
+          fetchErr = error;
+        }
+
+        if (userRow) {
+          const userData = userRow.data || {};
+          const customer = {
+            id: userRow.id,
+            name: userData.username || userData.displayName || 'Khách hàng mới',
+            phone: userData.phone || phone || '',
+            email: userData.email || '',
+            level: userData.level || userData.tier || 'Thành viên mới',
+            points: Number(userData.points || userData.vXu || 0),
+            discountPercent: Number(userData.discountPercent || 0),
+            balance: Number(userData.balance || userData.walletBalance || 0),
+            promoBalance: Number(userData.promoBalance || 0),
+            voucherCount: Number(userData.voucherCount || 0),
+            address: userData.address || ''
+          };
+          return res.json({
+            status: 'success',
+            customer
+          });
+        }
+      }
+    } catch (err) {
+      console.error('[OpenAPI] Customer lookup database error:', err);
+    }
     
     if (phone === '0987654321' || code === 'KH001') {
       return res.json({
@@ -2107,6 +2160,39 @@ Format:
         writeErpProducts(products);
         console.log('[OpenAPI] Deducted inventory stock for order items.');
       }
+    }
+
+    // Write to Supabase orders table
+    try {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      if (supabaseUrl && supabaseAnonKey) {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+        
+        const orderPayload = {
+          id: orderData.id || orderData.orderId || `ERP-ORD-${Date.now()}`,
+          tenant_id: 'tenant-vcomm-prod-01',
+          customer_id: orderData.customerId || orderData.userId || null,
+          customer_name: orderData.customerName || 'KHLE',
+          total: Number(orderData.total) || 0,
+          status: orderData.status ? orderData.status.toLowerCase() : 'pending',
+          items: orderData.items || [],
+          created_at: orderData.createdAt || new Date().toISOString()
+        };
+
+        const { error: insErr } = await supabaseClient
+          .from('orders')
+          .upsert(orderPayload);
+          
+        if (insErr) {
+          console.error('[OpenAPI] Failed to insert/upsert order into Supabase orders table:', insErr);
+        } else {
+          console.log('[OpenAPI] Order inserted/upserted into Supabase orders table successfully.');
+        }
+      }
+    } catch (sbErr) {
+      console.error('[OpenAPI] Error writing order to Supabase:', sbErr);
     }
 
     // Write to Firestore finance_transactions for internal accounting
