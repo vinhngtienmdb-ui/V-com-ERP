@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { db, doc, getDoc, updateDoc, collection, query, where, limit, getDocs } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 import { FinanceTransaction } from '../types/erp';
 import { safeLocalStorage } from '../lib/storage';
 
@@ -992,6 +993,13 @@ export const syncOrderToMisa = async (orderId: string): Promise<any> => {
       
       if (hasRealDoc) {
         await updateDoc(orderRef, updateData);
+        // Persist misa status manually since orders is a relational table and drops extra fields
+        await supabase.from('finance_transactions').upsert({
+          id: `misa_sync_${orderId}`,
+          tenant_id: 'tenant-vcomm-prod-01',
+          data: updateData,
+          updated_at: new Date().toISOString()
+        });
       }
       window.dispatchEvent(new CustomEvent('misa-order-synced', { detail: { id: orderId, ...updateData } }));
       return responseData;
@@ -1002,9 +1010,16 @@ export const syncOrderToMisa = async (orderId: string): Promise<any> => {
     const errorMsg = error.response?.data?.message || error.message || 'Lỗi kết nối API đồng bộ MISA';
     
     if (hasRealDoc) {
-      await updateDoc(orderRef, {
+      const errorData = {
         misaSynced: false,
         misaSyncError: errorMsg
+      };
+      await updateDoc(orderRef, errorData);
+      await supabase.from('finance_transactions').upsert({
+        id: `misa_sync_${orderId}`,
+        tenant_id: 'tenant-vcomm-prod-01',
+        data: errorData,
+        updated_at: new Date().toISOString()
       });
     }
     window.dispatchEvent(new CustomEvent('misa-order-synced', { detail: { id: orderId, misaSynced: false, misaSyncError: errorMsg } }));

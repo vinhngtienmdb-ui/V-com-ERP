@@ -1102,7 +1102,7 @@ export function Orders() {
         
         const snap = await getDocs(q);
         if (active) {
-          const data = snap.docs.map((doc: any) => {
+          let data = snap.docs.map((doc: any) => {
             const d = doc.data();
             return {
               id: doc.id,
@@ -1112,6 +1112,30 @@ export function Orders() {
                 : new Date().toLocaleString('vi-VN'),
             };
           });
+
+          // Fetch MISA sync metadata from finance_transactions
+          const orderIds = data.map((d: any) => d.id);
+          if (orderIds.length > 0) {
+            try {
+              const { data: syncData } = await supabase
+                .from('finance_transactions')
+                .select('id, data')
+                .in('id', orderIds.map((id: string) => `misa_sync_${id}`));
+              
+              if (syncData && syncData.length > 0) {
+                data = data.map((d: any) => {
+                  const sd = syncData.find((s: any) => s.id === `misa_sync_${d.id}`);
+                  if (sd && sd.data) {
+                    return { ...d, ...sd.data };
+                  }
+                  return d;
+                });
+              }
+            } catch (syncErr) {
+              console.warn('Failed to fetch MISA sync data:', syncErr);
+            }
+          }
+
           setDbOrders(data);
           setTotalCount(snap.count || 0);
           setLoading(false);

@@ -1373,18 +1373,31 @@ export function Customers() {
         if (active) {
           if (custRows && custRows.length > 0) {
             const userIds = custRows.map(c => c.id);
-            const { data: userRows } = await supabase
-              .from('users')
-              .select('*')
-              .in('id', userIds);
+            const emails = custRows.map(c => c.email).filter(e => e);
+            
+            let userRows: any[] = [];
+            // Fetch users by ID or Email
+            const { data: usersById } = await supabase.from('users').select('*').in('id', userIds);
+            const { data: usersAll } = await supabase.from('users').select('*'); // Workaround: since we can't search JSON fields efficiently without RPC, we filter locally. It's a small dataset.
+            
+            if (usersById) userRows = [...usersById];
+            if (usersAll) {
+               const usersByEmail = usersAll.filter(u => u.data?.email && emails.includes(u.data.email));
+               userRows = [...userRows, ...usersByEmail];
+            }
               
             const userMap = new Map();
             if (userRows) {
-              userRows.forEach(u => userMap.set(u.id, u.data || {}));
+              userRows.forEach(u => {
+                userMap.set(u.id, u);
+                if (u.data && u.data.email) userMap.set(u.data.email, u);
+              });
             }
             
             const customersList = custRows.map(c => {
-              const uData = userMap.get(c.id) || {};
+              const uMatch = (c.email && userMap.has(c.email)) ? userMap.get(c.email) : userMap.get(c.id);
+              const uData = uMatch ? (uMatch.data || {}) : {};
+              
               return {
                 id: c.id,
                 name: c.name || uData.displayName || uData.username || 'Khách hàng mới',
@@ -1400,7 +1413,8 @@ export function Customers() {
                 walletBalance: Number(uData.balance || uData.walletBalance || 0),
                 promoBalance: Number(uData.promoBalance || 0),
                 tier: uData.level || uData.tier || 'Thành viên mới',
-                activities: uData.activities || []
+                activities: uData.activities || [],
+                linkedUserId: uMatch ? uMatch.id : null
               };
             });
             
@@ -1534,10 +1548,12 @@ export function Customers() {
       const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
       const userField = adjustType === 'wallet' ? 'balance' : 'points';
       
+      const lookupId = (adjustingCustomer as any).linkedUserId || adjustingCustomer.id;
+      
       const { data: userRow } = await supabase
         .from('users')
         .select('*')
-        .eq('id', adjustingCustomer.id)
+        .eq('id', lookupId)
         .maybeSingle();
 
       if (userRow) {
@@ -1550,11 +1566,27 @@ export function Customers() {
         const { error } = await supabase
           .from('users')
           .update({ data: userData, updated_at: new Date().toISOString() })
-          .eq('id', adjustingCustomer.id);
+          .eq('id', lookupId);
 
         if (error) throw error;
 
         triggerRefresh();
+      } else {
+         // Create a new user row if not exists
+         const newId = lookupId;
+         const userData: any = {
+           email: adjustingCustomer.email || '',
+           name: adjustingCustomer.name || ''
+         };
+         userData[userField] = Number(adjustAmount);
+         userData[field] = Number(adjustAmount);
+         
+         const { error } = await supabase
+          .from('users')
+          .insert({ id: newId, data: userData, updated_at: new Date().toISOString() });
+          
+         if (error) throw error;
+         triggerRefresh();
       }
       setAdjustingCustomer(null);
       setAdjustAmount('');
