@@ -17,7 +17,14 @@ export interface Product {
  misaSyncedAt?: string;
  misaSyncError?: string;
  similarity?: number; // Điểm tương đồng cho AI Vector Search
+ description?: string;
+ weight?: string;
+ dimensions?: string;
+ images?: string[];
+ videoUrl?: string;
+ specs?: { key: string; value: string }[];
 }
+
 
 export interface SellerMetric {
  id: string;

@@ -30,7 +30,10 @@ import {
  Maximize2,
  Eye,
  EyeOff,
- Loader2
+ Loader2,
+ Layers,
+ Tv,
+ Settings
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
@@ -316,27 +319,33 @@ export function PIM() {
  
  setShowPnLForProduct(null);
  alert('Đã cập nhật giá và chi phí thành công!');
- } catch (error) {
+} catch (error) {
  handleFirestoreError(error, 'update', 'products');
  }
  };
  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, name: string } | null>(null);
- const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
- const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [showDetailForProduct, setShowDetailForProduct] = useState<Product | null>(null);
+  const [activeDetailTab, setActiveDetailTab] = useState<'overview' | 'specs' | 'media' | 'pnl' | 'edit'>('overview');
+  const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
+  const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
  const [fileValidation, setFileValidation] = useState<{status: 'idle'|'validating'|'success'|'error', message: string, data?: any}>({status: 'idle', message: ''});
- const [newProduct, setNewProduct] = useState({
- name: '',
- category: 'Điện thoại',
- brand: '',
- price: '',
- costPrice: '',
- hiddenCosts: '',
- stock: '',
- sku: '',
- description: '',
- weight: '',
- dimensions: ''
- });
+  const [newProduct, setNewProduct] = useState({
+  name: '',
+  category: 'Điện thoại',
+  brand: '',
+  price: '',
+  costPrice: '',
+  hiddenCosts: '',
+  stock: '',
+  sku: '',
+  description: '',
+  weight: '',
+  dimensions: '',
+  videoUrl: '',
+  imagesCsv: '',
+  specsText: ''
+  });
 
  const generateSKU = () => {
  const brandPart = newProduct.brand ? newProduct.brand.substring(0, 3).toUpperCase() : 'GEN';
@@ -442,61 +451,119 @@ export function PIM() {
  }
  };
 
- const handleAddProduct = (e: React.FormEvent) => {
- e.preventDefault();
- 
- if (uploadMode === 'bulk') {
- if (fileValidation.status !== 'success') return;
- 
- const count = fileValidation.data || 12;
- const newBulkProducts: Product[] = Array.from({length: count}).map((_, i) => ({
- id: `PRD-BLK-${Math.floor(Math.random() * 9000) + 1000}`,
- name: `Sản phẩm Data Import ${i + 1}`,
- sku: `CSV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
- price: 150000 + Math.floor(Math.random() * 500000),
- costPrice: 100000,
- hiddenCosts: 10000,
- margin: 25,
- profit: 50000,
- stock: Math.floor(Math.random() * 100) + 10,
- category: 'Nhập khẩu CSV',
- brand: 'Bulk Data',
- sellerName: 'Hệ thống (Self-managed)',
- status: 'pending_approval' as const,
- image: `https://picsum.photos/seed/bulk${i}/100/100`
- }));
- setProducts([...newBulkProducts, ...products]);
- setIsUploadModalOpen(false);
- setFileValidation({status: 'idle', message: ''});
- return;
- }
+  const handleAddProduct = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (uploadMode === 'bulk') {
+  if (fileValidation.status !== 'success') return;
+  
+  const count = fileValidation.data || 12;
+  const newBulkProducts: Product[] = Array.from({length: count}).map((_, i) => ({
+  id: `PRD-BLK-${Math.floor(Math.random() * 9000) + 1000}`,
+  name: `Sản phẩm Data Import ${i + 1}`,
+  sku: `CSV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+  price: 150000 + Math.floor(Math.random() * 500000),
+  costPrice: 100000,
+  hiddenCosts: 10000,
+  margin: 25,
+  profit: 50000,
+  stock: Math.floor(Math.random() * 100) + 10,
+  category: 'Nhập khẩu CSV',
+  brand: 'Bulk Data',
+  sellerName: 'Hệ thống (Self-managed)',
+  status: 'pending_approval' as const,
+  image: `https://picsum.photos/seed/bulk${i}/100/100`
+  }));
 
- const price = Number(newProduct.price) || 0;
- const costPrice = Number(newProduct.costPrice) || (price * 0.7);
- const hiddenCosts = Number(newProduct.hiddenCosts) || 0;
- const profit = price - costPrice - hiddenCosts;
- const margin = price > 0 ? (profit / price) * 100 : 0;
+  for (const p of newBulkProducts) {
+    await addDoc(collection(db, 'products'), {
+      ...p,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  }
+  setIsUploadModalOpen(false);
+  setFileValidation({status: 'idle', message: ''});
+  return;
+  }
 
- const product: Product = {
- id: `PRD-${Math.floor(Math.random() * 900) + 100}`,
- name: newProduct.name,
- sku: newProduct.sku,
- price: price,
- costPrice: costPrice,
- hiddenCosts: hiddenCosts,
- margin: Number(margin.toFixed(1)),
- profit: profit,
- stock: Number(newProduct.stock) || 0,
- category: newProduct.category,
- brand: newProduct.brand,
- sellerName: 'Hệ thống (Self-managed)',
- status: 'in_stock',
- image: `https://picsum.photos/seed/${newProduct.name}/100/100`
- };
- setProducts([product, ...products]);
- setIsUploadModalOpen(false);
- setNewProduct({ name: '', category: 'Điện thoại', brand: '', price: '', costPrice: '', hiddenCosts: '', stock: '', sku: '', description: '', weight: '', dimensions: '' });
- };
+  const price = Number(newProduct.price) || 0;
+  const costPrice = Number(newProduct.costPrice) || (price * 0.7);
+  const hiddenCosts = Number(newProduct.hiddenCosts) || 0;
+  const profit = price - costPrice - hiddenCosts;
+  const margin = price > 0 ? (profit / price) * 100 : 0;
+
+  // Parse specs
+  const specs = newProduct.specsText
+    ? newProduct.specsText
+        .split('\n')
+        .map(line => {
+          const index = line.indexOf(':');
+          if (index === -1) return null;
+          return {
+            key: line.substring(0, index).trim(),
+            value: line.substring(index + 1).trim()
+          };
+        })
+        .filter((item): item is { key: string; value: string } => item !== null)
+    : [];
+
+  // Parse images
+  const images = newProduct.imagesCsv
+    ? newProduct.imagesCsv
+        .split(',')
+        .map(url => url.trim())
+        .filter(url => url.length > 0)
+    : [];
+
+  const productData = {
+  name: newProduct.name,
+  sku: newProduct.sku,
+  price: price,
+  costPrice: costPrice,
+  hiddenCosts: hiddenCosts,
+  margin: Number(margin.toFixed(1)),
+  profit: profit,
+  stock: Number(newProduct.stock) || 0,
+  category: newProduct.category,
+  brand: newProduct.brand,
+  sellerName: 'Hệ thống (Self-managed)',
+  status: 'in_stock' as const,
+  image: `https://picsum.photos/seed/${encodeURIComponent(newProduct.name)}/200/200`,
+  description: newProduct.description || '',
+  weight: newProduct.weight || '',
+  dimensions: newProduct.dimensions || '',
+  videoUrl: newProduct.videoUrl || '',
+  images: images,
+  specs: specs,
+  createdAt: serverTimestamp(),
+  updatedAt: serverTimestamp()
+  };
+
+  try {
+    await addDoc(collection(db, 'products'), productData);
+    setIsUploadModalOpen(false);
+    setNewProduct({
+      name: '',
+      category: 'Điện thoại',
+      brand: '',
+      price: '',
+      costPrice: '',
+      hiddenCosts: '',
+      stock: '',
+      sku: '',
+      description: '',
+      weight: '',
+      dimensions: '',
+      videoUrl: '',
+      imagesCsv: '',
+      specsText: ''
+    });
+  } catch (err: any) {
+    console.error("Lỗi khi thêm sản phẩm:", err);
+    alert("Thêm sản phẩm thất bại: " + err.message);
+  }
+  };
 
   const categories = Array.from(new Set(products.map(p => p.category)));
   const brands = Array.from(new Set(products.map(p => p.brand).filter(Boolean)));
@@ -723,8 +790,39 @@ export function PIM() {
  />
  </div>
  </div>
- </div>
- ) : (
+
+  <div className="grid grid-cols-2 gap-6 mt-4">
+  <div className="space-y-3">
+  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">URL Video giới thiệu</label>
+  <input 
+  type="text" placeholder="Ví dụ: https://www.youtube.com/watch?v=..." 
+  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-medium"
+  value={newProduct.videoUrl}
+  onChange={e => setNewProduct({...newProduct, videoUrl: e.target.value})}
+  />
+  </div>
+  <div className="space-y-3">
+  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ảnh bộ sưu tập (Phân tách bằng dấu phẩy)</label>
+  <input 
+  type="text" placeholder="Ví dụ: https://url1.jpg, https://url2.jpg" 
+  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white font-medium"
+  value={newProduct.imagesCsv}
+  onChange={e => setNewProduct({...newProduct, imagesCsv: e.target.value})}
+  />
+  </div>
+  </div>
+
+  <div className="space-y-3 mt-4">
+  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Cấu hình chi tiết (Mỗi dòng một thông số dạng Key: Value)</label>
+  <textarea 
+  rows={3} placeholder="Ví dụ:&#10;CPU: Apple A18 Pro&#10;RAM: 8GB"
+  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
+  value={newProduct.specsText}
+  onChange={e => setNewProduct({...newProduct, specsText: e.target.value})}
+  ></textarea>
+  </div>
+  </div>
+  ) : (
  <div className="p-6 space-y-8 flex-1 flex flex-col justify-center">
  <div 
  onDragOver={handleDragOver}
@@ -1244,7 +1342,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
 
  {/* Image & Badges */}
- <div className="relative h-44 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-4 group-hover:shadow-sm transition-all">
+ <div onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }} className="relative h-44 w-full rounded-lg bg-slate-50 border border-slate-300 overflow-hidden mb-4 group-hover:shadow-sm transition-all cursor-pointer">
  <img src={product.image} alt={product.name} className={cn("w-full h-full object-cover  transition-transform duration-700", product.status === 'hidden' && "grayscale opacity-50")} referrerPolicy="no-referrer" />
  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-[8px] font-black text-slate-600 shadow-sm border border-slate-200 uppercase tracking-tighter z-10">
  {product.id}
@@ -1277,7 +1375,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  {product.category}
  </span>
  </div>
- <h3 className="text-sm font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-3 flex-1 h-10">
+ <h3 onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }} className="text-sm font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-3 flex-1 h-10 cursor-pointer">
  {product.name}
  </h3>
 
@@ -1370,10 +1468,10 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
 
  <button 
- onClick={() => setShowPnLForProduct(product)}
+ onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }}
  className="flex items-center gap-2 text-[11px] font-black text-orange-700 hover:translate-x-1 transition-all bg-slate-100 px-4 py-2.5 rounded-lg group/btn"
  >
- Chi tiết P&L <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+ Xem chi tiết <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
  </button>
  </div>
  </div>
@@ -1719,6 +1817,520 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
  </div>
  )}
- </div>
- );
+
+  {showDetailForProduct && (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-all">
+      <div className="bg-white rounded-lg w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-orange-700">
+              <Package className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">Chi tiết sản phẩm</h3>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
+                SKU: {showDetailForProduct.sku} | ID: {showDetailForProduct.id}
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={() => { setShowDetailForProduct(null); }}
+            className="p-3 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        {/* Navigation Tabs */}
+        <div className="flex bg-slate-100/80 p-1.5 border-b border-slate-200 gap-1.5 overflow-x-auto">
+          <button 
+            onClick={() => setActiveDetailTab('overview')}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'overview' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+          >
+            <Package className="w-4 h-4" /> Tổng quan
+          </button>
+          <button 
+            onClick={() => setActiveDetailTab('specs')}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'specs' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+          >
+            <Layers className="w-4 h-4" /> Cấu hình & Specs
+          </button>
+          <button 
+            onClick={() => setActiveDetailTab('media')}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'media' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+          >
+            <Camera className="w-4 h-4" /> Ảnh & Video
+          </button>
+          <button 
+            onClick={() => setActiveDetailTab('pnl')}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'pnl' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+          >
+            <Calculator className="w-4 h-4" /> Phân tích P&L
+          </button>
+          <button 
+            onClick={() => {
+              setActiveDetailTab('edit');
+              setEditProductData({
+                name: showDetailForProduct.name,
+                brand: showDetailForProduct.brand,
+                category: showDetailForProduct.category,
+                price: showDetailForProduct.price,
+                costPrice: showDetailForProduct.costPrice,
+                hiddenCosts: showDetailForProduct.hiddenCosts,
+                stock: showDetailForProduct.stock,
+                sku: showDetailForProduct.sku,
+                image: showDetailForProduct.image,
+                description: showDetailForProduct.description || '',
+                weight: showDetailForProduct.weight || '',
+                dimensions: showDetailForProduct.dimensions || '',
+                videoUrl: showDetailForProduct.videoUrl || '',
+                images: showDetailForProduct.images || [],
+                specs: showDetailForProduct.specs || []
+              });
+            }}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0 ml-auto", activeDetailTab === 'edit' ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+          >
+            <Settings className="w-4 h-4" /> Chỉnh sửa
+          </button>
+        </div>
+
+        {/* Modal Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
+          {activeDetailTab === 'overview' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left side: Main Image Preview & Quick specs */}
+              <div className="space-y-4">
+                <div className="relative aspect-square w-full rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm flex items-center justify-center">
+                  <img 
+                    src={showDetailForProduct.images && showDetailForProduct.images.length > 0 
+                      ? showDetailForProduct.images[currentGalleryIndex] 
+                      : showDetailForProduct.image} 
+                    alt={showDetailForProduct.name} 
+                    className="w-full h-full object-contain p-4"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {showDetailForProduct.images && showDetailForProduct.images.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto py-1">
+                    {showDetailForProduct.images.map((imgUrl, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentGalleryIndex(idx)}
+                        className={cn("w-16 h-16 rounded-lg border bg-white overflow-hidden shadow-sm shrink-0 transition-all", idx === currentGalleryIndex ? "ring-2 ring-orange-500 border-orange-500" : "border-slate-200 hover:border-orange-200")}
+                      >
+                        <img src={imgUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right side: Core Info & Description */}
+              <div className="flex flex-col space-y-4">
+                <div>
+                  <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                    {showDetailForProduct.category}
+                  </span>
+                  <span className="px-2.5 py-1 bg-orange-50 text-orange-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-orange-100 ml-2">
+                    {showDetailForProduct.brand || 'No Brand'}
+                  </span>
+                </div>
+                <h4 className="text-xl font-extrabold text-slate-900 leading-snug">{showDetailForProduct.name}</h4>
+                
+                <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-200">
+                  <div>
+                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider">Giá bán lẻ</p>
+                    <p className="text-2xl font-black text-slate-900 font-mono mt-1">{formatCurrency(showDetailForProduct.price)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider">Tồn kho</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={cn("w-3 h-3 rounded-full", showDetailForProduct.stock < 10 ? "bg-red-500 animate-pulse" : "bg-emerald-500")} />
+                      <span className="text-lg font-black text-slate-900 font-mono">{showDetailForProduct.stock} sản phẩm</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col min-h-[200px]">
+                  <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Mô tả sản phẩm</h5>
+                  <div 
+                    className="bg-white border border-slate-200 rounded-lg p-4 overflow-y-auto max-h-[300px] text-sm text-slate-600 leading-relaxed font-sans prose prose-slate max-w-none"
+                    dangerouslySetInnerHTML={{ __html: showDetailForProduct.description || '<p className="text-slate-400 italic">Chưa có mô tả chi tiết sản phẩm.</p>' }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeDetailTab === 'specs' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-orange-600" />
+                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">Thông số kỹ thuật</h4>
+                </div>
+                <table className="w-full text-left text-sm text-slate-600 divide-y divide-slate-200">
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    <tr>
+                      <td className="px-6 py-3.5 bg-slate-50/50 w-1/3 font-black text-[11px] uppercase tracking-wider text-slate-500">Mã SKU</td>
+                      <td className="px-6 py-3.5 font-mono text-slate-900 font-bold">{showDetailForProduct.sku}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-3.5 bg-slate-50/50 font-black text-[11px] uppercase tracking-wider text-slate-500">Nhà cung cấp (Seller)</td>
+                      <td className="px-6 py-3.5 text-slate-900">{showDetailForProduct.sellerName}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-3.5 bg-slate-50/50 font-black text-[11px] uppercase tracking-wider text-slate-500">Trọng lượng</td>
+                      <td className="px-6 py-3.5 text-slate-900">{showDetailForProduct.weight ? `${showDetailForProduct.weight} Gram` : 'Chưa cập nhật'}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-3.5 bg-slate-50/50 font-black text-[11px] uppercase tracking-wider text-slate-500">Kích thước (DxRxC)</td>
+                      <td className="px-6 py-3.5 text-slate-900">{showDetailForProduct.dimensions ? `${showDetailForProduct.dimensions} cm` : 'Chưa cập nhật'}</td>
+                    </tr>
+                    {showDetailForProduct.specs && showDetailForProduct.specs.map((spec, sIdx) => (
+                      <tr key={sIdx}>
+                        <td className="px-6 py-3.5 bg-slate-50/50 font-black text-[11px] uppercase tracking-wider text-slate-500">{spec.key}</td>
+                        <td className="px-6 py-3.5 text-slate-900">{spec.value}</td>
+                      </tr>
+                    ))}
+                    {(!showDetailForProduct.specs || showDetailForProduct.specs.length === 0) && (
+                      <tr>
+                        <td colSpan={2} className="px-6 py-8 text-center text-slate-400 italic">
+                          Chưa cập nhật thêm thông số kỹ thuật tùy biến.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeDetailTab === 'media' && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Images grid */}
+              <div className="lg:col-span-2 space-y-4">
+                <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <Camera className="w-5 h-5 text-orange-600" /> Thư viện ảnh sản phẩm
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  {showDetailForProduct.images && showDetailForProduct.images.map((imgUrl, imgIdx) => (
+                    <div key={imgIdx} className="aspect-square bg-white border border-slate-200 rounded-lg overflow-hidden relative shadow-sm group">
+                      <img src={imgUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <a href={imgUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200">
+                        <Maximize2 className="w-6 h-6" />
+                      </a>
+                    </div>
+                  ))}
+                  {(!showDetailForProduct.images || showDetailForProduct.images.length === 0) && (
+                    <div className="col-span-3 bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-400 italic">
+                      Chưa có ảnh phụ trong thư viện.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Video section */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <Tv className="w-5 h-5 text-orange-600" /> Video giới thiệu
+                </h4>
+                {showDetailForProduct.videoUrl ? (
+                  <div className="w-full rounded-xl overflow-hidden border border-slate-200 bg-black aspect-video relative shadow-sm">
+                    {showDetailForProduct.videoUrl.includes('youtube.com') || showDetailForProduct.videoUrl.includes('youtu.be') ? (
+                      (() => {
+                        const getYoutubeId = (url: string) => {
+                          const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                          const match = url.match(regExp);
+                          return (match && match[2].length === 11) ? match[2] : null;
+                        };
+                        const videoId = getYoutubeId(showDetailForProduct.videoUrl);
+                        return videoId ? (
+                          <iframe 
+                            className="w-full h-full"
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title="Product Video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <div className="p-4 text-center text-white text-xs">Không thể phân tích mã video YouTube</div>
+                        );
+                      })()
+                    ) : (
+                      <video 
+                        className="w-full h-full" 
+                        controls 
+                        src={showDetailForProduct.videoUrl}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center text-slate-500 aspect-video shadow-inner">
+                    <Tv className="w-10 h-10 text-slate-600 mb-2" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Không có video giới thiệu</p>
+                    <p className="text-[10px] text-slate-500 mt-1 text-center">Bạn có thể thêm liên kết video YouTube hoặc link MP4 trong tab Chỉnh sửa.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeDetailTab === 'pnl' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Financial Summary */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm">
+                <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-emerald-600" /> Báo cáo doanh thu & Lợi nhuận gộp
+                </h4>
+                <div className="divide-y divide-slate-100 space-y-3 pt-2 font-medium">
+                  <div className="flex justify-between text-sm py-1.5">
+                    <span className="text-slate-500">Giá niêm yết (Retail Price)</span>
+                    <span className="font-mono font-black text-slate-900">{formatCurrency(showDetailForProduct.price)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1.5">
+                    <span className="text-slate-500">Giá vốn gốc (Cost Price)</span>
+                    <span className="font-mono font-bold text-slate-700">{formatCurrency(showDetailForProduct.costPrice)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1.5">
+                    <span className="text-slate-500">Chi phí ẩn (Vận chuyển, đóng gói)</span>
+                    <span className="font-mono text-slate-700">{formatCurrency(showDetailForProduct.hiddenCosts)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1.5 pt-3 font-bold border-t border-slate-200">
+                    <span className="text-slate-800">Lợi nhuận gộp (Gross Profit)</span>
+                    <span className="font-mono text-emerald-600">+{formatCurrency(showDetailForProduct.profit)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1.5">
+                    <span className="text-slate-800">Biên lợi nhuận (Gross Margin)</span>
+                    <span className="font-mono bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-emerald-700 text-xs font-black">+{showDetailForProduct.margin}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Integration & Misa status */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm flex flex-col justify-between">
+                <div>
+                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-blue-600" /> Trạng thái đồng bộ MISA AMIS
+                  </h4>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-2">
+                    Sản phẩm này cần được ghi sổ kế toán và ánh xạ đầy đủ sang DIInventoryItems trên hệ thống MISA AMIS Cloud để thực hiện các nghiệp vụ bán hàng kiêm xuất kho tự động.
+                  </p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2 mt-4 font-bold">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 uppercase tracking-wider text-[10px]">Trạng thái liên kết</span>
+                    {showDetailForProduct.misaSynced ? (
+                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200 uppercase tracking-wider">Đã đồng bộ hóa 🟢</span>
+                    ) : showDetailForProduct.misaSyncError ? (
+                      <span className="text-[10px] font-black text-rose-700 bg-rose-50 px-2 py-1 rounded border border-rose-200 uppercase tracking-wider">Lỗi kết nối 🔴</span>
+                    ) : (
+                      <span className="text-[10px] font-black text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-200 uppercase tracking-wider">Chờ đồng bộ 🟡</span>
+                    )}
+                  </div>
+                  {showDetailForProduct.misaSyncedAt && (
+                    <div className="flex justify-between items-center pt-1 border-t border-slate-200">
+                      <span className="text-slate-500 uppercase tracking-wider text-[10px]">Thời điểm đồng bộ</span>
+                      <span className="text-slate-800 font-mono text-[11px]">{new Date(showDetailForProduct.misaSyncedAt).toLocaleString('vi-VN')}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeDetailTab === 'edit' && (
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
+              <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2 border-b border-slate-100">
+                <Settings className="w-5 h-5 text-blue-600" /> Trình chỉnh sửa chi tiết sản phẩm
+              </h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Basic settings */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Tên sản phẩm</label>
+                    <input 
+                      type="text"
+                      value={editProductData.name || ''}
+                      onChange={(e) => setEditProductData({...editProductData, name: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:bg-white transition-all font-bold"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Thương hiệu</label>
+                      <input 
+                        type="text"
+                        value={editProductData.brand || ''}
+                        onChange={(e) => setEditProductData({...editProductData, brand: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Ngành hàng</label>
+                      <input 
+                        type="text"
+                        value={editProductData.category || ''}
+                        onChange={(e) => setEditProductData({...editProductData, category: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:bg-white font-bold"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Giá bán lẻ</label>
+                      <input 
+                        type="number"
+                        value={editProductData.price || 0}
+                        onChange={(e) => setEditProductData({...editProductData, price: Number(e.target.value)})}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Tồn kho</label>
+                      <input 
+                        type="number"
+                        value={editProductData.stock || 0}
+                        onChange={(e) => setEditProductData({...editProductData, stock: Number(e.target.value)})}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Trọng lượng (g)</label>
+                      <input 
+                        type="text"
+                        value={editProductData.weight || ''}
+                        onChange={(e) => setEditProductData({...editProductData, weight: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Media settings */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">URL ảnh chính</label>
+                    <input 
+                      type="text"
+                      value={editProductData.image || ''}
+                      onChange={(e) => setEditProductData({...editProductData, image: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:bg-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">URL bộ sưu tập ảnh (Cách nhau bằng dấu phẩy)</label>
+                    <input 
+                      type="text"
+                      value={editProductData.images ? editProductData.images.join(', ') : ''}
+                      onChange={(e) => {
+                        const urls = e.target.value.split(',').map(url => url.trim()).filter(url => url.length > 0);
+                        setEditProductData({...editProductData, images: urls});
+                      }}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:bg-white"
+                      placeholder="Ví dụ: url1.jpg, url2.jpg"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">URL Video giới thiệu (YouTube / mp4)</label>
+                    <input 
+                      type="text"
+                      value={editProductData.videoUrl || ''}
+                      onChange={(e) => setEditProductData({...editProductData, videoUrl: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:bg-white"
+                      placeholder="Ví dụ: https://www.youtube.com/watch?v=..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Detailed Description */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Mô tả sản phẩm (HTML)</label>
+                  <textarea 
+                    rows={5}
+                    value={editProductData.description || ''}
+                    onChange={(e) => setEditProductData({...editProductData, description: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 font-medium resize-none"
+                  />
+                </div>
+
+                {/* Specifications text parsing area */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Thông số cấu hình kỹ thuật (Mỗi dòng một thông số Key: Value)</label>
+                  <textarea 
+                    rows={5}
+                    value={editProductData.specs ? editProductData.specs.map(s => `${s.key}: ${s.value}`).join('\n') : ''}
+                    onChange={(e) => {
+                      const lines = e.target.value.split('\n');
+                      const specArray = lines.map(line => {
+                        const idx = line.indexOf(':');
+                        if (idx === -1) return null;
+                        return {
+                          key: line.substring(0, idx).trim(),
+                          value: line.substring(idx + 1).trim()
+                        };
+                      }).filter((item): item is { key: string; value: string } => item !== null);
+                      setEditProductData({...editProductData, specs: specArray});
+                    }}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 font-medium font-mono resize-none"
+                    placeholder="Ví dụ:&#10;CPU: Apple A18 Pro&#10;RAM: 8GB"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button 
+                  onClick={() => setActiveDetailTab('overview')}
+                  className="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-slate-50"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (!showDetailForProduct) return;
+                    
+                    const price = editProductData.price || 0;
+                    const costPrice = editProductData.costPrice || (price * 0.7);
+                    const hiddenCosts = editProductData.hiddenCosts || 0;
+                    const profit = price - costPrice - hiddenCosts;
+                    const margin = price > 0 ? (profit / price) * 100 : 0;
+                    
+                    const updatedProduct = {
+                      ...editProductData,
+                      profit,
+                      margin: Number(margin.toFixed(1)),
+                      updatedAt: serverTimestamp()
+                    };
+
+                    try {
+                      await updateDoc(doc(db, 'products', showDetailForProduct.id), updatedProduct);
+                      setShowDetailForProduct({
+                        ...showDetailForProduct,
+                        ...updatedProduct
+                      } as Product);
+                      setActiveDetailTab('overview');
+                      alert("Cập nhật thông tin sản phẩm thành công!");
+                    } catch (err) {
+                      console.error("Lỗi cập nhật sản phẩm:", err);
+                      alert("Cập nhật sản phẩm thất bại!");
+                    }
+                  }}
+                  className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-blue-700 shadow-sm"
+                >
+                  Lưu cấu hình & thông tin
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+  </div>
+  );
 }

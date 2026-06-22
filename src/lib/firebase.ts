@@ -6,6 +6,39 @@ import { safeLocalStorage } from './storage';
 // -----------------------------------------------------------------------------
 export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock'];
 
+export function mapJsFieldToDbColumn(tableName: string, field: string): string {
+  if (field === 'id') return 'id';
+  if (field === 'tenantId') return 'tenant_id';
+  
+  if (RELATIONAL_TABLES.includes(tableName)) {
+    if (tableName === 'products') {
+      if (field === 'imageUrl' || field === 'image') return 'image_url';
+      if (field === 'createdAt') return 'created_at';
+      if (field === 'costPrice') return 'cost_price';
+      if (field === 'hiddenCosts') return 'hidden_costs';
+      if (field === 'sellerName') return 'seller_name';
+      if (field === 'videoUrl') return 'video_url';
+    } else if (tableName === 'customers') {
+      if (field === 'createdAt') return 'created_at';
+    } else if (tableName === 'orders') {
+      if (field === 'customerId') return 'customer_id';
+      if (field === 'customerName') return 'customer_name';
+      if (field === 'createdAt') return 'created_at';
+    } else if (tableName === 'warehouse_stock') {
+      if (field === 'storeId' || field === 'warehouseId') return 'warehouse_id';
+      if (field === 'productId' || field === 'materialId') return 'product_id';
+      if (field === 'productName' || field === 'materialName') return 'product_name';
+      if (field === 'safetyStock') return 'safety_stock';
+      if (field === 'updatedAt') return 'updated_at';
+    }
+    // Default snake_case fallback for other fields in relational tables
+    return field.replace(/([A-Z])/g, "_$1").toLowerCase();
+  }
+  
+  // Non-relational tables
+  return `data->>${field}`;
+}
+
 export function toRelationalPayload(tableName: string, docId: string, tenantId: string | null, jsData: any) {
   const payload: any = {
     id: docId,
@@ -20,6 +53,21 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.category = jsData.category || null;
     payload.image_url = jsData.image || jsData.imageUrl || jsData.image_url || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    
+    // Add missing relational fields
+    payload.brand = jsData.brand || null;
+    payload.stock = Number(jsData.stock) || 0;
+    payload.cost_price = Number(jsData.costPrice) || 0.00;
+    payload.hidden_costs = Number(jsData.hiddenCosts) || 0.00;
+    payload.margin = Number(jsData.margin) || 0.00;
+    payload.profit = Number(jsData.profit) || 0.00;
+    payload.seller_name = jsData.sellerName || null;
+    payload.weight = jsData.weight || null;
+    payload.dimensions = jsData.dimensions || null;
+    payload.video_url = jsData.videoUrl || null;
+    payload.images = Array.isArray(jsData.images) ? jsData.images : (jsData.images ? [jsData.images] : null);
+    payload.specs = jsData.specs || null;
+    
     if (jsData.description_embedding) {
       payload.description_embedding = jsData.description_embedding;
     }
@@ -71,8 +119,23 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.sku = row.sku;
     jsData.category = row.category;
     jsData.imageUrl = row.image_url;
-    jsData.image = row.image_url;
+    jsData.image = row.image_url; // Map to both image and imageUrl for frontend compatibility
     jsData.createdAt = row.created_at;
+    
+    // Deserialize relational columns
+    jsData.brand = row.brand;
+    jsData.stock = Number(row.stock || 0);
+    jsData.costPrice = Number(row.cost_price || 0);
+    jsData.hiddenCosts = Number(row.hidden_costs || 0);
+    jsData.margin = Number(row.margin || 0);
+    jsData.profit = Number(row.profit || 0);
+    jsData.sellerName = row.seller_name;
+    jsData.weight = row.weight;
+    jsData.dimensions = row.dimensions;
+    jsData.videoUrl = row.video_url;
+    jsData.images = row.images || [];
+    jsData.specs = row.specs || [];
+    
     if (row.description_embedding) {
       jsData.description_embedding = row.description_embedding;
     }
@@ -346,34 +409,7 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       const field = c.field!;
       const op = c.op!;
       const value = c.value;
-
-      // Primary keys and tenant partitions are mapped as top-level table columns.
-      // All other fields are inside the JSONB 'data' column, unless it is a relational table.
-      let targetColumn = `data->>${field}`;
-      if (field === 'id') {
-        targetColumn = 'id';
-      } else if (field === 'tenantId') {
-        targetColumn = 'tenant_id';
-      } else if (RELATIONAL_TABLES.includes(tableName)) {
-        if (field === 'storeId' || field === 'warehouseId') targetColumn = 'warehouse_id';
-        else if (field === 'customerId') targetColumn = 'customer_id';
-        else if (field === 'customerName') targetColumn = 'customer_name';
-        else if (field === 'productId' || field === 'materialId') targetColumn = 'product_id';
-        else if (field === 'productName' || field === 'materialName') targetColumn = 'product_name';
-        else if (field === 'safetyStock') targetColumn = 'safety_stock';
-        else if (field === 'imageUrl') targetColumn = 'image_url';
-        else if (field === 'createdAt') targetColumn = 'created_at';
-        else if (field === 'updatedAt') targetColumn = 'updated_at';
-        else if (field === 'routedWarehouse') targetColumn = 'routed_warehouse';
-        else if (field === 'einvoiceStatus') targetColumn = 'einvoice_status';
-        else if (field === 'einvoiceXml') targetColumn = 'einvoice_xml';
-        else if (field === 'einvoiceLookupCode') targetColumn = 'einvoice_lookup_code';
-        else if (field === 'einvoiceSignedAt') targetColumn = 'einvoice_signed_at';
-        else if (field === 'shippingCost') targetColumn = 'shipping_cost';
-        else {
-          targetColumn = field;
-        }
-      }
+      const targetColumn = mapJsFieldToDbColumn(tableName, field);
 
       if (op === '==' || op === '===') {
         builder = builder.eq(targetColumn, value);
@@ -388,7 +424,6 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
       } else if (op === 'in') {
         builder = builder.in(targetColumn, value);
       } else if (op === 'array-contains') {
-        // Safe JSONB containment
         if (RELATIONAL_TABLES.includes(tableName)) {
           builder = builder.contains(targetColumn, [value]);
         } else {
@@ -398,29 +433,8 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
     } else if (c.type === 'orderBy') {
       const field = c.field!;
       const ascending = c.direction === 'asc';
-      if (field === 'id') {
-        builder = builder.order('id', { ascending });
-      } else if (field === 'created_at' || field === 'createdAt' || field === 'timestamp') {
-        builder = builder.order('created_at', { ascending });
-      } else {
-        let orderCol = `data->>${field}`;
-        if (RELATIONAL_TABLES.includes(tableName)) {
-          if (field === 'storeId' || field === 'warehouseId') orderCol = 'warehouse_id';
-          else if (field === 'customerId') orderCol = 'customer_id';
-          else if (field === 'customerName') orderCol = 'customer_name';
-          else if (field === 'productId' || field === 'materialId') orderCol = 'product_id';
-          else if (field === 'productName' || field === 'materialName') orderCol = 'product_name';
-          else if (field === 'safetyStock') orderCol = 'safety_stock';
-          else if (field === 'imageUrl') orderCol = 'image_url';
-          else if (field === 'createdAt') orderCol = 'created_at';
-          else if (field === 'updatedAt') orderCol = 'updated_at';
-          else if (field === 'routedWarehouse') orderCol = 'routed_warehouse';
-          else if (field === 'einvoiceStatus') orderCol = 'einvoice_status';
-          else if (field === 'shippingCost') orderCol = 'shipping_cost';
-          else orderCol = field;
-        }
-        builder = builder.order(orderCol, { ascending });
-      }
+      const orderCol = mapJsFieldToDbColumn(tableName, field);
+      builder = builder.order(orderCol, { ascending });
     } else if (c.type === 'limit') {
       builder = builder.limit(c.value!);
     } else if (c.type === 'range') {
@@ -430,41 +444,14 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
     } else if (c.type === 'ilike') {
       const field = c.field!;
       const value = c.value as string;
-      let targetColumn = `data->>${field}`;
-      if (field === 'id') {
-        targetColumn = 'id';
-      } else if (RELATIONAL_TABLES.includes(tableName)) {
-        if (field === 'storeId') targetColumn = 'store_id';
-        else if (field === 'customerId') targetColumn = 'customer_id';
-        else if (field === 'customerName') targetColumn = 'customer_name';
-        else if (field === 'productId' || field === 'materialId') targetColumn = 'product_id';
-        else if (field === 'productName' || field === 'materialName') targetColumn = 'product_name';
-        else if (field === 'safetyStock') targetColumn = 'safety_stock';
-        else if (field === 'imageUrl') targetColumn = 'image_url';
-        else if (field === 'createdAt') targetColumn = 'created_at';
-        else if (field === 'updatedAt') targetColumn = 'updated_at';
-        else targetColumn = field;
-      }
+      const targetColumn = mapJsFieldToDbColumn(tableName, field);
       builder = builder.ilike(targetColumn, `%${value}%`);
     } else if (c.type === 'search') {
       const fields = c.field!.split(',');
       const queryText = c.value as string;
       if (queryText && queryText.trim() !== '') {
         const orConditions = fields.map(f => {
-          let col = `data->>${f}`;
-          if (f === 'id') col = 'id';
-          else if (RELATIONAL_TABLES.includes(tableName)) {
-            if (f === 'storeId') col = 'store_id';
-            else if (f === 'customerId') col = 'customer_id';
-            else if (f === 'customerName') col = 'customer_name';
-            else if (f === 'productId' || f === 'materialId') col = 'product_id';
-            else if (f === 'productName' || f === 'materialName') col = 'product_name';
-            else if (f === 'safetyStock') col = 'safety_stock';
-            else if (f === 'imageUrl') col = 'image_url';
-            else if (f === 'createdAt') col = 'created_at';
-            else if (f === 'updatedAt') col = 'updated_at';
-            else col = f;
-          }
+          const col = mapJsFieldToDbColumn(tableName, f);
           return `${col}.ilike.%${queryText}%`;
         }).join(',');
         builder = builder.or(orConditions);
