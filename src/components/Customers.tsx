@@ -1544,54 +1544,86 @@ export function Customers() {
     e.preventDefault();
     if (!adjustingCustomer || !adjustAmount) return;
     
+    // Chuẩn hóa tên field: chỉ dùng 'walletBalance' và 'vXu'
+    const canonicalField = adjustType === 'wallet' ? 'walletBalance' : 'vXu';
+    const amount = Number(adjustAmount);
+    
+    if (isNaN(amount) || amount === 0) {
+      alert('Số tiền không hợp lệ!');
+      return;
+    }
+
     try {
-      const field = adjustType === 'wallet' ? 'walletBalance' : 'points';
-      const userField = adjustType === 'wallet' ? 'balance' : 'points';
-      
+      // Bước 1: Tìm user trong bảng 'users' (eCommerce source of truth)
+      // Ưu tiên: linkedUserId → ID trực tiếp → tìm bằng email
+      let userRow: any = null;
+
+      // Thử tìm bằng linkedUserId hoặc id trực tiếp
       const lookupId = (adjustingCustomer as any).linkedUserId || adjustingCustomer.id;
-      
-      const { data: userRow } = await supabase
+      const { data: userById } = await supabase
         .from('users')
         .select('*')
         .eq('id', lookupId)
         .maybeSingle();
-
-      if (userRow) {
-        const userData = userRow.data || {};
-        const currentVal = Number(userData[userField] || userData[field] || 0);
+      
+      if (userById) {
+        userRow = userById;
+      } else if (adjustingCustomer.email) {
+        // Fallback: tìm bằng email trong JSONB data column
+        const { data: allUsers } = await supabase
+          .from('users')
+          .select('*')
+          .limit(500);
         
-        userData[userField] = currentVal + Number(adjustAmount);
-        userData[field] = currentVal + Number(adjustAmount);
-
-        const { error } = await supabase
-          .from('users')
-          .update({ data: userData, updated_at: new Date().toISOString() })
-          .eq('id', lookupId);
-
-        if (error) throw error;
-
-        triggerRefresh();
-      } else {
-         // Create a new user row if not exists
-         const newId = lookupId;
-         const userData: any = {
-           email: adjustingCustomer.email || '',
-           name: adjustingCustomer.name || ''
-         };
-         userData[userField] = Number(adjustAmount);
-         userData[field] = Number(adjustAmount);
-         
-         const { error } = await supabase
-          .from('users')
-          .insert({ id: newId, data: userData, updated_at: new Date().toISOString() });
-          
-         if (error) throw error;
-         triggerRefresh();
+        if (allUsers) {
+          userRow = allUsers.find((u: any) => 
+            u.data?.email && u.data.email.toLowerCase() === adjustingCustomer.email.toLowerCase()
+          ) || null;
+        }
       }
+
+      if (!userRow) {
+        // Không tìm thấy user eCommerce - báo lỗi, không tạo user ảo
+        alert(`Không tìm thấy tài khoản eCommerce tương ứng cho khách hàng "${adjustingCustomer.name}".\n\nKhách hàng cần đăng ký tài khoản trên eCommerce trước khi có thể cộng/trừ số dư từ ERP.`);
+        return;
+      }
+
+      // Bước 2: Cộng/trừ số dư vào đúng field chuẩn
+      const userData = userRow.data || {};
+      const currentVal = Number(userData[canonicalField] || 0);
+      const newVal = currentVal + amount;
+
+      // Ghi chuẩn hóa: chỉ dùng 1 field name duy nhất
+      const updatedData = {
+        ...userData,
+        [canonicalField]: newVal,
+      };
+
+      // Đảm bảo backward compat cho eCommerce đọc cả 2 tên field cũ
+      if (canonicalField === 'walletBalance') {
+        updatedData.balance = newVal; // Legacy compat
+      } else if (canonicalField === 'vXu') {
+        updatedData.points = newVal; // Legacy compat
+      }
+
+      const { error } = await supabase
+        .from('users')
+        .update({ data: updatedData, updated_at: new Date().toISOString() })
+        .eq('id', userRow.id);
+
+      if (error) throw error;
+
+      // Thông báo thành công
+      const typeLabel = adjustType === 'wallet' ? 'số dư Ví' : 'V-Xu';
+      const action = amount >= 0 ? 'Cộng' : 'Trừ';
+      alert(`✓ ${action} ${Math.abs(amount).toLocaleString('vi-VN')}${adjustType === 'wallet' ? '₫' : ' V-Xu'} vào ${typeLabel} của "${adjustingCustomer.name}" thành công!\nSố dư mới: ${newVal.toLocaleString('vi-VN')}${adjustType === 'wallet' ? '₫' : ' V-Xu'}`);
+
       setAdjustingCustomer(null);
       setAdjustAmount('');
-    } catch(err) {
+      triggerRefresh();
+    } catch(err: any) {
       console.error('Error adjusting balance', err);
+      alert(`Lỗi khi điều chỉnh số dư: ${err.message || err}\n\nVui lòng thử lại hoặc kiểm tra kết nối mạng.`);
     }
   };
 

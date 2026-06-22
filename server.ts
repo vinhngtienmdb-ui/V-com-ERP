@@ -2058,15 +2058,23 @@ Format:
 
         if (userRow) {
           const userData = userRow.data || {};
+          // Chuẩn hóa: luôn đọc walletBalance (primary), balance (alias)
+          const walletBalance = Number(userData.walletBalance || userData.balance || 0);
+          // Chuẩn hóa: luôn đọc vXu (primary), points (alias)
+          const vXu = Number(userData.vXu || userData.points || 0);
           const customer = {
             id: userRow.id,
             name: userData.username || userData.displayName || 'Khách hàng mới',
             phone: userData.phone || phone || '',
             email: userData.email || '',
             level: userData.level || userData.tier || 'Thành viên mới',
-            points: Number(userData.points || userData.vXu || 0),
+            // Canonical fields
+            walletBalance,
+            vXu,
+            // Legacy aliases (backward compat)
+            balance: walletBalance,
+            points: vXu,
             discountPercent: Number(userData.discountPercent || 0),
-            balance: Number(userData.balance || userData.walletBalance || 0),
             promoBalance: Number(userData.promoBalance || 0),
             voucherCount: Number(userData.voucherCount || 0),
             address: userData.address || ''
