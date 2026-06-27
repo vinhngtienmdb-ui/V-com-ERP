@@ -75,7 +75,7 @@ export function TaskKanban({ tasks, onTasksChange, onSelectTask, onAddTaskQuick 
     <div className="space-y-6 font-sans">
       
       {/* Top Filter and Actions Bar */}
-      <div className="bg-white rounded-xl border border-slate-300 p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between text-xs font-sans">
+      <div className="bg-white rounded-lg border border-slate-300 p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between text-xs font-sans">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-1.5 font-bold">
             <Filter className="w-4 h-4 text-slate-400" />
@@ -142,7 +142,7 @@ export function TaskKanban({ tasks, onTasksChange, onSelectTask, onAddTaskQuick 
               key={col.id}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, col.id)}
-              className="bg-slate-50/50 rounded-xl border border-slate-300 flex flex-col min-h-[550px] transition-all"
+              className="bg-slate-50/50 rounded-lg border border-slate-300 flex flex-col min-h-[550px] transition-all"
             >
               {/* Column Header */}
               <div className={cn(
@@ -176,7 +176,7 @@ export function TaskKanban({ tasks, onTasksChange, onSelectTask, onAddTaskQuick 
                       draggable
                       onDragStart={(e) => handleDragStart(e, task.id)}
                       className={cn(
-                        "bg-white p-4 rounded-xl border border-slate-300 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all cursor-grab active:cursor-grabbing group relative",
+                        "bg-white p-4 rounded-lg border border-slate-300 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all cursor-grab active:cursor-grabbing group relative",
                         isOverdue && "border-red-300 bg-red-50/10"
                       )}
                     >

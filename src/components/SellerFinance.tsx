@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BadgeDollarSign, 
   TrendingUp, 
@@ -39,6 +39,8 @@ import {
 import { formatCurrency, cn } from '../lib/utils';
 import { SellerCreditScore, EarlyPayoutRequest } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
+import { db, doc, getDoc, collection, query, where, getDocs, addDoc } from '../lib/firebase';
+import { updateWalletBalance } from '../lib/firebase';
 
 // Extended type for Simulator
 interface SimulatedSeller {
@@ -83,7 +85,7 @@ const LIQUIDITY_TREND_DATA = [
 
 export function SellerFinance() {
   const { addNotification } = useNotifications();
-  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout' | 'risk_analytics'>('credit');
+  const [activeTab, setActiveTab] = useState<'credit' | 'early_payout' | 'risk_analytics' | 'seller_wallet'>('credit');
   
   // Scoring weights configuration state
   const [weights, setWeights] = useState({
@@ -114,6 +116,84 @@ export function SellerFinance() {
   const [calcTerm, setCalcTerm] = useState(6);
   const [calcCollateral, setCalcCollateral] = useState<'inventory' | 'revenue' | 'guarantee'>('revenue');
   const [isSyncedLedger, setIsSyncedLedger] = useState(false);
+
+  // Seller Wallet State (Mocked logged in seller)
+  const currentSellerId = 'SEL-001';
+  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
+  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [isLoadingWallet, setIsLoadingWallet] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'seller_wallet') {
+      fetchWalletData();
+    }
+  }, [activeTab]);
+
+  const fetchWalletData = async () => {
+    setIsLoadingWallet(true);
+    try {
+      const sellerRef = doc(db, 'sellers', currentSellerId);
+      const sellerSnap = await getDoc(sellerRef);
+      if (sellerSnap.exists()) {
+        setWalletBalance(Number(sellerSnap.data().walletBalance) || 0);
+      }
+
+      const q = query(
+        collection(db, 'wallet_transactions'),
+        where('userId', '==', currentSellerId)
+      );
+      const querySnapshot = await getDocs(q);
+      const txns: any[] = [];
+      querySnapshot.forEach((doc) => {
+        txns.push({ id: doc.id, ...doc.data() });
+      });
+      txns.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setWalletTransactions(txns);
+    } catch (error) {
+      console.error('Error fetching wallet data:', error);
+    } finally {
+      setIsLoadingWallet(false);
+    }
+  };
+
+  const handleRequestWithdrawal = async () => {
+    const amount = Number(withdrawalAmount);
+    if (!amount || amount <= 0) {
+      addNotification('Lỗi', 'Số tiền rút không hợp lệ');
+      return;
+    }
+    if (amount > walletBalance) {
+      addNotification('Lỗi', 'Số dư ví không đủ');
+      return;
+    }
+
+    try {
+      const withdrawalRef = collection(db, 'withdrawals');
+      await addDoc(withdrawalRef, {
+        sellerId: currentSellerId,
+        amount: amount,
+        status: 'pending',
+        requestDate: new Date().toISOString(),
+        bankAccount: '123456789 - Vietcombank' // Mock bank
+      });
+
+      await updateWalletBalance(currentSellerId, -amount, {
+        type: 'withdraw',
+        gateway: 'internal',
+        status: 'pending'
+      });
+
+      addNotification('Thành công', 'Đã gửi yêu cầu rút tiền thành công');
+      setShowWithdrawModal(false);
+      setWithdrawalAmount('');
+      fetchWalletData();
+    } catch (error) {
+      console.error('Error requesting withdrawal:', error);
+      addNotification('Lỗi', 'Đã xảy ra lỗi khi tạo yêu cầu rút tiền');
+    }
+  };
 
   // Helpers for calculations
   const totalWeight = weights.gmvGrowth + weights.refundRate + weights.buyerRating + weights.complianceIndex;
@@ -269,7 +349,7 @@ export function SellerFinance() {
 
       {/* 2. Top Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-slate-900 text-[#FAF9F5] p-5 rounded-xl border border-slate-850 shadow-sm flex flex-col justify-between">
+        <div className="bg-slate-900 text-[#FAF9F5] p-5 rounded-lg border border-slate-850 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="p-2 bg-slate-800 rounded-lg">
               <BadgeDollarSign className="w-5 h-5" />
@@ -284,7 +364,7 @@ export function SellerFinance() {
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-3xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="p-2 bg-slate-100 text-blue-600 rounded-lg">
               <Clock className="w-5 h-5" />
@@ -299,7 +379,7 @@ export function SellerFinance() {
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-3xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="p-2 bg-slate-100 text-emerald-600 rounded-lg">
               <Star className="w-5 h-5" />
@@ -314,7 +394,7 @@ export function SellerFinance() {
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-3xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="p-2 bg-slate-100 text-indigo-600 rounded-lg">
               <ShieldCheck className="w-5 h-5" />
@@ -331,12 +411,13 @@ export function SellerFinance() {
       </div>
 
       {/* 3. Navigation Tabs */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-3xs overflow-hidden">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-3xs overflow-hidden">
         <div className="flex border-b border-slate-200">
           {[
             { id: 'credit', label: 'Tín dụng & Thấu chi Seller', icon: ShieldCheck },
             { id: 'early_payout', label: 'Yêu cầu Giải ngân sớm', icon: Banknote },
-            { id: 'risk_analytics', label: 'Phân tích rủi ro & Thanh khoản', icon: PieChart }
+            { id: 'risk_analytics', label: 'Phân tích rủi ro & Thanh khoản', icon: PieChart },
+            { id: 'seller_wallet', label: 'Ví Gian Hàng (Seller)', icon: Wallet }
           ].map((tab) => (
             <button 
               key={tab.id}
@@ -360,7 +441,7 @@ export function SellerFinance() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Scoring Simulator Panel */}
-                <div className="bg-slate-50 rounded-xl border border-slate-250 p-5 space-y-5">
+                <div className="bg-slate-50 rounded-lg border border-slate-250 p-5 space-y-5">
                   <h3 className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5 uppercase tracking-wide">
                     <Settings2 className="w-4 h-4 text-blue-600" /> Trình mô phỏng chỉ số chấm điểm
                   </h3>
@@ -452,7 +533,7 @@ export function SellerFinance() {
                 </div>
 
                 {/* Sellers List Table */}
-                <div className="lg:col-span-2 overflow-x-auto border border-slate-200 rounded-xl bg-white min-w-0">
+                <div className="lg:col-span-2 overflow-x-auto border border-slate-200 rounded-lg bg-white min-w-0">
                   <table className="w-full text-left border-collapse whitespace-nowrap">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
@@ -516,10 +597,10 @@ export function SellerFinance() {
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Interactive Loan Calculator & Credit Agreement Generator */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-5 rounded-2xl border border-slate-200">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-5 rounded-lg border border-slate-200">
                 
                 {/* 1. Loan Calculator */}
-                <div className="space-y-4 bg-white p-5 rounded-xl border border-slate-200 shadow-3xs">
+                <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-200 shadow-3xs">
                   <div>
                     <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-2">
                       <Settings2 className="w-4.5 h-4.5 text-blue-650" />
@@ -595,7 +676,7 @@ export function SellerFinance() {
                     const totalPayable = calcAmount + interest;
 
                     return (
-                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 font-medium">
+                      <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 font-medium">
                         <div className="flex justify-between text-[10.5px]">
                           <span className="text-slate-450">Xếp hạng tín nhiệm AI:</span>
                           <span className="font-bold text-emerald-600">Tier {sel.tier} (Điểm: {sel.score})</span>
@@ -636,7 +717,7 @@ export function SellerFinance() {
                   const collateralName = calcCollateral === 'inventory' ? 'Hàng tồn kho ký gửi VComm' : calcCollateral === 'guarantee' ? 'Bảo lãnh ngân hàng' : 'Doanh thu tương lai trên sàn';
 
                   return (
-                    <div className="space-y-4 bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+                    <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-200 shadow-3xs flex flex-col justify-between">
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center">
                           <h3 className="text-xs font-extrabold text-slate-905 uppercase tracking-wide">
@@ -645,7 +726,7 @@ export function SellerFinance() {
                           <span className="text-[9px] bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded">Được bảo vệ 🔒</span>
                         </div>
                         
-                        <div className="p-3 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-xl font-mono text-[9px] leading-relaxed max-h-[160px] overflow-y-auto select-text">
+                        <div className="p-3 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-lg font-mono text-[9px] leading-relaxed max-h-[160px] overflow-y-auto select-text">
                           <p className="text-center font-bold text-amber-500">HỢP ĐỒNG TÍN DỤNG HẠN MỨC DOANH NGHIỆP</p>
                           <p className="text-center font-bold">Số: HĐTD/VCOMM/{Date.now().toString().slice(-5)}</p>
                           <p className="mt-2 text-slate-400">Bên Cho Vay: CỔNG TÀI CHÍNH VCOMM PLATFORM (VComm ERP)</p>
@@ -709,7 +790,7 @@ export function SellerFinance() {
                   return (
                     <div 
                       key={p.id} 
-                      className="p-5 bg-white border border-slate-200 rounded-xl hover:border-blue-600 hover:shadow-2xs transition-all flex flex-col justify-between space-y-4"
+                      className="p-5 bg-white border border-slate-200 rounded-lg hover:border-blue-600 hover:shadow-2xs transition-all flex flex-col justify-between space-y-4"
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -782,7 +863,7 @@ export function SellerFinance() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Recharts trend */}
-                <div className="lg:col-span-2 border border-slate-200 p-5 rounded-xl bg-white space-y-4">
+                <div className="lg:col-span-2 border border-slate-200 p-5 rounded-lg bg-white space-y-4">
                   <div className="flex justify-between items-center">
                     <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">
                       Xu hướng Dòng tiền & Yêu cầu giải ngân sớm
@@ -817,7 +898,7 @@ export function SellerFinance() {
 
                 {/* Aging analysis & AI Insights */}
                 <div className="space-y-6">
-                  <div className="bg-slate-900 text-[#FAF9F5] p-5 rounded-xl border border-slate-850 space-y-4">
+                  <div className="bg-slate-900 text-[#FAF9F5] p-5 rounded-lg border border-slate-850 space-y-4">
                     <h4 className="text-[10px] font-black text-amber-500 tracking-wider flex items-center gap-1.5 uppercase">
                       <Zap className="w-4 h-4 fill-current text-amber-500" /> AI Risk Intelligence
                     </h4>
@@ -850,7 +931,7 @@ export function SellerFinance() {
               </div>
 
               {/* Debt Aging Table */}
-              <div className="border border-slate-200 rounded-xl bg-white p-5 space-y-4">
+              <div className="border border-slate-200 rounded-lg bg-white p-5 space-y-4">
                 <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">
                   Chi tiết cơ cấu nợ thấu chi quá hạn (Debt Aging Breakdown)
                 </h4>
@@ -914,11 +995,95 @@ export function SellerFinance() {
             </div>
           )}
 
+          {/* TAB 4: Seller Wallet */}
+          {activeTab === 'seller_wallet' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="bg-slate-900 text-[#FAF9F5] p-6 rounded-lg border border-slate-850 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Số dư khả dụng</h3>
+                  <div className="text-4xl font-black italic tracking-tight">
+                    {isLoadingWallet ? 'Đang tải...' : formatCurrency(walletBalance)}
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-2">Seller ID: {currentSellerId}</p>
+                </div>
+                <button 
+                  onClick={() => setShowWithdrawModal(true)}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer border-0 shadow-xs whitespace-nowrap"
+                >
+                  Rút tiền về ngân hàng
+                </button>
+              </div>
+
+              <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800">Lịch sử giao dịch ví</h3>
+                </div>
+                <div className="overflow-x-auto min-w-0">
+                  <table className="w-full text-left whitespace-nowrap">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Loại giao dịch</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Số tiền (VNĐ)</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gateway</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {isLoadingWallet ? (
+                        <tr>
+                          <td colSpan={5} className="py-6 text-center text-sm text-slate-500">Đang tải dữ liệu...</td>
+                        </tr>
+                      ) : walletTransactions.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="py-6 text-center text-sm text-slate-500">Chưa có giao dịch nào</td>
+                        </tr>
+                      ) : walletTransactions.map(txn => (
+                        <tr key={txn.id} className="hover:bg-slate-50 transition-all">
+                          <td className="px-6 py-4 text-xs text-slate-600">{txn.timestamp || new Date(txn.createdAt).toLocaleString('vi-VN')}</td>
+                          <td className="px-6 py-4">
+                            <span className={cn(
+                              "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight",
+                              txn.type === 'deposit' ? "bg-emerald-50 text-emerald-600" : 
+                              txn.type === 'withdraw' ? "bg-rose-50 text-rose-600" :
+                              txn.type === 'payout' ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-700"
+                            )}>
+                              {txn.type}
+                            </span>
+                          </td>
+                          <td className={cn(
+                            "px-6 py-4 font-bold",
+                            txn.type === 'deposit' || txn.type === 'payout' ? "text-emerald-600" : "text-rose-600"
+                          )}>
+                            {txn.type === 'deposit' || txn.type === 'payout' ? '+' : '-'}{formatCurrency(txn.amount)}
+                          </td>
+                          <td className="px-6 py-4 text-xs text-slate-600 uppercase font-mono">{txn.gateway || 'INTERNAL'}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex justify-center">
+                              <span className={cn(
+                                "px-3 py-1 rounded-full text-[10px] font-bold",
+                                txn.status === 'success' ? "bg-emerald-100 text-emerald-700" : 
+                                txn.status === 'pending' ? "bg-amber-100 text-amber-700" :
+                                "bg-rose-100 text-rose-700"
+                              )}>
+                                {txn.status.toUpperCase()}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
 
       {/* 5. Bottom Info Banner */}
-      <div className="bg-[#111827] text-[#FAF9F5] p-6 rounded-xl relative overflow-hidden border border-slate-850">
+      <div className="bg-[#111827] text-[#FAF9F5] p-6 rounded-lg relative overflow-hidden border border-slate-850">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -961,7 +1126,7 @@ export function SellerFinance() {
                 </button>
               </div>
 
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-500">Nhà bán hàng:</span>
                   <span className="font-extrabold text-slate-900">{selectedSeller.sellerName}</span>
@@ -989,12 +1154,12 @@ export function SellerFinance() {
                   type="number"
                   value={newCreditLimit}
                   onChange={e => setNewCreditLimit(parseInt(e.target.value) || 0)}
-                  className="w-full p-2.5 border border-slate-300 rounded-xl font-bold focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full p-2.5 border border-slate-300 rounded-lg font-bold focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
                 
                 {/* Safe limit check warning */}
                 {newCreditLimit > selectedSeller.maxLimitBase * (selectedSeller.score >= 850 ? 1.0 : selectedSeller.score >= 750 ? 0.8 : selectedSeller.score >= 650 ? 0.5 : 0.3) && (
-                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-[10.5px] text-rose-700 leading-relaxed font-semibold flex gap-2">
+                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-[10.5px] text-rose-700 leading-relaxed font-semibold flex gap-2">
                     <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                     <span>
                       Cảnh báo: Hạn mức nhập vượt ngưỡng xếp hạng rủi ro tín dụng tối đa của đối tác (Hạn mức đề xuất an toàn: {formatCurrency(selectedSeller.maxLimitBase * (selectedSeller.score >= 850 ? 1.0 : selectedSeller.score >= 750 ? 0.8 : selectedSeller.score >= 650 ? 0.5 : 0.3))}). Yêu cầu đặc cách duyệt đặc biệt.
@@ -1020,7 +1185,7 @@ export function SellerFinance() {
                 </div>
 
                 {isSyncingMisa && (
-                  <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-2">
+                  <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50 space-y-2">
                     <div className="flex justify-between items-center text-[10.5px] font-semibold text-slate-700">
                       <span>Nợ TK 1388 (Phải thu khác - Thấu chi Seller):</span>
                       <span className="font-mono font-bold text-slate-900">{formatCurrency(newCreditLimit)}</span>
@@ -1058,7 +1223,7 @@ export function SellerFinance() {
       {/* WIZARD MODAL: Early Payout Approval */}
       {selectedPayout && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white w-full max-w-md rounded-2xl border border-slate-350 shadow-lg overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-md rounded-lg border border-slate-350 shadow-lg overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
             
             {/* Wizard Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50/50">
@@ -1117,7 +1282,7 @@ export function SellerFinance() {
                     Hệ thống đã kết nối API với đối tác vận chuyển GHTK / GHN để xác thực đơn hàng đã giao thành công và hết hạn khiếu nại đổi trả.
                   </p>
                   
-                  <div className="border border-slate-200 rounded-xl divide-y divide-slate-100 bg-slate-50/30 overflow-hidden">
+                  <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 bg-slate-50/30 overflow-hidden">
                     <div className="p-3 flex justify-between items-center text-[10.5px]">
                       <div>
                         <p className="font-bold text-slate-800">Đơn hàng ORD-2983</p>
@@ -1134,7 +1299,7 @@ export function SellerFinance() {
                     </div>
                   </div>
 
-                  <div className="p-3 bg-emerald-50 border border-emerald-250 rounded-xl text-[10.5px] text-emerald-700 leading-relaxed font-semibold flex gap-2">
+                  <div className="p-3 bg-emerald-50 border border-emerald-250 rounded-lg text-[10.5px] text-emerald-700 leading-relaxed font-semibold flex gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>🟢 Mọi vận đơn khớp điều kiện giải ngân. Đủ điều kiện thanh khoản 100%.</span>
                   </div>
@@ -1146,7 +1311,7 @@ export function SellerFinance() {
                 <div className="space-y-4">
                   <h4 className="font-bold text-slate-805 text-xs">Chi tiết khấu trừ phí & số tiền chuyển khoản</h4>
                   
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-500">Tổng tiền giải ngân yêu cầu:</span>
                       <span className="font-bold text-slate-900">{formatCurrency(selectedPayout.amount)}</span>
@@ -1161,7 +1326,7 @@ export function SellerFinance() {
                     </div>
                   </div>
 
-                  <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-xl space-y-2">
+                  <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-lg space-y-2">
                     <p className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Định khoản hạch toán ERP MISA</p>
                     <div className="flex justify-between text-[10.5px] font-semibold text-slate-700">
                       <span>Nợ TK 131 (Phải thu khách hàng - Seller):</span>
@@ -1187,7 +1352,7 @@ export function SellerFinance() {
                     Xác thực chữ ký số HSM của VComm ERP để hợp pháp hóa chứng từ giải ngân tự động.
                   </p>
 
-                  <div className="p-4 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-xl space-y-3 relative overflow-hidden">
+                  <div className="p-4 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-lg space-y-3 relative overflow-hidden">
                     <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
                       <Lock className="w-3.5 h-3.5 text-blue-500" /> Digital Certificate
                     </h5>
@@ -1209,7 +1374,7 @@ export function SellerFinance() {
                       value={otpCode}
                       onChange={e => setOtpCode(e.target.value)}
                       placeholder="Mã PIN (Ví dụ: 123456)"
-                      className="w-full p-2.5 border border-slate-300 rounded-xl font-bold tracking-widest text-center focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 border border-slate-300 rounded-lg font-bold tracking-widest text-center focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1226,7 +1391,7 @@ export function SellerFinance() {
                     Yêu cầu ứng vốn sớm của đối tác đã được giải ngân thành công qua cổng thanh toán Napas 24/7 và ghi sổ kế toán MISA.
                   </p>
 
-                  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 text-left space-y-2">
+                  <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 text-left space-y-2">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chứng từ thanh toán Napas</p>
                     <div className="flex justify-between text-[11px] font-semibold text-slate-700">
                       <span>Mã tham chiếu GD:</span>
@@ -1274,6 +1439,54 @@ export function SellerFinance() {
               )}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Request Withdrawal (Seller) */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-lg w-full max-w-md shadow-lg overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                Tạo yêu cầu rút tiền
+              </h3>
+              <button onClick={() => setShowWithdrawModal(false)} className="p-1.5 hover:bg-slate-200 rounded-full transition-colors border-0 bg-transparent cursor-pointer">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="p-6 space-y-5">
+              <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex justify-between items-center">
+                <span className="text-xs font-bold text-blue-800">Số dư khả dụng</span>
+                <span className="text-lg font-black text-blue-700">{formatCurrency(walletBalance)}</span>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Số tiền rút (VNĐ)
+                </label>
+                <input 
+                  type="number"
+                  value={withdrawalAmount}
+                  onChange={e => setWithdrawalAmount(e.target.value)}
+                  placeholder="Nhập số tiền muốn rút..."
+                  className="w-full p-3 border border-slate-300 rounded-lg font-bold text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button 
+                  onClick={() => setShowWithdrawModal(false)}
+                  className="flex-1 py-3 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 cursor-pointer"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  onClick={handleRequestWithdrawal}
+                  className="flex-[2] py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer border-0 shadow-xs"
+                >
+                  Xác nhận rút tiền
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

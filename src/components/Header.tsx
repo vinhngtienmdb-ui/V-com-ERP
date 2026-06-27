@@ -72,7 +72,7 @@ export function Header() {
   <input
   type="text"
   placeholder="Tìm kiếm..."
-  className="w-48 md:w-72 bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 transition-all font-medium placeholder:text-slate-500"
+  className="w-48 md:w-72 bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 transition-all font-medium placeholder:text-slate-500"
   />
   </div>
 
@@ -82,7 +82,7 @@ export function Header() {
          <div className="relative" ref={viewSettingsRef}>
            <button 
              onClick={() => setShowViewSettings(!showViewSettings)}
-             className="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-xl relative transition-all border border-transparent hover:border-slate-300"
+             className="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg relative transition-all border border-transparent hover:border-slate-300"
              title="Tùy chỉnh giao diện Bảng/Biểu"
            >
              <LayoutTemplate className="w-4.5 h-4.5" />
@@ -134,7 +134,7 @@ export function Header() {
          <div className="relative" ref={dropdownRef}>
   <button 
   onClick={() => setShowNotifications(!showNotifications)}
-  className="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-xl relative transition-all border border-transparent hover:border-slate-300"
+  className="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg relative transition-all border border-transparent hover:border-slate-300"
   >
   <Bell className="w-4.5 h-4.5" />
   {unreadCount > 0 && (

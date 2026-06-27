@@ -168,9 +168,9 @@ export function SupplierPortal() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]" />
 
-        <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-2xl shadow-2xl p-8 backdrop-blur-xl relative z-10">
+        <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-lg shadow-2xl p-8 backdrop-blur-xl relative z-10">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600/10 border border-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
+            <div className="w-16 h-16 bg-blue-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
               <Building2 className="w-8 h-8" />
             </div>
             <h1 className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
@@ -274,7 +274,7 @@ export function SupplierPortal() {
         {/* Left Stats & Info Column */}
         <div className="lg:col-span-3 space-y-6">
           {/* Supplier Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 shadow-sm space-y-4">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-blue-500" /> Thông tin nhà cung cấp
             </h3>
@@ -299,7 +299,7 @@ export function SupplierPortal() {
           </div>
 
           {/* Quick Stats */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
               Thống kê giao nhận
             </h3>
@@ -328,7 +328,7 @@ export function SupplierPortal() {
 
         {/* Right PO Management Column */}
         <div className="lg:col-span-9 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 shadow-sm">
             
             {/* Table Header Filter controls */}
             <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
@@ -442,7 +442,7 @@ export function SupplierPortal() {
 
           {/* Selected PO Details Card */}
           {selectedPo && (
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom duration-300">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom duration-300">
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="flex items-center gap-3">
                   <button onClick={() => setSelectedPo(null)} className="p-1.5 hover:bg-slate-850 rounded-lg text-slate-400 transition-colors">
@@ -464,7 +464,7 @@ export function SupplierPortal() {
                 <div className="space-y-4">
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Mặt hàng & Yêu cầu kỹ thuật</p>
-                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-850">
+                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-850">
                       <p className="text-sm font-bold text-slate-200">{selectedPo.title}</p>
                       <div className="flex justify-between items-center mt-3 text-xs text-slate-400">
                         <span>Số lượng đặt:</span>
@@ -485,7 +485,7 @@ export function SupplierPortal() {
                 <div className="space-y-4">
                   <div>
                     <p className="text-xs text-slate-500 mb-2">Trạng thái vận chuyển & Phối hợp</p>
-                    <div className="bg-slate-955 p-4 rounded-xl border border-slate-850 space-y-3">
+                    <div className="bg-slate-955 p-4 rounded-lg border border-slate-850 space-y-3">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-slate-400">Trạng thái:</span>
                         <span className="font-bold text-blue-400 uppercase tracking-wider">
@@ -588,11 +588,11 @@ export function SupplierPortal() {
       {/* QR Code Delivery Note Modal */}
       {showQrModal && selectedPo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full text-center relative space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 max-w-sm w-full text-center relative space-y-4">
             <h3 className="text-sm font-bold text-slate-200">Mã QR Phiếu giao hàng (Delivery Note)</h3>
             <p className="text-[11px] text-slate-400">Nhân viên kho VComm có thể quét mã này bằng điện thoại hoặc camera ERP để xác nhận nhập kho nhanh.</p>
             
-            <div className="bg-white p-4 rounded-xl inline-block border border-slate-250 mx-auto shadow-inner">
+            <div className="bg-white p-4 rounded-lg inline-block border border-slate-250 mx-auto shadow-inner">
               {/* Visual Simulated QR code using CSS */}
               <div className="w-48 h-48 bg-slate-950 flex flex-col items-center justify-center p-2 relative overflow-hidden rounded">
                 <div className="absolute inset-0 bg-[radial-gradient(#2563eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10" />

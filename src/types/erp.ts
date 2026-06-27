@@ -29,6 +29,8 @@ export interface Product {
 export interface SellerMetric {
  id: string;
  name: string;
+ email?: string;
+ phone?: string;
  totalProducts: number;
  rating: number;
  gmv: number;
@@ -41,6 +43,9 @@ export interface SellerMetric {
  commissionRate: number;
  joinDate: string;
  onboardingStep: 'documents' | 'verification' | 'completed';
+ businessLicenseUrl?: string;
+ idCardFrontUrl?: string;
+ idCardBackUrl?: string;
 }
 
 export interface CustomerActivity {
@@ -96,20 +101,32 @@ export interface DashboardStats {
 }
 
 export interface Order {
- id: string;
- customerName: string;
- date: string;
- total: number;
- status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returning';
- items: OrderItem[];
- paymentMethod: 'cod' | 'bank_transfer' | 'e_wallet';
+  id: string;
+  tenantId?: string;
+  customerId?: string;
+  customerName: string;
+  date: string;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returning';
+  items: OrderItem[];
+  paymentMethod: 'cod' | 'bank_transfer' | 'e_wallet';
+  
+  // Multi-Seller OMS fields
+  sellerId?: string;
+  parentOrderId?: string;
+  commissionFee?: number;
+  settlementStatus?: 'pending' | 'settled';
+  settlementId?: string;
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
 }
 
 export interface OrderItem {
- productId: string;
- productName: string;
- quantity: number;
- price: number;
+  id?: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  sellerId?: string;
 }
 
 // --- MARKETING & AFFILIATE ---
@@ -209,15 +226,19 @@ export interface JournalEntry {
 
 // --- SETTLEMENT & WITHDRAWAL ---
 export interface SettlementRow {
- id: string;
- sellerId: string;
- sellerName: string;
- period: string;
- totalSales: number;
- commissionFee: number;
- shippingFee: number;
- netPayout: number;
- status: 'pending' | 'completed' | 'failed';
+  id: string;
+  sellerId: string;
+  sellerName: string;
+  periodStart: string;
+  periodEnd: string;
+  totalSales: number;
+  commissionFee: number;
+  shippingFee: number;
+  netPayout: number;
+  status: 'pending' | 'completed' | 'failed';
+  paidAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface WithdrawalRequest {

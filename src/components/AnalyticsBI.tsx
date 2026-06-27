@@ -231,7 +231,7 @@ export function AnalyticsBI() {
  stat.alert ? "text-rose-600" : "text-slate-500"
  )}>{stat.label}</span>
  <div className={cn(
- "p-2 rounded-xl border transition-transform group-hover:rotate-12",
+ "p-2 rounded-lg border transition-transform group-hover:rotate-12",
  stat.alert ? "bg-rose-100 border-rose-200 text-rose-600 animate-pulse" : "bg-slate-50 border-slate-200 text-slate-500 group-hover:bg-slate-100 group-hover:text-orange-700"
  )}>
  <stat.icon className="w-4 h-4" />
@@ -627,7 +627,7 @@ export function AnalyticsBI() {
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Dự báo chuyển động tài chính trong 6 tháng tới</p>
  </div>
- <div className="flex gap-4 p-1.5 bg-slate-50 rounded-xl">
+ <div className="flex gap-4 p-1.5 bg-slate-50 rounded-lg">
  <div className="flex items-center gap-2 px-2">
  <div className="w-2 h-2 rounded-full bg-slate-900" />
  <span className="text-[10px] font-black uppercase text-slate-600">CLV</span>

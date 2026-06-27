@@ -47,6 +47,7 @@ const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m
 const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
 const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
 const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
+const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
 
 
 import { useAuth } from './context/AuthContext';
@@ -307,6 +308,7 @@ function AppLayout() {
     <Route path="/cskh" element={<CustomerService />} />
     <Route path="/scm" element={<Procurement />} />
     <Route path="/warehouse" element={<WarehouseModule />} />
+    <Route path="/logistics" element={<Logistics />} />
     <Route path="/finance" element={<Finance />} />
     <Route path="/settlement" element={<SettlementManagement />} />
     <Route path="/hr" element={<HumanResources />} />

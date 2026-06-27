@@ -105,7 +105,7 @@ export function OmniChat() {
  };
 
  return (
- <div className="flex bg-white rounded-2xl border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden animate-in fade-in duration-500">
+ <div className="flex bg-white rounded-lg border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden animate-in fade-in duration-500">
  {/* Sidebar - Thread List */}
  <div className="w-[320px] border-r border-slate-100 flex flex-col">
  <div className="p-4 border-b border-slate-100">
@@ -117,7 +117,7 @@ export function OmniChat() {
  <input 
  type="text" 
  placeholder="Tìm khách hàng..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all"
  />
  </div>
  </div>
@@ -253,7 +253,7 @@ export function OmniChat() {
  <button 
  onClick={generateDraft}
  disabled={isAiorocessing}
- className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-xl hover:bg-primary-600 hover:text-white transition-all shadow-sm group relative"
+ className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-lg hover:bg-primary-600 hover:text-white transition-all shadow-sm group relative"
  >
  <Sparkles className={cn("w-5 h-5", isAiorocessing && "animate-spin")} />
  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
@@ -265,7 +265,7 @@ export function OmniChat() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
  />
  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600  transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
  <Send className="w-5 h-5" />
@@ -318,7 +318,7 @@ export function OmniChat() {
  { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
  { id: 'ORD-8840', status: 'delivered', amount: 850000 }
  ].map(order => (
- <div key={order.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1 group hover:border-orange-200 transition-all cursor-pointer">
+ <div key={order.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1 group hover:border-orange-200 transition-all cursor-pointer">
  <div className="flex justify-between items-start">
  <span className="text-xs font-bold text-slate-900 font-mono">{order.id}</span>
  <span className={cn(

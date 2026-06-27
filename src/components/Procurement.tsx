@@ -96,7 +96,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  const categories = Array.from(new Set(MOCK_SUPPLIERS.map(s => s.category)));
 
  return (
- <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
  <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
  <div className="flex items-center gap-4">
  <button 
@@ -346,7 +346,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
   });
 
   return (
-    <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
+    <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden mt-4 animate-in fade-in slide-in- duration-500">
       <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
         <div className="flex items-center gap-4">
           <button 
@@ -532,7 +532,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
       {/* PO PDF visualizer modal */}
       {selectedRequestForPo && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-2xl relative flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div>
                 <h3 className="text-base font-bold text-slate-900">Chi tiết Đơn đặt hàng (Purchase Order PDF)</h3>
@@ -547,7 +547,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Visual PDF Body */}
-            <div className="flex-1 overflow-y-auto my-6 p-6 border border-slate-350 bg-slate-50 rounded-xl font-mono text-slate-800 text-xs space-y-6">
+            <div className="flex-1 overflow-y-auto my-6 p-6 border border-slate-350 bg-slate-50 rounded-lg font-mono text-slate-800 text-xs space-y-6">
               
               {/* PDF Header */}
               <div className="flex justify-between items-start pb-4 border-b border-dashed border-slate-400">
@@ -699,7 +699,7 @@ export function Procurement() {
  <div className="space-y-8">
  {/* Stats Cards */}
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
@@ -709,7 +709,7 @@ export function Procurement() {
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
  <Clock className="w-4 h-4 text-orange-700" />
@@ -719,7 +719,7 @@ export function Procurement() {
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
  <Building2 className="w-4 h-4 text-orange-600" />
@@ -729,7 +729,7 @@ export function Procurement() {
  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
  <Star className="w-4 h-4 text-primary-600" />

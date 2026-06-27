@@ -357,10 +357,10 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                     [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                     [&_li]:my-1
                     [&_blockquote]:border-l-4 [&_blockquote]:border-blue-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-500 [&_blockquote]:my-4
-                    [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:text-sm [&_pre]:overflow-x-auto [&_pre]:my-4
+                    [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:text-sm [&_pre]:overflow-x-auto [&_pre]:my-4
                     [&_a]:text-blue-600 [&_a]:underline [&_a]:cursor-pointer
                     [&_hr]:border-slate-200 [&_hr]:my-6
-                    [&_img]:rounded-xl [&_img]:max-w-full [&_img]:shadow-sm
+                    [&_img]:rounded-lg [&_img]:max-w-full [&_img]:shadow-sm
                     focus:ring-0"
                   data-placeholder="Bắt đầu soạn thảo nội dung trang tại đây..."
                   style={{ '--tw-prose-body': '#1e293b' } as React.CSSProperties}
@@ -372,7 +372,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                 <textarea
                   value={htmlSource}
                   onChange={e => setHtmlSource(e.target.value)}
-                  className="w-full min-h-[60vh] font-mono text-sm bg-slate-900 text-emerald-400 p-5 rounded-xl outline-none border border-slate-700 focus:border-blue-500 resize-none leading-relaxed"
+                  className="w-full min-h-[60vh] font-mono text-sm bg-slate-900 text-emerald-400 p-5 rounded-lg outline-none border border-slate-700 focus:border-blue-500 resize-none leading-relaxed"
                   placeholder="<!-- Nhập HTML tại đây -->"
                   spellCheck={false}
                 />
@@ -380,7 +380,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
 
               {/* Preview */}
               {viewMode === 'preview' && (
-                <div className="bg-white rounded-2xl shadow-sm p-6 min-h-[60vh]">
+                <div className="bg-white rounded-lg shadow-sm p-6 min-h-[60vh]">
                   <div className="mb-4 pb-4 border-b border-slate-100">
                     <h1 className="text-3xl font-bold text-slate-800">{title || 'Chưa có tiêu đề'}</h1>
                     {seoDesc && <p className="text-sm text-slate-400 mt-1">{seoDesc}</p>}
@@ -393,8 +393,8 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                     className="prose prose-slate max-w-none
                       [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:text-xl [&_h3]:font-bold
                       [&_blockquote]:border-l-4 [&_blockquote]:border-blue-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-500
-                      [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-xl
-                      [&_a]:text-blue-600 [&_a]:underline [&_img]:rounded-xl [&_img]:max-w-full"
+                      [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-lg
+                      [&_a]:text-blue-600 [&_a]:underline [&_img]:rounded-lg [&_img]:max-w-full"
                     dangerouslySetInnerHTML={{ __html: viewMode === 'preview'
                       ? (editorRef.current?.innerHTML || htmlSource)
                       : htmlSource }}
@@ -423,22 +423,22 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
       {/* ── Link dialog ── */}
       {showLinkDialog && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-sm p-6 w-96 space-y-4">
+          <div className="bg-white rounded-lg shadow-sm p-6 w-96 space-y-4">
             <h3 className="font-bold text-slate-800 flex items-center gap-2"><Link className="w-4 h-4 text-blue-500" />Chèn liên kết</h3>
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">URL</label>
               <input autoFocus type="url" value={linkHref} onChange={e => setLinkHref(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && insertLink()}
-                placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500" />
+                placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Văn bản hiển thị</label>
               <input type="text" value={linkText} onChange={e => setLinkText(e.target.value)}
                 placeholder="Để trống = dùng văn bản đang chọn"
-                className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500" />
+                className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div className="flex gap-2 pt-2">
-              <button onClick={() => setShowLinkDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-2xl text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
+              <button onClick={() => setShowLinkDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
               <button onClick={insertLink} className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-500">Chèn</button>
             </div>
           </div>
@@ -448,11 +448,11 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
       {/* ── Image dialog ── */}
       {showImageDialog && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-sm p-6 w-96 space-y-4">
+          <div className="bg-white rounded-lg shadow-sm p-6 w-96 space-y-4">
             <h3 className="font-bold text-slate-800 flex items-center gap-2"><Image className="w-4 h-4 text-blue-500" />Chèn hình ảnh</h3>
 
             {/* Upload file */}
-            <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-blue-400 transition-colors">
+            <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
               <input type="file" id="img-upload-editor" className="hidden" accept="image/*" onChange={handleImageFileUpload} />
               <label htmlFor="img-upload-editor" className="cursor-pointer flex flex-col items-center gap-1">
                 <Image className="w-6 h-6 text-slate-300" />
@@ -466,16 +466,16 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">URL hình ảnh</label>
               <input autoFocus type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-                placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500" />
+                placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Mô tả (alt text)</label>
               <input type="text" value={imageAlt} onChange={e => setImageAlt(e.target.value)}
                 placeholder="Mô tả hình ảnh..."
-                className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500" />
+                className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div className="flex gap-2 pt-2">
-              <button onClick={() => setShowImageDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-2xl text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
+              <button onClick={() => setShowImageDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
               <button onClick={insertImage} disabled={!imageUrl} className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-500 disabled:opacity-40">Chèn</button>
             </div>
           </div>

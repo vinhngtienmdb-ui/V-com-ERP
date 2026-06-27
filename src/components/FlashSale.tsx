@@ -21,8 +21,10 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Campaign } from '../types/erp';
+import { useAuth } from '../context/AuthContext';
 import { MOCK_AFFILIATES } from './Affiliate';
 import { MOCK_SELLERS } from './Sellers';
+import { Modal } from './ui/Modal';
 
 interface FlashSaleCampaign extends Campaign {
  requiredParticipants?: number;
@@ -120,11 +122,14 @@ const MOCK_PRODUCTS = [
 ];
 
 export function FlashSale() {
+ const { staffInfo } = useAuth();
+ const isSeller = staffInfo?.role === 'seller';
+
  const [activeTab, setActiveTab] = useState<'group_buy' | 'flash_sale' | 'voucher'>('group_buy');
  const [isModalOpen, setIsModalOpen] = useState(false);
  
  // Voucher states
- const [voucherType, setVoucherType] = useState<'admin' | 'seller' | 'shipping'>('admin');
+ const [voucherType, setVoucherType] = useState<'admin' | 'seller' | 'shipping'>(isSeller ? 'seller' : 'admin');
  const [selectedSellers, setSelectedSellers] = useState<string[]>([]);
 
  // Group buy states
@@ -135,6 +140,13 @@ export function FlashSale() {
  const [kolCommission, setKolCommission] = useState(5);
 
  const selectedProduct = MOCK_PRODUCTS.find(p => p.id === selectedProductId);
+
+ const filteredVouchers = MOCK_VOUCHERS.filter(v => {
+   if (isSeller) {
+     return v.creatorType === 'seller';
+   }
+   return true;
+ });
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -185,385 +197,356 @@ export function FlashSale() {
  </button>
  </div>
 
- {isModalOpen && activeTab === 'group_buy' && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] flex flex-col">
- <div className="flex justify-between items-center mb-6 shrink-0">
- <div className="flex items-center gap-2 text-rose-600">
- <Zap className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo chiến dịch Mua Chung Sập Giá</h2>
- </div>
- <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
- <X className="w-5 h-5" />
- </button>
- </div>
- 
- <div className="overflow-y-auto flex-1 pr-2 custom-scrollbar">
- <form className="space-y-6">
- {/* General Settings */}
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
- <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: Mua chung Tủ Lạnh..." required />
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">KOL/KOC Khởi tạo</label>
- <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
- <option value="">-- Chọn KOL/KOC --</option>
- {MOCK_AFFILIATES.filter(a => a.type === 'kol').map(kol => (
- <option key={kol.id} value={kol.name}>{kol.name} ({kol.followers ? `${(kol.followers/1000).toFixed(0)}K followers` : ''})</option>
- ))}
- </select>
- </div>
- <div className="md:col-span-2">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Sản phẩm triển khai</label>
- <select 
- className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
- required
- value={selectedProductId}
- onChange={(e) => setSelectedProductId(e.target.value)}
- >
- <option value="">-- Chọn sản phẩm --</option>
- {MOCK_PRODUCTS.map(p => (
- <option key={p.id} value={p.id}>{p.name} - Giá bán: {formatCurrency(p.price)}</option>
- ))}
- </select>
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Bắt đầu</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kết thúc</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- </div>
+  <Modal
+    isOpen={isModalOpen && activeTab === 'group_buy'}
+    onClose={() => setIsModalOpen(false)}
+    title="Tạo chiến dịch Mua Chung Sập Giá"
+    icon={<Zap className="w-5 h-5 text-rose-600 fill-current" />}
+    maxWidth="2xl"
+    confirmText="Khởi chạy Mua Chung Sập Giá"
+    confirmVariant="danger"
+    onConfirm={() => setIsModalOpen(false)}
+  >
+  <form className="space-y-6">
+  {/* General Settings */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
+  <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: Mua chung Tủ Lạnh..." required />
+  </div>
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">KOL/KOC Khởi tạo</label>
+  <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
+  <option value="">-- Chọn KOL/KOC --</option>
+  {MOCK_AFFILIATES.filter(a => a.type === 'kol').map(kol => (
+  <option key={kol.id} value={kol.name}>{kol.name} ({kol.followers ? `${(kol.followers/1000).toFixed(0)}K followers` : ''})</option>
+  ))}
+  </select>
+  </div>
+  <div className="md:col-span-2">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Sản phẩm triển khai</label>
+  <select 
+  className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
+  required
+  value={selectedProductId}
+  onChange={(e) => setSelectedProductId(e.target.value)}
+  >
+  <option value="">-- Chọn sản phẩm --</option>
+  {MOCK_PRODUCTS.map(p => (
+  <option key={p.id} value={p.id}>{p.name} - Giá bán: {formatCurrency(p.price)}</option>
+  ))}
+  </select>
+  </div>
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Bắt đầu</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kết thúc</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  </div>
 
- {/* Tiers Configuration */}
- <div className="bg-slate-50 p-5 rounded-lg border border-slate-300">
- <div className="flex justify-between items-center mb-4">
- <div>
- <h4 className="text-sm font-bold text-slate-900">Các mốc giảm giá (Multi-tier)</h4>
- <p className="text-xs text-slate-600">Người mua sẽ được hưởng chiết khấu tương ứng với mốc số lượng mua chung đạt được.</p>
- </div>
- <button 
- type="button"
- onClick={() => setTiers([...tiers, { quantity: 1000, discount: 15 }])}
- className="px-3 py-1.5 bg-white border border-slate-400 rounded-lg text-xs font-bold text-slate-800 flex items-center gap-1.5 hover:bg-slate-100"
- >
- <Plus className="w-3.5 h-3.5" /> Thêm mốc mới
- </button>
- </div>
- 
- <div className="space-y-3">
- {tiers.map((tier, index) => (
- <div key={index} className="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-300">
- <div className="flex-1">
- <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Mốc đơn hàng đạt</label>
- <div className="relative">
- <input 
- type="number" 
- value={tier.quantity} 
- onChange={(e) => {
- const newTiers = [...tiers];
- newTiers[index].quantity = Number(e.target.value);
- setTiers(newTiers);
- }}
- className="w-full font-mono text-sm border border-slate-300 rounded p-2 focus:border-slate-900 outline-none" 
- />
- </div>
- </div>
- <div className="flex-1">
- <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Giảm giá (%)</label>
- <div className="relative">
- <input 
- type="number" 
- value={tier.discount} 
- onChange={(e) => {
- const newTiers = [...tiers];
- newTiers[index].discount = Number(e.target.value);
- setTiers(newTiers);
- }}
- className="w-full font-mono text-sm border border-slate-300 rounded p-2 pr-8 focus:border-slate-900 outline-none text-rose-600 font-bold" 
- />
- <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">%</span>
- </div>
- </div>
- <button 
- type="button" 
- onClick={() => setTiers(tiers.filter((_, i) => i !== index))}
- className="mt-5 p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded"
- >
- <Trash2 className="w-4 h-4" />
- </button>
- </div>
- ))}
- </div>
- </div>
+  {/* Tiers Configuration */}
+  <div className="bg-slate-50 p-5 rounded-lg border border-slate-300">
+  <div className="flex justify-between items-center mb-4">
+  <div>
+  <h4 className="text-sm font-bold text-slate-900">Các mốc giảm giá (Multi-tier)</h4>
+  <p className="text-xs text-slate-600">Người mua sẽ được hưởng chiết khấu tương ứng với mốc số lượng mua chung đạt được.</p>
+  </div>
+  <button 
+  type="button"
+  onClick={() => setTiers([...tiers, { quantity: 1000, discount: 15 }])}
+  className="px-3 py-1.5 bg-white border border-slate-400 rounded-lg text-xs font-bold text-slate-800 flex items-center gap-1.5 hover:bg-slate-100"
+  >
+  <Plus className="w-3.5 h-3.5" /> Thêm mốc mới
+  </button>
+  </div>
+  
+  <div className="space-y-3">
+  {tiers.map((tier, index) => (
+  <div key={index} className="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-300">
+  <div className="flex-1">
+  <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Mốc đơn hàng đạt</label>
+  <div className="relative">
+  <input 
+  type="number" 
+  value={tier.quantity} 
+  onChange={(e) => {
+  const newTiers = [...tiers];
+  newTiers[index].quantity = Number(e.target.value);
+  setTiers(newTiers);
+  }}
+  className="w-full font-mono text-sm border border-slate-300 rounded p-2 focus:border-slate-900 outline-none" 
+  />
+  </div>
+  </div>
+  <div className="flex-1">
+  <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Giảm giá (%)</label>
+  <div className="relative">
+  <input 
+  type="number" 
+  value={tier.discount} 
+  onChange={(e) => {
+  const newTiers = [...tiers];
+  newTiers[index].discount = Number(e.target.value);
+  setTiers(newTiers);
+  }}
+  className="w-full font-mono text-sm border border-slate-300 rounded p-2 pr-8 focus:border-slate-900 outline-none text-rose-600 font-bold" 
+  />
+  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">%</span>
+  </div>
+  </div>
+  <button 
+  type="button" 
+  onClick={() => setTiers(tiers.filter((_, i) => i !== index))}
+  className="mt-5 p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded"
+  >
+  <Trash2 className="w-4 h-4" />
+  </button>
+  </div>
+  ))}
+  </div>
+  </div>
 
- {/* PnL Parameters */}
- <div className="bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><Calculator className="w-4 h-4 text-orange-600" /> Bảng tính Lợi nhuận (P&L)</h4>
- 
- <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-200">
- <div>
- <label className="block text-[11px] font-semibold text-slate-600 mb-1">C/K Nhà cung cấp (%)</label>
- <input type="number" value={distributorDiscount} onChange={(e) => setDistributorDiscount(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
- </div>
- <div>
- <label className="block text-[11px] font-semibold text-slate-600 mb-1">C/K Đại lý (%)</label>
- <input type="number" value={agentDiscount} onChange={(e) => setAgentDiscount(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
- </div>
- <div>
- <label className="block text-[11px] font-semibold text-slate-600 mb-1">Hoa hồng KOL (%)</label>
- <input type="number" value={kolCommission} onChange={(e) => setKolCommission(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
- </div>
- </div>
+  {/* PnL Parameters */}
+  <div className="bg-white p-5 rounded-lg border border-slate-300">
+  <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><Calculator className="w-4 h-4 text-orange-600" /> Bảng tính Lợi nhuận (P&L)</h4>
+  
+  <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-200">
+  <div>
+  <label className="block text-[11px] font-semibold text-slate-600 mb-1">C/K Nhà cung cấp (%)</label>
+  <input type="number" value={distributorDiscount} onChange={(e) => setDistributorDiscount(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
+  </div>
+  <div>
+  <label className="block text-[11px] font-semibold text-slate-600 mb-1">C/K Đại lý (%)</label>
+  <input type="number" value={agentDiscount} onChange={(e) => setAgentDiscount(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
+  </div>
+  <div>
+  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Hoa hồng KOL (%)</label>
+  <input type="number" value={kolCommission} onChange={(e) => setKolCommission(Number(e.target.value))} className="w-full border border-slate-400 rounded-md p-2 text-sm bg-slate-50" />
+  </div>
+  </div>
 
- {/* PnL Projection Table */}
- {selectedProduct ? (
- <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
- <th className="p-3 rounded-tl-lg">Mốc đơn</th>
- <th className="p-3">Giá bán/SP</th>
- <th className="p-3 text-right">Lợi nhuận/SP</th>
- <th className="p-3 text-right rounded-tr-lg">Tổng LN (Dự kiến)</th>
- </tr>
- </thead>
- <tbody className="text-sm">
- {tiers.sort((a, b) => a.quantity - b.quantity).map((tier, idx) => {
- const salePrice = selectedProduct.price * (1 - tier.discount / 100);
- // Deducting discounts based on SalePrice
- const netRevenue = salePrice * (1 - distributorDiscount / 100 - agentDiscount / 100 - kolCommission / 100);
- const profitPerItem = netRevenue - selectedProduct.costPrice;
- const totalProfit = profitPerItem * tier.quantity;
+  {/* PnL Projection Table */}
+  {selectedProduct ? (
+  <div className="overflow-x-auto min-w-0">
+  <table className="w-full text-left whitespace-nowrap">
+  <thead>
+  <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
+  <th className="p-3 rounded-tl-lg">Mốc đơn</th>
+  <th className="p-3">Giá bán/SP</th>
+  <th className="p-3 text-right">Lợi nhuận/SP</th>
+  <th className="p-3 text-right rounded-tr-lg">Tổng LN (Dự kiến)</th>
+  </tr>
+  </thead>
+  <tbody className="text-sm">
+  {tiers.sort((a, b) => a.quantity - b.quantity).map((tier, idx) => {
+  const salePrice = selectedProduct.price * (1 - tier.discount / 100);
+  // Deducting discounts based on SalePrice
+  const netRevenue = salePrice * (1 - distributorDiscount / 100 - agentDiscount / 100 - kolCommission / 100);
+  const profitPerItem = netRevenue - selectedProduct.costPrice;
+  const totalProfit = profitPerItem * tier.quantity;
 
- return (
- <tr key={idx} className="border-b border-slate-200 last:border-0 hover:bg-slate-50/50">
- <td className="p-3 font-bold text-slate-900">{tier.quantity} x {tier.discount}%</td>
- <td className="p-3 font-mono text-orange-700">{formatCurrency(salePrice)}</td>
- <td className={cn("p-3 font-mono text-right font-bold", profitPerItem > 0 ? "text-emerald-600" : "text-rose-600")}>
- {formatCurrency(profitPerItem)}
- </td>
- <td className={cn("p-3 font-mono text-right font-black", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
- {formatCurrency(totalProfit)}
- </td>
- </tr>
- );
- })}
- </tbody>
- </table>
- <p className="text-[10px] text-slate-500 mt-2 italic">* Lợi nhuận = Giá sau KM - (C/K NCC + C/K Đại lý + HH KOL) - Giá vốn</p>
- </div>
- ) : (
- <div className="text-center py-6 text-sm text-slate-600 bg-slate-50 rounded-lg flex flex-col items-center gap-2">
- <Package className="w-8 h-8 text-slate-500" />
- Vui lòng chọn Sản phẩm triển khai ở trên để xem P&L.
- </div>
- )}
- </div>
- </form>
- </div>
- 
- <div className="mt-6 pt-4 border-t border-slate-200 shrink-0">
- <button className="w-full bg-rose-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-rose-500/25 hover:bg-rose-700 transition flex items-center justify-center gap-2">
- <Zap className="w-5 h-5 fill-current" /> Khởi chạy Mua Chung Sập Giá
- </button>
- </div>
- </div>
- </div>
- )}
+  return (
+  <tr key={idx} className="border-b border-slate-200 last:border-0 hover:bg-slate-50/50">
+  <td className="p-3 font-bold text-slate-900">{tier.quantity} x {tier.discount}%</td>
+  <td className="p-3 font-mono text-orange-700">{formatCurrency(salePrice)}</td>
+  <td className={cn("p-3 font-mono text-right font-bold", profitPerItem > 0 ? "text-emerald-600" : "text-rose-600")}>
+  {formatCurrency(profitPerItem)}
+  </td>
+  <td className={cn("p-3 font-mono text-right font-black", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
+  {formatCurrency(totalProfit)}
+  </td>
+  </tr>
+  );
+  })}
+  </tbody>
+  </table>
+  <p className="text-[10px] text-slate-500 mt-2 italic">* Lợi nhuận = Giá sau KM - (C/K NCC + C/K Đại lý + HH KOL) - Giá vốn</p>
+  </div>
+  ) : (
+  <div className="text-center py-6 text-sm text-slate-600 bg-slate-50 rounded-lg flex flex-col items-center gap-2">
+  <Package className="w-8 h-8 text-slate-500" />
+  Vui lòng chọn Sản phẩm triển khai ở trên để xem P&L.
+  </div>
+  )}
+  </div>
+  </form>
+  </Modal>
 
- {isModalOpen && activeTab === 'flash_sale' && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
- <div className="flex justify-between items-center mb-6 shrink-0">
- <div className="flex items-center gap-2 text-orange-600">
- <Zap className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo Flash Sale</h2>
- </div>
- <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
- <X className="w-5 h-5" />
- </button>
- </div>
- 
- <form className="space-y-4">
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch Flash Sale</label>
- <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Deal khủng giữa tháng..." required />
- </div>
- <div className="grid grid-cols-2 gap-4">
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- </div>
+  <Modal
+    isOpen={isModalOpen && activeTab === 'flash_sale'}
+    onClose={() => setIsModalOpen(false)}
+    title="Tạo Flash Sale"
+    icon={<Zap className="w-5 h-5 text-orange-600 fill-current" />}
+    maxWidth="2xl"
+    confirmText="Lưu & Khởi chạy Flash Sale"
+    confirmVariant="warning"
+    onConfirm={() => setIsModalOpen(false)}
+  >
+  <form className="space-y-4">
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch Flash Sale</label>
+  <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Deal khủng giữa tháng..." required />
+  </div>
+  <div className="grid grid-cols-2 gap-4">
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  </div>
 
- <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
- <h4 className="text-sm font-bold text-slate-900 mb-2">Thêm Sản phẩm Flash Sale</h4>
- <div className="flex gap-2 mb-3">
- <select className="flex-1 border border-slate-400 rounded-lg p-2 text-sm bg-white" required>
- <option value="">-- Chọn sản phẩm tham gia --</option>
- {MOCK_PRODUCTS.map(p => (
- <option key={p.id} value={p.id}>{p.name} (Gốc: {formatCurrency(p.price)})</option>
- ))}
- </select>
- <input type="number" placeholder="Giảm giá (%)" className="w-24 border border-slate-400 rounded-lg p-2 text-sm" />
- <input type="number" placeholder="Giới hạn (SP)" className="w-32 border border-slate-400 rounded-lg p-2 text-sm" />
- <button type="button" className="bg-slate-800 text-[#FAF9F5] px-3 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition"><Plus className="w-4 h-4"/></button>
- </div>
- <div className="text-[11px] text-slate-600 italic mb-3">Thêm 1 hoặc nhiều sản phẩm với mức giảm giá khác nhau...</div>
- 
- {/* Table preview for added flash sale products */}
- <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left whitespace-nowrap">
- <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
- <tr>
- <th className="px-3 py-2">Sản phẩm</th>
- <th className="px-3 py-2 text-right">Giảm giá (%)</th>
- <th className="px-3 py-2 text-right">SL Giới hạn</th>
- <th className="px-3 py-2"></th>
- </tr>
- </thead>
- <tbody>
- <tr className="border-t border-slate-200">
- <td className="px-3 py-2 font-medium text-slate-800">iPhone 15 Pro Max 256GB</td>
- <td className="px-3 py-2 text-right font-bold text-rose-600">8%</td>
- <td className="px-3 py-2 text-right font-mono">100</td>
- <td className="px-3 py-2 text-right">
- <button type="button" className="text-rose-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
- </td>
- </tr>
- </tbody>
- </table>
- </div>
- </div>
+  <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
+  <h4 className="text-sm font-bold text-slate-900 mb-2">Thêm Sản phẩm Flash Sale</h4>
+  <div className="flex gap-2 mb-3">
+  <select className="flex-1 border border-slate-400 rounded-lg p-2 text-sm bg-white" required>
+  <option value="">-- Chọn sản phẩm tham gia --</option>
+  {MOCK_PRODUCTS.map(p => (
+  <option key={p.id} value={p.id}>{p.name} (Gốc: {formatCurrency(p.price)})</option>
+  ))}
+  </select>
+  <input type="number" placeholder="Giảm giá (%)" className="w-24 border border-slate-400 rounded-lg p-2 text-sm" />
+  <input type="number" placeholder="Giới hạn (SP)" className="w-32 border border-slate-400 rounded-lg p-2 text-sm" />
+  <button type="button" className="bg-slate-800 text-[#FAF9F5] px-3 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition"><Plus className="w-4 h-4"/></button>
+  </div>
+  <div className="text-[11px] text-slate-600 italic mb-3">Thêm 1 hoặc nhiều sản phẩm với mức giảm giá khác nhau...</div>
+  
+  {/* Table preview for added flash sale products */}
+  <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
+  <table className="w-full text-left whitespace-nowrap">
+  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
+  <tr>
+  <th className="px-3 py-2">Sản phẩm</th>
+  <th className="px-3 py-2 text-right">Giảm giá (%)</th>
+  <th className="px-3 py-2 text-right">SL Giới hạn</th>
+  <th className="px-3 py-2"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr className="border-t border-slate-200">
+  <td className="px-3 py-2 font-medium text-slate-800">iPhone 15 Pro Max 256GB</td>
+  <td className="px-3 py-2 text-right font-bold text-rose-600">8%</td>
+  <td className="px-3 py-2 text-right font-mono">100</td>
+  <td className="px-3 py-2 text-right">
+  <button type="button" className="text-rose-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </form>
+  </Modal>
 
- <button className="w-full bg-orange-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-orange-500/25 hover:bg-orange-700 transition mt-4">
- Lưu & Khởi chạy Flash Sale
- </button>
- </form>
- </div>
- </div>
- )}
+  <Modal
+    isOpen={isModalOpen && activeTab === 'voucher'}
+    onClose={() => setIsModalOpen(false)}
+    title="Tạo Voucher Mới"
+    icon={<Ticket className="w-5 h-5 text-emerald-600 fill-current" />}
+    maxWidth="2xl"
+    confirmText="Phát hành Voucher"
+    confirmVariant="success"
+    onConfirm={() => setIsModalOpen(false)}
+  >
+  <form className="space-y-4">
+  <div className="grid grid-cols-2 gap-4">
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mã Voucher (Code)</label>
+  <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm uppercase font-mono" placeholder="VD: SIEUSALE50" required />
+  </div>
+  {!isSeller && (
+    <div>
+      <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Phân loại Voucher</label>
+      <select 
+        className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
+        required
+        value={voucherType}
+        onChange={(e) => setVoucherType(e.target.value as any)}
+      >
+        <option value="admin">Voucher Sàn (Dùng toàn hệ thống)</option>
+        <option value="seller">Voucher Nhà bán (Shop cụ thể)</option>
+        <option value="shipping">Voucher Vận chuyển</option>
+      </select>
+    </div>
+  )}
+  </div>
 
- {isModalOpen && activeTab === 'voucher' && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-sm max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
- <div className="flex justify-between items-center mb-6">
- <div className="flex items-center gap-2 text-emerald-600">
- <Ticket className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo Voucher Mới</h2>
- </div>
- <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700">
- <X className="w-5 h-5" />
- </button>
- </div>
- 
- <form className="space-y-4">
- <div className="grid grid-cols-2 gap-4">
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mã Voucher (Code)</label>
- <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm uppercase font-mono" placeholder="VD: SIEUSALE50" required />
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Phân loại Voucher</label>
- <select 
- className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
- required
- value={voucherType}
- onChange={(e) => setVoucherType(e.target.value as any)}
- >
- <option value="admin">Voucher Sàn (Dùng toàn hệ thống)</option>
- <option value="seller">Voucher Nhà bán (Shop cụ thể)</option>
- <option value="shipping">Voucher Vận chuyển</option>
- </select>
- </div>
- </div>
+  {voucherType === 'seller' && !isSeller && (
+  <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-2">Áp dụng cho Nhà bán / Cửa hàng</label>
+  <div className="max-h-40 overflow-y-auto border border-slate-300 rounded bg-white">
+  {MOCK_SELLERS.length > 0 ? MOCK_SELLERS.map(seller => (
+  <label key={seller.id} className="flex items-center gap-3 p-3 border-b border-slate-200 hover:bg-slate-50 cursor-pointer last:border-b-0">
+  <input 
+  type="checkbox" 
+  className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
+  checked={selectedSellers.includes(seller.id)}
+  onChange={(e) => {
+  if (e.target.checked) {
+  setSelectedSellers([...selectedSellers, seller.id]);
+  } else {
+  setSelectedSellers(selectedSellers.filter(id => id !== seller.id));
+  }
+  }}
+  />
+  <div>
+  <p className="text-sm font-bold text-slate-900">{seller.name}</p>
+  <p className="text-[10px] text-slate-600">Mã: {seller.id}</p>
+  </div>
+  </label>
+  )) : (
+  <div className="p-4 text-center text-sm text-slate-600">Chưa có dữ liệu nhà bán</div>
+  )}
+  </div>
+  </div>
+  )}
 
- {voucherType === 'seller' && (
- <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-2">Áp dụng cho Nhà bán / Cửa hàng</label>
- <div className="max-h-40 overflow-y-auto border border-slate-300 rounded bg-white">
- {MOCK_SELLERS.length > 0 ? MOCK_SELLERS.map(seller => (
- <label key={seller.id} className="flex items-center gap-3 p-3 border-b border-slate-200 hover:bg-slate-50 cursor-pointer last:border-b-0">
- <input 
- type="checkbox" 
- className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
- checked={selectedSellers.includes(seller.id)}
- onChange={(e) => {
- if (e.target.checked) {
- setSelectedSellers([...selectedSellers, seller.id]);
- } else {
- setSelectedSellers(selectedSellers.filter(id => id !== seller.id));
- }
- }}
- />
- <div>
- <p className="text-sm font-bold text-slate-900">{seller.name}</p>
- <p className="text-[10px] text-slate-600">Mã: {seller.id}</p>
- </div>
- </label>
- )) : (
- <div className="p-4 text-center text-sm text-slate-600">Chưa có dữ liệu nhà bán</div>
- )}
- </div>
- </div>
- )}
+  <div className="grid grid-cols-3 gap-4">
+  <div className="col-span-1">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Loại Giảm Giá</label>
+  <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
+  <option value="percent">Giảm theo %</option>
+  <option value="fixed">Giảm số tiền cố định</option>
+  </select>
+  </div>
+  <div className="col-span-2">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mức Giảm Tương Ứng</label>
+  <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 50000 (VND) hoặc 10 (%)" required />
+  </div>
+  </div>
 
- <div className="grid grid-cols-3 gap-4">
- <div className="col-span-1">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Loại Giảm Giá</label>
- <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
- <option value="percent">Giảm theo %</option>
- <option value="fixed">Giảm số tiền cố định</option>
- </select>
- </div>
- <div className="col-span-2">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mức Giảm Tương Ứng</label>
- <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 50000 (VND) hoặc 10 (%)" required />
- </div>
- </div>
+  <div className="grid grid-cols-2 gap-4">
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giá Trị Đơn Tối Thiểu (VND)</label>
+  <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="0 nếu không yêu cầu" />
+  </div>
+  <div>
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giảm Tối Đa (VND) (Chỉ dùng cho %)</label>
+  <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Để trống nếu không giới hạn" />
+  </div>
+  </div>
 
- <div className="grid grid-cols-2 gap-4">
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giá Trị Đơn Tối Thiểu (VND)</label>
- <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="0 nếu không yêu cầu" />
- </div>
- <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giảm Tối Đa (VND) (Chỉ dùng cho %)</label>
- <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Để trống nếu không giới hạn" />
- </div>
- </div>
-
- <div className="grid grid-cols-3 gap-4">
- <div className="col-span-1">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Số lượt sử dụng</label>
- <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 1000" />
- </div>
- <div className="col-span-1">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- <div className="col-span-1">
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
- <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
- </div>
- </div>
-
- <button className="w-full bg-emerald-600 text-[#FAF9F5] p-3 rounded-lg font-bold shadow-sm shadow-emerald-500/25 hover:bg-emerald-700 transition mt-4">
- Phát hành Voucher
- </button>
- </form>
- </div>
- </div>
- )}
+  <div className="grid grid-cols-3 gap-4">
+  <div className="col-span-1">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Số lượt sử dụng</label>
+  <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 1000" />
+  </div>
+  <div className="col-span-1">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  <div className="col-span-1">
+  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
+  <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
+  </div>
+  </div>
+  </form>
+  </Modal>
 
  {/* Stats - Hide if Voucher Tab is active */}
  {activeTab !== 'voucher' && (
@@ -754,12 +737,12 @@ export function FlashSale() {
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Mã Voucher</th>
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nguồn (Admin/Nhà bán)</th>
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Chi tiết Giảm giá</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Lượt SC & Hạn sử dụng</th>
+ <th className="px-6 py-4 text-[11px] font-bold text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Lượt SC & Hạn sử dụng</th>
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {MOCK_VOUCHERS.map(voucher => (
+ {filteredVouchers.map(voucher => (
  <tr key={voucher.id} className="hover:bg-[#F9FAFB] transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">

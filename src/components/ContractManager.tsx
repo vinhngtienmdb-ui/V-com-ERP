@@ -30,8 +30,10 @@ import {
  Eye,
  Info
 } from 'lucide-react';
+import { Modal } from './ui/Modal';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const MOCK_CONTRACTS = [
  { id: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'labor', subtype: 'Chính thức', status: 'active', party: 'Nguyễn Văn A', expiry: '01/01/2025', value: '-', signatureStatus: 'signed', signers: [{role: 'Người sử dụng lao động', name: 'Giám đốc', status: 'signed'}, {role: 'Người lao động', name: 'Nguyễn Văn A', status: 'signed'}], file: { name: 'HDLD_NguyenVanA.docx', type: 'docx' }, comments: [ { id: 1, author: 'Nhân sự', time: '10:00 01/02', content: 'Đã cập nhật phụ lục đính kèm.' } ] },
@@ -319,9 +321,15 @@ export function ContractManager() {
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
-  {selectedContract && (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in p-4" onClick={() => setSelectedContract(null)}>
- <div className="bg-white rounded-xl shadow-sm w-full max-w-[95vw] h-[95vh] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" onClick={(e) => e.stopPropagation()}>
+   {selectedContract && (
+  <Modal
+    isOpen={true}
+    onClose={() => setSelectedContract(null)}
+    maxWidth="full"
+    hideFooter
+    noPadding
+  >
+  <div className="flex flex-col h-full overflow-hidden">
  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
  <div>
  <h3 className="text-lg font-bold text-slate-900">{selectedContract.title}</h3>
@@ -391,7 +399,7 @@ export function ContractManager() {
       <div className="p-4 space-y-6">
         
         {/* Status Box */}
-        <div className="bg-slate-50 p-4 border border-slate-200 rounded-xl">
+        <div className="bg-slate-50 p-4 border border-slate-200 rounded-lg">
           <h4 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-3">Tình trạng hồ sơ</h4>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
@@ -431,7 +439,7 @@ export function ContractManager() {
 
         {/* Action Panel for Pending */}
         {selectedContract.status === 'pending' && (
-          <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-xl space-y-3">
+          <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-lg space-y-3">
              <h4 className="text-xs font-bold uppercase text-blue-800 tracking-wider mb-2">Thao tác phê duyệt</h4>
              <button onClick={() => handleStatusChange(selectedContract.id, "active")} className="w-full px-4 py-2 bg-emerald-600 text-white rounded font-bold text-xs hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-2">
                <CheckCircle2 className="w-4 h-4" /> Phê duyệt hồ sơ
@@ -447,7 +455,7 @@ export function ContractManager() {
 
         {/* Progress */}
         {selectedContract.signers && (
-        <div className="border border-slate-200 rounded-xl overflow-hidden">
+        <div className="border border-slate-200 rounded-lg overflow-hidden">
           <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600" /> 
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Tiến trình chữ ký số</h4>
@@ -496,7 +504,7 @@ export function ContractManager() {
         </div>
         <div className="p-4 space-y-4">
           {(selectedContract.comments || []).map((cmt: any) => (
-             <div key={cmt.id} className="bg-slate-50 rounded-xl p-3 border border-slate-100 relative group">
+             <div key={cmt.id} className="bg-slate-50 rounded-lg p-3 border border-slate-100 relative group">
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-xs font-bold text-slate-900">{cmt.author}</span>
                   <span className="text-[9px] text-slate-400">{cmt.time}</span>
@@ -533,14 +541,19 @@ export function ContractManager() {
     </div>
   </div>
  </div>
- </div>
- </div>
+  </div>
+  </Modal>
  )}
 
 
  {signingModalOpen && (
- <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+  <Modal
+    isOpen={true}
+    onClose={() => setSigningModalOpen(false)}
+    maxWidth="2xl"
+    hideFooter
+    noPadding
+  >
  <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
  <div>
  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -558,7 +571,7 @@ export function ContractManager() {
  </div>
  
  <div className="p-6 space-y-5">
- <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl">
+ <div className="p-4 bg-slate-100 border border-slate-200 rounded-lg">
  <p className="text-xs text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-blue-900">{selectedContract?.title}</strong></p>
  </div>
 
@@ -572,7 +585,7 @@ export function ContractManager() {
  <p className="text-xs text-slate-600 mt-0.5">Xác thực qua ứng dụng trên điện thoại thông minh.</p>
  </div>
  </label>
- <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
+ <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors opacity-70">
  <input type="radio" name="signMethod" className="w-4 h-4 text-primary-600 border-slate-400 focus:ring-primary-600" />
  <div>
  <p className="text-[13px] font-bold text-slate-900">Ký bằng USB Token</p>
@@ -600,8 +613,7 @@ export function ContractManager() {
  <Key className="w-4 h-4" /> Xác nhận ký số
  </button>
  </div>
- </div>
- </div>
+ </Modal>
  )}
 
  <div className="flex items-center justify-between">
@@ -643,17 +655,17 @@ export function ContractManager() {
  </div>
 
  {/* Content */}
- <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+ <div className="flex-1 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
  <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <div className="relative w-64">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  <input 
  type="text" 
  placeholder="Tìm kiếm hợp đồng..."
- className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+ className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
  />
  </div>
- <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm">
+ <button className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-lg shadow-sm">
  <RefreshCw className="w-4 h-4" />
  </button>
  </div>
@@ -724,8 +736,13 @@ export function ContractManager() {
  </div>
  </div>
     {showCreateModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}>
- <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
+  <Modal
+    isOpen={true}
+    onClose={() => setShowCreateModal(false)}
+    maxWidth="md"
+    hideFooter
+    noPadding
+  >
  <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Tạo hợp đồng mới</h3>
  <button onClick={() => setShowCreateModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
@@ -749,7 +766,7 @@ export function ContractManager() {
  </div>
  <div>
   <label className="block text-[13px] font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
-  <div className="border-2 border-dashed border-slate-300 p-6 rounded-xl flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
+  <div className="border-2 border-dashed border-slate-300 p-6 rounded-lg flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
     <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200  transition-transform mb-3">
       <File className="w-6 h-6 text-primary-600" />
     </div>
@@ -762,12 +779,9 @@ export function ContractManager() {
  <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-colors">Hủy</button>
  <button onClick={() => { alert('Tạo hợp đồng thành công!'); setShowCreateModal(false); }} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition-colors">Tạo & Trình duyệt</button>
  </div>
- </div>
- </div>
+ </Modal>
  )}
   </div>
   </div>
   );
 }
-
- 

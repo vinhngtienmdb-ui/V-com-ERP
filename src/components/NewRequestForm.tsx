@@ -71,7 +71,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden w-full max-w-2xl mx-auto">
+    <div className="bg-white rounded-lg shadow-sm border border-slate-300 overflow-hidden w-full max-w-2xl mx-auto">
       <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
         <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
         {onCancel && (

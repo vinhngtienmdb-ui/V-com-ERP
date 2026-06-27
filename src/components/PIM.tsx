@@ -35,6 +35,7 @@ import {
  Tv,
  Settings
 } from 'lucide-react';
+import { useAuditLog } from '../hooks/useAuditLog';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
 import { syncProductToMisa } from '../services/misaService';
@@ -112,6 +113,7 @@ export function PIM() {
  const deleteProduct = async (id: string) => {
  try {
  await deleteDoc(doc(db, 'products', id));
+      log({ action: 'product.deleted', targetId: id, targetLabel: 'Sản phẩm đã xóa' });
  } catch (error) {
  handleFirestoreError(error, 'delete', 'products');
  }
@@ -1790,7 +1792,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </p>
  </div>
 
- <div className="relative z-10 text-right bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
+ <div className="relative z-10 text-right bg-white/10 backdrop-blur-md p-4 rounded-lg border border-white/20">
  <div className="text-3xl font-black font-mono">
  {netMargin.toFixed(1)}%
  </div>
@@ -1802,7 +1804,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  );
  })()}
  
- <div className="flex items-start gap-3 p-5 bg-slate-50 rounded-xl border border-slate-200">
+ <div className="flex items-start gap-3 p-5 bg-slate-50 rounded-lg border border-slate-200">
  <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
  <div className="space-y-1">
  <p className="text-xs font-black text-slate-800 uppercase tracking-tight">Cơ chế tính toán ERP 2.0</p>
@@ -1901,7 +1903,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Left side: Main Image Preview & Quick specs */}
               <div className="space-y-4">
-                <div className="relative aspect-square w-full rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm flex items-center justify-center">
+                <div className="relative aspect-square w-full rounded-lg bg-white border border-slate-200 overflow-hidden shadow-sm flex items-center justify-center">
                   <img 
                     src={showDetailForProduct.images && showDetailForProduct.images.length > 0 
                       ? showDetailForProduct.images[currentGalleryIndex] 
@@ -1965,7 +1967,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
 
           {activeDetailTab === 'specs' && (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                 <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
                   <Layers className="w-5 h-5 text-orange-600" />
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">Thông số kỹ thuật</h4>
@@ -2024,7 +2026,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                     </div>
                   ))}
                   {(!showDetailForProduct.images || showDetailForProduct.images.length === 0) && (
-                    <div className="col-span-3 bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-400 italic">
+                    <div className="col-span-3 bg-white border border-slate-200 rounded-lg p-8 text-center text-slate-400 italic">
                       Chưa có ảnh phụ trong thư viện.
                     </div>
                   )}
@@ -2037,7 +2039,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                   <Tv className="w-5 h-5 text-orange-600" /> Video giới thiệu
                 </h4>
                 {showDetailForProduct.videoUrl ? (
-                  <div className="w-full rounded-xl overflow-hidden border border-slate-200 bg-black aspect-video relative shadow-sm">
+                  <div className="w-full rounded-lg overflow-hidden border border-slate-200 bg-black aspect-video relative shadow-sm">
                     {showDetailForProduct.videoUrl.includes('youtube.com') || showDetailForProduct.videoUrl.includes('youtu.be') ? (
                       (() => {
                         const getYoutubeId = (url: string) => {
@@ -2068,7 +2070,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                     )}
                   </div>
                 ) : (
-                  <div className="w-full bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center text-slate-500 aspect-video shadow-inner">
+                  <div className="w-full bg-slate-900 border border-slate-800 rounded-lg p-6 flex flex-col items-center justify-center text-slate-500 aspect-video shadow-inner">
                     <Tv className="w-10 h-10 text-slate-600 mb-2" />
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Không có video giới thiệu</p>
                     <p className="text-[10px] text-slate-500 mt-1 text-center">Bạn có thể thêm liên kết video YouTube hoặc link MP4 trong tab Chỉnh sửa.</p>
@@ -2081,7 +2083,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
           {activeDetailTab === 'pnl' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Financial Summary */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm">
+              <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4 shadow-sm">
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-emerald-600" /> Báo cáo doanh thu & Lợi nhuận gộp
                 </h4>
@@ -2110,7 +2112,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
               </div>
 
               {/* Integration & Misa status */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm flex flex-col justify-between">
+              <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4 shadow-sm flex flex-col justify-between">
                 <div>
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
                     <Activity className="w-5 h-5 text-blue-600" /> Trạng thái đồng bộ MISA AMIS
@@ -2119,7 +2121,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                     Sản phẩm này cần được ghi sổ kế toán và ánh xạ đầy đủ sang DIInventoryItems trên hệ thống MISA AMIS Cloud để thực hiện các nghiệp vụ bán hàng kiêm xuất kho tự động.
                   </p>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2 mt-4 font-bold">
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs space-y-2 mt-4 font-bold">
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500 uppercase tracking-wider text-[10px]">Trạng thái liên kết</span>
                     {showDetailForProduct.misaSynced ? (
@@ -2142,7 +2144,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
           )}
 
           {activeDetailTab === 'edit' && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
+            <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-6 shadow-sm">
               <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2 border-b border-slate-100">
                 <Settings className="w-5 h-5 text-blue-600" /> Trình chỉnh sửa chi tiết sản phẩm
               </h4>
@@ -2309,6 +2311,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
 
                     try {
                       await updateDoc(doc(db, 'products', showDetailForProduct.id), updatedProduct);
+                      log({ action: 'product.updated', targetId: showDetailForProduct.id, targetLabel: updatedProduct.name, meta: { updatedProduct } });
                       setShowDetailForProduct({
                         ...showDetailForProduct,
                         ...updatedProduct

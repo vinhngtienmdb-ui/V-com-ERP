@@ -249,7 +249,7 @@ export function LoyaltyManagement() {
   </motion.div>
 
   {/* VIP Members Management Table */}
-  <div className="mt-8 bg-slate-50 border border-slate-200 rounded-xl p-6 space-y-4 shadow-sm">
+  <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-6 space-y-4 shadow-sm">
     <div className="flex justify-between items-center">
       <div>
         <h3 className="text-base font-bold text-slate-900">Quản lý Thành viên VIP & Tự động hóa ZNS</h3>
@@ -258,7 +258,7 @@ export function LoyaltyManagement() {
       <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 border border-blue-200 rounded">LOYALTY ZNS ACTIVE</span>
     </div>
     
-    <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-xs">
+    <div className="overflow-x-auto border border-slate-200 rounded-lg bg-white shadow-xs">
       <table className="w-full text-left text-xs border-collapse whitespace-nowrap">
         <thead className="bg-slate-50 text-slate-650 font-bold border-b border-slate-200">
           <tr>

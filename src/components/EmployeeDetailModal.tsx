@@ -157,7 +157,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         initial={{ opacity: 0, scale: 0.96, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 15 }}
-        className="bg-[#FAF9F5] rounded-xl w-full max-w-7xl h-[95vh] flex flex-col border border-zinc-300 shadow-2xl overflow-hidden text-slate-900"
+        className="bg-[#FAF9F5] rounded-lg w-full max-w-7xl h-[95vh] flex flex-col border border-zinc-300 shadow-2xl overflow-hidden text-slate-900"
       >
         {/* TOP BAR: HEADER PANEL */}
         <div className="px-6 py-4 bg-white border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
@@ -226,7 +226,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         <div className="px-6 py-4 bg-white border-b border-slate-200 shrink-0 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
           {/* Avatar frame */}
           <div className="lg:col-span-3 flex items-center gap-4 border-r border-slate-200/80 pr-4">
-            <div className="w-16 h-16 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-inner relative overflow-hidden group">
+            <div className="w-16 h-16 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-inner relative overflow-hidden group">
               <User className="w-8 h-8" />
               <div className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] text-white font-bold cursor-pointer">
                 Đổi ảnh
@@ -341,7 +341,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         {/* SCROLLABLE INNER WORKSPACE SECTION */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50">
           {/* TAB BORDER CONTAINER BOX (Light blue border like theme in screenshot) */}
-          <div className="border-2 border-blue-100 bg-white rounded-xl shadow-sm p-4 sm:p-6 min-h-[450px]">
+          <div className="border-2 border-blue-100 bg-white rounded-lg shadow-sm p-4 sm:p-6 min-h-[450px]">
             {/* Active Tab subtitle */}
             <div className="text-xs uppercase font-black text-blue-800 tracking-wider mb-5 flex items-center gap-2 border-b border-blue-50 pb-2">
               <span className="w-1.5 h-3.5 bg-blue-600 rounded" />
@@ -1097,7 +1097,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {formState.documents && formState.documents.map((doc: any, index: number) => (
-                    <div key={doc.id} className="border border-zinc-200/80 rounded-xl p-4 flex justify-between items-center shadow-inner hover:bg-slate-50 transition-colors">
+                    <div key={doc.id} className="border border-zinc-200/80 rounded-lg p-4 flex justify-between items-center shadow-inner hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-3">
                         <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
                           <FileText className="w-5 h-5" />
@@ -1174,7 +1174,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   </button>
                 </div>
 
-                <div className="overflow-x-auto border rounded-xl border-neutral-200">
+                <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
@@ -1421,7 +1421,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <div 
                       key={item.id} 
                       className={cn(
-                        "p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm",
+                        "p-4 rounded-lg border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm",
                         item.type === 'reward' 
                           ? 'border-emerald-200 bg-emerald-50/20 text-emerald-900' 
                           : 'border-rose-250 bg-rose-50/10 text-rose-900'
@@ -1505,7 +1505,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       {/* Timeline Dot */}
                       <span className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-orange-600 border border-white" />
                       
-                      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200/60 flex flex-col md:flex-row gap-4 items-start md:items-center">
                         <div className="w-24 font-mono font-bold text-orange-700 shrink-0 uppercase tracking-tight">
                           <input 
                             type="text" 
@@ -1566,7 +1566,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             {activeTab === 'logs' && (
               <div className="space-y-4 text-xs font-sans">
                 <span className="font-bold text-slate-600 block">Lịch sử ghi chép sửa đổi dữ liệu lý lịch nhân viên</span>
-                <div className="overflow-x-auto border rounded-xl border-neutral-200 bg-slate-50/50">
+                <div className="overflow-x-auto border rounded-lg border-neutral-200 bg-slate-50/50">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-100/80 border-b border-zinc-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
@@ -1618,7 +1618,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   </div>
                 </div>
 
-                <div className="overflow-x-auto border rounded-xl border-neutral-200">
+                <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
@@ -1651,7 +1651,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
             {activeTab === 'others' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs text-slate-800 font-sans">
-                <div className="space-y-2 border p-4 bg-slate-50/50 rounded-xl">
+                <div className="space-y-2 border p-4 bg-slate-50/50 rounded-lg">
                   <span className="font-bold text-slate-650 block border-b pb-1 mb-2 uppercase tracking-tight text-[10px] text-orange-700">Chính đảng & Quân sự</span>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 cursor-pointer p-1 font-bold">

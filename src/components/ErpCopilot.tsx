@@ -227,7 +227,7 @@ export function ErpCopilot() {
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[430px] h-[580px] bg-white rounded-2xl shadow-2xl border border-slate-300 flex flex-col z-[1000] animate-in slide-in-from-bottom-5 fade-in duration-300 overflow-hidden font-sans">
+        <div className="fixed bottom-24 right-6 w-[430px] h-[580px] bg-white rounded-lg shadow-2xl border border-slate-300 flex flex-col z-[1000] animate-in slide-in-from-bottom-5 fade-in duration-300 overflow-hidden font-sans">
           {/* Header */}
           <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-900 text-white">
             <div className="flex items-center gap-3">
@@ -249,7 +249,7 @@ export function ErpCopilot() {
             {messages.map((m, i) => (
               <div key={i} className={cn("flex flex-col", m.role === 'user' ? "items-end" : "items-start")}>
                 <div className={cn(
-                  "max-w-[90%] p-3.5 rounded-2xl text-xs leading-relaxed shadow-sm border",
+                  "max-w-[90%] p-3.5 rounded-lg text-xs leading-relaxed shadow-sm border",
                   m.role === 'user' 
                     ? "bg-slate-900 text-[#FAF9F5] border-slate-800 rounded-tr-none" 
                     : "bg-white text-slate-800 border-slate-200 rounded-tl-none"
@@ -289,7 +289,7 @@ export function ErpCopilot() {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-200 text-slate-500 p-3 rounded-2xl rounded-tl-none text-xs flex items-center gap-2 shadow-sm font-bold animate-pulse">
+                <div className="bg-white border border-slate-200 text-slate-500 p-3 rounded-lg rounded-tl-none text-xs flex items-center gap-2 shadow-sm font-bold animate-pulse">
                   <Bot className="w-4 h-4 text-cyan-600 animate-spin" />
                   Copilot đang suy nghĩ và truy vấn cơ sở dữ liệu...
                 </div>
@@ -305,12 +305,12 @@ export function ErpCopilot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Nhập yêu cầu (ví dụ: kho Hà Nội còn bao nhiêu hàng?)..."
-              className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400"
+              className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400"
             />
             <button 
               onClick={handleSend} 
               disabled={isLoading || !input.trim()}
-              className="p-3 bg-slate-900 text-[#FAF9F5] rounded-xl hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center"
+              className="p-3 bg-slate-900 text-[#FAF9F5] rounded-lg hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center"
             >
               <Send className="w-4 h-4" />
             </button>

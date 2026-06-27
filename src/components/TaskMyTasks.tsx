@@ -89,11 +89,11 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
     <div className="space-y-6 font-sans">
       
       {/* Top Banner with Staff summary */}
-      <div className="bg-[#1E293B] text-white p-6 rounded-xl border border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+      <div className="bg-[#1E293B] text-white p-6 rounded-lg border border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl" />
         
         <div className="flex items-center gap-3 relative z-10">
-          <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center font-bold text-lg border-2 border-slate-600 shadow-sm text-[#FAF9F5]">
+          <div className="w-12 h-12 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-lg border-2 border-slate-600 shadow-sm text-[#FAF9F5]">
             {myMember.initials}
           </div>
           <div>
@@ -135,7 +135,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between text-xs font-sans">
         
         {/* Navigation Filters */}
-        <div className="flex bg-slate-100 border border-slate-300 p-1.5 gap-1 rounded-xl overflow-x-auto hidden-scrollbar shrink-0">
+        <div className="flex bg-slate-100 border border-slate-300 p-1.5 gap-1 rounded-lg overflow-x-auto hidden-scrollbar shrink-0">
           <button
             onClick={() => setActiveTab('all')}
             className={cn(
@@ -194,7 +194,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm theo chủ đề, tiêu đề việc của bạn..."
-            className="w-full bg-white border border-slate-300 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
+            className="w-full bg-white border border-slate-300 rounded-lg py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
           />
           <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
         </div>
@@ -211,7 +211,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
               <div 
                 key={task.id}
                 className={cn(
-                  "bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden p-5 transition-all text-xs flex flex-col md:flex-row gap-5 relative group",
+                  "bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden p-5 transition-all text-xs flex flex-col md:flex-row gap-5 relative group",
                 )}
               >
                 {/* Due alert side indicator */}
@@ -268,7 +268,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
 
                   {/* Subtask micro checklists */}
                   {task.subtasks && task.subtasks.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 mt-2.5 max-w-2xl space-y-2">
+                    <div className="bg-slate-50 border border-slate-200/60 rounded-lg p-3 mt-2.5 max-w-2xl space-y-2">
                       <p className="font-extrabold text-[#64748B] text-[9.5px] uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
                         <CheckSquare className="w-3.5 h-3.5" />
                         Đầu việc chi tiết ({task.subtasks.filter(s => s.done).length}/{task.subtasks.length})
@@ -370,7 +370,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
           })}
         </div>
       ) : (
-        <div className="bg-white border rounded-xl p-12 text-center text-slate-500 space-y-2.5">
+        <div className="bg-white border rounded-lg p-12 text-center text-slate-500 space-y-2.5">
           <ListTodo className="w-12 h-12 text-slate-300 mx-auto" />
           <h4 className="font-extrabold text-sm text-slate-700">Tuyệt vời! Bạn không có công vụ nào tồn đọng</h4>
           <p className="text-xs text-slate-400">Không có công việc nào trong danh mục hoặc bộ lọc hiện tại.</p>

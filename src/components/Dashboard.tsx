@@ -63,6 +63,7 @@ function ResponsiveGridLayout({ children, ...props }: any) {
 import { formatCurrency, cn } from '../lib/utils';
 import { db, collection, onSnapshot, query, limit } from '../lib/firebase';
 import { usePreferences } from '../context/PreferencesContext';
+import { useAuth } from '../context/AuthContext';
 
 const data = [
  { name: 'T1', gmv: 4.5, traffic: 120000 },
@@ -126,7 +127,7 @@ const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: 
  </div>
  <div className="relative z-10">
  <div className="flex justify-between items-start mb-4">
- <div className="p-3 bg-slate-50 text-slate-700 rounded-xl group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100 shadow-sm">
+ <div className="p-3 bg-slate-50 text-slate-700 rounded-lg group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100 shadow-sm">
  <Icon className="w-5 h-5" />
  </div>
  <div className={cn(
@@ -159,7 +160,7 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
  >
  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
  <div className="relative z-10 flex flex-col h-full">
- <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-md  group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
+ <div className="p-3 bg-white/20 rounded-lg w-fit mb-4 backdrop-blur-md  group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
  <Icon className="w-5 h-5 text-[#FAF9F5]" />
  </div>
  <div className="mt-auto relative z-10">
@@ -293,7 +294,7 @@ export function Dashboard() {
  return (
  <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
  {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-6 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
+ <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-lg p-6 md:p-6 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
  {/* Decorative background glass circles */}
  <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
  <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
@@ -351,7 +352,7 @@ export function Dashboard() {
  "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
  </p>
  
- <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
+ <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
  Thực thi Đề xuất AI
  </button>
  </div>
@@ -375,16 +376,16 @@ export function Dashboard() {
  </div>
  
  <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-orange-700 transition-all flex items-center justify-center gap-2 shadow-sm">
+ <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-orange-700 transition-all flex items-center justify-center gap-2 shadow-sm">
  <Activity className="w-4 h-4 text-emerald-500" />
  Báo cáo Vận hành
  </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5">
+ <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5">
  Xuất dữ liệu BI
  </button>
  <button 
  onClick={() => setIsConfigOpen(true)}
- className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
+ className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
  >
  <Settings2 className="w-4 h-4 text-orange-600" />
  Tùy biến
@@ -394,15 +395,15 @@ export function Dashboard() {
 
  {config.showQuickNav && (
  <div className="flex flex-wrap items-center gap-3">
- <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
+ <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
  <Package className="w-4 h-4 text-orange-600  transition-transform" />
  Hệ thống PIM
  </button>
- <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
+ <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
  <ListOrdered className="w-4 h-4 text-emerald-500  transition-transform" />
  Quản lý Đơn hàng
  </button>
- <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
+ <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
  <Users className="w-4 h-4 text-slate-800  transition-transform" />
  Trung tâm Đối tác
  </button>
@@ -412,7 +413,7 @@ export function Dashboard() {
  {delayedOrdersCount > 0 && (
  <div 
  onClick={() => navigate('/orders')}
- className="bg-white to-white border border-red-200 p-4 rounded-xl cursor-pointer hover:shadow-sm transition-all group"
+ className="bg-white to-white border border-red-200 p-4 rounded-lg cursor-pointer hover:shadow-sm transition-all group"
  >
  <div className="flex items-start gap-4">
  <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-[#FAF9F5] transition-all shadow-sm shrink-0 mt-0.5">
@@ -565,7 +566,7 @@ export function Dashboard() {
  { id: 'showRevenueExpense', label: 'Biểu đồ Thu Chi', icon: LineChartIcon },
  { id: 'showCashFlow', label: 'Dòng tiền', icon: Wallet },
  ].map(item => (
- <label key={item.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/50 hover:border-slate-300 transition-colors cursor-pointer group">
+ <label key={item.id} className="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100/50 hover:border-slate-300 transition-colors cursor-pointer group">
  <div className="flex items-center gap-3">
  <item.icon className={cn("w-5 h-5", config[item.id] ? "text-orange-600" : "text-slate-500 group-hover:text-orange-500")} />
  <span className={cn("text-sm font-bold", config[item.id] ? "text-slate-900" : "text-slate-600 group-hover:text-slate-800")}>{item.label}</span>
@@ -579,7 +580,7 @@ export function Dashboard() {
  </div>
  </div>
  <div className="p-5 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
- <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-[#FAF9F5] rounded-xl text-sm font-bold hover:bg-slate-900 shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5 transition-all flex justify-center items-center gap-2">
+ <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-900 shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5 transition-all flex justify-center items-center gap-2">
  <CheckCircle2 className="w-5 h-5" /> Lưu tùy chỉnh
  </button>
  </div>
@@ -589,7 +590,7 @@ export function Dashboard() {
 
  {activeTab === 'overview' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500">
-    <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-4 animate-pulse">
+    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-4 animate-pulse">
       <div className="p-2 bg-red-100 rounded-lg shrink-0">
         <Activity className="w-5 h-5 text-red-600" />
       </div>
@@ -621,7 +622,7 @@ export function Dashboard() {
   isResizable={layoutEditable}
  >
   {config.showMainChart && (
-  <div key="mainChart" className="bg-white rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div key="mainChart" className="bg-white rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 hover:bg-slate-100 transition-colors">
   <div>
   <h3 className="font-bold text-primary-900 tracking-tight text-lg pointer-events-none">Biểu đồ Tăng trưởng & Xu hướng</h3>
@@ -661,7 +662,7 @@ export function Dashboard() {
   )}
 
   {config.showCommunity && (
-  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
+  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
   <div className="drag-handle cursor-move px-6 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
   <div className="flex items-center gap-4 mb-6 pointer-events-none">
   <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5 shadow-inner border border-slate-700">
@@ -681,7 +682,7 @@ export function Dashboard() {
   )}
 
   {config.showCategorySplit && (
-  <div key="categorySplit" className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col h-full w-full">
+  <div key="categorySplit" className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50 transition-colors px-5 py-4 border-b border-slate-200 flex items-center justify-between">
   <h3 className="font-bold text-primary-900 text-sm pointer-events-none">Tỷ trọng Ngành</h3>
   </div>
@@ -700,7 +701,7 @@ export function Dashboard() {
   )}
 
   {config.showTopSellers && (
-  <div key="topSellers" className="bg-white rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div key="topSellers" className="bg-white rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90 backdrop-blur-sm rounded-t-xl">
   <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
   <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
@@ -746,7 +747,7 @@ export function Dashboard() {
   isResizable={layoutEditable}
  >
   {config.showSLA && (
-  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-xl shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
+  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-lg shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
   <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
   <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2 pointer-events-none">
   <Activity className="w-5 h-5 text-orange-500" />
@@ -813,7 +814,7 @@ export function Dashboard() {
   )}
 
   {config.showHourlyOrders && (
-  <div key="hourlyOrders" className="bg-white rounded-xl border border-slate-300 shadow-sm flex flex-col overflow-hidden h-full w-full">
+  <div key="hourlyOrders" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col overflow-hidden h-full w-full">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-slate-900 text-lg pointer-events-none">Đơn hàng theo Giờ</h3>
   </div>
@@ -857,7 +858,7 @@ export function Dashboard() {
   )}
 
   {config.showRevenueExpense && (
-  <div key="revenueExpense" className="bg-white rounded-xl border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div key="revenueExpense" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-primary-900 text-lg flex items-center gap-2 pointer-events-none">
   <LineChartIcon className="w-5 h-5 text-orange-700" />
@@ -885,7 +886,7 @@ export function Dashboard() {
   )}
 
   {config.showCashFlow && (
-  <div key="cashFlow" className="bg-white rounded-xl border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div key="cashFlow" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2 pointer-events-none">
   <Wallet className="w-5 h-5 text-emerald-600" />

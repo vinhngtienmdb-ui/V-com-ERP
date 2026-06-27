@@ -127,13 +127,13 @@ const logAdminAudit = async (
         }
       } else {
   // Check if it's the bootstrapped admin
-  const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+  const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
   if (isBootstrapped) {
   setIsStaff(true);
   setIsAdmin(true);
   const adminInfo = { 
-    name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : 'Vinh Nguyen'), 
-    role: 'admin', 
+    name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
+    role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
     username: user.email?.split('@')[0],
     tenantId: 'tenant-vcomm-prod-01'
   };
@@ -155,13 +155,13 @@ const logAdminAudit = async (
   
   // STRICT FIX for bootstrapped security flaw:
   // Only grant staff and admin status in error/offline fallbacks to AUTHENTICATED/VERIFIED bootstrap accounts
-  const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+  const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
   if (isAuthorizedBootstrap) {
     setIsStaff(true);
-    setIsAdmin(true);
+    setIsAdmin(user.email !== 'seller@v-erp.com');
     setStaffInfo({ 
-      name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : 'Vinh Nguyen'), 
-      role: 'admin', 
+      name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
+      role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
       username: user.email ? user.email.split('@')[0] : 'admin',
       tenantId: 'tenant-vcomm-prod-01'
     });
@@ -191,6 +191,7 @@ const logAdminAudit = async (
     const email = username.includes('@') ? username : `${username}@v-erp.com`;
     const isAdminAccount = username === 'admin' || username === 'superadmin' || email === 'admin@v-erp.com' || email === 'superadmin@v-erp.com' || email === 'vinh.ngtienmdb@gmail.com' || email === 'admin@vcomm.vn' || email === 'superadmin@vcomm.vn';
     const isBootstrapAdmin = (username === 'admin' && password === 'admin@1234') || (username === 'superadmin' && password === 'superadmin@1234');
+    const isBootstrapSeller = username === 'seller' && password === 'seller@1234';
     
     try {
       await signIn(auth, email, password);
@@ -198,14 +199,14 @@ const logAdminAudit = async (
       // Standard bootstrap check if database is online but user does not exist in Auth
       const isUserNotFound = error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential';
       
-      if (isBootstrapAdmin && isUserNotFound) {
+      if ((isBootstrapAdmin || isBootstrapSeller) && isUserNotFound) {
         try {
           const userCredential = await createUser(auth, email, password);
           // Create staff doc
           await setDoc(doc(db, 'staff', userCredential.user.uid), {
-            name: username === 'superadmin' ? 'Super Admin' : 'System Admin',
+            name: username === 'superadmin' ? 'Super Admin' : (username === 'seller' ? 'Seller Demo' : 'System Admin'),
             username: username,
-            role: 'admin',
+            role: username === 'seller' ? 'seller' : 'admin',
             tenantId: 'tenant-vcomm-prod-01',
             createdAt: new Date().toISOString()
           });
@@ -220,22 +221,22 @@ const logAdminAudit = async (
 
       // If the account is a valid bootstrapped account with correct password,
       // we bypass Firebase Auth entirely to ensure login is always possible (e.g. when offline).
-      if (isBootstrapAdmin) {
-        console.warn("Firebase Auth failed or offline. Logging in via offline bootstrapped admin fallback.");
+      if (isBootstrapAdmin || isBootstrapSeller) {
+        console.warn("Firebase Auth failed or offline. Logging in via offline bootstrapped fallback.");
         const mockUser = {
-          uid: username === 'superadmin' ? 'mock-uid-superadmin' : 'mock-uid-admin',
+          uid: username === 'superadmin' ? 'mock-uid-superadmin' : (username === 'seller' ? 'mock-uid-seller' : 'mock-uid-admin'),
           email: email,
-          displayName: username === 'superadmin' ? 'Super Admin' : 'System Admin',
+          displayName: username === 'superadmin' ? 'Super Admin' : (username === 'seller' ? 'Seller Demo' : 'System Admin'),
           emailVerified: true,
         } as any;
         
         setUser(mockUser);
         setIsStaff(true);
-        setIsAdmin(true);
+        setIsAdmin(isBootstrapAdmin);
         setStaffInfo({
-          name: username === 'superadmin' ? 'Super Admin' : 'System Admin',
+          name: username === 'superadmin' ? 'Super Admin' : (username === 'seller' ? 'Seller Demo' : 'System Admin'),
           username: username,
-          role: 'admin',
+          role: username === 'seller' ? 'seller' : 'admin',
           tenantId: 'tenant-vcomm-prod-01',
           createdAt: new Date().toISOString()
         });

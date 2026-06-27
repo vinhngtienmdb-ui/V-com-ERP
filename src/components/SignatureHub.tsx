@@ -336,7 +336,7 @@ export function SignatureHub() {
           <button 
             onClick={fetchData} 
             disabled={isLoading}
-            className="bg-white border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2"
+            className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2"
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             Làm mới Certs
@@ -344,7 +344,7 @@ export function SignatureHub() {
           <button 
             onClick={handleGenerateKeyPair}
             disabled={isLoading}
-            className="bg-[#111827] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest"
+            className="bg-[#111827] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest"
           >
             <Key className="w-4 h-4 text-emerald-400" />
             Cấp Chứng thư RSA
@@ -386,7 +386,7 @@ export function SignatureHub() {
                 </div>
               </div>
             </div>
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+            <div className="p-3 bg-white/5 rounded-lg border border-white/10">
               <FileSignature className="w-8 h-8 text-white/40" />
             </div>
           </div>
@@ -420,7 +420,7 @@ export function SignatureHub() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+        <div className="flex-1 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
           {(activeTab === 'pending' || activeTab === 'signed') && (
             <>
               <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50">
@@ -432,13 +432,13 @@ export function SignatureHub() {
                       placeholder="Tìm kiếm tài liệu..."
                       value={searchSigQuery}
                       onChange={(e) => setSearchSigQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm"
+                      className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm"
                     />
                   </div>
                   <select
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700"
+                    className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700"
                   >
                     <option value="all">Tất cả phân loại</option>
                     <option value="contract">Hợp đồng</option>
@@ -448,7 +448,7 @@ export function SignatureHub() {
                   <select
                     value={requesterFilter}
                     onChange={(e) => setRequesterFilter(e.target.value)}
-                    className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 max-w-[150px]"
+                    className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 max-w-[150px]"
                   >
                     <option value="all">Mọi người tạo</option>
                     {uniqueRequesters.map(req => (
@@ -460,11 +460,11 @@ export function SignatureHub() {
                       type="date"
                       value={dateFilter}
                       onChange={(e) => setDateFilter(e.target.value)}
-                      className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 w-full"
+                      className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 w-full"
                     />
                   </div>
                 </div>
-                <button onClick={fetchData} className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm shrink-0">
+                <button onClick={fetchData} className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-lg shadow-sm shrink-0">
                   <RefreshCw className="w-4 h-4" />
                 </button>
               </div>
@@ -579,7 +579,7 @@ export function SignatureHub() {
                   { type: 'Hợp đồng mua bán / Dịch vụ', flow: ['Pháp chế', 'Kế toán trưởng', 'Giám đốc', 'Đối tác'], methods: ['Ký nháy', 'Ký nháy', 'Ký số Token', 'Ký số Tùy chọn'] },
                   { type: 'Đề nghị Tạm ứng / Chi tiêu', flow: ['Người đề xuất', 'Quản lý trực tiếp', 'Kế toán trưởng', 'Giám đốc'], methods: ['Xác nhận E-Form', 'Ký nháy', 'Ký nháy', 'Ký số / Chuyển khoản'] }
                 ].map((item, idx) => (
-                  <div key={idx} className="border border-slate-200 rounded-2xl p-5">
+                  <div key={idx} className="border border-slate-200 rounded-lg p-5">
                     <h4 className="font-bold text-slate-900 mb-4 flex items-center justify-between">
                       {item.type}
                       <button className="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg font-bold hover:bg-blue-100 transition-colors">Chỉnh sửa</button>
@@ -587,7 +587,7 @@ export function SignatureHub() {
                     <div className="flex flex-wrap items-start gap-4">
                       {item.flow.map((role, rIdx) => (
                         <React.Fragment key={rIdx}>
-                          <div className="flex flex-col items-center bg-slate-50 px-4 py-3 rounded-2xl border border-slate-200 w-full sm:w-auto min-w-[150px]">
+                          <div className="flex flex-col items-center bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 w-full sm:w-auto min-w-[150px]">
                             <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs mb-2">
                               {rIdx + 1}
                             </div>
@@ -626,7 +626,7 @@ export function SignatureHub() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {certificates.map(cert => (
-                  <div key={cert.user_id} className="border border-slate-200 rounded-2xl p-5 flex items-start gap-4 hover:border-blue-300 transition-colors bg-white shadow-sm">
+                  <div key={cert.user_id} className="border border-slate-200 rounded-lg p-5 flex items-start gap-4 hover:border-blue-300 transition-colors bg-white shadow-sm">
                     <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-300 flex items-center justify-center shrink-0">
                       <UserCheck className="w-6 h-6 text-blue-500" />
                     </div>
@@ -693,7 +693,7 @@ export function SignatureHub() {
       {/* Signing Modal */}
       {signingModalOpen && selectedDoc && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSigningModalOpen(false)}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-blue-600 animate-pulse" />
@@ -702,13 +702,13 @@ export function SignatureHub() {
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800 font-bold leading-relaxed">Tài liệu: {selectedDoc?.title}</p>
                 <p className="text-xs text-blue-600 font-mono mt-1">Ref ID: {selectedDoc?.docId || selectedDoc?.id}</p>
               </div>
 
               {!userKeyPair ? (
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-xs font-bold text-amber-800">Bạn chưa có Chứng thư số RSA</h4>
@@ -770,7 +770,7 @@ export function SignatureHub() {
       {/* Verification Results Modal */}
       {verificationModalOpen && verifyingDoc && verificationResult && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={() => setVerificationModalOpen(false)}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-blue-600" />
@@ -779,14 +779,14 @@ export function SignatureHub() {
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tài liệu</p>
                 <p className="text-sm font-bold text-slate-800 mt-1">{verifyingDoc.title}</p>
                 <p className="text-xs text-slate-600 font-mono mt-1">ID: {verifyingDoc.docId || verifyingDoc.id}</p>
               </div>
 
               {verificationResult.verified ? (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start gap-3">
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
                   <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
                   <div>
                     <h4 className="text-sm font-bold text-emerald-800">Chữ ký Hợp lệ & Dữ liệu Nguyên vẹn</h4>
@@ -796,7 +796,7 @@ export function SignatureHub() {
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                   <ShieldAlert className="w-6 h-6 text-red-600 shrink-0" />
                   <div>
                     <h4 className="text-sm font-bold text-red-800">Xác thực Thất bại!</h4>

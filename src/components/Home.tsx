@@ -216,7 +216,7 @@ export function Home() {
     <div className="flex flex-col h-full gap-6 animate-in fade-in duration-300 pb-20 pt-2 bg-slate-50/50 min-h-screen px-2 md:px-0">
       
       {/* Dynamic Header with Navigation & Search */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mt-1">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-lg border border-slate-200 shadow-sm mt-1">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Enterprise OS</span>
@@ -235,14 +235,14 @@ export function Home() {
             placeholder="Tìm kiếm nhanh module..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium"
           />
         </div>
       </div>
 
       {/* Primary Pill-style Tabs Control */}
       <div className="flex flex-wrap gap-2 items-center justify-between">
-        <div className="flex gap-2 bg-white/80 p-1 rounded-xl border border-slate-200 shadow-xs backdrop-blur-md">
+        <div className="flex gap-2 bg-white/80 p-1 rounded-lg border border-slate-200 shadow-xs backdrop-blur-md">
           <button
             onClick={() => { setActiveTab('chuc_nang'); setSelectedGroup(null); }}
             className={cn(
@@ -284,7 +284,7 @@ export function Home() {
         </div>
 
         {/* Recently Visited Modules (Quick access) */}
-        <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs text-xs font-medium text-slate-500">
+        <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs text-xs font-medium text-slate-500">
           <History className="w-3.5 h-3.5 text-slate-400" />
           <span className="font-bold text-slate-700">Mở gần đây:</span>
           {['/dashboard', '/requests', '/orders'].map(path => {
@@ -313,7 +313,7 @@ export function Home() {
             
             {/* SEARCHING STATE IN TABS */}
             {searchQuery && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+              <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Kết quả tìm kiếm phân hệ liên quan:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                   {filteredSubModules.map(item => {
@@ -328,14 +328,14 @@ export function Home() {
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button 
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-amber-500  transition-transform z-10"
                         >
                           <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
                         </button>
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
+                          "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -393,7 +393,7 @@ export function Home() {
                     )}
                     {/* Circle squircle around icon */}
                     <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
+                      "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
                       COLOR_MAP[group.color] || COLOR_MAP.blue
                     )}>
                       <IconComponent className="w-6 h-6" />
@@ -421,7 +421,7 @@ export function Home() {
         {/* TAB 2: ĐÁNH DẤU (Persisted Bookmarked modules drawer) */}
         {activeTab === 'danh_dau' && (
           <div className="animate-in fade-in duration-300 space-y-4">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
                 <div>
                   <h3 className="font-bold text-slate-900 flex items-center gap-2">
@@ -459,7 +459,7 @@ export function Home() {
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-amber-500  transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-amber-500  transition-transform z-10"
                           title="Bỏ đánh dấu"
                         >
                           <Star className="w-3.5 h-3.5 fill-amber-500" />
@@ -467,7 +467,7 @@ export function Home() {
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
+                          "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -496,7 +496,7 @@ export function Home() {
 
         {/* TAB 3: TẤT CẢ (Original group structures retained so no feature is lost!) */}
         {activeTab === 'tat_ca' && (
-          <div className="animate-in fade-in duration-300 space-y-10 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="animate-in fade-in duration-300 space-y-10 bg-white p-6 rounded-lg border border-slate-200 shadow-xs">
             {filteredGroups.map((group, groupIdx) => (
               <div key={groupIdx} className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -520,7 +520,7 @@ export function Home() {
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
                           onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
+                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-amber-500  transition-transform z-10"
                           title="Đánh dấu"
                         >
                           <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
@@ -528,7 +528,7 @@ export function Home() {
 
                         {/* Large circle squircle around icon */}
                         <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
+                          "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
                           COLOR_MAP[visuals.color] || COLOR_MAP.blue
                         )}>
                           <IconComponent className="w-6 h-6" />
@@ -603,7 +603,7 @@ export function Home() {
               {/* Drawer Header */}
               <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", COLOR_MAP[selectedGroup.color] || COLOR_MAP.blue)}>
+                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", COLOR_MAP[selectedGroup.color] || COLOR_MAP.blue)}>
                     {React.createElement(selectedGroup.icon, { className: "w-5 h-5" })}
                   </div>
                   <div>
@@ -621,7 +621,7 @@ export function Home() {
 
               {/* Drawer body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-                <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 text-blue-700 p-3 rounded-xl border border-blue-100/50">
+                <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 text-blue-700 p-3 rounded-lg border border-blue-100/50">
                   {selectedGroup.desc} Chọn một phân hệ nghiệp vụ ERP dưới đây để chuyển hướng điều hướng xử lý thông tin:
                 </p>
 
@@ -637,10 +637,10 @@ export function Home() {
                           setSelectedGroup(null);
                           navigate(path);
                         }}
-                        className="group flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-500 rounded-2xl transition-all duration-200 cursor-pointer"
+                        className="group flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-500 rounded-lg transition-all duration-200 cursor-pointer"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-blue-50 group-hover:border-blue-100 group-hover:text-blue-600 flex items-center justify-center transition-colors shadow-xs">
+                          <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-blue-50 group-hover:border-blue-100 group-hover:text-blue-600 flex items-center justify-center transition-colors shadow-xs">
                             <mod.icon className="w-4 h-4" />
                           </div>
                           <div>
@@ -708,7 +708,7 @@ export function Home() {
               </div>
 
               <div className="p-6 space-y-6">
-                <div className="border border-slate-200 rounded-2xl p-5 bg-slate-50 space-y-4">
+                <div className="border border-slate-200 rounded-lg p-5 bg-slate-50 space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Chủ sở hữu bản quyền</span>
                     <span className="text-xs font-extrabold text-slate-800 font-mono">vinh.ngtienmdb@gmail.com</span>
@@ -740,7 +740,7 @@ export function Home() {
               <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
                 <button 
                   onClick={() => setShowCopyright(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-extrabold transition-all shadow-sm active:scale-95"
+                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-lg text-xs font-extrabold transition-all shadow-sm active:scale-95"
                 >
                   Đóng chứng chỉ
                 </button>
@@ -769,7 +769,7 @@ export function Home() {
             >
               <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-lime-500 text-white flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-lime-500 text-white flex items-center justify-center shadow-sm">
                     <Factory className="w-5 h-5" />
                   </div>
                   <div>
@@ -789,40 +789,40 @@ export function Home() {
                 {/* Visual Pipeline components */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Item 1 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
                     <p className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 1: Lập kế hoạch (MRP)</p>
                     <h4 className="font-bold text-slate-800 text-sm">Nhu cầu nguyên vật liệu</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Hệ thống phân tích báo cáo đơn hàng và cấu trúc sản phẩm BOM để xuất phiếu mua vật tư.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
+                    <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
                       <div className="flex justify-between"><span>Phiếu kế hoạch:</span><span className="font-bold">MRP-2026-091</span></div>
                       <div className="flex justify-between"><span>Nguyên liệu:</span><span className="font-bold text-blue-600">Thép mạ kẽm</span></div>
                     </div>
                   </div>
 
                   {/* Item 2 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
                     <p className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 2: Lệnh sản xuất</p>
                     <h4 className="font-bold text-slate-800 text-sm">Chế tạo & Lắp ráp phân xưởng</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Phân bổ chỉ tiêu sản lượng theo dây chuyền lắp ráp công nghệ chính xác cao IoT.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
+                    <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
                       <div className="flex justify-between"><span>Lệnh chế tạo:</span><span className="font-bold">WO-9948271</span></div>
                       <div className="flex justify-between"><span>Nhà xưởng:</span><span className="font-bold text-green-600">Line A - Khu CNC</span></div>
                     </div>
                   </div>
 
                   {/* Item 3 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
                     <p className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 3: Kiểm định & Đóng gói</p>
                     <h4 className="font-bold text-slate-800 text-sm">Quản lý chất lượng (IQC/OQC)</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Chứng thư kiểm tra chất lượng từ các kỹ sư đầu ngành, sấy dán mã vạch kho vận bốc xếp.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
+                    <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
                       <div className="flex justify-between"><span>Tỷ lệ đạt chuẩn:</span><span className="font-bold text-emerald-600">99.85%</span></div>
                       <div className="flex justify-between"><span>Nhãn dán QR code:</span><span className="font-bold text-slate-600">QR-BATCH-204</span></div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl flex gap-3 text-xs font-medium">
+                <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg flex gap-3 text-xs font-medium">
                   <Info className="w-5 h-5 flex-shrink-0 text-yellow-600" />
                   <div>
                     <span className="font-bold">Lưu ý nghiệp vụ:</span> Phân hệ quản lý dây chuyền sản xuất đang được cấu hình đồng bộ trực tiếp với hệ sinh thái ERP phần cứng tại nhà máy. Liên hệ quản lý IT Enterprise của VComm để tích hợp PLC/Scada.
@@ -833,7 +833,7 @@ export function Home() {
               <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
                 <button 
                   onClick={() => setShowProduction(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
                 >
                   Xác nhận cấu hình
                 </button>

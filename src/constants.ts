@@ -29,7 +29,8 @@ import {
  Monitor,
  Zap,
  Key,
- Home
+ Home,
+ Truck
 } from 'lucide-react';
 
 export const navGroups = [
@@ -72,6 +73,7 @@ export const navGroups = [
  title: 'Kho & Chuỗi cung ứng',
  items: [
  { icon: Warehouse, label: 'Quản trị Kho vận', path: '/warehouse', color: 'amber', description: 'Tối ưu tồn kho và quản lý kho bãi' },
+ { icon: Truck, label: 'Vận chuyển (Logistics)', path: '/logistics', color: 'orange', description: 'Theo dõi hành trình và đối tác vận chuyển' },
  { icon: ShoppingBag, label: 'Mua hàng & NCC', path: '/scm', color: 'lime', description: 'Quản lý nhà cung cấp và thu mua' },
  { icon: Scale, label: 'Tuân thủ & Pháp chế', path: '/compliance', color: 'gray', description: 'Đảm bảo tiêu chuẩn vận hành toàn chuỗi' },
  ]

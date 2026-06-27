@@ -334,13 +334,13 @@ export function MailClient() {
   const unreadCount = emails.filter(m => m.folder === 'inbox' && !m.isRead).length;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden flex flex-col animate-in fade-in duration-500">
+    <div className="bg-white rounded-lg border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden flex flex-col animate-in fade-in duration-500">
       
       {/* ── NOT CONNECTED SCREEN ── */}
       {!isConnected ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50 space-y-8 select-none">
           <div className="max-w-md space-y-4">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto border border-blue-100 shadow-xs">
+            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mx-auto border border-blue-100 shadow-xs">
               <Mail className="w-8 h-8" />
             </div>
             <div className="space-y-1.5">
@@ -356,7 +356,7 @@ export function MailClient() {
             <button 
               onClick={() => handleStartConnection('google')}
               disabled={isConnecting}
-              className="bg-white p-5 rounded-2xl border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
+              className="bg-white p-5 rounded-lg border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
             >
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">G</div>
               <div>
@@ -369,7 +369,7 @@ export function MailClient() {
             <button 
               onClick={() => handleStartConnection('microsoft')}
               disabled={isConnecting}
-              className="bg-white p-5 rounded-2xl border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
+              className="bg-white p-5 rounded-lg border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
             >
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">M</div>
               <div>
@@ -400,7 +400,7 @@ export function MailClient() {
                   setNewMail({ to: '', subject: '', body: '', attachments: [] });
                   setShowComposeModal(true);
                 }}
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition"
               >
                 <Plus className="w-4 h-4" /> Soạn thư
               </button>
@@ -444,7 +444,7 @@ export function MailClient() {
             </div>
 
             {/* Profile / Account Status */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-2.5">
+            <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-2.5">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs shrink-0 select-none">
                   {userEmail[0]?.toUpperCase()}
@@ -474,7 +474,7 @@ export function MailClient() {
 
           {activeFolder === 'settings' ? (
             <div className="flex-1 bg-slate-50 p-6 overflow-y-auto space-y-6">
-              <div className="max-w-2xl mx-auto space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="max-w-2xl mx-auto space-y-6 bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <Settings className="w-5 h-5 text-blue-650" />
@@ -496,7 +496,7 @@ export function MailClient() {
                           setUserEmail('support@vcomm.vn');
                         }}
                         className={cn(
-                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
                           accountType === 'google' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
@@ -509,7 +509,7 @@ export function MailClient() {
                           setUserEmail('vinhnt@vcomm.vn');
                         }}
                         className={cn(
-                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
                           accountType === 'microsoft' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
@@ -525,7 +525,7 @@ export function MailClient() {
                         type="button"
                         onClick={() => setApiMode('mock')}
                         className={cn(
-                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
                           apiMode === 'mock' ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
@@ -535,7 +535,7 @@ export function MailClient() {
                         type="button"
                         onClick={() => setApiMode('live')}
                         className={cn(
-                          "flex-1 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
+                          "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
                           apiMode === 'live' ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
@@ -554,7 +554,7 @@ export function MailClient() {
                         value={clientId}
                         onChange={e => setClientId(e.target.value)}
                         placeholder="Ví dụ: 8a7d3910-349c-4621-a1b0-2b10df04acb2"
-                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                       />
                     </div>
                     <div className="space-y-1">
@@ -564,7 +564,7 @@ export function MailClient() {
                         value={clientSecret}
                         onChange={e => setClientSecret(e.target.value)}
                         placeholder="••••••••••••••••••••••••"
-                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -578,7 +578,7 @@ export function MailClient() {
                           value={tenantId}
                           onChange={e => setTenantId(e.target.value)}
                           placeholder="Ví dụ: common hoặc ID thư mục"
-                          className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                          className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                         />
                       </div>
                     )}
@@ -588,13 +588,13 @@ export function MailClient() {
                         type="text"
                         value={scope}
                         onChange={e => setScope(e.target.value)}
-                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                        className="w-full p-2.5 bg-slate-50 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className={cn(
                       "w-3 h-3 rounded-full flex shrink-0",
@@ -654,7 +654,7 @@ export function MailClient() {
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       placeholder="Tìm email, người gửi..."
-                      className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -785,7 +785,7 @@ export function MailClient() {
                             {selectedMail.attachments.map((file, idx) => (
                               <div 
                                 key={idx} 
-                                className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between hover:bg-slate-100/60 transition duration-150 group"
+                                className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between hover:bg-slate-100/60 transition duration-150 group"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
                                   <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
@@ -825,7 +825,7 @@ export function MailClient() {
       {/* ── 4. COMPOSE EMAIL MODAL ── */}
       {showComposeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm border border-slate-350 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-xl rounded-lg shadow-sm border border-slate-350 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
             {/* Compose Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
@@ -852,12 +852,12 @@ export function MailClient() {
                     setShowAutocomplete(e.target.value.length > 0);
                   }}
                   placeholder="nhanvien@vcomm.vn"
-                  className="w-full p-2.5 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full p-2.5 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
                 
                 {/* Autocomplete Popup */}
                 {showAutocomplete && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-300 rounded-xl shadow-md z-30 max-h-[160px] overflow-y-auto divide-y divide-slate-100">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-300 rounded-lg shadow-md z-30 max-h-[160px] overflow-y-auto divide-y divide-slate-100">
                     {MOCK_MEMBERS
                       .filter(m => m.name.toLowerCase().includes(newMail.to.toLowerCase()) || m.email.toLowerCase().includes(newMail.to.toLowerCase()))
                       .map(member => (
@@ -886,7 +886,7 @@ export function MailClient() {
                   value={newMail.subject}
                   onChange={e => setNewMail(prev => ({ ...prev, subject: e.target.value }))}
                   placeholder="Tiêu đề thư..."
-                  className="w-full p-2.5 border border-slate-250 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full p-2.5 border border-slate-250 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -960,7 +960,7 @@ export function MailClient() {
                     });
                     addNotification('Đính kèm', `Đã đính kèm thành công tệp ${selected.name}`);
                   }}
-                  className="border-2 border-dashed border-slate-250 rounded-xl p-4 text-center hover:bg-slate-50/50 cursor-pointer transition flex flex-col items-center justify-center gap-1.5 select-none"
+                  className="border-2 border-dashed border-slate-250 rounded-lg p-4 text-center hover:bg-slate-50/50 cursor-pointer transition flex flex-col items-center justify-center gap-1.5 select-none"
                 >
                   <Paperclip className="w-5 h-5 text-slate-450" />
                   <span className="text-[10px] font-bold text-blue-650">Nhấn để đính kèm tệp mẫu</span>
@@ -1016,7 +1016,7 @@ export function MailClient() {
       {/* ── OAuth Simulated Popup ── */}
       {showOauthPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs select-none">
-          <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl border border-slate-300 overflow-hidden flex flex-col font-sans text-xs">
+          <div className="bg-white w-full max-w-sm rounded-lg shadow-xl border border-slate-300 overflow-hidden flex flex-col font-sans text-xs">
             <div className="p-5 border-b border-slate-150 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-xs">
@@ -1030,7 +1030,7 @@ export function MailClient() {
             
             <div className="p-6 space-y-5">
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 font-serif font-black text-lg">
+                <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 font-serif font-black text-lg">
                   V
                 </div>
                 <h3 className="text-xs font-extrabold text-slate-905">Cấp quyền cho ứng dụng VComm ERP</h3>
@@ -1039,7 +1039,7 @@ export function MailClient() {
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-650 space-y-2 leading-relaxed text-[9.5px] font-medium">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-slate-650 space-y-2 leading-relaxed text-[9.5px] font-medium">
                 <p>• Đọc thư điện tử cá nhân và tệp đính kèm.</p>
                 <p>• Gửi thư điện tử thay mặt bạn dưới đuôi tên miền công ty.</p>
                 <p>• Đồng bộ hóa nhãn/thư mục và quản lý thư.</p>

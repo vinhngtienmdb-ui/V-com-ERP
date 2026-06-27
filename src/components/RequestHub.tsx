@@ -40,6 +40,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { TemplateGalleryModal } from './TemplateGalleryModal';
 import { FormConfigModal } from './FormConfigModal';
+import { Modal } from './ui/Modal';
 import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../lib/firebase';
 import { syncTransactionToMisa } from '../services/misaService';
 
@@ -771,7 +772,7 @@ export function RequestHub() {
  </div>
 
  {/* Content */}
- <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+ <div className="flex-1 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
  {activeTab !== 'settings' ? (
  <>
  <div className="p-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50/80">
@@ -783,7 +784,7 @@ export function RequestHub() {
  placeholder="Tìm theo mã, nội dung hoặc loại phiếu..."
  value={searchReqQuery}
  onChange={(e) => setSearchReqQuery(e.target.value)}
- className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm placeholder:text-slate-500 transition-all"
+ className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm placeholder:text-slate-500 transition-all"
  />
  </div>
  
@@ -791,7 +792,7 @@ export function RequestHub() {
  <select
  value={statusFilter}
  onChange={(e) => setStatusFilter(e.target.value)}
- className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 cursor-pointer hover:border-slate-400"
+ className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 cursor-pointer hover:border-slate-400"
  >
  <option value="all">Trạng thái (Tất cả)</option>
  <option value="pending">Chờ duyệt</option>
@@ -802,7 +803,7 @@ export function RequestHub() {
  <select
  value={requesterFilter}
  onChange={(e) => setRequesterFilter(e.target.value)}
- className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 max-w-[150px] cursor-pointer hover:border-slate-400"
+ className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm font-medium text-slate-700 max-w-[150px] cursor-pointer hover:border-slate-400"
  >
  <option value="all">Người tạo (Mọi người)</option>
  {uniqueRequesters.map(req => (
@@ -811,7 +812,7 @@ export function RequestHub() {
  </select>
  </div>
 
- <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm">
+ <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm">
  <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-500 px-2 border-r border-slate-200">
  <Clock className="w-3 h-3" /> Từ
  </div>
@@ -846,7 +847,7 @@ export function RequestHub() {
  <div className="flex items-center gap-2 shrink-0">
  <button 
  onClick={() => {}} // Could trigger a re-fetch if using API
- className="p-2 text-slate-500 hover:text-emerald-600 bg-white border border-slate-200 rounded-2xl shadow-sm transition-all hover:bg-emerald-50 active:scale-95"
+ className="p-2 text-slate-500 hover:text-emerald-600 bg-white border border-slate-200 rounded-lg shadow-sm transition-all hover:bg-emerald-50 active:scale-95"
  title="Làm mới"
  >
  <RefreshCw className="w-4 h-4" />
@@ -951,7 +952,7 @@ export function RequestHub() {
  </div>
  <button 
  onClick={clearAllFilters}
- className="px-4 py-2 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
+ className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
  >
  Xóa tất cả bộ lọc
  </button>
@@ -970,7 +971,7 @@ export function RequestHub() {
  <p className="text-xs text-slate-600 mb-4">Tạo và chỉnh sửa các loại phiếu đề xuất để sử dụng trong tổ chức.</p>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
  {formConfigs.map((item) => (
- <div key={item.id} className="border border-slate-200 rounded-2xl p-4 bg-slate-50 relative group">
+ <div key={item.id} className="border border-slate-200 rounded-lg p-4 bg-slate-50 relative group">
  <div className="flex justify-between items-start mb-2">
  <h4 className="font-bold text-slate-900">{item.name}</h4>
  <div className="flex gap-2 invisible group-hover:visible">
@@ -992,7 +993,7 @@ export function RequestHub() {
  <button onClick={() => {
  setTemplateAction('create_config');
  setShowTemplateGallery(true);
- }} className="border border-dashed border-slate-400 rounded-2xl p-4 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
+ }} className="border border-dashed border-slate-400 rounded-lg p-4 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 transition-colors bg-white">
  <Plus className="w-6 h-6 mb-2" />
  <span className="text-[13px] font-bold">Thêm loại phiếu mới</span>
  </button>
@@ -1000,7 +1001,7 @@ export function RequestHub() {
  </div>
 
  {formConfigs.length > 0 && selectedConfigForWorkflow && (
- <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm">
+ <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 shadow-sm">
  <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-300 pb-6">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200">
@@ -1028,7 +1029,7 @@ export function RequestHub() {
  setFormConfigs(updated);
  }
  }}
- className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95"
+ className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95"
  >
  <Plus className="w-4 h-4 text-emerald-600" /> Chèn bước duyệt mới
  </button>
@@ -1048,7 +1049,7 @@ export function RequestHub() {
  {idx + 1}
  </div>
  
- <div className="flex-1 bg-white border border-slate-300 p-5 rounded-2xl shadow-sm group-hover:shadow-sm transition-all group-hover:border-primary-200">
+ <div className="flex-1 bg-white border border-slate-300 p-5 rounded-lg shadow-sm group-hover:shadow-sm transition-all group-hover:border-primary-200">
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
  <h5 className="font-bold text-slate-900 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
@@ -1078,7 +1079,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].ruleType = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 shadow-inner"
+ className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-slate-50 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 shadow-inner"
  >
  <option value="system">🏢 Trưởng bộ phận (System-Auto)</option>
  <option value="user_select">👤 Người dùng chọn thủ công</option>
@@ -1099,7 +1100,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].specificUser = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-primary-50/50 font-bold text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-inner border-primary-100"
+ className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-primary-50/50 font-bold text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-inner border-primary-100"
  >
  <option value="">-- Chọn thành viên --</option>
  <option value="Giám đốc Nhân sự">Lê Thị Tuyết (HR Director)</option>
@@ -1119,7 +1120,7 @@ export function RequestHub() {
  updated[cIdx].workflow[wIdx].sla = e.target.value;
  setFormConfigs(updated);
  }}
- className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 shadow-inner"
+ className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-slate-50 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 shadow-inner"
  >
  <option value="24h">⏱️ Trong vòng 24h</option>
  <option value="48h">⏱️ Trong vòng 48h</option>
@@ -1146,7 +1147,7 @@ export function RequestHub() {
  <div className="mt-8 pt-6 border-t border-slate-300 flex justify-end">
  <button 
  onClick={() => alert('Đã lưu cấu hình luồng duyệt thành công!')}
- className="px-6 py-3 bg-primary-600 text-white rounded-xl text-[13px] font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
+ className="px-6 py-3 bg-primary-600 text-white rounded-lg text-[13px] font-bold shadow-sm shadow-indigo-100 hover:bg-primary-700 transition-all active:scale-95"
  >
  LƯU CẤU HÌNH LUỒNG DUYỆT
  </button>
@@ -1159,21 +1160,21 @@ export function RequestHub() {
  </div>
 
  {showAddModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowAddModal(false)}>
- <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
- <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
- <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
- <X className="w-5 h-5" />
- </button>
- </div>
+ <Modal
+   isOpen={true}
+   onClose={() => setShowAddModal(false)}
+   title="Tạo đề xuất mới"
+   maxWidth="md"
+   hideFooter
+   noPadding
+ >
  <div className="p-6 space-y-4">
  <div>
  <label className="block text-[13px] font-bold text-slate-800 mb-2">Loại đề xuất</label>
  <select 
  value={newRequest.subtype}
  onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+ className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
  >
  {Array.from(new Set(formConfigs.map(c => c.category))).map(cat => (
  <optgroup key={cat} label={cat}>
@@ -1189,7 +1190,7 @@ export function RequestHub() {
  <textarea 
  value={newRequest.title}
  onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
+ className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
  placeholder="Ví dụ: Nghỉ phép 2 ngày đi du lịch gia đình..."
  />
  </div>
@@ -1204,14 +1205,14 @@ export function RequestHub() {
  </label>
  {field.type === 'textarea' ? (
  <textarea 
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
  />
  ) : field.type === 'select' ? (
  <select
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
@@ -1222,7 +1223,7 @@ export function RequestHub() {
  ) : (
  <input 
  type={field.type} 
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+ className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
  required={field.required}
  value={newRequest.formData[field.id] || ''}
  onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
@@ -1256,7 +1257,7 @@ export function RequestHub() {
   </div>
   </label>
 
-  <div className="bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden">
+  <div className="bg-slate-50 rounded-lg border border-slate-300 overflow-hidden">
   <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
   <p className="text-[13px] font-bold text-slate-800">Người phê duyệt từng bước</p>
   <button 
@@ -1280,7 +1281,7 @@ export function RequestHub() {
   newRef[index].reviewer = e.target.value;
   setNewRequest({...newRequest, customReviewers: newRef});
   }}
-  className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+  className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
   required
   >
   <option value="">-- Chọn người phê duyệt --</option>
@@ -1310,7 +1311,7 @@ export function RequestHub() {
   </div>
 
   {signatureMethod === 'personal_image' && (
-  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
    <div className="flex justify-between items-center text-xs">
     <span className="font-bold text-slate-700 flex items-center gap-1.5 font-sans">
      <PenTool className="w-4 h-4 text-blue-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
@@ -1321,12 +1322,12 @@ export function RequestHub() {
      </span>
     )}
    </div>
-   <div className="relative border border-slate-300 rounded-xl bg-white overflow-hidden h-40 shadow-inner">
+   <div className="relative border border-slate-300 rounded-lg bg-white overflow-hidden h-40 shadow-inner">
     <canvas
      ref={canvasRef}
      width={600}
      height={160}
-     className="w-full h-full cursor-crosshair rounded-xl block touch-none"
+     className="w-full h-full cursor-crosshair rounded-lg block touch-none"
      onMouseDown={startCanvasDrawing}
      onMouseMove={drawCanvas}
      onMouseUp={stopCanvasDrawing}
@@ -1356,7 +1357,7 @@ export function RequestHub() {
   </div>
   </div>
  <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
+ <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
  Hủy
  </button>
  <button 
@@ -1365,24 +1366,23 @@ export function RequestHub() {
  Gửi đề xuất
  </button>
  </div>
- </div>
- </div>
+ </Modal>
  )}
  {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {/* Removed hidden old inline modal */}
  
   {/* Selected Request Detail Slide-over Panel */}
   <AnimatePresence>
   {selectedRequestForView && (
-    <div className="fixed inset-0 z-[60] flex justify-end bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelectedRequestForView(null)}>
-      <motion.div 
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="w-full max-w-3xl bg-white shadow-sm h-full overflow-y-auto flex flex-col border-l border-emerald-200" onClick={(e) => e.stopPropagation()}>
+    <Modal
+      isOpen={true}
+      onClose={() => setSelectedRequestForView(null)}
+      maxWidth="3xl"
+      hideFooter
+      noPadding
+    >
         <div className="px-4 py-3 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
+            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-lg">
               <FileSignature className="w-5 h-5" />
             </div>
             <div>
@@ -1409,15 +1409,15 @@ export function RequestHub() {
         <div className="p-6 flex-1 space-y-8">
           {/* Header Info */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Người đề xuất</p>
               <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.requester}</p>
             </div>
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Ngày gửi</p>
               <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.date}</p>
             </div>
-            <div className="col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="col-span-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Tiêu đề / Lý do</p>
               <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.title}</p>
             </div>
@@ -1450,7 +1450,7 @@ export function RequestHub() {
             </h4>
 
             {legalAuditResult ? (
-              <div className="bg-rose-50/50 border border-rose-100 rounded-2xl p-5 space-y-4">
+              <div className="bg-rose-50/50 border border-rose-100 rounded-lg p-5 space-y-4">
                 <div className="prose prose-slate max-w-none text-xs leading-relaxed text-slate-700 whitespace-pre-line font-medium md:text-[13px]">
                   {legalAuditResult}
                 </div>
@@ -1458,21 +1458,21 @@ export function RequestHub() {
                   <button
                     onClick={() => handleAiLegalAudit(selectedRequestForView)}
                     disabled={isAuditing}
-                    className="px-3.5 py-1.5 bg-white border border-rose-200 rounded-xl text-xs font-bold hover:bg-rose-50 text-rose-700 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    className="px-3.5 py-1.5 bg-white border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-50 text-rose-700 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
                     <RefreshCw className={cn("w-3.5 h-3.5", isAuditing && "animate-spin")} /> Chạy lại kiểm tra
                   </button>
                   <button
                     onClick={() => setLegalAuditResult(null)}
-                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600 transition-all cursor-pointer"
                   >
                     Đóng kết quả
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="bg-[#fafafa] border border-slate-200 rounded-2xl p-6 text-center space-y-3">
-                <div className="w-12 h-12 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+              <div className="bg-[#fafafa] border border-slate-200 rounded-lg p-6 text-center space-y-3">
+                <div className="w-12 h-12 bg-rose-50 border border-rose-100 text-rose-600 rounded-lg flex items-center justify-center mx-auto shadow-sm">
                   <Sparkles className="w-5 h-5 animate-pulse" />
                 </div>
                 <div className="max-w-md mx-auto">
@@ -1484,7 +1484,7 @@ export function RequestHub() {
                 <button
                   onClick={() => handleAiLegalAudit(selectedRequestForView)}
                   disabled={isAuditing}
-                  className="px-5 py-2.5 bg-rose-950 text-rose-200 border border-rose-900 rounded-2xl text-xs font-bold hover:bg-rose-900 hover:text-white transition-all flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="px-5 py-2.5 bg-rose-950 text-rose-200 border border-rose-900 rounded-lg text-xs font-bold hover:bg-rose-900 hover:text-white transition-all flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50 shadow-sm"
                 >
                   {isAuditing ? (
                     <>
@@ -1505,23 +1505,23 @@ export function RequestHub() {
             <div className="space-y-3">
               {/* Integrity status alert banners */}
               {verificationLoading ? (
-                <div className="bg-slate-100 border border-slate-300 text-slate-700 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold animate-pulse">
+                <div className="bg-slate-100 border border-slate-300 text-slate-700 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold animate-pulse">
                   <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
                   Đang xác thực tính toàn vẹn chữ ký số...
                 </div>
               ) : verificationStatus === 'verified' ? (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold shadow-sm">
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold shadow-sm">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 animate-pulse" />
                   Chữ ký số hợp lệ: Nội dung văn bản nguyên vẹn (Verified).
                 </div>
               ) : verificationStatus === 'tampered' ? (
-                <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl flex items-center gap-2 text-xs font-bold shadow-sm border-l-4 border-l-rose-600 animate-bounce">
+                <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold shadow-sm border-l-4 border-l-rose-600 animate-bounce">
                   <ShieldAlert className="w-4 h-4 text-rose-600" />
                   CẢNH BÁO LỖI TOÀN VẸN: Dữ liệu đã bị thay đổi trái phép sau khi ký số!
                 </div>
               ) : null}
 
-              <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-950 shadow-sm space-y-4">
+              <div className="bg-slate-900 text-white rounded-lg p-5 border border-slate-950 shadow-sm space-y-4">
                 <div className="flex justify-between items-start border-b border-slate-800 pb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="p-1.5 bg-emerald-950 text-emerald-400 border border-emerald-900/50 rounded-lg">
@@ -1561,7 +1561,7 @@ export function RequestHub() {
                 {selectedRequestForView.signatureDraw && (
                   <div className="border-t border-slate-800 pt-3">
                     <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
-                    <div className="bg-white p-2 rounded-xl flex items-center justify-center max-w-[200px] border border-slate-700">
+                    <div className="bg-white p-2 rounded-lg flex items-center justify-center max-w-[200px] border border-slate-700">
                       <img src={selectedRequestForView.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
                     </div>
                   </div>
@@ -1583,7 +1583,7 @@ export function RequestHub() {
                     "w-[14px] h-[14px] rounded-full shrink-0 border-2 mt-1 bg-white",
                     log.status === 'approved' ? "border-emerald-500" : "border-rose-500"
                   )} />
-                  <div className="flex-1 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                  <div className="flex-1 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
                     <div className="flex justify-between items-start mb-1">
                       <p className="text-xs font-bold text-slate-800">{log.stepName}</p>
                       <span className={cn(
@@ -1600,7 +1600,7 @@ export function RequestHub() {
               {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.workflow?.slice((selectedRequestForView.approvalLog || []).length).map((_: any, idx: number) => (
                 <div key={'w-'+idx} className="relative z-10 flex gap-4 opacity-50">
                   <div className="w-[14px] h-[14px] rounded-full shrink-0 border-2 border-slate-300 bg-slate-100 mt-1" />
-                  <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg p-3">
                     <p className="text-xs font-bold text-slate-600 mb-1">Cấp duyệt {(selectedRequestForView.approvalLog || []).length + idx + 1}</p>
                     <p className="text-[10px] font-bold text-amber-600">Đang chờ xử lý...</p>
                   </div>
@@ -1704,23 +1704,23 @@ export function RequestHub() {
           </div>
 
         </div>
-      </motion.div>
-    </div>
+  </Modal>
   )}
   </AnimatePresence>
 
   {/* Digital Signature Modal */}
  <AnimatePresence>
  {signingRequestId && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md" onClick={() => setSigningRequestId(null)}>
- <motion.div 
- initial={{ opacity: 0, scale: 0.95, y: 20 }}
- animate={{ opacity: 1, scale: 1, y: 0 }}
- exit={{ opacity: 0, scale: 0.95, y: 20 }}
- className="bg-white rounded-xl w-full max-w-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+ <Modal
+   isOpen={true}
+   onClose={() => setSigningRequestId(null)}
+   maxWidth="2xl"
+   hideFooter
+   noPadding
+ >
  <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
+ <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center">
  <FileSignature className="w-5 h-5" />
  </div>
  <div>
@@ -1784,7 +1784,7 @@ export function RequestHub() {
  </div>
  </div>
 
- <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 flex items-start gap-4">
+ <div className="bg-amber-50 rounded-lg p-4 border border-amber-100 flex items-start gap-4">
  <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
  <Clock className="w-4 h-4" />
  </div>
@@ -1816,19 +1816,20 @@ export function RequestHub() {
  )}
  </button>
  </div>
- </motion.div>
- </div>
+ </Modal>
  )}
  </AnimatePresence>
  {/* Print PDF / A4 Modal */}
  <AnimatePresence>
  {showPrintModal && selectedRequestForPrint && (
- <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto" onClick={() => setShowPrintModal(false)}>
- <motion.div 
- initial={{ opacity: 0, y: 50 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: 50 }}
- className="bg-white rounded-none shadow-sm w-[210mm] min-h-[297mm] mx-auto p-[20mm] relative" id="a4-print-document" onClick={(e) => e.stopPropagation()}>
+ <Modal
+   isOpen={true}
+   onClose={() => setShowPrintModal(false)}
+   maxWidth="full"
+   hideFooter
+   noPadding
+ >
+ <div className="bg-white rounded-none shadow-sm w-[210mm] min-h-[297mm] mx-auto p-[20mm] relative overflow-y-auto" id="a4-print-document">
  {/* Print Control Overlay (Visible only on UI, hidden in Print) */}
  <div className="absolute top-4 -right-16 flex flex-col gap-2 print:hidden">
  <button 
@@ -1871,7 +1872,7 @@ export function RequestHub() {
  <div className="flex flex-col h-full border-[3px] border-slate-900 p-6">
  <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
  <div className="flex items-center gap-4">
- <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-2xl tracking-tighter">OS</div>
+ <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-2xl tracking-tighter">OS</div>
  <div>
  <h2 className="text-xl font-bold uppercase tracking-tighter">Omni-System Enterprise</h2>
  <p className="text-[10px] font-bold text-slate-600 italic">Hệ thống Quản trị Doanh nghiệp Toàn diện</p>
@@ -2067,22 +2068,21 @@ export function RequestHub() {
   </div>
  </div>
  </div>
- </motion.div>
  </div>
+ </Modal>
  )}
  </AnimatePresence>
 
  {/* Routing / Luân chuyển văn bản modal */}
  <AnimatePresence>
  {showRouteModal && routingRequest && (
-  <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" onClick={() => setShowRouteModal(false)}>
-   <motion.div 
-     initial={{ opacity: 0, scale: 0.95 }}
-     animate={{ opacity: 1, scale: 1 }}
-     exit={{ opacity: 0, scale: 0.95 }}
-     className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200"
-     onClick={(e) => e.stopPropagation()}
-   >
+  <Modal
+    isOpen={true}
+    onClose={() => setShowRouteModal(false)}
+    maxWidth="lg"
+    hideFooter
+    noPadding
+  >
      {/* Header */}
      <div className="bg-slate-950 text-white px-6 py-4 flex items-center justify-between">
        <div className="flex items-center gap-3">
@@ -2126,7 +2126,7 @@ export function RequestHub() {
                key={dept.id}
                onClick={() => setRoutingDepartment(dept.id)}
                className={cn(
-                 "p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-1.5",
+                 "p-3 rounded-lg border cursor-pointer transition-all flex flex-col gap-1.5",
                  routingDepartment === dept.id 
                    ? "bg-slate-50 border-slate-950 ring-2 ring-slate-100" 
                    : "bg-white border-slate-200 hover:border-slate-300"
@@ -2150,7 +2150,7 @@ export function RequestHub() {
            placeholder="Ví dụ: Nguyễn Văn A (Trưởng phòng), hoặc bỏ trống để tự động nhận..."
            value={routingRecipient}
            onChange={(e) => setRoutingRecipient(e.target.value)}
-           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium"
+           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-lg focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium"
          />
        </div>
 
@@ -2162,7 +2162,7 @@ export function RequestHub() {
            placeholder="Nhập hướng dẫn xử lý hồ sơ..."
            value={routingNote}
            onChange={(e) => setRoutingNote(e.target.value)}
-           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium resize-none text-slate-800"
+           className="w-full bg-[#fafafa] text-slate-900 text-xs px-3.5 py-2.5 border border-slate-300 rounded-lg focus:border-slate-900 focus:outline-none placeholder-slate-400 font-medium resize-none text-slate-800"
          />
        </div>
      </div>
@@ -2172,20 +2172,19 @@ export function RequestHub() {
        <button 
          type="button"
          onClick={() => setShowRouteModal(false)}
-         className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all cursor-pointer"
+         className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all cursor-pointer"
        >
          Hủy bỏ
        </button>
        <button 
          type="button"
          onClick={executeRouting}
-         className="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-sm shadow-emerald-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
+         className="flex-1 py-3 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm shadow-emerald-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
        >
          Xác nhận Luân chuyển <Send className="w-4 h-4" />
        </button>
      </div>
-   </motion.div>
-  </div>
+  </Modal>
   )}
   </AnimatePresence>
 

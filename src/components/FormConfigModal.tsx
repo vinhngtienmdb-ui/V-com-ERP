@@ -27,7 +27,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={onClose}>
-      <div className="bg-[#F8F9FA] rounded-xl w-full max-w-4xl h-[85vh] shadow-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-[#F8F9FA] rounded-lg w-full max-w-4xl h-[85vh] shadow-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Tabs */}
         <div className="bg-white border-b border-slate-300 pt-4 px-6 flex justify-between items-end relative">
@@ -70,10 +70,10 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 md:p-6">
           {activeTab === 'basic' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               
               <div className="flex gap-4 items-start border-b border-slate-300 pb-4">
-                <div className="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-emerald-500 text-white rounded-lg flex items-center justify-center shrink-0">
                   <FileText className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
@@ -94,7 +94,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   value={config.description || ''}
                   onChange={(e) => setConfig({...config, description: e.target.value})}
                   placeholder="Nhập mô tả cho yêu cầu"
-                  className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
+                  className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none min-h-[100px]"
                 />
               </div>
 
@@ -103,7 +103,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                 <select 
                   value={config.category}
                   onChange={(e) => setConfig({...config, category: e.target.value})}
-                  className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                 >
                   <option value="vang_mat">Vắng mặt</option>
                   <option value="giai_trinh">Giải trình công</option>
@@ -156,7 +156,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'design' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               <div className="flex justify-between items-center border-b border-slate-300 pb-4 mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">Thiết kế biểu mẫu</h3>
@@ -175,7 +175,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
 
               <div className="space-y-4">
                 {(config.fields || []).map((field: any, idx: number) => (
-                  <div key={field.id} className="bg-slate-50 border border-slate-300 p-4 rounded-xl relative group">
+                  <div key={field.id} className="bg-slate-50 border border-slate-300 p-4 rounded-lg relative group">
                     <button 
                       onClick={() => {
                         setConfig({
@@ -254,7 +254,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   </div>
                 ))}
                 {(!config.fields || config.fields.length === 0) && (
-                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-500">
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center text-slate-500">
                     <Settings className="w-8 h-8 mb-3 text-slate-400" />
                     <p className="text-sm font-bold text-slate-700">Chưa có trường dữ liệu nào</p>
                     <p className="text-xs text-slate-500 mt-1">Bấm "Thêm trường" để bắt đầu thiết kế E-Form.</p>
@@ -265,14 +265,14 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
           )}
 
           {activeTab === 'workflow' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
               <div className="border-b border-slate-300 pb-4 mb-6">
                 <h3 className="text-xl font-bold text-slate-900">Cấu hình luồng phê duyệt</h3>
                 <p className="text-sm text-slate-600 mt-1">Thiết lập quy trình duyệt mặc định định và các quyền đi kèm.</p>
               </div>
 
               <div className="space-y-4">
-                <label className="flex items-start gap-4 p-4 border border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                <label className="flex items-start gap-4 p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
                   <input 
                     type="checkbox" 
                     checked={config.allowUrgent || false}
@@ -285,7 +285,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                   </div>
                 </label>
 
-                <label className="flex items-start gap-4 p-4 border border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                <label className="flex items-start gap-4 p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
                   <input 
                     type="checkbox" 
                     checked={config.allowCustomReviewers || false}
@@ -302,11 +302,11 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               <div className="pt-6 mt-6 border-t border-slate-300">
                 <h4 className="text-sm font-bold text-slate-900 mb-4">Luồng phê duyệt mặc định</h4>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-300">
+                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-300">
                     <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded w-16 text-center">BƯỚC 1</span>
                     <span className="text-sm font-semibold text-slate-800 flex-1">Quản lý trực tiếp</span>
                   </div>
-                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-300">
+                  <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-300">
                     <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded w-16 text-center">BƯỚC 2</span>
                     <span className="text-sm font-semibold text-slate-800 flex-1">Ban Giám Đốc</span>
                   </div>

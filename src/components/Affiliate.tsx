@@ -164,7 +164,7 @@ export function AffiliateManagement() {
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#2563EB] font-bold text-xs border border-slate-300 shrink-0">
- {affiliate.name.charAt(0)}
+ {affiliate?.name?.charAt(0) || '?'}
  </div>
  <div>
  <p className="text-sm font-semibold text-[#111827]">{affiliate.name}</p>

@@ -4,7 +4,7 @@ import { safeLocalStorage } from './storage';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements'];
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -24,11 +24,43 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'customerId') return 'customer_id';
       if (field === 'customerName') return 'customer_name';
       if (field === 'createdAt') return 'created_at';
+      if (field === 'sellerId') return 'seller_id';
+      if (field === 'parentOrderId') return 'parent_order_id';
+      if (field === 'commissionFee') return 'commission_fee';
+      if (field === 'settlementStatus') return 'settlement_status';
+      if (field === 'paymentStatus') return 'payment_status';
+      if (field === 'paymentMethod') return 'payment_method';
+      if (field === 'settlementId') return 'settlement_id';
     } else if (tableName === 'warehouse_stock') {
       if (field === 'storeId' || field === 'warehouseId') return 'warehouse_id';
       if (field === 'productId' || field === 'materialId') return 'product_id';
       if (field === 'productName' || field === 'materialName') return 'product_name';
       if (field === 'safetyStock') return 'safety_stock';
+      if (field === 'updatedAt') return 'updated_at';
+    } else if (tableName === 'sellers') {
+      if (field === 'totalProducts') return 'total_products';
+      if (field === 'walletBalance') return 'wallet_balance';
+      if (field === 'taxCode') return 'tax_code';
+      if (field === 'identityCard') return 'identity_card';
+      if (field === 'commissionRate') return 'commission_rate';
+      if (field === 'joinDate') return 'join_date';
+      if (field === 'onboardingStep') return 'onboarding_step';
+      if (field === 'partnerType') return 'partner_type';
+      if (field === 'activeModules') return 'active_modules';
+      if (field === 'businessLicenseUrl') return 'business_license_url';
+      if (field === 'idCardFrontUrl') return 'id_card_front_url';
+      if (field === 'idCardBackUrl') return 'id_card_back_url';
+    } else if (tableName === 'settlements') {
+      if (field === 'sellerId') return 'seller_id';
+      if (field === 'sellerName') return 'seller_name';
+      if (field === 'periodStart') return 'period_start';
+      if (field === 'periodEnd') return 'period_end';
+      if (field === 'totalSales') return 'total_sales';
+      if (field === 'commissionFee') return 'commission_fee';
+      if (field === 'shippingFee') return 'shipping_fee';
+      if (field === 'netPayout') return 'net_payout';
+      if (field === 'paidAt') return 'paid_at';
+      if (field === 'createdAt') return 'created_at';
       if (field === 'updatedAt') return 'updated_at';
     }
     // Default snake_case fallback for other fields in relational tables
@@ -92,12 +124,53 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.carrier = jsData.carrier || null;
     payload.tracking = jsData.tracking || null;
     payload.shipping_cost = Number(jsData.shippingCost || jsData.shipping_cost) || 0.00;
+    payload.seller_id = jsData.sellerId || jsData.seller_id || null;
+    payload.parent_order_id = jsData.parentOrderId || jsData.parent_order_id || null;
+    payload.commission_fee = Number(jsData.commissionFee || jsData.commission_fee) || 0.00;
+    payload.settlement_status = jsData.settlementStatus || jsData.settlement_status || 'pending';
+    payload.settlement_id = jsData.settlementId || jsData.settlement_id || null;
+    payload.payment_status = jsData.paymentStatus || jsData.payment_status || 'unpaid';
+    payload.payment_method = jsData.paymentMethod || jsData.payment_method || 'cod';
   } else if (tableName === 'warehouse_stock') {
     payload.warehouse_id = jsData.warehouseId || jsData.warehouse_id || jsData.storeId || jsData.store_id || null;
     payload.product_id = jsData.productId || jsData.materialId || jsData.product_id || null;
     payload.product_name = jsData.productName || jsData.materialName || jsData.product_name || null;
     payload.quantity = Number(jsData.quantity) || 0.00;
     payload.safety_stock = Number(jsData.safetyStock || jsData.safety_stock) || 0.00;
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'sellers') {
+    payload.name = jsData.name || '';
+    payload.email = jsData.email || null;
+    payload.phone = jsData.phone || null;
+    payload.total_products = Number(jsData.totalProducts) || 0;
+    payload.rating = Number(jsData.rating) || 0;
+    payload.gmv = Number(jsData.gmv) || 0;
+    payload.wallet_balance = Number(jsData.walletBalance) || 0;
+    payload.status = jsData.status || 'pending';
+    payload.tax_code = jsData.taxCode || null;
+    payload.identity_card = jsData.identityCard || null;
+    payload.address = jsData.address || null;
+    payload.representative = jsData.representative || null;
+    payload.commission_rate = Number(jsData.commissionRate) || 0;
+    payload.join_date = jsData.joinDate || jsData.join_date || new Date().toISOString();
+    payload.onboarding_step = jsData.onboardingStep || jsData.onboarding_step || 'registration';
+    payload.partner_type = jsData.partnerType || jsData.partner_type || 'dealer';
+    payload.active_modules = jsData.activeModules || jsData.active_modules || [];
+    payload.business_license_url = jsData.businessLicenseUrl || jsData.business_license_url || null;
+    payload.id_card_front_url = jsData.idCardFrontUrl || jsData.id_card_front_url || null;
+    payload.id_card_back_url = jsData.idCardBackUrl || jsData.id_card_back_url || null;
+  } else if (tableName === 'settlements') {
+    payload.seller_id = jsData.sellerId || jsData.seller_id || null;
+    payload.seller_name = jsData.sellerName || jsData.seller_name || null;
+    payload.period_start = jsData.periodStart || jsData.period_start || new Date().toISOString();
+    payload.period_end = jsData.periodEnd || jsData.period_end || new Date().toISOString();
+    payload.total_sales = Number(jsData.totalSales || jsData.total_sales) || 0.00;
+    payload.commission_fee = Number(jsData.commissionFee || jsData.commission_fee) || 0.00;
+    payload.shipping_fee = Number(jsData.shippingFee || jsData.shipping_fee) || 0.00;
+    payload.net_payout = Number(jsData.netPayout || jsData.net_payout) || 0.00;
+    payload.status = jsData.status || 'pending';
+    payload.paid_at = jsData.paidAt || jsData.paid_at || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
     payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
   }
 
@@ -160,6 +233,13 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.carrier = row.carrier;
     jsData.tracking = row.tracking;
     jsData.shippingCost = Number(row.shipping_cost || 0);
+    jsData.sellerId = row.seller_id;
+    jsData.parentOrderId = row.parent_order_id;
+    jsData.commissionFee = Number(row.commission_fee || 0);
+    jsData.settlementStatus = row.settlement_status;
+    jsData.settlementId = row.settlement_id;
+    jsData.paymentStatus = row.payment_status;
+    jsData.paymentMethod = row.payment_method;
   } else if (tableName === 'warehouse_stock') {
     jsData.warehouseId = row.warehouse_id || row.store_id;
     jsData.storeId = row.warehouse_id || row.store_id; // Keep storeId for backward compatibility
@@ -169,6 +249,40 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.materialName = row.product_name; // backward compatibility
     jsData.quantity = Number(row.quantity);
     jsData.safetyStock = Number(row.safety_stock);
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'sellers') {
+    jsData.name = row.name;
+    jsData.email = row.email;
+    jsData.phone = row.phone;
+    jsData.totalProducts = Number(row.total_products || 0);
+    jsData.rating = Number(row.rating || 0);
+    jsData.gmv = Number(row.gmv || 0);
+    jsData.walletBalance = Number(row.wallet_balance || 0);
+    jsData.status = row.status;
+    jsData.taxCode = row.tax_code;
+    jsData.identityCard = row.identity_card;
+    jsData.address = row.address;
+    jsData.representative = row.representative;
+    jsData.commissionRate = Number(row.commission_rate || 0);
+    jsData.joinDate = row.join_date;
+    jsData.onboardingStep = row.onboarding_step;
+    jsData.partnerType = row.partner_type;
+    jsData.activeModules = row.active_modules || [];
+    jsData.businessLicenseUrl = row.business_license_url;
+    jsData.idCardFrontUrl = row.id_card_front_url;
+    jsData.idCardBackUrl = row.id_card_back_url;
+  } else if (tableName === 'settlements') {
+    jsData.sellerId = row.seller_id;
+    jsData.sellerName = row.seller_name;
+    jsData.periodStart = row.period_start;
+    jsData.periodEnd = row.period_end;
+    jsData.totalSales = Number(row.total_sales || 0);
+    jsData.commissionFee = Number(row.commission_fee || 0);
+    jsData.shippingFee = Number(row.shipping_fee || 0);
+    jsData.netPayout = Number(row.net_payout || 0);
+    jsData.status = row.status;
+    jsData.paidAt = row.paid_at;
+    jsData.createdAt = row.created_at;
     jsData.updatedAt = row.updated_at;
   }
 
@@ -982,5 +1096,60 @@ export const signInWithGoogle = async () => {
 };
 
 export const getAuth = () => auth;
+
+// -----------------------------------------------------------------------------
+// Wallet & Finance Helpers
+// -----------------------------------------------------------------------------
+export const updateWalletBalance = async (
+  sellerId: string, 
+  amount: number, 
+  transactionData: {
+    type: 'deposit' | 'withdraw' | 'payment' | 'refund' | 'payout',
+    gateway: string,
+    status: 'pending' | 'success' | 'failed'
+  }
+) => {
+  try {
+    // 1. Get current seller
+    const sellerRef = doc(db, 'sellers', sellerId);
+    const sellerSnap = await getDoc(sellerRef);
+    if (!sellerSnap.exists()) {
+      throw new Error('Seller not found');
+    }
+    
+    const sellerData = sellerSnap.data();
+    const currentBalance = Number(sellerData.walletBalance) || 0;
+    const newBalance = currentBalance + amount;
+    
+    // Check if sufficient balance for withdrawal
+    if (newBalance < 0) {
+      throw new Error('Insufficient wallet balance');
+    }
+    
+    // 2. Add transaction record
+    const txnRef = collection(db, 'wallet_transactions');
+    const newTxn = await addDoc(txnRef, {
+      userId: sellerId,
+      amount: Math.abs(amount),
+      type: transactionData.type,
+      gateway: transactionData.gateway,
+      status: transactionData.status,
+      timestamp: new Date().toLocaleString('vi-VN'),
+      createdAt: new Date().toISOString()
+    });
+    
+    // 3. Update seller balance (Only if transaction is successful or pending withdrawal that locks balance)
+    if (transactionData.status === 'success' || (transactionData.type === 'withdraw' && transactionData.status === 'pending')) {
+      await updateDoc(sellerRef, {
+        walletBalance: newBalance
+      });
+    }
+    
+    return newTxn;
+  } catch (err) {
+    console.error('Error updating wallet balance:', err);
+    throw err;
+  }
+};
 
 

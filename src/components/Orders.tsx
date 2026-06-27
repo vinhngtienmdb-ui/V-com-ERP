@@ -28,6 +28,7 @@ import {
   FileText,
   Building2,
 } from 'lucide-react';
+import { useAuditLog } from '../hooks/useAuditLog';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
@@ -376,7 +377,7 @@ const OrderDetailModal = ({
         </div>
 
         {order.status === 'pending' && (
-          <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-4 mb-6 text-center font-sans">
+          <div className="bg-emerald-50/50 border border-emerald-200 rounded-lg p-4 mb-6 text-center font-sans">
             <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2.5">Thanh toán chuyển khoản VietQR</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm shrink-0">
@@ -399,7 +400,7 @@ const OrderDetailModal = ({
         )}
 
         {/* Zalo ZNS Order Status Workflow */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
@@ -460,7 +461,7 @@ const OrderDetailModal = ({
         </div>
 
         {/* Trạng thái Ghi sổ Kế toán */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
@@ -504,7 +505,7 @@ const OrderDetailModal = ({
         </div>
 
         {/* Điều phối Kho hàng Logistics (Multi-Warehouse Routing) */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
             Điều phối Kho hàng Logistics (Multi-Warehouse Routing)
           </p>
@@ -605,7 +606,7 @@ const OrderDetailModal = ({
         </div>
 
         {/* Hóa đơn Điện tử & Ký số Cloud HSM */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
@@ -1024,6 +1025,7 @@ export function Orders() {
       try {
         const { doc, updateDoc } = await import('../lib/firebase');
         await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+      log({ action: 'order.updated', targetId: orderId, meta: { event: 'Status/payment update' } });
         matchedOrder = dbOrders.find(o => o.id === orderId);
         if (matchedOrder) {
           matchedOrder = { ...matchedOrder, status: newStatus };
@@ -1179,33 +1181,6 @@ export function Orders() {
   };
 
   const addDemoOrders = async () => {
-    // Note: status must be one of: 'pending', 'completed', 'cancelled', 'returned' according to firestore rules
-    // paymentMethod must be 'cash', 'qr', 'pos', 'loyalty', 'loyalty_full', or null
-    const demo = [
-      {
-        customerName: 'Nguyễn Văn A',
-        total: 2500000,
-        status: 'delivered',
-        paymentMethod: 'cod',
-        items: [{ name: 'Bàn phím cơ', price: 2500000 }],
-        carrier: 'GHTK',
-        tracking: 'GHTK123456789',
-        shippingCost: 35000,
-        source: 'erp',
-      },
-      {
-        customerName: 'Trần Thị B',
-        total: 1200000,
-        status: 'pending',
-        paymentMethod: 'bank_transfer',
-        items: [{ name: 'Chuột không dây', price: 1200000 }],
-        carrier: 'GHN',
-        tracking: 'GHN987654321',
-        shippingCost: 28000,
-        source: 'erp',
-      },
-    ];
-
     const { getAuth } = await import('../lib/firebase');
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -1214,12 +1189,71 @@ export function Orders() {
       return;
     }
 
-    for (const o of demo) {
+    // Define items for the cart
+    const itemSeller1 = { name: 'Điện thoại Smartphone', price: 15000000, quantity: 1, sellerId: 'SEL-001' };
+    const itemSeller2 = { name: 'Ốp lưng silicon', price: 150000, quantity: 2, sellerId: 'SEL-002' };
+
+    // 1. Create Parent Order
+    const parentOrder = {
+      customerName: 'Nguyễn Văn A (Split Test)',
+      total: itemSeller1.price * itemSeller1.quantity + itemSeller2.price * itemSeller2.quantity,
+      status: 'pending',
+      paymentMethod: 'bank_transfer',
+      paymentStatus: 'paid',
+      items: [itemSeller1, itemSeller2],
+      source: 'erp',
+      staffId: currentUser.uid,
+      createdAt: serverTimestamp(),
+      sellerId: null, // It's a parent
+      parentOrderId: null,
+    };
+
+    try {
+      const parentRef = await addDoc(collection(db, 'orders'), parentOrder);
+      const parentId = parentRef.id;
+
+      // 2. Create Sub-order for SEL-001
       await addDoc(collection(db, 'orders'), {
-        ...o,
+        customerName: 'Nguyễn Văn A (Split Test)',
+        total: itemSeller1.price * itemSeller1.quantity,
+        status: 'pending',
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'paid',
+        items: [itemSeller1],
+        source: 'erp',
         staffId: currentUser.uid,
         createdAt: serverTimestamp(),
+        sellerId: 'SEL-001',
+        parentOrderId: parentId,
+        commissionFee: (itemSeller1.price * itemSeller1.quantity) * 0.05, // 5% commission
+        settlementStatus: 'pending',
+        shippingCost: 35000,
+        carrier: 'GHTK'
       });
+
+      // 3. Create Sub-order for SEL-002
+      await addDoc(collection(db, 'orders'), {
+        customerName: 'Nguyễn Văn A (Split Test)',
+        total: itemSeller2.price * itemSeller2.quantity,
+        status: 'pending',
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'paid',
+        items: [itemSeller2],
+        source: 'erp',
+        staffId: currentUser.uid,
+        createdAt: serverTimestamp(),
+        sellerId: 'SEL-002',
+        parentOrderId: parentId,
+        commissionFee: (itemSeller2.price * itemSeller2.quantity) * 0.08, // 8% commission
+        settlementStatus: 'pending',
+        shippingCost: 15000,
+        carrier: 'GHN'
+      });
+      
+      alert('Đã tạo thành công Đơn gốc và Tách thành 2 Đơn con!');
+    } catch (error) {
+      console.error('Error creating split orders:', error);
+      alert('Có lỗi xảy ra khi tạo đơn hàng ngẫu nhiên');
     }
   };
 
@@ -1249,7 +1283,7 @@ export function Orders() {
       </div>
 
       <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
-        <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
+        <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all ring-2 ring-red-100">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] text-red-600 font-bold uppercase italic tracking-widest">
               Cảnh báo chậm trễ
@@ -1263,7 +1297,7 @@ export function Orders() {
             Đơn {'>'}24h chưa xử lý
           </div>
         </div>
-        <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+        <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
               Cần đóng gói
@@ -1275,7 +1309,7 @@ export function Orders() {
             12 đơn đóng muộn ({'>'}24h)
           </div>
         </div>
-        <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+        <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
               Đang vận chuyển
@@ -1287,7 +1321,7 @@ export function Orders() {
             Chủ yếu: GHTK (65%)
           </div>
         </div>
-        <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
+        <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
           <div className="relative z-10 flex flex-col justify-between h-full text-[#FAF9F5]">
             <div className="flex justify-between items-start mb-4">
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -1378,7 +1412,7 @@ export function Orders() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4 h-[600px] flex flex-col">
+        <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden mt-4 h-[600px] flex flex-col">
           <TableVirtuoso
             data={filteredOrders}
             style={{ height: '100%', flex: 1 }}
@@ -1421,6 +1455,9 @@ export function Orders() {
                   Đơn hàng & Khách hàng
                 </th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">
+                  Gian hàng & Phân rã
+                </th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">
                   Giao nhận & Tracking
                 </th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest bg-[#F9FAFB]">
@@ -1444,7 +1481,8 @@ export function Orders() {
               <>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">
+                    <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors flex items-center gap-1.5">
+                      {order.parentOrderId ? <i className="text-[10px] text-purple-600 bg-purple-50 px-1 py-0.5 rounded border border-purple-200 not-italic">Sub</i> : <i className="text-[10px] text-slate-500 bg-slate-100 px-1 py-0.5 rounded border border-slate-200 not-italic">Root</i>}
                       #{order.id.split('-').pop()}
                     </p>
                     {isDelayed(order.date, order.status) && (
@@ -1457,6 +1495,24 @@ export function Orders() {
                     {order.customerName}
                   </p>
                   <p className="text-[10px] text-[#9CA3AF] mt-0.5">{order.date}</p>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col gap-1">
+                    {order.sellerId ? (
+                      <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 w-fit">
+                        🏢 {order.sellerId}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-slate-400 italic">
+                        Đơn tổng (Parent)
+                      </span>
+                    )}
+                    {order.parentOrderId && (
+                      <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                        ↳ Gốc: <span className="font-mono text-slate-700">{order.parentOrderId.split('-').pop()}</span>
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   {order.carrier ? (
@@ -1618,7 +1674,7 @@ export function Orders() {
         )}
 
         {znsToast && znsToast.show && (
-          <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-900 border-2 border-blue-500 text-[#FAF9F5] rounded-2xl p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
+          <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-900 border-2 border-blue-500 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0 shadow-md">
                 Z

@@ -273,10 +273,10 @@ export function AIOperations() {
  <input 
  type="text" 
  placeholder="Tìm ID xử lý của AI..." 
- className="bg-slate-50 border border-slate-300 rounded-xl pl-12 pr-6 py-3 text-sm focus:outline-none w-full md:w-80 ring-orange-600/10 focus:ring-4 transition-all"
+ className="bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-6 py-3 text-sm focus:outline-none w-full md:w-80 ring-orange-600/10 focus:ring-4 transition-all"
  />
  </div>
- <button className="bg-white border border-slate-300 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all">
+ <button className="bg-white border border-slate-300 px-5 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all">
  <Filter className="w-4 h-4" /> Filter Confidence
  </button>
  </div>
@@ -290,7 +290,7 @@ export function AIOperations() {
  <AiDatabaseInspector />
  ) : activeModel === 'review' ? (
  MOCK_HUMAN_QUEUE.map((item) => (
- <div key={item.id} className="p-6 bg-amber-50/30 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start gap-6 group">
+ <div key={item.id} className="p-6 bg-amber-50/30 border border-amber-200 rounded-lg flex flex-col sm:flex-row items-start gap-6 group">
  <div className="p-5 rounded-lg bg-white shadow-sm shadow-amber-200/50 text-amber-600 border border-amber-100  transition-transform">
  <UserCheck className="w-8 h-8" />
  </div>
@@ -310,8 +310,8 @@ export function AIOperations() {
  </div>
  </div>
  <div className="flex gap-3">
- <button className="px-6 py-3 bg-white border border-slate-300 text-rose-600 font-black rounded-xl text-[10px] uppercase tracking-[0.1em] hover:bg-rose-50 transition-all border-b-2 active:translate-y-0.5">Reject Action</button>
- <button className="px-6 py-3 bg-slate-900 text-[#FAF9F5] font-black rounded-xl text-[10px] uppercase tracking-[0.1em] hover:bg-emerald-600 transition-all shadow-sm shadow-slate-900/20 active:translate-y-0.5">Approve Model</button>
+ <button className="px-6 py-3 bg-white border border-slate-300 text-rose-600 font-black rounded-lg text-[10px] uppercase tracking-[0.1em] hover:bg-rose-50 transition-all border-b-2 active:translate-y-0.5">Reject Action</button>
+ <button className="px-6 py-3 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-[10px] uppercase tracking-[0.1em] hover:bg-emerald-600 transition-all shadow-sm shadow-slate-900/20 active:translate-y-0.5">Approve Model</button>
  </div>
  </div>
  <div className="p-4 bg-white/80 rounded-lg border border-amber-200/50 shadow-inner">
@@ -322,7 +322,7 @@ export function AIOperations() {
  ))
  ) : (
  MOCK_AI_LOGS.filter(l => l.type === activeModel || activeModel === 'moderation').map((log) => (
- <div key={log.id} className="p-6 bg-white border border-slate-200 rounded-xl hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-6 border-b-2">
+ <div key={log.id} className="p-6 bg-white border border-slate-200 rounded-lg hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-col sm:flex-row items-start gap-6 border-b-2">
  <div className={cn(
  "p-5 rounded-lg shadow-sm transition-all ",
  log.status === 'flagged' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : "bg-emerald-50 text-emerald-500 shadow-emerald-200/30"
@@ -347,8 +347,8 @@ export function AIOperations() {
  </div>
  </div>
  <div className="flex gap-2">
- <button className="px-5 py-2.5 bg-slate-100 text-slate-900 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border-b-2 active:translate-y-0.5">Override</button>
- <button className="px-5 py-2.5 bg-slate-900 text-[#FAF9F5] font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 active:translate-y-0.5">Telemetry</button>
+ <button className="px-5 py-2.5 bg-slate-100 text-slate-900 font-black rounded-lg text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border-b-2 active:translate-y-0.5">Override</button>
+ <button className="px-5 py-2.5 bg-slate-900 text-[#FAF9F5] font-black rounded-lg text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 active:translate-y-0.5">Telemetry</button>
  </div>
  </div>
  <div className="p-5 bg-slate-50 rounded-lg border border-slate-200/50 shadow-inner group-hover:bg-slate-100/50 transition-colors">
@@ -365,14 +365,14 @@ export function AIOperations() {
  </div>
 
    {/* Gemini Real-time AI Operations Analyzer Console */}
-  <div className="bg-[#0b1329] text-[#f8fafc] p-6 rounded-xl border border-slate-800 shadow-xl overflow-hidden relative group my-6">
+  <div className="bg-[#0b1329] text-[#f8fafc] p-6 rounded-lg border border-slate-800 shadow-xl overflow-hidden relative group my-6">
     {/* Background pulse elements */}
     <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40 animate-pulse duration-[8000ms]" />
     
     <div className="relative z-10 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-950 border border-blue-900 rounded-xl text-orange-500">
+          <div className="p-3 bg-blue-950 border border-blue-900 rounded-lg text-orange-500">
             <Sparkles className="w-6 h-6 animate-pulse" />
           </div>
           <div>
@@ -410,7 +410,7 @@ export function AIOperations() {
               handleGenerateDiagnostics('fraud', p);
             }}
             disabled={isLoadingInsight}
-            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-lg transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <span className="p-1.5 bg-rose-950/50 border border-rose-900 rounded text-rose-500"><AlertTriangle className="w-4 h-4" /></span>
@@ -430,7 +430,7 @@ export function AIOperations() {
               handleGenerateDiagnostics('pricing', p);
             }}
             disabled={isLoadingInsight}
-            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-lg transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <span className="p-1.5 bg-emerald-950/50 border border-emerald-900 rounded text-emerald-500"><DollarSign className="w-4 h-4" /></span>
@@ -450,7 +450,7 @@ export function AIOperations() {
               handleGenerateDiagnostics('general', p);
             }}
             disabled={isLoadingInsight}
-            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-xl transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
+            className="p-4 bg-[#141d36] hover:bg-[#1b274c] border border-slate-800 hover:border-slate-700 text-left rounded-lg transition-all group/btn disabled:opacity-50 text-xs flex flex-col justify-between space-y-3 h-full border-b-2 cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <span className="p-1.5 bg-blue-950/50 border border-blue-900 rounded text-blue-500"><Layers className="w-4 h-4" /></span>
@@ -473,7 +473,7 @@ export function AIOperations() {
         <div className="flex gap-3">
           <input
             type="text"
-            className="flex-1 bg-[#141d36] text-[#f8fafc] text-xs px-4 py-3 border border-slate-800 rounded-xl focus:border-slate-700 focus:outline-none placeholder-slate-500 font-medium"
+            className="flex-1 bg-[#141d36] text-[#f8fafc] text-xs px-4 py-3 border border-slate-800 rounded-lg focus:border-slate-700 focus:outline-none placeholder-slate-500 font-medium"
             placeholder="Nhập yêu cầu phân tích dữ liệu kho, đối soát iPOS, hoặc chỉ tiêu lợi nhuận..."
             value={customPrompt}
             onChange={(e) => setCustomPrompt(e.target.value)}
@@ -482,7 +482,7 @@ export function AIOperations() {
             type="button"
             onClick={() => handleGenerateDiagnostics('general', customPrompt)}
             disabled={isLoadingInsight || !customPrompt.trim()}
-            className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-950 disabled:opacity-50 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-md active:translate-y-0.5 border-b-2 flex items-center gap-2 cursor-pointer font-sans"
+            className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-950 disabled:opacity-50 font-black rounded-lg text-xs uppercase tracking-widest transition-all shadow-md active:translate-y-0.5 border-b-2 flex items-center gap-2 cursor-pointer font-sans"
           >
             {isLoadingInsight ? (
               <>
@@ -499,7 +499,7 @@ export function AIOperations() {
 
       {/* Output Screen */}
       {(insightOutput || isLoadingInsight) && (
-        <div className="border border-slate-800 bg-[#070d1a] rounded-xl overflow-hidden shadow-inner">
+        <div className="border border-slate-800 bg-[#070d1a] rounded-lg overflow-hidden shadow-inner">
           <div className="bg-[#101930] px-4 py-3 border-b border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span className="text-slate-400 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -545,7 +545,7 @@ export function AIOperations() {
   </div>
 
 <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={32}>
- <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
  <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
@@ -553,12 +553,12 @@ export function AIOperations() {
  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Ngân sách Hàng tháng</span>
  </div>
  <DraggableGrid className="grid grid-cols-2 gap-6 mb-10" columns={2} gap={24}>
- <div className="p-6 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+ <div className="p-6 bg-stone-950 text-[#FAF9F5] rounded-lg border border-slate-800 shadow-sm relative overflow-hidden group">
  <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Chi phí Thời gian thực</p>
  <p className="text-3xl font-black tracking-tight tracking-tighter">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-slate-900/10 rounded-full blur-xl group-hover:bg-slate-900/20 transition-all" />
  </div>
- <div className="p-6 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
+ <div className="p-6 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
  <p className="text-3xl font-black text-emerald-700 tracking-tight tracking-tighter">32.4%</p>
  <TrendingUp className="absolute top-4 right-4 w-10 h-10 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
@@ -585,12 +585,12 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
+ <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex justify-between items-center mb-10">
  <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
  <LineChartIcon className="w-6 h-6 text-orange-700" /> Multi-Model Arena Performance
  </h3>
- <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
+ <button className="text-[10px] font-black text-orange-700 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-lg border border-slate-300 hover:bg-[#EAE7DF] transition-all">Start A/B Battle</button>
  </div>
  <div className="overflow-x-auto min-w-0">
  <table className="w-full text-left whitespace-nowrap">
@@ -620,12 +620,12 @@ export function AIOperations() {
  </DraggableGrid>
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
+ <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm border border-slate-800 group">
  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-slate-900/20 transition-all duration-1000" />
  
  <div className="relative z-10 space-y-8">
  <div className="flex items-center gap-6">
- <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm  transition-transform duration-500">
+ <div className="p-5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 shadow-sm  transition-transform duration-500">
  <BarChart4 className="w-10 h-10 text-orange-500" />
  </div>
  <h3 className="text-4xl font-black tracking-tight leading-tight italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
@@ -641,7 +641,7 @@ export function AIOperations() {
  <Layers className="absolute -bottom-16 -right-16 w-80 h-80 text-[#FAF9F5]/5 opacity-50 group-hover:rotate-12 transition-transform duration-1000" />
  </div>
 
- <div className="bg-white p-6 border border-slate-200 rounded-xl shadow-sm shadow-slate-200/40 space-y-10">
+ <div className="bg-white p-6 border border-slate-200 rounded-lg shadow-sm shadow-slate-200/40 space-y-10">
  <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
  <Activity className="w-7 h-7 text-orange-700" /> Phân tích Độ lệch & Tình trạng Model
  </h3>
@@ -679,7 +679,7 @@ export function AIOperations() {
  </DraggableGrid>
 
  {/* Hardware & Resource Grid */}
- <div className="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden group">
+ <div className="mt-8 bg-white rounded-lg border border-slate-200 shadow-sm p-6 relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none  transition-transform duration-1000">
  <Server className="w-64 h-64 rotate-12" />
  </div>
@@ -692,13 +692,13 @@ export function AIOperations() {
  </h3>
  <p className="text-slate-600 font-medium mt-2">Giám sát tải của các cụm GPU NVIDIA dành cho Inference & Fine-tuning.</p>
  </div>
- <button className="px-6 py-3 border border-emerald-200 text-emerald-700 font-black text-[11px] uppercase tracking-widest rounded-xl hover:bg-emerald-50 transition-all flex items-center gap-3 shadow-sm shadow-emerald-700/5 bg-white border-b-4 active:translate-y-1">
+ <button className="px-6 py-3 border border-emerald-200 text-emerald-700 font-black text-[11px] uppercase tracking-widest rounded-lg hover:bg-emerald-50 transition-all flex items-center gap-3 shadow-sm shadow-emerald-700/5 bg-white border-b-4 active:translate-y-1">
  <RefreshCw className="w-4 h-4" /> Sync Cluster State
  </button>
  </div>
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10" columns={3} gap={32}>
- <div className="border border-slate-200 rounded-xl p-6 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
+ <div className="border border-slate-200 rounded-lg p-6 bg-slate-50 relative overflow-hidden group/card hover:shadow-sm transition-all border-b-4">
  <div className="flex justify-between items-center mb-8">
  <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: A100-80GB</h4>
  <span className="text-[9px] bg-emerald-600 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-emerald-600/20">Training Pool</span>
@@ -730,7 +730,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border border-slate-300 rounded-xl p-6 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
+ <div className="border border-slate-300 rounded-lg p-6 bg-white shadow-sm shadow-slate-900/5 ring-2 ring-orange-600/5 relative group/card border-b-4">
  <div className="flex justify-between items-center mb-8">
  <h4 className="font-black text-slate-900 text-lg uppercase tracking-tight">Node: L4-24GB</h4>
  <span className="text-[9px] bg-slate-900 text-[#FAF9F5] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-sm shadow-slate-900/5">Inference Pool</span>
@@ -762,7 +762,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border-2 border-slate-200 border-dashed rounded-xl p-6 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
+ <div className="border-2 border-slate-200 border-dashed rounded-lg p-6 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
  <div className="p-5 bg-white rounded-full shadow-sm group-hover/add:scale-110 transition-transform mb-4 border border-slate-200">
  <Plus className="w-10 h-10 text-slate-500 group-hover/add:text-orange-600" />
  </div>
@@ -829,7 +829,7 @@ function AiDatabaseInspector() {
 
   return (
     <div className="space-y-6 font-sans">
-      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
+      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 space-y-4">
         <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-blue-500 animate-pulse" />
           AI Database RAG Inspector (Hỏi đáp SQL Tiếng Việt)
@@ -858,7 +858,7 @@ function AiDatabaseInspector() {
           <input
             type="text"
             placeholder="Ví dụ: Liệt kê các đơn hàng đã thanh toán có tổng tiền lớn hơn 1 triệu đồng..."
-            className="flex-1 text-xs p-3.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+            className="flex-1 text-xs p-3.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
             value={queryText}
             onChange={e => setQueryText(e.target.value)}
             onKeyDown={e => {
@@ -868,7 +868,7 @@ function AiDatabaseInspector() {
           <button
             onClick={() => handleQuery(queryText)}
             disabled={loading || !queryText}
-            className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-6 py-3.5 rounded-xl text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-6 py-3.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
           >
             {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Truy vấn 🔍'}
           </button>
@@ -876,7 +876,7 @@ function AiDatabaseInspector() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs font-bold text-red-700 flex items-center gap-2">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-xs font-bold text-red-700 flex items-center gap-2">
           <XCircle className="w-5 h-5 shrink-0" />
           {error}
         </div>
@@ -893,21 +893,21 @@ function AiDatabaseInspector() {
         <div className="space-y-6 animate-in fade-in duration-300">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* SQL & Explanation Card */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4 shadow-xs">
               <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Phân tích & SQL từ AI</h4>
               
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
                 <p className="text-xs text-slate-700 font-bold leading-relaxed">{result.explanation}</p>
               </div>
 
-              <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-emerald-400 overflow-x-auto border border-slate-950 relative">
+              <div className="bg-slate-900 rounded-lg p-4 font-mono text-[10px] text-emerald-400 overflow-x-auto border border-slate-950 relative">
                 <div className="absolute right-3 top-3 bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[8px] font-sans font-bold uppercase">SQL (Read-only)</div>
                 <pre>{result.sql}</pre>
               </div>
             </div>
 
             {/* Visualizer Chart Card */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs flex flex-col min-h-[300px]">
+            <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4 shadow-xs flex flex-col min-h-[300px]">
               <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Đồ thị hóa kết quả (Visualizer)</h4>
               
               {chartConfig && chartConfig.type !== 'none' && chartData.length > 0 ? (
@@ -987,7 +987,7 @@ function AiDatabaseInspector() {
           </div>
 
           {/* Database Table Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden">
             <div className="p-5 border-b border-slate-200">
               <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Kết quả truy xuất ({result.rows.length} dòng)</h4>
             </div>

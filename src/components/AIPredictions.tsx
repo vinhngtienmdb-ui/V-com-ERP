@@ -268,7 +268,7 @@ export function AIPredictions() {
                   <p className="text-xs text-slate-500 font-bold uppercase tracking-wider animate-pulse">AI đang phân tích dữ liệu đơn hàng và chạy dự báo nhu cầu...</p>
                 </div>
               ) : forecastingData.length === 0 ? (
-                <div className="p-16 border-2 border-dashed border-slate-200 text-center rounded-xl">
+                <div className="p-16 border-2 border-dashed border-slate-200 text-center rounded-lg">
                   <Boxes className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Không có dữ liệu tồn kho hoặc đơn hàng để dự báo.</p>
                 </div>
@@ -417,7 +417,7 @@ export function AIPredictions() {
                   <p className="text-xs text-slate-500 font-bold uppercase tracking-wider animate-pulse">AI đang phân tích hành vi mua sắm và đề xuất mức giá tối ưu...</p>
                 </div>
               ) : pricingSuggestions.length === 0 ? (
-                <div className="p-16 border-2 border-dashed border-slate-200 text-center rounded-xl">
+                <div className="p-16 border-2 border-dashed border-slate-200 text-center rounded-lg">
                   <DollarSign className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Không tìm thấy sản phẩm nào để tính toán giá động.</p>
                 </div>

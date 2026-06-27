@@ -402,7 +402,7 @@ export function VCommSupermarket() {
   return (
     <div className="space-y-6">
       {/* Supermarket Dashboard Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-900 via-teal-950 to-emerald-900 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-900 via-teal-950 to-emerald-900 rounded-lg p-6 text-white shadow-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-500/10 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -419,7 +419,7 @@ export function VCommSupermarket() {
         {activeTab === 'inventory' && (
           <button 
             onClick={() => setShowAddModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-emerald-600/20"
+            className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-lg transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-emerald-600/20"
           >
             <Plus className="w-4 h-4" /> Thêm Sản Phẩm Siêu Thị
           </button>
@@ -453,7 +453,7 @@ export function VCommSupermarket() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Products menu catalog (Left 2 columns) */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-4">
+            <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-xs space-y-4">
               {/* Category tabs & Filter layout */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="flex flex-wrap gap-1.5">
@@ -480,7 +480,7 @@ export function VCommSupermarket() {
                     placeholder="Quét mã vạch hoặc gõ tên..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 pr-4 py-1.5 w-full rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                    className="pl-9 pr-4 py-1.5 w-full rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
                   />
                 </div>
               </div>
@@ -504,7 +504,7 @@ export function VCommSupermarket() {
                         key={prod.id}
                         onClick={() => !isOutOfStock && addToCart(prod)}
                         className={cn(
-                          "bg-slate-50 border rounded-xl p-3 flex flex-col justify-between hover:shadow-sm hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden group",
+                          "bg-slate-50 border rounded-lg p-3 flex flex-col justify-between hover:shadow-sm hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden group",
                           isOutOfStock ? "opacity-60 grayscale cursor-not-allowed border-slate-200" : "border-slate-150"
                         )}
                       >
@@ -537,7 +537,7 @@ export function VCommSupermarket() {
 
           {/* POS Side bar Cart Receipt system (Right column) */}
           <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between min-h-[500px]">
+            <div className="bg-white rounded-lg border border-slate-200 shadow-xs flex flex-col justify-between min-h-[500px]">
               {/* Cart section header */}
               <div className="p-4 border-b border-slate-150 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -720,7 +720,7 @@ export function VCommSupermarket() {
                   <button 
                     onClick={handleCheckoutAndPrint}
                     disabled={cart.length === 0}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:bg-slate-450 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/20 cursor-pointer text-center"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:bg-slate-450 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/20 cursor-pointer text-center"
                   >
                     <Printer className="w-4 h-4" /> Bán Hàng & In Hoá Đơn K80
                   </button>
@@ -734,26 +734,26 @@ export function VCommSupermarket() {
         <div className="space-y-4">
           {/* Quick statistic cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
               <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Tổng số danh mục SKUs</span>
               <h4 className="text-xl font-extrabold text-slate-900 mt-1">{stats.totalSkus} mặt hàng</h4>
             </div>
-            <div className="bg-amber-50/40 border border-amber-200 p-4 rounded-xl">
+            <div className="bg-amber-50/40 border border-amber-200 p-4 rounded-lg">
               <span className="text-[10px] font-bold text-amber-600 block uppercase tracking-wider">Cần nhập thêm hàng (Low-stock)</span>
               <h4 className="text-xl font-extrabold text-amber-700 mt-1">{stats.lowStockSkus} SKUs</h4>
             </div>
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
               <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Tổng số lượng thùng / gói sẵn kho</span>
               <h4 className="text-xl font-extrabold text-slate-900 mt-1">{stats.totalStockUnits} chiếc</h4>
             </div>
-            <div className="bg-emerald-50/20 border border-emerald-250 p-4 rounded-xl">
+            <div className="bg-emerald-50/20 border border-emerald-250 p-4 rounded-lg">
               <span className="text-[10px] font-bold text-emerald-600 block uppercase tracking-wider">Khấu hao giá trị kho tồn</span>
               <h4 className="text-xl font-extrabold text-emerald-700 mt-1">{formatCurrency(stats.inventoryValuation)}</h4>
             </div>
           </div>
 
           {/* Table display */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
             <div className="p-4 border-b border-slate-150 flex flex-col sm:flex-row justify-between items-center gap-3">
               <h4 className="font-extrabold text-sm text-slate-800">Quản Trị Kệ Trưng Bày & Tồn Phát Siêu Thị</h4>
               {/* Category selector */}
@@ -761,7 +761,7 @@ export function VCommSupermarket() {
                 <select 
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value as any)}
-                  className="px-3 py-1.5 border border-slate-200 rounded-xl bg-white text-xs select-none"
+                  className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white text-xs select-none"
                 >
                   <option value="all">Mọi ngành hàng</option>
                   <option value="food">Thực phẩm đóng gói</option>
@@ -774,7 +774,7 @@ export function VCommSupermarket() {
                   placeholder="Quét Barcode hoặc tìm kiếm..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="px-3 py-1.5 border border-slate-200 rounded-xl bg-white text-xs"
+                  className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white text-xs"
                 />
               </div>
             </div>
@@ -870,7 +870,7 @@ export function VCommSupermarket() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm w-full max-w-lg overflow-hidden text-xs font-sans"
+            className="bg-white rounded-lg border border-slate-200 shadow-sm w-full max-w-lg overflow-hidden text-xs font-sans"
           >
             <div className="bg-emerald-900 text-white p-5 flex items-center justify-between">
               <div>
@@ -892,7 +892,7 @@ export function VCommSupermarket() {
                     placeholder="SM-FOOD-101"
                     value={newSKU}
                     onChange={(e) => setNewSKU(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   />
                 </div>
                 <div className="space-y-1">
@@ -902,7 +902,7 @@ export function VCommSupermarket() {
                     placeholder="89311..."
                     value={newBarcode}
                     onChange={(e) => setNewBarcode(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   />
                 </div>
               </div>
@@ -915,7 +915,7 @@ export function VCommSupermarket() {
                   placeholder="Coca Cola lon nhôm 320ml"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200"
                 />
               </div>
 
@@ -925,7 +925,7 @@ export function VCommSupermarket() {
                   <select 
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
                   >
                     <option value="food">Thực phẩm</option>
                     <option value="drink">Đồ uống</option>
@@ -940,7 +940,7 @@ export function VCommSupermarket() {
                     placeholder="Kệ gia dụng B1"
                     value={newShelf}
                     onChange={(e) => setNewShelf(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   />
                 </div>
               </div>
@@ -953,7 +953,7 @@ export function VCommSupermarket() {
                     placeholder="0"
                     value={newCost || ''}
                     onChange={(e) => setNewCost(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   />
                 </div>
                 <div className="space-y-1">
@@ -964,7 +964,7 @@ export function VCommSupermarket() {
                     required
                     value={newPrice || ''}
                     onChange={(e) => setNewPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-slate-900"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-bold text-slate-900"
                   />
                 </div>
               </div>
@@ -977,7 +977,7 @@ export function VCommSupermarket() {
                     placeholder="0"
                     value={newStock || ''}
                     onChange={(e) => setNewStock(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   />
                 </div>
                 <div className="space-y-1">
@@ -986,7 +986,7 @@ export function VCommSupermarket() {
                     type="number" 
                     value={newMinStock}
                     onChange={(e) => setNewMinStock(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-bold"
                   />
                 </div>
               </div>
@@ -1017,7 +1017,7 @@ export function VCommSupermarket() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-slate-100 rounded-2xl border border-slate-200 shadow-sm w-full max-w-[420px] overflow-hidden"
+            className="bg-slate-100 rounded-lg border border-slate-200 shadow-sm w-full max-w-[420px] overflow-hidden"
           >
             {/* Header toolbar */}
             <div className="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between text-xs">

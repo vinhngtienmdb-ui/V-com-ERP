@@ -54,7 +54,7 @@ export function UserProfile() {
  <button 
  onClick={handleSave}
  disabled={isSaving}
- className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 disabled:opacity-50"
+ className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-slate-800 transition-all shadow-sm shadow-blue-200 disabled:opacity-50"
  >
  {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
  </button>
@@ -68,7 +68,7 @@ export function UserProfile() {
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all",
+ "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold transition-all",
  activeTab === tab.id 
  ? "bg-slate-100 text-orange-700 border border-slate-300 shadow-sm" 
  : "text-slate-600 hover:bg-white hover:text-slate-900"
@@ -87,7 +87,7 @@ export function UserProfile() {
  <div className="flex flex-col items-center sm:flex-row gap-6">
  <div className="relative group">
  <div className="w-24 h-24 rounded-lg bg-slate-100 flex items-center justify-center text-orange-700 text-2xl font-bold border-2 border-white shadow-sm overflow-hidden relative">
- {staffInfo?.name?.split(' ').pop()?.charAt(0) || 'U'}
+ {staffInfo?.name?.split(' ').pop()?.charAt(0) || '?'}
  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
  <Camera className="w-6 h-6 text-[#FAF9F5]" />
  </div>
@@ -112,7 +112,7 @@ export function UserProfile() {
  <input 
  type="text" 
  defaultValue={staffInfo?.name}
- className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
  />
  </div>
  </div>
@@ -122,7 +122,7 @@ export function UserProfile() {
  type="text" 
  readOnly 
  value={staffInfo?.id || 'STAFF-999'}
- className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 font-mono italic"
+ className="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-600 font-mono italic"
  />
  </div>
  <div className="space-y-2">
@@ -132,7 +132,7 @@ export function UserProfile() {
  <input 
  type="email" 
  defaultValue={staffInfo?.email}
- className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
  />
  </div>
  </div>
@@ -143,7 +143,7 @@ export function UserProfile() {
  <input 
  type="tel" 
  defaultValue={staffInfo?.phone || '0987654321'}
- className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all font-medium"
  />
  </div>
  </div>
@@ -151,7 +151,7 @@ export function UserProfile() {
 
  <div className="pt-6 border-t border-slate-200">
  <h4 className="font-bold text-slate-900 mb-4">Thông tin bổ sung</h4>
- <div className="bg-slate-100 p-4 rounded-xl border border-slate-300/50 space-y-3">
+ <div className="bg-slate-100 p-4 rounded-lg border border-slate-300/50 space-y-3">
  <div className="flex justify-between items-center text-sm">
  <span className="text-orange-700 font-medium">Phòng ban:</span>
  <span className="font-bold text-blue-900">{staffInfo?.role?.department || 'Vận hành Sàn'}</span>
@@ -177,7 +177,7 @@ export function UserProfile() {
  <div className="relative">
  <input 
  type={showCurrentPassword ? "text" : "password"} 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  <button 
  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
@@ -192,7 +192,7 @@ export function UserProfile() {
  <div className="relative">
  <input 
  type={showNewPassword ? "text" : "password"} 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  <button 
  onClick={() => setShowNewPassword(!showNewPassword)}
@@ -206,10 +206,10 @@ export function UserProfile() {
  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Xác nhận mật khẩu mới</label>
  <input 
  type="password" 
- className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all"
  />
  </div>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-xl text-sm font-bold mt-2 hover:bg-slate-800 transition-all">Cập nhật mật khẩu</button>
+ <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-lg text-sm font-bold mt-2 hover:bg-slate-800 transition-all">Cập nhật mật khẩu</button>
  </div>
  </div>
 
@@ -251,7 +251,7 @@ export function UserProfile() {
  { label: 'Báo cáo doanh thu ngày', desc: 'Gửi báo cáo tổng hợp doanh thu sau khi kết thúc ca.', enabled: false },
  { label: 'Cảnh báo tồn kho thấp', desc: 'Thông báo khi sản phẩm trong kho sắp hết hàng.', enabled: true },
  ].map((item, idx) => (
- <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors">
+ <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-lg transition-colors">
  <div className="space-y-1">
  <p className="text-sm font-bold text-slate-900">{item.label}</p>
  <p className="text-xs text-slate-600">{item.desc}</p>
@@ -307,13 +307,13 @@ export function UserProfile() {
  <div className="grid grid-cols-2 gap-4 max-w-sm">
  <button 
  onClick={() => setLanguage('vi')}
- className={cn("p-3 rounded-xl text-sm font-bold transition-all", language === 'vi' ? "border-2 border-slate-900 bg-white text-orange-700" : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-50")}
+ className={cn("p-3 rounded-lg text-sm font-bold transition-all", language === 'vi' ? "border-2 border-slate-900 bg-white text-orange-700" : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-50")}
  >
  Tiếng Việt
  </button>
  <button 
  onClick={() => setLanguage('en')}
- className={cn("p-3 rounded-xl text-sm font-bold transition-all", language === 'en' ? "border-2 border-slate-900 bg-white text-orange-700" : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-50")}
+ className={cn("p-3 rounded-lg text-sm font-bold transition-all", language === 'en' ? "border-2 border-slate-900 bg-white text-orange-700" : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-50")}
  >
  English
  </button>
@@ -329,7 +329,7 @@ export function UserProfile() {
  <h4 className="font-bold text-rose-900">Vùng nguy hiểm</h4>
  <p className="text-xs text-rose-700">Yêu cầu vô hiệu hóa tài khoản hoặc xóa dữ liệu cá nhân theo chính sách bảo mật GDPR/CRM.</p>
  </div>
- <button className="bg-rose-600 text-[#FAF9F5] px-6 py-2.5 rounded-xl font-bold hover:bg-rose-700 transition-all shadow-sm shadow-rose-200 text-sm">
+ <button className="bg-rose-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-rose-700 transition-all shadow-sm shadow-rose-200 text-sm">
  Vô hiệu hóa tài khoản
  </button>
  </div>

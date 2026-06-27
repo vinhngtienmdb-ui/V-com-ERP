@@ -249,10 +249,10 @@ export function Workspace() {
         <div className="space-y-8">
           
           {/* News / Alert Banner */}
-          <div className="bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-blue-900/10">
+          <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-blue-900/10">
             <div className="relative z-10 flex flex-col gap-5 items-start">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-600 text-white p-2 rounded-xl">
+                <div className="bg-orange-600 text-white p-2 rounded-lg">
                   <Zap className="w-5 h-5 fill-current" />
                 </div>
                 <div>
@@ -263,7 +263,7 @@ export function Workspace() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
                 {INTERNAL_NEWS.map(news => (
-                  <div key={news.id} className="bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all cursor-pointer group">
+                  <div key={news.id} className="bg-white/5 border border-white/10 p-4 rounded-lg hover:bg-white/10 transition-all cursor-pointer group">
                     <div className="flex justify-between items-start mb-2">
                       <span className={cn(
                         "text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider",
@@ -301,7 +301,7 @@ export function Workspace() {
                     <div 
                       key={mod.id}
                       onClick={() => setActiveModule(mod.id)}
-                      className="group bg-white p-5 rounded-xl border border-slate-300 hover:border-[#2563EB]/40 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                      className="group bg-white p-5 rounded-lg border border-slate-300 hover:border-[#2563EB]/40 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                     >
                       <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                         <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
@@ -379,7 +379,7 @@ export function Workspace() {
 
       {/* 5. Placeholder screens representing secondary features in high-fidelity */}
       {['calendar', 'meeting_rooms', 'vehicles', 'doc_list', 'doc_archive', 'asset_list', 'asset_assign', 'asset_maintenance'].includes(activeModule) && (
-        <div className="bg-white rounded-xl border border-slate-300 p-8 shadow-sm text-center max-w-xl mx-auto space-y-4">
+        <div className="bg-white rounded-lg border border-slate-300 p-8 shadow-sm text-center max-w-xl mx-auto space-y-4">
           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 mx-auto border border-slate-200">
             {activeModule === 'calendar' && <CalendarIcon className="w-8 h-8 text-indigo-600" />}
             {activeModule === 'meeting_rooms' && <Building2 className="w-8 h-8 text-rose-600" />}
@@ -398,7 +398,7 @@ export function Workspace() {
           </div>
 
           {/* Interactive features simulation list */}
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left text-[11px] font-sans space-y-2">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-left text-[11px] font-sans space-y-2">
             <p className="font-extrabold text-[#64748B] uppercase tracking-wider">Lịch sử giao thức liên kết gần đây:</p>
             
             {activeModule === 'calendar' && (

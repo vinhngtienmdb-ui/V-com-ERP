@@ -106,7 +106,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
     <div className="space-y-6 font-sans">
       
       {/* Action Header & Toggle Form Button */}
-      <div className="flex justify-between items-center bg-white rounded-xl border border-slate-300 p-5 shadow-sm">
+      <div className="flex justify-between items-center bg-white rounded-lg border border-slate-300 p-5 shadow-sm">
         <div className="space-y-1">
           <h2 className="text-base font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-indigo-600" />
@@ -129,7 +129,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
       {/* Delegation Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border-2 border-indigo-200/60 p-6 shadow-md space-y-5 animate-in slide-in-from-top duration-300">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg border-2 border-indigo-200/60 p-6 shadow-md space-y-5 animate-in slide-in-from-top duration-300">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="text-sm font-black text-slate-800 uppercase flex items-center gap-2">
               <Plus className="w-4 h-4 text-emerald-600" /> Form Giao Công Việc Mới
@@ -282,7 +282,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
       )}
 
       {/* Advanced Filter Panel */}
-      <div className="bg-white rounded-xl border border-slate-300 p-5 shadow-sm space-y-4">
+      <div className="bg-white rounded-lg border border-slate-300 p-5 shadow-sm space-y-4">
         
         {/* Search row */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
@@ -293,14 +293,14 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm việc bằng mã ID, tiêu đề, mô tả hoặc nhãn..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2.5 pl-10 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           </div>
 
           <div className="flex gap-2 shrink-0">
             {/* Quick count badge */}
-            <div className="px-3 py-2.5 rounded-xl bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-700 flex items-center gap-1 font-mono">
+            <div className="px-3 py-2.5 rounded-lg bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-700 flex items-center gap-1 font-mono">
               <span className="w-2 h-2 rounded-full bg-indigo-500" />
               Kết quả: {filteredTasks.length} việc
             </div>
@@ -379,7 +379,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
       </div>
 
       {/* Task List Table View */}
-      <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden text-xs">
+      <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden text-xs">
         {filteredTasks.length > 0 ? (
           <div className="overflow-x-auto min-w-0">
             <table className="w-full text-left border-collapse whitespace-nowrap font-sans">

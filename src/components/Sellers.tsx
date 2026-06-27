@@ -1,6 +1,8 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { Modal } from './ui/Modal';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { collection, getDocs, updateDoc, doc, db } from '../lib/firebase';
 import { 
  Users, 
  ShieldCheck, 
@@ -204,42 +206,22 @@ export function SellerManagement() {
 
   const fetchDbSellers = async () => {
     try {
-      const { data: sbSellers, error } = await supabase.from('sellers').select('*');
-      if (error) throw error;
+      const querySnapshot = await getDocs(collection(db, 'sellers'));
+      const dbSellers: PartnerData[] = querySnapshot.docs.map(d => ({
+        ...(d.data() as PartnerData),
+        id: d.id
+      }));
 
-      const { data: sbWallets } = await supabase.from('seller_wallets').select('*');
-      const walletMap = new Map((sbWallets || []).map(w => [w.seller_id, w]));
-
-      const { data: sbTaxes } = await supabase.from('seller_taxes').select('*');
-      const taxMap = new Map((sbTaxes || []).map(t => [t.seller_id, t]));
-
-      const mapped: PartnerData[] = (sbSellers || []).map(s => {
-        const wallet = walletMap.get(s.id);
-        const tax = taxMap.get(s.id);
-        return {
-          id: s.id,
-          name: s.shop_name,
-          totalProducts: 0,
-          rating: Number(s.rating || 5),
-          gmv: Number(s.revenue || 0),
-          status: s.status === 'APPROVED' ? 'active' : s.status === 'PENDING' ? 'pending' : 'suspended',
-          taxCode: tax?.tax_id_number || 'N/A',
-          identityCard: 'N/A',
-          address: 'N/A',
-          representative: tax?.representative_name || 'N/A',
-          commissionRate: 3.5,
-          joinDate: new Date(s.created_at).toLocaleDateString('vi-VN'),
-          onboardingStep: s.status === 'APPROVED' ? 'completed' : 'verification',
-          partnerType: 'seller',
-          activeModules: ['orders', 'pim', 'marketing', 'flashsale', 'affiliate'],
-          walletBalance: Number(wallet?.balance || 0)
-        };
-      });
-
-      const filteredMocks = MOCK_SELLERS.filter(mock => !mapped.some(m => m.id === mock.id));
-      setSellers([...mapped, ...filteredMocks]);
+      // In production, we'd only use DB data.
+      // For development, we merge with mock if needed, but here we prefer db.
+      if (dbSellers.length > 0) {
+        setSellers(dbSellers);
+      } else {
+        // Fallback to MOCK_SELLERS if DB is empty to show the UI
+        setSellers(MOCK_SELLERS);
+      }
     } catch (err) {
-      console.error("Failed to fetch Supabase sellers:", err);
+      console.error("Failed to fetch Firebase sellers:", err);
     }
   };
 
@@ -249,17 +231,10 @@ export function SellerManagement() {
 
   const handleApproveSeller = async (id: string) => {
     try {
-      const { error: err1 } = await supabase
-        .from('sellers')
-        .update({ status: 'APPROVED' })
-        .eq('id', id);
-      if (err1) throw err1;
-
-      await supabase
-        .from('seller_taxes')
-        .update({ tax_status: 'VERIFIED' })
-        .eq('seller_id', id);
-
+      await updateDoc(doc(db, 'sellers', id), {
+        status: 'active',
+        onboardingStep: 'completed'
+      });
       alert('Đã phê duyệt và kích hoạt tài khoản nhà bán hàng!');
       setApprovingSeller(null);
       fetchDbSellers();
@@ -270,12 +245,9 @@ export function SellerManagement() {
 
   const handleRejectSeller = async (id: string) => {
     try {
-      const { error: err1 } = await supabase
-        .from('sellers')
-        .update({ status: 'SUSPENDED' })
-        .eq('id', id);
-      if (err1) throw err1;
-
+      await updateDoc(doc(db, 'sellers', id), {
+        status: 'suspended'
+      });
       alert('Đã từ chối hồ sơ nhà bán hàng.');
       setApprovingSeller(null);
       fetchDbSellers();
@@ -297,12 +269,9 @@ export function SellerManagement() {
         return s;
       }));
     } else {
-      const nextStatus = currentSeller.status === 'suspended' ? 'APPROVED' : 'SUSPENDED';
+      const nextStatus = currentSeller.status === 'suspended' ? 'active' : 'suspended';
       try {
-        await supabase
-          .from('sellers')
-          .update({ status: nextStatus })
-          .eq('id', id);
+        await updateDoc(doc(db, 'sellers', id), { status: nextStatus });
         fetchDbSellers();
       } catch (err) {
         console.error(err);
@@ -323,16 +292,10 @@ export function SellerManagement() {
       }));
     } else {
       try {
-        const { data: w } = await supabase
-          .from('seller_wallets')
-          .select('balance')
-          .eq('seller_id', adjustingSeller.id)
-          .single();
-        const currentBal = w ? Number(w.balance) : 0;
-        await supabase
-          .from('seller_wallets')
-          .update({ balance: currentBal + Number(adjustAmount) })
-          .eq('seller_id', adjustingSeller.id);
+        const currentBal = adjustingSeller.walletBalance || 0;
+        await updateDoc(doc(db, 'sellers', adjustingSeller.id), { 
+          walletBalance: currentBal + Number(adjustAmount) 
+        });
         fetchDbSellers();
       } catch (err) {
         console.error(err);
@@ -655,7 +618,7 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="bg-white border border-slate-300 shadow-sm rounded-xl overflow-hidden mt-4">
+ <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden mt-4">
  <div className="overflow-x-auto min-w-0">
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
@@ -679,7 +642,7 @@ export function SellerManagement() {
  <td className="px-6 py-4">
  <div className="flex items-center gap-4">
  <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-slate-300">
- {seller.name.charAt(0)}
+ {seller?.name?.charAt(0) || '?'}
  </div>
  <div>
  <div className="flex items-center gap-2">
@@ -799,20 +762,24 @@ export function SellerManagement() {
  </div>
 
  {selectedSeller && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
- <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold text-xl">
- {selectedSeller.name.charAt(0)}
- </div>
- <div>
- <h2 className="text-xl font-bold text-slate-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</h2>
- <p className="text-xs text-slate-600 font-medium">Đối tác: <span className="font-bold text-primary-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</p>
- </div>
- </div>
- <button onClick={() => setSelectedSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
- </div>
+ <Modal
+   isOpen={true}
+   onClose={() => setSelectedSeller(null)}
+   maxWidth="4xl"
+   hideFooter
+   noPadding
+   title={
+     <div className="flex flex-col">
+       <span className="text-xl font-bold text-slate-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</span>
+       <span className="text-xs text-slate-600 font-medium mt-1 font-sans">Đối tác: <span className="font-bold text-primary-600">{selectedSeller.name}</span> ({selectedSeller.partnerType === 'seller' ? 'Nhà bán Online' : selectedSeller.partnerType === 'dealer' ? 'Đại lý Offline' : 'Nhà máy (M2C)'}) • MST: {selectedSeller.taxCode}</span>
+     </div>
+   }
+   icon={
+     <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold text-xl">
+       {selectedSeller?.name?.charAt(0) || '?'}
+     </div>
+   }
+ >
  <DraggableGrid className="flex-1 overflow-y-auto p-6 bg-white grid grid-cols-1 md:grid-cols-2 gap-6 custom-scrollbar" columns={2} gap={32}>
  {/* Left Col: Domain Setup */}
  <div className="space-y-6">
@@ -960,25 +927,28 @@ export function SellerManagement() {
  </div>
  </div>
  </DraggableGrid>
- </div>
- </div>
+ </Modal>
  )}
 
  {approvingSeller && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
- <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-sm animate-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-[#EAE7DF] text-orange-700 rounded-lg flex items-center justify-center font-bold text-xl">
- <UserCheck className="w-6 h-6" />
- </div>
- <div>
- <h2 className="text-xl font-bold text-slate-900 leading-tight">Duyệt hồ sơ Đối tác mới</h2>
- <p className="text-xs text-slate-600 font-medium">Đối tác: <span className="font-bold text-orange-700">{approvingSeller.name}</span> • MST: {approvingSeller.taxCode}</p>
- </div>
- </div>
- <button onClick={() => setApprovingSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
- </div>
+ <Modal
+   isOpen={true}
+   onClose={() => setApprovingSeller(null)}
+   maxWidth="4xl"
+   hideFooter
+   noPadding
+   title={
+     <div className="flex flex-col">
+       <span className="text-xl font-bold text-slate-900 leading-tight">Duyệt hồ sơ Đối tác mới</span>
+       <span className="text-xs text-slate-600 font-medium font-normal mt-1 font-sans">Đối tác: <span className="font-bold text-orange-700">{approvingSeller.name}</span> • MST: {approvingSeller.taxCode}</span>
+     </div>
+   }
+   icon={
+     <div className="w-12 h-12 bg-[#EAE7DF] text-orange-700 rounded-lg flex items-center justify-center font-bold text-xl">
+       <UserCheck className="w-6 h-6" />
+     </div>
+   }
+ >
 
  <div className="flex-1 overflow-y-auto p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 custom-scrollbar">
  {/* Left Column: Information Overview & Selection */}
@@ -988,7 +958,7 @@ export function SellerManagement() {
  <div className="grid grid-cols-3 gap-3">
  <button 
  onClick={() => setApprovalType('seller')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'seller' ? "border-slate-900 bg-slate-100/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
+ className={cn("p-4 border rounded-lg flex flex-col items-center gap-2 text-center transition-all", approvalType === 'seller' ? "border-slate-900 bg-slate-100/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
  <div className={cn("p-2 rounded-full", approvalType === 'seller' ? "bg-[#EAE7DF] text-orange-700" : "bg-slate-100 text-slate-600")}>
  <Store className="w-5 h-5" />
@@ -1000,7 +970,7 @@ export function SellerManagement() {
  </button>
  <button 
  onClick={() => setApprovalType('dealer')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'dealer' ? "border-emerald-500 bg-emerald-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
+ className={cn("p-4 border rounded-lg flex flex-col items-center gap-2 text-center transition-all", approvalType === 'dealer' ? "border-emerald-500 bg-emerald-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
  <div className={cn("p-2 rounded-full", approvalType === 'dealer' ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-600")}>
  <Briefcase className="w-5 h-5" />
@@ -1012,7 +982,7 @@ export function SellerManagement() {
  </button>
  <button 
  onClick={() => setApprovalType('factory')}
- className={cn("p-4 border rounded-xl flex flex-col items-center gap-2 text-center transition-all", approvalType === 'factory' ? "border-purple-500 bg-purple-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
+ className={cn("p-4 border rounded-lg flex flex-col items-center gap-2 text-center transition-all", approvalType === 'factory' ? "border-purple-500 bg-purple-50/50 shadow-sm" : "border-slate-300 hover:bg-slate-50")}
  >
  <div className={cn("p-2 rounded-full", approvalType === 'factory' ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-600")}>
  <Building className="w-5 h-5" />
@@ -1025,7 +995,7 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="bg-white rounded-xl border border-slate-300 p-5 space-y-4">
+ <div className="bg-white rounded-lg border border-slate-300 p-5 space-y-4">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  Thông tin Người bán
  </h3>
@@ -1053,7 +1023,7 @@ export function SellerManagement() {
  </div>
  </div>
 
- <div className="bg-slate-50 rounded-xl border border-slate-300 p-5 space-y-4">
+ <div className="bg-slate-50 rounded-lg border border-slate-300 p-5 space-y-4">
  <div className="flex items-center justify-between">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-slate-500" /> Hồ sơ năng lực (Upload)
@@ -1090,7 +1060,7 @@ export function SellerManagement() {
 
  {/* Right Column: Configuration & Actions */}
  <div className="md:col-span-7 space-y-6">
- <div className="p-6 border border-slate-300 rounded-xl bg-white shadow-sm">
+ <div className="p-6 border border-slate-300 rounded-lg bg-white shadow-sm">
  <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
  <Settings2 className="w-5 h-5 text-primary-600" /> Cấu hình Khởi tạo
  </h3>
@@ -1229,35 +1199,36 @@ export function SellerManagement() {
  <div className="flex gap-4">
  <button 
  onClick={() => handleRejectSeller(approvingSeller.id)}
- className="flex-1 py-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-sm transition-all"
+ className="flex-1 py-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg font-bold text-sm transition-all"
  >
  Từ chối Hồ sơ
  </button>
  <button 
  onClick={() => handleApproveSeller(approvingSeller.id)}
- className={cn("flex-1 py-3 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all shadow-sm .5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
+ className={cn("flex-1 py-3 text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm transition-all shadow-sm .5", approvalType === 'seller' ? "bg-slate-900 shadow-slate-900/5 hover:bg-slate-800" : approvalType === 'dealer' ? "bg-emerald-600 shadow-emerald-500/30 hover:bg-emerald-700" : "bg-purple-600 shadow-purple-500/30 hover:bg-purple-700")}
  >
  Phê duyệt & Kích hoạt
  </button>
  </div>
  </div>
  </div>
- </div>
- </div>
+ </Modal>
  )}
 
  {selectedSeller && (
- <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg w-full max-w-lg overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div>
- <h2 className="text-xl font-bold text-slate-900 border-l-4 border-slate-900 pl-3">Thông tin chi tiết Đối tác</h2>
- <p className="text-xs text-slate-600 mt-1 ml-4 font-mono">ID: {selectedSeller.id}</p>
- </div>
- <button onClick={() => setSelectedSeller(null)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 hover:text-slate-700 transition-colors">
- <X className="w-5 h-5" />
- </button>
- </div>
+ <Modal
+   isOpen={true}
+   onClose={() => setSelectedSeller(null)}
+   maxWidth="lg"
+   hideFooter
+   noPadding
+   title={
+     <div className="flex flex-col">
+       <span className="text-xl font-bold text-slate-900 border-l-4 border-slate-900 pl-3 leading-tight">Thông tin chi tiết Đối tác</span>
+       <span className="text-xs text-slate-600 mt-1 ml-4 font-mono font-normal">ID: {selectedSeller.id}</span>
+     </div>
+   }
+ >
  <div className="p-6 space-y-6">
  <div>
  <div className="flex items-center justify-between mb-2">
@@ -1275,17 +1246,17 @@ export function SellerManagement() {
  </div>
  
  <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
- <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+ <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Mã số thuế</p>
  <p className="text-slate-900 font-mono text-sm">{selectedSeller.taxCode || '---'}</p>
  </div>
- <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+ <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">CCCD người đại diện</p>
  <p className="text-slate-900 font-mono text-sm">{selectedSeller.identityCard || '---'}</p>
  </div>
  </DraggableGrid>
 
- <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+ <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3">
  <div>
  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 flex items-center gap-2"><UserCheck className="w-3.5 h-3.5"/> Người đại diện</p>
  <p className="text-slate-900 text-sm font-semibold">{selectedSeller.representative || 'Chưa cập nhật'}</p>
@@ -1299,20 +1270,23 @@ export function SellerManagement() {
  <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
  <button onClick={() => setSelectedSeller(null)} className="px-5 py-2.5 bg-slate-800 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm hover:bg-slate-900 transition-all">Đóng</button>
  </div>
- </div>
- </div>
+ </Modal>
  )}
 
  {adjustingSeller && (
- <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg w-full max-w-md overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div>
- <h2 className="text-lg font-bold text-slate-900">Điều chỉnh ví điện tử</h2>
- <p className="text-xs text-slate-600">Đối tác: {adjustingSeller.name}</p>
- </div>
- <button onClick={() => setAdjustingSeller(null)} className="p-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"><X className="w-5 h-5 text-slate-600" /></button>
- </div>
+ <Modal
+   isOpen={true}
+   onClose={() => setAdjustingSeller(null)}
+   maxWidth="md"
+   hideFooter
+   noPadding
+   title={
+     <div className="flex flex-col">
+       <span className="text-lg font-bold text-slate-900 leading-tight">Điều chỉnh ví điện tử</span>
+       <span className="text-xs text-slate-600 font-normal mt-1 font-sans">Đối tác: {adjustingSeller.name}</span>
+     </div>
+   }
+ >
  <form onSubmit={submitAdjustBalance} className="p-6 space-y-6">
  <div>
  <div className="flex justify-between items-center mb-1.5">
@@ -1338,20 +1312,19 @@ export function SellerManagement() {
  <button 
  type="button"
  onClick={() => setAdjustingSeller(null)}
- className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
+ className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-lg font-bold text-sm hover:bg-slate-200 transition-all"
  >
  Hủy
  </button>
  <button 
  type="submit"
- className="flex-1 py-2.5 bg-emerald-600 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-sm"
+ className="flex-1 py-2.5 bg-emerald-600 text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-sm"
  >
  Xác nhận
  </button>
  </div>
- </form>
- </div>
- </div>
+  </form>
+ </Modal>
  )}
 
  </>

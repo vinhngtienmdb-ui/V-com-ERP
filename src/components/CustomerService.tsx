@@ -1,4 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { Modal } from './ui/Modal';
 import { 
   BarChart, 
   Bar, 
@@ -576,7 +577,7 @@ export function CustomerService() {
 
 			<div className="flex flex-col lg:flex-row gap-6 items-start">
 				{/* Left: Distribution Bar Chart Component */}
-				<div className="w-full lg:w-2/3 bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-6">
+				<div className="w-full lg:w-2/3 bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
 					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
 						<div>
 							<h3 className="text-base font-bold text-slate-900 flex items-center gap-2 font-sans">
@@ -701,7 +702,7 @@ export function CustomerService() {
 				{/* Right: Operational Statistics & Live Actions */}
 				<div className="w-full lg:w-1/3 space-y-6 font-sans">
 					{/* Status Stats Summary */}
-					<div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4">
+					<div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm space-y-4">
 						<h4 className="text-sm font-bold text-slate-800 uppercase tracking-widest pb-2 border-b border-slate-150 flex items-center gap-2">
 							<Sparkles className="w-4 h-4 text-primary-500" />
 							Chỉ Số SLA Chốt Hôm Nay
@@ -740,7 +741,7 @@ export function CustomerService() {
 					</div>
 
 					{/* Routing and Live Support Tip */}
-					<div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-5 rounded-xl text-[#FAF9F5] shadow-lg relative overflow-hidden border border-slate-700">
+					<div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-5 rounded-lg text-[#FAF9F5] shadow-lg relative overflow-hidden border border-slate-700">
 						<div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl" />
 						<div className="relative z-15">
 							<div className="flex items-center gap-1.5 text-xs font-bold text-[#E2E8F0] uppercase tracking-widest mb-2 font-sans">
@@ -755,7 +756,7 @@ export function CustomerService() {
 			</div>
 
 			{/* SLA Violations warnings table (Actionable Warnings) */}
-			<div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden font-sans">
+			<div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden font-sans">
 				<div className="p-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4 bg-slate-50/70">
 					<div>
 						<h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -1081,7 +1082,7 @@ export function CustomerService() {
  msg.senderId === 'ai' ? "items-start" : "items-end flex flex-col"
  )}>
  <div className={cn(
- "p-3 rounded-xl text-sm shadow-sm leading-relaxed",
+ "p-3 rounded-lg text-sm shadow-sm leading-relaxed",
  msg.senderId === 'ai' 
  ? "bg-white text-slate-900 border border-slate-300 rounded-bl-sm" 
  : "bg-slate-900 text-[#FAF9F5] rounded-br-sm"
@@ -1131,13 +1132,13 @@ export function CustomerService() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 focus:bg-white transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 focus:bg-white transition-all font-medium"
  />
  <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg transition-all disabled:opacity-50 flex items-center justify-center shadow-sm shadow-slate-900/5" onClick={handleSendMessage} disabled={isAiProcessing || !inputValue.trim()}>
  <Send className="w-4 h-4 ml-0.5" />
  </button>
  </div>
- <button className="bg-amber-100 hover:bg-amber-200 p-3 rounded-xl transition-colors flex-shrink-0 relative group">
+ <button className="bg-amber-100 hover:bg-amber-200 p-3 rounded-lg transition-colors flex-shrink-0 relative group">
  <Zap className="w-5 h-5 text-amber-600 fill-current" />
  <div className="absolute bottom-full right-0 mb-2 whitespace-nowrap px-3 py-2 bg-slate-800 text-[#FAF9F5] text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
  Dùng AI trả lời
@@ -1212,7 +1213,7 @@ export function CustomerService() {
  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> SIP Registered • Ext: 101
  </div>
  
- <div className="bg-white w-full max-w-sm rounded-xl p-6 shadow-sm border border-slate-300 flex flex-col items-center">
+ <div className="bg-white w-full max-w-sm rounded-lg p-6 shadow-sm border border-slate-300 flex flex-col items-center">
  <div className="w-full bg-slate-100 h-16 rounded-lg flex items-center justify-center mb-8 text-2xl font-mono font-bold text-slate-800 tracing-widest">
  090 123 4567
  </div>
@@ -1419,7 +1420,7 @@ export function CustomerService() {
  <input 
  type="text" 
  placeholder="Nhập tin nhắn (Nhấn Enter để gửi)..." 
- className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
+ className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
  />
  <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex flex-col items-center justify-center bg-primary-600 text-[#FAF9F5] rounded-lg hover:bg-primary-700 transition-all">
  <Send className="w-4 h-4 ml-0.5" />
@@ -1453,7 +1454,7 @@ export function CustomerService() {
  <div className="xl:col-span-2 space-y-6">
  {/* Team Stats */}
  <DraggableGrid className="grid grid-cols-3 gap-4" columns={3} gap={16}>
- <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm flex items-center gap-4">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex items-center gap-4">
  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
  <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
  </div>
@@ -1462,7 +1463,7 @@ export function CustomerService() {
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đang Online</p>
  </div>
  </div>
- <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm flex items-center gap-4">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex items-center gap-4">
  <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center">
  <PhoneCall className="w-5 h-5" />
  </div>
@@ -1471,7 +1472,7 @@ export function CustomerService() {
  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đang nghe máy</p>
  </div>
  </div>
- <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm flex items-center gap-4">
+ <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex items-center gap-4">
  <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center">
  <Ticket className="w-5 h-5" />
  </div>
@@ -1483,7 +1484,7 @@ export function CustomerService() {
  </DraggableGrid>
 
  {/* Staff List */}
- <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
+ <div className="bg-white rounded-lg shadow-sm border border-slate-300 overflow-hidden overflow-x-auto min-w-0">
  <table className="w-full text-left whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-200">
  <tr>
@@ -1607,7 +1608,7 @@ export function CustomerService() {
 
  {/* Ext & Routing Config */}
  <div className="space-y-6">
- <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm">
+ <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <h4 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
  <Shield className="w-4 h-4 text-primary-600" /> Định tuyến thông minh (Smart Routing)
  </h4>
@@ -1638,7 +1639,7 @@ export function CustomerService() {
  </div>
  </div>
  
- <div className="bg-primary-600 p-5 rounded-xl text-[#FAF9F5] shadow-sm shadow-indigo-600/20 relative overflow-hidden">
+ <div className="bg-primary-600 p-5 rounded-lg text-[#FAF9F5] shadow-sm shadow-indigo-600/20 relative overflow-hidden">
  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-10 translate-x-10" />
  <h4 className="font-bold mb-2 flex items-center gap-2">
  <PhoneCall className="w-4 h-4" /> Đồng bộ PBX (OmiCall)
@@ -1668,10 +1669,10 @@ export function CustomerService() {
  
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
  {/* Fanpage Config */}
- <div className="bg-white rounded-xl p-6 border border-slate-300 shadow-sm flex flex-col">
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
  <div className="flex justify-between items-start mb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-[#EAE7DF] rounded-xl flex items-center justify-center text-orange-700">
+ <div className="w-12 h-12 bg-[#EAE7DF] rounded-lg flex items-center justify-center text-orange-700">
  <Facebook className="w-6 h-6" />
  </div>
  <div>
@@ -1701,10 +1702,10 @@ export function CustomerService() {
  </div>
 
  {/* Zalo OA Config */}
- <div className="bg-white rounded-xl p-6 border border-slate-300 shadow-sm flex flex-col">
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
  <div className="flex justify-between items-start mb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-slate-800/10 rounded-xl flex items-center justify-center text-orange-600">
+ <div className="w-12 h-12 bg-slate-800/10 rounded-lg flex items-center justify-center text-orange-600">
  <MessageSquare className="w-6 h-6" />
  </div>
  <div>
@@ -1737,10 +1738,10 @@ export function CustomerService() {
  </div>
 
  {/* Web Livechat Widget */}
- <div className="bg-white rounded-xl p-6 border border-slate-300 shadow-sm flex flex-col lg:col-span-2">
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col lg:col-span-2">
  <div className="flex justify-between items-start mb-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
+ <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600">
  <Code2 className="w-6 h-6" />
  </div>
  <div>
@@ -1772,7 +1773,7 @@ export function CustomerService() {
  <div>
  <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Copy JavaScript Snippet</h5>
  <div className="relative">
- <pre className="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto min-w-0">
+ <pre className="bg-slate-900 text-emerald-400 p-4 rounded-lg text-[11px] font-mono overflow-x-auto min-w-0">
 {`<script>
  window.VCommChatOptions = {
  appId: "vcomm_live_9a8b7c6d",
@@ -1794,100 +1795,92 @@ export function CustomerService() {
  </div>
  </div>
 
- {/* Ticket Detail / AI Reply Slide-over */}
+ {/* Ticket Detail / AI Reply Modal */}
  <AnimatePresence>
  {selectedTicket && (
- <div className="fixed inset-0 z-50 flex justify-end">
- <motion.div 
- initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
- onClick={() => setSelectedTicket(null)}
- className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
- />
- <motion.div 
- initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
- transition={{ type: "spring", damping: 25, stiffness: 200 }}
- className="relative w-full max-w-lg bg-white shadow-sm border-l border-slate-300 flex flex-col z-10"
- >
- <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-start">
- <div>
- <h2 className="text-lg font-bold text-slate-900 break-words pr-4">{selectedTicket.subject}</h2>
- <div className="flex items-center gap-3 mt-2">
- <span className="text-xs font-mono font-bold text-slate-500 uppercase">{selectedTicket.id}</span>
- <span className={cn(
- "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
- selectedTicket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : "bg-amber-100 text-amber-700"
- )}>
- {selectedTicket.status === 'open' ? 'MỚI' : 'ĐANG XỬ LÝ'}
- </span>
- </div>
- </div>
- <button onClick={() => setSelectedTicket(null)} className="p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shrink-0">
- <ArrowRight className="w-5 h-5" />
- </button>
- </div>
-
- <div className="flex-1 overflow-y-auto p-6 space-y-6">
- {/* Customer Info */}
- <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
- <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
- <User className="w-5 h-5 text-slate-600" />
- </div>
- <div>
- <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
- <p className="text-xs text-slate-600">Khách hàng Vàng • 12 đơn hàng</p>
- </div>
- </div>
-
- {/* AI Sentiment analysis */}
- <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
- <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
- <Sparkles className="w-3 h-3" /> Nhận định AI
- </p>
- <p className="text-sm font-medium text-slate-800">
- {selectedTicket.sentiment === 'critical' ? 
- "Khách hàng đang có thái độ rất bức xúc. Cần giải quyết và đền bù NGAY LẬP TỨC để tránh khủng hoảng truyền thông." : 
- "Khách hàng đưa ra thắc mắc thông thường, giọng điệu trung tính. Có thể dùng template trả lời tự động."}
- </p>
- </div>
-
- {/* Reply Action */}
- <div className="space-y-3">
- <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
- <MessageSquare className="w-4 h-4 text-orange-600" /> Phản hồi khách hàng
- </h3>
- <textarea 
- className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all resize-none bg-slate-50"
- placeholder="Nhập nội dung phản hồi..."
- value={draftedMessage}
- onChange={(e) => setDraftedMessage(e.target.value)}
- />
- 
- <div className="flex gap-2">
- <button 
- onClick={handleSimulateAiReply}
- disabled={aiDrafting}
- className="flex-1 bg-primary-100 text-primary-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-primary-200 transition-all flex items-center justify-center gap-2"
- >
- {aiDrafting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
- Tự động soạn bằng AI
- </button>
- <button 
-   onClick={() => handleCloseTicket(selectedTicket, draftedMessage)}
-   className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all font-mono"
+  <Modal
+    isOpen={true}
+    onClose={() => setSelectedTicket(null)}
+    maxWidth="2xl"
+    hideFooter
+    noPadding
   >
-  Gửi & Đóng Ticket
-  </button>
- </div>
- </div>
- </div>
- </motion.div>
- </div>
+    <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-start">
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 break-words pr-4">{selectedTicket.subject}</h2>
+        <div className="flex items-center gap-3 mt-2">
+          <span className="text-xs font-mono font-bold text-slate-500 uppercase">{selectedTicket.id}</span>
+          <span className={cn(
+            "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+            selectedTicket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : "bg-amber-100 text-amber-700"
+          )}>
+            {selectedTicket.status === 'open' ? 'MỚI' : 'ĐANG XỬ LÝ'}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div className="p-6 space-y-6">
+      {/* Customer Info */}
+      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+          <User className="w-5 h-5 text-slate-600" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
+          <p className="text-xs text-slate-600">Khách hàng Vàng • 12 đơn hàng</p>
+        </div>
+      </div>
+
+      {/* AI Sentiment analysis */}
+      <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
+        <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
+          <Sparkles className="w-3 h-3" /> Nhận định AI
+        </p>
+        <p className="text-sm font-medium text-slate-800">
+          {selectedTicket.sentiment === 'critical' ? 
+          "Khách hàng đang có thái độ rất bức xúc. Cần giải quyết và đền bù NGAY LẬP TỨC để tránh khủng hoảng truyền thông." : 
+          "Khách hàng đưa ra thắc mắc thông thường, giọng điệu trung tính. Có thể dùng template trả lời tự động."}
+        </p>
+      </div>
+
+      {/* Reply Action */}
+      <div className="space-y-3">
+        <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+          <MessageSquare className="w-4 h-4 text-orange-600" /> Phản hồi khách hàng
+        </h3>
+        <textarea 
+          className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all resize-none bg-slate-50"
+          placeholder="Nhập nội dung phản hồi..."
+          value={draftedMessage}
+          onChange={(e) => setDraftedMessage(e.target.value)}
+        />
+        
+        <div className="flex gap-2">
+          <button 
+            onClick={handleSimulateAiReply}
+            disabled={aiDrafting}
+            className="flex-1 bg-primary-100 text-primary-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-primary-200 transition-all flex items-center justify-center gap-2"
+          >
+            {aiDrafting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            Tự động soạn bằng AI
+          </button>
+          <button 
+            onClick={() => handleCloseTicket(selectedTicket, draftedMessage)}
+            className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all font-mono"
+          >
+            Gửi & Đóng Ticket
+          </button>
+        </div>
+      </div>
+    </div>
+  </Modal>
  )}
  </AnimatePresence>
 
   {/* Zalo ZNS Sentinel Success Floating Toast */}
   {znsToast && znsToast.show && (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-2xl p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
+    <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
           Z

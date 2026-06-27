@@ -1,5 +1,6 @@
+import { db, collection, getDocs, query, where, addDoc, updateDoc } from '../lib/firebase';
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
  FileText, 
  CreditCard, 
@@ -12,11 +13,13 @@ import {
  ShieldCheck,
  Receipt,
  Truck,
- AlertCircle
+ AlertCircle,
+ Loader2
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
-import { SettlementRow, WithdrawalRequest } from '../types/erp';
+import { SettlementRow, WithdrawalRequest, Order } from '../types/erp';
 
+// Keep the old mocks for tabs that are not implemented yet
 const MOCK_COD_SETTLEMENTS = [
  {
  id: 'COD-GHTK-0301',
@@ -41,31 +44,6 @@ const MOCK_COD_SETTLEMENTS = [
  }
 ];
 
-const MOCK_SETTLEMENTS: SettlementRow[] = [
- {
- id: 'STL-2024-001',
- sellerId: 'SEL-001',
- sellerName: 'Phụ kiện Apple Hà Nội',
- period: '01/03 - 15/03',
- totalSales: 250000000,
- commissionFee: 12500000,
- shippingFee: 2450000,
- netPayout: 235050000,
- status: 'completed'
- },
- {
- id: 'STL-2024-002',
- sellerId: 'SEL-002',
- sellerName: 'Shop Mẹ & Bé Official',
- period: '01/03 - 15/03',
- totalSales: 154000000,
- commissionFee: 7700000,
- shippingFee: 1500000,
- netPayout: 144800000,
- status: 'pending'
- }
-];
-
 const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  {
  id: 'WDR-1001',
@@ -76,21 +54,177 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  bankAccount: { bankName: 'Vietcombank', accountNo: '1023456789', accountName: 'NGUYEN VAN A' },
  status: 'pending',
  requestDate: '15/03/2024 10:30'
- },
- {
- id: 'WDR-1002',
- userId: 'USR-882',
- userName: 'Trần Minh Tuấn',
- userType: 'buyer',
- amount: 1500000,
- bankAccount: { bankName: 'Techcombank', accountNo: '190345678901', accountName: 'TRAN MINH TUAN' },
- status: 'approved',
- requestDate: '14/03/2024 16:45'
  }
 ];
 
 export function SettlementManagement() {
- const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
+  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
+  const [settlements, setSettlements] = useState<SettlementRow[]>([]);
+  const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isReconciling, setIsReconciling] = useState(false);
+
+  const fetchSettlements = async () => {
+    setLoading(true);
+    try {
+      const snapshot = await getDocs(collection(db, 'settlements'));
+      const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as SettlementRow));
+      setSettlements(data.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()));
+
+      const withdrawalSnapshot = await getDocs(collection(db, 'withdrawals'));
+      const withdrawalData = withdrawalSnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as WithdrawalRequest));
+      setWithdrawals(withdrawalData.sort((a, b) => new Date(b.requestDate).getTime() - new Date(a.requestDate).getTime()));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettlements();
+  }, []);
+
+  const runAutoReconciliation = async () => {
+    setIsReconciling(true);
+    try {
+      // 1. Lấy tất cả Đơn hàng (Sub-orders) đã giao thành công và chưa đối soát
+      const ordersRef = collection(db, 'orders');
+      // Tạm thời lấy tất cả pending để lọc (do có thể thiếu index query phức tạp)
+      const q = query(ordersRef, where('settlementStatus', '==', 'pending'));
+      const snapshot = await getDocs(q);
+      
+      const ordersToSettle = snapshot.docs
+        .map((d: any) => ({ id: d.id, ...d.data() } as Order))
+        .filter((o: any) => (o.status === 'delivered' || o.status === 'completed') && o.sellerId);
+
+      if (ordersToSettle.length === 0) {
+        alert('Không có đơn hàng nào cần đối soát!');
+        setIsReconciling(false);
+        return;
+      }
+
+      // 2. Gom nhóm theo Gian hàng (Seller ID)
+      const groupedBySeller: Record<string, {
+        orders: Order[],
+        totalSales: number,
+        totalCommission: number,
+        totalShipping: number,
+        sellerName: string
+      }> = {};
+
+      ordersToSettle.forEach((o: any) => {
+        const sid = o.sellerId!;
+        if (!groupedBySeller[sid]) {
+          groupedBySeller[sid] = { orders: [], totalSales: 0, totalCommission: 0, totalShipping: 0, sellerName: o.sellerId! };
+        }
+        groupedBySeller[sid].orders.push(o);
+        groupedBySeller[sid].totalSales += (o.total || 0);
+        groupedBySeller[sid].totalCommission += (o.commissionFee || 0);
+        groupedBySeller[sid].totalShipping += (o.shippingCost || 0);
+      });
+
+      // 3. Tạo Settlements và Cập nhật Orders (Thay vì writeBatch, dùng Promise.all)
+      const promises: Promise<any>[] = [];
+      
+      for (const [sellerId, data] of Object.entries(groupedBySeller)) {
+        const settlementData: Partial<SettlementRow> = {
+          sellerId,
+          sellerName: `Gian hàng ${sellerId}`, // Tạm lấy ID làm tên
+          periodStart: new Date().toISOString(),
+          periodEnd: new Date().toISOString(),
+          totalSales: data.totalSales,
+          commissionFee: data.totalCommission,
+          shippingFee: data.totalShipping,
+          netPayout: data.totalSales - data.totalCommission - data.totalShipping,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Tạo settlement
+        const p = addDoc(collection(db, 'settlements'), settlementData).then(settlementRef => {
+          // Sau khi tạo xong, update các orders thuộc về settlement này
+          const orderPromises = data.orders.map(o => {
+            // giả lập updateDoc cần reference object theo định dạng SupabaseAdapter
+            const mockDocRef = { path: `orders/${o.id}`, tableName: 'orders', id: o.id };
+            return updateDoc(mockDocRef as any, { 
+              settlementStatus: 'settled',
+              settlementId: settlementRef.id
+            });
+          });
+          return Promise.all(orderPromises);
+        });
+        
+        promises.push(p);
+      }
+
+      await Promise.all(promises);
+      alert(`Đã đối soát tự động cho ${Object.keys(groupedBySeller).length} gian hàng!`);
+      fetchSettlements();
+    } catch (error) {
+      console.error('Lỗi chạy đối soát:', error);
+      alert('Đã xảy ra lỗi khi đối soát.');
+    } finally {
+      setIsReconciling(false);
+    }
+  };
+
+  const approveSettlement = async (settlement: SettlementRow) => {
+    if (!confirm('Duyệt đối soát và chuyển tiền vào ví gian hàng?')) return;
+    try {
+      if (!settlement.sellerId || !settlement.netPayout) return;
+      
+      const { updateWalletBalance } = await import('../lib/firebase');
+      await updateWalletBalance(settlement.sellerId, settlement.netPayout, {
+        type: 'deposit',
+        gateway: 'system_reconciliation',
+        status: 'success'
+      });
+
+      const mockDocRef = { path: `settlements/${settlement.id}`, tableName: 'settlements', id: settlement.id };
+      await updateDoc(mockDocRef as any, { status: 'completed' });
+      
+      alert('Đã duyệt chuyển tiền vào ví gian hàng!');
+      fetchSettlements();
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi khi duyệt đối soát');
+    }
+  };
+
+  const approveWithdrawal = async (withdrawal: WithdrawalRequest) => {
+    if (!confirm('Xác nhận đã giải ngân qua ngân hàng?')) return;
+    try {
+      const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
+      await updateDoc(mockDocRef as any, { status: 'processed' });
+      
+      alert('Đã cập nhật trạng thái chi thành công!');
+      fetchSettlements();
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi khi duyệt chi');
+    }
+  };
+
+  const rejectWithdrawal = async (withdrawal: WithdrawalRequest) => {
+    if (!confirm('Từ chối yêu cầu và hoàn tiền vào ví?')) return;
+    try {
+      const { updateWalletBalance } = await import('../lib/firebase');
+      await updateWalletBalance(withdrawal.userId, withdrawal.amount, {
+        type: 'refund',
+        gateway: 'system_rejection',
+        status: 'success'
+      });
+      
+      const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
+      await updateDoc(mockDocRef as any, { status: 'rejected' });
+      alert('Đã từ chối và hoàn tiền vào ví!');
+      fetchSettlements();
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi khi từ chối');
+    }
+  };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -100,9 +234,13 @@ export function SettlementManagement() {
  <p className="text-sm text-[#6B7280] mt-1">Đối soát dòng tiền Seller, xử lý yêu cầu rút tiền và tự động xuất hóa đơn GTGT.</p>
  </div>
  <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <RefreshCcw className="w-4 h-4" />
- Chạy đối soát tự động
+ <button 
+  onClick={runAutoReconciliation}
+  disabled={isReconciling}
+  className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2 disabled:opacity-50"
+ >
+  {isReconciling ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
+  Chạy đối soát tự động
  </button>
  <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Receipt className="w-4 h-4" />
@@ -210,52 +348,68 @@ export function SettlementManagement() {
  )}
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {activeTab === 'settlement' && MOCK_SETTLEMENTS.map((stl) => (
+ {activeTab === 'settlement' && settlements.map((stl) => {
+   const periodStr = stl.periodStart && stl.periodEnd 
+     ? `${new Date(stl.periodStart).toLocaleDateString('vi-VN')} - ${new Date(stl.periodEnd).toLocaleDateString('vi-VN')}`
+     : 'N/A';
+   return (
  <tr key={stl.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{stl.sellerName}</p>
  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{stl.sellerId}</p>
  </td>
- <td className="px-6 py-4 text-xs text-[#4B5563]">{stl.period}</td>
- <td className="px-6 py-4 text-right font-semibold">{formatCurrency(stl.totalSales)}</td>
- <td className="px-6 py-4 text-right text-xs text-red-500 font-medium">-{formatCurrency(stl.commissionFee + stl.shippingFee)}</td>
+ <td className="px-6 py-4 text-xs text-[#4B5563]">{periodStr}</td>
+ <td className="px-6 py-4 text-right font-semibold">{formatCurrency(stl.totalSales || 0)}</td>
+ <td className="px-6 py-4 text-right text-xs text-red-500 font-medium">-{formatCurrency((stl.commissionFee || 0) + (stl.shippingFee || 0))}</td>
  <td className="px-6 py-4 text-right">
- <p className="text-sm font-bold text-[#10B981]">{formatCurrency(stl.netPayout)}</p>
+ <p className="text-sm font-bold text-[#10B981]">{formatCurrency(stl.netPayout || 0)}</p>
  </td>
  <td className="px-6 py-4">
- <div className="flex justify-center">
+ <div className="flex justify-end gap-2 items-center">
  <span className={cn(
  "px-2 py-0.5 rounded-full text-[10px] font-bold",
- stl.status === 'completed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+ stl.status === 'completed' ? "bg-emerald-100 text-emerald-700" :
+ stl.status === 'pending' ? "bg-amber-100 text-amber-700" :
+ "bg-red-100 text-red-700"
  )}>
- {stl.status === 'completed' ? 'ĐÃ QUYẾT TOÁN' : 'CHỜ DUYỆT'}
+ {stl.status === 'completed' ? 'Đã Thanh toán' : stl.status === 'pending' ? 'Chờ Duyệt' : 'Thất bại'}
  </span>
+ {stl.status === 'pending' && (
+   <button onClick={() => approveSettlement(stl)} className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Duyệt vào ví</button>
+ )}
  </div>
  </td>
  </tr>
- ))}
- {activeTab === 'withdrawal' && MOCK_WITHDRAWALS.map((wdr) => (
+ );
+ })}
+ {activeTab === 'withdrawal' && withdrawals.map((wdr) => (
  <tr key={wdr.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{wdr.userName}</p>
- <span className="text-[10px] text-[#6B7280] uppercase font-semibold bg-slate-100 px-1.5 py-0.5 rounded">{wdr.userType}</span>
+ <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{wdr.userId} • {wdr.userType === 'seller' ? 'Nhà Bán' : 'Người Mua'}</p>
  </td>
  <td className="px-6 py-4">
- <p className="text-xs font-bold text-[#111827]">{wdr.bankAccount.bankName}</p>
- <p className="text-[10px] font-mono text-[#6B7280]">{wdr.bankAccount.accountNo} - {wdr.bankAccount.accountName}</p>
+ <p className="text-xs font-semibold text-[#374151]">{wdr.bankAccount?.bankName}</p>
+ <p className="text-[10px] text-[#6B7280]">{wdr.bankAccount?.accountNo} - {wdr.bankAccount?.accountName}</p>
  </td>
- <td className="px-6 py-4 text-right font-bold text-[#111827]">{formatCurrency(wdr.amount)}</td>
+ <td className="px-6 py-4 text-right">
+ <p className="text-sm font-bold text-[#111827]">{formatCurrency(wdr.amount)}</p>
+ </td>
  <td className="px-6 py-4 text-right text-[10px] text-[#9CA3AF]">{wdr.requestDate}</td>
  <td className="px-6 py-4 text-right">
  {wdr.status === 'pending' ? (
  <div className="flex justify-end gap-2">
- <button className="px-3 py-1.5 bg-[#111827] text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-slate-800">Duyệt chi</button>
- <button className="px-3 py-1.5 border border-slate-300 text-[#6B7280] text-[10px] font-bold rounded-md">Từ chối</button>
+ <button onClick={() => approveWithdrawal(wdr)} className="px-3 py-1.5 bg-[#111827] text-[#FAF9F5] text-[10px] font-bold rounded-md hover:bg-slate-800">Duyệt chi</button>
+ <button onClick={() => rejectWithdrawal(wdr)} className="px-3 py-1.5 border border-slate-300 text-[#6B7280] text-[10px] font-bold rounded-md hover:bg-slate-50">Từ chối</button>
+ </div>
+ ) : wdr.status === 'rejected' ? (
+ <div className="flex justify-end">
+ <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-[10px] font-bold">ĐÃ TỪ CHỐI</span>
  </div>
  ) : (
  <div className="flex justify-end">
  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold flex items-center gap-1">
- <CheckCircle2 className="w-3 h-3" /> ĐÃ XỬ LÝ (Payout)
+ <CheckCircle2 className="w-3 h-3" /> ĐÃ XỬ LÝ
  </span>
  </div>
  )}

@@ -1114,7 +1114,7 @@ export function DeviceLeasing() {
   return (
     <div className="space-y-6">
       {/* Banner & header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-lg p-6 text-white shadow-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -1130,7 +1130,7 @@ export function DeviceLeasing() {
         </div>
         <button 
           onClick={() => setShowApplyModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-indigo-600/20"
+          className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-lg transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-indigo-600/20"
         >
           <Plus className="w-4 h-4" /> Tạo Hồ Sơ Trả Góp/Thuê
         </button>
@@ -1138,20 +1138,20 @@ export function DeviceLeasing() {
 
       {/* Stats Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
+        <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Hợp đồng hoạt động</span>
               <h3 className="text-2xl font-black text-slate-900 mt-2">{stats.activeLeaseNum} / {stats.totalApplications}</h3>
               <p className="text-[11px] text-slate-500 mt-2">Tổng số hồ sơ trả góp đang bàn giao máy</p>
             </div>
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
               <Smartphone className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
+        <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Doanh thu dự kiến</span>
@@ -1160,33 +1160,33 @@ export function DeviceLeasing() {
                 Đã thu: {formatCurrency(stats.collectedPremium)}
               </p>
             </div>
-            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
+        <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Đơn Chờ phê duyệt</span>
               <h3 className="text-2xl font-black text-slate-900 mt-2">{stats.pendingApprovalNum}</h3>
               <p className="text-[11px] text-amber-600 mt-2 font-semibold">Khách hàng đang nộp đặt cọc online</p>
             </div>
-            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+            <div className="p-3 bg-amber-50 text-amber-600 rounded-lg">
               <Clock className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
+        <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Nợ xấu / Trễ hạn thanh toán</span>
               <h3 className="text-2xl font-black text-rose-600 mt-2">{stats.overdueNum} KH</h3>
               <p className="text-[11px] text-rose-500 mt-2">Thiết bị sẽ tự khoá từ xa Knox nếu không đóng</p>
             </div>
-            <div className="p-3 bg-rose-50 text-rose-600 rounded-xl">
+            <div className="p-3 bg-rose-50 text-rose-600 rounded-lg">
               <ShieldAlert className="w-5 h-5 animate-pulse" />
             </div>
           </div>
@@ -1197,7 +1197,7 @@ export function DeviceLeasing() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 columns - Lists */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
             {/* Header controls */}
             <div className="p-5 border-b border-slate-150 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">
@@ -1241,7 +1241,7 @@ export function DeviceLeasing() {
                 {/* Visual Charts grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Chart 1: Cơ cấu loại thiết bị */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                  <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-2xs">
                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Cơ cấu loại thiết bị thuê</h4>
                     <div className="h-60">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1270,7 +1270,7 @@ export function DeviceLeasing() {
                   </div>
 
                   {/* Chart 2: Dự kiến vs Thực thu */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                  <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-2xs">
                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Doanh thu dự kiến vs Thực tế thu</h4>
                     <div className="h-60">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1307,7 +1307,7 @@ export function DeviceLeasing() {
                 </div>
 
                 {/* Additional Risk Level Chart */}
-                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
+                <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-2xs">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Tỷ lệ thanh toán đúng hạn và nợ quá hạn</h4>
                   <div className="h-44">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1456,7 +1456,7 @@ export function DeviceLeasing() {
 
         {/* Right column - Detailed active lease / installments */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
+          <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs">
             {selectedLease ? (
               <div className="space-y-5">
                 <div className="flex items-start justify-between border-b border-slate-150 pb-3">
@@ -1470,7 +1470,7 @@ export function DeviceLeasing() {
                 </div>
 
                 {/* Detail Panel Sub-tabs */}
-                <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl">
+                <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg">
                   <button
                     type="button"
                     onClick={() => setDetailTab('schedule')}
@@ -1624,7 +1624,7 @@ export function DeviceLeasing() {
                 {/* TAB 2: VComm Samsung Knox / MDM Remote lockers */}
                 {detailTab === 'mdm' && (
                   <div className="space-y-4 animate-in fade-in duration-200">
-                    <div className="p-3 bg-slate-900 text-slate-100 rounded-xl space-y-3">
+                    <div className="p-3 bg-slate-900 text-slate-100 rounded-lg space-y-3">
                       <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Trạng thái Knox MDM</span>
                         <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
@@ -1660,7 +1660,7 @@ export function DeviceLeasing() {
                     </div>
 
                     {/* Auto-Locking rule checkbox */}
-                    <div className="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-lg">
                       <input
                         type="checkbox"
                         id="autoLockRule"
@@ -1738,7 +1738,7 @@ export function DeviceLeasing() {
                     </div>
 
                     {/* Integrated mini GPS Tracker simulation inside Vietnam zone */}
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
                       <div className="flex justify-between items-center text-[11px]">
                         <span className="font-extrabold text-slate-700 flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-rose-500" /> Định vị thiết bị thật
@@ -1817,7 +1817,7 @@ export function DeviceLeasing() {
                 {/* TAB 3: AI Credit Audit Assessments (Gemini) */}
                 {detailTab === 'ai-audit' && (
                   <div className="space-y-4 animate-in fade-in duration-200 pb-2">
-                    <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-3">
+                    <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3">
                       <div className="flex items-center gap-1.5 border-b border-slate-205 pb-2">
                         <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
                         <span className="font-extrabold text-slate-800 text-xs">Báo cáo kiểm soát Tín dụng của Gemini AI</span>
@@ -1834,7 +1834,7 @@ export function DeviceLeasing() {
                       ) : aiCreditScore > 0 ? (
                         <div className="space-y-3 animate-in fade-in duration-300">
                           {/* Credit gauge simulation */}
-                          <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
+                          <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200">
                             <div>
                               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Điểm Tín Dụng AI Est.</p>
                               <p className="text-xl font-black text-indigo-700 font-mono mt-0.5">{aiCreditScore}/850</p>
@@ -1865,7 +1865,7 @@ export function DeviceLeasing() {
                           </div>
 
                           {/* Detail feedback */}
-                          <div className="bg-indigo-50/30 border border-indigo-100 rounded-xl p-3 text-slate-700 leading-relaxed text-[11px] font-medium max-h-[150px] overflow-y-auto custom-scrollbar">
+                          <div className="bg-indigo-50/30 border border-indigo-100 rounded-lg p-3 text-slate-700 leading-relaxed text-[11px] font-medium max-h-[150px] overflow-y-auto custom-scrollbar">
                             {aiResult}
                           </div>
 
@@ -1888,7 +1888,7 @@ export function DeviceLeasing() {
                           <button
                             type="button"
                             onClick={() => handleAIEvaluate(selectedLease)}
-                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-xl text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm"
+                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-lg text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm"
                           >
                             <Sparkles className="w-3.5 h-3.5" /> Thẩm định với Gemini AI
                           </button>
@@ -1897,7 +1897,7 @@ export function DeviceLeasing() {
                     </div>
 
                     {/* CIC Lookup Section */}
-                    <div className="bg-white rounded-xl border border-slate-200 p-3 space-y-2">
+                    <div className="bg-white rounded-lg border border-slate-200 p-3 space-y-2">
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
@@ -1983,7 +1983,7 @@ export function DeviceLeasing() {
                       <button
                         type="button"
                         onClick={() => handleAIEvaluate(selectedLease)}
-                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-xl text-[10.5px] flex items-center gap-1.5 justify-center cursor-pointer"
+                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-lg text-[10.5px] flex items-center gap-1.5 justify-center cursor-pointer"
                       >
                         <Sparkles className="w-3.5 h-3.5" /> Thẩm định AI ngay với dữ liệu CIC
                       </button>
@@ -2027,7 +2027,7 @@ export function DeviceLeasing() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm w-full max-w-xl overflow-hidden"
+            className="bg-white rounded-lg border border-slate-200 shadow-sm w-full max-w-xl overflow-hidden"
           >
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div>
@@ -2049,7 +2049,7 @@ export function DeviceLeasing() {
                 <select 
                   value={selectedDeviceIndex}
                   onChange={(e) => handleDeviceChange(parseInt(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-indigo-500/20"
                 >
                   {SAMPLE_DEVICES.map((dev, idx) => (
                     <option key={idx} value={idx}>
@@ -2066,7 +2066,7 @@ export function DeviceLeasing() {
                   <select 
                     value={durationMonths}
                     onChange={(e) => setDurationMonths(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white font-bold text-indigo-700 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white font-bold text-indigo-700 focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value={6}>6 tháng</option>
                     <option value={12}>12 tháng (Hỗ trợ lãi suất)</option>
@@ -2080,7 +2080,7 @@ export function DeviceLeasing() {
                   <select 
                     value={upfrontPercent}
                     onChange={(e) => setUpfrontPercent(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value={10}>10% giá máy</option>
                     <option value={20}>20% (Khuyến nghị)</option>
@@ -2091,7 +2091,7 @@ export function DeviceLeasing() {
               </div>
 
               {/* Financial Calculation review */}
-              <div className="bg-indigo-50/40 border border-indigo-100 rounded-xl p-4 space-y-2 font-medium">
+              <div className="bg-indigo-50/40 border border-indigo-100 rounded-lg p-4 space-y-2 font-medium">
                 <div className="flex justify-between">
                   <span>Số tiền cọc (upfront):</span>
                   <span className="font-extrabold text-slate-900">{formatCurrency(getLeasePriceStats().upfront)}</span>
@@ -2120,7 +2120,7 @@ export function DeviceLeasing() {
                     placeholder="Nguyễn Văn A"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
 
@@ -2133,7 +2133,7 @@ export function DeviceLeasing() {
                       placeholder="030099..."
                       value={identityCard}
                       onChange={(e) => setIdentityCard(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -2144,7 +2144,7 @@ export function DeviceLeasing() {
                       placeholder="09..."
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
@@ -2157,7 +2157,7 @@ export function DeviceLeasing() {
                     placeholder="khachhang@vcomm.vn"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
               </div>
@@ -2189,7 +2189,7 @@ export function DeviceLeasing() {
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-slate-950 text-slate-100 rounded-2xl border border-slate-800 shadow-sm w-full max-w-md overflow-hidden text-xs font-sans"
+            className="bg-slate-950 text-slate-100 rounded-lg border border-slate-800 shadow-sm w-full max-w-md overflow-hidden text-xs font-sans"
           >
             <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -2263,7 +2263,7 @@ export function DeviceLeasing() {
                   value={notifContent}
                   onChange={(e) => setNotifContent(e.target.value)}
                   rows={4}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-slate-200 font-medium focus:ring-2 focus:ring-indigo-500/20 text-[11px] focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-200 font-medium focus:ring-2 focus:ring-indigo-500/20 text-[11px] focus:outline-none"
                 />
               </div>
 
@@ -2276,7 +2276,7 @@ export function DeviceLeasing() {
               )}
 
               {notifSuccessText && (
-                <div className="p-3.5 bg-emerald-950/40 border border-emerald-900 rounded-xl text-emerald-400 flex items-start gap-2 animate-in fade-in">
+                <div className="p-3.5 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400 flex items-start gap-2 animate-in fade-in">
                   <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500 mt-0.5" />
                   <span className="font-medium">{notifSuccessText}</span>
                 </div>
@@ -2311,7 +2311,7 @@ export function DeviceLeasing() {
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md overflow-hidden text-xs"
+            className="bg-white rounded-lg border border-slate-200 shadow-xl w-full max-w-md overflow-hidden text-xs"
           >
             <div className="bg-gradient-to-r from-blue-700 to-indigo-850 text-white p-5 flex items-center justify-between">
               <div>
@@ -2331,7 +2331,7 @@ export function DeviceLeasing() {
 
             <div className="p-6 space-y-4 font-sans text-xs">
               {/* Payment Bill Info */}
-              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 grid grid-cols-2 gap-y-1.5 leading-snug">
+              <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 grid grid-cols-2 gap-y-1.5 leading-snug">
                 <span className="text-slate-500">Khách hàng:</span>
                 <span className="font-bold text-slate-800 text-right">{payingLease.customerName}</span>
                 <span className="text-slate-500">Gói thuê:</span>
@@ -2343,7 +2343,7 @@ export function DeviceLeasing() {
               </div>
 
               {/* VietQR Mock graphic and Bank Account values */}
-              <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-3">
+              <div className="border border-slate-200 rounded-lg p-4 bg-white space-y-3">
                 <div className="relative w-44 h-44 mx-auto border-2 border-indigo-500 rounded-lg overflow-hidden p-1 bg-white">
                   {/* Decorative VietQR Napas logo frames */}
                   <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-blue-600 to-teal-500 flex items-center justify-between px-1 text-[7px] text-white font-extrabold uppercase tracking-widest">
@@ -2382,7 +2382,7 @@ export function DeviceLeasing() {
 
               {/* Autodetect Verification button */}
               {paymentVerified ? (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-350 rounded-xl text-emerald-900 flex items-start gap-2.5 animate-in fade-in leading-relaxed">
+                <div className="p-3.5 bg-emerald-50 border border-emerald-350 rounded-lg text-emerald-900 flex items-start gap-2.5 animate-in fade-in leading-relaxed">
                   <CheckCircle2 className="w-4 h-4 text-emerald-650 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-extrabold text-emerald-800">Đã kiểm tra chuyển khoản thành công!</p>
@@ -2390,7 +2390,7 @@ export function DeviceLeasing() {
                   </div>
                 </div>
               ) : confirmingPayment ? (
-                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2.5 text-center text-slate-350 animate-in fade-in leading-snug">
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg space-y-2.5 text-center text-slate-350 animate-in fade-in leading-snug">
                   <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin mx-auto" />
                   <div className="font-mono text-[10px] space-y-0.5">
                     <p className="animate-pulse text-indigo-400 font-bold">Đang đối chiếu giao dịch MBBank...</p>
@@ -2407,7 +2407,7 @@ export function DeviceLeasing() {
                       setPaymentVerified(true);
                     }, 1500);
                   }}
-                  className="w-full py-2.5 bg-gradient-to-r from-emerald-650 to-teal-650 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all text-[11px]"
+                  className="w-full py-2.5 bg-gradient-to-r from-emerald-650 to-teal-650 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all text-[11px]"
                 >
                   <Search className="w-4 h-4" /> Bấm kiểm tra kết quả biến động VietQR tự động
                 </button>
@@ -2418,7 +2418,7 @@ export function DeviceLeasing() {
                 <button
                   type="button"
                   onClick={() => setShowPaymentPortal(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200 cursor-pointer"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 cursor-pointer"
                 >
                   {paymentVerified ? "Đóng cửa sổ" : "Hủy giao dịch"}
                 </button>
@@ -2429,7 +2429,7 @@ export function DeviceLeasing() {
                       handleCollectInstallment(payingLease.id, paymentActiveInst.installmentId);
                       setShowPaymentPortal(false);
                     }}
-                    className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl cursor-pointer"
+                    className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg cursor-pointer"
                   >
                     Xác nhận & Cập nhật hợp đồng
                   </button>

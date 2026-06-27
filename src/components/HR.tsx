@@ -856,7 +856,7 @@ export function HumanResources() {
  {activeTab === 'overview' && (
  <div className="space-y-8 animate-in fade-in duration-700">
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng nhân sự</span>
  <Users className="w-4 h-4 text-orange-700" />
@@ -866,7 +866,7 @@ export function HumanResources() {
  <Building2 className="w-3.5 h-3.5" /> 05 Phòng ban
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang Onboarding</span>
  <Rocket className="w-4 h-4 text-emerald-600" />
@@ -874,7 +874,7 @@ export function HumanResources() {
  <div className="text-3xl font-black text-emerald-600">12</div>
  <p className="text-[10px] text-[#6B7280] mt-3 font-bold uppercase">Bổ sung 4 nhân sự Kho</p>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Quỹ lương tháng</span>
  <Wallet className="w-4 h-4 text-slate-500" />
@@ -882,7 +882,7 @@ export function HumanResources() {
  <div className="text-2xl font-black text-[#111827] truncate">{formatCurrency(1850000000)}</div>
  <p className="text-[10px] text-slate-500 mt-3 font-bold italic uppercase tracking-tighter">Tăng 5.2% so với T2</p>
  </div>
- <div className="bg-[#111827] p-6 rounded-xl shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
+ <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-4">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Skill Health</span>
@@ -1769,7 +1769,7 @@ export function HumanResources() {
 
  {activeTab === 'attendance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500 p-6 bg-slate-50 min-h-[600px]">
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-300 shadow-sm mb-6">
+ <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-lg border border-slate-300 shadow-sm mb-6">
  <div>
  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
  <Clock className="w-6 h-6 text-orange-500" /> Quản lý Chấm công & Hiện diện
@@ -1797,7 +1797,7 @@ export function HumanResources() {
 
  {activeAttendanceMethod === 'kiosk' ? (
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
- <div className="bg-[#111827] rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-sm">
+ <div className="bg-[#111827] rounded-lg p-6 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden shadow-sm">
  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] /20 via-transparent to-transparent opacity-50" />
  
  <div className="space-y-2 relative z-10">
@@ -1805,7 +1805,7 @@ export function HumanResources() {
  <p className="text-orange-500 text-xs font-bold uppercase tracking-[0.3em]">Hệ thống đang sẵn sàng</p>
  </div>
 
- <div className="w-64 h-64 bg-slate-800 rounded-xl border-4 border-slate-700 relative flex items-center justify-center overflow-hidden group">
+ <div className="w-64 h-64 bg-slate-800 rounded-lg border-4 border-slate-700 relative flex items-center justify-center overflow-hidden group">
  <div className="absolute inset-0 bg-slate-800/10 opacity-100" />
  <div className="absolute top-0 left-0 w-full h-1 bg-slate-800 shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-[scan_3s_ease-in-out_infinite]" />
  <ScanFace className="w-24 h-24 text-orange-500/50 group-hover:text-orange-500 transition-colors" />
@@ -1826,7 +1826,7 @@ export function HumanResources() {
  </div>
 
  <div className="space-y-6">
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm h-full">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm h-full">
  <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
  <Activity className="w-4 h-4 text-emerald-500" /> Ghi nhận gần đây
  </h3>
@@ -1836,7 +1836,7 @@ export function HumanResources() {
  { name: 'Trần Thu Thủy', time: '08:15', status: 'In', image: 'T', dept: 'CSKH' },
  { name: 'Nguyễn Diệu Nhi', time: '08:30', status: 'Late', image: 'N', dept: 'Sales' }
  ].map((l, i) => (
- <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-200 hover:bg-white transition-all">
+ <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-orange-200 hover:bg-white transition-all">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center font-bold text-primary-600 text-sm shadow-sm border border-white">
  {l.image}
@@ -1856,13 +1856,13 @@ export function HumanResources() {
  </div>
  ))}
  </div>
- <button className="w-full mt-6 py-4 text-xs font-bold text-slate-600 border border-dashed border-slate-300 rounded-xl hover:bg-slate-50 transition-colors uppercase tracking-widest hover:text-slate-800">Xem tất cả lịch sử</button>
+ <button className="w-full mt-6 py-4 text-xs font-bold text-slate-600 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 transition-colors uppercase tracking-widest hover:text-slate-800">Xem tất cả lịch sử</button>
  </div>
  
  <div className="bg-white border border-primary-100 p-6 rounded-lg relative overflow-hidden group">
  <Zap className="absolute -right-6 -bottom-6 w-24 h-24 text-primary-100  transition-transform" />
  <div className="flex items-start gap-4 relative z-10">
- <div className="p-3 bg-white text-primary-600 rounded-xl shadow-sm border border-primary-100">
+ <div className="p-3 bg-white text-primary-600 rounded-lg shadow-sm border border-primary-100">
  <ShieldCheck className="w-6 h-6" />
  </div>
  <div>
@@ -1919,7 +1919,7 @@ export function HumanResources() {
  <td className="px-6 py-5">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-700 text-[10px] uppercase">
- {emp?.fullName.split(' ').pop()?.charAt(0) || 'U'}
+ {emp?.fullName?.split(' ').pop()?.charAt(0) || '?'}
  </div>
  <div>
  <div className="text-xs font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{emp?.fullName}</div>
@@ -2053,11 +2053,11 @@ export function HumanResources() {
  <p className="text-sm font-medium text-slate-500 italic">Đánh giá hiệu quả công việc dựa trên dữ liệu thời gian thực và AI Score.</p>
  </div>
  <div className="flex gap-3">
- <div className="bg-slate-100 p-1 rounded-xl flex">
+ <div className="bg-slate-100 p-1 rounded-lg flex">
  <button className="px-4 py-2 bg-white text-primary-600 font-bold text-xs rounded-lg shadow-sm">Tháng này</button>
  <button className="px-4 py-2 text-slate-600 font-bold text-xs hover:text-slate-800">Quý 1/2024</button>
  </div>
- <button className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-xl text-xs font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-2">
+ <button className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-2">
  <Calculator className="w-4 h-4" /> Chốt KPI Batch
  </button>
  </div>
@@ -2099,7 +2099,7 @@ export function HumanResources() {
  </DraggableGrid>
 
  <DraggableGrid className="grid grid-cols-12 gap-6 mt-4" columns={12} gap={32}>
- <div className="col-span-12 lg:col-span-8 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+ <div className="col-span-12 lg:col-span-8 bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
  <h3 className="font-black text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
  <div className="relative">
@@ -2107,7 +2107,7 @@ export function HumanResources() {
  <input 
  type="text" 
  placeholder="Tìm kiếm KPIs..." 
- className="pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/20 w-64"
+ className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/20 w-64"
  />
  </div>
  </div>
@@ -2129,8 +2129,8 @@ export function HumanResources() {
  <tr key={kpi.id} className="hover:bg-slate-50/80 transition-colors group">
  <td className="px-6 py-5">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
- {emp?.fullName.split(' ').pop()?.charAt(0)}
+ <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center font-black text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
+ {emp?.fullName?.split(' ').pop()?.charAt(0) || '?'}
  </div>
  <div>
  <p className="text-sm font-black text-slate-900 italic tracking-tight">{emp?.fullName}</p>
@@ -2176,7 +2176,7 @@ export function HumanResources() {
  </div>
 
  <div className="col-span-12 lg:col-span-4 space-y-8">
- <div className="bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
+ <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden shadow-sm">
  <div className="absolute top-0 right-0 p-4">
  <Trophy className="w-12 h-12 text-[#FAF9F5]/10 rotate-12" />
  </div>
@@ -2209,9 +2209,9 @@ export function HumanResources() {
  </button>
  </div>
 
- <div className="bg-white border border-slate-300 rounded-xl p-6 shadow-sm group">
+ <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-sm group">
  <div className="flex items-center gap-3 mb-8">
- <div className="p-3 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 shadow-sm relative">
+ <div className="p-3 bg-rose-50 text-rose-600 rounded-lg border border-rose-100 shadow-sm relative">
  <MapIcon className="w-6 h-6" />
  <div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-ping" />
  </div>
@@ -2392,7 +2392,7 @@ export function HumanResources() {
  {/* Edit Payroll Modal */}
  {editingPayrollId && editPayrollForm && (
  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
+ <div className="bg-white rounded-lg shadow-sm w-full max-w-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
  <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Cập nhật Lương ({editPayrollForm.employeeName})</h3>
  <button onClick={() => setEditingPayrollId(null)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
@@ -2504,7 +2504,7 @@ export function HumanResources() {
  </div>
  </div>
  
- <div className="mt-8 p-6 bg-slate-900 rounded-xl shadow-inner border border-slate-700 flex justify-between items-center text-[#FAF9F5] relative overflow-hidden">
+ <div className="mt-8 p-6 bg-slate-900 rounded-lg shadow-inner border border-slate-700 flex justify-between items-center text-[#FAF9F5] relative overflow-hidden">
  <div className="absolute top-0 right-0 w-32 h-32 bg-slate-800/10 rounded-full blur-2xl flex-shrink-0" />
  <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl flex-shrink-0" />
  <div className="relative z-10">
@@ -2645,14 +2645,14 @@ export function HumanResources() {
  </div>
  ) : activeTab === 'points_mod' ? (
   <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
-   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-lg border border-slate-300 shadow-sm gap-4">
     <div>
      <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
       <Trophy className="w-6 h-6 text-amber-500 animate-bounce" /> V-Points Rewards & Golden Board
      </h2>
      <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Tích điểm đổi quà & Khen thưởng nội bộ thông qua đóng góp công việc và tinh thần</p>
     </div>
-    <div className="px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
+    <div className="px-5 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
      <div className="p-2 bg-amber-500 text-white rounded-lg">
       <Trophy className="w-5 h-5" />
      </div>
@@ -2665,7 +2665,7 @@ export function HumanResources() {
 
    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div className="lg:col-span-4 space-y-6">
-     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-4">
+     <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
        <Sparkles className="w-4 h-4 text-purple-600" /> Tặng / Phạt V-Points (Quản lý)
       </h3>
@@ -2726,7 +2726,7 @@ export function HumanResources() {
       </div>
      </div>
 
-     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm space-y-4">
+     <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Lịch sử giao dịch điểm</h3>
       <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2">
        {vpointHistory.map((item) => (
@@ -2749,7 +2749,7 @@ export function HumanResources() {
     </div>
 
     <div className="lg:col-span-8 space-y-6">
-     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
+     <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
       <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
        <BadgeDollarSign className="w-4 h-4 text-orange-600" /> Cửa hàng đổi quà HRM (Thử nghiệm)
       </h3>
@@ -2763,7 +2763,7 @@ export function HumanResources() {
        ].map((item, idx) => {
         const Icon = item.icon;
         return (
-         <div key={idx} className="bg-slate-50/50 hover:bg-white rounded-xl border border-slate-200 hover:border-amber-400 p-4 transition-all duration-300 flex flex-col justify-between h-full hover:shadow-sm relative group text-slate-800">
+         <div key={idx} className="bg-slate-50/50 hover:bg-white rounded-lg border border-slate-200 hover:border-amber-400 p-4 transition-all duration-300 flex flex-col justify-between h-full hover:shadow-sm relative group text-slate-800">
           {item.badge && (
            <span className="absolute top-3 right-3 bg-amber-500 text-white font-bold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full">
             {item.badge}
@@ -2795,7 +2795,7 @@ export function HumanResources() {
       </div>
      </div>
 
-     <div className="bg-slate-900 text-white rounded-xl p-6 relative overflow-hidden shadow-sm">
+     <div className="bg-slate-900 text-white rounded-lg p-6 relative overflow-hidden shadow-sm">
       <div className="absolute right-0 bottom-0 opacity-10 rotate-12 scale-125">
        <Trophy className="w-72 h-72 text-amber-400" />
       </div>
@@ -2813,7 +2813,7 @@ export function HumanResources() {
         { name: 'Lê Hoàng Minh', role: 'Kỹ sư Vận hành Kho', points: 3200, rank: 'Hạng 2', badge: 'Cứu tinh Layout tối ưu' },
         { name: 'Nguyễn Diệu Nhi', role: 'Chuyên viên Content', points: 2950, rank: 'Hạng 3', badge: 'Sáng tạo đột phá KPI' }
        ].map((champion, i) => (
-        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
          <div className="flex items-center gap-4">
           <span className="text-xl font-black text-amber-400 w-12">{champion.rank}</span>
           <div>
@@ -2839,14 +2839,14 @@ export function HumanResources() {
   </div>
  ) : activeTab === 'suggestions_mod' ? (
   <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
-   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-lg border border-slate-300 shadow-sm gap-4">
     <div>
      <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
       <AlertCircle className="w-6 h-6 text-indigo-600" /> Democratic Suggestions Box
      </h2>
      <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Cửa ngõ đóng góp ẩn danh trung thực - Bảo vệ quyền lợi, tối ưu môi trường làm việc</p>
     </div>
-    <div className="flex h-10 border border-indigo-200 bg-indigo-50/50 rounded-xl px-4 items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
+    <div className="flex h-10 border border-indigo-200 bg-indigo-50/50 rounded-lg px-4 items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
      <ShieldCheck className="w-4 h-4" /> Bảo mật & mã hóa đầu-cuối
     </div>
    </div>
@@ -2855,7 +2855,7 @@ export function HumanResources() {
     <div className="lg:col-span-8 space-y-4">
      <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider">Tất cả góp ý từ tập thể nhân sự</h3>
      {suggestions.map((item) => (
-      <div key={item.id} className="bg-white rounded-xl border border-slate-300 p-5 shadow-sm space-y-4 relative overflow-hidden hover:border-indigo-300 transition-all text-slate-800 text-slate-800">
+      <div key={item.id} className="bg-white rounded-lg border border-slate-300 p-5 shadow-sm space-y-4 relative overflow-hidden hover:border-indigo-300 transition-all text-slate-800 text-slate-800">
        <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
          <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold uppercase border border-slate-200">
@@ -2880,7 +2880,7 @@ export function HumanResources() {
        </p>
 
        {item.replies.length > 0 && (
-        <div className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-xl space-y-2 mt-4 ml-4">
+        <div className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-lg space-y-2 mt-4 ml-4">
          <p className="text-[10px] font-black text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
           <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Phản hồi chính thức từ Ban Giám Đốc/HR:
          </p>
@@ -2932,7 +2932,7 @@ export function HumanResources() {
     </div>
 
     <div className="lg:col-span-4 space-y-6">
-     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4 text-slate-800">
+     <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-4 text-slate-800">
       <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-3">
        <Smile className="w-4 h-4 text-emerald-500 animate-pulse" /> Đóng góp ý kiến mới (Ẩn danh)
       </h3>
@@ -2996,14 +2996,14 @@ export function HumanResources() {
   </div>
  ) : activeTab === 'review_mod' ? (
   <div className="p-6 bg-slate-50 min-h-[600px] space-y-6 animate-in fade-in duration-500 text-slate-800">
-   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-xl border border-slate-300 shadow-sm gap-4">
+   <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-white rounded-lg border border-slate-300 shadow-sm gap-4">
     <div>
      <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900">
       <Users className="w-6 h-6 text-rose-500" /> AI Timesheet Aggregation & Burnout Predictor
      </h2>
      <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">Theo dõi tổng hợp chuyên cần chuyên sâu phối hợp dự báo kiệt sức (Burnout Index) của nhân sự</p>
     </div>
-    <div className="px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs font-bold text-rose-800 uppercase tracking-tight shadow-inner">
+    <div className="px-4 py-2 bg-rose-50 border border-rose-200 rounded-lg flex items-center gap-2 text-xs font-bold text-rose-800 uppercase tracking-tight shadow-inner">
      <AlertCircle className="w-4 h-4 text-rose-500 animate-pulse" /> 02 Trường hợp Burnout rủi ro cao
     </div>
    </div>
@@ -3014,7 +3014,7 @@ export function HumanResources() {
      { dept: 'Customer Support (CSKH)', safety: '74%', risk: 'Rủi ro Trung bình', count: 2, stats: 'Lượng ticket dồn dập, ca tối nghỉ gián đoạn', status: 'medium' },
      { dept: 'Marketing & Design', safety: '95%', risk: 'Vùng An toàn', count: 0, stats: '96% đúng giờ, làm việc hành chính chuẩn', status: 'safe' }
     ].map((item, idx) => (
-     <div key={idx} className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex flex-col justify-between">
+     <div key={idx} className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex flex-col justify-between">
       <div className="space-y-1">
        <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black leading-none">{item.dept}</span>
        <h3 className="text-xl font-black text-slate-900 mt-1">{item.risk}</h3>
@@ -3044,7 +3044,7 @@ export function HumanResources() {
    </div>
 
    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <div className="lg:col-span-8 bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col mt-4">
+    <div className="lg:col-span-8 bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden flex flex-col mt-4">
      <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
       <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Danh sách nhân sự cần theo dõi đặc biệt</h3>
       <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Tháng 06/2026</span>
@@ -3136,7 +3136,7 @@ export function HumanResources() {
     </div>
 
     <div className="lg:col-span-4 space-y-6 mt-4">
-     <div className="bg-[#111827] text-white p-6 rounded-xl relative overflow-hidden group">
+     <div className="bg-[#111827] text-white p-6 rounded-lg relative overflow-hidden group">
       <div className="absolute top-0 right-0 p-4">
        <Sparkles className="w-12 h-12 text-white/5 rotate-12" />
       </div>
@@ -3190,7 +3190,7 @@ export function HumanResources() {
  <div className="p-6 border-b border-slate-200 flex justify-between items-start bg-white to-white sticky top-0 z-10">
  <div className="flex gap-4 items-center">
  <div className="w-16 h-16 bg-[#EAE7DF] text-orange-700 rounded-full flex items-center justify-center text-xl font-bold shadow-sm border border-orange-200">
- {selectedEmployee.fullName.charAt(0)}
+ {selectedEmployee?.fullName?.charAt(0) || '?'}
  </div>
  <div>
  <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">{selectedEmployee.fullName}</h2>
@@ -3223,7 +3223,7 @@ export function HumanResources() {
      <Edit2 className="w-3 h-3" /> Chỉnh sửa
     </button>
    </div>
-   <div className="bg-slate-50 rounded-xl p-5 border border-slate-300 space-y-4 shadow-sm text-sm">
+   <div className="bg-slate-50 rounded-lg p-5 border border-slate-300 space-y-4 shadow-sm text-sm">
     <div className="grid grid-cols-2 gap-4 border-b border-slate-200 pb-3">
      <div>
       <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Ngày sinh</span>
@@ -3321,7 +3321,7 @@ export function HumanResources() {
  <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-emerald-500"/> Vai trò & Phân quyền
  </h3>
- <div className="bg-slate-50 p-4 rounded-xl border border-slate-300 flex items-center justify-between">
+ <div className="bg-slate-50 p-4 rounded-lg border border-slate-300 flex items-center justify-between">
  <div>
  <p className="text-sm font-bold text-slate-900">Cấp quyền hệ thống</p>
  <p className="text-xs text-slate-600 mt-1">Chỉnh sửa vai trò truy cập của nhân viên trên hệ thống ERP.</p>
@@ -3338,7 +3338,7 @@ export function HumanResources() {
  </div>
  </div>
  
- <div className="bg-slate-50 p-4 rounded-xl border border-slate-300 space-y-4">
+ <div className="bg-slate-50 p-4 rounded-lg border border-slate-300 space-y-4">
  <h4 className="text-sm font-bold text-slate-900">Phân quyền chi tiết (Permissions)</h4>
  <div className="space-y-3">
  {Object.entries({
@@ -3385,7 +3385,7 @@ export function HumanResources() {
  <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
  <BrainCircuit className="w-4 h-4 text-orange-600"/> Skill Matrix (Radar)
  </h3>
- <div className="h-64 bg-slate-50 rounded-xl border border-slate-300 p-4 relative shadow-sm">
+ <div className="h-64 bg-slate-50 rounded-lg border border-slate-300 p-4 relative shadow-sm">
  <ResponsiveContainer width="100%" height="100%">
  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={selectedEmployee.skills || []}>
  <PolarGrid stroke="#e2e8f0" />
@@ -3579,7 +3579,7 @@ export function HumanResources() {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.95 }}
  key={c.id} draggable onDragStart={(e: any) => handleDragStart(e, c.id)} 
- className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-sm hover:border-primary-300 transition-all relative overflow-hidden group"
+ className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-sm hover:border-primary-300 transition-all relative overflow-hidden group"
  >
  <div className={cn("absolute top-0 left-0 w-1.5 h-full transition-colors", 
  c.matchScore >= 90 ? "bg-emerald-500" : 

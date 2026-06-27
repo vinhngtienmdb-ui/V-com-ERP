@@ -302,7 +302,7 @@ export function InternalChat() {
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden flex animate-in fade-in duration-500 font-sans text-xs">
+    <div className="bg-white rounded-lg border border-slate-300 shadow-sm h-[calc(100vh-180px)] overflow-hidden flex animate-in fade-in duration-500 font-sans text-xs">
       
       {/* 1. Left Channels Sidebar */}
       <div className="w-[240px] bg-slate-50 border-r border-slate-200 flex flex-col justify-between shrink-0">
@@ -329,7 +329,7 @@ export function InternalChat() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Tìm phòng ban, đồng nghiệp..."
-              className="w-full bg-white border border-slate-300 rounded-xl pl-8 pr-3 py-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -439,7 +439,7 @@ export function InternalChat() {
             {/* Chat Header */}
             <div className="p-4 bg-white border-b border-slate-200 flex justify-between items-center z-10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-105 border border-slate-200 flex items-center justify-center font-bold text-xs text-blue-650 shadow-3xs select-none">
+                <div className="w-9 h-9 rounded-lg bg-slate-105 border border-slate-200 flex items-center justify-center font-bold text-xs text-blue-650 shadow-3xs select-none">
                   {activeChannel.avatarText || activeChannel.name[0]}
                 </div>
                 <div>
@@ -511,7 +511,7 @@ export function InternalChat() {
                       
                       <div 
                         className={cn(
-                          "p-3 rounded-2xl text-[11.5px] leading-relaxed shadow-3xs",
+                          "p-3 rounded-lg text-[11.5px] leading-relaxed shadow-3xs",
                           msg.isSelf 
                             ? "bg-blue-600 text-white rounded-tr-none font-medium" 
                             : msg.isAi
@@ -524,7 +524,7 @@ export function InternalChat() {
                           <div 
                             onClick={() => setPreviewAttachment(msg.attachment!)}
                             className={cn(
-                              "p-2.5 rounded-xl border mb-2.5 flex items-center justify-between gap-3 text-left cursor-pointer hover:opacity-90 transition duration-150",
+                              "p-2.5 rounded-lg border mb-2.5 flex items-center justify-between gap-3 text-left cursor-pointer hover:opacity-90 transition duration-150",
                               msg.isSelf ? "bg-blue-700/50 border-blue-500 text-white" : "bg-slate-50 border-slate-200"
                             )}
                           >
@@ -605,7 +605,7 @@ export function InternalChat() {
                   <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-[10px] border border-slate-350 shrink-0">AI</div>
                   <div className="space-y-1">
                     <span className="text-[9px] font-bold text-slate-500 px-1">VComm AI Assistant</span>
-                    <div className="p-3 bg-indigo-50 border border-indigo-150 text-slate-700 rounded-2xl rounded-tl-none text-[11px] flex items-center gap-1.5">
+                    <div className="p-3 bg-indigo-50 border border-indigo-150 text-slate-700 rounded-lg rounded-tl-none text-[11px] flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
                       <span>AI đang phân tích câu hỏi và truy vấn CSDL ERP...</span>
                     </div>
@@ -620,7 +620,7 @@ export function InternalChat() {
               <div className="flex items-center gap-2.5">
                 <button 
                   onClick={handleUploadFile}
-                  className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-xl transition cursor-pointer border-0"
+                  className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-lg transition cursor-pointer border-0"
                   title="Đính kèm tệp tin"
                 >
                   <Paperclip className="w-4.5 h-4.5" />
@@ -632,7 +632,7 @@ export function InternalChat() {
                     onChange={e => setInputValue(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
                     placeholder="Nhập tin nhắn... (Gõ @AI để hỏi đáp AI trợ lý)"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     <button 
@@ -646,7 +646,7 @@ export function InternalChat() {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim()}
-                  className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs disabled:opacity-40 transition cursor-pointer border-0"
+                  className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs disabled:opacity-40 transition cursor-pointer border-0"
                 >
                   <Send className="w-4.5 h-4.5" />
                 </button>
@@ -665,7 +665,7 @@ export function InternalChat() {
       {/* 3. Group Creation Modal */}
       {showCreateGroupModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white w-full max-w-sm rounded-2xl shadow-sm border border-slate-350 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-sm rounded-lg shadow-sm border border-slate-350 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-slate-250 bg-slate-50/50">
               <div className="flex items-center gap-2">
                 <Users className="w-4.5 h-4.5 text-blue-600" />
@@ -687,7 +687,7 @@ export function InternalChat() {
                   value={newGroupName}
                   onChange={e => setNewGroupName(e.target.value)}
                   placeholder="Ví dụ: Chiến dịch Sales Q3"
-                  className="w-full p-2 border border-slate-250 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full p-2 border border-slate-250 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
 
@@ -698,14 +698,14 @@ export function InternalChat() {
                   value={newGroupDesc}
                   onChange={e => setNewGroupDesc(e.target.value)}
                   placeholder="Mô tả mục đích nhóm chat..."
-                  className="w-full p-2 border border-slate-250 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full p-2 border border-slate-250 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
 
               {/* Members check list */}
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Mời thành viên</label>
-                <div className="border border-slate-200 rounded-xl divide-y divide-slate-100 max-h-[160px] overflow-y-auto bg-slate-50/20">
+                <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-[160px] overflow-y-auto bg-slate-50/20">
                   {MOCK_MEMBERS.map(member => (
                     <div 
                       key={member.id}
@@ -750,7 +750,7 @@ export function InternalChat() {
       {/* ── 5. ATTACHMENT PREVIEW MODAL ── */}
       {previewAttachment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-lg border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
@@ -767,7 +767,7 @@ export function InternalChat() {
 
             {/* Modal Body */}
             <div className="p-6 flex-1 overflow-y-auto space-y-4 text-center">
-              <div className="mx-auto w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 text-slate-405">
+              <div className="mx-auto w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-405">
                 {previewAttachment.type === 'image' ? (
                   <ImageIcon className="w-8 h-8 text-indigo-500" />
                 ) : (
@@ -780,14 +780,14 @@ export function InternalChat() {
               </div>
 
               {previewAttachment.type === 'image' ? (
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center min-h-[160px] border-dashed">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center min-h-[160px] border-dashed">
                   <div className="text-center space-y-2">
                     <ImageIcon className="w-10 h-10 text-slate-300 mx-auto animate-pulse" />
                     <p className="text-[10px] text-slate-400 font-medium">Bản xem trước hình ảnh độ phân giải cao (Mocked Image Canvas)</p>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-left font-mono text-[10px] text-slate-650 space-y-2 leading-relaxed bg-slate-900/5 select-text shadow-inner">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-left font-mono text-[10px] text-slate-650 space-y-2 leading-relaxed bg-slate-900/5 select-text shadow-inner">
                   <p className="font-bold border-b border-slate-200 pb-1.5 text-[9px] uppercase tracking-wider text-slate-400">Nội dung văn bản trích xuất (AI Document OCR Preview):</p>
                   <p>1. CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
                   <p>2. Đơn vị đề xuất: Bộ phận Vận hành sàn VComm ERP</p>

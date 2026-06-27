@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { X, Keyboard } from 'lucide-react';
+import { Keyboard } from 'lucide-react';
+import { Modal } from './ui/Modal';
 
 const GROUPS = [
   {
@@ -38,61 +39,46 @@ export function ShortcutsModal({ onClose }: Props) {
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-[300] flex items-center justify-center p-4"
-      style={{ background: 'rgba(9,11,17,0.55)', backdropFilter: 'blur(4px)' }}
-      onClick={onClose}
+    <Modal
+      title="Phím tắt hệ thống"
+      icon={<Keyboard className="w-5 h-5 text-blue-500" />}
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="md"
     >
-      <div
-        className="bg-white border border-slate-300 w-full max-w-lg overflow-hidden animate-in scale-in duration-150"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50">
-          <div className="flex items-center gap-2">
-            <Keyboard className="w-4 h-4 text-blue-500" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">Phím tắt hệ thống</span>
-          </div>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-4 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
-          {GROUPS.map(group => (
-            <div key={group.title}>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">{group.title}</span>
-                <div className="flex-1 h-px bg-[#E5E7EB]" />
-              </div>
-              <div className="divide-y divide-slate-100">
-                {group.shortcuts.map(sc => (
-                  <div key={sc.desc} className="flex items-center justify-between py-2">
-                    <span className="text-[12px] text-slate-600 font-medium">{sc.desc}</span>
-                    <div className="flex items-center gap-1">
-                      {sc.keys.map((k, i) => (
-                        <React.Fragment key={k}>
-                          {i > 0 && <span className="font-mono text-[9px] text-slate-300 mx-0.5">+</span>}
-                          <kbd className="inline-flex items-center justify-center min-w-[24px] h-5 px-1.5 bg-slate-100 border border-slate-300 font-mono text-[10px] text-slate-600">
-                            {k}
-                          </kbd>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      <div className="space-y-5 px-1">
+        {GROUPS.map(group => (
+          <div key={group.title}>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">{group.title}</span>
+              <div className="flex-1 h-px bg-[#E5E7EB] dark:bg-slate-700" />
             </div>
-          ))}
-        </div>
-
-        <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200">
-          <p className="font-mono text-[9px] text-slate-400 text-center tracking-wider">
-            Nhấn <kbd className="px-1 py-0.5 bg-white border border-slate-300 font-mono text-[9px]">?</kbd> bất kỳ lúc nào để mở lại
-          </p>
-        </div>
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/50">
+              {group.shortcuts.map(sc => (
+                <div key={sc.desc} className="flex items-center justify-between py-2">
+                  <span className="text-[12px] text-slate-600 dark:text-slate-300 font-medium">{sc.desc}</span>
+                  <div className="flex items-center gap-1">
+                    {sc.keys.map((k, i) => (
+                      <React.Fragment key={k}>
+                        {i > 0 && <span className="font-mono text-[9px] text-slate-300 dark:text-slate-500 mx-0.5">+</span>}
+                        <kbd className="inline-flex items-center justify-center min-w-[24px] h-5 px-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[10px] text-slate-600 dark:text-slate-400 rounded">
+                          {k}
+                        </kbd>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+
+      <div className="-mx-4 -mb-4 mt-6 px-4 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+        <p className="font-mono text-[9px] text-slate-400 dark:text-slate-500 text-center tracking-wider">
+          Nhấn <kbd className="px-1 py-0.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[9px] rounded">?</kbd> bất kỳ lúc nào để mở lại
+        </p>
+      </div>
+    </Modal>
   );
 }

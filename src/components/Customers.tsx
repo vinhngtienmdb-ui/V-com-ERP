@@ -41,6 +41,7 @@ import { generateCustomerCareMessage } from '../services/geminiService';
 import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../lib/firebase';
 import { syncCustomerToMisa } from '../services/misaService';
 import { supabase } from '../lib/supabase';
+import { Modal } from './ui/Modal';
 
 const CopyButton = ({ value }: { value: string }) => {
  const [copied, setCopied] = useState(false);
@@ -204,8 +205,14 @@ const CustomerDetailModal = ({
     : [];
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-xl w-full max-w-5xl shadow-sm h-[90vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="5xl"
+      hideFooter
+      noPadding
+    >
+      <div className="flex flex-col h-full">
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50 shrink-0">
           <div className="flex items-center gap-3">
@@ -248,9 +255,9 @@ const CustomerDetailModal = ({
         <div className="flex-1 flex overflow-hidden">
           {/* Persistent Left Sidebar */}
           <div className="w-80 border-r border-slate-200 overflow-y-auto p-5 space-y-4 shrink-0 bg-slate-50/50">
-            <div className="p-6 bg-white border border-slate-200 rounded-xl text-center shadow-sm">
+            <div className="p-6 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
               <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-3xl font-bold mb-4 mx-auto border-4 border-white shadow-sm">
-                {customer.name.split(' ').pop()?.charAt(0)}
+                {customer?.name?.split(' ').pop()?.charAt(0) || '?'}
               </div>
               <h3 className="font-bold text-lg text-slate-900">{customer.name}</h3>
               <p className="text-sm text-slate-500 mb-4 font-mono">{customer.id}</p>
@@ -260,7 +267,7 @@ const CustomerDetailModal = ({
               </div>
             </div>
 
-            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+            <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Mục tiêu lên hạng</h4>
                 <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
@@ -271,7 +278,7 @@ const CustomerDetailModal = ({
               <p className="text-[10px] text-slate-500 mt-2.5 text-center">Tích lũy thêm <span className="font-bold text-slate-700">{formatCurrency(nextTierThreshold - customer.totalSpent)}</span> để lên Kim Cương</p>
             </div>
             
-            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm relative overflow-hidden group">
+            <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm relative overflow-hidden group">
               <h4 className="font-bold text-xs mb-3 text-blue-800 flex items-center gap-2">
                 <Filter className="w-3.5 h-3.5" /> Phân giải RFM Score
               </h4>
@@ -294,7 +301,7 @@ const CustomerDetailModal = ({
               </div>
             </div>
 
-            <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 shadow-sm space-y-3">
+            <div className="p-4 bg-emerald-50/50 rounded-lg border border-emerald-100 shadow-sm space-y-3">
               <h4 className="font-bold text-xs text-emerald-800 flex items-center gap-2">
                 <DollarSign className="w-3.5 h-3.5" /> Tài sản & Thưởng
               </h4>
@@ -410,11 +417,11 @@ const CustomerDetailModal = ({
             {activeModalTab === 'overview' && (
               <div className="space-y-6">
                 <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
-                  <div className="p-5 border border-slate-200 rounded-xl bg-slate-50 shadow-sm group">
+                  <div className="p-5 border border-slate-200 rounded-lg bg-slate-50 shadow-sm group">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu mua sắm</p>
                     <p className="text-2xl font-black text-slate-900">{formatCurrency(customer.totalSpent)}</p>
                   </div>
-                  <div className="p-5 border border-slate-200 rounded-xl bg-slate-50 shadow-sm group">
+                  <div className="p-5 border border-slate-200 rounded-lg bg-slate-50 shadow-sm group">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng đã mua</p>
                     <div className="flex items-baseline gap-1">
                       <span className="text-2xl font-black text-slate-900">{customer.orderCount}</span>
@@ -423,7 +430,7 @@ const CustomerDetailModal = ({
                   </div>
                 </DraggableGrid>
                 
-                <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-xl relative overflow-hidden">
+                <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 -mr-8 -mt-8 rounded-full opacity-50"></div>
                   <div className="flex justify-between items-center mb-5 relative z-10">
                     <h4 className="font-bold text-primary-900 flex items-center gap-2">
@@ -439,7 +446,7 @@ const CustomerDetailModal = ({
                     </button>
                   </div>
                   
-                  <div className="bg-white p-4 rounded-xl border border-primary-100/50 shadow-inner relative z-10 mb-4 focus-within:border-primary-300 transition-colors">
+                  <div className="bg-white p-4 rounded-lg border border-primary-100/50 shadow-inner relative z-10 mb-4 focus-within:border-primary-300 transition-colors">
                     <input 
                       type="text" 
                       placeholder="Tiêu đề email tự động..." 
@@ -456,7 +463,7 @@ const CustomerDetailModal = ({
                       onChange={(e) => setEmailContent(e.target.value)}
                     />
                     {loadingAi && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-xl backdrop-blur-[1px]">
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-lg backdrop-blur-[1px]">
                         <div className="flex flex-col items-center gap-2">
                           <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
                           <span className="text-[10px] font-bold text-primary-600 uppercase tracking-widest">Đang soạn thảo...</span>
@@ -468,7 +475,7 @@ const CustomerDetailModal = ({
                   <div className="flex justify-end gap-3 relative z-10">
                     <button 
                       disabled={!emailSubject || !emailContent || loadingAi}
-                      className="bg-primary-600 text-[#FAF9F5] px-6 py-3 rounded-xl text-xs font-bold shadow-sm shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all flex items-center gap-2"
+                      className="bg-primary-600 text-[#FAF9F5] px-6 py-3 rounded-lg text-xs font-bold shadow-sm shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all flex items-center gap-2"
                       onClick={() => {
                         alert('Tin nhắn chăm sóc đã được gửi tới ' + customer.email);
                       }}
@@ -566,7 +573,7 @@ const CustomerDetailModal = ({
                       const totalUnpaid = lease.installments?.filter((i: any) => i.status === 'unpaid').length || 0;
                       
                       return (
-                        <div key={lease.id} className="border border-slate-200 rounded-xl p-5 bg-slate-50/50 space-y-4 hover:border-slate-300 transition-all">
+                        <div key={lease.id} className="border border-slate-200 rounded-lg p-5 bg-slate-50/50 space-y-4 hover:border-slate-300 transition-all">
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-bold text-slate-950 text-sm">{lease.deviceModel}</h4>
@@ -639,7 +646,7 @@ const CustomerDetailModal = ({
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                  <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-300">
                     <Smartphone className="w-10 h-10 text-slate-400 mx-auto mb-3" />
                     <p className="text-sm font-semibold text-slate-700">Không có hợp đồng thuê thiết bị</p>
                     <p className="text-xs text-slate-500 mt-1 italic">Khách hàng này chưa thực hiện giao dịch hoặc đăng ký thuê máy Knox MDM.</p>
@@ -658,7 +665,7 @@ const CustomerDetailModal = ({
 
                 {customerSeller ? (
                   <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                    <div className="grid grid-cols-3 gap-6 bg-slate-50 border border-slate-200 rounded-lg p-5">
                       <div className="text-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm">
                         <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Điểm tín dụng</p>
                         <p className="text-3xl font-black text-slate-900">{customerSeller.score}</p>
@@ -740,7 +747,7 @@ const CustomerDetailModal = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                  <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-300">
                     <BadgeDollarSign className="w-10 h-10 text-slate-400 mx-auto mb-3" />
                     <p className="text-sm font-semibold text-slate-700">Không có hồ sơ tín dụng Nhà bán</p>
                     <p className="text-xs text-slate-500 mt-1 italic">Khách hàng này không thuộc danh mục đối tác B2B Seller có hạn mức tín dụng tài chính.</p>
@@ -760,7 +767,7 @@ const CustomerDetailModal = ({
                 {customerContracts.length > 0 ? (
                   <div className="space-y-6">
                     {customerContracts.map((con: any) => (
-                      <div key={con.id} className="border border-slate-200 rounded-xl p-5 bg-slate-50/50 space-y-4 hover:border-slate-300 transition-all">
+                      <div key={con.id} className="border border-slate-200 rounded-lg p-5 bg-slate-50/50 space-y-4 hover:border-slate-300 transition-all">
                         <div className="flex justify-between items-start">
                           <div>
                             <h4 className="font-bold text-slate-950 text-sm">{con.title}</h4>
@@ -806,7 +813,7 @@ const CustomerDetailModal = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                  <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-300">
                     <FileText className="w-10 h-10 text-slate-400 mx-auto mb-3" />
                     <p className="text-sm font-semibold text-slate-700">Không có hợp đồng ký số</p>
                     <p className="text-xs text-slate-500 mt-1 italic">Chưa tìm thấy hợp đồng lao động, mua bán hay dịch vụ của khách hàng này.</p>
@@ -857,9 +864,9 @@ const CustomerDetailModal = ({
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-                    <DollarSign className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                    <p className="text-sm font-semibold text-slate-700">Không có giao dịch tài chính ghi sổ</p>
+                  <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                    <FileText className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                    <p className="text-sm font-semibold text-slate-700">Chưa có giao dịch sổ cái</p>
                     <p className="text-xs text-slate-500 mt-1 italic">Hệ thống kế toán chưa ghi nhận bút toán thu chi nào đối với khách hàng này.</p>
                   </div>
                 )}
@@ -868,286 +875,285 @@ const CustomerDetailModal = ({
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 
 const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
- const [aiMessage, setAiMessage] = useState<string | null>(null);
- const [loadingAi, setLoadingAi] = useState(false);
+  const [aiMessage, setAiMessage] = useState<string | null>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
 
- const handleGenerate = async () => {
- setLoadingAi(true);
- try {
- const msg = await generateCustomerCareMessage(customer);
- setAiMessage(msg);
- } finally {
- setLoadingAi(false);
- }
- };
+  const handleGenerate = async () => {
+    setLoadingAi(true);
+    try {
+      const msg = await generateCustomerCareMessage(customer);
+      setAiMessage(msg);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
 
- return (
- <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
- <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-sm animate-in zoom-in-95 duration-200">
- <div className="flex justify-between items-start mb-6">
- <div>
- <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
- <p className="text-xs text-slate-600 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
- </div>
- <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
- <X className="w-6 h-6" />
- </button>
- </div>
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="lg"
+      hideFooter
+      noPadding
+    >
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
+            <p className="text-xs text-slate-600 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
- <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
- {loadingAi ? (
- <div className="flex flex-col items-center gap-3">
- <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
- <p className="text-xs font-bold text-primary-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
- </div>
- ) : aiMessage ? (
- <div className="w-full">
- <p className="text-sm text-slate-800 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
- </div>
- ) : (
- <div className="flex flex-col items-center gap-4">
- <Sparkles className="w-10 h-10 text-primary-300" />
- <button 
- onClick={handleGenerate}
- className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-primary-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
- >
- <Sparkles className="w-4 h-4" /> Soạn tin nhắn cá nhân hóa
- </button>
- </div>
- )}
- </div>
+        <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
+          {loadingAi ? (
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+              <p className="text-xs font-bold text-primary-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
+            </div>
+          ) : aiMessage ? (
+            <div className="w-full">
+              <p className="text-sm text-slate-800 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4">
+              <Sparkles className="w-10 h-10 text-primary-300" />
+              <button 
+                onClick={handleGenerate}
+                className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-primary-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" /> Soạn tin nhắn cá nhân hóa
+              </button>
+            </div>
+          )}
+        </div>
 
- {aiMessage && (
- <div className="flex gap-3">
- <button 
- onClick={() => {
- navigator.clipboard.writeText(aiMessage);
- alert('Đã copy tin nhắn!');
- }}
- className="flex-1 py-3 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
- >
- Sao chép nội dung
- </button>
- <button 
- className="flex-1 py-3 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100"
- onClick={() => {
- alert('Tin nhắn đã được chuyển sang module Omnichannel Chat!');
- onClose();
- }}
- >
- Dùng tin nhắn này
- </button>
- </div>
- )}
- </div>
- </div>
- );
+        {aiMessage && (
+          <div className="flex gap-3">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(aiMessage);
+                alert('Đã copy tin nhắn!');
+              }}
+              className="flex-1 py-3 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
+            >
+              Sao chép nội dung
+            </button>
+            <button 
+              className="flex-1 py-3 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100"
+              onClick={() => {
+                alert('Tin nhắn đã được chuyển sang module Omnichannel Chat!');
+                onClose();
+              }}
+            >
+              Dùng tin nhắn này
+            </button>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
 };
 
 const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
- const [activeTab, setActiveTab] = useState<'tier' | 'points' | 'tags' | 'sources'>('tier');
- return (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-xl w-full max-w-3xl shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <div className="flex items-center gap-3">
- <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
- <Settings className="w-5 h-5" />
- </div>
- <div>
- <h2 className="text-xl font-bold text-slate-900">Cấu hình Khách hàng (CRM)</h2>
- <p className="text-xs text-slate-600">Quản lý hạng thẻ, phân nhóm và cấu hình thu thập dữ liệu</p>
- </div>
- </div>
- <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
- <X className="w-6 h-6" />
- </button>
- </div>
- 
- <div className="flex border-b border-slate-300">
- {[
- { id: 'tier', label: 'Hạng thành viên' },
- { id: 'points', label: 'Tích điểm' },
- { id: 'tags', label: 'Thẻ phân loại' },
- { id: 'sources', label: 'Nguồn khách hàng' }
- ].map((tab) => (
- <button
- key={tab.id}
- onClick={() => setActiveTab(tab.id as any)}
- className={cn(
- "px-6 py-4 text-sm font-bold border-b-2 transition-all",
- activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
- )}
- >
- {tab.label}
- </button>
- ))}
- </div>
+  const [activeTab, setActiveTab] = useState<'tier' | 'points' | 'tags' | 'sources'>('tier');
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="3xl"
+      title="Cấu hình & Phân tích Nâng cao"
+      icon={<Settings className="w-5 h-5" />}
+      hideFooter
+      noPadding
+    >
+      <div className="flex flex-col h-full">
+        <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
+          {[
+            { id: 'tier', label: 'Hạng thành viên' },
+            { id: 'points', label: 'Tích điểm' },
+            { id: 'tags', label: 'Thẻ phân loại' },
+            { id: 'sources', label: 'Nguồn khách hàng' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "px-6 py-4 text-sm font-bold border-b-2 transition-all",
+                activeTab === tab.id ? "border-slate-900 text-orange-700" : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
- <div className="p-6 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
- {activeTab === 'tier' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center">
- <h3 className="font-bold text-slate-900">Danh sách Hạng thành viên</h3>
- <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
- + Thêm hạng thành viên
- </button>
- </div>
- <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-slate-500" /> Hạng Bạc (Mặc định)
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 0đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-yellow-500" /> Hạng Vàng
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 10,000,000đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
- <div>
- <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-sky-400" /> Hạng Kim Cương
- </h4>
- <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 50,000,000đ</p>
- </div>
- <div className="flex gap-2">
- <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
- </div>
- </div>
- </div>
- </div>
- )}
+        <div className="p-6 min-h-[300px] bg-slate-50 max-h-[60vh] overflow-y-auto">
+          {activeTab === 'tier' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-slate-900">Danh sách Hạng thành viên</h3>
+                <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
+                  + Thêm hạng thành viên
+                </button>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-slate-500" /> Hạng Bạc (Mặc định)
+                    </h4>
+                    <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 0đ</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-yellow-500" /> Hạng Vàng
+                    </h4>
+                    <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 10,000,000đ</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-sky-400" /> Hạng Kim Cương
+                    </h4>
+                    <p className="text-xs text-slate-600 mt-1">Chi tiêu từ: 50,000,000đ</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="text-xs text-orange-700 font-medium hover:underline">Sửa</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
- {activeTab === 'points' && (
- <div className="space-y-6">
- <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
- <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
- <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
- <div>
- <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
- <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
- <div className="flex items-center gap-2 mt-1">
- <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- <span className="text-sm font-bold text-slate-700">=</span>
- <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-slate-500" />
- <span className="text-xs text-slate-600">Điểm</span>
- </div>
- </div>
- </div>
- <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
- <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
- <div>
- <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
- <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
- <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
- </div>
- </div>
- </DraggableGrid>
- <div className="flex justify-end">
- <button onClick={onClose} className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800">Lưu cấu hình</button>
- </div>
- </div>
- )}
+          {activeTab === 'points' && (
+            <div className="space-y-6">
+              <h3 className="font-bold text-slate-900">Cấu hình Tích điểm & Tiêu điểm</h3>
+              <DraggableGrid className="grid grid-cols-2 gap-6" columns={2} gap={24}>
+                <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
+                  <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
+                  <div>
+                    <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
+                    <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                      <span className="text-sm font-bold text-slate-700">=</span>
+                      <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-slate-500" />
+                      <span className="text-xs text-slate-600">Điểm</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
+                  <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
+                  <div>
+                    <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
+                    <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
+                    <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                  </div>
+                </div>
+              </DraggableGrid>
+              <div className="flex justify-end">
+                <button onClick={onClose} className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800">Lưu cấu hình</button>
+              </div>
+            </div>
+          )}
 
- {activeTab === 'tags' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <div>
- <h3 className="font-bold text-slate-900">Thẻ phân loại ưu tiên (VIP, Fraud...)</h3>
- <p className="text-xs text-slate-600 mt-1">Cấu hình các tag màu để làm nổi bật khách hàng trong hệ thống.</p>
- </div>
- <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
- + Thêm thẻ
- </button>
- </div>
- <div className="space-y-3">
- <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
- <div className="flex items-center gap-3">
- <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">#FRAUD / SPAM</span>
- <p className="text-xs text-slate-600">Khách hàng có lịch sử bom hàng, lừa đảo.</p>
- </div>
- <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
- </div>
- <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
- <div className="flex items-center gap-3">
- <span className="px-3 py-1 bg-[#EAE7DF] text-orange-800 rounded-full text-xs font-bold border border-orange-200">#KOL / INFLUENCER</span>
- <p className="text-xs text-slate-600">Người có ảnh hưởng, cần chăm sóc đặc biệt.</p>
- </div>
- <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
- </div>
- </div>
- </div>
- )}
- 
- {activeTab === 'sources' && (
- <div className="space-y-6">
- <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <div>
- <h3 className="font-bold text-slate-900">Cấu hình Nguồn Tracking</h3>
- <p className="text-xs text-slate-600 mt-1">Đồng bộ dữ liệu khách hàng từ các nền tảng tự động.</p>
- </div>
- <button className="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">
- + Kết nối Nguồn mới
- </button>
- </div>
- 
- <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
- <div className="p-4 rounded-lg border border-emerald-500 bg-emerald-50 relative overflow-hidden group">
- <h4 className="font-bold text-emerald-900">Landing Page Nệm Foam</h4>
- <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-emerald-600 bg-white px-2 py-1 rounded">240 Leads</span>
- <button className="text-emerald-700 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
- </div>
- </div>
- <div className="p-4 rounded-lg border border-slate-300 bg-white relative overflow-hidden group">
- <h4 className="font-bold text-slate-900">Chiến dịch Mùa Hè - Zalo Ads</h4>
- <p className="text-xs text-slate-600 mt-1">Tạm dừng (Mất kết nối API)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">0 Leads</span>
- <button className="text-orange-700 text-[10px] font-bold uppercase hover:underline">Kết nối lại</button>
- </div>
- </div>
- <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
- <h4 className="font-bold text-blue-900">Facebook Shop</h4>
- <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-orange-700 bg-white px-2 py-1 rounded">1,250 Leads</span>
- <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
- </div>
- </div>
- </DraggableGrid>
- </div>
- )}
- </div>
- </div>
- </div>
- );
+          {activeTab === 'tags' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+                <div>
+                  <h3 className="font-bold text-slate-900">Thẻ phân loại ưu tiên (VIP, Fraud...)</h3>
+                  <p className="text-xs text-slate-600 mt-1">Cấu hình các tag màu để làm nổi bật khách hàng trong hệ thống.</p>
+                </div>
+                <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">
+                  + Thêm thẻ
+                </button>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">#FRAUD / SPAM</span>
+                    <p className="text-xs text-slate-600">Khách hàng có lịch sử bom hàng, lừa đảo.</p>
+                  </div>
+                  <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-slate-300 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 bg-[#EAE7DF] text-orange-800 rounded-full text-xs font-bold border border-orange-200">#KOL / INFLUENCER</span>
+                    <p className="text-xs text-slate-600">Người có ảnh hưởng, cần chăm sóc đặc biệt.</p>
+                  </div>
+                  <button className="text-xs text-slate-500 hover:text-red-500 font-medium">Xóa</button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {activeTab === 'sources' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
+                <div>
+                  <h3 className="font-bold text-slate-900">Cấu hình Nguồn Tracking</h3>
+                  <p className="text-xs text-slate-600 mt-1">Đồng bộ dữ liệu khách hàng từ các nền tảng tự động.</p>
+                </div>
+                <button className="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">
+                  + Kết nối Nguồn mới
+                </button>
+              </div>
+              
+              <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
+                <div className="p-4 rounded-lg border border-emerald-500 bg-emerald-50 relative overflow-hidden group">
+                  <h4 className="font-bold text-emerald-900">Landing Page Nệm Foam</h4>
+                  <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-600 bg-white px-2 py-1 rounded">240 Leads</span>
+                    <button className="text-emerald-700 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
+                  </div>
+                </div>
+                <div className="p-4 rounded-lg border border-slate-300 bg-white relative overflow-hidden group">
+                  <h4 className="font-bold text-slate-900">Chiến dịch Mùa Hè - Zalo Ads</h4>
+                  <p className="text-xs text-slate-600 mt-1">Tạm dừng (Mất kết nối API)</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">0 Leads</span>
+                    <button className="text-orange-700 text-[10px] font-bold uppercase hover:underline">Kết nối lại</button>
+                  </div>
+                </div>
+                <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
+                  <h4 className="font-bold text-blue-900">Facebook Shop</h4>
+                  <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xs font-bold text-orange-700 bg-white px-2 py-1 rounded">1,250 Leads</span>
+                    <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
+                  </div>
+                </div>
+              </DraggableGrid>
+            </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
 };
 
 const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) => {
@@ -1199,58 +1205,57 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
   };
 
   return (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-xl w-full max-w-md shadow-sm overflow-hidden animate-in zoom-in duration-300">
- <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h2 className="text-xl font-bold text-slate-900">Thêm Khách hàng mới</h2>
- <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-all text-slate-600">
- <X className="w-5 h-5" />
- </button>
- </div>
- <form onSubmit={handleSubmit} className="p-6 space-y-4">
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Họ và tên *</label>
- <input 
- required
- type="text" 
- value={formData.name}
- onChange={e => setFormData({...formData, name: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="Nguyễn Văn A"
- />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Số điện thoại *</label>
- <input 
- required
- type="text" 
- value={formData.phone}
- onChange={e => setFormData({...formData, phone: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="0901234567"
- />
- </div>
- <div>
- <label className="text-xs font-bold text-slate-600 mb-1 block">Email</label>
- <input 
- type="email" 
- value={formData.email}
- onChange={e => setFormData({...formData, email: e.target.value})}
- className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
- placeholder="email@example.com"
- />
- </div>
- <div className="pt-4 flex justify-end gap-3">
- <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-800 font-bold text-sm rounded-lg hover:bg-slate-200">Hủy</button>
- <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2">
- {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
- Lưu Khách hàng
- </button>
- </div>
- </form>
- </div>
- </div>
- );
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="md"
+      title="Thêm Khách hàng mới"
+      hideFooter
+      noPadding
+    >
+      <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div>
+          <label className="text-xs font-bold text-slate-600 mb-1 block">Họ và tên *</label>
+          <input 
+            required
+            type="text" 
+            value={formData.name}
+            onChange={e => setFormData({...formData, name: e.target.value})}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            placeholder="Nguyễn Văn A"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-slate-600 mb-1 block">Số điện thoại *</label>
+          <input 
+            required
+            type="text" 
+            value={formData.phone}
+            onChange={e => setFormData({...formData, phone: e.target.value})}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            placeholder="0901234567"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-slate-600 mb-1 block">Email</label>
+          <input 
+            type="email" 
+            value={formData.email}
+            onChange={e => setFormData({...formData, email: e.target.value})}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            placeholder="email@example.com"
+          />
+        </div>
+        <div className="pt-4 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-800 font-bold text-sm rounded-lg hover:bg-slate-200">Hủy</button>
+          <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-slate-900 text-[#FAF9F5] font-bold text-sm rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2">
+            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            Lưu Khách hàng
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
 };
 
 export function Customers() {
@@ -1707,28 +1712,28 @@ export function Customers() {
  {activeView === 'list' ? (
  <>
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{totalCount}</span>
  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{totalCount}</span>
  <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-[#111827]">{formatCurrency(24500000)}</span>
  <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
  <div className="flex items-end justify-between">
  <span className="text-2xl font-black text-amber-600">{Math.round(totalCount * 0.15)}</span>
@@ -1739,7 +1744,7 @@ export function Customers() {
 
  {/* CRM Intelligence & RFM Segmentation */}
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-300 shadow-sm relative overflow-hidden group">
+ <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute top-0 right-0 p-4">
  <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
  </div>
@@ -1753,7 +1758,7 @@ export function Customers() {
  { name: 'Tiềm năng', val: 28, color: 'bg-slate-800', desc: 'Sẵn sàng Upsell' },
  { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
  ].map((seg, i) => (
- <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+ <div key={i} className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
  <div className="flex justify-between items-start mb-2">
  <div className={cn("w-2 h-2 rounded-full", seg.color)} />
  <span className="text-xl font-black text-slate-900">{seg.val}%</span>
@@ -1764,7 +1769,7 @@ export function Customers() {
  ))}
  </div>
  
- <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-xl flex items-center justify-between">
+ <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-lg flex items-center justify-between">
  <div className="flex items-center gap-4">
  <div className="p-3 bg-white text-primary-600 rounded-lg shadow-sm">
  <Mail className="w-5 h-5" />
@@ -1778,7 +1783,7 @@ export function Customers() {
  </div>
  </div>
 
- <div className="bg-slate-900 p-6 rounded-xl text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
+ <div className="bg-slate-900 p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
  <div className="relative z-10">
  <div className="flex items-center gap-3 mb-6">
  <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -1787,23 +1792,23 @@ export function Customers() {
  <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
  </div>
  <div className="space-y-6">
- <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
  <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
  <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
  </div>
  <div className="flex gap-4">
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Số dư Ví khách</p>
  <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
  </div>
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl">
+ <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
  <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Hạng Kim Cương</p>
  <p className="text-lg font-bold text-sky-400">08 KH</p>
  </div>
  </div>
  </div>
  </div>
- <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+ <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
  <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
  </button>
  <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
@@ -2036,7 +2041,7 @@ export function Customers() {
   </div>
   </>
  ) : (
- <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
+ <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-300 rounded-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
  <div className="p-4 border-b border-slate-300 bg-white flex justify-between items-center z-10 relative w-full">
  <div className="flex items-center gap-3">
  <h2 className="font-bold text-slate-900">Sales Pipeline B2B (Mẫu)</h2>
@@ -2081,7 +2086,7 @@ export function Customers() {
  {pipelineStages.map(stage => (
  <div 
  key={stage.id} 
- className="w-80 shrink-0 bg-slate-100 rounded-xl flex flex-col max-h-full border border-slate-300 shadow-sm"
+ className="w-80 shrink-0 bg-slate-100 rounded-lg flex flex-col max-h-full border border-slate-300 shadow-sm"
  onDragOver={(e) => e.preventDefault()}
  onDrop={(e) => handleDropPipeline(e, stage.id)}
  >
@@ -2165,7 +2170,7 @@ export function Customers() {
  />
  <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
  {adjustType === 'wallet' && Number(adjustAmount) > 0 && (
-   <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center font-sans mt-4">
+   <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center font-sans mt-4">
      <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-2">Quét mã chuyển khoản VietQR Nạp tiền Ví</p>
      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
        <div className="bg-white p-1.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
@@ -2189,13 +2194,13 @@ export function Customers() {
  <button 
  type="button"
  onClick={() => setAdjustingCustomer(null)}
- className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
+ className="flex-1 py-2.5 bg-slate-100 text-slate-800 rounded-lg font-bold text-sm hover:bg-slate-200 transition-all"
  >
  Hủy
  </button>
  <button 
  type="submit"
- className="flex-1 py-2.5 bg-emerald-600 text-[#FAF9F5] rounded-xl font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-sm"
+ className="flex-1 py-2.5 bg-emerald-600 text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm transition-all hover:bg-emerald-700 hover:shadow-sm"
  >
  Xác nhận
  </button>

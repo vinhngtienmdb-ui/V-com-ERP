@@ -41,6 +41,7 @@ import {
   QrCode,
   RefreshCw,
 } from 'lucide-react';
+import { useAuditLog } from '../hooks/useAuditLog';
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';
@@ -1404,7 +1405,7 @@ export function WarehouseModule() {
         <div className="space-y-8">
           {/* Stats Cards */}
           <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+            <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
                 <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
                   Giá trị tồn kho
@@ -1420,7 +1421,7 @@ export function WarehouseModule() {
                 </span>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+            <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
                 <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
                   Đơn Fulfillment
@@ -1434,7 +1435,7 @@ export function WarehouseModule() {
                 </span>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+            <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
                 <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
                   Hàng sắp hết (Alt)
@@ -1448,7 +1449,7 @@ export function WarehouseModule() {
                 </span>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
+            <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
                 <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
                   Uptime Kho vận
@@ -1780,7 +1781,7 @@ export function WarehouseModule() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 bg-[#EAE7DF] rounded-full flex items-center justify-center text-[10px] font-bold text-orange-700">
-                              {ship.driver.charAt(0)}
+                              {ship?.driver?.charAt(0) || '?'}
                             </div>
                             <span className="text-sm text-slate-700 font-medium">
                               {ship.driver}
@@ -1839,7 +1840,7 @@ export function WarehouseModule() {
 
           {errorForecast && (
             <div className="p-6">
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs font-bold text-red-700 flex items-center gap-2">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-xs font-bold text-red-700 flex items-center gap-2">
                 <XCircle className="w-5 h-5 shrink-0" />
                 {errorForecast}
               </div>
@@ -1853,7 +1854,7 @@ export function WarehouseModule() {
             </div>
           ) : (
             <div className="p-6 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chọn mặt hàng phân tích</label>
                   <select
@@ -1891,7 +1892,7 @@ export function WarehouseModule() {
 
               {selectedProductForecast && (
                 <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
-                  <div className="lg:col-span-2 bg-slate-900 rounded-xl p-6 text-[#FAF9F5] relative overflow-hidden h-[400px] flex flex-col">
+                  <div className="lg:col-span-2 bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden h-[400px] flex flex-col">
                     <div className="relative z-10 flex-1 flex flex-col">
                       <h3 className="text-base font-bold mb-1">Dự báo Xu hướng Tiêu thụ: {selectedProductForecast.productName}</h3>
                       <p className="text-slate-400 text-xs mb-6">
@@ -1924,7 +1925,7 @@ export function WarehouseModule() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="bg-white border-2 border-primary-100 rounded-xl p-6 shadow-sm shadow-indigo-100/20 flex flex-col justify-between">
+                    <div className="bg-white border-2 border-primary-100 rounded-lg p-6 shadow-sm shadow-indigo-100/20 flex flex-col justify-between">
                       <div>
                         <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
                           AI Recommendation
@@ -1971,7 +1972,7 @@ export function WarehouseModule() {
                           <button
                             onClick={() => handleCreateAutoRequest(selectedProductForecast)}
                             disabled={creatingRequest || !isBuy}
-                            className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            className={`w-full mt-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                               isBuy 
                                 ? 'bg-primary-600 hover:bg-primary-700 text-[#FAF9F5] shadow-indigo-200' 
                                 : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
@@ -1984,7 +1985,7 @@ export function WarehouseModule() {
                       })()}
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-300 rounded-xl p-6">
+                    <div className="bg-slate-50 border border-slate-300 rounded-lg p-6">
                       <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
                         Độ chính xác mô hình
                       </h4>
@@ -2058,7 +2059,7 @@ export function WarehouseModule() {
           <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: Grid visualization */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 border border-slate-300 rounded-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 border border-slate-300 rounded-lg">
                 {/* Metric Switcher */}
                 <div className="space-y-1.5 text-left font-sans">
                   <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest block">
@@ -2151,7 +2152,7 @@ export function WarehouseModule() {
               </div>
 
               {/* Sơ đồ kệ thực tế */}
-              <div className="border border-slate-300 rounded-xl p-6 bg-slate-50/50 space-y-8">
+              <div className="border border-slate-300 rounded-lg p-6 bg-slate-50/50 space-y-8">
                 <div className="flex justify-between items-center text-xs text-[#6B7280] font-bold border-b pb-3 font-sans">
                   <span className="flex items-center gap-1.5">
                     <Warehouse className="w-4 h-4 text-slate-500" />
@@ -2193,7 +2194,7 @@ export function WarehouseModule() {
                       return (
                         <div
                           key={rack}
-                          className="bg-white p-4 border border-slate-300 rounded-xl shadow-sm space-y-3"
+                          className="bg-white p-4 border border-slate-300 rounded-lg shadow-sm space-y-3"
                         >
                           <div className="flex justify-between items-center border-b pb-2 font-sans">
                             <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -2434,7 +2435,7 @@ export function WarehouseModule() {
             </div>
 
             {/* Right Column: Interaction Sidebar */}
-            <div className="bg-white border border-slate-300 rounded-xl p-6 shadow-xs flex flex-col justify-between min-h-[500px]">
+            <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-xs flex flex-col justify-between min-h-[500px]">
               {selectedShelf ? (
                 <div className="space-y-6 animate-in fade-in duration-300 text-left">
                   {/* Header Details */}
@@ -2605,7 +2606,7 @@ export function WarehouseModule() {
                       </h4>
                       <form
                         onSubmit={handleRelocate}
-                        className="space-y-3 bg-[#FCFBF8] p-3 border rounded-xl"
+                        className="space-y-3 bg-[#FCFBF8] p-3 border rounded-lg"
                       >
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1 text-left">
@@ -2720,7 +2721,7 @@ export function WarehouseModule() {
                   </div>
 
                   {/* Mini statistic items */}
-                  <div className="bg-slate-50 border rounded-xl p-4 text-left divide-y divide-slate-200 shadow-2xs font-sans">
+                  <div className="bg-slate-50 border rounded-lg p-4 text-left divide-y divide-slate-200 shadow-2xs font-sans">
                     <div className="py-2.5 flex justify-between items-center text-xs">
                       <span className="text-slate-600 flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block" />{' '}
@@ -2756,7 +2757,7 @@ export function WarehouseModule() {
                   </div>
 
                   {/* Quick AI Space optimizer banner */}
-                  <div className="bg-gradient-to-br from-[#EEF2FF] to-indigo-100/50 border border-indigo-200 rounded-xl p-4 text-left space-y-3 shadow-xs">
+                  <div className="bg-gradient-to-br from-[#EEF2FF] to-indigo-100/50 border border-indigo-200 rounded-lg p-4 text-left space-y-3 shadow-xs">
                     <div className="flex items-center gap-2 font-sans">
                       <div className="p-1.5 bg-indigo-100 rounded text-indigo-700 h-fit">
                         <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
@@ -2944,7 +2945,7 @@ export function WarehouseModule() {
             {/* Modal Quét Mã QR/Barcode */}
             {showScanner && (
               <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 font-sans">
-                <div className="bg-white rounded-2xl border border-slate-300 shadow-xl max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                <div className="bg-white rounded-lg border border-slate-300 shadow-xl max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
                   <div className="p-5 border-b border-[#F3F4F6] bg-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-2 text-slate-900">
                       <QrCode className="w-5 h-5 text-orange-600 animate-pulse" />
@@ -2960,13 +2961,13 @@ export function WarehouseModule() {
                   
                   <div className="p-6 flex flex-col items-center gap-4">
                     {scannerError ? (
-                      <div className="text-center py-8 px-4 bg-rose-50 rounded-xl border border-rose-200 text-rose-600 w-full">
+                      <div className="text-center py-8 px-4 bg-rose-50 rounded-lg border border-rose-200 text-rose-600 w-full">
                         <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
                         <p className="text-xs font-bold mb-1">Lỗi Máy Quét</p>
                         <p className="text-xs font-medium">{scannerError}</p>
                       </div>
                     ) : (
-                      <div className="w-full relative bg-slate-950 rounded-xl overflow-hidden border border-slate-300 aspect-square flex items-center justify-center">
+                      <div className="w-full relative bg-slate-950 rounded-lg overflow-hidden border border-slate-300 aspect-square flex items-center justify-center">
                         <div id="reader" className="w-full h-full"></div>
                         {/* Khung ngắm quét */}
                         <div className="absolute inset-0 border-[30px] border-slate-950/40 pointer-events-none flex items-center justify-center">
@@ -2990,7 +2991,7 @@ export function WarehouseModule() {
               {stockItems.slice(0, 3).map(item => (
                 <div
                   key={item.id}
-                  className="bg-slate-50 border border-slate-300 p-4 rounded-xl flex items-center gap-4"
+                  className="bg-slate-50 border border-slate-300 p-4 rounded-lg flex items-center gap-4"
                 >
                   <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
                     <Package
@@ -3010,7 +3011,7 @@ export function WarehouseModule() {
               ))}
             </div>
 
-            <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
               <div className="overflow-x-auto min-w-0">
                 <table className="w-full text-left border-collapse whitespace-nowrap">
                   <thead className="bg-slate-50 border-b border-slate-300">

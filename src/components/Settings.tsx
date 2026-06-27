@@ -1,6 +1,7 @@
 import { safeLocalStorage } from '../lib/storage';
 import { supabase } from '../lib/supabase';
 import { Wallet , Save } from 'lucide-react';
+import { useAuditLog } from '../hooks/useAuditLog';
 import React, { useState, useEffect } from 'react';
 import { VietnamAddressSelector, VietnamProvinceBrowser, type VietnamAddress, EMPTY_ADDRESS, formatAddress } from './VietnamAddressSelector';
 import { 
@@ -1285,9 +1286,9 @@ export function SettingsPage() {
  return (
  <>
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+ <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
   <div className="flex items-center gap-4">
-    <div className="w-12 h-12 rounded-2xl bg-slate-700 flex items-center justify-center shrink-0">
+    <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center shrink-0">
       <Settings className="w-6 h-6 text-white" />
     </div>
     <div>
@@ -1296,13 +1297,13 @@ export function SettingsPage() {
     </div>
   </div>
   <div className="flex items-center gap-2 shrink-0">
-    <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors">
+    <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg transition-colors">
       <RefreshCw className="w-4 h-4 text-emerald-500" /> Lịch sử
     </button>
-    <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors">
+    <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg transition-colors">
       <Sparkles className="w-4 h-4 text-purple-500" /> AI Audit
     </button>
-    <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 shadow-sm">
+    <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm">
       <Save className="w-4 h-4" />{isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
     </button>
   </div>
@@ -1312,7 +1313,7 @@ export function SettingsPage() {
  {/* Main Grid or Content Area */}
  {activeTab !== 'overview' && (
  <div className="flex items-center gap-3">
-   <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 text-sm font-medium rounded-xl transition-colors shadow-sm">
+   <button onClick={() => setActiveTab('overview')} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 text-sm font-medium rounded-lg transition-colors shadow-sm">
      <ChevronLeft className="w-4 h-4" /> Tổng quan
    </button>
    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -1356,8 +1357,8 @@ export function SettingsPage() {
      { label: 'Điểm Webhook',      value: `${MOCK_WEBHOOKS.length} Endpoints`,badge: '100% Uptime', badgeCls: 'bg-sky-100 text-sky-700',           icon: Webhook,         iconBg: 'bg-sky-500' },
      { label: 'Ngành hàng',        value: `${categoryFees.length} Nhóm`,     badge: 'Tối ưu AI',   badgeCls: 'bg-violet-100 text-violet-700',     icon: BadgeDollarSign, iconBg: 'bg-emerald-500' },
    ].map(item => (
-     <div key={item.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 hover:shadow-sm .5 transition-all shadow-sm">
-       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.iconBg}`}>
+     <div key={item.label} className="bg-white border border-slate-200 rounded-lg p-4 flex items-center gap-3 hover:shadow-sm .5 transition-all shadow-sm">
+       <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${item.iconBg}`}>
          <item.icon className="w-5 h-5 text-white" />
        </div>
        <div className="flex-1 min-w-0">
@@ -1379,9 +1380,9 @@ export function SettingsPage() {
      <button
        key={mod.id}
        onClick={() => setActiveTab(mod.id as any)}
-       className="group bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-sm hover:border-slate-300 .5 transition-all duration-200 min-h-[160px] justify-between"
+       className="group bg-white border border-slate-200 rounded-lg p-5 flex flex-col items-center text-center gap-3 hover:shadow-sm hover:border-slate-300 .5 transition-all duration-200 min-h-[160px] justify-between"
      >
-       <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform  duration-200", getIconBg(mod.color))}>
+       <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center shrink-0 transition-transform  duration-200", getIconBg(mod.color))}>
          <mod.icon className="w-6 h-6 text-white" />
        </div>
        <div>
@@ -1398,7 +1399,7 @@ export function SettingsPage() {
  )}
  {activeTab === 'appearance' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
   <Sparkles className="w-5 h-5 text-rose-500" />
   Giao diện & Theme
@@ -1426,8 +1427,8 @@ export function SettingsPage() {
   <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
   <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
   <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
-  <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-xl flex-1 font-medium`}>Cong (xl)</button>
-  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-2xl flex-1 font-medium`}>Rất cong (2xl)</button>
+  <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Cong (xl)</button>
+  <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Rất cong (2xl)</button>
   </div>
  </div>
 
@@ -1438,7 +1439,7 @@ export function SettingsPage() {
   <button
   key={theme}
   onClick={() => setHolidayTheme(theme)}
-  className={`p-4 border rounded-xl text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-slate-300 hover:border-slate-400'}`}
+  className={`p-4 border rounded-lg text-center flex flex-col items-center gap-2 transition-all ${holidayTheme === theme ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm' : 'border-slate-300 hover:border-slate-400'}`}
   >
   <span className="text-2xl">
   {theme === 'tet' ? '🧧' : theme === 'christmas' ? '🎄' : theme === 'mid-autumn' ? '🌕' : theme === 'halloween' ? '🎃' : '✨'}
@@ -1455,9 +1456,9 @@ export function SettingsPage() {
 
  {activeTab === 'general' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <h3 className="font-bold text-slate-900">Cấu hình ví & Payout</h3>
- <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200">
+ <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
  <div className="space-y-1">
  <p className="text-sm font-bold text-slate-900">Tính năng Duyệt Payout tự động</p>
  <p className="text-[10px] text-slate-600 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
@@ -1481,7 +1482,7 @@ export function SettingsPage() {
 
   {activeTab === 'wallet_crm' && (
   <div className="animate-in fade-in duration-300 space-y-6">
-    <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+    <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-slate-900 flex items-center gap-2">
           <Wallet className="w-5 h-5 text-primary-600" /> Cấu hình Ví CSKH & Khuyến mại
@@ -1511,7 +1512,7 @@ export function SettingsPage() {
           canTransfer: false,
           color: 'purple'
         }].map(wallet => (
-          <div key={wallet.name} className="border border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div key={wallet.name} className="border border-slate-200 rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <h4 className="font-bold text-slate-900 flex items-center gap-2">
                 <span className={cn("w-3 h-3 rounded-full", wallet.color === "emerald" ? "bg-emerald-500" : wallet.color === "blue" ? "bg-blue-500" : wallet.color === "indigo" ? "bg-indigo-500" : "bg-slate-500")}></span>
@@ -1559,7 +1560,7 @@ export function SettingsPage() {
  {activeTab === 'fees' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {/* Section 1: Dynamic System Fees */}
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
@@ -1577,7 +1578,7 @@ export function SettingsPage() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
  {systemFees.map((fee) => (
- <div key={fee.id} className={cn("p-4 rounded-xl border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-slate-300" : "bg-slate-50 border-slate-200 opacity-60")}>
+ <div key={fee.id} className={cn("p-4 rounded-lg border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-slate-300" : "bg-slate-50 border-slate-200 opacity-60")}>
  <div className="flex justify-between items-start mb-3 relative z-10">
  <div className="flex items-center gap-2">
  <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-slate-100 text-blue-600" : "bg-purple-50 text-purple-600")}>
@@ -1636,7 +1637,7 @@ export function SettingsPage() {
  </div>
 
  {/* Section 2: Platform Commission (Existing) */}
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
  <div className="flex items-center justify-between mb-4">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
@@ -1663,12 +1664,12 @@ export function SettingsPage() {
  </div>
 
  {showAddCategory && (
- <div className="mb-4 p-4 bg-slate-50 border border-slate-300 rounded-xl flex items-center gap-3 animate-in slide-in- duration-200">
+ <div className="mb-4 p-4 bg-slate-50 border border-slate-300 rounded-lg flex items-center gap-3 animate-in slide-in- duration-200">
  <label className="text-sm font-bold text-slate-800 whitespace-nowrap">Tên ngành hàng:</label>
  <input 
  type="text" 
  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
- className="flex-1 p-2 bg-white border border-slate-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
+ className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 font-medium"
  value={newCategoryName}
  onChange={(e) => setNewCategoryName(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
@@ -1678,7 +1679,7 @@ export function SettingsPage() {
  </div>
  )}
 
- <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm overflow-x-auto min-w-0">
+ <div className="border border-slate-200 rounded-lg overflow-hidden shadow-sm overflow-x-auto min-w-0">
  <table className="w-full text-sm whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr>
@@ -1709,7 +1710,7 @@ export function SettingsPage() {
  type="number"
  value={cf.sellerFee}
  onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
- className="w-16 p-1.5 text-sm border-2 border-slate-300 rounded-2xl text-center focus:outline-none focus:border-slate-900 font-bold text-blue-900 bg-white"
+ className="w-16 p-1.5 text-sm border-2 border-slate-300 rounded-lg text-center focus:outline-none focus:border-slate-900 font-bold text-blue-900 bg-white"
  />
  <span className="text-xs font-bold text-orange-500">%</span>
  </div>
@@ -1725,7 +1726,7 @@ export function SettingsPage() {
  type="number"
  value={cf.mallFee}
  onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, mallFee: parseFloat(e.target.value) } : p))}
- className="w-16 p-1.5 text-sm border-2 border-amber-100 rounded-2xl text-center focus:outline-none focus:border-amber-500 font-bold text-amber-900 bg-white"
+ className="w-16 p-1.5 text-sm border-2 border-amber-100 rounded-lg text-center focus:outline-none focus:border-amber-500 font-bold text-amber-900 bg-white"
  />
  <span className="text-xs font-bold text-amber-400">%</span>
  </div>
@@ -1738,7 +1739,7 @@ export function SettingsPage() {
  {cf.aiSuggestedSellerFee && (
  <button 
  onClick={() => handleApplyAiSuggestion(cf.id)}
- className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 "
+ className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 px-3 py-2 rounded-lg border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-95 "
  title={`Gợi ý: ${cf.aiReasoning}`}
  >
  <Sparkles className="w-4 h-4" /> Áp dụng
@@ -1755,7 +1756,7 @@ export function SettingsPage() {
     <button 
       onClick={handleSaveFeeConfig} 
       disabled={isSavingFee} 
-      className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 shadow-sm"
+      className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
     >
       <Save className="w-4 h-4" />{isSavingFee ? 'Đang lưu...' : 'Lưu cấu hình Phí sàn'}
     </button>
@@ -1767,7 +1768,7 @@ export function SettingsPage() {
 
   {activeTab === 'website' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <Globe className="w-4 h-4 text-blue-600" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
  </h3>
@@ -1787,13 +1788,13 @@ export function SettingsPage() {
         value={domain} 
         onChange={(e) => updateDomain(index, e.target.value)}
         placeholder="ví dụ: store.domain.com" 
-        className="flex-1 p-3 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
+        className="flex-1 p-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
         />
         <button 
           type="button"
           onClick={() => handleCheckDns(domain)}
           disabled={!domain || diagState === 'checking'}
-          className="px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-2xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           {diagState === 'checking' ? (
             <>
@@ -1813,7 +1814,7 @@ export function SettingsPage() {
         </div>
 
         {diagState !== 'idle' && (
-          <div className={`p-3.5 rounded-2xl border text-xs leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 ${
+          <div className={`p-3.5 rounded-lg border text-xs leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 ${
             diagState === 'checking' 
               ? 'bg-blue-50/50 border-blue-200 text-blue-800' 
               : diagState === 'valid' 
@@ -1843,7 +1844,7 @@ export function SettingsPage() {
                 <p className="text-slate-650">
                   Vui lòng định cấu hình bản ghi tên miền của bạn:
                 </p>
-                <div className="bg-white/60 p-2.5 rounded-xl border border-rose-200/50 font-mono text-[10px] text-slate-700 space-y-1">
+                <div className="bg-white/60 p-2.5 rounded-lg border border-rose-200/50 font-mono text-[10px] text-slate-700 space-y-1">
                   <div>• Bản ghi <strong className="text-slate-900 font-bold">A</strong>: Tên <strong className="text-slate-900 font-bold">@</strong> trỏ về IP <strong className="text-slate-900 font-bold">76.76.21.21</strong></div>
                   <div>• Hoặc Bản ghi <strong className="text-slate-900 font-bold">CNAME</strong>: Tên <strong className="text-slate-900 font-bold">www</strong> trỏ về <strong className="text-slate-900 font-bold">cname.vercel-dns.com</strong></div>
                 </div>
@@ -1954,7 +1955,7 @@ export function SettingsPage() {
        { key: 'legalInfo', title: 'Thông tin pháp lý', icon: ShieldCheck },
        { key: 'preview', title: 'Xem trước Footer', icon: AppWindow },
      ] as const).map(({ key, title, icon: Icon }) => (
-       <div key={key} className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+       <div key={key} className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
          <button
            onClick={() => setExpandedSection(expandedSection === key ? null : key)}
            className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
@@ -1984,7 +1985,7 @@ export function SettingsPage() {
                        value={siteConfig.companyInfo[field]}
                        onChange={e => setSiteConfig(c => ({ ...c, companyInfo: { ...c.companyInfo, [field]: e.target.value } }))}
                        placeholder={placeholder}
-                       className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                       className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                      />
                    </div>
                  ))}
@@ -2015,7 +2016,7 @@ export function SettingsPage() {
                            type="text"
                            value={siteConfig.footerLinks[titleKey]}
                            onChange={e => setSiteConfig(c => ({ ...c, footerLinks: { ...c.footerLinks, [titleKey]: e.target.value } }))}
-                           className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                           className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                          />
                        </div>
                        <div className="space-y-2">
@@ -2027,14 +2028,14 @@ export function SettingsPage() {
                                value={item.label}
                                onChange={e => updateFooterLink(colKey, idx, 'label', e.target.value)}
                                placeholder="Nhãn hiển thị"
-                               className="flex-1 p-2 rounded-2xl border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                               className="flex-1 p-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                              />
                              <input
                                type="text"
                                value={item.url}
                                onChange={e => updateFooterLink(colKey, idx, 'url', e.target.value)}
                                placeholder="/duong-dan"
-                               className="flex-1 p-2 rounded-2xl border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                               className="flex-1 p-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                              />
                              <button
                                onClick={() => item.url && setEditingPageUrl({ url: item.url, label: item.label })}
@@ -2067,7 +2068,7 @@ export function SettingsPage() {
                  {/* List */}
                  <div className="space-y-2">
                    {siteConfig.paymentMethods.map((pm) => (
-                     <div key={pm.id} className={cn('flex items-center gap-3 p-3 rounded-xl border transition-all', pm.active ? 'border-blue-300 bg-blue-50/40' : 'border-slate-200 bg-white opacity-60')}>
+                     <div key={pm.id} className={cn('flex items-center gap-3 p-3 rounded-lg border transition-all', pm.active ? 'border-blue-300 bg-blue-50/40' : 'border-slate-200 bg-white opacity-60')}>
                        {/* Toggle */}
                        <button
                          onClick={() => togglePaymentMethod(pm.id)}
@@ -2115,7 +2116,7 @@ export function SettingsPage() {
                          type="text"
                          value={pm.label}
                          onChange={(e) => updatePaymentMethod(pm.id, 'label', e.target.value)}
-                         className="flex-1 px-3 py-1.5 text-sm rounded-2xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
+                         className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
                          placeholder="Tên phương thức..."
                        />
 
@@ -2139,7 +2140,7 @@ export function SettingsPage() {
                  {/* Add new */}
                  <button
                    onClick={addPaymentMethod}
-                   className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-xl text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2"
+                   className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2"
                  >
                    <Plus className="w-4 h-4" /> Thêm phương thức thanh toán
                  </button>
@@ -2167,7 +2168,7 @@ export function SettingsPage() {
                        value={siteConfig.socialLinks[field]}
                        onChange={e => setSiteConfig(c => ({ ...c, socialLinks: { ...c.socialLinks, [field]: e.target.value } } ))}
                        placeholder={placeholder}
-                       className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                       className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                      />
                    </div>
                  ))}
@@ -2181,13 +2182,13 @@ export function SettingsPage() {
                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Tên công ty (đầy đủ theo pháp lý)</label>
                    <input type="text" value={siteConfig.legalInfo.companyName}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, companyName: e.target.value } }))}
-                     className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                     className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                  </div>
                  <div className="md:col-span-2">
                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Địa chỉ pháp lý</label>
                    <textarea value={siteConfig.legalInfo.legalAddress}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, legalAddress: e.target.value } }))}
-                     rows={2} className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" />
+                     rows={2} className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" />
                  </div>
                  {([
                    { field: 'taxCode' as const, label: 'Mã số thuế', placeholder: '' },
@@ -2200,14 +2201,14 @@ export function SettingsPage() {
                      <input type="text" value={siteConfig.legalInfo[field]}
                        onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, [field]: e.target.value } }))}
                        placeholder={placeholder}
-                       className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                       className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                    </div>
                  ))}
                  <div className="md:col-span-2">
                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Dòng bản quyền (Copyright)</label>
                    <input type="text" value={siteConfig.copyrightText}
                      onChange={e => setSiteConfig(c => ({ ...c, copyrightText: e.target.value }))}
-                     className="w-full p-2.5 rounded-2xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                     className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                  </div>
                </div>
              )}
@@ -2242,7 +2243,7 @@ export function SettingsPage() {
 
                     <div className="space-y-3">
                       {storefrontSections.map((sec, idx) => (
-                        <div key={sec.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-4 hover:shadow-xs transition duration-150">
+                        <div key={sec.id} className="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between gap-4 hover:shadow-xs transition duration-150">
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className={`w-2 h-2 rounded-full ${sec.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}></span>
@@ -2302,7 +2303,7 @@ export function SettingsPage() {
                   <div className="lg:col-span-2 flex flex-col items-center space-y-4">
                     <div className="flex justify-between items-center w-full">
                       <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Xem trước thiết bị</span>
-                      <div className="flex bg-slate-105 p-1 rounded-xl border border-slate-200">
+                      <div className="flex bg-slate-105 p-1 rounded-lg border border-slate-200">
                         <button 
                           type="button"
                           onClick={() => setPreviewDeviceMode('mobile')}
@@ -2349,7 +2350,7 @@ export function SettingsPage() {
                         {/* Homepage inner contents */}
                         <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5 bg-slate-50 scrollbar-none">
                           {/* Store Header logo banner */}
-                          <div className="p-2 bg-white rounded-xl shadow-3xs flex justify-between items-center">
+                          <div className="p-2 bg-white rounded-lg shadow-3xs flex justify-between items-center">
                             <span className="text-xs font-black text-slate-905 tracking-tight">{siteConfig.companyInfo.brandName}</span>
                             <div className="flex gap-1.5 text-[8px] font-bold text-slate-500">
                               <span>Sản phẩm</span>
@@ -2363,7 +2364,7 @@ export function SettingsPage() {
                             .map(s => (
                               <div 
                                 key={s.id} 
-                                className={`p-3 rounded-xl shadow-4xs text-[10px] leading-snug font-semibold text-center transition-all duration-300 hover:scale-[1.02] ${
+                                className={`p-3 rounded-lg shadow-4xs text-[10px] leading-snug font-semibold text-center transition-all duration-300 hover:scale-[1.02] ${
                                   s.id === 'hero_banner' 
                                     ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white min-h-[55px] flex items-center justify-center'
                                     : s.id === 'flash_sale'
@@ -2402,7 +2403,7 @@ export function SettingsPage() {
 
 {/* PREVIEW */}
              {key === 'preview' && (
-               <div className="rounded-xl overflow-hidden border border-slate-200 bg-white text-sm">
+               <div className="rounded-lg overflow-hidden border border-slate-200 bg-white text-sm">
                  <div className="bg-slate-100 px-4 py-2 flex items-center gap-2 border-b border-slate-200">
                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
@@ -2504,7 +2505,7 @@ export function SettingsPage() {
  {activeTab === 'rbac' && (
  <div className="animate-in fade-in duration-300 space-y-6">
  {!editingRole ? (
- <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
  <Lock className="w-4 h-4 text-blue-600" /> Quản lý Vai trò & Phân quyền
@@ -2560,7 +2561,7 @@ export function SettingsPage() {
  </div>
  ) : (
  <div className="space-y-6 animate-in slide-in- duration-300">
- <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-300 shadow-sm">
+ <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex items-center gap-4">
  <button 
  onClick={() => setEditingRole(null)}
@@ -2601,7 +2602,7 @@ export function SettingsPage() {
  </div>
  </div>
 
- <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-slate-50 border-b border-slate-300 flex justify-between items-center">
  <h4 className="font-bold text-slate-900 text-sm">Ma trận Quyền hạn chi tiết</h4>
  <label className="flex items-center gap-2 cursor-pointer">
@@ -2645,7 +2646,7 @@ export function SettingsPage() {
  <div key={group.id} className="space-y-4 animate-in fade-in slide-in- duration-300">
  <div className="grid grid-cols-1 gap-3">
  {group.modules.map(module => (
- <div key={module.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm transition-all group">
+ <div key={module.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-white hover:shadow-sm transition-all group">
  <div className="space-y-1">
  <p className="text-sm font-bold text-slate-900">{module.label}</p>
  <p className="text-[10px] text-slate-500 font-mono uppercase">Module: {module.id}</p>
@@ -2701,7 +2702,7 @@ export function SettingsPage() {
     <div className="animate-in fade-in duration-300 space-y-6">
       {/* Bento Grid Stats Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-indigo-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-indigo-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider font-bold text-indigo-600/70 dark:text-indigo-400/70">Tổng Kết Nối Hoạt Động</p>
             <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
@@ -2709,12 +2710,12 @@ export function SettingsPage() {
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Các cổng kết nối dữ liệu ngoại</p>
           </div>
-          <div className="p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
+          <div className="p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg">
             <Activity className="w-6 h-6 animate-pulse" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-emerald-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-emerald-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-600/70 dark:text-emerald-400/70">Tỷ Lệ Đồng Bộ Thành Công</p>
             <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
@@ -2722,12 +2723,12 @@ export function SettingsPage() {
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Đạt chỉ tiêu SLA vận hành</p>
           </div>
-          <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
+          <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-purple-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-purple-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider font-bold text-purple-600/70 dark:text-purple-400/70">Webhooks Đang Active</p>
             <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
@@ -2735,12 +2736,12 @@ export function SettingsPage() {
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Đẩy dữ liệu thời gian thực</p>
           </div>
-          <div className="p-3 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-xl">
+          <div className="p-3 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-lg">
             <Webhook className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-2xl border border-rose-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-rose-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider font-bold text-rose-600/70 dark:text-rose-400/70">Lỗi Hệ Thống Hôm Nay</p>
             <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
@@ -2748,7 +2749,7 @@ export function SettingsPage() {
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Cần rà soát đối soát tài khoản</p>
           </div>
-          <div className="p-3 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl">
+          <div className="p-3 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg">
             <ShieldAlert className="w-6 h-6" />
           </div>
         </div>
@@ -2765,11 +2766,11 @@ export function SettingsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* MISA ACCOUNTING */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl">
+                  <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg">
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
@@ -2810,11 +2811,11 @@ export function SettingsPage() {
           </div>
 
           {/* SEPAY GATEWAY */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-blue-500/10 text-blue-600 rounded-xl">
+                  <div className="p-2 bg-blue-500/10 text-blue-600 rounded-lg">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
@@ -2863,11 +2864,11 @@ export function SettingsPage() {
           </div>
 
           {/* ZALO ZNS */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-sky-500/10 text-sky-600 rounded-xl">
+                  <div className="p-2 bg-sky-500/10 text-sky-600 rounded-lg">
                     <MessageSquare className="w-5 h-5" />
                   </div>
                   <div>
@@ -2908,11 +2909,11 @@ export function SettingsPage() {
           </div>
 
           {/* SHOPIFY / HARAVAN RETAIL SYNC */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-teal-500/10 text-teal-600 rounded-xl">
+                  <div className="p-2 bg-teal-500/10 text-teal-600 rounded-lg">
                     <Store className="w-5 h-5" />
                   </div>
                   <div>
@@ -2953,11 +2954,11 @@ export function SettingsPage() {
           </div>
 
           {/* SHOPEE / TIKTOK SHOP MULTICHANNEL */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-orange-500/10 text-orange-600 rounded-xl">
+                  <div className="p-2 bg-orange-500/10 text-orange-600 rounded-lg">
                     <Zap className="w-5 h-5" />
                   </div>
                   <div>
@@ -2998,11 +2999,11 @@ export function SettingsPage() {
           </div>
 
           {/* CUSTOM WEBHOOKS */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-purple-500/10 text-purple-600 rounded-xl">
+                  <div className="p-2 bg-purple-500/10 text-purple-600 rounded-lg">
                     <Webhook className="w-5 h-5" />
                   </div>
                   <div>
@@ -3041,7 +3042,7 @@ export function SettingsPage() {
       {/* Sync Logs and OpenAPI Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sync Logs List */}
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Activity className="w-4 h-4 text-emerald-500" /> Nhật ký đồng bộ API (API Sync Logs)
@@ -3111,7 +3112,7 @@ export function SettingsPage() {
         </div>
 
         {/* OpenAPI Key Manager */}
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Key className="w-4 h-4 text-orange-500" /> OpenAPI Client Keys
@@ -3132,7 +3133,7 @@ export function SettingsPage() {
 
           <div className="space-y-3">
             {openApiKeys.map(key => (
-              <div key={key.id} className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-2 relative overflow-hidden">
+              <div key={key.id} className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700/60 space-y-2 relative overflow-hidden">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800 dark:text-slate-200 text-xs">{key.name}</span>
                   <span className={cn(
@@ -3181,167 +3182,150 @@ export function SettingsPage() {
 
       {/* --- MISA CONFIGURATION MODAL --- */}
       {activeConfigModal === 'misa' && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-emerald-600" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Kế toán Doanh nghiệp MISA</h4>
-              </div>
-              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
-                <X className="w-4 h-4 text-slate-500" />
-              </button>
-            </div>
-
-            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200/50 dark:border-yellow-900/30 p-3.5 rounded-2xl flex items-start gap-2.5">
+        <Modal
+          isOpen={activeConfigModal === 'misa'}
+          onClose={() => setActiveConfigModal(null)}
+          title="Cấu hình Kế toán Doanh nghiệp MISA"
+          icon={<Building2 className="w-5 h-5 text-emerald-600" />}
+          maxWidth="lg"
+          onConfirm={() => {
+            saveMisaConfigLocal(misaConfig);
+            logAction('Settings.Misa', 'UPDATE', 'Cập nhật cấu hình Misa');
+            setActiveConfigModal(null);
+          }}
+          confirmText="Lưu cấu hình MISA"
+          confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 text-white"
+        >
+          <div className="space-y-4">
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200/50 dark:border-yellow-900/30 p-3.5 rounded-lg flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
               <div className="text-[10px] text-yellow-800 dark:text-yellow-300">
                 <span className="font-bold">Lưu ý nghiệp vụ</span>: Bắt buộc tuân thủ <span className="font-bold">Thông tư 99/2025/TT-BTC</span> của Bộ Tài chính khi hạch toán. Các mã tài khoản phải khớp chính xác với hệ thống tài khoản kế toán doanh nghiệp (COA) hiện hành.
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">MISA App ID</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">MISA App ID</label>
+                <input 
+                  type="text" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                  value={misaConfig.appId}
+                  onChange={e => setMisaConfig(prev => ({ ...prev, appId: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token (API Connect)</label>
+                <input 
+                  type="password" 
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                  value={misaConfig.accessToken}
+                  onChange={e => setMisaConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3">
+              <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300 mb-3">Thiết lập tài khoản hạch toán mặc định</h5>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Nợ thu (Ngân hàng)</label>
                   <input 
                     type="text" 
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                    value={misaConfig.appId}
-                    onChange={e => setMisaConfig(prev => ({ ...prev, appId: e.target.value }))}
+                    maxLength={5}
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.debitAccountDefault}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, debitAccountDefault: e.target.value.replace(/\D/g, '') }))}
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token (API Connect)</label>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Doanh thu (Có)</label>
                   <input 
-                    type="password" 
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                    value={misaConfig.accessToken}
-                    onChange={e => setMisaConfig(prev => ({ ...prev, accessToken: e.target.value }))}
+                    type="text" 
+                    maxLength={5}
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.creditAccountDefault}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, creditAccountDefault: e.target.value.replace(/\D/g, '') }))}
                   />
                 </div>
-              </div>
-
-              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3">
-                <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300 mb-3">Thiết lập tài khoản hạch toán mặc định</h5>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Nợ thu (Ngân hàng)</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                      value={misaConfig.debitAccountDefault}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, debitAccountDefault: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Doanh thu (Có)</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                      value={misaConfig.creditAccountDefault}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, creditAccountDefault: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Tài khoản Phải thu (131)</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                      value={misaConfig.receivableAccountDefault}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, receivableAccountDefault: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Thuế GTGT đầu ra (33311)</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                      value={misaConfig.taxAccountOutDefault || ''}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, taxAccountOutDefault: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Mã kho mặc định</label>
-                    <input 
-                      type="text" 
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono uppercase"
-                      value={misaConfig.defaultWarehouseCode || ''}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, defaultWarehouseCode: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500">Phải trả nhà cung cấp (331)</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
-                      value={misaConfig.partnerLiabilitiesAccount || ''}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, partnerLiabilitiesAccount: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Phải thu (131)</label>
+                  <input 
+                    type="text" 
+                    maxLength={5}
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.receivableAccountDefault}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, receivableAccountDefault: e.target.value.replace(/\D/g, '') }))}
+                  />
                 </div>
-              </div>
-
-              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tách giao dịch sàn TMĐT</h5>
-                    <p className="text-[9px] text-slate-500">Tự động hạch toán riêng phí hoa hồng Shopee/TikTok vào TK 641.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={misaConfig.enableMarketplaceSplit}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, enableMarketplaceSplit: e.target.checked }))}
-                    />
-                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
-                  </label>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Thuế GTGT đầu ra (33311)</label>
+                  <input 
+                    type="text" 
+                    maxLength={5}
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.taxAccountOutDefault || ''}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, taxAccountOutDefault: e.target.value.replace(/\D/g, '') }))}
+                  />
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Chế độ Kế toán Nội bộ (Mock Mode)</h5>
-                    <p className="text-[9px] text-slate-500">Chạy các nghiệp vụ ở dạng Sandbox, không đẩy trực tiếp vào sổ cái chính thức.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={misaConfig.localAccountingMode}
-                      onChange={e => setMisaConfig(prev => ({ ...prev, localAccountingMode: e.target.checked }))}
-                    />
-                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
-                  </label>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Mã kho mặc định</label>
+                  <input 
+                    type="text" 
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono uppercase"
+                    value={misaConfig.defaultWarehouseCode || ''}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, defaultWarehouseCode: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">Phải trả nhà cung cấp (331)</label>
+                  <input 
+                    type="text" 
+                    maxLength={5}
+                    className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
+                    value={misaConfig.partnerLiabilitiesAccount || ''}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, partnerLiabilitiesAccount: e.target.value.replace(/\D/g, '') }))}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
-              <button 
-                onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
-              >
-                Hủy bỏ
-              </button>
-              <button 
-                onClick={() => {
-                  saveMisaConfigLocal(misaConfig);
-                  setActiveConfigModal(null);
-                }}
-                className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors"
-              >
-                Lưu cấu hình MISA
-              </button>
+            <div className="border-t border-slate-100 dark:border-slate-700/50 pt-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tách giao dịch sàn TMĐT</h5>
+                  <p className="text-[9px] text-slate-500">Tự động hạch toán riêng phí hoa hồng Shopee/TikTok vào TK 641.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={misaConfig.enableMarketplaceSplit}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, enableMarketplaceSplit: e.target.checked }))}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Chế độ Kế toán Nội bộ (Mock Mode)</h5>
+                  <p className="text-[9px] text-slate-500">Chạy các nghiệp vụ ở dạng Sandbox, không đẩy trực tiếp vào sổ cái chính thức.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={misaConfig.localAccountingMode}
+                    onChange={e => setMisaConfig(prev => ({ ...prev, localAccountingMode: e.target.checked }))}
+                  />
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* --- SEPAY CONFIGURATION MODAL --- */}
@@ -3364,7 +3348,7 @@ export function SettingsPage() {
                 <input 
                   type="password" 
                   placeholder="Bearer JWT Token..."
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100 font-mono"
                   value={apiKeys.sepayToken}
                   onChange={e => setApiKeys(prev => ({ ...prev, sepayToken: e.target.value }))}
                 />
@@ -3376,7 +3360,7 @@ export function SettingsPage() {
                   <input 
                     type="text" 
                     placeholder="SePay client ID"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
                     value={apiKeys.sepayId}
                     onChange={e => setApiKeys(prev => ({ ...prev, sepayId: e.target.value }))}
                   />
@@ -3386,14 +3370,14 @@ export function SettingsPage() {
                   <input 
                     type="password" 
                     placeholder="SePay client secret"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-slate-100"
                     value={apiKeys.sepaySecret}
                     onChange={e => setApiKeys(prev => ({ ...prev, sepaySecret: e.target.value }))}
                   />
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+              <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                 <h5 className="font-bold text-[10px] text-slate-600 dark:text-slate-400 uppercase">SePay Webhook URL để nhận biến động số dư</h5>
                 <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
                   <span className="font-mono text-[9px] text-slate-500 truncate select-all flex-1">https://api.vcomm.vn/v1/webhooks/sepay-callback</span>
@@ -3410,7 +3394,7 @@ export function SettingsPage() {
               </div>
 
               {/* Webhook Simulator Section */}
-              <div className="p-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
+              <div className="p-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
                 <h5 className="font-bold text-[10.5px] text-blue-800 dark:text-blue-400 uppercase tracking-wider">Bộ Giả Lập Webhook (Webhook Simulator)</h5>
                 
                 <div className="space-y-2.5">
@@ -3439,7 +3423,7 @@ export function SettingsPage() {
                   <button 
                     onClick={handleSimulateWebhook}
                     disabled={simulating || !simCode}
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     {simulating ? 'Đang giả lập...' : 'Kích hoạt Webhook giả lập 🚀'}
                   </button>
@@ -3450,7 +3434,7 @@ export function SettingsPage() {
             <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button 
                 onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
               >
                 Hủy bỏ
               </button>
@@ -3459,7 +3443,7 @@ export function SettingsPage() {
                   saveApiKeys();
                   setActiveConfigModal(null);
                 }}
-                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Lưu cấu hình
               </button>
@@ -3487,7 +3471,7 @@ export function SettingsPage() {
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Official Account ID (OA ID)</label>
                 <input 
                   type="text" 
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
                   value={znsConfig.oaId}
                   onChange={e => setZnsConfig(prev => ({ ...prev, oaId: e.target.value }))}
                 />
@@ -3497,7 +3481,7 @@ export function SettingsPage() {
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Developer App ID</label>
                 <input 
                   type="text" 
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
                   value={znsConfig.appId}
                   onChange={e => setZnsConfig(prev => ({ ...prev, appId: e.target.value }))}
                 />
@@ -3507,13 +3491,13 @@ export function SettingsPage() {
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">OA Access Token</label>
                 <input 
                   type="password" 
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
                   value={znsConfig.accessToken}
                   onChange={e => setZnsConfig(prev => ({ ...prev, accessToken: e.target.value }))}
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
                 <div>
                   <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tự động refresh token</h5>
                   <p className="text-[9px] text-slate-500">Sử dụng Refresh Token để gia hạn Access Token tự động.</p>
@@ -3533,7 +3517,7 @@ export function SettingsPage() {
             <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button 
                 onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
               >
                 Hủy bỏ
               </button>
@@ -3542,7 +3526,7 @@ export function SettingsPage() {
                   saveZnsConfigLocal(znsConfig);
                   setActiveConfigModal(null);
                 }}
-                className="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Lưu cấu hình ZNS
               </button>
@@ -3571,7 +3555,7 @@ export function SettingsPage() {
                 <input 
                   type="text" 
                   placeholder="shop-retail.myshopify.com hoặc nexhubshop.vn"
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100"
                   value={shopifyHaravanConfig.shopUrl}
                   onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, shopUrl: e.target.value }))}
                 />
@@ -3582,7 +3566,7 @@ export function SettingsPage() {
                 <input 
                   type="password" 
                   placeholder="shpat_..."
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 dark:text-slate-100 font-mono"
                   value={shopifyHaravanConfig.accessToken}
                   onChange={e => setShopifyHaravanConfig(prev => ({ ...prev, accessToken: e.target.value }))}
                 />
@@ -3635,7 +3619,7 @@ export function SettingsPage() {
             <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button 
                 onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
               >
                 Hủy bỏ
               </button>
@@ -3644,7 +3628,7 @@ export function SettingsPage() {
                   saveShopifyHaravanConfig(shopifyHaravanConfig);
                   setActiveConfigModal(null);
                 }}
-                className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Lưu cấu hình
               </button>
@@ -3672,7 +3656,7 @@ export function SettingsPage() {
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Sàn Thương mại</label>
                   <select 
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
                     value={marketplaceConfig.platform}
                     onChange={e => setMarketplaceConfig(prev => ({ ...prev, platform: e.target.value as 'shopee' | 'tiktok' }))}
                   >
@@ -3685,7 +3669,7 @@ export function SettingsPage() {
                   <input 
                     type="text" 
                     placeholder="shop_id_12345"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
                     value={marketplaceConfig.shopId}
                     onChange={e => setMarketplaceConfig(prev => ({ ...prev, shopId: e.target.value }))}
                   />
@@ -3698,7 +3682,7 @@ export function SettingsPage() {
                   <input 
                     type="text" 
                     placeholder="app_key"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
                     value={marketplaceConfig.appKey}
                     onChange={e => setMarketplaceConfig(prev => ({ ...prev, appKey: e.target.value }))}
                   />
@@ -3708,7 +3692,7 @@ export function SettingsPage() {
                   <input 
                     type="password" 
                     placeholder="app_secret"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
                     value={marketplaceConfig.appSecret}
                     onChange={e => setMarketplaceConfig(prev => ({ ...prev, appSecret: e.target.value }))}
                   />
@@ -3719,7 +3703,7 @@ export function SettingsPage() {
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token hiện tại</label>
                 <input 
                   type="password" 
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100 font-mono"
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100 font-mono"
                   value={marketplaceConfig.accessToken}
                   onChange={e => setMarketplaceConfig(prev => ({ ...prev, accessToken: e.target.value }))}
                 />
@@ -3759,7 +3743,7 @@ export function SettingsPage() {
             <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button 
                 onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
               >
                 Hủy bỏ
               </button>
@@ -3768,7 +3752,7 @@ export function SettingsPage() {
                   saveMarketplaceConfig(marketplaceConfig);
                   setActiveConfigModal(null);
                 }}
-                className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Lưu cấu hình
               </button>
@@ -3790,7 +3774,7 @@ export function SettingsPage() {
                 <p className="text-xs text-slate-500">
                   Vui lòng sao chép Client Secret Key dưới đây. Bạn chỉ có thể xem khóa này <span className="font-bold text-red-500">một lần duy nhất</span> vì lý do bảo mật.
                 </p>
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                   <span className="font-mono text-[10px] text-slate-800 dark:text-slate-100 font-bold select-all flex-1 break-all">{createdKeyDetails}</span>
                   <button 
                     onClick={() => {
@@ -3808,7 +3792,7 @@ export function SettingsPage() {
                   setCreatedKeyDetails(null);
                   setActiveConfigModal(null);
                 }}
-                className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
+                className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Tôi đã lưu, đóng cửa sổ
               </button>
@@ -3831,7 +3815,7 @@ export function SettingsPage() {
                   <input 
                     type="text" 
                     placeholder="ví dụ: Giao Hàng Tiết Kiệm (GHTK)"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100"
+                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100"
                     value={newOpenApiKey.name || ''}
                     onChange={e => setNewOpenApiKey(prev => ({ ...prev, name: e.target.value }))}
                   />
@@ -3839,7 +3823,7 @@ export function SettingsPage() {
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gán Quyền Hạn (Scopes)</label>
-                  <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60 max-h-[140px] overflow-y-auto">
+                  <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700/60 max-h-[140px] overflow-y-auto">
                     {[
                       { id: 'orders.read', name: 'Đọc Đơn hàng' },
                       { id: 'orders.write', name: 'Tạo/Sửa Đơn hàng' },
@@ -3872,13 +3856,13 @@ export function SettingsPage() {
               <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button 
                   onClick={() => setActiveConfigModal(null)}
-                  className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                  className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
                 >
                   Hủy bỏ
                 </button>
                 <button 
                   onClick={handleCreateApiKey}
-                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors"
+                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors"
                 >
                   Tạo Token Key
                 </button>
@@ -3957,23 +3941,23 @@ export function SettingsPage() {
 
  {activeTab === 'org' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
  </h3>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
+ <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
  <h4 className="font-bold text-slate-900 mb-4">Phòng ban</h4>
  {MOCK_DEPARTMENTS.map((dept) => (
- <div key={dept.id} className={cn("bg-white p-3 rounded-2xl border border-slate-200 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
+ <div key={dept.id} className={cn("bg-white p-3 rounded-lg border border-slate-200 mb-2 flex justify-between items-center", dept.parentId ? "ml-6 border-l-4 border-l-blue-400" : "")}>
  <span className="text-sm font-medium">{dept.name}</span>
  <button className="text-[10px] bg-slate-100 px-2 py-1 rounded">Sửa</button>
  </div>
  ))}
  </div>
- <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
+ <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
  <h4 className="font-bold text-slate-900">Chức danh</h4>
  <button 
@@ -3985,7 +3969,7 @@ export function SettingsPage() {
  </div>
  <div className="space-y-2 h-[400px] overflow-y-auto pr-1">
  {jobTitles.map((title) => (
- <div key={title.id} className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+ <div key={title.id} className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
  <div className="flex justify-between items-start mb-1">
  <div className="font-bold text-sm text-slate-900">{title.name}</div>
  <button 
@@ -4008,7 +3992,7 @@ export function SettingsPage() {
  ))}
  </div>
  </div>
- <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:col-span-1">
+ <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 md:col-span-1">
  <div className="flex justify-between items-center mb-4">
  <h4 className="font-bold text-slate-900">Cấp bậc</h4>
  <button className="text-xs bg-slate-200 text-slate-800 px-2 py-1 rounded hover:bg-slate-300 transition">
@@ -4017,7 +4001,7 @@ export function SettingsPage() {
  </div>
  <div className="space-y-2">
  {MOCK_JOB_RANKS.map((item) => (
- <div key={item.id} className="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center shadow-sm">
+ <div key={item.id} className="bg-white p-3 rounded-lg border border-slate-200 flex justify-between items-center shadow-sm">
  <div>
  <div className="text-sm font-medium">{item.name}</div>
  <div className="text-[10px] text-slate-500">Level: {item.level}</div>
@@ -4034,7 +4018,7 @@ export function SettingsPage() {
 
  {activeTab === 'stores' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
@@ -4048,14 +4032,14 @@ export function SettingsPage() {
  <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Globe className="w-4 h-4" /> Cấu hình Tên miền (Domain)</h4>
  <p className="text-sm text-primary-700 mb-4">Các chi nhánh có thể chạy trên subdomain riêng biệt, cung cấp cho nhân viên thu ngân đường dẫn đăng nhập trực tiếp mà không cần vào trang chủ ERP.</p>
  <div className="grid grid-cols-2 gap-4">
- <div className="bg-white p-3 rounded-2xl shadow-sm border border-primary-50 flex justify-between items-center">
+ <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
  <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Quận 1</span>
  <p className="font-mono text-sm text-slate-900">sg1.v-erp.com</p>
  </div>
  <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
  </div>
- <div className="bg-white p-3 rounded-2xl shadow-sm border border-primary-50 flex justify-between items-center">
+ <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
  <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Cầu Giấy</span>
  <p className="font-mono text-sm text-slate-900">hn1.v-erp.com</p>
@@ -4072,7 +4056,7 @@ export function SettingsPage() {
  { id: 'STORE_001', name: 'Chi nhánh Quận 1 - Sài Gòn', address: '123 Lê Lợi, Q.1, TP.HCM', staff: 5, manager: 'Nguyễn Văn A' },
  { id: 'STORE_002', name: 'Chi nhánh Cầu Giấy - Hà Nội', address: '45 Xuân Thủy, Cầu Giấy, HN', staff: 8, manager: 'Trần Thị B' },
  ].map(store => (
- <div key={store.id} className="border border-slate-200 rounded-2xl p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
+ <div key={store.id} className="border border-slate-200 rounded-lg p-4 flex items-center justify-between hover:border-blue-400 transition-colors bg-slate-50">
  <div>
  <h5 className="font-bold text-slate-900 text-lg flex items-center gap-2">{store.name}</h5>
  <p className="text-sm text-slate-600 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
@@ -4083,7 +4067,7 @@ export function SettingsPage() {
  </div>
  <div className="flex gap-2">
  <button className="p-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100"><Edit2 className="w-4 h-4" /></button>
- <button className="p-2 bg-white border border-slate-300 text-slate-700 rounded-2xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"><Trash2 className="w-4 h-4" /></button>
+ <button className="p-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"><Trash2 className="w-4 h-4" /></button>
  </div>
  </div>
  ))}
@@ -4093,7 +4077,7 @@ export function SettingsPage() {
  )}
  {activeTab === 'comms' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <MessageSquare className="w-5 h-5 text-blue-600" /> Tích hợp SMS OTP & Zalo ZNS
@@ -4102,7 +4086,7 @@ export function SettingsPage() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  {/* Zalo ZNS Config */}
- <div className="border border-slate-200 rounded-2xl p-5 hover:border-blue-400 transition-colors">
+ <div className="border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition-colors">
  <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
@@ -4118,17 +4102,17 @@ export function SettingsPage() {
  <div className="space-y-4">
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Official Account ID (OA ID)</label>
- <input type="text" defaultValue="2938475928374928" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
+ <input type="text" defaultValue="2938475928374928" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Zalo App ID</label>
- <input type="text" defaultValue="142345234523" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
+ <input type="text" defaultValue="142345234523" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Access Token</label>
  <div className="flex gap-2">
- <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
- <button className="px-3 bg-slate-100 border border-slate-200 rounded-2xl hover:bg-slate-200 text-sm font-bold text-slate-700">Đồng bộ</button>
+ <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
+ <button className="px-3 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 text-sm font-bold text-slate-700">Đồng bộ</button>
  </div>
  <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sẽ hết hạn vào 20:00 25/04/2026. Bật auto-refresh để tự làm mới.</p>
  </div>
@@ -4139,7 +4123,7 @@ export function SettingsPage() {
  </div>
 
  {/* SMS OTP Config */}
- <div className="border border-slate-200 rounded-2xl p-5 hover:border-emerald-400 transition-colors">
+ <div className="border border-slate-200 rounded-lg p-5 hover:border-emerald-400 transition-colors">
  <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
@@ -4155,7 +4139,7 @@ export function SettingsPage() {
  <div className="space-y-4 opacity-70">
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Nhà cung cấp (SMS Vendor)</label>
- <select className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+ <select className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
  <option>eSMS.vn</option>
  <option>VietGuys</option>
  <option>FPT SMS</option>
@@ -4164,16 +4148,16 @@ export function SettingsPage() {
  </div>
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Brandname đăng ký</label>
- <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
+ <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">API Key</label>
- <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  <div>
  <label className="text-xs font-bold text-slate-700 block mb-1">Secret Key</label>
- <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
+ <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  </div>
  </div>
@@ -4183,21 +4167,21 @@ export function SettingsPage() {
  </div>
  </div>
  
- <div className="bg-slate-100 border border-slate-200 rounded-2xl p-5 mt-6">
+ <div className="bg-slate-100 border border-slate-200 rounded-lg p-5 mt-6">
  <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
  <p className="text-sm text-orange-800 mb-4">Cấu hình các sự kiện hệ thống tự động gọi API ZNS/SMS để thông báo chăm sóc khách hàng.</p>
  <div className="space-y-3">
- <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
  <span className="text-sm font-medium text-slate-800 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
  <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
  <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
  <span className="text-[10px] font-bold text-blue-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
  </label>
- <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer">
+ <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
  <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
  <button className="text-[10px] font-bold text-blue-600 hover:text-orange-800 underline">Cấu hình Mẫu tin</button>
@@ -4210,7 +4194,7 @@ export function SettingsPage() {
 
  {activeTab === 'popup' && (
  <div className="animate-in fade-in duration-300 space-y-6">
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <Send className="w-4 h-4 text-blue-600" /> Trung tâm Gửi thông báo (Push Notification)
  </h3>
@@ -4223,7 +4207,7 @@ export function SettingsPage() {
  placeholder="VD: Thông báo bảo trì hệ thống" 
  value={notiTitle}
  onChange={(e) => setNotiTitle(e.target.value)}
- className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
 
@@ -4234,13 +4218,13 @@ export function SettingsPage() {
  placeholder="Chi tiết thông báo..." 
  value={notiMessage}
  onChange={(e) => setNotiMessage(e.target.value)}
- className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
+ className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
  />
  </div>
 
  <div>
  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
- <select className="w-full p-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
+ <select className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
  <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
  <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
  <option value="customer">Tất cả Khách hàng (Storefront App)</option>
@@ -4272,7 +4256,7 @@ export function SettingsPage() {
  </div>
  </div>
 
- <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+ <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
  <AppWindow className="w-4 h-4 text-blue-600" /> Quản lý Popup Website
  </h3>
@@ -4300,7 +4284,7 @@ export function SettingsPage() {
  placeholder="VD: Khuyến Mãi Hè 2024" 
  value={popupTitle}
  onChange={(e) => setPopupTitle(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
@@ -4310,7 +4294,7 @@ export function SettingsPage() {
  value={popupDesc}
  rows={2}
  onChange={(e) => setPopupDesc(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
  />
  </div>
  <div>
@@ -4320,7 +4304,7 @@ export function SettingsPage() {
  placeholder="https://example.com/banner.jpg" 
  value={popupImage}
  onChange={(e) => setPopupImage(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  <div>
@@ -4331,22 +4315,22 @@ export function SettingsPage() {
  placeholder="Tên nút (VD: Xem ngay)" 
  value={popupCtaText}
  onChange={(e) => setPopupCtaText(e.target.value)}
- className="w-1/3 p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-1/3 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  <input 
  type="text" 
  placeholder="Link (URL)" 
  value={popupCtaLink}
  onChange={(e) => setPopupCtaLink(e.target.value)}
- className="flex-1 p-2 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="flex-1 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
  />
  </div>
  </div>
  </div>
  
- <div className="bg-slate-50 border border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] relative">
+ <div className="bg-slate-50 border border-slate-300 rounded-lg p-4 flex flex-col items-center justify-center min-h-[200px] relative">
  <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Xem trước</div>
- <div className="w-full max-w-[240px] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
+ <div className="w-full max-w-[240px] bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mt-4">
  {popupImage ? (
  <div className="h-24 overflow-hidden relative">
  <img src={popupImage} alt="Popup Banner Preview" className="w-full h-full object-cover" />
@@ -4384,20 +4368,20 @@ export function SettingsPage() {
 
      {activeTab === 'inventory' && (
     <div className="animate-in fade-in duration-300 space-y-6">
-      <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+      <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 flex items-center gap-2">
           <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
         </h3>
         <p className="text-sm text-slate-600 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
             <div className="flex justify-between items-center mb-4">
               <h4 className="font-bold text-slate-900">Danh mục Nhóm Hàng hóa</h4>
               <button className="text-xs text-blue-600 font-bold hover:underline">+ Thêm nhóm</button>
             </div>
             <div className="space-y-2">
               {['Nguyên vật liệu (Raw Materials)', 'Thành phẩm (Finished Goods)', 'Bán thành phẩm (WIP)', 'Hàng hóa thương mại (Trading Goods)'].map((type, i) => (
-                <div key={i} className="flex justify-between items-center bg-white p-3 border border-slate-200 rounded-2xl">
+                <div key={i} className="flex justify-between items-center bg-white p-3 border border-slate-200 rounded-lg">
                   <span className="text-sm font-medium">{type}</span>
                   <button className="text-slate-500 hover:text-slate-700"><Edit2 className="w-4 h-4" /></button>
                 </div>
@@ -4405,14 +4389,14 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
             <h4 className="font-bold text-slate-950 mb-4">Phương pháp Quản lý Kho</h4>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100/50">
+              <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
                 <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" defaultChecked />
                 <span className="text-sm font-medium">Bình quan gia quyền (Weighted Average)</span>
               </label>
-              <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100/50">
+              <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
                 <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium">Nhập trước xuất trước (FIFO)</span>
               </label>
@@ -4442,7 +4426,7 @@ export function SettingsPage() {
 							Doanh nghiệp của bạn đang vận hành trên cụm máy chủ đám mây chuyên dụng với hiệu năng tối đa, không giới hạn quyền năng quản trị.
 						</p>
 					</div>
-					<div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col items-center shrink-0 w-full md:w-auto text-center">
+					<div className="bg-white/10 backdrop-blur-md rounded-lg p-5 border border-white/10 flex flex-col items-center shrink-0 w-full md:w-auto text-center">
 						<span className="text-[10px] text-slate-300 uppercase tracking-widest font-semibold">Chu kỳ thanh toán tiếp theo</span>
 						<span className="text-2xl font-black text-amber-300 mt-1">20 / 06 / 2026</span>
 						<span className="text-[11px] text-slate-400 mt-1">Số tiền: 15,000,000đ / Năm (Trực động)</span>
@@ -4453,7 +4437,7 @@ export function SettingsPage() {
 			{/* Grid của hạn mức và Cụm Tenants */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Cột Trái: Hạn mức Hệ thống (SaaS Quotas) */}
-				<div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+				<div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-6">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2">
 							<CreditCard className="w-5 h-5 text-blue-600" /> Hạn mức Tài nguyên SaaS (Resource Quotas)
@@ -4468,7 +4452,7 @@ export function SettingsPage() {
 							{ title: 'Danh mục Sản phẩm (PIM)', current: 842, max: 5000, unit: 'Sản phẩm lưu trữ', percent: 16.8, color: 'from-emerald-500 to-teal-600' },
 							{ title: 'Dung lượng đám mây (Storage)', current: 1.2, max: 50, unit: 'GB lưu trữ media', percent: 2.4, color: 'from-amber-500 to-orange-600' }
 						].map((quota, idx) => (
-							<div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+							<div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
 								<div className="flex justify-between items-start mb-2">
 									<span className="text-xs font-bold text-slate-800 uppercase tracking-tight">{quota.title}</span>
 									<span className="text-[11px] font-mono text-slate-500">
@@ -4489,7 +4473,7 @@ export function SettingsPage() {
 						))}
 					</div>
 
-					<div className="p-4 bg-blue-50 border border-blue-150 rounded-2xl flex items-start gap-3">
+					<div className="p-4 bg-blue-50 border border-blue-150 rounded-lg flex items-start gap-3">
 						<AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
 						<div className="text-xs leading-relaxed text-blue-800">
 							<span className="font-bold">Mở rộng hạn mức linh hoạt:</span> Hệ thống SaaS được thiết kế để mở rộng tài nguyên tự động. Khi chạm ngưỡng 90% dung lượng hoặc giới hạn, quản trị viên có thể bấm đề xuất mua thêm gói lẻ hoặc đăng ký nâng thêm gói Enterprise Plus trực tiếp để tránh gián đoạn dịch vụ.
@@ -4498,7 +4482,7 @@ export function SettingsPage() {
 				</div>
 
 				{/* Cột Phải: Cấu hình Tenant & Cloud Node */}
-				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+				<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-6">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2">
 							<Database className="w-5 h-5 text-indigo-600" /> Hệ thống Tenant & Nodes
@@ -4507,7 +4491,7 @@ export function SettingsPage() {
 					</div>
 
 					<div className="space-y-4">
-						<div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+						<div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
 							<div className="flex justify-between items-center text-xs">
 								<span className="text-slate-500">Mã định danh Tenant ID</span>
 								<span className="font-mono font-bold text-slate-800">tenant-vcomm-prod-01</span>
@@ -4528,7 +4512,7 @@ export function SettingsPage() {
 							</div>
 						</div>
 
-						<div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+						<div className="border border-slate-200 rounded-lg p-4 space-y-3">
 							<span className="text-xs font-bold text-slate-800 uppercase tracking-widest block font-mono">Sao lưu Đám mây (Cloud Backups)</span>
 							
 							<div className="space-y-2">
@@ -4536,7 +4520,7 @@ export function SettingsPage() {
 								<select 
 									value={backupCloud} 
 									onChange={e => setBackupCloud(e.target.value as any)}
-									className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+									className="w-full p-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
 								>
 									<option value="gdrive">Google Drive</option>
 									<option value="dropbox">Dropbox</option>
@@ -4550,7 +4534,7 @@ export function SettingsPage() {
 									<select 
 										value={backupFrequency} 
 										onChange={e => setBackupFrequency(e.target.value as any)}
-										className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full p-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
 									>
 										<option value="daily">Hàng ngày</option>
 										<option value="weekly">Hàng tuần</option>
@@ -4562,7 +4546,7 @@ export function SettingsPage() {
 									<select 
 										value={backupHour} 
 										onChange={e => setBackupHour(e.target.value)}
-										className="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full p-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
 									>
 										<option value="00:00">00:00 AM</option>
 										<option value="02:00">02:00 AM</option>
@@ -4591,14 +4575,14 @@ export function SettingsPage() {
 										}, 1500);
 									}}
 									disabled={isRunningBackup}
-									className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer disabled:opacity-50"
+									className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs cursor-pointer disabled:opacity-50"
 								>
 									{isRunningBackup ? 'Đang sao lưu...' : 'Sao lưu ngay'}
 								</button>
 								<button 
 									type="button"
 									onClick={() => alert('Đang tải bản sao lưu cấu hình hệ thống và CSDL hiện tại...')} 
-									className="py-2 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-800 text-xs font-bold rounded-xl transition duration-150 shadow-xs cursor-pointer"
+									className="py-2 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-800 text-xs font-bold rounded-lg transition duration-150 shadow-xs cursor-pointer"
 								>
 									<Download className="w-3.5 h-3.5" />
 								</button>
@@ -4609,7 +4593,7 @@ export function SettingsPage() {
 			</div>
 
 			{/* Gói dịch vụ so sánh (Subscription Plans Simulator) */}
-			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6">
+			<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-6">
 				<div>
 					<h4 className="font-bold text-slate-900 flex items-center gap-2">
 						<Sparkles className="w-5 h-5 text-amber-500" /> Các gói dịch vụ SaaS Toàn Diện (SaaS Pricing Matrix)
@@ -4756,7 +4740,7 @@ export function SettingsPage() {
 
 							{/* Button CTA with micro interactions */}
 							<button 
-								className={`w-full mt-8 py-3 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-sm cursor-pointer ${
+								className={`w-full mt-8 py-3 rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-sm cursor-pointer ${
 									plan.active 
 										? 'bg-emerald-500/10 text-emerald-700 border border-dashed border-emerald-300 hover:bg-emerald-500/15 cursor-default' 
 										: plan.highlight
@@ -4791,7 +4775,7 @@ export function SettingsPage() {
 			{/* Lịch sử hoá đơn & và Custom Domains đại lý */}
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				{/* Danh sách hoá đơn */}
-				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
+				<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-4">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2">
 							<FileText className="w-5 h-5 text-indigo-600" /> Bản kê Hoá đơn Thuê bao SaaS
@@ -4799,7 +4783,7 @@ export function SettingsPage() {
 						<p className="text-xs text-slate-500 mt-0.5">Lịch sử thanh toán định kỳ cho tài nguyên SaaS và giấy phép sử dụng.</p>
 					</div>
 
-					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
+					<div className="overflow-x-auto border border-slate-200 rounded-lg">
 						<table className="w-full text-left text-xs border-collapse whitespace-nowrap">
 							<thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
 								<tr>
@@ -4836,7 +4820,7 @@ export function SettingsPage() {
 				</div>
 
 				{/* DNS Custom Domain For Tenants */}
-				<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
+				<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-4">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2">
 							<Globe className="w-5 h-5 text-indigo-600" /> Tên miền đại lý & Cài đặt DNS
@@ -4844,12 +4828,12 @@ export function SettingsPage() {
 						<p className="text-xs text-slate-500 mt-0.5">Trỏ tên miền thương hiệu riêng của doanh nghiệp về trung tâm phân phối SaaS.</p>
 					</div>
 
-					<div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+					<div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
 						<div className="text-xs font-semibold text-slate-700 uppercase tracking-wider font-mono">Hướng dẫn cấu hình DNS:</div>
 						<p className="text-xs text-slate-650 leading-relaxed">
 							Tại trang quản trị nhà đăng ký tên miền của bạn (Mắt Bão, Pavietnam, Cloudflare, v.v.), hãy cấu hình bản ghi sau để kích hoạt SSL tự động:
 						</p>
-						<div className="bg-white border border-slate-200 rounded-xl p-3 text-xs font-mono space-y-1">
+						<div className="bg-white border border-slate-200 rounded-lg p-3 text-xs font-mono space-y-1">
 							<div><span className="text-slate-400">Loại bản ghi (Type):</span> <span className="font-bold text-blue-600">CNAME</span></div>
 							<div><span className="text-slate-400">Tên (Name / Host):</span> <span className="font-bold text-slate-800">erp</span> hoặc <span className="font-bold text-slate-800">@</span></div>
 							<div><span className="text-slate-400">Giá trị (Points to):</span> <span className="font-bold text-emerald-600 font-semibold">saas.vcommerp.com</span></div>
@@ -4867,7 +4851,7 @@ export function SettingsPage() {
 			</div>
 
 						{/* Phân tích An ninh AI (AI Security Monitor) */}
-			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-6 mb-6">
+			<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-6 mb-6">
 				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-100 pb-4">
 					<div className="space-y-1">
 						<h4 className="font-bold text-slate-900 flex items-center gap-2 text-base">
@@ -4879,7 +4863,7 @@ export function SettingsPage() {
 						type="button"
 						onClick={runAiSecurityScan}
 						disabled={isScanningAiLogs}
-						className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-xs transition duration-150"
+						className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg flex items-center gap-2 cursor-pointer shadow-xs transition duration-150"
 					>
 						{isScanningAiLogs ? (
 							<>
@@ -4904,8 +4888,8 @@ export function SettingsPage() {
 				) : (
 					<div className="space-y-4 animate-in fade-in duration-300">
 						{/* Cảnh báo Nguy hại (Critical Alert) */}
-						<div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-4 shadow-2xs">
-							<div className="p-2 bg-rose-100 text-rose-700 rounded-xl shrink-0">
+						<div className="p-4 bg-rose-50 border border-rose-200 rounded-lg flex items-start gap-4 shadow-2xs">
+							<div className="p-2 bg-rose-100 text-rose-700 rounded-lg shrink-0">
 								<AlertCircle className="w-5 h-5" />
 							</div>
 							<div className="space-y-2 flex-1 min-w-0">
@@ -4918,7 +4902,7 @@ export function SettingsPage() {
 								<p className="text-xs font-semibold text-slate-800 leading-relaxed">
 									Thay đổi quyền hạn vai trò đột ngột: Tài khoản nhân viên <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">nv_nhan@vcomm.vn</code> được nâng cấp lên nhóm vai trò <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">Siêu quản trị (Super Admin)</code> bởi IP lạ <code className="font-mono text-slate-700">113.161.42.99</code>.
 								</p>
-								<div className="bg-white/80 p-3 rounded-xl border border-rose-150/50 space-y-1.5">
+								<div className="bg-white/80 p-3 rounded-lg border border-rose-150/50 space-y-1.5">
 									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
 										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
 									</span>
@@ -4932,8 +4916,8 @@ export function SettingsPage() {
 						</div>
 
 						{/* Cảnh báo Rủi ro (Warning Alert) */}
-						<div className="p-4 bg-amber-50 border border-amber-250 rounded-2xl flex items-start gap-4 shadow-2xs">
-							<div className="p-2 bg-amber-100 text-amber-700 rounded-xl shrink-0">
+						<div className="p-4 bg-amber-50 border border-amber-250 rounded-lg flex items-start gap-4 shadow-2xs">
+							<div className="p-2 bg-amber-100 text-amber-700 rounded-lg shrink-0">
 								<AlertCircle className="w-5 h-5" />
 							</div>
 							<div className="space-y-2 flex-1 min-w-0">
@@ -4946,7 +4930,7 @@ export function SettingsPage() {
 								<p className="text-xs font-semibold text-slate-805 leading-relaxed">
 									Tải xuống dữ liệu CRM dung lượng lớn: Tài khoản kế toán <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-amber-700 border border-amber-100">acc_accountant@vcomm.vn</code> tải xuống danh sách 1,200 khách hàng VIP (CRM) từ địa chỉ IP nước ngoài <code className="font-mono text-slate-700">198.51.100.4</code> (Unknown Cloud Provider).
 								</p>
-								<div className="bg-white/80 p-3 rounded-xl border border-amber-150/50 space-y-1.5">
+								<div className="bg-white/80 p-3 rounded-lg border border-amber-150/50 space-y-1.5">
 									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
 										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
 									</span>
@@ -4962,7 +4946,7 @@ export function SettingsPage() {
 			</div>
 
 {/* GIAI ĐOẠN 2: Lịch sử Giám sát Đăng nhập Admin (Admin Audit Logs Container) */}
-			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-xs space-y-4">
+			<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-4">
 				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2 text-base">
@@ -4983,11 +4967,11 @@ export function SettingsPage() {
 						Đang truy xuất nhật ký truy cập...
 					</div>
 				) : adminAuditLogs.length === 0 ? (
-					<div className="py-6 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-xs leading-relaxed">
+					<div className="py-6 border-2 border-dashed border-slate-200 rounded-lg text-center text-slate-400 text-xs leading-relaxed">
 						Chưa ghi nhận sự kiện truy cập hành động nào của tài khoản Admin tại tenant này.
 					</div>
 				) : (
-					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
+					<div className="overflow-x-auto border border-slate-200 rounded-lg">
 						<table className="w-full text-left text-xs border-collapse min-w-[700px]">
 							<thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
 								<tr>
@@ -5056,7 +5040,7 @@ export function SettingsPage() {
 	{activeTab === 'chart_of_accounts' && (
 		<div className="animate-in fade-in duration-300 space-y-6">
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+				<div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
 					<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-4">
 						<div>
 							<h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
@@ -5070,7 +5054,7 @@ export function SettingsPage() {
 								onClick={() => {
 									alert('Excel Template: Tải xuống file excel mẫu COA_Schema_Template.xlsx thành công.');
 								}}
-								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-lg border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
 							>
 								<Download className="w-3.5 h-3.5" />
 								<span>File mẫu</span>
@@ -5086,7 +5070,7 @@ export function SettingsPage() {
 										addNotification('Import COA', 'Nhập thành công tài khoản chi tiết 11212 từ Excel template!');
 									}
 								}}
-								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-lg border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
 							>
 								<Upload className="w-3.5 h-3.5" />
 								<span>Import Excel</span>
@@ -5103,7 +5087,7 @@ export function SettingsPage() {
 									a.click();
 									addNotification('Export COA', 'Xuất danh mục tài khoản thành công!');
 								}}
-								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-xl border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
+								className="px-3 py-2 bg-slate-50 hover:bg-slate-105 text-slate-705 text-xs font-bold rounded-lg border border-slate-250 flex items-center gap-1.5 cursor-pointer transition border-0"
 							>
 								<Download className="w-3.5 h-3.5" />
 								<span>Export</span>
@@ -5111,7 +5095,7 @@ export function SettingsPage() {
 						</div>
 					</div>
 
-					<div className="overflow-x-auto border border-slate-200 rounded-2xl">
+					<div className="overflow-x-auto border border-slate-200 rounded-lg">
 						<table className="w-full text-left text-xs border-collapse min-w-[600px]">
 							<thead className="bg-slate-50 text-slate-650 font-bold border-b border-slate-200">
 								<tr>
@@ -5181,7 +5165,7 @@ export function SettingsPage() {
 
 				<div className="space-y-6">
 					{/* Card thêm mới tài khoản */}
-					<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+					<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
 						<div>
 							<h4 className="font-bold text-slate-900 flex items-center gap-2">
 								<Plus className="w-5 h-5 text-indigo-650" /> Thêm tài khoản mới
@@ -5190,7 +5174,7 @@ export function SettingsPage() {
 						</div>
 
 						{coaError && (
-							<div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 leading-relaxed font-semibold">
+							<div className="p-3.5 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 leading-relaxed font-semibold">
 								⚠️ {coaError}
 							</div>
 						)}
@@ -5203,7 +5187,7 @@ export function SettingsPage() {
 									value={newCoa.code} 
 									onChange={e => setNewCoa(prev => ({ ...prev, code: e.target.value }))}
 									placeholder="Ví dụ: 11211, 11115"
-									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 								/>
 							</div>
 
@@ -5214,7 +5198,7 @@ export function SettingsPage() {
 									value={newCoa.name} 
 									onChange={e => setNewCoa(prev => ({ ...prev, name: e.target.value }))}
 									placeholder="Ví dụ: Tiền VNĐ tại Techcombank"
-									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 								/>
 							</div>
 
@@ -5224,7 +5208,7 @@ export function SettingsPage() {
 									<select 
 										value={newCoa.type} 
 										onChange={e => setNewCoa(prev => ({ ...prev, type: e.target.value as any }))}
-										className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold"
+										className="w-full p-2.5 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold"
 									>
 										<option value="Asset">Tài sản</option>
 										<option value="Liability">Nợ phải trả</option>
@@ -5238,7 +5222,7 @@ export function SettingsPage() {
 									<select 
 										value={newCoa.parentCode || ''} 
 										onChange={e => setNewCoa(prev => ({ ...prev, parentCode: e.target.value }))}
-										className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+										className="w-full p-2.5 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 									>
 										<option value="">Không có</option>
 										{coaList.filter(c => !c.parentCode).map(c => (
@@ -5251,7 +5235,7 @@ export function SettingsPage() {
 							<button 
 								type="button"
 								onClick={handleCreateCoa}
-								className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition cursor-pointer border-0"
+								className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition cursor-pointer border-0"
 							>
 								Lưu tài khoản
 							</button>
@@ -5259,7 +5243,7 @@ export function SettingsPage() {
 					</div>
 
 					{/* Card ánh xạ tài khoản thuế */}
-					<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-4">
+					<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
 						<div>
 							<h4 className="font-bold text-slate-900 flex items-center gap-2">
 								<Settings className="w-5 h-5 text-indigo-650" /> Ánh xạ tài khoản thuế
@@ -5273,7 +5257,7 @@ export function SettingsPage() {
 								<select 
 									value={taxMappings.inputTaxAccount} 
 									onChange={e => setTaxMappings(prev => ({ ...prev, inputTaxAccount: e.target.value }))}
-									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 								>
 									{coaList.filter(c => c.isLeaf && c.code.startsWith('133')).map(c => (
 										<option key={c.code} value={c.code}>{c.code} - {c.name}</option>
@@ -5286,7 +5270,7 @@ export function SettingsPage() {
 								<select 
 									value={taxMappings.outputTaxAccount} 
 									onChange={e => setTaxMappings(prev => ({ ...prev, outputTaxAccount: e.target.value }))}
-									className="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 								>
 									{coaList.filter(c => c.isLeaf && c.code.startsWith('333')).map(c => (
 										<option key={c.code} value={c.code}>{c.code} - {c.name}</option>
@@ -5302,7 +5286,7 @@ export function SettingsPage() {
 
 	{activeTab === 'workflow_rules' && (
 		<div className="animate-in fade-in duration-300 space-y-6">
-			<div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm space-y-6">
+			<div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
 				<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-4">
 					<div>
 						<h3 className="font-bold text-slate-900 flex items-center gap-2 text-base">
@@ -5313,7 +5297,7 @@ export function SettingsPage() {
 					<button 
 						type="button"
 						onClick={() => setShowAddWorkflowModal(true)}
-						className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition border-0 animate-in fade-in"
+						className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs transition border-0 animate-in fade-in"
 					>
 						<Plus className="w-4 h-4" />
 						<span>Tạo quy trình mới</span>
@@ -5322,7 +5306,7 @@ export function SettingsPage() {
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{workflowRules.map((rule) => (
-						<div key={rule.id} className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between min-h-[200px] ${
+						<div key={rule.id} className={`p-5 rounded-lg border transition-all duration-300 flex flex-col justify-between min-h-[200px] ${
 							rule.isActive ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-50/50 border-slate-200 opacity-70'
 						}`}>
 							<div className="space-y-4">
@@ -5391,7 +5375,7 @@ export function SettingsPage() {
 			{/* Modal thêm Workflow Rule */}
 			{showAddWorkflowModal && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-					<div className="bg-white w-full max-w-md rounded-2xl shadow-sm border border-slate-300 overflow-hidden animate-in zoom-in-95 duration-200">
+					<div className="bg-white w-full max-w-md rounded-lg shadow-sm border border-slate-300 overflow-hidden animate-in zoom-in-95 duration-200">
 						<div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/50">
 							<div className="flex items-center gap-3">
 								<Zap className="w-5 h-5 text-amber-500 fill-amber-100" />
@@ -5410,7 +5394,7 @@ export function SettingsPage() {
 									value={newWorkflow.name} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, name: e.target.value }))}
 									placeholder="Ví dụ: Gửi SMS khi sản phẩm hết hàng"
-									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-250 rounded-lg text-xs focus:ring-2 focus:ring-blue-500/20"
 								/>
 							</div>
 
@@ -5419,7 +5403,7 @@ export function SettingsPage() {
 								<select 
 									value={newWorkflow.trigger} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, trigger: e.target.value }))}
-									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-250 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
 								>
 									<option value="order_created">Đơn hàng mới tạo (Order Created)</option>
 									<option value="stock_low">Sản phẩm hết hàng (Stock Low)</option>
@@ -5432,7 +5416,7 @@ export function SettingsPage() {
 								<select 
 									value={newWorkflow.condition} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, condition: e.target.value }))}
-									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-250 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
 								>
 									<option value="total_amount > 20000000">Giá trị đơn hàng &gt; 20,000,000đ</option>
 									<option value="inventory_qty < 10">Số lượng tồn kho dưới &lt; 10 sản phẩm</option>
@@ -5445,7 +5429,7 @@ export function SettingsPage() {
 								<select 
 									value={newWorkflow.action} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, action: e.target.value }))}
-									className="w-full p-2.5 border border-slate-250 rounded-xl text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
+									className="w-full p-2.5 border border-slate-250 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500/20"
 								>
 									<option value="send_zalo_zns">Gửi tin Zalo ZNS cho Khách hàng</option>
 									<option value="send_push_admin">Gửi thông báo Push đến Admin</option>
@@ -5481,258 +5465,219 @@ export function SettingsPage() {
   </div>
 
   {showAddJobTitleModal && (
- <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-xl shadow-sm w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
- <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h3 className="font-bold text-slate-900">{editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}</h3>
- <button 
- onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
- className="text-slate-500 hover:text-slate-700 font-bold text-lg leading-none"
- >
- &times;
- </button>
- </div>
- <div className="p-4 overflow-y-auto flex-1 space-y-4">
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
- <input 
- type="text" 
- value={newJobTitle.name || ''} 
- onChange={e => setNewJobTitle({...newJobTitle, name: e.target.value})}
- className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
- placeholder="VD: Trưởng phòng Marketing"
- />
- </div>
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
- <select 
- value={newJobTitle.department || ''} 
- onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
- className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
- >
- <option value="">Chọn phòng ban</option>
- {MOCK_DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
- </select>
- </div>
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Cấp bậc</label>
- <select 
- value={newJobTitle.rank || ''} 
- onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
- className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm"
- >
- <option value="">Chọn cấp bậc</option>
- {MOCK_JOB_RANKS.map(r => <option key={r.id} value={r.id}>{r.name} (Level {r.level})</option>)}
- </select>
- </div>
- <div>
- <label className="block text-sm font-bold text-slate-800 mb-1">Mô tả công việc</label>
- <textarea 
- value={newJobTitle.description || ''} 
- onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
- className="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-sm min-h-[100px]"
- placeholder="Mô tả ngắn gọn chức năng, nhiệm vụ..."
- />
- </div>
- </div>
- <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
- <button 
- onClick={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
- className="px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-100"
- >
- Hủy
- </button>
- <button 
- onClick={handleSaveJobTitle}
- disabled={!newJobTitle.name || !newJobTitle.department}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 disabled:opacity-50"
- >
- Lưu Chức danh
- </button>
- </div>
- </div>
- </div>
- )}
+    <Modal
+      isOpen={showAddJobTitleModal}
+      onClose={() => { setShowAddJobTitleModal(false); setEditingJobTitle(null); }}
+      title={editingJobTitle ? 'Chỉnh sửa Chức danh' : 'Thêm Chức danh mới'}
+      maxWidth="lg"
+      onConfirm={handleSaveJobTitle}
+      confirmText="Lưu Chức danh"
+      confirmDisabled={!newJobTitle.name || !newJobTitle.department}
+      confirmButtonClass="bg-blue-600 hover:bg-slate-800 text-white"
+    >
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
+          <input 
+            type="text" 
+            value={newJobTitle.name || ''} 
+            onChange={e => setNewJobTitle({...newJobTitle, name: e.target.value})}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 text-sm"
+            placeholder="VD: Trưởng phòng Marketing"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
+          <select 
+            value={newJobTitle.department || ''} 
+            onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 text-sm"
+          >
+            <option value="">Chọn phòng ban</option>
+            {MOCK_DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">Cấp bậc</label>
+          <select 
+            value={newJobTitle.rank || ''} 
+            onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 text-sm"
+          >
+            <option value="">Chọn cấp bậc</option>
+            {MOCK_JOB_RANKS.map(r => <option key={r.id} value={r.id}>{r.name} (Level {r.level})</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">Mô tả công việc</label>
+          <textarea 
+            value={newJobTitle.description || ''} 
+            onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 text-sm min-h-[100px]"
+            placeholder="Mô tả ngắn gọn chức năng, nhiệm vụ..."
+          />
+        </div>
+      </div>
+    </Modal>
+  )}
 
- {/* Fee Management Modal */}
- {showFeeModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
- <div className="bg-white w-full max-w-lg rounded-2xl shadow-sm border border-slate-300 overflow-hidden animate-in zoom-in-95 slide-in- duration-300">
- <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/50">
- <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center">
- <BadgeDollarSign className="w-6 h-6" />
- </div>
- <div>
- <h3 className="text-lg font-bold text-slate-900">{editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}</h3>
- <p className="text-xs text-slate-600">Thiết lập tham số và phạm vi áp dụng phí</p>
- </div>
- </div>
- <button onClick={() => setShowFeeModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
- <X className="w-5 h-5 text-slate-500" />
- </button>
- </div>
+  {/* Fee Management Modal */}
+  {showFeeModal && (
+    <Modal
+      title={editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}
+      icon={<BadgeDollarSign className="w-5 h-5 text-blue-600" />}
+      isOpen={showFeeModal}
+      maxWidth="lg"
+      onClose={() => setShowFeeModal(false)}
+      onConfirm={() => {
+        if (editingFee) {
+          setSystemFees(systemFees.map(f => f.id === editingFee.id ? { ...newFee as SystemFee, id: f.id } : f));
+          logAction('Settings.Fees', 'UPDATE', `Cập nhật loại phí: ${newFee.name}`);
+        } else {
+          setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
+          logAction('Settings.Fees', 'CREATE', `Thêm mới loại phí: ${newFee.name}`);
+        }
+        setShowFeeModal(false);
+        addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
+      }}
+      confirmText={editingFee ? 'Cập nhật' : 'Xác nhận Thêm'}
+    >
+      <div className="space-y-6">
+        {/* Fee Name */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tên loại phí</label>
+          <input 
+            type="text" 
+            value={newFee.name || ''}
+            onChange={(e) => setNewFee({ ...newFee, name: e.target.value })}
+            placeholder="VD: Phí vận hành kho, Phí thanh toán..."
+            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-slate-900 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+          />
+        </div>
 
- <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
- {/* Fee Name */}
- <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tên loại phí</label>
- <input 
- type="text" 
- value={newFee.name || ''}
- onChange={(e) => setNewFee({ ...newFee, name: e.target.value })}
- placeholder="VD: Phí vận hành kho, Phí thanh toán..."
- className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
- />
- </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loại phí</label>
+            <div className="flex bg-slate-100 p-1 rounded-lg">
+              <button 
+                onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
+                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'percentage' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+              >
+                Phần trăm (%)
+              </button>
+              <button 
+                onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
+                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'fixed' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+              >
+                Cố định (đ)
+              </button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Giá trị</label>
+            <div className="relative">
+              <input 
+                type="number" 
+                value={newFee.value || ''}
+                onChange={(e) => setNewFee({ ...newFee, value: parseFloat(e.target.value) })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-sm font-bold focus:border-slate-900 outline-none"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">
+                {newFee.type === 'percentage' ? '%' : 'đ'}
+              </span>
+            </div>
+          </div>
+        </div>
 
- <div className="grid grid-cols-2 gap-4">
- <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loại phí</label>
- <div className="flex bg-slate-100 p-1 rounded-xl">
- <button 
- onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'percentage' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- Phần trăm (%)
- </button>
- <button 
- onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", newFee.type === 'fixed' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- Cố định (đ)
- </button>
- </div>
- </div>
- <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Giá trị</label>
- <div className="relative">
- <input 
- type="number" 
- value={newFee.value || ''}
- onChange={(e) => setNewFee({ ...newFee, value: parseFloat(e.target.value) })}
- className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:border-slate-900 outline-none"
- />
- <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">
- {newFee.type === 'percentage' ? '%' : 'đ'}
- </span>
- </div>
- </div>
- </div>
+        {/* Targeting: Seller Type */}
+        <div className="space-y-3">
+          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
+          <div className="flex gap-4">
+            {['mall', 'normal'].map((type) => {
+              const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
+              return (
+                <div 
+                  key={type}
+                  onClick={() => {
+                    const current = newFee.applyTo?.sellerTypes || [];
+                    const next = isSelected ? current.filter(t => t !== type) : [...current, type as any];
+                    setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, sellerTypes: next } });
+                  }}
+                  className={cn(
+                    "flex-1 p-3 rounded-lg border-2 cursor-pointer transition-all flex items-center gap-3",
+                    isSelected ? "border-slate-900 bg-slate-100/50" : "border-slate-300 bg-white hover:border-slate-400"
+                  )}
+                >
+                  <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-slate-900 bg-slate-900" : "border-slate-400")}>
+                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className={cn("text-xs font-bold", isSelected ? "text-orange-800" : "text-slate-700")}>
+                    {type === 'mall' ? 'Shop Mall' : 'Seller thường'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
- {/* Targeting: Seller Type */}
- <div className="space-y-3">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
- <div className="flex gap-4">
- {['mall', 'normal'].map((type) => {
- const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
- return (
- <div 
- key={type}
- onClick={() => {
- const current = newFee.applyTo?.sellerTypes || [];
- const next = isSelected ? current.filter(t => t !== type) : [...current, type as any];
- setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, sellerTypes: next } });
- }}
- className={cn(
- "flex-1 p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3",
- isSelected ? "border-slate-900 bg-slate-100/50" : "border-slate-300 bg-white hover:border-slate-400"
- )}
- >
- <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-slate-900 bg-slate-900" : "border-slate-400")}>
- {isSelected && <Check className="w-3 h-3 text-white" />}
- </div>
- <span className={cn("text-xs font-bold", isSelected ? "text-orange-800" : "text-slate-700")}>
- {type === 'mall' ? 'Shop Mall' : 'Seller thường'}
- </span>
- </div>
- );
- })}
- </div>
- </div>
+        {/* Targeting: Categories */}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
+            <button 
+              onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
+              className="text-[10px] font-bold text-blue-600 hover:underline"
+            >
+              Tất cả ngành
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categoryFees.map(cat => {
+              const isAll = newFee.applyTo?.categories.includes('all');
+              const isSelected = isAll || newFee.applyTo?.categories.includes(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  disabled={isAll && newFee.applyTo?.categories.length === 1}
+                  onClick={() => {
+                    let next;
+                    if (isAll) {
+                      next = [cat.id];
+                    } else {
+                      const current = newFee.applyTo?.categories || [];
+                      next = isSelected ? current.filter(id => id !== cat.id) : [...current, cat.id];
+                      if (next.length === 0) next = ['all'];
+                    }
+                    setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: next } });
+                  }}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
+                    isSelected ? "bg-primary-600 border-primary-600 text-white shadow-sm" : "bg-white border-slate-300 text-slate-600 hover:border-slate-400"
+                  )}
+                >
+                  {cat.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
- {/* Targeting: Categories */}
- <div className="space-y-3">
- <div className="flex justify-between items-center">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
- <button 
- onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
- className="text-[10px] font-bold text-blue-600 hover:underline"
- >
- Tất cả ngành
- </button>
- </div>
- <div className="flex flex-wrap gap-2">
- {categoryFees.map(cat => {
- const isAll = newFee.applyTo?.categories.includes('all');
- const isSelected = isAll || newFee.applyTo?.categories.includes(cat.id);
- return (
- <button
- key={cat.id}
- disabled={isAll && newFee.applyTo?.categories.length === 1}
- onClick={() => {
- let next: string[];
- if (isAll) {
- next = [cat.id];
- } else {
- const current = newFee.applyTo?.categories || [];
- next = isSelected ? current.filter(id => id !== cat.id) : [...current, cat.id];
- if (next.length === 0) next = ['all'];
- }
- setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: next } });
- }}
- className={cn(
- "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
- isSelected ? "bg-primary-600 border-primary-600 text-white shadow-sm" : "bg-white border-slate-300 text-slate-600 hover:border-slate-400"
- )}
- >
- {cat.name}
- </button>
- );
- })}
- </div>
- </div>
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
+          <textarea 
+            rows={2}
+            value={newFee.description || ''}
+            onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
+            placeholder="Ghi chú về ý nghĩa loại phí này..."
+            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-slate-900 outline-none resize-none"
+          />
+        </div>
+      </div>
+    </Modal>
+  )}
 
- {/* Description */}
- <div className="space-y-2">
- <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
- <textarea 
- rows={2}
- value={newFee.description || ''}
- onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
- placeholder="Ghi chú về ý nghĩa loại phí này..."
- className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-slate-900 outline-none resize-none"
- />
- </div>
- </div>
-
- <div className="p-6 bg-slate-50 border-t border-slate-200 flex gap-3">
- <button 
- onClick={() => setShowFeeModal(false)}
- className="flex-1 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all"
- >
- Hủy bỏ
- </button>
- <button 
- onClick={() => {
- if (editingFee) {
- setSystemFees(systemFees.map(f => f.id === editingFee.id ? { ...newFee as SystemFee, id: f.id } : f));
- } else {
- setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
- }
- setShowFeeModal(false);
- addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
- }}
- className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
- >
- {editingFee ? 'Cập nhật' : 'Xác nhận Thêm'}
- </button>
- </div>
- </div>
- </div>
- )}
-
- {/* Page Editor Modal */}
+  {/* Page Editor Modal */}
  {editingPageUrl && (
    <PageEditorModal
      url={editingPageUrl.url}
@@ -5967,7 +5912,7 @@ function IPosLicensesPanel() {
   return (
     <div className="animate-in fade-in duration-350 space-y-6">
       {/* Top Header Card */}
-      <div className="bg-white border border-slate-300 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+      <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
             <Tablet className="w-5 h-5 text-blue-600" />
@@ -5979,14 +5924,14 @@ function IPosLicensesPanel() {
         </div>
         <button
           onClick={handleOpenAddModal}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border-0"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border-0"
         >
           <Plus className="w-4 h-4" /> Cấp bản quyền mới
         </button>
       </div>
 
       {/* Table Card */}
-      <div className="bg-white border border-slate-300 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden">
         {/* Search Bar */}
         <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center gap-3">
           <div className="relative flex-1 max-w-md">
@@ -5995,13 +5940,13 @@ function IPosLicensesPanel() {
               placeholder="Tìm theo tên chi nhánh, tên miền hoặc token..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-xs pl-9 pr-4 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none transition-all placeholder:text-slate-400 bg-white"
+              className="w-full text-xs pl-9 pr-4 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none transition-all placeholder:text-slate-400 bg-white"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           </div>
           <button
             onClick={fetchLicenses}
-            className="p-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
+            className="p-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
             title="Làm mới"
           >
             <RefreshCw className="w-4 h-4" />
@@ -6118,7 +6063,7 @@ function IPosLicensesPanel() {
       </div>
 
       {/* iPOS Accounts Approvals Section */}
-      <div className="bg-white border border-slate-300 rounded-2xl shadow-sm overflow-hidden mt-6">
+      <div className="bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden mt-6">
         <div className="p-5 border-b border-slate-200 bg-slate-50">
           <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
             <Users className="w-5 h-5 text-blue-600" />
@@ -6133,7 +6078,7 @@ function IPosLicensesPanel() {
           <span className="text-xs font-bold text-slate-600">Tài khoản trên hệ thống</span>
           <button
             onClick={fetchAccounts}
-            className="p-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
+            className="p-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition-all cursor-pointer bg-white"
             title="Làm mới tài khoản"
           >
             <RefreshCw className="w-4 h-4" />
@@ -6228,7 +6173,7 @@ function IPosLicensesPanel() {
       {/* Add / Edit License Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] animate-in fade-in duration-200 p-4">
-          <div className="bg-white border border-slate-300 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white border border-slate-300 rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
@@ -6252,7 +6197,7 @@ function IPosLicensesPanel() {
                   type="text"
                   value={formStoreName}
                   onChange={(e) => setFormStoreName(e.target.value)}
-                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none"
                   placeholder="Ví dụ: VComm Retail - Chi nhánh Hà Nội"
                 />
               </div>
@@ -6263,7 +6208,7 @@ function IPosLicensesPanel() {
                 <select
                   value={formLicenseType}
                   onChange={(e) => setFormLicenseType(e.target.value)}
-                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none bg-white"
                 >
                   <option value="SaaS Standard">SaaS Standard (Giới hạn máy)</option>
                   <option value="SaaS Premium">SaaS Premium (Đầy đủ tính năng)</option>
@@ -6278,7 +6223,7 @@ function IPosLicensesPanel() {
                     type="text"
                     value={formCustomDomain}
                     onChange={(e) => setFormCustomDomain(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                    className="w-full text-xs font-semibold text-slate-800 pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none"
                     placeholder="Ví dụ: pos.hanoi.brand.vn"
                   />
                   <Globe className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -6295,14 +6240,14 @@ function IPosLicensesPanel() {
                       type="text"
                       value={formApiToken}
                       onChange={(e) => setFormApiToken(e.target.value)}
-                      className="w-full text-xs text-slate-800 font-mono pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                      className="w-full text-xs text-slate-800 font-mono pl-8 pr-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none"
                       placeholder="vcomm_live_ipos_key_..."
                     />
                     <Key className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   </div>
                   <button
                     onClick={() => setFormApiToken(generateToken())}
-                    className="px-3 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-white"
+                    className="px-3 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer bg-white"
                   >
                     Tạo khóa
                   </button>
@@ -6319,7 +6264,7 @@ function IPosLicensesPanel() {
                     max={50}
                     value={formMaxRegisters}
                     onChange={(e) => setFormMaxRegisters(Number(e.target.value))}
-                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none"
+                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -6328,7 +6273,7 @@ function IPosLicensesPanel() {
                     type="date"
                     value={formExpiresAt}
                     onChange={(e) => setFormExpiresAt(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                    className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none bg-white"
                   />
                 </div>
               </div>
@@ -6339,7 +6284,7 @@ function IPosLicensesPanel() {
                 <select
                   value={formStatus}
                   onChange={(e) => setFormStatus(e.target.value)}
-                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-xl outline-none bg-white"
+                  className="w-full text-xs font-semibold text-slate-800 px-3 py-2 border border-slate-300 focus:border-blue-500 rounded-lg outline-none bg-white"
                 >
                   <option value="Hoạt động">Hoạt động (Active)</option>
                   <option value="Tạm dừng">Tạm dừng (Suspended)</option>
@@ -6352,13 +6297,13 @@ function IPosLicensesPanel() {
             <div className="p-5 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white"
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-all cursor-pointer bg-white"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSaveLicense}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer border-0"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer border-0"
               >
                 Lưu lại
               </button>

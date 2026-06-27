@@ -225,13 +225,13 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
             <textarea 
               value={desc} 
               onChange={(e) => setDesc(e.target.value)}
-              className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] placeholder-slate-400 resize-none h-24"
+              className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3 focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] placeholder-slate-400 resize-none h-24"
               placeholder="Mô tả nội dung chi tiết công việc..."
             />
           </div>
 
           {/* Quick Properties Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs">
             
             {/* Assignee Selection */}
             <div className="space-y-1.5">
@@ -332,7 +332,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
           </div>
 
           {/* Interactive Progress Slider */}
-          <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div className="space-y-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div className="flex justify-between items-center text-xs">
               <span className="font-extrabold text-slate-500 uppercase tracking-wider">Tiến độ thực hiện</span>
               <span className="text-sm font-black text-blue-600 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{progress}%</span>
@@ -447,7 +447,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
             {comments.length > 0 ? (
               <div className="space-y-4">
                 {comments.map(comm => (
-                  <div key={comm.id} className="flex gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200/60 relative group/comm animate-in fade-in">
+                  <div key={comm.id} className="flex gap-3 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200/60 relative group/comm animate-in fade-in">
                     <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center font-bold text-slate-600">
                       {comm.author.substring(0, 2).toUpperCase()}
                     </div>

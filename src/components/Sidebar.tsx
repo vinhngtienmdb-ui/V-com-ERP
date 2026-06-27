@@ -70,6 +70,10 @@ export function Sidebar() {
           const deniedPaths = ['/finance', '/settlement', '/seller-finance', '/signature', '/org'];
           return !deniedPaths.includes(item.path);
         }
+        if (role === 'seller') {
+          const allowedPaths = ['/', '/dashboard', '/orders', '/pim', '/seller-finance', '/flash-sale', '/logistics'];
+          return allowedPaths.includes(item.path);
+        }
         return false;
       });
 

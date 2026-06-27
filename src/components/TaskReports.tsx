@@ -101,7 +101,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
     <div className="space-y-6 font-sans">
       
       {/* Top Filter Bar */}
-      <div className="bg-white rounded-xl border border-slate-300 p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between text-xs">
+      <div className="bg-white rounded-lg border border-slate-300 p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between text-xs">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-1.5 font-bold">
             <Filter className="w-4 h-4 text-slate-400" />
@@ -147,43 +147,43 @@ export function TaskReports({ tasks }: TaskReportsProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
         
         {/* Metric 1 */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng số công việc</p>
             <p className="text-3xl font-black text-slate-900">{totalCount}</p>
             <p className="text-[10.5px] text-slate-500 font-medium font-sans">Đang theo sát vận hành</p>
           </div>
-          <div className="p-3 bg-slate-100 text-slate-600 rounded-xl">
+          <div className="p-3 bg-slate-100 text-slate-600 rounded-lg">
             <BarChart2 className="w-5 h-5" />
           </div>
         </div>
 
         {/* Metric 2 */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tỷ lệ hoàn thành</p>
             <p className="text-3xl font-black text-emerald-600">{completionRate}%</p>
             <p className="text-[10.5px] text-emerald-500 font-medium">Đồ thị tiến trình tổng quan</p>
           </div>
-          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
             <CheckCircle className="w-5 h-5" />
           </div>
         </div>
 
         {/* Metric 3 */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tiến độ trung bình</p>
             <p className="text-3xl font-black text-indigo-600">{avgProgress}%</p>
             <p className="text-[10.5px] text-indigo-500 font-medium">Độ hoàn thiện trung bình</p>
           </div>
-          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
             <TrendingUp className="w-5 h-5 animate-pulse" />
           </div>
         </div>
 
         {/* Metric 4 */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
             <p className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Công việc quá hạn</p>
             <p className={cn("text-3xl font-black", overdueCount > 0 ? "text-rose-600 animate-pulse" : "text-slate-900")}>
@@ -191,7 +191,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
             </p>
             <p className="text-[10.5px] text-slate-500 font-medium">Cần đôn đốc kiểm điểm</p>
           </div>
-          <div className={cn("p-3 rounded-xl", overdueCount > 0 ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-slate-600")}>
+          <div className={cn("p-3 rounded-lg", overdueCount > 0 ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-slate-600")}>
             <AlertTriangle className="w-5 h-5" />
           </div>
         </div>
@@ -202,7 +202,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Chart 1: Tasks by Department */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm space-y-4">
           <div>
             <h4 className="text-sm font-bold text-slate-900">Tiến độ công việc theo Phòng Ban</h4>
             <p className="text-xs text-slate-500 font-medium mt-0.5">So sánh số lượng đã hoàn tất và việc đang giải quyết tại các bộ phận.</p>
@@ -223,7 +223,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         </div>
 
         {/* Chart 2: Task Status Ratio */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm space-y-4">
           <div>
             <h4 className="text-sm font-bold text-slate-900">Phân bố Trạng thái Công việc</h4>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Cơ cấu trạng thái giúp phân tích điểm nghẽn của quy trình sản xuất.</p>
@@ -276,7 +276,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Tasks by Scope (Company Wide) Bar Chart */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4 lg:col-span-2">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm space-y-4 lg:col-span-2">
           <div>
             <h4 className="text-sm font-bold text-slate-900">Số lượng Công việc theo dải Cấp độ (Scope)</h4>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Khối lượng việc phân chia theo Cá nhân, Nhóm, Phòng ban và Công ty.</p>
@@ -297,7 +297,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         </div>
 
         {/* Priority Stats List View */}
-        <div className="bg-white p-5 rounded-xl border border-slate-300 shadow-sm space-y-4">
+        <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm space-y-4">
           <div>
             <h4 className="text-sm font-bold text-slate-900">Mức độ ưu tiên</h4>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Sự phân tách mức khẩn cấp tại phễu lọc hiện tại.</p>
