@@ -7,9 +7,6 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { GoogleGenAI } from '@google/genai';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, limit, query, where, updateDoc, doc, getDoc } from 'firebase/firestore';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
@@ -18,33 +15,7 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
 const supabaseClient = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
-// Initialize Firestore from firebase-applet-config.json
-const firebaseConfigPath = path.join(process.cwd(), 'firebase-applet-config.json');
 let db: any = null;
-
-try {
-  if (fs.existsSync(firebaseConfigPath)) {
-    const firebaseConfig = JSON.parse(fs.readFileSync(firebaseConfigPath, 'utf-8'));
-    const app = initializeApp(firebaseConfig);
-    const dbId = firebaseConfig.firestoreDatabaseId || 'ai-studio-1e3b12e5-a3ed-4efd-9a51-f5e787287778';
-    db = getFirestore(app, dbId);
-    console.log('[Firebase] Firestore initialized successfully with dbId:', dbId);
-
-    // Auto-login to Firebase Auth to resolve Permission Denied in Firestore rules
-    const auth = getAuth(app);
-    signInWithEmailAndPassword(auth, 'admin@v-erp.com', 'admin@1234')
-      .then(() => {
-        console.log('[Firebase] Authenticated successfully as admin@v-erp.com');
-      })
-      .catch((err) => {
-        console.error('[Firebase] Auto-authentication failed:', err.message);
-      });
-  } else {
-    console.error('[Firebase] Config file not found at:', firebaseConfigPath);
-  }
-} catch (error) {
-  console.error('[Firebase] Failed to initialize Firestore:', error);
-}
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('vi-VN', {
@@ -1944,19 +1915,23 @@ Format:
     }
     const token = authHeader.substring(7);
 
-    // Check Firestore tenants collection first
+    // Check Supabase ipos_stores table first
     let fsTenant: any = null;
-    if (db) {
+    if (supabaseClient) {
       try {
-        const tenantsRef = collection(db, 'tenants');
-        const qTenants = query(tenantsRef, where('apiToken', '==', token), where('status', '==', 'active'));
-        const tenantSnap = await getDocs(qTenants);
-        if (!tenantSnap.empty) {
-          fsTenant = tenantSnap.docs[0].data();
-          fsTenant.id = tenantSnap.docs[0].id;
+        const { data: storeRow, error: storeErr } = await supabaseClient
+          .from('ipos_stores')
+          .select('*')
+          .eq('data->>apiToken', token)
+          .eq('data->>statusLabel', 'Hoạt động')
+          .maybeSingle();
+        
+        if (!storeErr && storeRow) {
+          fsTenant = storeRow.data || {};
+          fsTenant.id = storeRow.id;
         }
       } catch (err) {
-        console.error('[OpenAPI] Failed to query Firestore tenants:', err);
+        console.error('[OpenAPI] Failed to query Supabase ipos_stores:', err);
       }
     }
 
@@ -3697,8 +3672,15 @@ ${summaryText}`;
         ipAddress: req.ip || '127.0.0.1',
         tenantId: 'tenant-vcomm-prod-01'
       };
-      if (db) {
-        await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      if (supabaseClient) {
+        await supabaseClient
+          .from('admin_audit_logs')
+          .insert({
+            id: crypto.randomUUID(),
+            tenant_id: 'tenant-vcomm-prod-01',
+            data: auditPayload,
+            updated_at: new Date().toISOString()
+          });
       }
 
       res.json({ status: 'success', message: 'Kích hoạt 2FA thành công!' });
@@ -3762,8 +3744,15 @@ ${summaryText}`;
         ipAddress: req.ip || '127.0.0.1',
         tenantId: 'tenant-vcomm-prod-01'
       };
-      if (db) {
-        await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      if (supabaseClient) {
+        await supabaseClient
+          .from('admin_audit_logs')
+          .insert({
+            id: crypto.randomUUID(),
+            tenant_id: 'tenant-vcomm-prod-01',
+            data: auditPayload,
+            updated_at: new Date().toISOString()
+          });
       }
 
       res.json({ status: 'success', message: 'Đã vô hiệu hóa 2FA.' });
