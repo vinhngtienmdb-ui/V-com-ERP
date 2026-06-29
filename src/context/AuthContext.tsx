@@ -10,6 +10,10 @@ interface AuthContextType {
  staffInfo: any | null;
  login: (username: string, password: string) => Promise<void>;
  signOut: () => Promise<void>;
+ isMfaRequired: boolean;
+ mfaUserEmail: string;
+ verifyMfaCode: (code: string) => Promise<void>;
+ cancelMfa: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,6 +76,9 @@ const logAdminAudit = async (
  const [isStaff, setIsStaff] = useState(false);
  const [isAdmin, setIsAdmin] = useState(false);
  const [staffInfo, setStaffInfo] = useState<any | null>(null);
+ const [isMfaRequired, setIsMfaRequired] = useState(false);
+ const [mfaUserEmail, setMfaUserEmail] = useState('');
+ const [mfaVerified, setMfaVerified] = useState(false);
 
  useEffect(() => {
  // Aggressive fallback to prevent loading screen hang
@@ -84,6 +91,29 @@ const logAdminAudit = async (
 
  const unsubscribe = onAuthStateChanged(auth, async (user) => {
   setUser(user);
+  if (user) {
+    let twoFactorEnabled = false;
+    try {
+      const staffDoc = await getDoc(doc(db, 'staff', user.uid));
+      if (staffDoc.exists()) {
+        twoFactorEnabled = !!staffDoc.data().twoFactorEnabled;
+      }
+    } catch (err) {
+      console.warn("Could not check 2FA status from Firestore:", err);
+    }
+
+    if (twoFactorEnabled) {
+      setIsMfaRequired(true);
+      setMfaUserEmail(user.email || '');
+      // Keep mfaVerified false so user is hidden until OTP is validated
+    } else {
+      setIsMfaRequired(false);
+      setMfaVerified(true);
+    }
+  } else {
+    setIsMfaRequired(false);
+    setMfaVerified(false);
+  }
   if (user) {
   try {
     // 1. Fetch role from user_roles in Supabase
@@ -252,6 +282,32 @@ const logAdminAudit = async (
     }
   };
  
+  const verifyMfaCode = async (code: string) => {
+    if (!user) throw new Error('Không tìm thấy phiên đăng nhập.');
+    try {
+      const res = await fetch('/api/mfa/verify-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: user.uid, code })
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        setMfaVerified(true);
+        setIsMfaRequired(false);
+      } else {
+        throw new Error(data.message || 'Mã xác thực không chính xác.');
+      }
+    } catch (err: any) {
+      throw new Error(err.message || 'Lỗi kết nối tới máy chủ xác thực.');
+    }
+  };
+
+  const cancelMfa = () => {
+    setIsMfaRequired(false);
+    setMfaVerified(false);
+    signOut();
+  };
+
   const signOut = async () => {
   const currentUser = auth.currentUser;
   if (currentUser) {
@@ -261,11 +317,34 @@ const logAdminAudit = async (
       logAdminAudit(currentUser.email || 'admin', 'Logout', 'Success', currentUser.uid, tenantId).catch(err => { console.error("Logout failed in background:", err); });
     }
   }
-  try { await logout(); } catch (e) { console.error("Logout failed:", e); }
+  try { 
+    await logout(); 
+    setIsMfaRequired(false);
+    setMfaVerified(false);
+  } catch (e) { 
+    console.error("Logout failed:", e); 
+  }
   };
 
+  const activeUser = (isMfaRequired && !mfaVerified) ? null : user;
+  const activeIsStaff = (isMfaRequired && !mfaVerified) ? false : isStaff;
+  const activeIsAdmin = (isMfaRequired && !mfaVerified) ? false : isAdmin;
+  const activeStaffInfo = (isMfaRequired && !mfaVerified) ? null : staffInfo;
+
  return (
- <AuthContext.Provider value={{ user, loading, isStaff, isAdmin, staffInfo, login, signOut }}>
+ <AuthContext.Provider value={{ 
+   user: activeUser, 
+   loading, 
+   isStaff: activeIsStaff, 
+   isAdmin: activeIsAdmin, 
+   staffInfo: activeStaffInfo, 
+   login, 
+   signOut,
+   isMfaRequired,
+   mfaUserEmail,
+   verifyMfaCode,
+   cancelMfa
+ }}>
  {children}
  </AuthContext.Provider>
  );

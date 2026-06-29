@@ -21,13 +21,119 @@ import { useNotifications } from '../context/NotificationContext';
 import { cn } from '../lib/utils';
 
 export function UserProfile() {
- const { staffInfo } = useAuth();
+ const { staffInfo, user } = useAuth();
  const { theme, setTheme, language, setLanguage } = usePreferences();
  const { addNotification } = useNotifications();
  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'appearance'>('profile');
  const [isSaving, setIsSaving] = useState(false);
  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
  const [showNewPassword, setShowNewPassword] = useState(false);
+
+ const [isMfaEnabled, setIsMfaEnabled] = useState(false);
+ const [isSettingUpMfa, setIsSettingUpMfa] = useState(false);
+ const [isDisablingMfa, setIsDisablingMfa] = useState(false);
+ const [mfaSecret, setMfaSecret] = useState('');
+ const [mfaQrUrl, setMfaQrUrl] = useState('');
+ const [otpCode, setOtpCode] = useState('');
+ const [mfaError, setMfaError] = useState<string | null>(null);
+ const [mfaLoading, setMfaLoading] = useState(false);
+
+ React.useEffect(() => {
+   if (staffInfo) {
+     setIsMfaEnabled(!!staffInfo.twoFactorEnabled);
+   }
+ }, [staffInfo]);
+
+ const handleStartMfaSetup = async () => {
+   setMfaLoading(true);
+   setMfaError(null);
+   try {
+     const res = await fetch('/api/mfa/setup', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ email: user?.email || staffInfo?.email || 'admin@v-erp.com' })
+     });
+     const data = await res.json();
+     if (res.ok && data.status === 'success') {
+       setMfaSecret(data.secret);
+       setMfaQrUrl(`https://quickchart.io/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(data.otpauthUrl)}`);
+       setIsSettingUpMfa(true);
+     } else {
+       throw new Error(data.message || 'Không thể tạo khóa bí mật 2FA.');
+     }
+   } catch (err: any) {
+     setMfaError(err.message || 'Lỗi kết nối tới máy chủ.');
+   } finally {
+     setMfaLoading(false);
+   }
+ };
+
+ const handleConfirmMfaEnable = async () => {
+   if (!otpCode || otpCode.length !== 6) {
+     setMfaError('Vui lòng nhập mã OTP gồm 6 chữ số.');
+     return;
+   }
+   setMfaLoading(true);
+   setMfaError(null);
+   try {
+     const res = await fetch('/api/mfa/verify-and-enable', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({
+         uid: user?.uid,
+         secret: mfaSecret,
+         code: otpCode,
+         email: user?.email || staffInfo?.email
+       })
+     });
+     const data = await res.json();
+     if (res.ok && data.status === 'success') {
+       setIsMfaEnabled(true);
+       setIsSettingUpMfa(false);
+       setOtpCode('');
+       alert('Kích hoạt xác thực 2 lớp (2FA) thành công!');
+     } else {
+       throw new Error(data.message || 'Mã xác thực không chính xác.');
+     }
+   } catch (err: any) {
+     setMfaError(err.message || 'Lỗi kích hoạt 2FA.');
+   } finally {
+     setMfaLoading(false);
+   }
+ };
+
+ const handleDisableMfa = async () => {
+   if (!otpCode || otpCode.length !== 6) {
+     setMfaError('Vui lòng nhập mã OTP gồm 6 chữ số để xác minh tắt 2FA.');
+     return;
+   }
+   setMfaLoading(true);
+   setMfaError(null);
+   try {
+     const res = await fetch('/api/mfa/disable', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({
+         uid: user?.uid,
+         code: otpCode,
+         email: user?.email || staffInfo?.email
+       })
+     });
+     const data = await res.json();
+     if (res.ok && data.status === 'success') {
+       setIsMfaEnabled(false);
+       setIsDisablingMfa(false);
+       setOtpCode('');
+       alert('Đã vô hiệu hóa xác thực 2 lớp (2FA).');
+     } else {
+       throw new Error(data.message || 'Mã xác thực không chính xác.');
+     }
+   } catch (err: any) {
+     setMfaError(err.message || 'Lỗi vô hiệu hóa 2FA.');
+   } finally {
+     setMfaLoading(false);
+   }
+ };
 
  const tabs = [
  { id: 'profile', label: 'Thông tin cá nhân', icon: User },
@@ -213,23 +319,153 @@ export function UserProfile() {
  </div>
  </div>
 
- <div className="pt-8 border-t border-slate-200">
- <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
- <Shield className="w-5 h-5 text-orange-600" /> Bảo mật hai lớp (2FA)
- </h3>
- <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
- <div className="space-y-1">
- <p className="text-sm font-bold text-slate-900">Xác thực Google Authenticator</p>
- <p className="text-xs text-slate-600">Tăng cường bảo mật bằng cách yêu cầu mã xác thực khi đăng nhập.</p>
- </div>
- <div className="flex items-center gap-3">
- <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">Chưa kích hoạt</span>
- <div className="w-12 h-6 bg-slate-200 rounded-full relative cursor-pointer group">
- <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all" />
- </div>
- </div>
- </div>
- </div>
+  <div className="pt-8 border-t border-slate-200">
+    <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+      <Shield className="w-5 h-5 text-orange-600" /> Bảo mật hai lớp (2FA)
+    </h3>
+    
+    {isSettingUpMfa ? (
+      <div className="p-5 bg-slate-50 rounded-lg border border-slate-200 space-y-6">
+        <div className="space-y-2">
+          <h4 className="font-bold text-slate-900 text-sm">Thiết lập Google/Microsoft Authenticator</h4>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            1. Quét mã QR dưới đây bằng ứng dụng Authenticator của bạn (hoặc nhập khóa bí mật thủ công).
+          </p>
+        </div>
+        
+        <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-slate-200 max-w-sm mx-auto">
+          {mfaQrUrl ? (
+            <img src={mfaQrUrl} alt="MFA QR Code" className="w-48 h-48 object-contain" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-48 h-48 bg-slate-100 flex items-center justify-center text-xs text-slate-500">Đang tải QR...</div>
+          )}
+          <div className="mt-3 text-center w-full">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Khóa bí mật (Thủ công)</span>
+            <code className="text-xs font-mono font-bold bg-slate-100 px-2.5 py-1.5 rounded block mt-1 select-all">{mfaSecret}</code>
+          </div>
+        </div>
+
+        <div className="space-y-3 max-w-xs mx-auto">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">2. Nhập mã OTP 6 số để xác nhận</label>
+            <input 
+              type="text" 
+              maxLength={6}
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+              placeholder="000000"
+              className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-center font-mono font-bold tracking-[0.3em] text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900"
+            />
+          </div>
+
+          {mfaError && (
+            <p className="text-xs font-bold text-red-600 text-center">{mfaError}</p>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleConfirmMfaEnable}
+              disabled={mfaLoading || otpCode.length !== 6}
+              className="flex-1 bg-slate-900 text-[#FAF9F5] py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all disabled:opacity-50"
+            >
+              {mfaLoading ? 'Đang kích hoạt...' : 'Kích hoạt'}
+            </button>
+            <button
+              onClick={() => {
+                setIsSettingUpMfa(false);
+                setOtpCode('');
+                setMfaError(null);
+              }}
+              className="flex-1 bg-white border border-slate-300 text-slate-700 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all"
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : isDisablingMfa ? (
+      <div className="p-5 bg-slate-50 rounded-lg border border-slate-200 space-y-4 max-w-md">
+        <h4 className="font-bold text-slate-900 text-sm">Vô hiệu hóa Bảo mật 2FA</h4>
+        <p className="text-xs text-slate-600 leading-relaxed">
+          Vui lòng nhập mã OTP hiện tại từ ứng dụng Authenticator của bạn để xác minh việc vô hiệu hóa bảo mật hai lớp.
+        </p>
+
+        <div className="space-y-3 max-w-xs">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Mã OTP 6 số</label>
+            <input 
+              type="text" 
+              maxLength={6}
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+              placeholder="000000"
+              className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-center font-mono font-bold tracking-[0.3em] text-sm focus:outline-none"
+            />
+          </div>
+
+          {mfaError && (
+            <p className="text-xs font-bold text-red-600">{mfaError}</p>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleDisableMfa}
+              disabled={mfaLoading || otpCode.length !== 6}
+              className="flex-1 bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700 transition-all disabled:opacity-50"
+            >
+              {mfaLoading ? 'Đang xử lý...' : 'Xác nhận tắt'}
+            </button>
+            <button
+              onClick={() => {
+                setIsDisablingMfa(false);
+                setOtpCode('');
+                setMfaError(null);
+              }}
+              className="flex-1 bg-white border border-slate-300 text-slate-700 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all"
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+        <div className="space-y-1">
+          <p className="text-sm font-bold text-slate-900">Xác thực Google Authenticator</p>
+          <p className="text-xs text-slate-600">Yêu cầu mã số OTP xác minh từ thiết bị của bạn khi thực hiện đăng nhập.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {isMfaEnabled ? (
+            <>
+              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">Đang hoạt động</span>
+              <button 
+                onClick={() => {
+                  setIsDisablingMfa(true);
+                  setOtpCode('');
+                  setMfaError(null);
+                }}
+                disabled={mfaLoading}
+                className="bg-white border border-red-300 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-50 transition-all disabled:opacity-50"
+              >
+                Vô hiệu hóa
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">Chưa kích hoạt</span>
+              <button 
+                onClick={handleStartMfaSetup}
+                disabled={mfaLoading}
+                className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all disabled:opacity-50"
+              >
+                {mfaLoading ? 'Đang tải...' : 'Thiết lập'}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
  </div>
  )}
 

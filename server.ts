@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import { GoogleGenAI } from '@google/genai';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, limit, query, where, updateDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, limit, query, where, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { createClient } from '@supabase/supabase-js';
 
@@ -3556,6 +3556,214 @@ ${summaryText}`;
         items,
         message: `Đồng bộ thành công! Đã nạp giỏ hàng trực tuyến O2O của khách: ${phone}.`
       });
+    } catch (err: any) {
+      res.status(500).json({ status: 'error', message: err.message });
+    }
+  });
+
+  // -----------------------------------------------------------------------------
+  // Multi-Factor Authentication (2FA) TOTP Helpers & Endpoints
+  // -----------------------------------------------------------------------------
+  function generateBase32Secret(length = 16): string {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    let secret = '';
+    const randomBytes = crypto.randomBytes(length);
+    for (let i = 0; i < length; i++) {
+      secret += alphabet[randomBytes[i] % alphabet.length];
+    }
+    return secret;
+  }
+
+  function base32Decode(base32: string): Buffer {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    let bits = '';
+    const cleaned = base32.toUpperCase().replace(/=+$/, '');
+    for (let i = 0; i < cleaned.length; i++) {
+      const val = alphabet.indexOf(cleaned[i]);
+      if (val === -1) throw new Error('Invalid base32 character: ' + cleaned[i]);
+      bits += val.toString(2).padStart(5, '0');
+    }
+    const bytes = [];
+    for (let i = 0; i + 8 <= bits.length; i += 8) {
+      bytes.push(parseInt(bits.substring(i, i + 8), 2));
+    }
+    return Buffer.from(bytes);
+  }
+
+  function generateTOTP(secret: string, window = 0): string {
+    try {
+      const key = base32Decode(secret);
+      const epoch = Math.floor(Date.now() / 1000);
+      const time = Math.floor(epoch / 30) + window;
+      
+      const buffer = Buffer.alloc(8);
+      let tmp = time;
+      for (let i = 7; i >= 0; i--) {
+        buffer[i] = tmp & 0xff;
+        tmp = Math.floor(tmp / 256);
+      }
+      
+      const hmac = crypto.createHmac('sha1', key).update(buffer).digest();
+      const offset = hmac[hmac.length - 1] & 0xf;
+      const code = (
+        ((hmac[offset] & 0x7f) << 24) |
+        ((hmac[offset + 1] & 0xff) << 16) |
+        ((hmac[offset + 2] & 0xff) << 8) |
+        (hmac[offset + 3] & 0xff)
+      ) % 1000000;
+      
+      return code.toString().padStart(6, '0');
+    } catch (e) {
+      console.error('Error generating TOTP:', e);
+      return '';
+    }
+  }
+
+  function verifyTOTP(secret: string, code: string): boolean {
+    const cleanCode = code.trim();
+    if (cleanCode.length !== 6 || isNaN(Number(cleanCode))) return false;
+    for (let i = -1; i <= 1; i++) {
+      if (generateTOTP(secret, i) === cleanCode) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // API Route: Generate 2FA Secret
+  app.post('/api/mfa/setup', async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ status: 'error', message: 'Thiếu email người dùng.' });
+    }
+    try {
+      const secret = generateBase32Secret(16);
+      const issuer = 'VCommERP';
+      const otpauthUrl = `otpauth://totp/${issuer}:${email}?secret=${secret}&issuer=${issuer}`;
+      res.json({
+        status: 'success',
+        secret,
+        otpauthUrl
+      });
+    } catch (err: any) {
+      res.status(500).json({ status: 'error', message: err.message });
+    }
+  });
+
+  // API Route: Verify & Enable 2FA
+  app.post('/api/mfa/verify-and-enable', async (req, res) => {
+    const { uid, secret, code, email } = req.body;
+    if (!uid || !secret || !code) {
+      return res.status(400).json({ status: 'error', message: 'Thiếu tham số thiết lập.' });
+    }
+    try {
+      if (!db) throw new Error('Firestore not initialized');
+      const isValid = verifyTOTP(secret, code);
+      if (!isValid) {
+        return res.status(400).json({ status: 'error', message: 'Mã xác thực không chính xác hoặc đã hết hạn.' });
+      }
+      
+      const staffDocRef = doc(db, 'staff', uid);
+      await updateDoc(staffDocRef, {
+        twoFactorEnabled: true,
+        twoFactorSecret: secret
+      });
+
+      const auditPayload = {
+        email: email || 'User',
+        userId: uid,
+        action: '2FA Enabled',
+        status: 'Success',
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers['user-agent'] || '',
+        browser: 'System',
+        ipAddress: req.ip || '127.0.0.1',
+        tenantId: 'tenant-vcomm-prod-01'
+      };
+      await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+
+      res.json({ status: 'success', message: 'Kích hoạt 2FA thành công!' });
+    } catch (err: any) {
+      console.error('[MFA Enable Error]:', err);
+      res.status(500).json({ status: 'error', message: err.message });
+    }
+  });
+
+  // API Route: Disable 2FA
+  app.post('/api/mfa/disable', async (req, res) => {
+    const { uid, code, email } = req.body;
+    if (!uid || !code) {
+      return res.status(400).json({ status: 'error', message: 'Thiếu tham số vô hiệu hóa.' });
+    }
+    try {
+      if (!db) throw new Error('Firestore not initialized');
+      
+      const staffDocRef = doc(db, 'staff', uid);
+      const staffSnap = await getDoc(staffDocRef);
+      if (!staffSnap.exists()) {
+        return res.status(404).json({ status: 'error', message: 'Không tìm thấy người dùng.' });
+      }
+      const staffData = staffSnap.data();
+      const secret = staffData.twoFactorSecret;
+      if (!secret) {
+        return res.status(400).json({ status: 'error', message: 'Tài khoản chưa được kích hoạt 2FA.' });
+      }
+      
+      const isValid = verifyTOTP(secret, code);
+      if (!isValid) {
+        return res.status(400).json({ status: 'error', message: 'Mã xác thực không chính xác.' });
+      }
+      
+      await updateDoc(staffDocRef, {
+        twoFactorEnabled: false,
+        twoFactorSecret: null
+      });
+
+      const auditPayload = {
+        email: email || staffData.email || 'User',
+        userId: uid,
+        action: '2FA Disabled',
+        status: 'Success',
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers['user-agent'] || '',
+        browser: 'System',
+        ipAddress: req.ip || '127.0.0.1',
+        tenantId: 'tenant-vcomm-prod-01'
+      };
+      await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+
+      res.json({ status: 'success', message: 'Đã vô hiệu hóa 2FA.' });
+    } catch (err: any) {
+      res.status(500).json({ status: 'error', message: err.message });
+    }
+  });
+
+  // API Route: Verify 2FA on Login
+  app.post('/api/mfa/verify-login', async (req, res) => {
+    const { uid, code } = req.body;
+    if (!uid || !code) {
+      return res.status(400).json({ status: 'error', message: 'Thiếu tham số xác thực.' });
+    }
+    try {
+      if (!db) throw new Error('Firestore not initialized');
+      
+      const staffDocRef = doc(db, 'staff', uid);
+      const staffSnap = await getDoc(staffDocRef);
+      if (!staffSnap.exists()) {
+        return res.status(404).json({ status: 'error', message: 'Không tìm thấy thông tin người dùng.' });
+      }
+      const staffData = staffSnap.data();
+      const secret = staffData.twoFactorSecret;
+      if (!secret) {
+        return res.status(400).json({ status: 'error', message: 'Tài khoản chưa được kích hoạt 2FA.' });
+      }
+      
+      const isValid = verifyTOTP(secret, code);
+      if (!isValid) {
+        return res.status(400).json({ status: 'error', message: 'Mã xác thực 2FA không chính xác hoặc đã hết hạn.' });
+      }
+      
+      res.json({ status: 'success', message: 'Xác thực 2FA thành công.' });
     } catch (err: any) {
       res.status(500).json({ status: 'error', message: err.message });
     }
