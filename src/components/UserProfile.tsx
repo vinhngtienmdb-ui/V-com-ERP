@@ -48,19 +48,33 @@ export function UserProfile() {
    setMfaLoading(true);
    setMfaError(null);
    try {
-     const res = await fetch('/api/mfa/setup', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ email: user?.email || staffInfo?.email || 'admin@v-erp.com' })
-     });
-     const data = await res.json();
-     if (res.ok && data.status === 'success') {
-       setMfaSecret(data.secret);
-       setMfaQrUrl(`https://quickchart.io/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(data.otpauthUrl)}`);
-       setIsSettingUpMfa(true);
-     } else {
-       throw new Error(data.message || 'Không thể tạo khóa bí mật 2FA.');
+     let secret = '';
+     let otpauthUrl = '';
+     try {
+       const res = await fetch('/api/mfa/setup', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ email: user?.email || staffInfo?.email || 'admin@v-erp.com' })
+       });
+       const data = await res.json();
+       if (res.ok && data.status === 'success') {
+         secret = data.secret;
+         otpauthUrl = data.otpauthUrl;
+       } else {
+         throw new Error(data.message || 'Không thể tạo khóa bí mật 2FA.');
+       }
+     } catch (fetchErr) {
+       console.warn('API setup failed, falling back to browser generation:', fetchErr);
+       const { generateBase32Secret } = await import('../lib/mfa');
+       secret = generateBase32Secret(16);
+       const email = user?.email || staffInfo?.email || 'admin@vcomm.vn';
+       const issuer = 'VCommERP';
+       otpauthUrl = `otpauth://totp/${issuer}:${email}?secret=${secret}&issuer=${issuer}`;
      }
+
+     setMfaSecret(secret);
+     setMfaQrUrl(`https://quickchart.io/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(otpauthUrl)}`);
+     setIsSettingUpMfa(true);
    } catch (err: any) {
      setMfaError(err.message || 'Lỗi kết nối tới máy chủ.');
    } finally {
@@ -76,24 +90,47 @@ export function UserProfile() {
    setMfaLoading(true);
    setMfaError(null);
    try {
-     const res = await fetch('/api/mfa/verify-and-enable', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({
-         uid: user?.uid,
-         secret: mfaSecret,
-         code: otpCode,
-         email: user?.email || staffInfo?.email
-       })
-     });
-     const data = await res.json();
-     if (res.ok && data.status === 'success') {
+     let success = false;
+     let message = '';
+     try {
+       const res = await fetch('/api/mfa/verify-and-enable', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           uid: user?.uid,
+           secret: mfaSecret,
+           code: otpCode,
+           email: user?.email || staffInfo?.email
+         })
+       });
+       const data = await res.json();
+       if (res.ok && data.status === 'success') {
+         success = true;
+       } else {
+         message = data.message || 'Mã xác thực không chính xác.';
+       }
+     } catch (fetchErr) {
+       console.warn('API enable failed, falling back to client-side verification:', fetchErr);
+       const { clientMfaVerifyAndEnable } = await import('../lib/mfa');
+       if (user?.uid) {
+         const res = await clientMfaVerifyAndEnable(user.uid, mfaSecret, otpCode);
+         if (res.status === 'success') {
+           success = true;
+         } else {
+           message = res.message || 'Mã xác thực không chính xác.';
+         }
+       } else {
+         message = 'Không tìm thấy phiên đăng nhập.';
+       }
+     }
+
+     if (success) {
        setIsMfaEnabled(true);
        setIsSettingUpMfa(false);
        setOtpCode('');
        alert('Kích hoạt xác thực 2 lớp (2FA) thành công!');
      } else {
-       throw new Error(data.message || 'Mã xác thực không chính xác.');
+       throw new Error(message || 'Mã xác thực không chính xác.');
      }
    } catch (err: any) {
      setMfaError(err.message || 'Lỗi kích hoạt 2FA.');
@@ -110,26 +147,49 @@ export function UserProfile() {
    setMfaLoading(true);
    setMfaError(null);
    try {
-     const res = await fetch('/api/mfa/disable', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({
-         uid: user?.uid,
-         code: otpCode,
-         email: user?.email || staffInfo?.email
-       })
-     });
-     const data = await res.json();
-     if (res.ok && data.status === 'success') {
+     let success = false;
+     let message = '';
+     try {
+       const res = await fetch('/api/mfa/disable', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           uid: user?.uid,
+           code: otpCode,
+           email: user?.email || staffInfo?.email
+         })
+       });
+       const data = await res.json();
+       if (res.ok && data.status === 'success') {
+         success = true;
+       } else {
+         message = data.message || 'Mã xác thực không chính xác.';
+       }
+     } catch (fetchErr) {
+       console.warn('API disable failed, falling back to client-side verification:', fetchErr);
+       const { clientMfaDisable } = await import('../lib/mfa');
+       if (user?.uid) {
+         const res = await clientMfaDisable(user.uid, otpCode);
+         if (res.status === 'success') {
+           success = true;
+         } else {
+           message = res.message || 'Mã xác thực không chính xác.';
+         }
+       } else {
+         message = 'Không tìm thấy phiên đăng nhập.';
+       }
+     }
+
+     if (success) {
        setIsMfaEnabled(false);
        setIsDisablingMfa(false);
        setOtpCode('');
-       alert('Đã vô hiệu hóa xác thực 2 lớp (2FA).');
+       alert('Đã tắt xác thực 2 lớp (2FA) thành công.');
      } else {
-       throw new Error(data.message || 'Mã xác thực không chính xác.');
+       throw new Error(message || 'Mã xác thực không chính xác.');
      }
    } catch (err: any) {
-     setMfaError(err.message || 'Lỗi vô hiệu hóa 2FA.');
+     setMfaError(err.message || 'Lỗi tắt 2FA.');
    } finally {
      setMfaLoading(false);
    }
