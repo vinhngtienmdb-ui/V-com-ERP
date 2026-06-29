@@ -34,11 +34,15 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
  });
 
  const [primaryColor, setPrimaryColor] = useState<PrimaryColor>(() => {
- return (safeLocalStorage.getItem('app_primary_color') as PrimaryColor) || 'vcomm';
+  const saved = safeLocalStorage.getItem('app_primary_color');
+  if (!saved || saved === 'indigo') return 'vcomm';
+  return saved as PrimaryColor;
  });
 
  const [borderRadius, setBorderRadius] = useState<BorderRadius>(() => {
- return (safeLocalStorage.getItem('app_border_radius') as BorderRadius) || 'vcomm';
+  const saved = safeLocalStorage.getItem('app_border_radius');
+  if (!saved || saved === 'lg') return 'vcomm';
+  return saved as BorderRadius;
  });
 
  const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => {
