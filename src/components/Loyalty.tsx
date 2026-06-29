@@ -294,7 +294,7 @@ export function LoyaltyManagement() {
                     "px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-2xs cursor-pointer",
                     m.tier === 'Kim cương' 
                       ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed" 
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-primary-600 hover:bg-primary-700 text-white"
                   )}
                 >
                   Thăng hạng 👑

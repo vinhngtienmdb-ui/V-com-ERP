@@ -194,7 +194,7 @@ const EASY_HRM_MODULES: { category: string; items: EasyHrmSubModule[] }[] = [
   {
     category: "Hồ sơ & Biến động",
     items: [
-      { id: "dashboard", name: "Tổng quan (Dashboard)", desc: "Biểu đồ và phân tích thâm niên, thực tập, thử việc.", icon: TrendingUp, color: "text-blue-600 bg-blue-50" },
+      { id: "dashboard", name: "Tổng quan (Dashboard)", desc: "Biểu đồ và phân tích thâm niên, thực tập, thử việc.", icon: TrendingUp, color: "text-primary-600 bg-primary-50" },
       { id: "employees", name: "Hồ sơ nhân viên", desc: "Quản lý chi tiết lý lịch, thông tin cá nhân và liên hệ.", icon: Users, color: "text-indigo-600 bg-indigo-50" },
       { id: "history", name: "Lịch sử hồ sơ nhân viên", desc: "Ghi nhận lịch sử điều chỉnh lương cơ bản, phụ cấp hằng tháng.", icon: ClipboardList, color: "text-emerald-600 bg-emerald-50" },
       { id: "dependents", name: "Quan hệ thân nhân", desc: "Lý lịch gia đình & thông tin giảm trừ gia cảnh thuế TNCN.", icon: Heart, color: "text-rose-600 bg-rose-50" },
@@ -216,7 +216,7 @@ const EASY_HRM_MODULES: { category: string; items: EasyHrmSubModule[] }[] = [
     items: [
       { id: "reports", name: "Báo cáo nhân học", desc: "Xuất dữ liệu thống kê nhân sự đa chiều theo phòng ban.", icon: FileSpreadsheet, color: "text-teal-600 bg-teal-50" },
       { id: "general_config", name: "Thiết lập danh mục hồ sơ", desc: "Metadata chức vụ, chức danh, bằng cấp học vấn.", icon: Settings, color: "text-slate-600 bg-slate-50" },
-      { id: "backups", name: "Lịch sử lưu trữ (Backup)", desc: "Quản lý chốt sổ snapshots dữ liệu nhân sự từng tháng.", icon: Database, color: "text-blue-600 bg-blue-50" },
+      { id: "backups", name: "Lịch sử lưu trữ (Backup)", desc: "Quản lý chốt sổ snapshots dữ liệu nhân sự từng tháng.", icon: Database, color: "text-primary-600 bg-primary-50" },
       { id: "allowance_config", name: "Thiết lập phụ cấp", desc: "Công thức hóa học hỗ trợ kê khai bảo hiểm xã hội.", icon: KeyRound, color: "text-purple-600 bg-purple-50" },
       { id: "salary_scales", name: "Thang bảng lương", desc: "Danh sách thang bảng lương ngạch bậc theo pháp lý.", icon: Landmark, color: "text-indigo-600 bg-indigo-50" },
       { id: "templates", name: "Thiết lập mẫu quyết định", desc: "Quản lý mẫu Word file quyết định với cấu trúc tokens.", icon: FileSpreadsheet, color: "text-amber-600 bg-amber-50" },
@@ -776,10 +776,10 @@ export function EasyHRMComponent() {
                 <div className="bg-white rounded-lg border border-slate-300 shadow-sm p-4 overflow-hidden">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                      <span className="w-2 h-2 rounded-full bg-primary-500"></span>
                       Dữ liệu Nhân sự thực tập (Bảng 1)
                     </h3>
-                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Thực tế</span>
+                    <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">Thực tế</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
@@ -807,7 +807,7 @@ export function EasyHRMComponent() {
                             </td>
                             <td className="p-2 text-slate-600 font-mono">{emp.contractStartDate}</td>
                             <td className="p-2 text-slate-600 font-mono">{emp.contractEndDate}</td>
-                            <td className="p-2"><span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-bold rounded text-[10px]">Cá nhân</span></td>
+                            <td className="p-2"><span className="px-2 py-0.5 bg-primary-50 text-blue-700 font-bold rounded text-[10px]">Cá nhân</span></td>
                           </tr>
                         ))}
                       </tbody>

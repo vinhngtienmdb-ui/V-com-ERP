@@ -110,14 +110,14 @@ export function OmniChat() {
  <div className="w-[320px] border-r border-slate-100 flex flex-col">
  <div className="p-4 border-b border-slate-100">
  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
- <MessageSquare className="w-5 h-5 text-blue-600" /> OmniChat Center
+ <MessageSquare className="w-5 h-5 text-primary-600" /> OmniChat Center
  </h2>
  <div className="relative mt-4">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
  <input 
  type="text" 
  placeholder="Tìm khách hàng..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all"
  />
  </div>
  </div>
@@ -191,7 +191,7 @@ export function OmniChat() {
  )}>
  <div className={cn(
  "w-8 h-8 rounded-full flex items-center justify-center shadow-sm",
- msg.senderId === 'ai' ? "bg-blue-600 text-white" : "bg-blue-600 text-white"
+ msg.senderId === 'ai' ? "bg-primary-600 text-white" : "bg-primary-600 text-white"
  )}>
  {msg.senderId === 'ai' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
  </div>
@@ -203,20 +203,20 @@ export function OmniChat() {
  "p-4 rounded-lg text-sm shadow-sm",
  msg.senderId === 'ai' 
  ? "bg-white text-slate-900 border border-slate-100 rounded-tl-none" 
- : "bg-blue-600 hover:bg-blue-700 text-white rounded-tr-none"
+ : "bg-primary-600 hover:bg-primary-700 text-white rounded-tr-none"
  )}>
  {msg.text}
  </div>
  <div className="flex items-center gap-2 px-1">
  <span className="text-[10px] text-[#9CA3AF] font-medium">{msg.senderName} • {msg.timestamp}</span>
- {msg.senderId === 'user' && <CheckCheck className="w-3 h-3 text-blue-600" />}
+ {msg.senderId === 'user' && <CheckCheck className="w-3 h-3 text-primary-600" />}
  </div>
  </div>
  </div>
  ))}
  {isAiorocessing && (
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center animate-pulse">
+ <div className="w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center animate-pulse">
  <Bot className="w-4 h-4" />
  </div>
  <div className="bg-white border border-slate-100 p-3 rounded-lg rounded-tl-none shadow-sm flex items-center gap-2">
@@ -238,7 +238,7 @@ export function OmniChat() {
  <button 
  key={i}
  onClick={() => setInputValue(reply)}
- className="whitespace-nowrap px-4 py-2 bg-slate-100 text-blue-600 text-[11px] font-bold rounded-full border border-slate-300 hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+ className="whitespace-nowrap px-4 py-2 bg-slate-100 text-primary-600 text-[11px] font-bold rounded-full border border-slate-300 hover:bg-slate-900 hover:text-white transition-all shadow-sm"
  >
  {reply}
  </button>
@@ -256,7 +256,7 @@ export function OmniChat() {
  className="p-3 bg-primary-50 border border-primary-100 text-primary-600 rounded-lg hover:bg-primary-600 hover:text-white transition-all shadow-sm group relative"
  >
  <Sparkles className={cn("w-5 h-5", isAiorocessing && "animate-spin")} />
- <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
+ <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
  </button>
  <div className="flex-1 relative">
  <input 
@@ -265,9 +265,9 @@ export function OmniChat() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all"
+ className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
  />
- <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600  transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
+ <button className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600  transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
  <Send className="w-5 h-5" />
  </button>
  </div>
@@ -293,7 +293,7 @@ export function OmniChat() {
  </div>
  <div className="flex justify-center gap-2">
  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
- <span className="px-3 py-1 bg-slate-100 text-blue-600 rounded-lg text-[10px] font-bold">VIo ỗạng Bạc</span>
+ <span className="px-3 py-1 bg-slate-100 text-primary-600 rounded-lg text-[10px] font-bold">VIo ỗạng Bạc</span>
  </div>
  </div>
 
@@ -323,17 +323,17 @@ export function OmniChat() {
  <span className="text-xs font-bold text-slate-900 font-mono">{order.id}</span>
  <span className={cn(
  "text-[9px] font-bold uppercase",
- order.status === 'shipping' ? "text-blue-600" : "text-emerald-600"
+ order.status === 'shipping' ? "text-primary-600" : "text-emerald-600"
  )}>{order.status}</span>
  </div>
- <p className="text-sm font-bold text-blue-600">{formatCurrency(order.amount)}</p>
+ <p className="text-sm font-bold text-primary-600">{formatCurrency(order.amount)}</p>
  </div>
  ))}
  </div>
  </div>
 
  <div className="bg-slate-100 p-4 rounded-lg space-y-2 border border-slate-300">
- <h4 className="text-[10px] font-bold text-blue-600 uppercase flex items-center gap-2">
+ <h4 className="text-[10px] font-bold text-primary-600 uppercase flex items-center gap-2">
  <Bot className="w-3 h-3" /> AI Summary
  </h4>
  <p className="text-[11px] text-[#4B5563] leading-relaxed">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng thân thiết, thường xuyên tương tác qua Zalo.</p>

@@ -165,12 +165,12 @@ export function SupplierPortal() {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 relative overflow-hidden font-sans">
         {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]" />
 
         <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-lg shadow-2xl p-8 backdrop-blur-xl relative z-10">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
+            <div className="w-16 h-16 bg-primary-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
               <Building2 className="w-8 h-8" />
             </div>
             <h1 className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
@@ -218,7 +218,7 @@ export function SupplierPortal() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
+              className="w-full bg-primary-600 hover:bg-primary-500 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
             >
               <LogIn className="w-4 h-4" /> Đăng nhập hệ thống
             </button>
@@ -240,7 +240,7 @@ export function SupplierPortal() {
       <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center text-blue-500">
+            <div className="w-9 h-9 bg-primary-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center text-blue-500">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -404,7 +404,7 @@ export function SupplierPortal() {
                           <span className={cn(
                             "px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider inline-flex items-center gap-1",
                             dStatus === 'delivered' ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
-                            dStatus === 'shipping' ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" :
+                            dStatus === 'shipping' ? "bg-primary-500/10 text-blue-400 border border-blue-500/20" :
                             dStatus === 'confirmed' ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" :
                             "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                           )}>
@@ -544,7 +544,7 @@ export function SupplierPortal() {
                   <button
                     onClick={() => updatePoDelivery(selectedPo.id, 'shipping')}
                     disabled={updatingStatus !== null}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-blue-600/10"
+                    className="bg-primary-600 hover:bg-primary-500 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-blue-600/10"
                   >
                     {updatingStatus === 'shipping' && <Clock className="w-4 h-4 animate-spin" />}
                     Bắt đầu giao hàng (Xuất kho NCC)

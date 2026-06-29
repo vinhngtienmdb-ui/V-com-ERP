@@ -340,7 +340,7 @@ export function MailClient() {
       {!isConnected ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50 space-y-8 select-none">
           <div className="max-w-md space-y-4">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mx-auto border border-blue-100 shadow-xs">
+            <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-lg flex items-center justify-center mx-auto border border-primary-100 shadow-xs">
               <Mail className="w-8 h-8" />
             </div>
             <div className="space-y-1.5">
@@ -358,7 +358,7 @@ export function MailClient() {
               disabled={isConnecting}
               className="bg-white p-5 rounded-lg border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
             >
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">G</div>
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">G</div>
               <div>
                 <span className="text-xs font-bold text-slate-900 block">Google Workspace</span>
                 <span className="text-[10px] text-slate-450 mt-0.5 block">Kết nối hộp thư Gmail API</span>
@@ -371,7 +371,7 @@ export function MailClient() {
               disabled={isConnecting}
               className="bg-white p-5 rounded-lg border border-slate-250 hover:border-blue-400 hover:shadow-xs transition duration-150 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group"
             >
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">M</div>
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 font-bold text-slate-650 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">M</div>
               <div>
                 <span className="text-xs font-bold text-slate-900 block">Microsoft Outlook 365</span>
                 <span className="text-[10px] text-slate-450 mt-0.5 block">Kết nối tài khoản Microsoft Graph API</span>
@@ -400,7 +400,7 @@ export function MailClient() {
                   setNewMail({ to: '', subject: '', body: '', attachments: [] });
                   setShowComposeModal(true);
                 }}
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition"
+                className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition"
               >
                 <Plus className="w-4 h-4" /> Soạn thư
               </button>
@@ -426,16 +426,16 @@ export function MailClient() {
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition cursor-pointer border-0 bg-transparent text-left",
                         activeFolder === item.id 
-                          ? "bg-slate-200 text-blue-600 font-bold" 
+                          ? "bg-slate-200 text-primary-600 font-bold" 
                           : "text-slate-650 hover:bg-slate-100 hover:text-slate-900"
                       )}
                     >
                       <div className="flex items-center gap-2">
-                        <item.icon className={cn("w-4 h-4", activeFolder === item.id ? "text-blue-600" : "text-slate-450")} />
+                        <item.icon className={cn("w-4 h-4", activeFolder === item.id ? "text-primary-600" : "text-slate-450")} />
                         <span>{item.label}</span>
                       </div>
                       {item.count !== undefined && item.count > 0 && (
-                        <span className="bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded-full text-[9px] shadow-3xs">{item.count}</span>
+                        <span className="bg-blue-100 text-primary-600 font-bold px-2 py-0.5 rounded-full text-[9px] shadow-3xs">{item.count}</span>
                       )}
                     </button>
                   ))}
@@ -497,7 +497,7 @@ export function MailClient() {
                         }}
                         className={cn(
                           "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
-                          accountType === 'google' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                          accountType === 'google' ? "bg-primary-50 border-blue-500 text-primary-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
                         Google Workspace
@@ -510,7 +510,7 @@ export function MailClient() {
                         }}
                         className={cn(
                           "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
-                          accountType === 'microsoft' ? "bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                          accountType === 'microsoft' ? "bg-primary-50 border-blue-500 text-primary-600" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
                         Microsoft 365
@@ -536,7 +536,7 @@ export function MailClient() {
                         onClick={() => setApiMode('live')}
                         className={cn(
                           "flex-1 py-2 rounded-lg text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer",
-                          apiMode === 'live' ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                          apiMode === 'live' ? "bg-primary-600 border-blue-600 text-white" : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
                         )}
                       >
                         Live API
@@ -633,7 +633,7 @@ export function MailClient() {
                         setIsConnected(true);
                         addNotification('Hộp thư', 'Đã kích hoạt kết nối tài khoản thành công.');
                       }}
-                      className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs cursor-pointer border-0"
+                      className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg text-xs cursor-pointer border-0"
                     >
                       Kích hoạt
                     </button>
@@ -687,7 +687,7 @@ export function MailClient() {
                         onClick={() => handleSelectMail(mail.id)}
                         className={cn(
                           "p-3.5 hover:bg-slate-50/70 transition duration-150 cursor-pointer flex flex-col gap-1.5 relative border-l-4",
-                          selectedMailId === mail.id ? "bg-blue-50/30 border-blue-600" : "border-transparent",
+                          selectedMailId === mail.id ? "bg-primary-50/30 border-blue-600" : "border-transparent",
                           !mail.isRead && "font-bold bg-slate-50/30"
                         )}
                       >
@@ -708,7 +708,7 @@ export function MailClient() {
                               </span>
                             )}
                             {!mail.isRead && (
-                              <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                              <span className="w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
                             )}
                           </div>
                           <button 
@@ -829,7 +829,7 @@ export function MailClient() {
             {/* Compose Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
-                <Send className="w-4 h-4 text-blue-600" />
+                <Send className="w-4 h-4 text-primary-600" />
                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Soạn thư mới</h3>
               </div>
               <button 
@@ -1003,7 +1003,7 @@ export function MailClient() {
               </button>
               <button 
                 onClick={handleSendMail}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0 flex items-center gap-1.5"
+                className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0 flex items-center gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Gửi Thư</span>
@@ -1030,7 +1030,7 @@ export function MailClient() {
             
             <div className="p-6 space-y-5">
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 font-serif font-black text-lg">
+                <div className="w-12 h-12 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center mx-auto border border-primary-100 font-serif font-black text-lg">
                   V
                 </div>
                 <h3 className="text-xs font-extrabold text-slate-905">Cấp quyền cho ứng dụng VComm ERP</h3>
@@ -1055,7 +1055,7 @@ export function MailClient() {
               </button>
               <button 
                 onClick={handleConfirmOauth}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0 flex items-center gap-1"
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0 flex items-center gap-1"
               >
                 <Check className="w-3.5 h-3.5" /> Chấp nhận cấp quyền
               </button>

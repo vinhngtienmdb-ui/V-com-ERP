@@ -63,6 +63,7 @@ import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../lib/firebase';
 import { PageEditorModal } from './PageEditorModal';
+import { Modal } from './ui/Modal';
 
 interface ShopifyHaravanConfig {
   shopUrl: string;
@@ -332,8 +333,8 @@ const SETTINGS_MODULE_GROUPS = [
 
 function getColorClasses(color: string) {
  switch (color) {
- case 'blue': return 'bg-slate-100 text-blue-600';
- case 'orange': return 'bg-orange-50 text-blue-600';
+ case 'blue': return 'bg-slate-100 text-primary-600';
+ case 'orange': return 'bg-orange-50 text-primary-600';
  case 'indigo': return 'bg-primary-50 text-primary-600';
  case 'purple': return 'bg-purple-50 text-purple-600';
  case 'emerald': return 'bg-emerald-50 text-emerald-600';
@@ -347,9 +348,9 @@ function getColorClasses(color: string) {
 
 function getIconBg(color: string) {
   const map: Record<string, string> = {
-    blue: 'bg-blue-500', indigo: 'bg-indigo-500', purple: 'bg-purple-500',
+    blue: 'bg-primary-500', indigo: 'bg-indigo-500', purple: 'bg-purple-500',
     emerald: 'bg-emerald-500', rose: 'bg-rose-500', cyan: 'bg-cyan-500',
-    orange: 'bg-orange-500', primary: 'bg-blue-500', slate: 'bg-slate-600',
+    orange: 'bg-orange-500', primary: 'bg-primary-500', slate: 'bg-slate-600',
   };
   return map[color] || 'bg-slate-500';
 }
@@ -365,6 +366,7 @@ const MOCK_PROVINCES = [
 import { usePreferences } from '../context/PreferencesContext';
 
 export function SettingsPage() {
+  const { log: logAction } = useAuditLog();
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
  const { staffInfo } = useAuth();
  const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules' | 'ipos_licenses'>('overview');
@@ -1303,7 +1305,7 @@ export function SettingsPage() {
     <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg transition-colors">
       <Sparkles className="w-4 h-4 text-purple-500" /> AI Audit
     </button>
-    <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm">
+    <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm">
       <Save className="w-4 h-4" />{isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
     </button>
   </div>
@@ -1338,7 +1340,7 @@ export function SettingsPage() {
     { id: 'workflow_rules', label: 'Quy trình No-code', icon: Zap },
     ].filter(t => t.id === activeTab).map(t => (
    <React.Fragment key={t.id}>
-   <t.icon className="w-5 h-5 text-blue-600" /> {t.label}
+   <t.icon className="w-5 h-5 text-primary-600" /> {t.label}
    </React.Fragment>
    ))}
    </h2>
@@ -1353,7 +1355,7 @@ export function SettingsPage() {
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
    {[
      { label: 'Vai trò hệ thống', value: `${roles.length} Roles`,            badge: 'Bảo mật cao',  badgeCls: 'bg-emerald-100 text-emerald-700', icon: Lock,            iconBg: 'bg-purple-500' },
-     { label: 'Tên miền trỏ về',  value: `${customDomains.length} Domains`,  badge: 'Đã xác thực', badgeCls: 'bg-blue-100 text-blue-700',       icon: Globe,           iconBg: 'bg-blue-500' },
+     { label: 'Tên miền trỏ về',  value: `${customDomains.length} Domains`,  badge: 'Đã xác thực', badgeCls: 'bg-blue-100 text-blue-700',       icon: Globe,           iconBg: 'bg-primary-500' },
      { label: 'Điểm Webhook',      value: `${MOCK_WEBHOOKS.length} Endpoints`,badge: '100% Uptime', badgeCls: 'bg-sky-100 text-sky-700',           icon: Webhook,         iconBg: 'bg-sky-500' },
      { label: 'Ngành hàng',        value: `${categoryFees.length} Nhóm`,     badge: 'Tối ưu AI',   badgeCls: 'bg-violet-100 text-violet-700',     icon: BadgeDollarSign, iconBg: 'bg-emerald-500' },
    ].map(item => (
@@ -1464,7 +1466,7 @@ export function SettingsPage() {
  <p className="text-sm font-bold text-slate-900">Tính năng Duyệt Payout tự động</p>
  <p className="text-[10px] text-slate-600 italic text-pretty max-w-md">Nếu được bật, hệ thống sẽ tự động giải ngân cho Seller khi đơn hàng chuyển sang trạng thái "Thành công" và qua thời gian khiếu nại (7 ngày).</p>
  </div>
- <div className="w-12 h-6 bg-blue-600 rounded-full relative cursor-pointer">
+ <div className="w-12 h-6 bg-primary-600 rounded-full relative cursor-pointer">
  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
  </div>
  </div>
@@ -1474,7 +1476,7 @@ export function SettingsPage() {
  <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all border border-transparent">
  Hủy bỏ
  </button>
- <button className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95">
+ <button className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95">
  Lưu cấu hình
  </button>
  </div>
@@ -1516,7 +1518,7 @@ export function SettingsPage() {
           <div key={wallet.name} className="border border-slate-200 rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                <span className={cn("w-3 h-3 rounded-full", wallet.color === "emerald" ? "bg-emerald-500" : wallet.color === "blue" ? "bg-blue-500" : wallet.color === "indigo" ? "bg-indigo-500" : "bg-slate-500")}></span>
+                <span className={cn("w-3 h-3 rounded-full", wallet.color === "emerald" ? "bg-emerald-500" : wallet.color === "blue" ? "bg-primary-500" : wallet.color === "indigo" ? "bg-indigo-500" : "bg-slate-500")}></span>
                 {wallet.name}
               </h4>
               <p className="text-sm text-slate-600 mt-1">{wallet.desc}</p>
@@ -1582,7 +1584,7 @@ export function SettingsPage() {
  <div key={fee.id} className={cn("p-4 rounded-lg border transition-all relative overflow-hidden group", fee.isActive ? "bg-white border-slate-300" : "bg-slate-50 border-slate-200 opacity-60")}>
  <div className="flex justify-between items-start mb-3 relative z-10">
  <div className="flex items-center gap-2">
- <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-slate-100 text-blue-600" : "bg-purple-50 text-purple-600")}>
+ <div className={cn("p-2 rounded-lg", fee.type === 'fixed' ? "bg-slate-100 text-primary-600" : "bg-purple-50 text-purple-600")}>
  {fee.type === 'fixed' ? <BadgeDollarSign className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
  </div>
  <div>
@@ -1599,7 +1601,7 @@ export function SettingsPage() {
  </div>
 
  <div className="mb-4 relative z-10">
- <span className={cn("text-2xl font-bold", fee.type === 'fixed' ? "text-blue-600" : "text-purple-600")}>
+ <span className={cn("text-2xl font-bold", fee.type === 'fixed' ? "text-primary-600" : "text-purple-600")}>
  {fee.type === 'fixed' ? formatCurrency(fee.value) : `${fee.value}%`}
  </span>
  <div className="mt-2 space-y-1.5">
@@ -1617,7 +1619,7 @@ export function SettingsPage() {
  <div className="flex justify-end gap-2 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity">
  <button 
  onClick={() => { setEditingFee(fee); setNewFee(fee); setShowFeeModal(true); }}
- className="p-1.5 text-blue-600 hover:bg-slate-100 rounded"
+ className="p-1.5 text-primary-600 hover:bg-slate-100 rounded"
  >
  <Edit2 className="w-3.5 h-3.5" />
  </button>
@@ -1642,7 +1644,7 @@ export function SettingsPage() {
  <div className="flex items-center justify-between mb-4">
  <div>
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
- <BadgeDollarSign className="w-4 h-4 text-blue-600" /> Phí hoa hồng theo Ngành hàng & Loại Nhà Bán
+ <BadgeDollarSign className="w-4 h-4 text-primary-600" /> Phí hoa hồng theo Ngành hàng & Loại Nhà Bán
  </h3>
  <p className="text-xs text-slate-600 mt-1">Cấu hình linh hoạt mức phí Sàn thu từ Seller thường và Shop Mall (đối tác chính hãng).</p>
  </div>
@@ -1688,7 +1690,7 @@ export function SettingsPage() {
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-slate-100/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
  <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
- <span className="text-[9px] font-medium text-blue-600">Nhà bán cá nhân/nhỏ lẻ</span>
+ <span className="text-[9px] font-medium text-primary-600">Nhà bán cá nhân/nhỏ lẻ</span>
  </div>
  </th>
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-amber-50/50 w-[25%]">
@@ -1711,12 +1713,12 @@ export function SettingsPage() {
  type="number"
  value={cf.sellerFee}
  onChange={(e) => setCategoryFees(prev => prev.map(p => p.id === cf.id ? { ...p, sellerFee: parseFloat(e.target.value) } : p))}
- className="w-16 p-1.5 text-sm border-2 border-slate-300 rounded-lg text-center focus:outline-none focus:border-slate-900 font-bold text-blue-900 bg-white"
+ className="w-16 p-1.5 text-sm border-2 border-slate-300 rounded-lg text-center focus:outline-none focus:border-slate-900 font-bold text-primary-900 bg-white"
  />
  <span className="text-xs font-bold text-orange-500">%</span>
  </div>
  {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
- <span className="text-[10px] text-blue-600 font-bold bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
+ <span className="text-[10px] text-primary-600 font-bold bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
  )}
  </div>
  </td>
@@ -1757,7 +1759,7 @@ export function SettingsPage() {
     <button 
       onClick={handleSaveFeeConfig} 
       disabled={isSavingFee} 
-      className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+      className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
     >
       <Save className="w-4 h-4" />{isSavingFee ? 'Đang lưu...' : 'Lưu cấu hình Phí sàn'}
     </button>
@@ -1771,7 +1773,7 @@ export function SettingsPage() {
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <Globe className="w-4 h-4 text-blue-600" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
+ <Globe className="w-4 h-4 text-primary-600" /> Cấu hình Website Tổng (Hệ thống ERP & Storefront)
  </h3>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1789,7 +1791,7 @@ export function SettingsPage() {
         value={domain} 
         onChange={(e) => updateDomain(index, e.target.value)}
         placeholder="ví dụ: store.domain.com" 
-        className="flex-1 p-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 transition-all" 
+        className="flex-1 p-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-slate-900 transition-all" 
         />
         <button 
           type="button"
@@ -1799,12 +1801,12 @@ export function SettingsPage() {
         >
           {diagState === 'checking' ? (
             <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-primary-600" />
               <span>Đang quét...</span>
             </>
           ) : (
             <>
-              <Globe className="w-3.5 h-3.5 text-blue-600" />
+              <Globe className="w-3.5 h-3.5 text-primary-600" />
               <span>Kiểm tra DNS</span>
             </>
           )}
@@ -1817,7 +1819,7 @@ export function SettingsPage() {
         {diagState !== 'idle' && (
           <div className={`p-3.5 rounded-lg border text-xs leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 ${
             diagState === 'checking' 
-              ? 'bg-blue-50/50 border-blue-200 text-blue-800' 
+              ? 'bg-primary-50/50 border-blue-200 text-blue-800' 
               : diagState === 'valid' 
                 ? 'bg-emerald-50 border-emerald-250 text-emerald-800' 
                 : 'bg-rose-50 border-rose-250 text-rose-800'
@@ -1857,7 +1859,7 @@ export function SettingsPage() {
       </div>
     );
   })}
- <button onClick={addDomain} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-2">
+ <button onClick={addDomain} className="text-xs font-bold text-primary-600 hover:underline flex items-center gap-1 mt-2">
  <Plus className="w-3 h-3" /> Thêm tên miền mới
  </button>
  </div>
@@ -1882,7 +1884,7 @@ export function SettingsPage() {
  ) : (
  <Image className="w-8 h-8 text-slate-400" />
  )}
- <span className="text-xs font-bold text-blue-600">
+ <span className="text-xs font-bold text-primary-600">
  Nhấn để tải lên hoặc kéo thả Logo
  </span>
  <p className="text-[10px] text-[#9CA3AF] mt-1">PNG, JPG tối đa 5MB</p>
@@ -1907,7 +1909,7 @@ export function SettingsPage() {
  ) : (
  <Globe className="w-6 h-6 text-slate-400" />
  )}
- <span className="text-xs font-bold text-blue-600">
+ <span className="text-xs font-bold text-primary-600">
  Nhấn để tải lên hoặc kéo thả Favicon
  </span>
  <p className="text-[10px] text-[#9CA3AF] mt-1">ICO, PNG (32x32px)</p>
@@ -1921,7 +1923,7 @@ export function SettingsPage() {
  <button 
    onClick={handleSaveWebsiteConfig}
    disabled={isSavingWebsite}
-   className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+   className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
  >
    {isSavingWebsite ? (
      <>
@@ -1962,7 +1964,7 @@ export function SettingsPage() {
            className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
          >
            <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-             <Icon className="w-4 h-4 text-blue-600" /> {title}
+             <Icon className="w-4 h-4 text-primary-600" /> {title}
            </h3>
            <ChevronLeft className={cn('w-4 h-4 text-slate-400 transition-transform', expandedSection === key ? '-rotate-90' : 'rotate-180')} />
          </button>
@@ -2042,7 +2044,7 @@ export function SettingsPage() {
                                onClick={() => item.url && setEditingPageUrl({ url: item.url, label: item.label })}
                                title="Chỉnh sửa nội dung trang"
                                disabled={!item.url}
-                               className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                               className="p-2 text-blue-500 hover:bg-primary-50 rounded-lg transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                              >
                                <Edit2 className="w-3.5 h-3.5" />
                              </button>
@@ -2051,7 +2053,7 @@ export function SettingsPage() {
                              </button>
                            </div>
                          ))}
-                         <button onClick={() => addFooterLink(colKey)} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-1">
+                         <button onClick={() => addFooterLink(colKey)} className="text-xs font-bold text-primary-600 hover:underline flex items-center gap-1 mt-1">
                            <Plus className="w-3 h-3" /> Thêm liên kết
                          </button>
                        </div>
@@ -2069,11 +2071,11 @@ export function SettingsPage() {
                  {/* List */}
                  <div className="space-y-2">
                    {siteConfig.paymentMethods.map((pm) => (
-                     <div key={pm.id} className={cn('flex items-center gap-3 p-3 rounded-lg border transition-all', pm.active ? 'border-blue-300 bg-blue-50/40' : 'border-slate-200 bg-white opacity-60')}>
+                     <div key={pm.id} className={cn('flex items-center gap-3 p-3 rounded-lg border transition-all', pm.active ? 'border-blue-300 bg-primary-50/40' : 'border-slate-200 bg-white opacity-60')}>
                        {/* Toggle */}
                        <button
                          onClick={() => togglePaymentMethod(pm.id)}
-                         className={cn('w-10 h-6 rounded-full transition-all shrink-0 relative', pm.active ? 'bg-blue-500' : 'bg-slate-300')}
+                         className={cn('w-10 h-6 rounded-full transition-all shrink-0 relative', pm.active ? 'bg-primary-500' : 'bg-slate-300')}
                        >
                          <span className={cn('absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all', pm.active ? 'left-5' : 'left-1')} />
                        </button>
@@ -2141,7 +2143,7 @@ export function SettingsPage() {
                  {/* Add new */}
                  <button
                    onClick={addPaymentMethod}
-                   className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2"
+                   className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-primary-600 hover:bg-primary-50/30 transition-all flex items-center justify-center gap-2"
                  >
                    <Plus className="w-4 h-4" /> Thêm phương thức thanh toán
                  </button>
@@ -2379,7 +2381,7 @@ export function SettingsPage() {
                               >
                                 {s.id === 'bento_campaign' ? (
                                   <>
-                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-1 text-[8px] flex items-center justify-center text-blue-755 font-bold">🍉 Thời Trang</div>
+                                    <div className="bg-primary-50 border border-primary-100 rounded-lg p-1 text-[8px] flex items-center justify-center text-blue-755 font-bold">🍉 Thời Trang</div>
                                     <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-1 text-[8px] flex items-center justify-center text-emerald-755 font-bold">🔌 Điện Tử</div>
                                   </>
                                 ) : s.id === 'featured_products' ? (
@@ -2415,7 +2417,7 @@ export function SettingsPage() {
                    <div className="grid grid-cols-4 gap-6 pb-6 border-b border-slate-200">
                      {/* Col 0: Company */}
                      <div className="space-y-2">
-                       <div className="font-bold text-lg text-blue-600">{siteConfig.companyInfo.brandName}</div>
+                       <div className="font-bold text-lg text-primary-600">{siteConfig.companyInfo.brandName}</div>
                        <p className="text-[11px] text-slate-500 leading-relaxed">{siteConfig.companyInfo.address}</p>
                        {siteConfig.companyInfo.hotline && <p className="text-[11px] text-slate-500">Hotline: {siteConfig.companyInfo.hotline}</p>}
                        {siteConfig.companyInfo.email && <p className="text-[11px] text-slate-500">Email: {siteConfig.companyInfo.email}</p>}
@@ -2424,14 +2426,14 @@ export function SettingsPage() {
                      <div className="space-y-2">
                        <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">{siteConfig.footerLinks.col1Title}</div>
                        {siteConfig.footerLinks.col1Items.filter(l => l.label).map((l, i) => (
-                         <div key={i} className="text-[11px] text-slate-500 hover:text-blue-600 cursor-pointer transition-colors">{l.label}</div>
+                         <div key={i} className="text-[11px] text-slate-500 hover:text-primary-600 cursor-pointer transition-colors">{l.label}</div>
                        ))}
                      </div>
                      {/* Col 2 */}
                      <div className="space-y-2">
                        <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">{siteConfig.footerLinks.col2Title}</div>
                        {siteConfig.footerLinks.col2Items.filter(l => l.label).map((l, i) => (
-                         <div key={i} className="text-[11px] text-slate-500 hover:text-blue-600 cursor-pointer transition-colors">{l.label}</div>
+                         <div key={i} className="text-[11px] text-slate-500 hover:text-primary-600 cursor-pointer transition-colors">{l.label}</div>
                        ))}
                      </div>
                      {/* Col 3: Payment + Social */}
@@ -2454,7 +2456,7 @@ export function SettingsPage() {
                        <div className="space-y-1.5">
                          <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THEO DÕI</div>
                          <div className="flex gap-2">
-                           {siteConfig.socialLinks.facebook && <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[9px] font-bold">f</div>}
+                           {siteConfig.socialLinks.facebook && <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-[9px] font-bold">f</div>}
                            {siteConfig.socialLinks.instagram && <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-[9px] font-bold">in</div>}
                            {siteConfig.socialLinks.twitter && <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center text-white text-[9px] font-bold">X</div>}
                            {siteConfig.socialLinks.youtube && <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white text-[9px] font-bold">▶</div>}
@@ -2489,7 +2491,7 @@ export function SettingsPage() {
        <button
          onClick={handleSaveSiteConfig}
          disabled={isSavingSiteConfig}
-         className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+         className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
        >
          {isSavingSiteConfig ? (
            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Đang lưu...</>
@@ -2509,7 +2511,7 @@ export function SettingsPage() {
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
- <Lock className="w-4 h-4 text-blue-600" /> Quản lý Vai trò & Phân quyền
+ <Lock className="w-4 h-4 text-primary-600" /> Quản lý Vai trò & Phân quyền
  </h3>
  <button 
  onClick={() => {
@@ -2518,7 +2520,7 @@ export function SettingsPage() {
  setRoles([...roles, newRole]);
  setEditingRole(newRole);
  }}
- className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:underline"
+ className="flex items-center gap-2 text-xs font-bold text-primary-600 hover:underline"
  >
  <Plus className="w-3.5 h-3.5" /> Tạo Vai trò mới
  </button>
@@ -2542,14 +2544,14 @@ export function SettingsPage() {
  </div>
  </td>
  <td className="px-6 py-4">
- <span className="px-2 py-0.5 bg-slate-100 text-blue-600 text-[10px] font-bold rounded-full border border-slate-300">
+ <span className="px-2 py-0.5 bg-slate-100 text-primary-600 text-[10px] font-bold rounded-full border border-slate-300">
  {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
  </span>
  </td>
  <td className="px-6 py-4 text-right">
  <button 
  onClick={() => setEditingRole(role)}
- className="text-xs font-bold text-blue-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all"
+ className="text-xs font-bold text-primary-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all"
  >
  Thiết lập chi tiết
  </button>
@@ -2596,7 +2598,7 @@ export function SettingsPage() {
  setEditingRole(null);
  addNotification('Đã cập nhật phân quyền', `Vai trò ${editingRole.name} đã được lưu thành công.`);
  }}
- className="px-6 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
+ className="px-6 py-2 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5"
  >
  Lưu thay đổi
  </button>
@@ -2617,7 +2619,7 @@ export function SettingsPage() {
  setEditingRole({...editingRole, permissions: []});
  }
  }}
- className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600"
+ className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500"
  />
  <span className="text-xs font-bold text-slate-800">Gán Toàn quyền (Super Admin)</span>
  </label>
@@ -2632,7 +2634,7 @@ export function SettingsPage() {
  className={cn(
  "py-4 text-sm font-bold transition-all border-b-2",
  activeModuleTab === group.id
- ? "border-slate-900 text-blue-600"
+ ? "border-slate-900 text-primary-600"
  : "border-transparent text-slate-600 hover:text-slate-800 hover:border-slate-400"
  )}
  >
@@ -2674,7 +2676,7 @@ export function SettingsPage() {
  : editingRole.permissions.filter(p => p !== permissionKey);
  setEditingRole({...editingRole, permissions: newPermissions});
  }}
- className="w-3.5 h-3.5 text-blue-600 rounded border-slate-400 focus:ring-orange-600"
+ className="w-3.5 h-3.5 text-primary-600 rounded border-slate-400 focus:ring-primary-500"
  />
  <span className="text-[10px] font-bold uppercase tracking-tight">
  {action === 'view' ? 'Xem' : 
@@ -2816,7 +2818,7 @@ export function SettingsPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-blue-500/10 text-blue-600 rounded-lg">
+                  <div className="p-2 bg-primary-500/10 text-primary-600 rounded-lg">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
@@ -2839,7 +2841,7 @@ export function SettingsPage() {
                       }
                     }}
                   />
-                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-500"></div>
+                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-primary-500"></div>
                 </label>
               </div>
               <p className="text-[10px] text-slate-500 line-clamp-2">
@@ -3191,11 +3193,11 @@ export function SettingsPage() {
           maxWidth="lg"
           onConfirm={() => {
             saveMisaConfigLocal(misaConfig);
-            logAction('Settings.Misa', 'UPDATE', 'Cập nhật cấu hình Misa');
+            logAction({ action: 'Settings.Misa', targetId: 'UPDATE', targetLabel: 'Cập nhật cấu hình Misa' });
             setActiveConfigModal(null);
           }}
           confirmText="Lưu cấu hình MISA"
-          confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 text-white"
+          confirmVariant="success"
         >
           <div className="space-y-4">
             <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200/50 dark:border-yellow-900/30 p-3.5 rounded-lg flex items-start gap-2.5">
@@ -3335,7 +3337,7 @@ export function SettingsPage() {
           <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-blue-600" />
+                <CreditCard className="w-5 h-5 text-primary-600" />
                 <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Cổng Thanh toán SePay</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
@@ -3395,7 +3397,7 @@ export function SettingsPage() {
               </div>
 
               {/* Webhook Simulator Section */}
-              <div className="p-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
+              <div className="p-4 bg-primary-50/50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
                 <h5 className="font-bold text-[10.5px] text-blue-800 dark:text-blue-400 uppercase tracking-wider">Bộ Giả Lập Webhook (Webhook Simulator)</h5>
                 
                 <div className="space-y-2.5">
@@ -3424,7 +3426,7 @@ export function SettingsPage() {
                   <button 
                     onClick={handleSimulateWebhook}
                     disabled={simulating || !simCode}
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                    className="w-full py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     {simulating ? 'Đang giả lập...' : 'Kích hoạt Webhook giả lập 🚀'}
                   </button>
@@ -3444,7 +3446,7 @@ export function SettingsPage() {
                   saveApiKeys();
                   setActiveConfigModal(null);
                 }}
-                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors"
+                className="flex-1 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs font-bold transition-colors"
               >
                 Lưu cấu hình
               </button>
@@ -3883,7 +3885,7 @@ export function SettingsPage() {
  {/* Cascade selector demo */}
  <div className="bg-white p-4 border border-slate-200">
  <div className="flex items-center gap-2 mb-3">
- <MapPin className="w-4 h-4 text-blue-600" />
+ <MapPin className="w-4 h-4 text-primary-600" />
  <h3 className="text-sm font-bold text-slate-800">Chọn địa chỉ nhanh</h3>
  <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Tỉnh → Huyện → Xã</span>
  </div>
@@ -3897,7 +3899,7 @@ export function SettingsPage() {
  <div className="bg-white p-4 border border-slate-200">
  <div className="flex justify-between items-center mb-3">
  <div className="flex items-center gap-2">
- <MapPin className="w-4 h-4 text-blue-600" />
+ <MapPin className="w-4 h-4 text-primary-600" />
  <h3 className="text-sm font-bold text-slate-800">Danh sách Tỉnh/Thành phố</h3>
  <span className="font-mono text-[10px] text-slate-400 border border-slate-200 px-1.5 py-0.5">Nguồn: provinces.open-api.vn</span>
  </div>
@@ -3913,7 +3915,7 @@ export function SettingsPage() {
  <button
  onClick={handleSaveAddressConfig}
  disabled={savingAddressConfig || loadingAddressConfig}
- className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors disabled:opacity-50 cursor-pointer"
+ className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors disabled:opacity-50 cursor-pointer"
  >
  {savingAddressConfig ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
  Lưu cấu hình Địa chỉ
@@ -3945,7 +3947,7 @@ export function SettingsPage() {
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Cơ cấu Tổ chức
+ <Building2 className="w-5 h-5 text-primary-600" /> Quản lý Cơ cấu Tổ chức
  </h3>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -3963,7 +3965,7 @@ export function SettingsPage() {
  <h4 className="font-bold text-slate-900">Chức danh</h4>
  <button 
  onClick={() => { setNewJobTitle({}); setEditingJobTitle(null); setShowAddJobTitleModal(true); }}
- className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-slate-800 transition"
+ className="text-xs bg-primary-600 text-white px-2 py-1 rounded hover:bg-slate-800 transition"
  >
  <Plus className="w-3 h-3 inline" /> Thêm
  </button>
@@ -3975,7 +3977,7 @@ export function SettingsPage() {
  <div className="font-bold text-sm text-slate-900">{title.name}</div>
  <button 
  onClick={() => { setEditingJobTitle(title); setNewJobTitle(title); setShowAddJobTitleModal(true); }}
- className="text-[10px] text-blue-600 hover:bg-slate-100 px-2 py-1 rounded"
+ className="text-[10px] text-primary-600 hover:bg-slate-100 px-2 py-1 rounded"
  >Sửa</button>
  </div>
  <div className="text-xs text-slate-600 mb-1 line-clamp-2" title={title.description}>{title.description || 'Chưa có mô tả'}</div>
@@ -4022,9 +4024,9 @@ export function SettingsPage() {
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <Building2 className="w-5 h-5 text-blue-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
+ <Building2 className="w-5 h-5 text-primary-600" /> Quản lý Chuỗi cửa hàng / Chi nhánh
  </h3>
- <button className="bg-slate-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#EAE7DF] flex items-center gap-2">
+ <button className="bg-slate-100 text-primary-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#EAE7DF] flex items-center gap-2">
  <Plus className="w-4 h-4" /> Thêm Cửa hàng
  </button>
  </div>
@@ -4063,7 +4065,7 @@ export function SettingsPage() {
  <p className="text-sm text-slate-600 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {store.address}</p>
  <div className="flex gap-4 mt-3">
  <span className="text-xs bg-slate-200/50 text-slate-700 px-2 py-1 rounded-md font-medium">Quản lý: <span className="font-bold">{store.manager}</span></span>
- <span className="text-xs bg-slate-100 text-blue-600 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
+ <span className="text-xs bg-slate-100 text-primary-600 px-2 py-1 rounded-md font-medium">{store.staff} nhân viên</span>
  </div>
  </div>
  <div className="flex gap-2">
@@ -4081,7 +4083,7 @@ export function SettingsPage() {
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <div className="flex justify-between items-center">
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
- <MessageSquare className="w-5 h-5 text-blue-600" /> Tích hợp SMS OTP & Zalo ZNS
+ <MessageSquare className="w-5 h-5 text-primary-600" /> Tích hợp SMS OTP & Zalo ZNS
  </h3>
  </div>
 
@@ -4118,7 +4120,7 @@ export function SettingsPage() {
  <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Token sẽ hết hạn vào 20:00 25/04/2026. Bật auto-refresh để tự làm mới.</p>
  </div>
  </div>
- <button className="w-full mt-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
+ <button className="w-full mt-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
  Kiểm tra kết nối ZNS
  </button>
  </div>
@@ -4169,23 +4171,23 @@ export function SettingsPage() {
  </div>
  
  <div className="bg-slate-100 border border-slate-200 rounded-lg p-5 mt-6">
- <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
+ <h4 className="font-bold text-primary-900 mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Kịch bản Gửi tin (Triggers)</h4>
  <p className="text-sm text-orange-800 mb-4">Cấu hình các sự kiện hệ thống tự động gọi API ZNS/SMS để thông báo chăm sóc khách hàng.</p>
  <div className="space-y-3">
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
+ <input type="checkbox" defaultChecked className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
  <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
+ <input type="checkbox" defaultChecked className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
- <span className="text-[10px] font-bold text-blue-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
+ <span className="text-[10px] font-bold text-primary-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
- <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-slate-400 focus:ring-orange-600" />
+ <input type="checkbox" className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS chúc mừng Sinh nhật Khách hàng (Loyalty)</span>
- <button className="text-[10px] font-bold text-blue-600 hover:text-orange-800 underline">Cấu hình Mẫu tin</button>
+ <button className="text-[10px] font-bold text-primary-600 hover:text-primary-750 underline">Cấu hình Mẫu tin</button>
  </label>
  </div>
  </div>
@@ -4197,7 +4199,7 @@ export function SettingsPage() {
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <Send className="w-4 h-4 text-blue-600" /> Trung tâm Gửi thông báo (Push Notification)
+ <Send className="w-4 h-4 text-primary-600" /> Trung tâm Gửi thông báo (Push Notification)
  </h3>
 
  <div className="space-y-4">
@@ -4208,7 +4210,7 @@ export function SettingsPage() {
  placeholder="VD: Thông báo bảo trì hệ thống" 
  value={notiTitle}
  onChange={(e) => setNotiTitle(e.target.value)}
- className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
  />
  </div>
 
@@ -4219,13 +4221,13 @@ export function SettingsPage() {
  placeholder="Chi tiết thông báo..." 
  value={notiMessage}
  onChange={(e) => setNotiMessage(e.target.value)}
- className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y"
+ className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 resize-y"
  />
  </div>
 
  <div>
  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
- <select className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white cursor-pointer mb-2">
+ <select className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white cursor-pointer mb-2">
  <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
  <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
  <option value="customer">Tất cả Khách hàng (Storefront App)</option>
@@ -4249,7 +4251,7 @@ export function SettingsPage() {
  setNotiMessage('');
  setTimeout(() => setNotiStatus(''), 3000);
  }}
- className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Send className="w-4 h-4" /> Bắn thông báo ngay
  </button>
@@ -4259,7 +4261,7 @@ export function SettingsPage() {
 
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm border-b border-slate-100 pb-3">
- <AppWindow className="w-4 h-4 text-blue-600" /> Quản lý Popup Website
+ <AppWindow className="w-4 h-4 text-primary-600" /> Quản lý Popup Website
  </h3>
  
  <div className="space-y-4">
@@ -4285,7 +4287,7 @@ export function SettingsPage() {
  placeholder="VD: Khuyến Mãi Hè 2024" 
  value={popupTitle}
  onChange={(e) => setPopupTitle(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
  />
  </div>
  <div>
@@ -4295,7 +4297,7 @@ export function SettingsPage() {
  value={popupDesc}
  rows={2}
  onChange={(e) => setPopupDesc(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-y" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 resize-y" 
  />
  </div>
  <div>
@@ -4305,7 +4307,7 @@ export function SettingsPage() {
  placeholder="https://example.com/banner.jpg" 
  value={popupImage}
  onChange={(e) => setPopupImage(e.target.value)}
- className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
  />
  </div>
  <div>
@@ -4316,14 +4318,14 @@ export function SettingsPage() {
  placeholder="Tên nút (VD: Xem ngay)" 
  value={popupCtaText}
  onChange={(e) => setPopupCtaText(e.target.value)}
- className="w-1/3 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-1/3 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
  />
  <input 
  type="text" 
  placeholder="Link (URL)" 
  value={popupCtaLink}
  onChange={(e) => setPopupCtaLink(e.target.value)}
- className="flex-1 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="flex-1 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
  />
  </div>
  </div>
@@ -4357,7 +4359,7 @@ export function SettingsPage() {
  <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
  <button 
  onClick={() => alert('Đã lưu cấu hình Popup!')}
- className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
+ className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
  >
  Lưu thiết lập Popup
  </button>
@@ -4371,14 +4373,14 @@ export function SettingsPage() {
     <div className="animate-in fade-in duration-300 space-y-6">
       <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 flex items-center gap-2">
-          <Package className="w-5 h-5 text-blue-600" /> Phân loại & Cấu hình Hàng hóa
+          <Package className="w-5 h-5 text-primary-600" /> Phân loại & Cấu hình Hàng hóa
         </h3>
         <p className="text-sm text-slate-600 mb-4">Quản lý các loại mặt hàng, định mức dự trữ, đơn vị tính, và các thuộc tính lưu kho (SKU/Barcode).</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
             <div className="flex justify-between items-center mb-4">
               <h4 className="font-bold text-slate-900">Danh mục Nhóm Hàng hóa</h4>
-              <button className="text-xs text-blue-600 font-bold hover:underline">+ Thêm nhóm</button>
+              <button className="text-xs text-primary-600 font-bold hover:underline">+ Thêm nhóm</button>
             </div>
             <div className="space-y-2">
               {['Nguyên vật liệu (Raw Materials)', 'Thành phẩm (Finished Goods)', 'Bán thành phẩm (WIP)', 'Hàng hóa thương mại (Trading Goods)'].map((type, i) => (
@@ -4394,11 +4396,11 @@ export function SettingsPage() {
             <h4 className="font-bold text-slate-950 mb-4">Phương pháp Quản lý Kho</h4>
             <div className="space-y-3">
               <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
-                <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" defaultChecked />
+                <input type="radio" name="inventory_method" className="w-4 h-4 text-primary-600" defaultChecked />
                 <span className="text-sm font-medium">Bình quan gia quyền (Weighted Average)</span>
               </label>
               <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100/50">
-                <input type="radio" name="inventory_method" className="w-4 h-4 text-blue-600" />
+                <input type="radio" name="inventory_method" className="w-4 h-4 text-primary-600" />
                 <span className="text-sm font-medium">Nhập trước xuất trước (FIFO)</span>
               </label>
             </div>
@@ -4412,7 +4414,7 @@ export function SettingsPage() {
 		<div className="animate-in fade-in duration-350 space-y-7">
 			{/* Gói hiện tại và thông báo chúc mừng */}
 			<div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-6 text-white relative overflow-hidden shadow-sm">
-				<div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+				<div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
 				<div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
 
 				<div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -4441,7 +4443,7 @@ export function SettingsPage() {
 				<div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-xs space-y-6">
 					<div>
 						<h4 className="font-bold text-slate-900 flex items-center gap-2">
-							<CreditCard className="w-5 h-5 text-blue-600" /> Hạn mức Tài nguyên SaaS (Resource Quotas)
+							<CreditCard className="w-5 h-5 text-primary-600" /> Hạn mức Tài nguyên SaaS (Resource Quotas)
 						</h4>
 						<p className="text-xs text-slate-500 mt-0.5">Các thông số giới hạn dịch vụ dựa theo gói đăng ký hiện tại.</p>
 					</div>
@@ -4474,8 +4476,8 @@ export function SettingsPage() {
 						))}
 					</div>
 
-					<div className="p-4 bg-blue-50 border border-blue-150 rounded-lg flex items-start gap-3">
-						<AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+					<div className="p-4 bg-primary-50 border border-blue-150 rounded-lg flex items-start gap-3">
+						<AlertCircle className="w-5 h-5 text-primary-600 mt-0.5 shrink-0" />
 						<div className="text-xs leading-relaxed text-blue-800">
 							<span className="font-bold">Mở rộng hạn mức linh hoạt:</span> Hệ thống SaaS được thiết kế để mở rộng tài nguyên tự động. Khi chạm ngưỡng 90% dung lượng hoặc giới hạn, quản trị viên có thể bấm đề xuất mua thêm gói lẻ hoặc đăng ký nâng thêm gói Enterprise Plus trực tiếp để tránh gián đoạn dịch vụ.
 						</div>
@@ -4576,7 +4578,7 @@ export function SettingsPage() {
 										}, 1500);
 									}}
 									disabled={isRunningBackup}
-									className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs cursor-pointer disabled:opacity-50"
+									className="flex-1 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs cursor-pointer disabled:opacity-50"
 								>
 									{isRunningBackup ? 'Đang sao lưu...' : 'Sao lưu ngay'}
 								</button>
@@ -4702,7 +4704,7 @@ export function SettingsPage() {
 								</h5>
 								
 								<div className="mt-3 flex items-baseline gap-1">
-									<span className={`text-xl font-black ${plan.active ? 'text-emerald-600' : plan.highlight ? 'text-blue-600' : 'text-slate-900'} tracking-tight`}>
+									<span className={`text-xl font-black ${plan.active ? 'text-emerald-600' : plan.highlight ? 'text-primary-600' : 'text-slate-900'} tracking-tight`}>
 										{plan.price}
 									</span>
 									<span className="text-xs text-slate-400 font-semibold">{plan.period}</span>
@@ -4811,7 +4813,7 @@ export function SettingsPage() {
 											</span>
 										</td>
 										<td className="p-3 text-right">
-											<button onClick={() => alert('Đang tải hóa đơn VAT bản PDF...')} className="text-blue-600 hover:underline font-bold cursor-pointer">PDF 💾</button>
+											<button onClick={() => alert('Đang tải hóa đơn VAT bản PDF...')} className="text-primary-600 hover:underline font-bold cursor-pointer">PDF 💾</button>
 										</td>
 									</tr>
 								))}
@@ -4835,7 +4837,7 @@ export function SettingsPage() {
 							Tại trang quản trị nhà đăng ký tên miền của bạn (Mắt Bão, Pavietnam, Cloudflare, v.v.), hãy cấu hình bản ghi sau để kích hoạt SSL tự động:
 						</p>
 						<div className="bg-white border border-slate-200 rounded-lg p-3 text-xs font-mono space-y-1">
-							<div><span className="text-slate-400">Loại bản ghi (Type):</span> <span className="font-bold text-blue-600">CNAME</span></div>
+							<div><span className="text-slate-400">Loại bản ghi (Type):</span> <span className="font-bold text-primary-600">CNAME</span></div>
 							<div><span className="text-slate-400">Tên (Name / Host):</span> <span className="font-bold text-slate-800">erp</span> hoặc <span className="font-bold text-slate-800">@</span></div>
 							<div><span className="text-slate-400">Giá trị (Points to):</span> <span className="font-bold text-emerald-600 font-semibold">saas.vcommerp.com</span></div>
 							<div><span className="text-slate-400">TTL:</span> <span className="font-bold text-slate-800">3600 (1 hour)</span></div>
@@ -4843,8 +4845,8 @@ export function SettingsPage() {
 
 						<div className="pt-2 flex items-center justify-between text-xs font-medium border-t border-slate-200">
 							<span className="text-slate-500">Trạng thái kết nối</span>
-							<span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded flex items-center gap-1 border border-blue-150">
-								<span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Đang trỏ: erp.vcom.vn
+							<span className="px-2 py-0.5 bg-primary-50 text-blue-700 text-[10px] font-bold rounded flex items-center gap-1 border border-blue-150">
+								<span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span> Đang trỏ: erp.vcom.vn
 							</span>
 						</div>
 					</div>
@@ -5116,7 +5118,7 @@ export function SettingsPage() {
 										<td className="p-3 text-slate-705 font-semibold">{account.name}</td>
 										<td className="p-3">
 											<span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-												account.type === 'Asset' ? 'bg-blue-50 text-blue-700 border-blue-150' :
+												account.type === 'Asset' ? 'bg-primary-50 text-blue-700 border-blue-150' :
 												account.type === 'Liability' ? 'bg-amber-50 text-amber-705 border-amber-150' :
 												account.type === 'Equity' ? 'bg-purple-50 text-purple-700 border-purple-150' :
 												account.type === 'Revenue' ? 'bg-emerald-50 text-emerald-700 border-emerald-150' :
@@ -5152,7 +5154,7 @@ export function SettingsPage() {
 													setCoaList(prev => prev.map(c => c.code === account.code ? { ...c, isActive: !c.isActive } : c));
 													addNotification('Tài khoản', `Đã đổi trạng thái tài khoản ${account.code}`);
 												}}
-												className="text-xs text-blue-600 font-bold hover:underline cursor-pointer border-0 bg-transparent"
+												className="text-xs text-primary-600 font-bold hover:underline cursor-pointer border-0 bg-transparent"
 											>
 												{account.isActive ? 'Khóa' : 'Kích hoạt'}
 											</button>
@@ -5236,7 +5238,7 @@ export function SettingsPage() {
 							<button 
 								type="button"
 								onClick={handleCreateCoa}
-								className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition cursor-pointer border-0"
+								className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition cursor-pointer border-0"
 							>
 								Lưu tài khoản
 							</button>
@@ -5298,7 +5300,7 @@ export function SettingsPage() {
 					<button 
 						type="button"
 						onClick={() => setShowAddWorkflowModal(true)}
-						className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs transition border-0 animate-in fade-in"
+						className="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs transition border-0 animate-in fade-in"
 					>
 						<Plus className="w-4 h-4" />
 						<span>Tạo quy trình mới</span>
@@ -5451,7 +5453,7 @@ export function SettingsPage() {
 								type="button"
 								onClick={handleCreateWorkflow}
 								disabled={!newWorkflow.name}
-								className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg cursor-pointer border-0 animate-in fade-in"
+								className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg cursor-pointer border-0 animate-in fade-in"
 							>
 								Lưu Quy trình
 							</button>
@@ -5474,7 +5476,7 @@ export function SettingsPage() {
       onConfirm={handleSaveJobTitle}
       confirmText="Lưu Chức danh"
       confirmDisabled={!newJobTitle.name || !newJobTitle.department}
-      confirmButtonClass="bg-blue-600 hover:bg-slate-800 text-white"
+      confirmVariant="primary"
     >
       <div className="space-y-4">
         <div>
@@ -5526,17 +5528,17 @@ export function SettingsPage() {
   {showFeeModal && (
     <Modal
       title={editingFee ? 'Chỉnh sửa loại phí' : 'Thêm loại phí mới'}
-      icon={<BadgeDollarSign className="w-5 h-5 text-blue-600" />}
+      icon={<BadgeDollarSign className="w-5 h-5 text-primary-600" />}
       isOpen={showFeeModal}
       maxWidth="lg"
       onClose={() => setShowFeeModal(false)}
       onConfirm={() => {
         if (editingFee) {
           setSystemFees(systemFees.map(f => f.id === editingFee.id ? { ...newFee as SystemFee, id: f.id } : f));
-          logAction('Settings.Fees', 'UPDATE', `Cập nhật loại phí: ${newFee.name}`);
+          logAction({ action: 'Settings.Fees', targetId: 'UPDATE', targetLabel: `Cập nhật loại phí: ${newFee.name}` });
         } else {
           setSystemFees([...systemFees, { ...newFee as SystemFee, id: `sys-${Date.now()}`, isActive: true }]);
-          logAction('Settings.Fees', 'CREATE', `Thêm mới loại phí: ${newFee.name}`);
+          logAction({ action: 'Settings.Fees', targetId: 'CREATE', targetLabel: `Thêm mới loại phí: ${newFee.name}` });
         }
         setShowFeeModal(false);
         addNotification('Đã cập nhật cấu hình', `Loại phí ${newFee.name} đã được lưu thành công.`);
@@ -5562,13 +5564,13 @@ export function SettingsPage() {
             <div className="flex bg-slate-100 p-1 rounded-lg">
               <button 
                 onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
-                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'percentage' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'percentage' ? "bg-white text-primary-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
               >
                 Phần trăm (%)
               </button>
               <button 
                 onClick={() => setNewFee({ ...newFee, type: 'fixed' })}
-                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'fixed' ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+                className={cn("flex-1 py-2 text-xs font-bold rounded-md transition-all", newFee.type === 'fixed' ? "bg-white text-primary-600 shadow-sm" : "text-slate-600 hover:text-slate-800")}
               >
                 Cố định (đ)
               </button>
@@ -5627,7 +5629,7 @@ export function SettingsPage() {
             <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
             <button 
               onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
-              className="text-[10px] font-bold text-blue-600 hover:underline"
+              className="text-[10px] font-bold text-primary-600 hover:underline"
             >
               Tất cả ngành
             </button>
@@ -5916,7 +5918,7 @@ function IPosLicensesPanel() {
       <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-            <Tablet className="w-5 h-5 text-blue-600" />
+            <Tablet className="w-5 h-5 text-primary-600" />
             Danh sách Bản quyền & Chi nhánh iPOS
           </h3>
           <p className="text-xs text-slate-500 mt-0.5 font-medium">
@@ -5925,7 +5927,7 @@ function IPosLicensesPanel() {
         </div>
         <button
           onClick={handleOpenAddModal}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border-0"
+          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border-0"
         >
           <Plus className="w-4 h-4" /> Cấp bản quyền mới
         </button>
@@ -5958,7 +5960,7 @@ function IPosLicensesPanel() {
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
-              <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
+              <RefreshCw className="w-6 h-6 animate-spin text-primary-600" />
               <span className="text-xs font-bold">Đang tải dữ liệu...</span>
             </div>
           ) : filteredLicenses.length === 0 ? (
@@ -5992,7 +5994,7 @@ function IPosLicensesPanel() {
                       <span className={cn(
                         "text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider",
                         lic.licenseType === 'SaaS Premium' 
-                          ? "bg-blue-50 border-blue-200 text-blue-700" 
+                          ? "bg-primary-50 border-blue-200 text-blue-700" 
                           : "bg-slate-50 border-slate-200 text-slate-700"
                       )}>
                         {lic.licenseType}
@@ -6042,7 +6044,7 @@ function IPosLicensesPanel() {
                     <td className="p-4 text-right flex justify-end gap-1.5">
                       <button
                         onClick={() => handleOpenEditModal(lic)}
-                        className="p-1.5 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-lg transition-all cursor-pointer border-0 bg-transparent"
+                        className="p-1.5 hover:bg-primary-50 text-slate-500 hover:text-primary-600 rounded-lg transition-all cursor-pointer border-0 bg-transparent"
                         title="Chỉnh sửa"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -6067,7 +6069,7 @@ function IPosLicensesPanel() {
       <div className="bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden mt-6">
         <div className="p-5 border-b border-slate-200 bg-slate-50">
           <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-            <Users className="w-5 h-5 text-blue-600" />
+            <Users className="w-5 h-5 text-primary-600" />
             Danh sách Đăng ký Tài khoản iPOS Chờ duyệt
           </h3>
           <p className="text-xs text-slate-500 mt-0.5 font-medium">
@@ -6089,7 +6091,7 @@ function IPosLicensesPanel() {
         <div className="overflow-x-auto">
           {loadingAccounts ? (
             <div className="p-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
-              <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
+              <RefreshCw className="w-6 h-6 animate-spin text-primary-600" />
               <span className="text-xs font-bold">Đang tải tài khoản...</span>
             </div>
           ) : accounts.length === 0 ? (
@@ -6178,7 +6180,7 @@ function IPosLicensesPanel() {
             {/* Modal Header */}
             <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Tablet className="w-5 h-5 text-blue-600" />
+                <Tablet className="w-5 h-5 text-primary-600" />
                 {editingLicense ? 'Chỉnh sửa Bản quyền iPOS' : 'Cấp Bản quyền iPOS Mới'}
               </h3>
               <button
@@ -6304,7 +6306,7 @@ function IPosLicensesPanel() {
               </button>
               <button
                 onClick={handleSaveLicense}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer border-0"
+                className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer border-0"
               >
                 Lưu lại
               </button>

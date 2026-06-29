@@ -120,7 +120,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
           onClick={() => setShowForm(!showForm)}
           className={cn(
             "px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer",
-            showForm ? "bg-slate-900 text-white" : "bg-[#2563EB] text-[#FAF9F5] hover:bg-slate-800"
+            showForm ? "bg-slate-900 text-white" : "bg-primary-600 text-[#FAF9F5] hover:bg-slate-800"
           )}
         >
           {showForm ? 'Đóng form' : 'Giao việc mới (Đồng bộ)'}
@@ -293,7 +293,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm việc bằng mã ID, tiêu đề, mô tả hoặc nhãn..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2.5 pl-10 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2.5 pl-10 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 border-b-2"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           </div>
@@ -412,7 +412,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
                             "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border shrink-0",
                             task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200' :
                             task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
-                            task.priority === 'medium' ? 'bg-blue-50 text-blue-600 border-blue-200' :
+                            task.priority === 'medium' ? 'bg-primary-50 text-primary-600 border-blue-200' :
                             'bg-slate-100 text-slate-600 border-slate-200'
                           )}>
                             {task.priority === 'urgent' ? 'Nguy cấp' :

@@ -449,7 +449,7 @@ const OrderDetailModal = ({
                 Zalo Notification Service: <strong>Đang kết nối</strong>
               </span>
             </div>
-            <span className="text-[9.5px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+            <span className="text-[9.5px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded border border-primary-100">
               Template:{' '}
               {order.status === 'shipped'
                 ? 'ZNS_ORDER_SHIPPED'
@@ -491,7 +491,7 @@ const OrderDetailModal = ({
               <button
                 onClick={() => onSyncMisa(order.id)}
                 disabled={isSyncingMisa}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-lg flex items-center gap-2 shadow-sm transition-all"
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white text-xs font-bold rounded-lg flex items-center gap-2 shadow-sm transition-all"
               >
                 {isSyncingMisa ? 'Đang ghi sổ...' : 'Ghi sổ Kế toán'}
               </button>
@@ -694,7 +694,7 @@ const OrderDetailModal = ({
                   href={`https://tracuu.vcomm.vn/invoice?code=${einvoiceLookupCode}`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="text-blue-600 hover:underline font-semibold flex items-center gap-1"
+                  className="text-primary-600 hover:underline font-semibold flex items-center gap-1"
                 >
                   tracuu.vcomm.vn ↗
                 </a>
@@ -742,12 +742,12 @@ const OrderDetailModal = ({
             </p>
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
+                <div className="p-2 bg-[#EAE7DF] text-primary-600 rounded-lg">
                   <Truck className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">{order.carrier || 'Chưa vận chuyển'}</p>
-                  <p className="font-mono text-xs text-orange-700">{order.tracking || 'N/A'}</p>
+                  <p className="font-mono text-xs text-primary-600">{order.tracking || 'N/A'}</p>
                 </div>
               </div>
 
@@ -780,7 +780,7 @@ const OrderDetailModal = ({
               <button
                 onClick={() => handleDraftRma(order)}
                 disabled={isGenerating}
-                className="text-xs font-bold text-[#FAF9F5] bg-slate-900 hover:bg-slate-800 disabled:bg-blue-400 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center"
+                className="text-xs font-bold text-[#FAF9F5] bg-slate-900 hover:bg-slate-800 disabled:bg-primary-300 px-4 py-2.5 rounded-lg flex items-center gap-2 mb-3 shadow-sm transition-all w-full justify-center"
               >
                 <BrainCircuit className="w-4 h-4" />{' '}
                 {isGenerating ? 'AI Đang phân tích và tạo phản hồi...' : 'Tạo phản hồi RMA bằng AI'}
@@ -954,6 +954,7 @@ const paymentMethodLabels: Record<string, string> = {
 };
 
 export function Orders() {
+  const { log } = useAuditLog();
   const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
   const [mockOrders, setMockOrders] = useState<any[]>(MOCK_ORDERS);
   const [syncingOrderId, setSyncingOrderId] = useState<string | null>(null);
@@ -1065,6 +1066,18 @@ export function Orders() {
       });
     }
   };
+
+    // Close modals on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedOrder(null);
+        setPrintingOrder(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedOrder, printingOrder]);
 
   // Debounce search query
   useEffect(() => {
@@ -1395,7 +1408,7 @@ export function Orders() {
               onClick={() => setActiveStep('all')}
               className={cn(
                 'px-4 py-2 text-xs font-semibold',
-                activeStep === 'all' ? 'bg-[#2563EB] text-[#FAF9F5]' : 'text-[#4B5563]'
+                activeStep === 'all' ? 'bg-primary-600 text-[#FAF9F5]' : 'text-[#4B5563]'
               )}
             >
               Tất cả
@@ -1404,7 +1417,7 @@ export function Orders() {
               onClick={() => setActiveStep('rma')}
               className={cn(
                 'px-4 py-2 text-xs font-semibold border-l border-slate-300',
-                activeStep === 'rma' ? 'bg-[#2563EB] text-[#FAF9F5]' : 'text-[#4B5563]'
+                activeStep === 'rma' ? 'bg-primary-600 text-[#FAF9F5]' : 'text-[#4B5563]'
               )}
             >
               Phê duyệt Hoàn tiền/Trả hàng
@@ -1481,7 +1494,7 @@ export function Orders() {
               <>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors flex items-center gap-1.5">
+                    <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
                       {order.parentOrderId ? <i className="text-[10px] text-purple-600 bg-purple-50 px-1 py-0.5 rounded border border-purple-200 not-italic">Sub</i> : <i className="text-[10px] text-slate-500 bg-slate-100 px-1 py-0.5 rounded border border-slate-200 not-italic">Root</i>}
                       #{order.id.split('-').pop()}
                     </p>
@@ -1517,11 +1530,11 @@ export function Orders() {
                 <td className="px-6 py-4">
                   {order.carrier ? (
                     <div className="flex items-center gap-3">
-                      <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-orange-200 transition-colors">
+                      <div className="flex flex-col items-center gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-sm w-full group-hover:border-primary-200 transition-colors">
                         <span className="text-[10px] font-bold text-slate-800 uppercase">
                           {order.carrier}
                         </span>
-                        <span className="text-[10px] font-mono text-[#2563EB] font-bold">
+                        <span className="text-[10px] font-mono text-primary-600 font-bold">
                           {order.tracking}
                         </span>
                       </div>
@@ -1529,7 +1542,7 @@ export function Orders() {
                         onClick={e => {
                           e.stopPropagation();
                         }}
-                        className="text-[10px] text-orange-700 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1 shrink-0"
+                        className="text-[10px] text-primary-600 hover:bg-[#EAE7DF] px-2 py-1 rounded bg-slate-100 transition-all flex items-center gap-1 shrink-0"
                       >
                         <MapPin className="w-3 h-3" /> Tra cứu
                       </button>
@@ -1601,7 +1614,7 @@ export function Orders() {
                       <button
                         onClick={() => handleSyncOrderToMisa(order.id)}
                         disabled={syncingOrderId === order.id}
-                        className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-xs flex items-center gap-1 disabled:opacity-50 cursor-pointer animate-in fade-in"
+                        className="px-3 py-1 bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-bold rounded-lg shadow-xs flex items-center gap-1 disabled:opacity-50 cursor-pointer animate-in fade-in"
                       >
                         {syncingOrderId === order.id ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1676,7 +1689,7 @@ export function Orders() {
         {znsToast && znsToast.show && (
           <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-900 border-2 border-blue-500 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0 shadow-md">
+              <div className="w-9 h-9 rounded-full bg-primary-600 flex items-center justify-center font-bold text-white shrink-0 shadow-md">
                 Z
               </div>
               <div className="flex-1 min-w-0">

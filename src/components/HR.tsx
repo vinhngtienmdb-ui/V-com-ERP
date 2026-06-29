@@ -605,7 +605,21 @@ export function HumanResources() {
  const [attendanceView, setAttendanceView] = useState<'week' | 'month'>('week');
  const [filterDateAtt, setFilterDateAtt] = useState('');
 
- const deferredSearchEmployee = React.useDeferredValue(searchEmployee);
+   // Close modals on ESC keypress
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowEmployeeModal(false);
+        setShowATSModal(false);
+        setSelectedEmployee(null);
+        setShowAttendanceConfig(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showEmployeeModal, showATSModal, selectedEmployee, showAttendanceConfig]);
+
+  const deferredSearchEmployee = React.useDeferredValue(searchEmployee);
 
  const filteredEmployees = React.useMemo(() => {
   const q = deferredSearchEmployee.trim().toLowerCase();
@@ -785,7 +799,7 @@ export function HumanResources() {
      </div>
      <div className="space-y-6">
       <div className="p-5 bg-slate-100/50 border border-slate-300 rounded-lg">
-       <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2"><BrainCircuit className="w-4 h-4 text-orange-700" /> AI Insights</h4>
+       <h4 className="text-sm font-bold text-primary-900 flex items-center gap-2 mb-2"><BrainCircuit className="w-4 h-4 text-orange-700" /> AI Insights</h4>
        <p className="text-xs text-blue-800 leading-relaxed">Tỷ lệ nghỉ việc (attrition rate) giảm ổn định trong Q2, đặc biệt sau khi triển khai chương trình phúc lợi mới. Nhu cầu tuyển mới tăng mạnh trong tháng 6 chuẩn bị cho mùa Sale cuối năm.</p>
       </div>
       <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
@@ -831,7 +845,7 @@ export function HumanResources() {
  </button>
  <button 
  onClick={() => setActiveTab('rec_candidates')}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <UserPlus className="w-4 h-4" />
  + Tuyển dụng
@@ -844,7 +858,7 @@ export function HumanResources() {
   <div className="bg-white rounded-lg border border-slate-300 shadow-sm p-4 w-fit">
    <button 
    onClick={() => setActiveTab('overview')} 
-   className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors"
+   className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors"
    >
    <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
    </button>
@@ -919,7 +933,7 @@ export function HumanResources() {
  setActiveTab(item.id);
  }
  }}
- className="bg-slate-50 border border-slate-300 rounded-lg p-5 hover:border-blue-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
+ className="bg-slate-50 border border-slate-300 rounded-lg p-5 hover:border-primary-300 hover:shadow-sm hover:bg-white transition-all text-left flex gap-4 items-start group"
  >
  <div className={cn("p-3 rounded-lg shrink-0 transition-transform ", getColorClasses(item.color))}>
  <item.icon className="w-6 h-6" />
@@ -990,7 +1004,7 @@ export function HumanResources() {
  <div className="absolute inset-0 bg-white /50 to-transparent pointer-events-none rounded-lg" />
  <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg border border-slate-300 shadow-sm">
  <h3 className="text-sm font-bold text-[#111827] mb-4 flex items-center gap-2">
- <MapPin className="w-4 h-4 text-[#2563EB]" /> Live Map Chấm công Giao hàng
+ <MapPin className="w-4 h-4 text-primary-600" /> Live Map Chấm công Giao hàng
  </h3>
  <div className="h-48 bg-slate-50 rounded-lg border border-[#F3F4F6] relative overflow-hidden flex items-center justify-center">
  <div className="text-center space-y-2 opacity-40">
@@ -1022,7 +1036,7 @@ export function HumanResources() {
  <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
  <button 
  onClick={() => setActiveTab('overview')} 
- className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
+ className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
  >
  <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
  </button>
@@ -1040,7 +1054,7 @@ export function HumanResources() {
  placeholder="Tìm nhân viên, ID..." 
  value={searchEmployee}
  onChange={(e) => setSearchEmployee(e.target.value)}
- className="bg-slate-50 border border-slate-300 rounded-lg px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 w-64 transition-all" 
+ className="bg-slate-50 border border-slate-300 rounded-lg px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 w-64 transition-all" 
  />
  </div>
  {activeTab === 'personnel' && (
@@ -1048,7 +1062,7 @@ export function HumanResources() {
  <select 
  value={filterDept}
  onChange={(e) => setFilterDept(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  >
  <option value="all">Tất cả Phòng ban</option>
  <option value="Marketing">Marketing</option>
@@ -1057,7 +1071,7 @@ export function HumanResources() {
  <select 
  value={filterPosition}
  onChange={(e) => setFilterPosition(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  >
  <option value="all">Tất cả Chức danh</option>
  <option value="Quản lý kho">Quản lý kho</option>
@@ -1066,7 +1080,7 @@ export function HumanResources() {
  <select 
  value={filterStatus}
  onChange={(e) => setFilterStatus(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  >
  <option value="all">Tất cả Trạng thái làm việc</option>
  <option value="active">Đang làm việc</option>
@@ -1094,7 +1108,7 @@ export function HumanResources() {
  type={attendanceView === 'month' ? "month" : "week"}
  value={filterDateAtt}
  onChange={(e) => setFilterDateAtt(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  />
  </div>
  )}
@@ -1197,7 +1211,7 @@ export function HumanResources() {
  type="number" 
  value={setting.config.radius}
  onChange={(e) => updateSettingConfig('gps', 'radius', Number(e.target.value))}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 outline-none"
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 outline-none"
  />
  <Timer className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
  </div>
@@ -1214,7 +1228,7 @@ export function HumanResources() {
  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Danh sách Vùng an toàn</label>
  <div className="space-y-2">
  {setting.config.zones?.map((zone: any, i: number) => (
- <div key={i} className="bg-white border border-slate-300 p-3 rounded-lg flex justify-between items-center group/item hover:border-blue-300 transition-colors">
+ <div key={i} className="bg-white border border-slate-300 p-3 rounded-lg flex justify-between items-center group/item hover:border-primary-300 transition-colors">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-orange-600"><MapPin className="w-4 h-4" /></div>
  <div>
@@ -1238,7 +1252,7 @@ export function HumanResources() {
  <div key={i} className="flex items-center gap-2 bg-slate-100 text-orange-800 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-bold">
  <Wifi className="w-3 h-3" />
  {ssid}
- <button className="hover:text-blue-900 ml-1">×</button>
+ <button className="hover:text-primary-900 ml-1">×</button>
  </div>
  ))}
  <button className="flex items-center gap-2 border border-dashed border-slate-400 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-orange-600 transition-all">
@@ -1258,7 +1272,7 @@ export function HumanResources() {
  <p className="text-[10px] text-slate-600 font-medium">Bảo mật cao nhất cho môi trường văn phòng.</p>
  </div>
  </div>
- <input type="checkbox" defaultChecked={setting.config.macRestricted} className="w-5 h-5 rounded border-slate-400 text-orange-700 focus:ring-orange-600" />
+ <input type="checkbox" defaultChecked={setting.config.macRestricted} className="w-5 h-5 rounded border-slate-400 text-orange-700 focus:ring-primary-500" />
  </div>
  </div>
  )}
@@ -1294,7 +1308,7 @@ export function HumanResources() {
  type="checkbox" 
  checked={!!setting.config[feat.id]} 
  onChange={(e) => updateSettingConfig('face', feat.id, e.target.checked)}
- className="w-4 h-4 rounded border-slate-400 text-orange-700 focus:ring-orange-600" 
+ className="w-4 h-4 rounded border-slate-400 text-orange-700 focus:ring-primary-500" 
  />
  </label>
  ))}
@@ -1310,7 +1324,7 @@ export function HumanResources() {
  type="number" 
  value={setting.config.refreshRate}
  onChange={(e) => updateSettingConfig('qr', 'refreshRate', Number(e.target.value))}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 outline-none"
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 outline-none"
  />
  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">GIÂY</span>
  </div>
@@ -1345,7 +1359,7 @@ export function HumanResources() {
  placeholder="192.168.1.xxx"
  value={setting.config.ip}
  onChange={(e) => updateSettingConfig('device', 'ip', e.target.value)}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 outline-none"
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 outline-none"
  />
  </div>
  <div className="space-y-1.5">
@@ -1354,7 +1368,7 @@ export function HumanResources() {
  type="number" 
  value={setting.config.port}
  onChange={(e) => updateSettingConfig('device', 'port', Number(e.target.value))}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 outline-none"
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 outline-none"
  />
  </div>
  </div>
@@ -1363,7 +1377,7 @@ export function HumanResources() {
  <select 
  value={setting.config.model}
  onChange={(e) => updateSettingConfig('device', 'model', e.target.value)}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 outline-none bg-white font-bold"
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 outline-none bg-white font-bold"
  >
  <option>ZKTeco K40 (Standalone)</option>
  <option>Ronald Jack F18 (TCP/IP)</option>
@@ -1506,7 +1520,7 @@ export function HumanResources() {
  {activeTab === 'personnel' && filteredEmployees.map((emp) => (
  <tr key={emp.id} onClick={() => setSelectedEmployee(emp)} className="hover:bg-slate-50 transition-colors cursor-pointer group">
  <td className="px-6 py-5">
- <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">{emp.fullName}</p>
+ <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors">{emp.fullName}</p>
  <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
  </td>
  <td className="px-6 py-5">
@@ -2282,7 +2296,7 @@ export function HumanResources() {
  alert("Lỗi kết chuyển dữ liệu.");
  }
  }}
- className="bg-[#2563EB] text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5 active:scale-95 transition-all hover:bg-slate-800 ml-3">
+ className="bg-primary-600 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5 active:scale-95 transition-all hover:bg-slate-800 ml-3">
  <ArrowRight className="w-4 h-4" /> Kết chuyển sang Finance (P&L)
  </button>
  <button className="bg-[#111827] text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/20 active:scale-95 transition-all hover:bg-slate-800">
@@ -2346,7 +2360,7 @@ export function HumanResources() {
  <p className="text-xs font-bold text-red-500 font-mono">-{formatCurrency(pay.pitAmount + pay.insuranceAmount)}</p>
  </td>
  <td className="px-6 py-4 text-right">
- <p className="text-[15px] font-bold text-[#2563EB] font-mono bg-slate-100 px-3 py-1 rounded-lg inline-block">{formatCurrency(pay.netSalary)}</p>
+ <p className="text-[15px] font-bold text-primary-600 font-mono bg-slate-100 px-3 py-1 rounded-lg inline-block">{formatCurrency(pay.netSalary)}</p>
  </td>
  <td className="px-6 py-4">
  <div className="flex justify-center">
@@ -2427,7 +2441,7 @@ export function HumanResources() {
  return updated;
  });
  }}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-600" />
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
  <div>
  <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Phụ cấp</label>
@@ -2442,7 +2456,7 @@ export function HumanResources() {
  return updated;
  });
  }}
- className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-600" />
+ className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
  <div>
  <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Thưởng (OT, KPI...)</label>
@@ -3218,7 +3232,7 @@ export function HumanResources() {
       setEditingEmployee(selectedEmployee);
       setShowEmployeeModal(true);
      }}
-     className="text-xs text-orange-600 hover:text-orange-700 font-bold transition-all flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg border border-slate-300"
+     className="text-xs text-orange-600 hover:text-primary-600 font-bold transition-all flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg border border-slate-300"
     >
      <Edit2 className="w-3 h-3" /> Chỉnh sửa
     </button>
@@ -3327,7 +3341,7 @@ export function HumanResources() {
  <p className="text-xs text-slate-600 mt-1">Chỉnh sửa vai trò truy cập của nhân viên trên hệ thống ERP.</p>
  </div>
  <select 
- className="bg-white border text-sm font-semibold border-slate-300 text-slate-800 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 shadow-sm transition-all"
+ className="bg-white border text-sm font-semibold border-slate-300 text-slate-800 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-slate-900 shadow-sm transition-all"
  value={selectedEmployee.role || 'Nhân viên'}
  onChange={(e) => handleRoleChange(selectedEmployee.id, e.target.value)}
  >
@@ -3363,7 +3377,7 @@ export function HumanResources() {
  <label key={pAction} className="flex items-center gap-1.5 cursor-pointer">
  <input 
  type="checkbox" 
- className="w-3.5 h-3.5 text-orange-700 rounded border-slate-400 focus:ring-orange-600/20 transition-all cursor-pointer"
+ className="w-3.5 h-3.5 text-orange-700 rounded border-slate-400 focus:ring-primary-500/20 transition-all cursor-pointer"
  checked={employeePerms[pAction as keyof typeof employeePerms]}
  onChange={(e) => handlePermissionChange(selectedEmployee.id, catKey, pAction as any, e.target.checked)}
  />

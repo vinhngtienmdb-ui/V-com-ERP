@@ -1409,7 +1409,7 @@ export function WarehouseModule() {
           <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
             <Filter className="w-4 h-4" /> Bản đồ kho
           </button>
-          <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+          <button className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
             <Plus className="w-4 h-4" /> Tạo phiếu kho
           </button>
         </div>
@@ -1484,7 +1484,7 @@ export function WarehouseModule() {
             {WAREHOUSE_MODULE_GROUPS.map((group, gIdx) => (
               <div key={gIdx} className="space-y-4">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
-                  <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
+                  <span className="w-1 h-4 bg-primary-600 rounded-full inline-block" />
                   {group.title}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -1492,21 +1492,21 @@ export function WarehouseModule() {
                     <div
                       key={mod.id}
                       onClick={() => setActiveTab(mod.id as any)}
-                      className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                      className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-primary-500/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                     >
                       <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
                       </div>
                       <div
                         className={cn(
-                          'w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm',
+                          'w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-primary-600 group-hover:text-[#FAF9F5] transition-all shadow-sm',
                           getColorClasses(mod.color)
                         )}
                       >
                         <mod.icon className="w-6 h-6" />
                       </div>
                       <div className="relative z-10">
-                        <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">
+                        <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-primary-700 transition-colors">
                           {mod.label}
                         </h3>
                         <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">
@@ -1527,7 +1527,7 @@ export function WarehouseModule() {
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
+              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
             >
               <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
             </button>
@@ -1629,7 +1629,7 @@ export function WarehouseModule() {
               <div className="flex items-center justify-between mb-8">
                 <button
                   onClick={() => setSelectedPartnerForFees(null)}
-                  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors"
+                  className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" /> Danh sách đối tác
                 </button>
@@ -1674,7 +1674,7 @@ export function WarehouseModule() {
                         <tr key={fee.id} className="hover:bg-slate-50/50 transition-colors group">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center group-hover:bg-slate-100 group-hover:text-orange-700 transition-colors">
+                              <div className="w-8 h-8 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center group-hover:bg-slate-100 group-hover:text-primary-600 transition-colors">
                                 <DollarSign className="w-4 h-4" />
                               </div>
                               <span className="text-sm font-bold text-slate-900">{fee.name}</span>
@@ -1704,7 +1704,7 @@ export function WarehouseModule() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <button className="text-slate-500 hover:text-orange-700 transition-colors">
+                            <button className="text-slate-500 hover:text-primary-600 transition-colors">
                               <MoreVertical className="w-5 h-5" />
                             </button>
                           </td>
@@ -1733,7 +1733,7 @@ export function WarehouseModule() {
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
+              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
             >
               <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
             </button>
@@ -1818,7 +1818,7 @@ export function WarehouseModule() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button className="p-2 text-slate-500 hover:text-orange-700 transition-colors">
+                          <button className="p-2 text-slate-500 hover:text-primary-600 transition-colors">
                             <Navigation className="w-4 h-4" />
                           </button>
                           <button className="p-2 text-slate-500 hover:text-slate-700 transition-colors">
@@ -1840,7 +1840,7 @@ export function WarehouseModule() {
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg cursor-pointer"
+              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" /> Quay lại
             </button>
@@ -2033,7 +2033,7 @@ export function WarehouseModule() {
                   setActiveTab('overview');
                   setSelectedShelf(null);
                 }}
-                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg shadow-sm font-sans"
+                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg shadow-sm font-sans"
               >
                 <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
               </button>
@@ -2253,7 +2253,7 @@ export function WarehouseModule() {
                                     'bg-slate-50/50 border-dashed border-slate-200 text-slate-400';
                                 } else if (occ < 30) {
                                   cellColorClass =
-                                    'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200';
+                                    'bg-primary-50 hover:bg-blue-100 text-blue-700 border-blue-200';
                                 } else if (occ < 75) {
                                   cellColorClass =
                                     'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -2272,7 +2272,7 @@ export function WarehouseModule() {
                                     'bg-slate-50 border-slate-200 text-slate-400';
                                 } else if (freq === 'Low') {
                                   cellColorClass =
-                                    'bg-blue-50 text-blue-800 border-blue-200';
+                                    'bg-primary-50 text-blue-800 border-blue-200';
                                 } else if (freq === 'Medium') {
                                   cellColorClass =
                                     'bg-amber-50/60 text-amber-800 border-amber-200';
@@ -2382,7 +2382,7 @@ export function WarehouseModule() {
                           Trống
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-sm bg-blue-50 border border-blue-200 inline-block" />{' '}
+                          <span className="w-2.5 h-2.5 rounded-sm bg-primary-50 border border-blue-200 inline-block" />{' '}
                           &lt;30% (Thấp)
                         </span>
                         <span className="flex items-center gap-1.5">
@@ -2403,7 +2403,7 @@ export function WarehouseModule() {
                     {heatmapMetric === 'pick_freq' && (
                       <div className="flex gap-4">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-sm bg-blue-50 border border-blue-200 inline-block" />{' '}
+                          <span className="w-2.5 h-2.5 rounded-sm bg-primary-50 border border-blue-200 inline-block" />{' '}
                           Thấp (Cold)
                         </span>
                         <span className="flex items-center gap-1.5">
@@ -2615,7 +2615,7 @@ export function WarehouseModule() {
                   {selectedShelf.items.length > 0 && (
                     <div className="pt-4 border-t border-slate-100 space-y-3 font-sans">
                       <h4 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-1">
-                        <ListTodo className="w-3.5 h-3.5 text-blue-600" />
+                        <ListTodo className="w-3.5 h-3.5 text-primary-600" />
                         Điều chuyển vị trí (Relocate)
                       </h4>
                       <form
@@ -2795,7 +2795,7 @@ export function WarehouseModule() {
                     <button
                       onClick={handleAIOptimize}
                       disabled={isOptimizingLayout}
-                      className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-indigo-300 text-[#FAF9F5] font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-xs transition font-sans"
+                      className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-indigo-300 text-[#FAF9F5] font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-xs transition font-sans"
                     >
                       {isOptimizingLayout ? (
                         <>
@@ -2821,7 +2821,7 @@ export function WarehouseModule() {
 
               {/* Quick instructions in card bottom */}
               <div className="text-[10px] text-slate-400 border-t pt-3 flex items-center gap-1 text-center justify-center font-sans font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-500 inline-block animate-pulse" />
                 Vận hành liên tục cùng hệ thống tự động hóa QuickPrint.
               </div>
             </div>
@@ -2833,7 +2833,7 @@ export function WarehouseModule() {
           <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700"
+              className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600"
             >
               <ArrowLeft className="w-4 h-4" /> Quay lại
             </button>
@@ -2916,7 +2916,7 @@ export function WarehouseModule() {
                 onClick={() => setActiveTab('overview')}
                 className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-slate-300 transition-all shadow-sm group"
               >
-                <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-orange-700" />
+                <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-primary-600" />
               </button>
               <div>
                 <h3 className="text-sm font-bold text-slate-900 leading-none mb-1">
@@ -2943,12 +2943,12 @@ export function WarehouseModule() {
                     placeholder="Tìm kiếm mã nguyên liệu hoặc tên sản phẩm..."
                     value={stockSearchQuery}
                     onChange={(e) => setStockSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-orange-600 outline-none transition-all font-sans"
+                    className="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 outline-none transition-all font-sans"
                   />
                   <button
                     onClick={() => setShowScanner(true)}
                     title="Quét mã QR/Barcode"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-orange-700 transition-colors p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-primary-600 transition-colors p-1"
                   >
                     <Camera className="w-4 h-4" />
                   </button>
@@ -3120,7 +3120,7 @@ export function WarehouseModule() {
             <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
               <button
                 onClick={() => setActiveTab('overview')}
-                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
+                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
               >
                 <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
               </button>

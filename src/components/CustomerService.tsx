@@ -116,6 +116,17 @@ export function CustomerService() {
 
   const [logsSearchQuery, setLogsSearchQuery] = useState<string>('');
 
+    // Close ticket detail modal on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedTicket(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTicket]);
+
   useEffect(() => {
     setZnsLogs(getZnsLogs());
     setZnsTemplates(getZnsTemplates());
@@ -427,7 +438,7 @@ export function CustomerService() {
  <BarChart2 className="w-4 h-4 text-emerald-600" />
  Báo cáo SLA
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Ticket className="w-4 h-4" />
  Tạo Ticket mới
  </button>
@@ -542,7 +553,7 @@ export function CustomerService() {
  onClick={() => setActiveTab('zalo_zns')}
  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'zalo_zns' ? "bg-white text-blue-700 shadow-sm border border-blue-200" : "text-slate-600 hover:bg-slate-100")}
  >
- <MessageSquare className="w-4 h-4 text-blue-600" /> Bản tin Zalo ZNS
+ <MessageSquare className="w-4 h-4 text-primary-600" /> Bản tin Zalo ZNS
  </button>
  </div>
 
@@ -554,7 +565,7 @@ export function CustomerService() {
  <input 
  type="text" 
  placeholder={activeTab === 'tickets' ? "Tìm mã ticket, tên khách hàng..." : "Tìm kiếm..."} 
- className="bg-slate-50 border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72 focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
+ className="bg-slate-50 border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none w-72 focus:bg-white focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
  />
  </div>
  <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm text-slate-700 flex items-center gap-2 font-bold hover:bg-slate-50">
@@ -791,7 +802,7 @@ export function CustomerService() {
 									<td className="px-6 py-4">
 										<div className="font-bold text-slate-900">{alert.customerName}</div>
 										<div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-											{alert.channel === 'facebook' ? <span className="text-blue-600 font-bold">Facebook</span> : 
+											{alert.channel === 'facebook' ? <span className="text-primary-600 font-bold">Facebook</span> : 
 											 alert.channel === 'zalo' ? <span className="text-sky-600 font-bold">Zalo</span> : 
 											 alert.channel === 'shopee' ? <span className="text-orange-600 font-bold">Shopee</span> : 
 											 <span className="text-emerald-600 font-bold font-sans">Web Engine</span>}
@@ -868,7 +879,7 @@ export function CustomerService() {
  >
  <td className="px-6 py-4">
  <p className="text-xs font-mono font-bold text-slate-700 mb-0.5">{ticket.id}</p>
- <p className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition-colors">{ticket.customerName}</p>
+ <p className="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{ticket.customerName}</p>
  </td>
  <td className="px-6 py-4">
  <div className="flex items-center gap-2">
@@ -1001,7 +1012,7 @@ export function CustomerService() {
  <input 
  type="text" 
  placeholder="Tìm khách hàng..." 
- className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all shadow-sm"
+ className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all shadow-sm"
  />
  </div>
  </div>
@@ -1132,7 +1143,7 @@ export function CustomerService() {
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
  placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600/20 focus:border-slate-900 focus:bg-white transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-slate-900 focus:bg-white transition-all font-medium"
  />
  <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg transition-all disabled:opacity-50 flex items-center justify-center shadow-sm shadow-slate-900/5" onClick={handleSendMessage} disabled={isAiProcessing || !inputValue.trim()}>
  <Send className="w-4 h-4 ml-0.5" />
@@ -1187,7 +1198,7 @@ export function CustomerService() {
  order.status === 'shipping' ? "text-orange-700" : "text-emerald-600"
  )}>{order.status}</span>
  </div>
- <p className="text-sm font-bold text-[#2563EB]">{formatCurrency(order.amount)}</p>
+ <p className="text-sm font-bold text-primary-600">{formatCurrency(order.amount)}</p>
  </div>
  ))}
  </div>
@@ -1526,7 +1537,7 @@ export function CustomerService() {
  </div>
  </td>
  <td className="px-6 py-4 text-right">
- <button className="p-2 text-slate-500 hover:text-orange-700 transition-colors">
+ <button className="p-2 text-slate-500 hover:text-primary-600 transition-colors">
  <Settings className="w-4 h-4" />
  </button>
  </td>
@@ -1561,7 +1572,7 @@ export function CustomerService() {
  </div>
  </td>
  <td className="px-6 py-4 text-right">
- <button className="p-2 text-slate-500 hover:text-orange-700 transition-colors">
+ <button className="p-2 text-slate-500 hover:text-primary-600 transition-colors">
  <Settings className="w-4 h-4" />
  </button>
  </td>
@@ -1596,7 +1607,7 @@ export function CustomerService() {
  </div>
  </td>
  <td className="px-6 py-4 text-right">
- <button className="p-2 text-slate-500 hover:text-orange-700 transition-colors">
+ <button className="p-2 text-slate-500 hover:text-primary-600 transition-colors">
  <Settings className="w-4 h-4" />
  </button>
  </td>
@@ -1696,7 +1707,7 @@ export function CustomerService() {
  </div>
  </div>
  
- <button className="w-full py-2.5 border-2 border-dashed border-slate-400 rounded-lg text-slate-700 font-bold text-sm hover:border-slate-900 hover:text-orange-700 transition-all flex justify-center items-center gap-2">
+ <button className="w-full py-2.5 border-2 border-dashed border-slate-400 rounded-lg text-slate-700 font-bold text-sm hover:border-slate-900 hover:text-primary-600 transition-all flex justify-center items-center gap-2">
  <Plus className="w-4 h-4" /> Thêm Fanpage mới
  </button>
  </div>
@@ -1850,7 +1861,7 @@ export function CustomerService() {
           <MessageSquare className="w-4 h-4 text-orange-600" /> Phản hồi khách hàng
         </h3>
         <textarea 
-          className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all resize-none bg-slate-50"
+          className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none bg-slate-50"
           placeholder="Nhập nội dung phản hồi..."
           value={draftedMessage}
           onChange={(e) => setDraftedMessage(e.target.value)}
@@ -1882,7 +1893,7 @@ export function CustomerService() {
   {znsToast && znsToast.show && (
     <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
+        <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
           Z
         </div>
         <div className="flex-1 min-w-0">

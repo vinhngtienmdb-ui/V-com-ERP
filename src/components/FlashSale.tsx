@@ -157,7 +157,7 @@ export function FlashSale() {
  </div>
  <button 
  onClick={() => setIsModalOpen(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> 
  {activeTab === 'group_buy' ? 'Tạo Mua Chung' : activeTab === 'flash_sale' ? 'Tạo Flash Sale' : 'Tạo Voucher'}
@@ -169,7 +169,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('group_buy')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'group_buy' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'group_buy' ? "border-primary-600 text-primary-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Users2 className="w-4 h-4" />
@@ -179,7 +179,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('flash_sale')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'flash_sale' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'flash_sale' ? "border-primary-600 text-primary-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Zap className="w-4 h-4" />
@@ -189,7 +189,7 @@ export function FlashSale() {
  onClick={() => setActiveTab('voucher')}
  className={cn(
  "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'voucher' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
+ activeTab === 'voucher' ? "border-primary-600 text-primary-600" : "border-transparent text-slate-600 hover:text-slate-800"
  )}
  >
  <Ticket className="w-4 h-4" />
@@ -484,7 +484,7 @@ export function FlashSale() {
   <label key={seller.id} className="flex items-center gap-3 p-3 border-b border-slate-200 hover:bg-slate-50 cursor-pointer last:border-b-0">
   <input 
   type="checkbox" 
-  className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-orange-600"
+  className="w-4 h-4 text-orange-700 rounded border-slate-400 focus:ring-primary-500"
   checked={selectedSellers.includes(seller.id)}
   onChange={(e) => {
   if (e.target.checked) {
@@ -567,7 +567,7 @@ export function FlashSale() {
  <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
  <Zap className="w-5 h-5" />
  </div>
- <span className="text-[10px] text-[#2563EB] font-bold">Live Deal</span>
+ <span className="text-[10px] text-primary-600 font-bold">Live Deal</span>
  </div>
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Flash Sale Đang chạy</p>
  <div className="text-2xl font-bold text-[#111827]">03</div>

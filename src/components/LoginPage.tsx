@@ -61,7 +61,7 @@ export function LoginPage() {
     <img src={logo} alt="Logo" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
   ) : (
     <>
-      <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
+      <div className="w-6 h-6 bg-primary-600 rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
       <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
       VComm <span className="text-orange-500">ERP</span>
       </h1>
@@ -106,7 +106,7 @@ export function LoginPage() {
     <>
       <div className="space-y-2">
         <div className="md:hidden flex items-center gap-2 mb-8">
-          <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45"></div>
+          <div className="w-4 h-4 bg-primary-600 rounded-sm transform rotate-45"></div>
           <span className="text-xl font-bold text-[#111827]">VComm ERP</span>
         </div>
         <h2 className="text-3xl font-bold text-[#111827] tracking-tight">Xác thực 2 lớp (2FA)</h2>
@@ -119,7 +119,7 @@ export function LoginPage() {
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Mã xác thực OTP (6 chữ số)</label>
           <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2563EB] transition-colors">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <input 
@@ -131,7 +131,7 @@ export function LoginPage() {
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
-              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm font-mono text-center tracking-[0.3em] font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm font-mono text-center tracking-[0.3em] font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary-600 transition-all"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export function LoginPage() {
           <button 
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+            className="w-full py-4 bg-primary-600 text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -176,7 +176,7 @@ export function LoginPage() {
     <>
       <div className="space-y-2">
         <div className="md:hidden flex items-center gap-2 mb-8">
-          <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45"></div>
+          <div className="w-4 h-4 bg-primary-600 rounded-sm transform rotate-45"></div>
           <span className="text-xl font-bold text-[#111827]">VComm ERP</span>
         </div>
         <h2 className="text-3xl font-bold text-[#111827] tracking-tight">Chào mừng trở lại</h2>
@@ -187,7 +187,7 @@ export function LoginPage() {
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Tên đăng nhập</label>
           <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2563EB] transition-colors">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <Rocket className="w-4 h-4" />
             </div>
             <input 
@@ -196,7 +196,7 @@ export function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="admin"
-              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary-600 transition-all"
             />
           </div>
         </div>
@@ -204,7 +204,7 @@ export function LoginPage() {
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Mật khẩu</label>
           <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2563EB] transition-colors">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <LogIn className="w-4 h-4" />
             </div>
             <input 
@@ -213,7 +213,7 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary-600 transition-all"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ export function LoginPage() {
         <button 
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+          className="w-full py-4 bg-primary-600 text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
         >
           {isSubmitting ? (
             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

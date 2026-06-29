@@ -226,7 +226,7 @@ export function AIOperations() {
  <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
  <div className={cn(
  "p-4 rounded-none transition-transform  duration-500",
- stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-orange-700"
+ stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-primary-600"
  )}>
  <stat.icon className="w-6 h-6" />
  </div>
@@ -367,7 +367,7 @@ export function AIOperations() {
    {/* Gemini Real-time AI Operations Analyzer Console */}
   <div className="bg-[#0b1329] text-[#f8fafc] p-6 rounded-lg border border-slate-800 shadow-xl overflow-hidden relative group my-6">
     {/* Background pulse elements */}
-    <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40 animate-pulse duration-[8000ms]" />
+    <div className="absolute top-0 right-0 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40 animate-pulse duration-[8000ms]" />
     
     <div className="relative z-10 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
@@ -673,7 +673,7 @@ export function AIOperations() {
  </div>
  </div>
  ))}
- <button className="w-full py-5 bg-slate-50 text-slate-600 text-xs font-black rounded-[1.5rem] border border-slate-200 hover:text-orange-700 hover:bg-slate-100 transition-all uppercase tracking-widest border-b-4 active:translate-y-1">View Full Neural Architecture</button>
+ <button className="w-full py-5 bg-slate-50 text-slate-600 text-xs font-black rounded-[1.5rem] border border-slate-200 hover:text-primary-600 hover:bg-slate-100 transition-all uppercase tracking-widest border-b-4 active:translate-y-1">View Full Neural Architecture</button>
  </div>
  </div>
  </DraggableGrid>
@@ -762,7 +762,7 @@ export function AIOperations() {
  </div>
  </div>
 
- <div className="border-2 border-slate-200 border-dashed rounded-lg p-6 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-blue-300 hover:text-orange-700 transition-all cursor-pointer group/add">
+ <div className="border-2 border-slate-200 border-dashed rounded-lg p-6 bg-slate-50/50 flex flex-col items-center justify-center min-h-[250px] hover:bg-slate-100/50 hover:border-primary-300 hover:text-primary-600 transition-all cursor-pointer group/add">
  <div className="p-5 bg-white rounded-full shadow-sm group-hover/add:scale-110 transition-transform mb-4 border border-slate-200">
  <Plus className="w-10 h-10 text-slate-500 group-hover/add:text-orange-600" />
  </div>

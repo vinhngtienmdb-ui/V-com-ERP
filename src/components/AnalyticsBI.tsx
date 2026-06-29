@@ -232,7 +232,7 @@ export function AnalyticsBI() {
  )}>{stat.label}</span>
  <div className={cn(
  "p-2 rounded-lg border transition-transform group-hover:rotate-12",
- stat.alert ? "bg-rose-100 border-rose-200 text-rose-600 animate-pulse" : "bg-slate-50 border-slate-200 text-slate-500 group-hover:bg-slate-100 group-hover:text-orange-700"
+ stat.alert ? "bg-rose-100 border-rose-200 text-rose-600 animate-pulse" : "bg-slate-50 border-slate-200 text-slate-500 group-hover:bg-slate-100 group-hover:text-primary-600"
  )}>
  <stat.icon className="w-4 h-4" />
  </div>
@@ -266,13 +266,13 @@ export function AnalyticsBI() {
     <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-6 border-b border-slate-200">
       <div>
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
             Omnichannel performance
           </span>
           <span className="text-[10px] font-bold text-slate-400 font-mono">Real-time Sync</span>
         </div>
         <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-          <BarChart3 className="w-5 h-5 text-blue-600" /> Báo cáo Hiệu quả Kênh bán hàng & Doanh thu hợp nhất
+          <BarChart3 className="w-5 h-5 text-primary-600" /> Báo cáo Hiệu quả Kênh bán hàng & Doanh thu hợp nhất
         </h2>
         <p className="text-xs text-slate-500 font-medium mt-1">
           So sánh tương quan giữa các sàn điện tử (Shopee, Lazada, TikTok Shop), giao hàng ẩm thực và quầy thu ngân iPOS.
@@ -359,7 +359,7 @@ export function AnalyticsBI() {
         </div>
       </div>
 
-      <div className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-none flex items-center gap-1.5">
+      <div className="text-xs font-bold text-primary-600 bg-primary-50 border border-blue-200 px-3 py-1.5 rounded-none flex items-center gap-1.5">
         <Sparkles className="w-4 h-4 text-orange-600 animate-pulse" />
         Kênh hiệu quả nhất: <span className="font-extrabold uppercase text-slate-900">{topChannelItem?.name}</span> ({topChannelItem ? formatCurrency(topChannelItem.value) : '0đ'} - tăng trưởng {topChannelItem?.growth})
       </div>
@@ -583,7 +583,7 @@ export function AnalyticsBI() {
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Phân vị khách hàng dựa trên lịch sử mua sắm</p>
  </div>
- <select className="text-[10px] font-bold uppercase tracking-widest bg-slate-50 border border-slate-300 rounded-none px-3 py-2 outline-none focus:ring-2 focus:ring-orange-600/20">
+ <select className="text-[10px] font-bold uppercase tracking-widest bg-slate-50 border border-slate-300 rounded-none px-3 py-2 outline-none focus:ring-2 focus:ring-primary-500/20">
  <option>Theo lượt khách hàng</option>
  <option>Theo giá trị quy đổi</option>
  </select>

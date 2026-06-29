@@ -76,7 +76,7 @@ export function AdManager() {
  <GanttChartSquare className="w-4 h-4" />
  Báo cáo ROAS Tổng thể
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm">
  Cấu hình vị trí Đấu thầu
  </button>
  </div>
@@ -86,7 +86,7 @@ export function AdManager() {
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase">Doanh thu Quảng cáo tháng</span>
- <BadgeDollarSign className="w-4 h-4 text-[#2563EB]" />
+ <BadgeDollarSign className="w-4 h-4 text-primary-600" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(1540000000)}</div>
  <p className="text-[10px] text-[#10B981] font-medium mt-1">+12.5% so với tháng trước</p>
@@ -128,7 +128,7 @@ export function AdManager() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-5 text-sm font-bold border-b-2 transition-all flex items-center gap-3",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-primary-600 text-primary-600 bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -197,7 +197,7 @@ export function AdManager() {
  </div>
  <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
  <div 
- className={cn("h-full rounded-full transition-all duration-700", bid.status === 'active' ? "bg-[#2563EB]" : "bg-slate-400")} 
+ className={cn("h-full rounded-full transition-all duration-700", bid.status === 'active' ? "bg-primary-600" : "bg-slate-400")} 
  style={{ width: `${(bid.spent / bid.budget) * 100}%` }}
  />
  </div>
@@ -341,7 +341,7 @@ export function AdManager() {
  </div>
  ))}
  </div>
- <button className="w-full py-3 mt-6 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-orange-700 transition-all uppercase tracking-widest">
+ <button className="w-full py-3 mt-6 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-primary-600 transition-all uppercase tracking-widest">
  Xem toàn bộ báo cáo CTR
  </button>
  </div>

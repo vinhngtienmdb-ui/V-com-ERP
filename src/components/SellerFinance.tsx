@@ -366,7 +366,7 @@ export function SellerFinance() {
 
         <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-3xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
-            <div className="p-2 bg-slate-100 text-blue-600 rounded-lg">
+            <div className="p-2 bg-slate-100 text-primary-600 rounded-lg">
               <Clock className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chờ duyệt ứng vốn</span>
@@ -387,7 +387,7 @@ export function SellerFinance() {
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Doanh thu phí dịch vụ</span>
           </div>
           <div className="mt-4">
-            <div className="text-xl font-bold text-blue-600">
+            <div className="text-xl font-bold text-primary-600">
               {formatCurrency(payouts.reduce((acc, p) => p.status === 'disbursed' ? acc + p.discountFee : acc, 0) + 1240000)}
             </div>
             <p className="text-[10.5px] text-emerald-600 font-medium mt-1">Dựa trên phí 1% giá trị giải ngân</p>
@@ -424,7 +424,7 @@ export function SellerFinance() {
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
                 "px-5 py-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer bg-transparent border-transparent text-slate-500 hover:text-slate-900",
-                activeTab === tab.id && "border-blue-600 text-blue-600 bg-slate-50/50"
+                activeTab === tab.id && "border-blue-600 text-primary-600 bg-slate-50/50"
               )}
             >
               <tab.icon className="w-4.5 h-4.5" /> {tab.label}
@@ -443,7 +443,7 @@ export function SellerFinance() {
                 {/* Scoring Simulator Panel */}
                 <div className="bg-slate-50 rounded-lg border border-slate-250 p-5 space-y-5">
                   <h3 className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5 uppercase tracking-wide">
-                    <Settings2 className="w-4 h-4 text-blue-600" /> Trình mô phỏng chỉ số chấm điểm
+                    <Settings2 className="w-4 h-4 text-primary-600" /> Trình mô phỏng chỉ số chấm điểm
                   </h3>
                   <p className="text-[10.5px] text-slate-500 leading-relaxed">
                     Điều chỉnh trọng số của 4 nhóm chỉ số nghiệp vụ dưới đây (tổng trọng số phải bằng 100%) để cập nhật lại hạn mức thấu chi tự động.
@@ -521,7 +521,7 @@ export function SellerFinance() {
                     <button 
                       onClick={handleRunSimulation}
                       disabled={totalWeight !== 100 || isSimulating}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-xs disabled:opacity-40 flex items-center gap-1 cursor-pointer border-0"
+                      className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold shadow-xs disabled:opacity-40 flex items-center gap-1 cursor-pointer border-0"
                     >
                       {isSimulating ? (
                         <>🔄 Đang tính...</>
@@ -570,14 +570,14 @@ export function SellerFinance() {
                           </td>
                           <td className="px-5 py-4 text-right">
                             <p className="font-bold text-slate-900">{formatCurrency(s.maxCreditLimit)}</p>
-                            <p className="text-[9.5px] text-blue-600 font-semibold mt-0.5">
+                            <p className="text-[9.5px] text-primary-600 font-semibold mt-0.5">
                               Khả dụng: {formatCurrency(s.availableCredit)}
                             </p>
                           </td>
                           <td className="px-5 py-4 text-center">
                             <button 
                               onClick={() => handleOpenCreditModal(s)}
-                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-blue-600 rounded-lg font-bold border-0 cursor-pointer text-[10px]"
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-primary-600 rounded-lg font-bold border-0 cursor-pointer text-[10px]"
                             >
                               Cấp tín dụng
                             </button>
@@ -695,7 +695,7 @@ export function SellerFinance() {
                         </div>
                         <div className="flex justify-between text-xs font-bold pt-2 border-t border-slate-200 text-slate-905">
                           <span>Tổng số tiền gốc & lãi phải trả:</span>
-                          <span className="text-blue-600">{formatCurrency(totalPayable)}</span>
+                          <span className="text-primary-600">{formatCurrency(totalPayable)}</span>
                         </div>
                         <div className="flex justify-between text-[10px] text-slate-400 italic">
                           <span>Trả hàng tháng:</span>
@@ -723,7 +723,7 @@ export function SellerFinance() {
                           <h3 className="text-xs font-extrabold text-slate-905 uppercase tracking-wide">
                             Xem trước Hợp đồng Tín dụng số
                           </h3>
-                          <span className="text-[9px] bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded">Được bảo vệ 🔒</span>
+                          <span className="text-[9px] bg-blue-100 text-primary-600 font-bold px-2 py-0.5 rounded">Được bảo vệ 🔒</span>
                         </div>
                         
                         <div className="p-3 bg-slate-900 text-[#FAF9F5] border border-slate-800 rounded-lg font-mono text-[9px] leading-relaxed max-h-[160px] overflow-y-auto select-text">
@@ -822,7 +822,7 @@ export function SellerFinance() {
                         </div>
                         <div className="flex justify-between text-xs pt-1 border-t border-slate-50 font-bold text-slate-900">
                           <span>Thực nhận Napas:</span>
-                          <span className="text-blue-600">{formatCurrency(p.amount - p.discountFee)}</span>
+                          <span className="text-primary-600">{formatCurrency(p.amount - p.discountFee)}</span>
                         </div>
                       </div>
 
@@ -831,7 +831,7 @@ export function SellerFinance() {
                         {p.status === 'pending' && (
                           <button 
                             onClick={() => handleOpenPayoutWizard(p)}
-                            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold uppercase tracking-wider border-0 cursor-pointer text-[9.5px]"
+                            className="px-3.5 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold uppercase tracking-wider border-0 cursor-pointer text-[9.5px]"
                           >
                             Duyệt giải ngân
                           </button>
@@ -1008,7 +1008,7 @@ export function SellerFinance() {
                 </div>
                 <button 
                   onClick={() => setShowWithdrawModal(true)}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer border-0 shadow-xs whitespace-nowrap"
+                  className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg cursor-pointer border-0 shadow-xs whitespace-nowrap"
                 >
                   Rút tiền về ngân hàng
                 </button>
@@ -1046,7 +1046,7 @@ export function SellerFinance() {
                               "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight",
                               txn.type === 'deposit' ? "bg-emerald-50 text-emerald-600" : 
                               txn.type === 'withdraw' ? "bg-rose-50 text-rose-600" :
-                              txn.type === 'payout' ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-700"
+                              txn.type === 'payout' ? "bg-primary-50 text-primary-600" : "bg-slate-100 text-slate-700"
                             )}>
                               {txn.type}
                             </span>
@@ -1087,7 +1087,7 @@ export function SellerFinance() {
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-600 rounded-lg">
+              <div className="p-3 bg-primary-600 rounded-lg">
                 <GanttChartSquare className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold">Thuật toán Xếp hạng Tín nhiệm (Financial Rating Engine)</h3>
@@ -1116,7 +1116,7 @@ export function SellerFinance() {
             <div className="space-y-6 overflow-y-auto pr-1">
               <div className="flex justify-between items-center pb-4 border-b border-slate-150">
                 <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-blue-600" /> Cấp tín dụng & thấu chi
+                  <CreditCard className="w-5 h-5 text-primary-600" /> Cấp tín dụng & thấu chi
                 </h3>
                 <button 
                   onClick={() => setSelectedSeller(null)}
@@ -1179,7 +1179,7 @@ export function SellerFinance() {
                       type="checkbox" 
                       checked={isSyncingMisa} 
                       onChange={e => setIsSyncingMisa(e.target.checked)}
-                      className="rounded text-blue-600 focus:ring-0 cursor-pointer"
+                      className="rounded text-primary-600 focus:ring-0 cursor-pointer"
                     /> Đồng bộ MISA
                   </label>
                 </div>
@@ -1211,7 +1211,7 @@ export function SellerFinance() {
               </button>
               <button 
                 onClick={handleSaveCreditLimit}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold cursor-pointer border-0 shadow-xs"
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold cursor-pointer border-0 shadow-xs"
               >
                 Phê duyệt & Áp dụng
               </button>
@@ -1228,7 +1228,7 @@ export function SellerFinance() {
             {/* Wizard Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
-                <Banknote className="w-5 h-5 text-blue-600" />
+                <Banknote className="w-5 h-5 text-primary-600" />
                 <div>
                   <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
                     Quy trình duyệt ứng vốn giải ngân
@@ -1255,14 +1255,14 @@ export function SellerFinance() {
                 <div key={s.step} className="flex items-center gap-1">
                   <span className={cn(
                     "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold",
-                    wizardStep === s.step ? "bg-blue-600 text-white" : 
+                    wizardStep === s.step ? "bg-primary-600 text-white" : 
                     wizardStep > s.step ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-500"
                   )}>
                     {s.step}
                   </span>
                   <span className={cn(
                     "text-[10px] font-bold",
-                    wizardStep === s.step ? "text-blue-600" : 
+                    wizardStep === s.step ? "text-primary-600" : 
                     wizardStep > s.step ? "text-emerald-600" : "text-slate-400"
                   )}>
                     {s.label}
@@ -1322,7 +1322,7 @@ export function SellerFinance() {
                     </div>
                     <div className="flex justify-between text-xs font-bold pt-2.5 border-t border-slate-200 text-slate-900">
                       <span>Thực nhận chuyển khoản Seller:</span>
-                      <span className="text-blue-600 text-sm">{formatCurrency(selectedPayout.amount - selectedPayout.discountFee)}</span>
+                      <span className="text-primary-600 text-sm">{formatCurrency(selectedPayout.amount - selectedPayout.discountFee)}</span>
                     </div>
                   </div>
 
@@ -1424,7 +1424,7 @@ export function SellerFinance() {
                   <button 
                     onClick={handleNextWizardStep}
                     disabled={wizardStep === 3 && otpCode.length < 4}
-                    className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer border-0 shadow-xs disabled:opacity-40"
+                    className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg cursor-pointer border-0 shadow-xs disabled:opacity-40"
                   >
                     {isSigning ? '🔄 Đang ký số...' : 'Tiếp tục ➔'}
                   </button>
@@ -1456,7 +1456,7 @@ export function SellerFinance() {
               </button>
             </div>
             <div className="p-6 space-y-5">
-              <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex justify-between items-center">
+              <div className="bg-primary-50 border border-primary-100 p-4 rounded-lg flex justify-between items-center">
                 <span className="text-xs font-bold text-blue-800">Số dư khả dụng</span>
                 <span className="text-lg font-black text-blue-700">{formatCurrency(walletBalance)}</span>
               </div>
@@ -1481,7 +1481,7 @@ export function SellerFinance() {
                 </button>
                 <button 
                   onClick={handleRequestWithdrawal}
-                  className="flex-[2] py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer border-0 shadow-xs"
+                  className="flex-[2] py-3 bg-primary-600 text-white font-bold rounded-lg hover:bg-primary-700 cursor-pointer border-0 shadow-xs"
                 >
                   Xác nhận rút tiền
                 </button>

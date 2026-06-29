@@ -240,7 +240,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
             ([mode, Icon, label]) => (
               <button key={mode} onClick={() => switchMode(mode)}
                 className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all',
-                  viewMode === mode ? 'bg-blue-600 text-white shadow' : 'text-white/50 hover:text-white hover:bg-white/10')}>
+                  viewMode === mode ? 'bg-primary-600 text-white shadow' : 'text-white/50 hover:text-white hover:bg-white/10')}>
                 <Icon className="w-3.5 h-3.5" />{label}
               </button>
             )
@@ -250,7 +250,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
         <div className="flex items-center gap-2">
           {saveMsg && <span className="text-xs text-emerald-400 font-bold animate-pulse">{saveMsg}</span>}
           <button onClick={handleSave} disabled={isSaving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg text-xs font-bold transition-all active:scale-95">
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 rounded-lg text-xs font-bold transition-all active:scale-95">
             {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             {isSaving ? 'Đang lưu...' : 'Lưu (Ctrl+S)'}
           </button>
@@ -358,7 +358,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                     [&_li]:my-1
                     [&_blockquote]:border-l-4 [&_blockquote]:border-blue-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-500 [&_blockquote]:my-4
                     [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:text-sm [&_pre]:overflow-x-auto [&_pre]:my-4
-                    [&_a]:text-blue-600 [&_a]:underline [&_a]:cursor-pointer
+                    [&_a]:text-primary-600 [&_a]:underline [&_a]:cursor-pointer
                     [&_hr]:border-slate-200 [&_hr]:my-6
                     [&_img]:rounded-lg [&_img]:max-w-full [&_img]:shadow-sm
                     focus:ring-0"
@@ -394,7 +394,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
                       [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:text-xl [&_h3]:font-bold
                       [&_blockquote]:border-l-4 [&_blockquote]:border-blue-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-500
                       [&_pre]:bg-slate-900 [&_pre]:text-emerald-400 [&_pre]:p-4 [&_pre]:rounded-lg
-                      [&_a]:text-blue-600 [&_a]:underline [&_img]:rounded-lg [&_img]:max-w-full"
+                      [&_a]:text-primary-600 [&_a]:underline [&_img]:rounded-lg [&_img]:max-w-full"
                     dangerouslySetInnerHTML={{ __html: viewMode === 'preview'
                       ? (editorRef.current?.innerHTML || htmlSource)
                       : htmlSource }}
@@ -439,7 +439,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
             </div>
             <div className="flex gap-2 pt-2">
               <button onClick={() => setShowLinkDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
-              <button onClick={insertLink} className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-500">Chèn</button>
+              <button onClick={insertLink} className="flex-1 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-500">Chèn</button>
             </div>
           </div>
         </div>
@@ -476,7 +476,7 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
             </div>
             <div className="flex gap-2 pt-2">
               <button onClick={() => setShowImageDialog(false)} className="flex-1 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
-              <button onClick={insertImage} disabled={!imageUrl} className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-500 disabled:opacity-40">Chèn</button>
+              <button onClick={insertImage} disabled={!imageUrl} className="flex-1 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-500 disabled:opacity-40">Chèn</button>
             </div>
           </div>
         </div>

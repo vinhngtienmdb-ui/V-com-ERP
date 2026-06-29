@@ -16,13 +16,13 @@ interface LogEntry {
 }
 
 const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  'order.status_changed':        { label: 'CẬP NHẬT ĐH',    color: 'text-blue-700 bg-blue-50 border-blue-200' },
+  'order.status_changed':        { label: 'CẬP NHẬT ĐH',    color: 'text-blue-700 bg-primary-50 border-blue-200' },
   'order.created':               { label: 'TẠO ĐH',         color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
   'finance.transaction_created': { label: 'TÀI CHÍNH',      color: 'text-violet-700 bg-violet-50 border-violet-200' },
   'product.created':             { label: 'THÊM SP',        color: 'text-teal-700 bg-teal-50 border-teal-200' },
   'product.updated':             { label: 'SỬA SP',         color: 'text-teal-700 bg-teal-50 border-teal-200' },
-  'settings.updated':            { label: 'CÀI ĐẶT',       color: 'text-blue-600 bg-orange-50 border-orange-200' },
-  'site_config.updated':         { label: 'CẤU HÌNH',      color: 'text-blue-600 bg-orange-50 border-orange-200' },
+  'settings.updated':            { label: 'CÀI ĐẶT',       color: 'text-primary-600 bg-orange-50 border-orange-200' },
+  'site_config.updated':         { label: 'CẤU HÌNH',      color: 'text-primary-600 bg-orange-50 border-orange-200' },
   'request.submitted':           { label: 'GỬI ĐX',        color: 'text-amber-700 bg-amber-50 border-amber-200' },
   'request.approved':            { label: 'PHÊ DUYỆT',     color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
   'request.rejected':            { label: 'TỪ CHỐI',       color: 'text-red-700 bg-red-50 border-red-200' },

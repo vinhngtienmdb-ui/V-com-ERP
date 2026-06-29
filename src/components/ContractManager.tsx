@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
  MessageSquare, Send, File, Download, Reply,
   CornerDownRight, XCircle,
@@ -146,7 +146,22 @@ export function ContractManager() {
  const [newTempFields, setNewTempFields] = useState('');
  const [newTempVersion, setNewTempVersion] = useState('v1.0');
 
- // Operational handlers
+   // Close modals on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedContract(null);
+        setSigningModalOpen(false);
+        setShowCreateModal(false);
+        setIsAddingStepModal(false);
+        setIsAddingTemplateModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedContract, signingModalOpen, showCreateModal, isAddingStepModal, isAddingTemplateModal]);
+
+  // Operational handlers
  const handleAddWorkflowStep = () => {
    if (!newStepName.trim()) return;
    
@@ -407,7 +422,7 @@ export function ContractManager() {
               "px-3 py-1.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1.5",
               selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : 
               selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600 border border-amber-200" : 
-              selectedContract.status === "expiring_soon" ? "bg-orange-50 text-blue-600 border border-blue-200" :
+              selectedContract.status === "expiring_soon" ? "bg-orange-50 text-primary-600 border border-blue-200" :
               selectedContract.status === "returned" ? "bg-slate-100 text-slate-700 border border-slate-300" : "bg-red-50 text-red-600 border border-red-200"
               )}>
               {selectedContract.status === 'active' && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -426,7 +441,7 @@ export function ContractManager() {
                <p className={cn(
                   "text-xs font-bold",
                   selectedContract.status === 'expired' ? "text-red-600" :
-                  selectedContract.status === 'expiring_soon' ? "text-blue-600" : "text-slate-900"
+                  selectedContract.status === 'expiring_soon' ? "text-primary-600" : "text-slate-900"
                )}>{selectedContract.expiry}</p>
             </div>
             
@@ -439,7 +454,7 @@ export function ContractManager() {
 
         {/* Action Panel for Pending */}
         {selectedContract.status === 'pending' && (
-          <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-lg space-y-3">
+          <div className="bg-primary-50/50 p-4 border border-primary-100 rounded-lg space-y-3">
              <h4 className="text-xs font-bold uppercase text-blue-800 tracking-wider mb-2">Thao tác phê duyệt</h4>
              <button onClick={() => handleStatusChange(selectedContract.id, "active")} className="w-full px-4 py-2 bg-emerald-600 text-white rounded font-bold text-xs hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-2">
                <CheckCircle2 className="w-4 h-4" /> Phê duyệt hồ sơ
@@ -511,7 +526,7 @@ export function ContractManager() {
                 </div>
                 <p className="text-xs text-slate-700">{cmt.content}</p>
                 
-                <button className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition-opacity">
+                <button className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary-600 transition-opacity">
                   <Reply className="w-3 h-3" />
                 </button>
              </div>
@@ -572,7 +587,7 @@ export function ContractManager() {
  
  <div className="p-6 space-y-5">
  <div className="p-4 bg-slate-100 border border-slate-200 rounded-lg">
- <p className="text-xs text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-blue-900">{selectedContract?.title}</strong></p>
+ <p className="text-xs text-blue-800 font-medium leading-relaxed">Bạn đang thực hiện ký số cho tài liệu: <br/><strong className="text-primary-900">{selectedContract?.title}</strong></p>
  </div>
 
  <div>
@@ -699,7 +714,7 @@ export function ContractManager() {
  "px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
  doc.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'pending' ? "bg-amber-50 text-amber-600" :
- doc.status === "expiring_soon" ? "bg-orange-50 text-blue-600" : doc.status === "returned" ? "bg-slate-100 text-slate-700" : "bg-red-50 text-red-600"
+ doc.status === "expiring_soon" ? "bg-orange-50 text-primary-600" : doc.status === "returned" ? "bg-slate-100 text-slate-700" : "bg-red-50 text-red-600"
  )}>
  {doc.status === 'active' && <CheckCircle2 className="w-3 h-3" />}
  {doc.status === 'pending' && <Clock className="w-3 h-3" />}
@@ -714,7 +729,7 @@ export function ContractManager() {
  <div className="mt-1.5">
  <span className={cn(
  "px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1",
- doc.signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
+ doc.signatureStatus === 'signed' ? "bg-slate-100 text-primary-600" : "bg-slate-100 text-slate-700"
  )}>
  <PenTool className="w-3 h-3" />
  {doc.signatureStatus === 'signed' ? 'Đã ký số' : 'Chưa ký'}
@@ -726,7 +741,7 @@ export function ContractManager() {
  <p className={cn(
  "text-xs font-mono font-medium",
  doc.status === 'expired' ? "text-red-500" :
- doc.status === 'expiring_soon' ? "text-blue-600 font-bold" : "text-slate-700"
+ doc.status === 'expiring_soon' ? "text-primary-600 font-bold" : "text-slate-700"
  )}>{doc.expiry}</p>
  </td>
  </tr>

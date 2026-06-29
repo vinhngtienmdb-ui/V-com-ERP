@@ -1145,7 +1145,7 @@ export function DeviceLeasing() {
               <h3 className="text-2xl font-black text-slate-900 mt-2">{stats.activeLeaseNum} / {stats.totalApplications}</h3>
               <p className="text-[11px] text-slate-500 mt-2">Tổng số hồ sơ trả góp đang bàn giao máy</p>
             </div>
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div className="p-3 bg-primary-50 text-primary-600 rounded-lg">
               <Smartphone className="w-5 h-5" />
             </div>
           </div>
@@ -1411,7 +1411,7 @@ export function DeviceLeasing() {
                                   <>
                                     <button 
                                       onClick={() => handleUpdateStatus(app.id, 'approved')}
-                                      className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg  active:scale-95 transition-all"
+                                      className="p-1.5 bg-primary-50 hover:bg-blue-100 text-primary-600 rounded-lg  active:scale-95 transition-all"
                                       title="Phê duyệt hồ sơ"
                                     >
                                       <Check className="w-3.5 h-3.5" />
@@ -2222,7 +2222,7 @@ export function DeviceLeasing() {
                     }}
                     className={cn(
                       "py-2 px-3 rounded-lg border font-bold text-center transition-all cursor-pointer",
-                      notifChannel === 'zalo' ? "bg-blue-600/20 border-blue-500 text-blue-400" : "bg-slate-900 border-slate-800 text-slate-450 hover:bg-slate-850"
+                      notifChannel === 'zalo' ? "bg-primary-600/20 border-blue-500 text-blue-400" : "bg-slate-900 border-slate-800 text-slate-450 hover:bg-slate-850"
                     )}
                   >
                     Zalo ZNS

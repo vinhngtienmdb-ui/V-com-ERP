@@ -53,7 +53,7 @@ const CopyButton = ({ value }: { value: string }) => {
  return (
  <button 
  onClick={handleCopy}
- className="p-1 hover:bg-slate-100 rounded-md transition-colors text-slate-500 hover:text-orange-700"
+ className="p-1 hover:bg-slate-100 rounded-md transition-colors text-slate-500 hover:text-primary-600"
  title="Copy"
  >
  {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -291,7 +291,7 @@ const CustomerDetailModal = ({
                   <div key={item.label} className="space-y-1">
                     <div className="flex justify-between items-center text-[10px]">
                       <span className="text-orange-700 font-bold uppercase tracking-tighter">{item.label}</span> 
-                      <span className="font-black text-blue-900">{item.score}/5</span>
+                      <span className="font-black text-primary-900">{item.score}/5</span>
                     </div>
                     <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                       <div className="h-full bg-slate-800 transition-all" style={{ width: `${(item.score / 5) * 100}%` }} />
@@ -314,12 +314,12 @@ const CustomerDetailModal = ({
                   <span className="text-lg font-bold text-emerald-900 leading-none tracking-tight">{formatCurrency(customer.walletBalance || 0)}</span>
                 </div>
                 
-                <div className="bg-white p-3 rounded-lg border border-blue-100/50 relative overflow-hidden">
+                <div className="bg-white p-3 rounded-lg border border-primary-100/50 relative overflow-hidden">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Ví Khuyến Mại</span>
-                    <button className="text-[9px] text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-blue-50 relative z-10">Lịch sử</button>
+                    <span className="text-[10px] text-primary-600 font-bold uppercase tracking-wider">Ví Khuyến Mại</span>
+                    <button className="text-[9px] text-primary-600 border border-blue-200 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-primary-50 relative z-10">Lịch sử</button>
                   </div>
-                  <span className="text-lg font-bold text-blue-900 leading-none tracking-tight">{formatCurrency(customer.promoBalance || 0)}</span>
+                  <span className="text-lg font-bold text-primary-900 leading-none tracking-tight">{formatCurrency(customer.promoBalance || 0)}</span>
                 </div>
 
                 <div className="bg-white p-3 rounded-lg border border-purple-100/50 relative overflow-hidden">
@@ -589,7 +589,7 @@ const CustomerDetailModal = ({
                               </span>
                               <span className={cn(
                                 "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border",
-                                lease.status === 'active' ? "bg-blue-50 text-blue-700 border-blue-200" :
+                                lease.status === 'active' ? "bg-primary-50 text-blue-700 border-blue-200" :
                                 lease.status === 'late' ? "bg-red-50 text-red-700 border-red-200" : "bg-slate-100 text-slate-600 border-slate-200"
                               )}>
                                 HĐ: {lease.status === 'active' ? 'Đang thuê' : lease.status === 'late' ? 'Trễ hạn' : lease.status}
@@ -672,7 +672,7 @@ const CustomerDetailModal = ({
                         <span className={cn(
                           "inline-block mt-2 px-2.5 py-0.5 rounded text-[10px] font-black uppercase border",
                           customerSeller.tier === 'AAA' ? "bg-amber-50 text-amber-700 border-amber-200" :
-                          customerSeller.tier === 'AA' ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-blue-50 text-blue-700 border-blue-200"
+                          customerSeller.tier === 'AA' ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-primary-50 text-blue-700 border-blue-200"
                         )}>
                           Tier {customerSeller.tier}
                         </span>
@@ -731,7 +731,7 @@ const CustomerDetailModal = ({
                                     <span className={cn(
                                       "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border",
                                       pay.status === 'disbursed' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                      pay.status === 'approved' ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-amber-50 text-amber-700 border-amber-200"
+                                      pay.status === 'approved' ? "bg-primary-50 text-blue-700 border-blue-200" : "bg-amber-50 text-amber-700 border-amber-200"
                                     )}>
                                       {pay.status === 'disbursed' ? 'Đã chi tiền' : pay.status === 'approved' ? 'Đã duyệt' : 'Chờ duyệt'}
                                     </span>
@@ -1050,14 +1050,14 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
                   <div>
                     <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
-                    <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                    <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
                     <div className="flex items-center gap-2 mt-1">
-                      <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                      <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                       <span className="text-sm font-bold text-slate-700">=</span>
-                      <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none placeholder:text-slate-500" />
+                      <input type="number" defaultValue={10} className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none placeholder:text-slate-500" />
                       <span className="text-xs text-slate-600">Điểm</span>
                     </div>
                   </div>
@@ -1066,11 +1066,11 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
                   <div>
                     <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
-                    <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                    <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
-                    <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" />
+                    <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                 </div>
               </DraggableGrid>
@@ -1140,7 +1140,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   </div>
                 </div>
                 <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
-                  <h4 className="font-bold text-blue-900">Facebook Shop</h4>
+                  <h4 className="font-bold text-primary-900">Facebook Shop</h4>
                   <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs font-bold text-orange-700 bg-white px-2 py-1 rounded">1,250 Leads</span>
@@ -1221,7 +1221,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
             type="text" 
             value={formData.name}
             onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" 
             placeholder="Nguyễn Văn A"
           />
         </div>
@@ -1232,7 +1232,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
             type="text" 
             value={formData.phone}
             onChange={e => setFormData({...formData, phone: e.target.value})}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" 
             placeholder="0901234567"
           />
         </div>
@@ -1242,7 +1242,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
             type="email" 
             value={formData.email}
             onChange={e => setFormData({...formData, email: e.target.value})}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-600 outline-none" 
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" 
             placeholder="email@example.com"
           />
         </div>
@@ -1340,6 +1340,21 @@ export function Customers() {
  return newStages;
  });
  };
+
+    // Close modals on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedCustomer(null);
+        setAiQuickModalCustomer(null);
+        setShowConfigModal(false);
+        setShowAddModal(false);
+        setAdjustingCustomer(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCustomer, aiQuickModalCustomer, showConfigModal, showAddModal, adjustingCustomer]);
 
   // Debounce search query
   useEffect(() => {
@@ -1696,7 +1711,7 @@ export function Customers() {
  </div>
  <button 
  onClick={() => setShowAddModal(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Users className="w-4 h-4" /> Thêm Khách hàng
  </button>
@@ -1855,7 +1870,7 @@ export function Customers() {
  </button>
  </div>
  </div>
- <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
+ <button className="text-xs font-semibold text-primary-600 flex items-center gap-2 hover:underline">
  Xuất tệp CRM <ExternalLink className="w-3 h-3" />
  </button>
  </div>
@@ -2105,7 +2120,7 @@ export function Customers() {
  onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
  className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-300 cursor-grab hover:shadow-sm transition-all group"
  >
- <h4 className="font-bold text-sm text-slate-900 group-hover:text-orange-700 transition-colors">{deal.client}</h4>
+ <h4 className="font-bold text-sm text-slate-900 group-hover:text-primary-600 transition-colors">{deal.client}</h4>
  <p className="text-xs text-slate-600 mt-1 line-clamp-2">{deal.pd}</p>
  <div className="mt-3 flex items-center justify-between">
  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>

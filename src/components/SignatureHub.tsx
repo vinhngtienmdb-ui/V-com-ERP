@@ -168,6 +168,20 @@ export function SignatureHub() {
     }
   };
 
+    // Close modals on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSigningModalOpen(false);
+        setSelectedDoc(null);
+        setVerificationModalOpen(false);
+        setVerifyingDoc(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [signingModalOpen, selectedDoc, verificationModalOpen, verifyingDoc]);
+
   useEffect(() => {
     fetchData();
   }, [userEmail]);
@@ -369,7 +383,7 @@ export function SignatureHub() {
           <div className="relative z-10">
             <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
             <p className="text-4xl font-bold text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
-            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-blue-600">
+            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-primary-600">
               <CheckCircle2 className="w-3 h-3" /> Lưu trữ an toàn
             </div>
           </div>
@@ -409,7 +423,7 @@ export function SignatureHub() {
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
                 activeTab === tab.id 
-                  ? "bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600" 
+                  ? "bg-primary-50 text-blue-700 font-bold border-l-4 border-l-blue-600" 
                   : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
               )}
             >
@@ -505,7 +519,7 @@ export function SignatureHub() {
                               <span className="text-slate-500">→</span>
                               <div className="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded">Quản lý</div>
                               <span className="text-slate-500">→</span>
-                              <div className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded">Giám đốc</div>
+                              <div className="px-2 py-0.5 bg-primary-50 text-blue-700 text-[10px] font-bold rounded">Giám đốc</div>
                             </div>
                           </div>
                           <div className="flex -space-x-2 overflow-hidden mt-2">
@@ -535,7 +549,7 @@ export function SignatureHub() {
                           {doc.status === 'pending' && (
                             <button 
                               onClick={() => handleSign(doc)}
-                              className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-1.5 ml-auto"
+                              className="px-3 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-primary-700 transition-colors flex items-center gap-1.5 ml-auto"
                             >
                               <Key className="w-3.5 h-3.5" /> Ký ngay
                             </button>
@@ -546,7 +560,7 @@ export function SignatureHub() {
                               disabled={isVerifying && verifyingDoc?.docId === doc.docId}
                               className="px-3 py-1.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-1.5 ml-auto disabled:opacity-50"
                             >
-                              {isVerifying && verifyingDoc?.docId === doc.docId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />}
+                              {isVerifying && verifyingDoc?.docId === doc.docId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-primary-600" />}
                               Xác thực chữ ký
                             </button>
                           )}
@@ -582,7 +596,7 @@ export function SignatureHub() {
                   <div key={idx} className="border border-slate-200 rounded-lg p-5">
                     <h4 className="font-bold text-slate-900 mb-4 flex items-center justify-between">
                       {item.type}
-                      <button className="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg font-bold hover:bg-blue-100 transition-colors">Chỉnh sửa</button>
+                      <button className="text-xs text-primary-600 bg-primary-50 px-2.5 py-1 rounded-lg font-bold hover:bg-blue-100 transition-colors">Chỉnh sửa</button>
                     </h4>
                     <div className="flex flex-wrap items-start gap-4">
                       {item.flow.map((role, rIdx) => (
@@ -626,7 +640,7 @@ export function SignatureHub() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {certificates.map(cert => (
-                  <div key={cert.user_id} className="border border-slate-200 rounded-lg p-5 flex items-start gap-4 hover:border-blue-300 transition-colors bg-white shadow-sm">
+                  <div key={cert.user_id} className="border border-slate-200 rounded-lg p-5 flex items-start gap-4 hover:border-primary-300 transition-colors bg-white shadow-sm">
                     <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-300 flex items-center justify-center shrink-0">
                       <UserCheck className="w-6 h-6 text-blue-500" />
                     </div>
@@ -643,7 +657,7 @@ export function SignatureHub() {
                       </p>
                       <div className="flex items-center justify-between text-xs font-semibold mt-3">
                         <span className="text-slate-500">Tạo: {new Date(cert.created_at).toLocaleDateString('vi-VN')}</span>
-                        <span className="text-blue-600">RSA 2048-bit</span>
+                        <span className="text-primary-600">RSA 2048-bit</span>
                       </div>
                     </div>
                   </div>
@@ -696,15 +710,15 @@ export function SignatureHub() {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600 animate-pulse" />
+                <ShieldCheck className="w-5 h-5 text-primary-600 animate-pulse" />
                 Xác nhận Ký số Mật mã học (RSA)
               </h3>
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-primary-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800 font-bold leading-relaxed">Tài liệu: {selectedDoc?.title}</p>
-                <p className="text-xs text-blue-600 font-mono mt-1">Ref ID: {selectedDoc?.docId || selectedDoc?.id}</p>
+                <p className="text-xs text-primary-600 font-mono mt-1">Ref ID: {selectedDoc?.docId || selectedDoc?.id}</p>
               </div>
 
               {!userKeyPair ? (
@@ -757,7 +771,7 @@ export function SignatureHub() {
               <button 
                 onClick={confirmSign}
                 disabled={isSigningInProcess || !userKeyPair || !privateKeyInput}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-[13px] font-bold hover:bg-blue-700 shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+                className="px-5 py-2.5 bg-primary-600 text-white rounded-lg text-[13px] font-bold hover:bg-primary-700 shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
               >
                 {isSigningInProcess ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
                 {isSigningInProcess ? 'Đang thực thi ký số...' : 'Chấp nhận Ký số'}
@@ -773,7 +787,7 @@ export function SignatureHub() {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600" />
+                <ShieldCheck className="w-5 h-5 text-primary-600" />
                 Kết quả kiểm tra Tính toàn vẹn chữ ký số
               </h3>
             </div>

@@ -329,7 +329,7 @@ export function SellerManagement() {
  <div className="animate-in fade-in duration-300 space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm space-y-6">
  <h3 className="font-bold text-[#111827] flex items-center gap-2 text-sm border-b border-[#F3F4F6] pb-3">
- <Briefcase className="w-4 h-4 text-[#2563EB]" /> Cấu hình Nhà bán hàng
+ <Briefcase className="w-4 h-4 text-primary-600" /> Cấu hình Nhà bán hàng
  </h3>
 
  <div className="space-y-6">
@@ -387,7 +387,7 @@ export function SellerManagement() {
  type="number" 
  value={sellerUploadLimit}
  onChange={(e) => setSellerUploadLimit(e.target.value)}
- className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600" 
  />
  </div>
  <div>
@@ -395,7 +395,7 @@ export function SellerManagement() {
  <select 
  value={sellerPayoutSchedule}
  onChange={(e) => setSellerPayoutSchedule(e.target.value)}
- className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 bg-white"
  >
  <option value="daily">Hàng ngày (Daily)</option>
  <option value="weekly">Hàng tuần (Weekly)</option>
@@ -416,7 +416,7 @@ export function SellerManagement() {
  <select 
  value={productModeration}
  onChange={(e) => setProductModeration(e.target.value)}
- className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 bg-white"
  >
  <option value="auto">Tự động duyệt (AI Auto-Approve)</option>
  <option value="manual">Duyệt thủ công (Manual review)</option>
@@ -427,7 +427,7 @@ export function SellerManagement() {
  <select 
  value={requiredFulfillment ? "yes" : "no"}
  onChange={(e) => setRequiredFulfillment(e.target.value === "yes")}
- className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 bg-white"
  >
  <option value="no">Không bắt buộc (Nhà bán tự ship)</option>
  <option value="yes">Bắt buộc gửi kho xử lý</option>
@@ -463,7 +463,7 @@ export function SellerManagement() {
  type="number" step="0.1"
  value={minRatingActive}
  onChange={(e) => setMinRatingActive(e.target.value)}
- className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600" 
  />
  <span className="absolute right-3 top-1.5 text-sm text-slate-500">⭐</span>
  </div>
@@ -475,7 +475,7 @@ export function SellerManagement() {
  type="number"
  value={maxPenaltyPoints}
  onChange={(e) => setMaxPenaltyPoints(e.target.value)}
- className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pl-3 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600" 
  />
  <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs uppercase pt-[2px]">Điểm</span>
  </div>
@@ -492,7 +492,7 @@ export function SellerManagement() {
  <select 
  value={sellerShippingMode}
  onChange={(e) => setSellerShippingMode(e.target.value)}
- className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] bg-white"
+ className="w-full p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 bg-white"
  >
  <option value="platform">Sàn lấy và giao hàng (Bưu cục sàn)</option>
  <option value="custom">Nhà bán tự cấu hình đối tác vận chuyển</option>
@@ -506,7 +506,7 @@ export function SellerManagement() {
  type="number"
  value={slaHours}
  onChange={(e) => setSlaHours(e.target.value)}
- className="w-full p-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600" 
  />
  <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs uppercase pt-[2px]">Giờ</span>
  </div>
@@ -518,7 +518,7 @@ export function SellerManagement() {
  type="number"
  value={autoReturnLimit}
  onChange={(e) => setAutoReturnLimit(e.target.value)}
- className="w-full p-2 pr-12 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" 
+ className="w-full p-2 pr-12 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600" 
  />
  <span className="absolute right-3 top-2 text-sm text-slate-500 font-bold text-xs pt-[2px]">VNĐ</span>
  </div>
@@ -532,7 +532,7 @@ export function SellerManagement() {
  alert('Đã lưu cấu hình Module Nhà bán hàng!');
  setShowConfig(false);
  }}
- className="px-6 py-2.5 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
+ className="px-6 py-2.5 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95"
  >
  Lưu cấu hình
  </button>
@@ -597,23 +597,23 @@ export function SellerManagement() {
  <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
  <button 
  onClick={() => setActiveTab('all')}
- className={cn("px-4 py-2 text-xs font-semibold transition-all", activeTab === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
+ className={cn("px-4 py-2 text-xs font-semibold transition-all", activeTab === 'all' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Tất cả Đối tác</button>
  <button 
  onClick={() => setActiveTab('seller')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'seller' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'seller' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Nhà bán (Online)</button>
  <button 
  onClick={() => setActiveTab('dealer')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'dealer' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'dealer' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Đại lý (Offline)</button>
  <button 
  onClick={() => setActiveTab('factory')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'factory' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'factory' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Nhà máy (M2C)</button>
  <button 
  onClick={() => setActiveTab('pending')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'pending' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300 transition-all", activeTab === 'pending' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563] hover:bg-slate-50")}
  >Đang chờ duyệt</button>
  </div>
  </div>
@@ -641,13 +641,13 @@ export function SellerManagement() {
  <tr key={seller.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#2563EB] font-bold text-sm border border-slate-300">
+ <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center text-primary-600 font-bold text-sm border border-slate-300">
  {seller?.name?.charAt(0) || '?'}
  </div>
  <div>
  <div className="flex items-center gap-2">
  <p 
- className="text-sm font-semibold text-[#111827] cursor-pointer hover:text-orange-700 transition-colors"
+ className="text-sm font-semibold text-[#111827] cursor-pointer hover:text-primary-600 transition-colors"
  onClick={() => setSelectedSeller(seller)}
  >{seller.name}</p>
  {seller.partnerType === 'seller' ? (
@@ -678,7 +678,7 @@ export function SellerManagement() {
  <td className="px-6 py-4 text-right">
  <p className="text-sm font-bold text-[#111827]">{formatCurrency(seller.gmv)}</p>
  <p className="text-[12px] font-bold text-emerald-600 mt-1">{formatCurrency(seller.walletBalance || 0)} <span className="text-[10px] font-medium text-slate-600">Wallet</span></p>
- <p className="text-[10px] text-[#2563EB] font-medium mt-0.5">Hoa hồng: {seller.commissionRate}%</p>
+ <p className="text-[10px] text-primary-600 font-medium mt-0.5">Hoa hồng: {seller.commissionRate}%</p>
  </td>
  <td className="px-6 py-4">
  <div className="flex flex-col items-center">
@@ -697,7 +697,7 @@ export function SellerManagement() {
  setApprovalType(seller.partnerType || 'seller');
  setApprovingSeller(seller);
  }}
- className="flex-1 px-3 py-1.5 bg-[#2563EB] text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm"
+ className="flex-1 px-3 py-1.5 bg-primary-600 text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm"
  >
  Duyệt hồ sơ
  </button>
@@ -1002,7 +1002,7 @@ export function SellerManagement() {
  <div className="space-y-4">
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mô hình kinh doanh</label>
- <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
+ <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500">
  <option>Cá nhân kinh doanh</option>
  <option>Hộ kinh doanh</option>
  <option>Công ty / Doanh nghiệp</option>
@@ -1010,15 +1010,15 @@ export function SellerManagement() {
  </div>
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mã số thuế</label>
- <input type="text" defaultValue={approvingSeller.taxCode} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <input type="text" defaultValue={approvingSeller.taxCode} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ đăng ký Thuế</label>
- <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ Cửa hàng / Kho hàng</label>
- <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  </div>
  </div>
@@ -1069,11 +1069,11 @@ export function SellerManagement() {
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mức phí Sàn mặc định (%)</label>
- <input type="number" defaultValue={5} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600" />
+ <input type="number" defaultValue={5} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hạn mức hiển thị Sản phẩm (PIM Limit)</label>
- <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600">
+ <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500">
  <option>1,000 Sản phẩm (Cơ bản)</option>
  <option>5,000 Sản phẩm (Pro)</option>
  <option>Không giới hạn (Enterprise)</option>
@@ -1081,11 +1081,11 @@ export function SellerManagement() {
  </div>
  <div className="pt-2">
  <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer">
- <input type="checkbox" defaultChecked className="rounded text-orange-700 border-slate-400 focus:ring-orange-600" />
+ <input type="checkbox" defaultChecked className="rounded text-orange-700 border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800">Tự động duyệt SP đẩy lên hệ thống</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer mt-2">
- <input type="checkbox" className="rounded text-orange-700 border-slate-400 focus:ring-orange-600" />
+ <input type="checkbox" className="rounded text-orange-700 border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800">Mở quyền tham gia Mega Flash Sale</span>
  </label>
  </div>

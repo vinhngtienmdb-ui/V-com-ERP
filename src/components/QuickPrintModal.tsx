@@ -117,7 +117,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
             </div>
           )}
           {printStatus === 'printing' && (
-            <div className="bg-blue-600 text-white text-xs font-black px-6 py-2.5 flex items-center gap-2">
+            <div className="bg-primary-600 text-white text-xs font-black px-6 py-2.5 flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin" />
               ĐANG GỬI TẬP LỆNH IN K80 ĐỂ IN NATIVE...
             </div>

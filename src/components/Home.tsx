@@ -135,7 +135,7 @@ const ALL_SUB_MODULES = navGroups.flatMap(group => group.items);
 const COLOR_MAP: Record<string, string> = {
   orange: 'bg-orange-500 text-white shadow-sm shadow-orange-100',
   emerald: 'bg-emerald-500 text-white shadow-sm shadow-emerald-100',
-  blue: 'bg-blue-500 text-white shadow-sm shadow-blue-100',
+  blue: 'bg-primary-500 text-white shadow-sm shadow-blue-100',
   indigo: 'bg-indigo-500 text-white shadow-sm shadow-indigo-100',
   rose: 'bg-rose-500 text-white shadow-sm shadow-rose-100',
   violet: 'bg-violet-500 text-white shadow-sm shadow-violet-100',
@@ -219,11 +219,11 @@ export function Home() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-lg border border-slate-200 shadow-sm mt-1">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Enterprise OS</span>
+            <span className="text-[10px] font-extrabold text-primary-600 bg-primary-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Enterprise OS</span>
             <span className="text-[10px] font-medium text-slate-400">Ver 2.50</span>
           </div>
           <h2 className="font-serif text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-            VComm ERP <span className="text-blue-600 font-sans font-bold">Intelligence</span>
+            VComm ERP <span className="text-primary-600 font-sans font-bold">Intelligence</span>
           </h2>
         </div>
 
@@ -248,7 +248,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'chuc_nang'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -261,7 +261,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'danh_dau'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -274,7 +274,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'tat_ca'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -294,7 +294,7 @@ export function Home() {
               <button 
                 key={path}
                 onClick={() => navigate(path)}
-                className="hover:text-blue-600 hover:bg-blue-50/50 px-2 py-0.5 rounded-md transition-all font-bold flex items-center gap-1"
+                className="hover:text-primary-600 hover:bg-primary-50/50 px-2 py-0.5 rounded-md transition-all font-bold flex items-center gap-1"
               >
                 <mod.icon className="w-3 h-3 text-slate-500" />
                 {mod.label}
@@ -342,7 +342,7 @@ export function Home() {
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
+                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-primary-600 transition-colors tracking-tight">
                           {item.label}
                         </h4>
 
@@ -352,7 +352,7 @@ export function Home() {
                         </p>
 
                         {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />
                       </div>
                     );
                   })}
@@ -400,7 +400,7 @@ export function Home() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-bold text-slate-900 text-base mb-2 tracking-tight group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-bold text-slate-900 text-base mb-2 tracking-tight group-hover:text-primary-600 transition-colors">
                       {group.title}
                     </h3>
 
@@ -410,7 +410,7 @@ export function Home() {
                     </p>
 
                     {/* Fancy indicator bar */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />
                   </button>
                 );
               })}
@@ -440,7 +440,7 @@ export function Home() {
                   <p className="text-sm font-semibold text-slate-500">Chưa có ứng dụng nào được đánh dấu</p>
                   <button 
                     onClick={() => setActiveTab('chuc_nang')} 
-                    className="text-xs font-bold text-blue-600 hover:underline hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
+                    className="text-xs font-bold text-primary-600 hover:underline hover:text-blue-700 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100"
                   >
                     Duyệt các chức năng chính ngay
                   </button>
@@ -474,7 +474,7 @@ export function Home() {
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
+                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-primary-600 transition-colors tracking-tight">
                           {item.label}
                         </h4>
 
@@ -484,7 +484,7 @@ export function Home() {
                         </p>
 
                         {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />
                       </div>
                     );
                   })}
@@ -535,7 +535,7 @@ export function Home() {
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
+                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-primary-600 transition-colors tracking-tight">
                           {item.label}
                         </h4>
 
@@ -545,7 +545,7 @@ export function Home() {
                         </p>
 
                         {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />
                       </div>
                     );
                   })}
@@ -569,7 +569,7 @@ export function Home() {
             <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Doanh nghiệp: Enterprise Edition</div>
           </div>
           <div className="flex gap-4">
-            <button onClick={() => setShowCopyright(true)} className="text-xs font-bold text-blue-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
+            <button onClick={() => setShowCopyright(true)} className="text-xs font-bold text-primary-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
               <Shield className="w-3.5 h-3.5" /> Bản quyền hệ thống
             </button>
             <button onClick={() => alert('Đang tải cẩm nang hướng dẫn sử dụng VComm ERP...')} className="text-xs font-bold text-slate-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
@@ -621,7 +621,7 @@ export function Home() {
 
               {/* Drawer body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-                <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 text-blue-700 p-3 rounded-lg border border-blue-100/50">
+                <p className="text-xs text-slate-500 leading-relaxed font-medium bg-primary-50/50 text-blue-700 p-3 rounded-lg border border-primary-100/50">
                   {selectedGroup.desc} Chọn một phân hệ nghiệp vụ ERP dưới đây để chuyển hướng điều hướng xử lý thông tin:
                 </p>
 
@@ -640,11 +640,11 @@ export function Home() {
                         className="group flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-500 rounded-lg transition-all duration-200 cursor-pointer"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-blue-50 group-hover:border-blue-100 group-hover:text-blue-600 flex items-center justify-center transition-colors shadow-xs">
+                          <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-primary-50 group-hover:border-primary-100 group-hover:text-primary-600 flex items-center justify-center transition-colors shadow-xs">
                             <mod.icon className="w-4 h-4" />
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{mod.label}</p>
+                            <p className="text-xs font-bold text-slate-800 group-hover:text-primary-600 transition-colors">{mod.label}</p>
                             <p className="text-[10px] text-slate-500 line-clamp-1 leading-normal max-w-[200px]">{mod.description}</p>
                           </div>
                         </div>
@@ -657,7 +657,7 @@ export function Home() {
                           >
                             <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(path) ? "fill-amber-400 text-amber-500" : "")} />
                           </button>
-                          <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all" />
                         </div>
                       </div>
                     );
@@ -716,7 +716,7 @@ export function Home() {
 
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Mã phần mềm (VComm Product ID)</span>
-                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md font-mono">VCOMM-ERP-ENT-2026</span>
+                    <span className="text-xs font-semibold text-primary-600 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded-md font-mono">VCOMM-ERP-ENT-2026</span>
                   </div>
 
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -795,13 +795,13 @@ export function Home() {
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Hệ thống phân tích báo cáo đơn hàng và cấu trúc sản phẩm BOM để xuất phiếu mua vật tư.</p>
                     <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
                       <div className="flex justify-between"><span>Phiếu kế hoạch:</span><span className="font-bold">MRP-2026-091</span></div>
-                      <div className="flex justify-between"><span>Nguyên liệu:</span><span className="font-bold text-blue-600">Thép mạ kẽm</span></div>
+                      <div className="flex justify-between"><span>Nguyên liệu:</span><span className="font-bold text-primary-600">Thép mạ kẽm</span></div>
                     </div>
                   </div>
 
                   {/* Item 2 */}
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 2: Lệnh sản xuất</p>
+                    <p className="text-[10px] font-bold text-primary-600 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 2: Lệnh sản xuất</p>
                     <h4 className="font-bold text-slate-800 text-sm">Chế tạo & Lắp ráp phân xưởng</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Phân bổ chỉ tiêu sản lượng theo dây chuyền lắp ráp công nghệ chính xác cao IoT.</p>
                     <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">

@@ -266,7 +266,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   type="text"
                   value={formState.id || ''}
                   onChange={(e) => setFormState((prev: any) => ({ ...prev, id: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3.5 py-1.5 text-sm bg-slate-50 font-mono font-bold focus:ring-2 focus:ring-orange-600/10 focus:border-slate-800 outline-none text-slate-700"
+                  className="w-full border border-slate-300 rounded-lg px-3.5 py-1.5 text-sm bg-slate-50 font-mono font-bold focus:ring-2 focus:ring-primary-500/10 focus:border-slate-800 outline-none text-slate-700"
                   placeholder="VD: LKS016"
                 />
                 <button 
@@ -289,7 +289,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   type="text"
                   value={formState.fullName || ''}
                   onChange={(e) => setFormState((prev: any) => ({ ...prev, fullName: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3.5 py-1.5 text-sm font-sans font-bold focus:ring-2 focus:ring-orange-600/10 focus:border-slate-800 outline-none text-slate-850"
+                  className="w-full border border-slate-300 rounded-lg px-3.5 py-1.5 text-sm font-sans font-bold focus:ring-2 focus:ring-primary-500/10 focus:border-slate-800 outline-none text-slate-850"
                   placeholder="VD: Mai Trần Đình Thi"
                 />
                 <button 
@@ -310,7 +310,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               <select
                 value={formState.status || 'active'}
                 onChange={(e) => setFormState((prev: any) => ({ ...prev, status: e.target.value }))}
-                className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-orange-600/10 focus:border-slate-800 outline-none text-slate-800 font-bold"
+                className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary-500/10 focus:border-slate-800 outline-none text-slate-800 font-bold"
               >
                 <option value="active">Đang làm việc</option>
                 <option value="on_boarding">Thử việc (Trial)</option>
@@ -327,7 +327,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               <select
                 value={formState.unitCode || 'TAM938A'}
                 onChange={(e) => setFormState((prev: any) => ({ ...prev, unitCode: e.target.value }))}
-                className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-orange-600/10 focus:border-slate-800 outline-none text-slate-800 font-bold"
+                className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary-500/10 focus:border-slate-800 outline-none text-slate-800 font-bold"
               >
                 <option value="TAM938A">TAM938A - Trụ sở HN</option>
                 <option value="VCOMM-SGN">VCOMM-SGN - Chi nhánh HCM</option>
@@ -341,10 +341,10 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         {/* SCROLLABLE INNER WORKSPACE SECTION */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50">
           {/* TAB BORDER CONTAINER BOX (Light blue border like theme in screenshot) */}
-          <div className="border-2 border-blue-100 bg-white rounded-lg shadow-sm p-4 sm:p-6 min-h-[450px]">
+          <div className="border-2 border-primary-100 bg-white rounded-lg shadow-sm p-4 sm:p-6 min-h-[450px]">
             {/* Active Tab subtitle */}
             <div className="text-xs uppercase font-black text-blue-800 tracking-wider mb-5 flex items-center gap-2 border-b border-blue-50 pb-2">
-              <span className="w-1.5 h-3.5 bg-blue-600 rounded" />
+              <span className="w-1.5 h-3.5 bg-primary-600 rounded" />
               {tabLabels.find((t) => t.key === activeTab)?.label}
             </div>
 
@@ -1099,7 +1099,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   {formState.documents && formState.documents.map((doc: any, index: number) => (
                     <div key={doc.id} className="border border-zinc-200/80 rounded-lg p-4 flex justify-between items-center shadow-inner hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                        <div className="p-3 bg-primary-50 text-primary-600 rounded-lg">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>

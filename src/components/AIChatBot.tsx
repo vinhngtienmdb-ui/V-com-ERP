@@ -77,7 +77,7 @@ export function AIChatBot() {
  onChange={(e) => setInput(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
  placeholder="Nhập yêu cầu của bạn..."
- className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10"
+ className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/10"
  />
  <button onClick={handleSend} className="p-3 bg-[#111827] text-[#FAF9F5] rounded-lg hover:bg-slate-800">
  <Send className="w-4 h-4" />

@@ -89,7 +89,7 @@ export function AffiliateManagement() {
  <Link2 className="w-4 h-4" />
  URL Tracking
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <UserPlus className="w-4 h-4" />
  Booking KOL mới
  </button>
@@ -109,8 +109,8 @@ export function AffiliateManagement() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">CTR Trung bình</p>
- <div className="text-2xl font-bold text-[#2563EB]">6.8%</div>
- <div className="mt-1 text-[10px] text-[#2563EB] font-medium">+1.2% so với tháng trước</div>
+ <div className="text-2xl font-bold text-primary-600">6.8%</div>
+ <div className="mt-1 text-[10px] text-primary-600 font-medium">+1.2% so với tháng trước</div>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đơn hàng Affiliate</p>
@@ -137,11 +137,11 @@ export function AffiliateManagement() {
  <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
  <button 
  onClick={() => setActiveTab('all')}
- className={cn("px-4 py-2 text-xs font-semibold", activeTab === 'all' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
+ className={cn("px-4 py-2 text-xs font-semibold", activeTab === 'all' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563]")}
  >Tất cả</button>
  <button 
  onClick={() => setActiveTab('pending')}
- className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300", activeTab === 'pending' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-[#4B5563]")}
+ className={cn("px-4 py-2 text-xs font-semibold border-l border-slate-300", activeTab === 'pending' ? "bg-primary-600 text-[#FAF9F5]" : "text-[#4B5563]")}
  >Chờ duyệt hồ sơ</button>
  </div>
  </div>
@@ -163,7 +163,7 @@ export function AffiliateManagement() {
  <tr key={affiliate.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#2563EB] font-bold text-xs border border-slate-300 shrink-0">
+ <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-primary-600 font-bold text-xs border border-slate-300 shrink-0">
  {affiliate?.name?.charAt(0) || '?'}
  </div>
  <div>
@@ -218,7 +218,7 @@ export function AffiliateManagement() {
  </td>
  <td className="px-6 py-4 text-right">
  {affiliate.status === 'pending' ? (
- <button className="px-3 py-1.5 bg-[#2563EB] text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm">Duyệt KOL</button>
+ <button className="px-3 py-1.5 bg-primary-600 text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm">Duyệt KOL</button>
  ) : (
  <button className="text-xs font-semibold text-[#6B7280] hover:text-[#111827] p-2">Thiết lập & Book</button>
  )}
@@ -243,11 +243,11 @@ export function AffiliateManagement() {
  { cat: 'Điện tử', rate: '3%' },
  { cat: 'Gia dụng', rate: '5%' }
  ].map((item) => (
- <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-lg border border-[#F3F4F6] flex justify-between items-center group hover:border-[#2563EB] transition-all cursor-pointer">
+ <div key={item.cat} className="p-4 bg-[#F9FAFB] rounded-lg border border-[#F3F4F6] flex justify-between items-center group hover:border-primary-600 transition-all cursor-pointer">
  <span className="text-sm font-medium text-[#4B5563]">{item.cat}</span>
  <div className="flex items-center gap-2">
  <span className="text-lg font-bold text-[#111827]">{item.rate}</span>
- <ArrowUpRight className="w-4 h-4 text-[#9CA3AF] group-hover:text-[#2563EB]" />
+ <ArrowUpRight className="w-4 h-4 text-[#9CA3AF] group-hover:text-primary-600" />
  </div>
  </div>
  ))}

@@ -144,7 +144,7 @@ export function CommandPalette({ onClose }: Props) {
 
   const typeLabel: Record<string, string> = { nav: 'MENU', order: 'ĐƠN', product: 'SẢN PHẨM', customer: 'KH' };
   const typeColor: Record<string, string> = {
-    nav:      'bg-blue-50 text-blue-700 border-blue-200',
+    nav:      'bg-primary-50 text-blue-700 border-blue-200',
     order:    'bg-rose-50 text-rose-700 border-rose-200',
     product:  'bg-emerald-50 text-emerald-700 border-emerald-200',
     customer: 'bg-violet-50 text-violet-700 border-violet-200',

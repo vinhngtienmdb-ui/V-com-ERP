@@ -194,7 +194,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm theo chủ đề, tiêu đề việc của bạn..."
-            className="w-full bg-white border border-slate-300 rounded-lg py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 border-b-2"
+            className="w-full bg-white border border-slate-300 rounded-lg py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 border-b-2"
           />
           <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
         </div>
@@ -228,7 +228,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                       "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border",
                       task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200' :
                       task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
-                      task.priority === 'medium' ? 'bg-blue-50 text-blue-600 border-blue-200' :
+                      task.priority === 'medium' ? 'bg-primary-50 text-primary-600 border-blue-200' :
                       'bg-slate-100 text-slate-600 border-slate-200'
                     )}>
                       {task.priority === 'urgent' ? 'Nguy cấp' :
@@ -239,7 +239,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                     <span className={cn(
                       "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border",
                       task.scope === 'company' ? "bg-purple-50 text-purple-700 border-purple-200" :
-                      task.scope === 'department' ? "bg-blue-50 text-blue-700 border-blue-200" :
+                      task.scope === 'department' ? "bg-primary-50 text-blue-700 border-blue-200" :
                       task.scope === 'team' ? "bg-orange-50 text-orange-700 border-orange-200" :
                       "bg-emerald-50 text-emerald-700 border-emerald-200"
                     )}>
@@ -255,7 +255,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
 
                   <h3 
                     onClick={() => onSelectTask(task)}
-                    className="font-black text-sm text-[#111827] hover:text-[#2563EB] cursor-pointer transition-colors"
+                    className="font-black text-sm text-[#111827] hover:text-primary-600 cursor-pointer transition-colors"
                   >
                     {task.title}
                   </h3>
@@ -315,7 +315,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                       value={task.status}
                       onChange={(e) => handleStatusChange(task, e.target.value as any)}
                       className={cn(
-                        "font-bold text-[11px] rounded-lg px-2 py-1.5 bg-slate-50 border cursor-pointer border-slate-300 focus:ring-2 focus:ring-[#2563EB]/20 outline-none w-full max-w-[150px] inline-block",
+                        "font-bold text-[11px] rounded-lg px-2 py-1.5 bg-slate-50 border cursor-pointer border-slate-300 focus:ring-2 focus:ring-primary-500/20 outline-none w-full max-w-[150px] inline-block",
                         task.status === 'done' ? "text-emerald-700 border-emerald-400 font-extrabold" : "text-slate-800"
                       )}
                     >
@@ -342,7 +342,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                   <div className="space-y-1.5 w-full">
                     <div className="flex justify-between text-[10px] font-bold text-slate-500">
                       <span>Cập nhật tiến độ:</span>
-                      <span className="text-[#2563EB] font-black">{task.progress}%</span>
+                      <span className="text-primary-600 font-black">{task.progress}%</span>
                     </div>
                     <input 
                       type="range"

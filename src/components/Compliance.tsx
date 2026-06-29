@@ -44,7 +44,7 @@ export function Compliance() {
  <Download className="w-4 h-4" />
  Tải báo cáo tuân thủ
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <ShieldCheck className="w-4 h-4" />
  Đăng ký bảo quyền mới
  </button>
@@ -55,7 +55,7 @@ export function Compliance() {
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase">Thương hiệu đã bảo quyền</span>
- <ShieldCheck className="w-4 h-4 text-[#2563EB]" />
+ <ShieldCheck className="w-4 h-4 text-primary-600" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">842</div>
  <p className="text-[10px] text-[#10B981] font-medium mt-1">Đã xác thực sở hữu trí tuệ</p>
@@ -98,7 +98,7 @@ export function Compliance() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-primary-600 text-primary-600 bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -183,7 +183,7 @@ export function Compliance() {
  <p className="font-bold">Order: {dispute.orderId}</p>
  <p className="text-[10px] text-slate-600">Người báo: {dispute.reporterId}</p>
  </td>
- <td className="px-6 py-4 text-[#2563EB] font-medium cursor-pointer flex items-center gap-1">
+ <td className="px-6 py-4 text-primary-600 font-medium cursor-pointer flex items-center gap-1">
  <Eye className="w-3.5 h-3.5" /> Xem {dispute.evidence.length} bằng chứng
  </td>
  <td className="px-6 py-4 text-center">

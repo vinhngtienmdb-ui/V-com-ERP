@@ -19,10 +19,10 @@ const CATEGORIES = [
 ];
 
 const TEMPLATES = [
-  { id: 't1', title: 'Đơn xin phép', category: 'vang_mat', icon: FileText, color: 'text-blue-600', bg: 'bg-blue-100' },
+  { id: 't1', title: 'Đơn xin phép', category: 'vang_mat', icon: FileText, color: 'text-primary-600', bg: 'bg-blue-100' },
   { id: 't2', title: 'Đi muộn/về sớm', category: 'vang_mat', icon: CheckSquare, color: 'text-purple-600', bg: 'bg-purple-100' },
   { id: 't3', title: 'Tăng ca', category: 'vang_mat', icon: Briefcase, color: 'text-teal-600', bg: 'bg-teal-100' },
-  { id: 't4', title: 'Đơn giải trình công', category: 'giai_trinh', icon: FileText, color: 'text-blue-600', bg: 'bg-blue-100' },
+  { id: 't4', title: 'Đơn giải trình công', category: 'giai_trinh', icon: FileText, color: 'text-primary-600', bg: 'bg-blue-100' },
   { id: 't5', title: 'Đề nghị thanh toán', category: 'tai_chinh', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-100' },
   { id: 't6', title: 'Đề nghị tạm ứng', category: 'tai_chinh', icon: DollarSign, color: 'text-teal-600', bg: 'bg-teal-100' },
   { id: 't7', title: 'Đề xuất cấp văn phòng phẩm', category: 'hanh_chinh', icon: Briefcase, color: 'text-red-600', bg: 'bg-red-100' },

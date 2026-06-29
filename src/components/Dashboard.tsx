@@ -401,7 +401,7 @@ export function Dashboard() {
  </div>
  
  <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-orange-700 transition-all flex items-center justify-center gap-2 shadow-sm">
+ <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-primary-600 transition-all flex items-center justify-center gap-2 shadow-sm">
  <Activity className="w-4 h-4 text-emerald-500" />
  Báo cáo Vận hành
  </button>

@@ -2,7 +2,9 @@ import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { generatePerformanceReview } from '../services/geminiService';
 import { 
- Trophy, 
+ Trophy,
+  Sparkles,
+  AlertCircle, 
  GraduationCap, 
  Target, 
  TrendingUp, 
@@ -75,7 +77,7 @@ export function Performance() {
  <TrendingUp className="w-4 h-4" />
  Báo cáo hiệu suất
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Thiết lập mục tiêu mới
  </button>
@@ -131,7 +133,7 @@ export function Performance() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-primary-600 text-primary-600 bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -154,11 +156,11 @@ export function Performance() {
  <div className="space-y-1.5">
  <div className="flex justify-between text-xs">
  <span className="text-[#6B7280]">Tiến độ</span>
- <span className="font-bold text-[#2563EB]">{((kpi.current / kpi.target) * 100).toFixed(1)}%</span>
+ <span className="font-bold text-primary-600">{((kpi.current / kpi.target) * 100).toFixed(1)}%</span>
  </div>
  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
  <div 
- className="h-full bg-[#2563EB] rounded-full"
+ className="h-full bg-primary-600 rounded-full"
  style={{ width: `${(kpi.current / kpi.target) * 100}%` }}
  />
  </div>
@@ -180,7 +182,7 @@ export function Performance() {
             <span className={cn(
               "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase",
               course.category === 'Bắt buộc' ? "bg-rose-50 text-rose-600 border border-rose-100" :
-              course.category === 'Cơ bản' ? "bg-blue-50 text-blue-600 border border-blue-100" :
+              course.category === 'Cơ bản' ? "bg-primary-50 text-primary-600 border border-primary-100" :
               "bg-purple-50 text-purple-600 border border-purple-100"
             )}>
               {course.category}
@@ -289,7 +291,7 @@ export function Performance() {
  <p className="text-slate-500 text-sm max-w-2xl">
  Tự động tổng hợp ý kiến từ Đồng nghiệp, Quản lý trực tiếp và Nhân viên cấp dưới để đưa ra cái nhìn khách quan nhất về năng lực. Kết nối trực tiếp kết quả học tập từ LMS để đề xuất thăng tiến hoặc điều chỉnh quỹ lương.
  </p>
- <button className="px-6 py-3 bg-[#2563EB] text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2">
+ <button className="px-6 py-3 bg-primary-600 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2">
  Mở cổng Đánh giá Định kỳ <ArrowRight className="w-4 h-4" />
  </button>
  </div>

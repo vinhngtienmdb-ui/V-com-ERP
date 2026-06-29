@@ -66,7 +66,7 @@ export function TaskKanban({ tasks, onTasksChange, onSelectTask, onAddTaskQuick 
 
   const columns: { id: 'todo' | 'in_progress' | 'testing' | 'done'; title: string; color: string; border: string }[] = [
     { id: 'todo', title: 'Cần làm', color: 'bg-slate-100 text-slate-800', border: 'border-t-slate-400' },
-    { id: 'in_progress', title: 'Đang thực hiện', color: 'bg-blue-50 text-blue-800', border: 'border-t-blue-500' },
+    { id: 'in_progress', title: 'Đang thực hiện', color: 'bg-primary-50 text-blue-800', border: 'border-t-blue-500' },
     { id: 'testing', title: 'Đang kiểm thử', color: 'bg-amber-50 text-amber-800', border: 'border-t-amber-500' },
     { id: 'done', title: 'Đã hoàn thành', color: 'bg-emerald-50 text-emerald-800', border: 'border-t-emerald-500' }
   ];

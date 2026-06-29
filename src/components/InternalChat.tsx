@@ -310,7 +310,7 @@ export function InternalChat() {
           {/* Header & New Group button */}
           <div className="flex justify-between items-center shrink-0">
             <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-blue-600" /> Chat nội bộ
+              <MessageSquare className="w-4 h-4 text-primary-600" /> Chat nội bộ
             </h2>
             <button 
               onClick={() => setShowCreateGroupModal(true)}
@@ -345,12 +345,12 @@ export function InternalChat() {
                   className={cn(
                     "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold cursor-pointer border-0 bg-transparent text-left",
                     activeChannelId === ch.id 
-                      ? "bg-slate-200 text-blue-600 font-bold" 
+                      ? "bg-slate-200 text-primary-600 font-bold" 
                       : "text-slate-650 hover:bg-slate-100"
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Hash className={cn("w-4 h-4 shrink-0", activeChannelId === ch.id ? "text-blue-600" : "text-slate-400")} />
+                    <Hash className={cn("w-4 h-4 shrink-0", activeChannelId === ch.id ? "text-primary-600" : "text-slate-400")} />
                     <span className="truncate">{ch.name}</span>
                   </div>
                   {ch.unreadCount > 0 && (
@@ -370,12 +370,12 @@ export function InternalChat() {
                   className={cn(
                     "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold cursor-pointer border-0 bg-transparent text-left",
                     activeChannelId === ch.id 
-                      ? "bg-slate-200 text-blue-600 font-bold" 
+                      ? "bg-slate-200 text-primary-600 font-bold" 
                       : "text-slate-650 hover:bg-slate-100"
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Users className={cn("w-4 h-4 shrink-0", activeChannelId === ch.id ? "text-blue-600" : "text-slate-400")} />
+                    <Users className={cn("w-4 h-4 shrink-0", activeChannelId === ch.id ? "text-primary-600" : "text-slate-400")} />
                     <span className="truncate">{ch.name}</span>
                   </div>
                   {ch.unreadCount > 0 && (
@@ -395,7 +395,7 @@ export function InternalChat() {
                   className={cn(
                     "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold cursor-pointer border-0 bg-transparent text-left",
                     activeChannelId === ch.id 
-                      ? "bg-slate-200 text-blue-600 font-bold" 
+                      ? "bg-slate-200 text-primary-600 font-bold" 
                       : "text-slate-650 hover:bg-slate-100"
                   )}
                 >
@@ -513,7 +513,7 @@ export function InternalChat() {
                         className={cn(
                           "p-3 rounded-lg text-[11.5px] leading-relaxed shadow-3xs",
                           msg.isSelf 
-                            ? "bg-blue-600 text-white rounded-tr-none font-medium" 
+                            ? "bg-primary-600 text-white rounded-tr-none font-medium" 
                             : msg.isAi
                               ? "bg-indigo-50 border border-indigo-150 text-slate-805 rounded-tl-none font-medium"
                               : "bg-white border border-slate-200 text-slate-800 rounded-tl-none font-medium"
@@ -566,7 +566,7 @@ export function InternalChat() {
                                 onClick={() => handleAddReaction(msg.id, r.emoji)}
                                 className={cn(
                                   "px-1.5 py-0.5 rounded-full border text-[9px] font-bold flex items-center gap-0.5 cursor-pointer shadow-3xs",
-                                  r.users.includes('self') ? "bg-blue-50 border-blue-200 text-blue-600" : "bg-white border-slate-200 text-slate-500"
+                                  r.users.includes('self') ? "bg-primary-50 border-blue-200 text-primary-600" : "bg-white border-slate-200 text-slate-500"
                                 )}
                               >
                                 <span>{r.emoji}</span>
@@ -646,7 +646,7 @@ export function InternalChat() {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim()}
-                  className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs disabled:opacity-40 transition cursor-pointer border-0"
+                  className="p-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg shadow-xs disabled:opacity-40 transition cursor-pointer border-0"
                 >
                   <Send className="w-4.5 h-4.5" />
                 </button>
@@ -668,7 +668,7 @@ export function InternalChat() {
           <div className="bg-white w-full max-w-sm rounded-lg shadow-sm border border-slate-350 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-slate-250 bg-slate-50/50">
               <div className="flex items-center gap-2">
-                <Users className="w-4.5 h-4.5 text-blue-600" />
+                <Users className="w-4.5 h-4.5 text-primary-600" />
                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Tạo nhóm chat nội bộ</h3>
               </div>
               <button 
@@ -738,7 +738,7 @@ export function InternalChat() {
               <button 
                 onClick={handleCreateGroup}
                 disabled={!newGroupName.trim()}
-                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
+                className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
               >
                 Lưu & Tạo nhóm
               </button>
@@ -754,7 +754,7 @@ export function InternalChat() {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-blue-600" />
+                <FileText className="w-4 h-4 text-primary-600" />
                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Xem trước tài liệu đính kèm</h3>
               </div>
               <button 
@@ -811,7 +811,7 @@ export function InternalChat() {
                   alert(`Đang tải xuống tệp: ${previewAttachment.name}`);
                   setPreviewAttachment(null);
                 }}
-                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
+                className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg cursor-pointer border-0"
               >
                 Tải xuống tệp
               </button>

@@ -176,7 +176,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
             <span className={cn(
               "text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border",
               task.scope === 'company' ? "bg-purple-50 text-purple-700 border-purple-200" :
-              task.scope === 'department' ? "bg-blue-50 text-blue-700 border-blue-200" :
+              task.scope === 'department' ? "bg-primary-50 text-blue-700 border-blue-200" :
               task.scope === 'team' ? "bg-orange-50 text-orange-700 border-orange-200" :
               "bg-emerald-50 text-emerald-700 border-emerald-200"
             )}>
@@ -225,7 +225,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
             <textarea 
               value={desc} 
               onChange={(e) => setDesc(e.target.value)}
-              className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3 focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] placeholder-slate-400 resize-none h-24"
+              className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 placeholder-slate-400 resize-none h-24"
               placeholder="Mô tả nội dung chi tiết công việc..."
             />
           </div>
@@ -335,7 +335,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
           <div className="space-y-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div className="flex justify-between items-center text-xs">
               <span className="font-extrabold text-slate-500 uppercase tracking-wider">Tiến độ thực hiện</span>
-              <span className="text-sm font-black text-blue-600 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{progress}%</span>
+              <span className="text-sm font-black text-primary-600 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{progress}%</span>
             </div>
             <input 
               type="range" 
@@ -501,7 +501,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
           </button>
           <button 
             onClick={handleSave}
-            className="px-6 py-2 bg-[#2563EB] text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
+            className="px-6 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
           >
             <Save className="w-4 h-4" /> Lưu thay đổi
           </button>

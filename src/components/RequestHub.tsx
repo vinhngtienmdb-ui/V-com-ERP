@@ -732,7 +732,7 @@ export function RequestHub() {
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-blue-600" /> Tôi gửi đi</h3>
+ <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-primary-600" /> Tôi gửi đi</h3>
  <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
  </div>
  <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
@@ -895,7 +895,7 @@ export function RequestHub() {
  {doc.status === 'approved' && (
  <span className={cn(
  "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
- (doc as any).signatureStatus === 'signed' ? "bg-slate-100 text-blue-600" : "bg-slate-100 text-slate-700"
+ (doc as any).signatureStatus === 'signed' ? "bg-slate-100 text-primary-600" : "bg-slate-100 text-slate-700"
  )}>
  <FileSignature className="w-3 h-3" />
  {(doc as any).signatureStatus === 'signed' ? 'Đã ký số' : 'Chờ ký số'}
@@ -916,7 +916,7 @@ export function RequestHub() {
  </button>
  <button 
  onClick={() => setSigningRequestId(doc.id)}
- className="px-2 py-1 bg-slate-100 text-blue-600 text-[10px] font-bold rounded hover:bg-[#EAE7DF] flex items-center gap-1"
+ className="px-2 py-1 bg-slate-100 text-primary-600 text-[10px] font-bold rounded hover:bg-[#EAE7DF] flex items-center gap-1"
  >
  <FileSignature className="w-3 h-3" /> Ký & Duyệt
  </button>
@@ -932,7 +932,7 @@ export function RequestHub() {
  onClick={(e) => {
  e.stopPropagation(); setSelectedRequestForPrint(doc); setShowPrintModal(true);
  }}
- className="p-1 px-2 text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 text-[10px] font-bold"
+ className="p-1 px-2 text-slate-500 hover:text-primary-600 transition-colors flex items-center gap-1 text-[10px] font-bold"
  >
  <Printer className="w-3.5 h-3.5" /> In phiếu
  </button>
@@ -1314,7 +1314,7 @@ export function RequestHub() {
   <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
    <div className="flex justify-between items-center text-xs">
     <span className="font-bold text-slate-700 flex items-center gap-1.5 font-sans">
-     <PenTool className="w-4 h-4 text-blue-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
+     <PenTool className="w-4 h-4 text-primary-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
     </span>
     {drawnSignatureData && (
      <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
@@ -1648,7 +1648,7 @@ export function RequestHub() {
                   </button>
                   <button 
                     onClick={() => setSigningRequestId(selectedRequestForView.id)}
-                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-[13px] font-bold hover:bg-blue-50 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 border border-blue-600 text-primary-600 rounded-lg text-[13px] font-bold hover:bg-primary-50 transition-colors flex items-center gap-2"
                   >
                     <FileSignature className="w-4 h-4" /> Ký & Duyệt
                   </button>
@@ -1688,7 +1688,7 @@ export function RequestHub() {
                   <button
                     onClick={() => handleSyncRequestToMisa(selectedRequestForView)}
                     disabled={syncingMisaId === selectedRequestForView.id}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
+                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
                   >
                     {syncingMisaId === selectedRequestForView.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1720,7 +1720,7 @@ export function RequestHub() {
  >
  <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center">
+ <div className="w-10 h-10 bg-primary-600 text-white rounded-lg flex items-center justify-center">
  <FileSignature className="w-5 h-5" />
  </div>
  <div>
@@ -1738,7 +1738,7 @@ export function RequestHub() {
  <div className="bg-slate-50 rounded-lg p-6 border border-slate-300 space-y-4">
  <div className="flex justify-between items-center border-b border-slate-300 pb-4">
  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu phê duyệt</span>
- <span className="px-2 py-0.5 bg-[#EAE7DF] text-blue-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
+ <span className="px-2 py-0.5 bg-[#EAE7DF] text-primary-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
  </div>
  <div className="space-y-3">
  <h4 className="text-xl font-bold text-slate-900">{requests.find(r => r.id === signingRequestId)?.title}</h4>
@@ -1758,7 +1758,7 @@ export function RequestHub() {
  {/* CA Selection */}
  <div className="space-y-4">
  <label className="text-[13px] font-bold text-slate-900 flex items-center gap-2">
- <ShieldCheck className="w-4 h-4 text-blue-600" /> Chọn Nhà cung cấp Chứng thực (CA)
+ <ShieldCheck className="w-4 h-4 text-primary-600" /> Chọn Nhà cung cấp Chứng thực (CA)
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  {[
@@ -1803,7 +1803,7 @@ export function RequestHub() {
  <button 
  onClick={executeSignature}
  disabled={isSigningInProcess}
- className="flex-[2] py-4 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-sm shadow-blue-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+ className="flex-[2] py-4 bg-primary-600 text-white rounded-lg font-bold text-sm shadow-sm shadow-blue-100 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
  >
  {isSigningInProcess ? (
  <>
@@ -1855,7 +1855,7 @@ export function RequestHub() {
  </button>
  <button 
  onClick={() => window.print()}
- className="p-3 bg-blue-600 text-white rounded-full shadow-sm  transition-transform"
+ className="p-3 bg-primary-600 text-white rounded-full shadow-sm  transition-transform"
  title="In ngay"
  >
  <Printer className="w-5 h-5" />
@@ -1913,7 +1913,7 @@ export function RequestHub() {
  </h3>
  <table className="w-full border-2 border-slate-900 whitespace-nowrap">
  <thead>
- <tr className="bg-blue-600 text-white">
+ <tr className="bg-primary-600 text-white">
  <th className="px-4 py-2 text-[10px] font-bold uppercase text-left border-r border-white/20">Trường thông tin</th>
  <th className="px-4 py-2 text-[10px] font-bold uppercase text-left">Giá trị</th>
  </tr>
@@ -2006,7 +2006,7 @@ export function RequestHub() {
         CERTIFICATE: {selectedRequestForPrint.caProvider}<br/>
         <span className="text-[10px] uppercase">{selectedRequestForPrint.signedBy}</span>
       </div>
-      <p className="text-[7px] text-blue-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
+      <p className="text-[7px] text-primary-600 font-mono font-bold">{selectedRequestForPrint.signedAt}</p>
     </div>
   )
  ) : (

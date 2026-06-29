@@ -83,7 +83,7 @@ export function Logistics() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Truck className="w-6 h-6 text-orange-600" />
+            <Truck className="w-6 h-6 text-primary-600" />
             Vận chuyển & Giao nhận
           </h1>
           <p className="text-slate-500 text-sm mt-1">Quản lý hành trình đơn hàng và đối tác vận chuyển.</p>
@@ -92,7 +92,7 @@ export function Logistics() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+          <div className="p-3 bg-primary-50 text-primary-600 rounded-lg">
             <Package className="w-6 h-6" />
           </div>
           <div>
@@ -146,7 +146,7 @@ export function Logistics() {
               placeholder="Tìm theo mã vận đơn, mã đơn hàng..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-shadow"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-shadow"
             />
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -155,7 +155,7 @@ export function Logistics() {
               <select 
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full sm:w-auto pl-9 pr-8 py-2 bg-white border border-slate-300 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 cursor-pointer"
+                className="w-full sm:w-auto pl-9 pr-8 py-2 bg-white border border-slate-300 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 cursor-pointer"
               >
                 <option value="all">Tất cả trạng thái</option>
                 <option value="pending">Chờ lấy hàng</option>
@@ -191,7 +191,7 @@ export function Logistics() {
                       <div className="font-medium text-slate-900">{item.trackingCode}</div>
                       <div className="text-xs text-slate-500 mt-0.5">Dự kiến: {item.estimatedDate}</div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-orange-600">
+                    <td className="px-6 py-4 font-medium text-primary-600">
                       {item.orderId}
                     </td>
                     {!isSeller && (

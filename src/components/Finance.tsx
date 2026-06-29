@@ -422,7 +422,7 @@ export function Finance() {
  </button>
  <button 
  onClick={addDemoTransactions}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> Bút toán mới
  </button>
@@ -435,7 +435,7 @@ export function Finance() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-[#2563EB]">Doanh thu Hệ thống (G.M.V)</span>
+ <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-primary-600">Doanh thu Hệ thống (G.M.V)</span>
  <TrendingUp className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
@@ -485,7 +485,7 @@ export function Finance() {
  {FINANCE_MODULE_GROUPS.map((group, gIdx) => (
  <div key={gIdx} className="space-y-4">
  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
- <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
+ <span className="w-1 h-4 bg-primary-600 rounded-full inline-block" />
  {group.title}
  </h3>
  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -493,16 +493,16 @@ export function Finance() {
  <div 
  key={mod.id}
  onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+ className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-primary-600/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
  <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
  </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
+ <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-primary-600 group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
  <mod.icon className="w-6 h-6" />
  </div>
  <div className="relative z-10">
- <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
+ <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-primary-600 transition-colors">{mod.label}</h3>
  <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
  </div>
  </div>
@@ -529,7 +529,7 @@ export function Finance() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-primary-600 text-primary-600 bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -751,7 +751,7 @@ export function Finance() {
              {je.ref && <span className="text-xs text-slate-500 block">Ref: {je.ref}</span>}
            </td>
            <td className="px-6 py-4">
-             <span className="font-mono text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 border border-blue-100 rounded">
+             <span className="font-mono text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 border border-primary-100 rounded">
                {debitAccounts}
              </span>
            </td>
@@ -796,7 +796,7 @@ export function Finance() {
                  <button
                    onClick={() => handleSyncToMisa(je.txId)}
                    disabled={syncingId === je.txId}
-                   className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                   className="px-3 py-1 bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-bold rounded-lg shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
                  >
                    {syncingId === je.txId && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                    Ghi sổ Kế toán
@@ -1080,7 +1080,7 @@ export function Finance() {
               "p-4 rounded-lg border text-xs font-semibold leading-relaxed",
               closingStatus.type === 'success' && "bg-emerald-50 border-emerald-200 text-emerald-800",
               closingStatus.type === 'error' && "bg-rose-50 border-rose-200 text-rose-800",
-              closingStatus.type === 'loading' && "bg-blue-50 border-blue-200 text-blue-800"
+              closingStatus.type === 'loading' && "bg-primary-50 border-blue-200 text-blue-800"
             )}>
               {closingStatus.type === 'loading' && <Loader2 className="w-3.5 h-3.5 animate-spin inline mr-2 align-middle" />}
               {closingStatus.message}
@@ -1354,31 +1354,31 @@ export function Finance() {
               <div className="flex gap-2 bg-white p-1 rounded-lg border border-slate-200 w-fit">
                 <button 
                   onClick={() => setReportSubTab('pl')}
-                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'pl' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
+                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'pl' ? "bg-primary-600 text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
                 >
                   Báo cáo P&L (Kết quả KD)
                 </button>
                 <button 
                   onClick={() => setReportSubTab('trial')}
-                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'trial' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
+                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'trial' ? "bg-primary-600 text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
                 >
                   Bảng Cân đối Phát sinh
                 </button>
                 <button 
                   onClick={() => setReportSubTab('balance')}
-                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'balance' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
+                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'balance' ? "bg-primary-600 text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
                 >
                   Bảng Cân đối Kế toán
                 </button>
                 <button 
                   onClick={() => setReportSubTab('cashflow')}
-                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'cashflow' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
+                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'cashflow' ? "bg-primary-600 text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
                 >
                   Báo cáo Dòng tiền 💸
                 </button>
                 <button 
                   onClick={() => setReportSubTab('aging')}
-                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'aging' ? "bg-[#2563EB] text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
+                  className={cn("px-4 py-2 text-xs font-bold rounded-md transition-all", reportSubTab === 'aging' ? "bg-primary-600 text-[#FAF9F5]" : "text-slate-600 hover:bg-slate-50")}
                 >
                   Phân tích Tuổi nợ ⏳
                 </button>

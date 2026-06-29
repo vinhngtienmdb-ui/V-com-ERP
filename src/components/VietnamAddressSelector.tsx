@@ -176,7 +176,7 @@ export function VietnamAddressSelector({
 
       {/* ── Preview địa chỉ hoàn chỉnh ── */}
       {(value.wardName || value.provinceName) && (
-        <div className="flex items-start gap-1.5 bg-blue-50 border border-blue-100 px-2.5 py-1.5">
+        <div className="flex items-start gap-1.5 bg-primary-50 border border-primary-100 px-2.5 py-1.5">
           <MapPin className="w-3 h-3 text-blue-500 mt-0.5 shrink-0" />
           <p className="text-[12px] text-blue-700 leading-snug">{formatAddress(value)}</p>
         </div>
@@ -306,7 +306,7 @@ export function VietnamProvinceBrowser({
               {isConfigMode ? "Chế độ cấu hình: Tích chọn để hiển thị trên eCommerce" : "Địa chỉ hành chính 2 cấp (sau cải cách 2025)"}
             </span>
           </span>
-          {search && <span>· Lọc: <span className="font-bold text-blue-600">{filtered.length}</span> kết quả</span>}
+          {search && <span>· Lọc: <span className="font-bold text-primary-600">{filtered.length}</span> kết quả</span>}
           <span className="ml-auto">provinces.open-api.vn</span>
         </div>
       )}
@@ -344,7 +344,7 @@ export function VietnamProvinceBrowser({
                         type="checkbox"
                         checked={activeProvinces.includes(prov.code)}
                         onChange={(e) => onToggleProvince?.(prov.code, e.target.checked)}
-                        className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                        className="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
                       />
                     </td>
                   )}
@@ -389,7 +389,7 @@ export function VietnamProvinceBrowser({
                                 className={cn(
                                   "inline-flex items-center gap-1.5 text-[11px] font-medium border px-2 py-0.5 rounded transition-colors cursor-pointer select-none",
                                   isChecked 
-                                    ? "bg-blue-50 border-blue-200 text-blue-700" 
+                                    ? "bg-primary-50 border-blue-200 text-blue-700" 
                                     : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                                 )}
                               >
@@ -397,7 +397,7 @@ export function VietnamProvinceBrowser({
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={(e) => onToggleWard?.(w.code, e.target.checked)}
-                                  className="w-3 h-3 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                                  className="w-3 h-3 text-primary-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
                                 />
                                 {w.name}
                               </label>

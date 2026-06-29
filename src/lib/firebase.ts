@@ -909,12 +909,60 @@ export const deleteDoc = async (docRef: SupabaseDocRef): Promise<any> => {
 };
 
 export const onSnapshot = (
-  queryRef: SupabaseQuery | SupabaseCollectionRef, 
+  queryRef: SupabaseQuery | SupabaseCollectionRef | SupabaseDocRef, 
   nextOrObserver: any, 
   errorCallback?: any
 ) => {
   const next = typeof nextOrObserver === 'function' ? nextOrObserver : nextOrObserver.next;
   const errorHandler = typeof nextOrObserver === 'function' ? errorCallback : nextOrObserver.error;
+
+  if (queryRef instanceof SupabaseDocRef) {
+    const docRef = queryRef;
+    const cacheKey = `fs_cache_doc_${docRef.path}`;
+    
+    // 1. Initial cached render
+    const cached = safeLocalStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setTimeout(() => {
+          try {
+            next({
+              exists: () => parsed.exists,
+              data: () => deserializeTimestamps(parsed.data),
+              id: docRef.id,
+              ref: docRef
+            });
+          } catch (e) {}
+        }, 0);
+      } catch (e) {}
+    }
+
+    // 2. Fetch fresh data right away
+    getDoc(docRef).then((snap) => {
+      next(snap);
+    }).catch((err) => {
+      if (errorHandler) errorHandler(err);
+    });
+
+    // 3. Subscribe to Realtime Postgres Changes
+    const tableName = docRef.tableName;
+    const channel = supabase
+      .channel(`realtime-doc-${tableName}-${docRef.id}-${Date.now()}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: tableName, filter: `id=eq.${docRef.id}` }, async () => {
+        try {
+          const snap = await getDoc(docRef);
+          next(snap);
+        } catch (err) {
+          if (errorHandler) errorHandler(err);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }
 
   const cacheKey = `fs_cache_docs_${queryRef.path}`;
 

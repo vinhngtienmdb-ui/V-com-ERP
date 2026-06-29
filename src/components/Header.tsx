@@ -72,7 +72,7 @@ export function Header() {
   <input
   type="text"
   placeholder="Tìm kiếm..."
-  className="w-48 md:w-72 bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-slate-900 transition-all font-medium placeholder:text-slate-500"
+  className="w-48 md:w-72 bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/10 focus:border-slate-900 transition-all font-medium placeholder:text-slate-500"
   />
   </div>
 
@@ -107,10 +107,10 @@ export function Header() {
 
                   <label className="flex items-center justify-between cursor-pointer">
                      <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        {hideTables ? <EyeOff className="w-4 h-4 text-slate-500" /> : <Eye className="w-4 h-4 text-blue-600" />}
+                        {hideTables ? <EyeOff className="w-4 h-4 text-slate-500" /> : <Eye className="w-4 h-4 text-primary-600" />}
                         Bảng dữ liệu báo cáo
                      </span>
-                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideTables ? 'bg-blue-600' : 'bg-slate-300'}`}>
+                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideTables ? 'bg-primary-600' : 'bg-slate-300'}`}>
                         <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideTables ? 'translate-x-5' : 'translate-x-0'}`}></div>
                      </div>
                      <input type="checkbox" className="sr-only" checked={!hideTables} onChange={() => setHideTables(!hideTables)} />
@@ -152,7 +152,7 @@ export function Header() {
   )}
   </div>
   <div className="flex items-center gap-2">
-  <button onClick={markAllAsRead} className="text-slate-500 hover:text-orange-700 transition-colors" title={'Đánh dấu tất cả đã đọc'}>
+  <button onClick={markAllAsRead} className="text-slate-500 hover:text-primary-600 transition-colors" title={'Đánh dấu tất cả đã đọc'}>
   <CheckCheck className="w-4 h-4" />
   </button>
   <button onClick={clearAll} className="text-slate-500 hover:text-red-600 transition-colors" title={'Xóa tất cả'}>

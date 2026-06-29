@@ -58,6 +58,7 @@ import {
 import nexhubProducts from '../constants/nexhub_products.json';
 
 export function PIM() {
+  const { log } = useAuditLog();
  const [products, setProducts] = useState<Product[]>([]);
   const [syncingProductId, setSyncingProductId] = useState<string | null>(null);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
@@ -328,10 +329,21 @@ export function PIM() {
  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, name: string } | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [showDetailForProduct, setShowDetailForProduct] = useState<Product | null>(null);
+  // Close detail modal on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDetailForProduct(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showDetailForProduct]);
   const [activeDetailTab, setActiveDetailTab] = useState<'overview' | 'specs' | 'media' | 'pnl' | 'edit'>('overview');
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
  const [fileValidation, setFileValidation] = useState<{status: 'idle'|'validating'|'success'|'error', message: string, data?: any}>({status: 'idle', message: ''});
+  const [editProductData, setEditProductData] = useState<any>({});
   const [newProduct, setNewProduct] = useState({
   name: '',
   category: 'Điện thoại',
@@ -644,11 +656,11 @@ export function PIM() {
  <div className="flex bg-slate-100 p-1.5 rounded-lg mx-8">
  <button 
  onClick={() => setUploadMode('single')}
- className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+ className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'single' ? "bg-white text-primary-750 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >Nhập thủ công</button>
  <button 
  onClick={() => setUploadMode('bulk')}
- className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+ className={cn("px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-widest", uploadMode === 'bulk' ? "bg-white text-primary-750 shadow-sm" : "text-slate-600 hover:text-slate-800")}
  >Tải lên (CSV/Excel)</button>
  </div>
 
@@ -668,7 +680,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
  <input 
  type="text" required placeholder="Ví dụ: iPhone 16 Pro Max..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 transition-all font-medium"
  value={newProduct.name}
  onChange={e => setNewProduct({...newProduct, name: e.target.value})}
  />
@@ -677,7 +689,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Thương hiệu</label>
  <input 
  type="text" required placeholder="Apple, Samsung, Sony..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 transition-all font-medium"
  value={newProduct.brand}
  onChange={e => setNewProduct({...newProduct, brand: e.target.value})}
  />
@@ -688,7 +700,7 @@ export function PIM() {
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Ngành hàng</label>
  <select 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-bold appearance-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 transition-all font-bold appearance-none"
  value={newProduct.category}
  onChange={e => setNewProduct({...newProduct, category: e.target.value})}
  >
@@ -703,7 +715,7 @@ export function PIM() {
  <div className="relative">
  <input 
  type="text" required placeholder="Mã SKU định danh..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-5 pr-12 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold text-orange-700"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-5 pr-12 py-4 text-sm focus:outline-none focus:bg-white font-mono font-bold text-primary-750"
  value={newProduct.sku}
  onChange={e => setNewProduct({...newProduct, sku: e.target.value})}
  />
@@ -711,7 +723,7 @@ export function PIM() {
  type="button"
  onClick={generateSKU}
  title="Sinh mã SKU tự động"
- className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-orange-700 rounded-lg transition-all"
+ className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-primary-750 rounded-lg transition-all"
  >
  <Hash className="w-5 h-5" />
  </button>
@@ -766,7 +778,7 @@ export function PIM() {
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Mô tả sản phẩm chi tiết</label>
  <textarea 
  rows={3} placeholder="Mô tả công năng, đặc điểm nổi bật..."
- className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
+ className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 transition-all font-medium resize-none"
  value={newProduct.description}
  onChange={e => setNewProduct({...newProduct, description: e.target.value})}
  ></textarea>
@@ -818,7 +830,7 @@ export function PIM() {
   <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Cấu hình chi tiết (Mỗi dòng một thông số dạng Key: Value)</label>
   <textarea 
   rows={3} placeholder="Ví dụ:&#10;CPU: Apple A18 Pro&#10;RAM: 8GB"
-  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/5 transition-all font-medium resize-none"
+  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-5 py-4 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 transition-all font-medium resize-none"
   value={newProduct.specsText}
   onChange={e => setNewProduct({...newProduct, specsText: e.target.value})}
   ></textarea>
@@ -847,7 +859,7 @@ export function PIM() {
  
  {fileValidation.status === 'idle' && (
  <>
- <div className="w-20 h-20 bg-white shadow-sm shadow-slate-200/50 rounded-full flex items-center justify-center text-orange-700">
+ <div className="w-20 h-20 bg-white shadow-sm shadow-slate-200/50 rounded-full flex items-center justify-center text-primary-750">
  <UploadCloud className="w-8 h-8" />
  </div>
  <div>
@@ -860,12 +872,12 @@ export function PIM() {
 
  {fileValidation.status === 'validating' && (
  <>
- <div className="w-20 h-20 bg-white shadow-sm shadow-blue-200/50 rounded-full flex items-center justify-center text-orange-700">
+ <div className="w-20 h-20 bg-white shadow-sm shadow-blue-200/50 rounded-full flex items-center justify-center text-primary-750">
  <Sparkles className="w-8 h-8 animate-pulse" />
  </div>
  <div>
- <h3 className="text-xl font-black text-orange-700">Đang quét và chuẩn hóa dữ liệu...</h3>
- <p className="text-sm text-orange-600 font-medium mt-2">{fileValidation.message}</p>
+ <h3 className="text-xl font-black text-primary-750">Đang quét và chuẩn hóa dữ liệu...</h3>
+ <p className="text-sm text-primary-600 font-medium mt-2">{fileValidation.message}</p>
  </div>
  </>
  )}
@@ -918,17 +930,17 @@ export function PIM() {
  </div>
  
  {fileValidation.status === 'idle' && (
- <div className="flex justify-between items-center bg-slate-100/50 border border-slate-300 rounded-lg p-6 hover:border-orange-200 transition-all">
+ <div className="flex justify-between items-center bg-slate-100/50 border border-slate-300 rounded-lg p-6 hover:border-primary-200 transition-all">
  <div className="flex items-center gap-4">
  <div className="p-3 bg-white rounded-lg shadow-sm">
- <DownloadCloud className="w-6 h-6 text-orange-700" />
+ <DownloadCloud className="w-6 h-6 text-primary-750" />
  </div>
  <div>
  <p className="text-sm font-bold text-[#111827]">Tải File Mẫu (Template)</p>
  <p className="text-[10px] text-[#6B7280] font-bold mt-0.5">Bản chuẩn 2.0 đã bao gồm schema của AI Server.</p>
  </div>
  </div>
- <a href="#" className="flex items-center gap-2 text-xs font-bold text-orange-700 hover:text-orange-800 bg-white px-5 py-2.5 rounded-lg border border-slate-300 shadow-sm transition-all relative z-20 uppercase tracking-widest">
+ <a href="#" className="flex items-center gap-2 text-xs font-bold text-primary-750 hover:text-orange-800 bg-white px-5 py-2.5 rounded-lg border border-slate-300 shadow-sm transition-all relative z-20 uppercase tracking-widest">
  Tải Template
  </a>
  </div>
@@ -970,11 +982,11 @@ export function PIM() {
  <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-lg">
  <button 
  onClick={() => setInventoryUpdateMode(false)}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-orange-700 shadow-sm" : "text-slate-600")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !inventoryUpdateMode ? "bg-white text-primary-750 shadow-sm" : "text-slate-600")}
  >Tìm kiếm chung</button>
  <button 
  onClick={() => setInventoryUpdateMode(true)}
- className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", inventoryUpdateMode ? "bg-white text-orange-700 shadow-sm" : "text-slate-600")}
+ className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", inventoryUpdateMode ? "bg-white text-primary-750 shadow-sm" : "text-slate-600")}
  >Bổ sung tồn kho (+1)</button>
  </div>
 
@@ -1041,7 +1053,7 @@ export function PIM() {
  <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
  {scannedSkus.map(sku => (
  <div key={sku} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg text-xs font-mono font-bold border border-slate-200 animate-in slide-in- transition-all">
- <span className="text-orange-700">{sku}</span>
+ <span className="text-primary-750">{sku}</span>
  <div className="flex items-center gap-4">
  <span className="text-[10px] text-slate-500">
  {products.find(p => p.sku === sku || p.id === sku)?.name || 'SKU chưa xác định'}
@@ -1078,11 +1090,11 @@ export function PIM() {
  <div className="mt-8 p-4 bg-slate-100 border border-slate-300 rounded-lg">
  <div className="flex gap-3">
  <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
- <Zap className="w-5 h-5 text-orange-700" />
+ <Zap className="w-5 h-5 text-primary-750" />
  </div>
  <div>
- <p className="text-xs font-bold text-blue-900">Chế độ Bổ sung Tồn kho</p>
- <p className="text-[10px] text-orange-700 font-medium mt-1">Khi quét thành công một mã vạch hợp lệ, hệ thống sẽ tự động cộng 1 đơn vị vào tồn kho của sản phẩm đó ngay lập tức.</p>
+ <p className="text-xs font-bold text-primary-900">Chế độ Bổ sung Tồn kho</p>
+ <p className="text-[10px] text-primary-750 font-medium mt-1">Khi quét thành công một mã vạch hợp lệ, hệ thống sẽ tự động cộng 1 đơn vị vào tồn kho của sản phẩm đó ngay lập tức.</p>
  </div>
  </div>
  </div>
@@ -1134,7 +1146,7 @@ export function PIM() {
  onClick={toggleScanMode}
  className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
  >
- <ScanBarcode className="w-5 h-5 text-[#2563EB]" />
+ <ScanBarcode className="w-5 h-5 text-primary-600" />
  Quét mã / Kiểm kê
  </button>
  <button 
@@ -1145,15 +1157,15 @@ export function PIM() {
 isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
  )}
  >
- <Sparkles className={cn("w-4 h-4 text-[#2563EB] group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
+ <Sparkles className={cn("w-4 h-4 text-primary-600 group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
  {isScanning ? "AI đang quét dữ liệu..." : "AI Auto-Scan SP"}
  </button>
  <button 
  onClick={handleEmbedAllProducts}
  disabled={isEmbedding}
- className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-orange-600 disabled:opacity-50"
+ className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-primary-600 disabled:opacity-50"
  >
- {isEmbedding ? <Loader2 className="w-4 h-4 animate-spin text-orange-600" /> : <Sparkles className="w-4 h-4 text-orange-600 group-hover:rotate-12 transition-transform" />}
+ {isEmbedding ? <Loader2 className="w-4 h-4 animate-spin text-primary-600" /> : <Sparkles className="w-4 h-4 text-primary-600 group-hover:rotate-12 transition-transform" />}
  {isEmbedding ? "Đang đồng bộ..." : "Đồng bộ Vector AI"}
  </button>
  <button 
@@ -1165,7 +1177,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <button 
  onClick={handleBulkApprove}
  disabled={isScanning}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95 disabled:opacity-50"
+ className="bg-primary-600 text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95 disabled:opacity-50"
  >
  Duyệt sản phẩm mới (Bulk)
  </button>
@@ -1192,7 +1204,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
- <Calculator className="w-5 h-5 text-orange-700" />
+ <Calculator className="w-5 h-5 text-primary-750" />
  </div>
  <div className="text-3xl font-bold text-[#111827]">22.4%</div>
  <p className="text-[10px] text-emerald-600 mt-2 font-bold">Tối ưu +1.2% Target</p>
@@ -1201,7 +1213,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-3">
  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Category AI</span>
- <Zap className="w-5 h-5 text-orange-600" />
+ <Zap className="w-5 h-5 text-primary-600" />
  </div>
  <div>
  <div className="text-3xl font-bold text-[#FAF9F5] tracking-tighter">99.2%</div>
@@ -1230,14 +1242,14 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
       }
     }}
     placeholder={isAiSearch ? "Tìm kiếm bằng AI (VD: giày thể thao chống trượt đi mưa)..." : "Tìm sản phẩm (Tên, SKU, ID, Nhà bán, Thương hiệu)..."} 
-    className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-12 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-600/10 transition-all font-medium"
+    className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-12 pr-12 py-3 sm:py-3.5 text-sm focus:outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
    />
    {isAiSearch && (
     <button
      type="button"
      onClick={() => handleAiSearch()}
      disabled={aiSearchLoading}
-     className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-blue-600 rounded-lg transition-all"
+     className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 text-primary-600 rounded-lg transition-all"
      title="Tìm kiếm AI"
     >
      {aiSearchLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
@@ -1251,7 +1263,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
    className={cn(
     "px-5 py-3 sm:py-3.5 rounded-lg border text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shrink-0 shadow-sm active:scale-95",
     isAiSearch 
-     ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20" 
+     ? "bg-primary-600 border-blue-600 text-white shadow-md shadow-blue-500/20" 
      : "bg-white border-slate-300 text-slate-600 hover:bg-slate-50"
    )}
   >
@@ -1284,7 +1296,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <select
  value={filterCategory}
  onChange={(e) => setFilterCategory(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  >
  <option value="all">Tất cả ngành hàng</option>
  {categories.map(category => (
@@ -1295,7 +1307,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <select
  value={filterBrand}
  onChange={(e) => setFilterBrand(e.target.value)}
- className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-orange-600/20"
+ className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-xs font-bold text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-primary-500/20"
  >
  <option value="all">Tất cả thương hiệu</option>
  {brands.map(brand => (
@@ -1307,7 +1319,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
 
  <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
  {filteredProducts.map((product) => (
- <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-4 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-orange-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
+ <div key={product.id} className={cn("group flex flex-col bg-white border border-slate-300 rounded-lg p-4 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:border-primary-200 transition-all animate-in fade-in relative", selectedProductIds.includes(product.id) && "ring-2 ring-primary-500 border-primary-200")}>
  <div className="absolute top-4 left-4 z-20">
   <input 
     type="checkbox" 
@@ -1350,7 +1362,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  {product.id}
  </div>
  {isAiSearch && product.similarity !== undefined && (
- <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-blue-600/95 text-white rounded-lg text-[8px] font-black shadow-sm z-10 flex items-center gap-1 uppercase tracking-wider">
+ <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-primary-600/95 text-white rounded-lg text-[8px] font-black shadow-sm z-10 flex items-center gap-1 uppercase tracking-wider">
  <Sparkles className="w-2.5 h-2.5 text-white animate-pulse" />
  {(product.similarity * 100).toFixed(1)}% Match
  </div>
@@ -1373,11 +1385,11 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  {/* Info Area */}
  <div className="flex flex-col flex-1">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[8px] font-black text-orange-700 bg-slate-100 px-2 py-1 rounded-md border border-slate-200 uppercase tracking-wider shadow-sm inline-block">
+ <span className="text-[8px] font-black text-primary-750 bg-slate-100 px-2 py-1 rounded-md border border-slate-200 uppercase tracking-wider shadow-sm inline-block">
  {product.category}
  </span>
  </div>
- <h3 onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }} className="text-sm font-black text-[#111827] group-hover:text-orange-700 transition-colors line-clamp-2 tracking-tight leading-tight mb-3 flex-1 h-10 cursor-pointer">
+ <h3 onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }} className="text-sm font-black text-[#111827] group-hover:text-primary-750 transition-colors line-clamp-2 tracking-tight leading-tight mb-3 flex-1 h-10 cursor-pointer">
  {product.name}
  </h3>
 
@@ -1388,7 +1400,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <span className="truncate max-w-[90px]">{product.sellerName}</span>
  </div>
  <div className="flex items-center gap-1.5 text-[10px] text-[#6B7280] font-medium">
- <Hash className="w-3.5 h-3.5 text-orange-500" />
+ <Hash className="w-3.5 h-3.5 text-primary-500" />
  <span className="font-mono text-[10px] uppercase font-black">{product.sku}</span>
  </div>
  </div>
@@ -1419,7 +1431,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  type="number"
  defaultValue={product.hiddenCosts || 0}
  onBlur={(e) => updateHiddenCost(product, Number(e.target.value))}
-                      className="w-20 text-right bg-white border border-slate-300 hover:border-blue-300 rounded-md px-2 py-1 text-[10px] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 text-[#111827] shadow-sm transition-all"
+                      className="w-20 text-right bg-white border border-slate-300 hover:border-primary-300 rounded-md px-2 py-1 text-[10px] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/20 text-[#111827] shadow-sm transition-all"
                       placeholder="VD: 15000"
                     />
                   </div>
@@ -1460,8 +1472,8 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  {/* Footer Metrics */}
  <div className="mt-auto pt-5 border-t border-slate-200 flex items-center justify-between">
  <div className="flex flex-col gap-2">
- <div className="flex items-center gap-2 text-[10px] font-black text-orange-700">
- <Sparkles className="w-4 h-4 text-orange-500 animate-pulse" /> AI Verified
+ <div className="flex items-center gap-2 text-[10px] font-black text-primary-750">
+ <Sparkles className="w-4 h-4 text-primary-500 animate-pulse" /> AI Verified
  </div>
  <div className="flex items-center gap-2">
  <div className={cn("w-2.5 h-2.5 rounded-full", product.stock < 10 ? "bg-red-500 animate-pulse" : "bg-emerald-500")}></div>
@@ -1471,7 +1483,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
 
  <button 
  onClick={() => { setShowDetailForProduct(product); setActiveDetailTab('overview'); setCurrentGalleryIndex(0); }}
- className="flex items-center gap-2 text-[11px] font-black text-orange-700 hover:translate-x-1 transition-all bg-slate-100 px-4 py-2.5 rounded-lg group/btn"
+ className="flex items-center gap-2 text-[11px] font-black text-primary-750 hover:translate-x-1 transition-all bg-slate-100 px-4 py-2.5 rounded-lg group/btn"
  >
  Xem chi tiết <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
  </button>
@@ -1483,7 +1495,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
 
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
- <div className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
+ <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
  <div className="relative z-10 space-y-6">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
@@ -1555,7 +1567,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  {/* Header */}
  <div className="px-6 py-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-orange-700">
+ <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-primary-750">
  <Calculator className="w-6 h-6" />
  </div>
  <div>
@@ -1590,7 +1602,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase tracking-widest">
  {showPnLForProduct.category || 'N/A'}
  </span>
- <span className="px-2.5 py-1 bg-slate-100 text-orange-700 rounded-lg text-[10px] font-black uppercase tracking-widest">
+ <span className="px-2.5 py-1 bg-slate-100 text-primary-750 rounded-lg text-[10px] font-black uppercase tracking-widest">
  {showPnLForProduct.brand || 'No Brand'}
  </span>
  </div>
@@ -1607,7 +1619,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
- <Sparkles className="w-3.5 h-3.5 text-orange-600" /> Cấu hình Giá & Chi phí gốc
+ <Sparkles className="w-3.5 h-3.5 text-primary-600" /> Cấu hình Giá & Chi phí gốc
  </h5>
  
  <div className="bg-slate-50 rounded-lg p-5 space-y-5 border border-slate-200">
@@ -1619,7 +1631,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  type="number"
  value={pnlPrice}
  onChange={(e) => setPnlPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
@@ -1630,7 +1642,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  type="number"
  value={pnlCostPrice}
  onChange={(e) => setPnlCostPrice(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
  />
  </div>
  <div className="space-y-2">
@@ -1642,7 +1654,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  type="number"
  value={pnlHiddenCosts}
  onChange={(e) => setPnlHiddenCosts(Number(e.target.value))}
- className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-sm font-mono font-bold focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
  />
  </div>
  </div>
@@ -1702,10 +1714,10 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </button>
  <div>
  <p className="text-[11px] font-black text-slate-800">Gói dịch vụ (Freeship Xtra...)</p>
- <p className="text-[9px] text-orange-600 font-bold">Tùy chọn hiển thị</p>
+ <p className="text-[9px] text-primary-600 font-bold">Tùy chọn hiển thị</p>
  </div>
  </div>
- <p className="text-xs font-mono font-bold text-orange-700">
+ <p className="text-xs font-mono font-bold text-primary-750">
  -{formatCurrency(pnlOptionalFees.serviceFee ? pnlPrice * 0.05 : 0)}
  </p>
  </div>
@@ -1805,7 +1817,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  })()}
  
  <div className="flex items-start gap-3 p-5 bg-slate-50 rounded-lg border border-slate-200">
- <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+ <Info className="w-5 h-5 text-primary-600 shrink-0 mt-0.5" />
  <div className="space-y-1">
  <p className="text-xs font-black text-slate-800 uppercase tracking-tight">Cơ chế tính toán ERP 2.0</p>
  <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -1826,7 +1838,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-orange-700">
+            <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-primary-750">
               <Package className="w-6 h-6" />
             </div>
             <div>
@@ -1848,25 +1860,25 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
         <div className="flex bg-slate-100/80 p-1.5 border-b border-slate-200 gap-1.5 overflow-x-auto">
           <button 
             onClick={() => setActiveDetailTab('overview')}
-            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'overview' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'overview' ? "bg-white text-primary-750 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
           >
             <Package className="w-4 h-4" /> Tổng quan
           </button>
           <button 
             onClick={() => setActiveDetailTab('specs')}
-            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'specs' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'specs' ? "bg-white text-primary-750 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
           >
             <Layers className="w-4 h-4" /> Cấu hình & Specs
           </button>
           <button 
             onClick={() => setActiveDetailTab('media')}
-            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'media' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'media' ? "bg-white text-primary-750 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
           >
             <Camera className="w-4 h-4" /> Ảnh & Video
           </button>
           <button 
             onClick={() => setActiveDetailTab('pnl')}
-            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'pnl' ? "bg-white text-orange-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
+            className={cn("px-5 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider flex items-center gap-2 shrink-0", activeDetailTab === 'pnl' ? "bg-white text-primary-750 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-800")}
           >
             <Calculator className="w-4 h-4" /> Phân tích P&L
           </button>
@@ -1919,7 +1931,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                       <button
                         key={idx}
                         onClick={() => setCurrentGalleryIndex(idx)}
-                        className={cn("w-16 h-16 rounded-lg border bg-white overflow-hidden shadow-sm shrink-0 transition-all", idx === currentGalleryIndex ? "ring-2 ring-orange-500 border-orange-500" : "border-slate-200 hover:border-orange-200")}
+                        className={cn("w-16 h-16 rounded-lg border bg-white overflow-hidden shadow-sm shrink-0 transition-all", idx === currentGalleryIndex ? "ring-2 ring-primary-500 border-primary-500" : "border-slate-200 hover:border-primary-200")}
                       >
                         <img src={imgUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </button>
@@ -1934,7 +1946,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                   <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
                     {showDetailForProduct.category}
                   </span>
-                  <span className="px-2.5 py-1 bg-orange-50 text-orange-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-orange-100 ml-2">
+                  <span className="px-2.5 py-1 bg-primary-50 text-primary-750 rounded-lg text-[10px] font-black uppercase tracking-widest border border-orange-100 ml-2">
                     {showDetailForProduct.brand || 'No Brand'}
                   </span>
                 </div>
@@ -1969,7 +1981,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
             <div className="space-y-6">
               <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                 <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-orange-600" />
+                  <Layers className="w-5 h-5 text-primary-600" />
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">Thông số kỹ thuật</h4>
                 </div>
                 <table className="w-full text-left text-sm text-slate-600 divide-y divide-slate-200">
@@ -2014,7 +2026,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
               {/* Images grid */}
               <div className="lg:col-span-2 space-y-4">
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <Camera className="w-5 h-5 text-orange-600" /> Thư viện ảnh sản phẩm
+                  <Camera className="w-5 h-5 text-primary-600" /> Thư viện ảnh sản phẩm
                 </h4>
                 <div className="grid grid-cols-3 gap-4">
                   {showDetailForProduct.images && showDetailForProduct.images.map((imgUrl, imgIdx) => (
@@ -2036,7 +2048,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
               {/* Video section */}
               <div className="space-y-4">
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <Tv className="w-5 h-5 text-orange-600" /> Video giới thiệu
+                  <Tv className="w-5 h-5 text-primary-600" /> Video giới thiệu
                 </h4>
                 {showDetailForProduct.videoUrl ? (
                   <div className="w-full rounded-lg overflow-hidden border border-slate-200 bg-black aspect-video relative shadow-sm">
@@ -2115,7 +2127,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
               <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4 shadow-sm flex flex-col justify-between">
                 <div>
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-blue-600" /> Trạng thái đồng bộ MISA AMIS
+                    <Activity className="w-5 h-5 text-primary-600" /> Trạng thái đồng bộ MISA AMIS
                   </h4>
                   <p className="text-xs text-slate-500 leading-relaxed mt-2">
                     Sản phẩm này cần được ghi sổ kế toán và ánh xạ đầy đủ sang DIInventoryItems trên hệ thống MISA AMIS Cloud để thực hiện các nghiệp vụ bán hàng kiêm xuất kho tự động.
@@ -2146,7 +2158,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
           {activeDetailTab === 'edit' && (
             <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-6 shadow-sm">
               <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2 border-b border-slate-100">
-                <Settings className="w-5 h-5 text-blue-600" /> Trình chỉnh sửa chi tiết sản phẩm
+                <Settings className="w-5 h-5 text-primary-600" /> Trình chỉnh sửa chi tiết sản phẩm
               </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2323,7 +2335,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
                       alert("Cập nhật sản phẩm thất bại!");
                     }
                   }}
-                  className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-blue-700 shadow-sm"
+                  className="px-6 py-2.5 bg-primary-600 text-white font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-primary-700 shadow-sm"
                 >
                   Lưu cấu hình & thông tin
                 </button>

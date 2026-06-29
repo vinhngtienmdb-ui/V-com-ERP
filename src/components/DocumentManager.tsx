@@ -162,7 +162,7 @@ export function DocumentManager() {
                 </button>
                 <div className="flex gap-2">
                   <button onClick={() => setShowRoutingForm(!showRoutingForm)} className="px-3 py-1.5 bg-white border border-slate-300 text-sm font-medium rounded hover:bg-slate-50 flex items-center gap-2 text-slate-800">
-                    <CornerUpRight className="w-4 h-4 text-blue-600" /> Luân chuyển
+                    <CornerUpRight className="w-4 h-4 text-primary-600" /> Luân chuyển
                   </button>
                   <button onClick={() => setShowSignForm(!showSignForm)} className="px-3 py-1.5 bg-white border border-slate-300 text-sm font-medium rounded hover:bg-slate-50 flex items-center gap-2 text-slate-800">
                     <PenTool className="w-4 h-4 text-emerald-600" /> Ký / Phê duyệt
@@ -224,7 +224,7 @@ export function DocumentManager() {
                     </div>
                     <div className="flex justify-end gap-2 pt-2">
                        <button onClick={() => setShowRoutingForm(false)} className="px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-800 transition">Hủy</button>
-                       <button onClick={() => setShowRoutingForm(false)} className="px-4 py-1.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm">Gửi đi</button>
+                       <button onClick={() => setShowRoutingForm(false)} className="px-4 py-1.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-md transition shadow-sm">Gửi đi</button>
                     </div>
                   </div>
                 </div>
@@ -453,7 +453,7 @@ export function DocumentManager() {
                                 <h4 className="font-bold text-sm uppercase">{selectedDoc.signer}</h4>
                                 {selectedDoc.status === 'signed' ? (
                                   <div className="py-2 text-blue-700">
-                                     <div className="border border-blue-400 p-2 rounded-md inline-block bg-blue-50/50">
+                                     <div className="border border-blue-400 p-2 rounded-md inline-block bg-primary-50/50">
                                         <p className="text-[10px] font-bold uppercase mb-1">KÝ BỞI: CA_MDB_HANOI</p>
                                         <p className="text-[9px] font-mono">Dấu thời gian: 20/03 10:15:32</p>
                                      </div>
@@ -508,7 +508,7 @@ export function DocumentManager() {
 
                           <div className="flex gap-4">
                              <div className="flex flex-col items-center">
-                                <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200">
+                                <div className="w-7 h-7 rounded-full bg-blue-100 text-primary-600 flex items-center justify-center shrink-0 border border-blue-200">
                                    <PenTool className="w-4 h-4" />
                                 </div>
                                 <div className="w-0.5 h-full bg-slate-100 my-1"></div>
@@ -565,7 +565,7 @@ export function DocumentManager() {
                         <input 
                           type="text" 
                           placeholder="Tìm kiếm theo số KH, trích yếu..."
-                          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-orange-600"
+                          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-primary-500"
                         />
                       </div>
                       <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-colors">
@@ -598,7 +598,7 @@ export function DocumentManager() {
                             className="hover:bg-slate-50 transition-colors cursor-pointer group"
                           >
                             <td className="px-6 py-4">
-                              <p className="text-sm font-bold text-[#111827] group-hover:text-orange-700 transition-colors">{doc.id}</p>
+                              <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors">{doc.id}</p>
                               <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
                             <td className="px-6 py-4">
@@ -629,7 +629,7 @@ export function DocumentManager() {
                             <td className="px-6 py-4 text-right">
                                <div className="flex justify-end">
                                   {doc.status === 'processing' ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-md">
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-primary-50 border border-primary-100 rounded-md">
                                       <Clock className="w-3 h-3" /> Chờ xử lý
                                     </span>
                                   ) : doc.status === 'signed' ? (
@@ -697,7 +697,7 @@ export function DocumentManager() {
                    
                    <div className="space-y-6">
                      <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6 overflow-x-auto min-w-0">
-                       <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-blue-600" /> Cấu hình vai trò & Phân quyền</h4>
+                       <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-primary-600" /> Cấu hình vai trò & Phân quyền</h4>
                        <table className="w-full text-left border-collapse whitespace-nowrap">
                          <thead className="bg-slate-50 border-b border-[#F3F4F6]">
                            <tr>
@@ -713,16 +713,16 @@ export function DocumentManager() {
                              <td className="px-4 py-3 text-slate-700">Ban Giám đốc</td>
                              <td className="px-4 py-3"><span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded uppercase border border-emerald-100">Toàn quyền / Ký duyệt chính</span></td>
                              <td className="px-4 py-3 text-right">
-                               <button className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
+                               <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
                              </td>
                            </tr>
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Giám đốc Khối</td>
                              <td className="px-4 py-3 text-slate-700">Khối Vận hành, Kinh doanh...</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold rounded uppercase border border-blue-100">Ký nháy / Phê duyệt khối</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-primary-50 text-blue-700 text-[10px] font-bold rounded uppercase border border-primary-100">Ký nháy / Phê duyệt khối</span></td>
                              <td className="px-4 py-3 text-right">
-                               <button className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
+                               <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
                              </td>
                            </tr>
@@ -731,7 +731,7 @@ export function DocumentManager() {
                              <td className="px-4 py-3 text-slate-700">Phòng Nhân sự, Kế toán...</td>
                              <td className="px-4 py-3"><span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded uppercase border border-slate-300">Điều phối / Phân công xử lý</span></td>
                              <td className="px-4 py-3 text-right">
-                               <button className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
+                               <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
                              </td>
                            </tr>
@@ -740,7 +740,7 @@ export function DocumentManager() {
                              <td className="px-4 py-3 text-slate-700">Phòng Hành chính</td>
                              <td className="px-4 py-3"><span className="px-2.5 py-1 bg-orange-50 text-orange-700 text-[10px] font-bold rounded uppercase border border-orange-100">Văn thư / Cấp số / Ban hành</span></td>
                              <td className="px-4 py-3 text-right">
-                               <button className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
+                               <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
                              </td>
                            </tr>
@@ -777,7 +777,7 @@ export function DocumentManager() {
                                <span className="text-xs font-semibold text-slate-600 w-24">Định dạng số:</span>
                                <div className="flex text-xs font-mono bg-white border border-slate-400 rounded overflow-hidden shadow-inner">
                                  <span className="px-2 py-1 bg-slate-50 border-r border-slate-300 text-slate-700" title="Tiền tố">QD</span>
-                                 <span className="px-2 py-1 border-r border-slate-300 text-blue-600 font-bold bg-blue-50/30" title="Số thứ tự tự động">{`{SO_THU_TU:3}`}</span>
+                                 <span className="px-2 py-1 border-r border-slate-300 text-primary-600 font-bold bg-primary-50/30" title="Số thứ tự tự động">{`{SO_THU_TU:3}`}</span>
                                  <span className="px-2 py-1 border-r border-slate-300 text-emerald-600 bg-emerald-50/30" title="Biến Năm">{`/{NAM}`}</span>
                                  <span className="px-2 py-1 bg-slate-50 text-slate-700" title="Hậu tố">-MDB</span>
                                </div>
@@ -802,7 +802,7 @@ export function DocumentManager() {
                                <span className="text-xs font-semibold text-slate-600 w-24">Định dạng số:</span>
                                <div className="flex text-xs font-mono bg-white border border-slate-400 rounded overflow-hidden shadow-inner">
                                  <span className="px-2 py-1 bg-slate-50 border-r border-slate-300 text-slate-700">{`CVNB`}</span>
-                                 <span className="px-2 py-1 border-r border-slate-300 text-blue-600 font-bold bg-blue-50/30">{`-{SO_THU_TU:4}`}</span>
+                                 <span className="px-2 py-1 border-r border-slate-300 text-primary-600 font-bold bg-primary-50/30">{`-{SO_THU_TU:4}`}</span>
                                  <span className="px-2 py-1 border-r border-slate-300 text-emerald-600 bg-emerald-50/30">{`/{THANG}{NAM}`}</span>
                                  <span className="px-2 py-1 bg-purple-50/30 text-purple-600">{`-{MA_PHONG_BAN}`}</span>
                                </div>

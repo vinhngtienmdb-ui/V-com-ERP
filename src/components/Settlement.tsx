@@ -242,7 +242,7 @@ export function SettlementManagement() {
   {isReconciling ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
   Chạy đối soát tự động
  </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
+ <button className="bg-primary-600 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Receipt className="w-4 h-4" />
  Xuất hóa đơn hàng loạt
  </button>
@@ -259,7 +259,7 @@ export function SettlementManagement() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đang chờ giải ngân (Payout)</p>
- <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(2450000000)}</div>
+ <div className="text-2xl font-bold text-primary-600">{formatCurrency(2450000000)}</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Sẽ tự động chuyển sau 3 ngày</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
@@ -287,7 +287,7 @@ export function SettlementManagement() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
+ activeTab === tab.id ? "border-primary-600 text-primary-600 bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -309,7 +309,7 @@ export function SettlementManagement() {
  <Filter className="w-4 h-4" /> Lọc trạng thái
  </button>
  </div>
- <button className="text-xs font-semibold text-[#2563EB] flex items-center gap-2 hover:underline">
+ <button className="text-xs font-semibold text-primary-600 flex items-center gap-2 hover:underline">
  Tải danh sách chi tiết <Download className="w-3 h-3" />
  </button>
  </div>
@@ -375,7 +375,7 @@ export function SettlementManagement() {
  {stl.status === 'completed' ? 'Đã Thanh toán' : stl.status === 'pending' ? 'Chờ Duyệt' : 'Thất bại'}
  </span>
  {stl.status === 'pending' && (
-   <button onClick={() => approveSettlement(stl)} className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Duyệt vào ví</button>
+   <button onClick={() => approveSettlement(stl)} className="px-2 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700">Duyệt vào ví</button>
  )}
  </div>
  </td>

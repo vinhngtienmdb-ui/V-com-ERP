@@ -1,5 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
  Users,
  Coins,
@@ -85,6 +85,16 @@ export function WalletHub() {
  const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
  const [isSyncing, setIsSyncing] = useState(false);
  const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);
+  // Close action modal on ESC keypress
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowActionModal(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showActionModal]);
  const [transactionAmount, setTransactionAmount] = useState('');
  const [selectedBank, setSelectedBank] = useState(MOCK_BANK_ACCOUNTS[0]);
  const [gateways, setGateways] = useState(MOCK_GATEWAYS);
@@ -196,7 +206,7 @@ export function WalletHub() {
  <Landmark className="w-5 h-5" />
  </div>
  <div className="text-left">
- <p className={cn("text-sm font-bold", selectedBank.id === bank.id ? "text-blue-900" : "text-slate-800")}>{bank.bankName}</p>
+ <p className={cn("text-sm font-bold", selectedBank.id === bank.id ? "text-primary-900" : "text-slate-800")}>{bank.bankName}</p>
  <p className="text-[10px] text-slate-500 font-mono italic">{bank.accountNumber}</p>
  </div>
  </div>
@@ -241,7 +251,7 @@ export function WalletHub() {
  Đối soát tự động
  </button>
  <button className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Fingerprint className="w-4 h-4 text-orange-500" /> Cài đặt Bảo mật
+ <Fingerprint className="w-4 h-4 text-primary-500" /> Cài đặt Bảo mật
  </button>
  </div>
  </div>
@@ -283,7 +293,7 @@ export function WalletHub() {
  <div className="flex gap-2">
  <button 
  onClick={() => setShowActionModal('deposit')}
- className="bg-white text-orange-700 px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm shadow-blue-900/10 hover:bg-slate-100 transition-all"
+ className="bg-white text-primary-750 px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm shadow-blue-900/10 hover:bg-slate-100 transition-all"
  >
  Nạp ví
  </button>
@@ -315,11 +325,11 @@ export function WalletHub() {
  <AreaChart data={MOCK_CHART_DATA}>
  <defs>
  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
- <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
- <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+ <stop offset="5%" stopColor="var(--app-primary-500, #003991)" stopOpacity={0.1}/>
+ <stop offset="95%" stopColor="var(--app-primary-500, #003991)" stopOpacity={0}/>
  </linearGradient>
  </defs>
- <Area type="monotone" dataKey="income" stroke="#2563eb" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={3} />
+ <Area type="monotone" dataKey="income" stroke="var(--app-primary-500, #003991)" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={3} />
  </AreaChart>
  </ResponsiveContainer>
  </div>
@@ -329,7 +339,7 @@ export function WalletHub() {
  <p className="text-[10px] font-bold text-slate-500 uppercase">Dự báo tăng trưởng</p>
  <p className="text-lg font-black text-slate-900">+24.5%</p>
  </div>
- <button className="p-2 hover:bg-slate-50 rounded-lg transition-all text-orange-700">
+ <button className="p-2 hover:bg-slate-50 rounded-lg transition-all text-primary-750">
  <ArrowRight className="w-5 h-5" />
  </button>
  </div>
@@ -350,7 +360,7 @@ export function WalletHub() {
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
  "flex-1 px-6 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 w-full",
- activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
+ activeTab === tab.id ? "bg-white text-primary-750 shadow-sm" : "text-slate-600 hover:text-slate-800"
  )}
  >
  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -374,7 +384,7 @@ export function WalletHub() {
  value={searchHistory}
  onChange={(e) => setSearchHistory(e.target.value)}
  placeholder="Tìm theo Mã GD, User ID..." 
- className="w-full bg-white border border-slate-300 rounded-lg pl-12 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-600 outline-none"
+ className="w-full bg-white border border-slate-300 rounded-lg pl-12 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
  />
  </div>
  <div className="flex flex-wrap gap-2 w-full xl:w-auto">
@@ -433,14 +443,14 @@ export function WalletHub() {
  <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <div className={cn("w-1.5 h-1.5 rounded-full", txn.type === 'deposit' ? "bg-emerald-500" : "bg-slate-800")} />
- <span className="text-xs font-mono font-bold text-slate-900 group-hover:text-orange-700">{txn.id}</span>
+ <span className="text-xs font-mono font-bold text-slate-900 group-hover:text-primary-750">{txn.id}</span>
  </div>
  </td>
  <td className="px-6 py-4">
  <span className={cn(
  "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight",
  txn.type === 'deposit' ? "bg-emerald-50 text-emerald-600" :
- txn.type === 'payout' ? "bg-slate-100 text-orange-700" : "bg-slate-100 text-slate-700"
+ txn.type === 'payout' ? "bg-slate-100 text-primary-750" : "bg-slate-100 text-slate-700"
  )}>
  {txn.type}
  </span>
@@ -523,10 +533,10 @@ export function WalletHub() {
 
  <div className="mt-8 pt-6 border-t border-stone-50 flex justify-between items-center relative z-10">
  <div className="flex gap-2">
- <button className="p-2 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-500 hover:text-orange-700">
+ <button className="p-2 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-500 hover:text-primary-750">
  <SettingsIcon className="w-4 h-4" />
  </button>
- <button className="p-2 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-500 hover:text-orange-700">
+ <button className="p-2 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-500 hover:text-primary-750">
  <ArrowLeftRight className="w-4 h-4" />
  </button>
  </div>
@@ -560,7 +570,7 @@ export function WalletHub() {
  <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">Instant Settlement Protocol</h3>
  <p className="text-sm text-blue-100/80 leading-relaxed uppercase font-bold tracking-tight">Rút tiền về ngay lập tức 24/7 kể cả ngày lễ và cuối tuần qua hệ thống Napas 247. Phí giao dịch cố định chỉ 1.100đ.</p>
  </div>
- <button className="relative z-10 px-6 py-5 bg-white text-orange-700 rounded-lg font-black text-sm uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">
+ <button className="relative z-10 px-6 py-5 bg-white text-primary-750 rounded-lg font-black text-sm uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">
  Cấu hình Rút tiền nhanh
  </button>
  </div>
@@ -576,8 +586,8 @@ export function WalletHub() {
  <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] relative overflow-hidden flex flex-col md:flex-row gap-6 items-center">
  <div className="relative z-10 space-y-4 max-w-md">
  <div className="flex items-center gap-2 px-3 py-1 bg-slate-800/20 rounded-full w-fit">
- <ShieldCheck className="w-4 h-4 text-orange-500" />
- <span className="text-[10px] font-black uppercase tracking-widest text-orange-500">Security Standard v4.2</span>
+ <ShieldCheck className="w-4 h-4 text-primary-500" />
+ <span className="text-[10px] font-black uppercase tracking-widest text-primary-500">Security Standard v4.2</span>
  </div>
  <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">Escrow Smart Protocol</h3>
  <p className="text-sm text-slate-500 leading-relaxed">Tiền người mua được chuyển trực tiếp vào Vault của Sàn (Đã khóa). Khi Logistics xác nhận "Giao hàng thành công", hệ thống tự động giải ngân cho Người bán sau 7 ngày (Retention Period), đảm bảo an toàn 100%.</p>
@@ -626,7 +636,7 @@ export function WalletHub() {
  {MOCK_ESCROWS.map(escrow => (
  <tr key={escrow.orderId} className="hover:bg-slate-50 transition-all">
  <td className="px-6 py-4 text-sm font-bold text-slate-900 group">{escrow.orderId}</td>
- <td className="px-6 py-4 text-sm font-black text-orange-700">{formatCurrency(escrow.amount)}</td>
+ <td className="px-6 py-4 text-sm font-black text-primary-750">{formatCurrency(escrow.amount)}</td>
  <td className="px-6 py-4">
  <div className="flex flex-col">
  <span className="text-[10px] font-bold text-slate-500 uppercase">Seller: {escrow.sellerId}</span>
@@ -665,7 +675,7 @@ export function WalletHub() {
  <div className="lg:col-span-3 border-l-4 border-slate-900 bg-slate-100/50 p-6 rounded-lg mb-4 flex items-center justify-between">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-white rounded-lg shadow-sm flex items-center justify-center">
- <Building2 className="w-6 h-6 text-orange-700" />
+ <Building2 className="w-6 h-6 text-primary-750" />
  </div>
  <div>
  <h4 className="font-bold text-slate-900">SePay Bank Hub Connection</h4>
@@ -683,7 +693,7 @@ export function WalletHub() {
  <button 
  onClick={syncBankHub}
  disabled={isSyncing}
- className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-orange-700 hover:bg-white shadow-sm transition-all flex items-center gap-2"
+ className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-primary-750 hover:bg-white shadow-sm transition-all flex items-center gap-2"
  >
  <RefreshCcw className={cn("w-3 h-3", isSyncing && "animate-spin")} />
  Refresh Balance
@@ -744,7 +754,7 @@ export function WalletHub() {
  Đặt mặc định
  </button>
  )}
- <button className="text-orange-700 text-[10px] font-black hover:underline flex items-center gap-1">
+ <button className="text-primary-750 text-[10px] font-black hover:underline flex items-center gap-1">
  Cấu hình <ExternalLink className="w-3 h-3" />
  </button>
  </div>
@@ -808,13 +818,13 @@ export function WalletHub() {
  </div>
 
  {/* Points to Promo Conversion */}
- <div className="bg-white p-6 rounded-lg border border-blue-100 shadow-sm relative overflow-hidden">
+ <div className="bg-white p-6 rounded-lg border border-primary-100 shadow-sm relative overflow-hidden">
  <div className="absolute top-0 right-0 p-4 opacity-5">
  <ArrowLeftRight className="w-24 h-24 -rotate-12" />
  </div>
  <div className="relative z-10 space-y-4">
  <div className="flex items-center gap-2 mb-2">
- <div className="w-10 h-10 bg-blue-50 flex items-center justify-center rounded-lg text-blue-600">
+ <div className="w-10 h-10 bg-primary-50 flex items-center justify-center rounded-lg text-primary-600">
  <ArrowLeftRight className="w-5 h-5" />
  </div>
  <div>
@@ -832,8 +842,8 @@ export function WalletHub() {
  <ArrowDownRight className="w-4 h-4 text-slate-500" />
  </div>
  <div className="flex justify-between items-center text-sm">
- <span className="text-blue-600 font-bold">Ví Khuyến Mại (VNĐ)</span>
- <input type="text" className="w-24 text-right px-2 py-1 border border-blue-200 rounded block focus:outline-none text-blue-700 bg-blue-50 font-bold" defaultValue="10,000" />
+ <span className="text-primary-600 font-bold">Ví Khuyến Mại (VNĐ)</span>
+ <input type="text" className="w-24 text-right px-2 py-1 border border-blue-200 rounded block focus:outline-none text-blue-700 bg-primary-50 font-bold" defaultValue="10,000" />
  </div>
  <div className="border-t border-slate-300 pt-3 mt-3 flex justify-between items-center text-sm">
  <span className="text-slate-700 font-bold">Thời hạn hiệu lực (Ngày)</span>
@@ -842,7 +852,7 @@ export function WalletHub() {
  <p className="text-[10px] text-slate-600 italic text-right mt-1">Hệ thống sẽ dọn dẹp các KM hết hạn tự động.</p>
  </div>
  <div className="pt-2">
- <button onClick={() => alert('Đã cập nhật quy tắc quy đổi')} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] uppercase tracking-wider transition-colors">
+ <button onClick={() => alert('Đã cập nhật quy tắc quy đổi')} className="w-full py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg text-[11px] uppercase tracking-wider transition-colors">
  Lưu Quy Đổi
  </button>
  </div>
@@ -885,7 +895,7 @@ export function WalletHub() {
  </div>
  </div>
  <div className="flex gap-2">
- <input type="text" placeholder="Tìm theo Username, ID..." className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-orange-600" />
+ <input type="text" placeholder="Tìm theo Username, ID..." className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary-500" />
  <button className="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 text-sm font-bold">
  <Filter className="w-4 h-4" /> Lọc
  </button>
@@ -929,9 +939,9 @@ export function WalletHub() {
  <tbody className="divide-y divide-slate-100">
  {[
  { user: 'vinh.ngtienmdb', role: 'Khách hàng', type: 'cashback', typeLabel: 'Cashback', action: 'Hoàn tiền mua sắm đơn ORD-9121', icon: RefreshCcw, amount: '+50,000', curr: 'VNĐ', class: 'text-emerald-600', time: '12 thg 5, 2024 14:02' },
- { user: 'vinh.ngtienmdb', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Đổi từ Cashback sang Khuyến mại', icon: ArrowLeftRight, amount: '+55,000', curr: 'VNĐ', class: 'text-blue-600', time: '12 thg 5, 2024 14:05' },
+ { user: 'vinh.ngtienmdb', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Đổi từ Cashback sang Khuyến mại', icon: ArrowLeftRight, amount: '+55,000', curr: 'VNĐ', class: 'text-primary-600', time: '12 thg 5, 2024 14:05' },
  { user: 'kh_0911', role: 'Khách hàng', type: 'loyalty', typeLabel: 'Loyalty', action: 'Tích điểm đơn hàng tự động', icon: RefreshCcw, amount: '+12', curr: 'Pts', class: 'text-purple-600', time: '11 thg 5, 2024 09:30' },
- { user: 'kh_0911', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Quy đổi Điểm Loyalty ra Vourcher KM', icon: ArrowLeftRight, amount: '+120,000', curr: 'VNĐ', class: 'text-blue-600', time: '11 thg 5, 2024 10:15' },
+ { user: 'kh_0911', role: 'Khách hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Quy đổi Điểm Loyalty ra Vourcher KM', icon: ArrowLeftRight, amount: '+120,000', curr: 'VNĐ', class: 'text-primary-600', time: '11 thg 5, 2024 10:15' },
  { user: 'seller_thuyvan', role: 'Seller', type: 'cashback', typeLabel: 'Cashback', action: 'Thanh toán đơn hàng (Trừ Ví KH)', icon: CreditCard, amount: '-150,000', curr: 'VNĐ', class: 'text-slate-700', time: '10 thg 5, 2024 08:20' },
  { user: 'store_q7', role: 'Cửa hàng', type: 'promo', typeLabel: 'Khuyến Mại', action: 'Khách hàng áp dụng Ví Khuyến Mại', icon: Gift, amount: '-50,000', curr: 'VNĐ', class: 'text-slate-700', time: '09 thg 5, 2024 19:45' },
  ].filter(row => crmHistoryTab === 'all' || row.type === crmHistoryTab).map((row, i) => (
@@ -940,7 +950,7 @@ export function WalletHub() {
  <div className="font-bold text-slate-900 text-sm">{row.user}</div>
  <div className="text-[10px] text-slate-600 uppercase font-bold mt-0.5 tracking-wider">{row.role}</div>
  </td>
- <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.type === 'cashback' ? 'bg-emerald-50 text-emerald-700' : row.type === 'promo' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>{row.typeLabel}</span></td>
+ <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.type === 'cashback' ? 'bg-emerald-50 text-emerald-700' : row.type === 'promo' ? 'bg-primary-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>{row.typeLabel}</span></td>
  <td className="px-6 py-4 text-sm text-slate-700">
  <div className="flex items-center gap-2">
  <row.icon className="w-3.5 h-3.5 text-slate-500" />
@@ -972,11 +982,11 @@ export function WalletHub() {
  <div className="relative z-10 max-w-xl space-y-6">
  <div className="flex items-center gap-3">
  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10">
- <Fingerprint className="w-6 h-6 text-orange-500" />
+ <Fingerprint className="w-6 h-6 text-primary-500" />
  </div>
  <div>
  <h3 className="text-xl font-bold text-[#FAF9F5] tracking-tight uppercase italic">Vault Guard™ AI Monitoring</h3>
- <p className="text-orange-500 text-xs font-bold uppercase tracking-widest mt-0.5">Real-time fraud detection active</p>
+ <p className="text-primary-500 text-xs font-bold uppercase tracking-widest mt-0.5">Real-time fraud detection active</p>
  </div>
  </div>
  <p className="text-sm text-slate-500 leading-relaxed">Hệ thống AI giám sát mọi giao dịch 24/7 để phát hiện các hành vi bất thường như rửa tiền, gian lận thẻ hoặc nạp tiền ảo. Tự động đóng băng tài khoản khi có rủi ro cao để bảo vệ tài sản của Doanh nghiệp.</p>

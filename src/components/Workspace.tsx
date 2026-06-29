@@ -51,7 +51,7 @@ function getColorClasses(color: string) {
   switch (color) {
   case 'blue': return 'bg-slate-100 text-orange-700';
   case 'orange': return 'bg-orange-50 text-orange-600';
-  case 'indigo': return 'bg-blue-50 text-blue-600';
+  case 'indigo': return 'bg-primary-50 text-primary-600';
   case 'purple': return 'bg-purple-50 text-purple-600';
   case 'emerald': return 'bg-emerald-50 text-emerald-600';
   case 'fuchsia': return 'bg-fuchsia-50 text-fuchsia-600';
@@ -228,7 +228,7 @@ export function Workspace() {
               </button>
               <button 
                 onClick={() => setActiveModule('work_manage')}
-                className="bg-[#2563EB] text-[#FAF9F5] px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                className="bg-primary-600 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> Giao việc mới
               </button>
@@ -292,7 +292,7 @@ export function Workspace() {
             {MODULE_GROUPS.map((group, gIdx) => (
               <div key={gIdx} className="space-y-4">
                 <h3 className="text-xs font-extrabold text-slate-800 flex items-center gap-2 px-1 uppercase tracking-wider text-slate-500">
-                  <span className="w-1.5 h-3.5 bg-[#2563EB] rounded-full inline-block" />
+                  <span className="w-1.5 h-3.5 bg-primary-600 rounded-full inline-block" />
                   {group.title}
                 </h3>
                 
@@ -301,21 +301,21 @@ export function Workspace() {
                     <div 
                       key={mod.id}
                       onClick={() => setActiveModule(mod.id)}
-                      className="group bg-white p-5 rounded-lg border border-slate-300 hover:border-[#2563EB]/40 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
+                      className="group bg-white p-5 rounded-lg border border-slate-300 hover:border-primary-600/40 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
                     >
                       <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                         <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
                       </div>
                       
                       <div className={cn(
-                        "w-11 h-11 rounded-lg relative z-10 flex items-center justify-center group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-sm border border-slate-200", 
+                        "w-11 h-11 rounded-lg relative z-10 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm border border-slate-200", 
                         getColorClasses(mod.color)
                       )}>
                         <mod.icon className="w-5 h-5" />
                       </div>
                       
                       <div className="relative z-10 select-none">
-                        <h3 className="font-extrabold text-slate-900 text-xs mb-1 group-hover:text-[#2563EB] transition-colors flex items-center gap-1">
+                        <h3 className="font-extrabold text-slate-900 text-xs mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-1">
                           {mod.label} <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
                         </h3>
                         <p className="text-[10.5px] text-[#6B7280] leading-relaxed line-clamp-2 font-medium">{mod.desc}</p>
@@ -383,8 +383,8 @@ export function Workspace() {
           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 mx-auto border border-slate-200">
             {activeModule === 'calendar' && <CalendarIcon className="w-8 h-8 text-indigo-600" />}
             {activeModule === 'meeting_rooms' && <Building2 className="w-8 h-8 text-rose-600" />}
-            {activeModule === 'vehicles' && <Car className="w-8 h-8 text-blue-600" />}
-            {(activeModule === 'doc_list' || activeModule === 'doc_archive') && <FolderOpen className="w-8 h-8 text-[#2563EB]" />}
+            {activeModule === 'vehicles' && <Car className="w-8 h-8 text-primary-600" />}
+            {(activeModule === 'doc_list' || activeModule === 'doc_archive') && <FolderOpen className="w-8 h-8 text-primary-600" />}
             {activeModule.startsWith('asset_') && <Monitor className="w-8 h-8 text-purple-600" />}
           </div>
 
@@ -444,11 +444,11 @@ export function Workspace() {
               <div className="divide-y divide-slate-200 space-y-2 pt-1 font-bold">
                 <div className="flex justify-between text-slate-700 py-1">
                   <span>Tài liệu tiêu chuẩn an toàn ISO 9001:2026</span>
-                  <span className="text-blue-600">TẢI XUỐNG (PDF)</span>
+                  <span className="text-primary-600">TẢI XUỐNG (PDF)</span>
                 </div>
                 <div className="flex justify-between text-slate-700 py-1">
                   <span>Bản đồ quy hoạch cơ sở dữ liệu phân tán ERP</span>
-                  <span className="text-blue-600">TẢI XUỐNG (CAD)</span>
+                  <span className="text-primary-600">TẢI XUỐNG (CAD)</span>
                 </div>
               </div>
             )}
@@ -457,7 +457,7 @@ export function Workspace() {
               <div className="divide-y divide-slate-200 space-y-2 pt-1 font-bold">
                 <div className="flex justify-between text-slate-700 py-1">
                   <span>Màn hình Dell UltraSharp 27" (ID: EQ-MNT-032)</span>
-                  <span className="text-[#2563EB]">Đã bàn giao - P.Tech</span>
+                  <span className="text-primary-600">Đã bàn giao - P.Tech</span>
                 </div>
                 <div className="flex justify-between text-slate-700 py-1">
                   <span>Máy chủ cấu hình cao AI Xeon (ID: EQ-SRV-001)</span>

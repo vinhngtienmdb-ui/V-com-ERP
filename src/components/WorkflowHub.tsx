@@ -341,7 +341,7 @@ export function WorkflowHub() {
  <span className="text-[10px] font-black text-orange-700 uppercase tracking-widest">{task.module} • {task.id}</span>
  {task.priority === 'critical' && <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />}
  </div>
- <h4 className="text-base font-black text-slate-900 group-hover:text-orange-700 transition-colors uppercase tracking-tight">{task.title}</h4>
+ <h4 className="text-base font-black text-slate-900 group-hover:text-primary-600 transition-colors uppercase tracking-tight">{task.title}</h4>
  <div className="flex flex-wrap items-center gap-2 mt-2">
   <p className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5 shadow-inner bg-slate-50 px-3 py-1 rounded-full w-fit">
    <Clock className="w-3.5 h-3.5" /> Hạn chót: {task.deadline}
