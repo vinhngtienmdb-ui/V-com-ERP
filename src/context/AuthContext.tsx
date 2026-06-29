@@ -106,14 +106,24 @@ const logAdminAudit = async (
        console.warn("Could not check 2FA status from Supabase:", err);
      }
 
-     if (twoFactorEnabled) {
-       setIsMfaRequired(true);
-       setMfaUserEmail(user.email || '');
-       // Keep mfaVerified false so user is hidden until OTP is validated
-     } else {
-       setIsMfaRequired(false);
-       setMfaVerified(true);
-     }
+      const mfaVerifiedAt = safeLocalStorage.getItem(`mfa_verified_at_${user.uid}`);
+      let skipMfa = false;
+      if (mfaVerifiedAt) {
+        const verifiedTime = new Date(mfaVerifiedAt).getTime();
+        const sixtyMinutesAgo = Date.now() - 60 * 60 * 1000;
+        if (verifiedTime > sixtyMinutesAgo) {
+          skipMfa = true;
+        }
+      }
+
+      if (twoFactorEnabled && !skipMfa) {
+        setIsMfaRequired(true);
+        setMfaUserEmail(user.email || '');
+        // Keep mfaVerified false so user is hidden until OTP is validated
+      } else {
+        setIsMfaRequired(false);
+        setMfaVerified(true);
+      }
 
      try {
        // 1. Fetch role from user_roles in Supabase
@@ -298,6 +308,7 @@ const logAdminAudit = async (
       });
       const data = await res.json();
       if (res.ok && data.status === 'success') {
+        safeLocalStorage.setItem(`mfa_verified_at_${user.uid}`, new Date().toISOString());
         setMfaVerified(true);
         setIsMfaRequired(false);
       } else {
