@@ -1,5 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateRMAResponse, generateCustomerCareMessage, getAiChatResponse } from '../services/geminiService';
+import { 
+  generateRMAResponse, 
+  generateCustomerCareMessage, 
+  getAiChatResponse,
+  suggestStockReorder,
+  generatePerformanceReview,
+  summarizeCashFlow
+} from '../services/geminiService';
 import { safeLocalStorage } from '../lib/storage';
 
 vi.mock('@google/genai', () => {
@@ -49,5 +56,25 @@ describe('Gemini Service Tests', () => {
     };
     const res = await generateCustomerCareMessage(customer);
     expect(res).toContain('Quản lý Đơn hàng');
+  });
+
+  it('nên sinh phản hồi đề xuất tồn kho bằng AI (chế độ dự phòng ngoại tuyến)', async () => {
+    safeLocalStorage.setItem('api_gemini_api_key', 'test-api-key-123');
+    const item = { code: 'SP-001', name: 'Sữa tươi', currentStock: 5, minStock: 20 };
+    const res = await suggestStockReorder(item);
+    expect(res).toContain('tồn kho chạm ngưỡng tối thiểu');
+  });
+
+  it('nên sinh phản hồi đánh giá năng lực bằng AI (chế độ dự phòng ngoại tuyến)', async () => {
+    safeLocalStorage.setItem('api_gemini_api_key', 'test-api-key-123');
+    const employee = { name: 'Nguyễn Văn Minh', kpiScore: 95, achievements: ['Đạt KPI'] };
+    const res = await generatePerformanceReview(employee);
+    expect(res).toContain('Nhận xét đánh giá hiệu suất năm');
+  });
+
+  it('nên sinh phản hồi tóm tắt dòng tiền bằng AI (chế độ dự phòng ngoại tuyến)', async () => {
+    safeLocalStorage.setItem('api_gemini_api_key', 'test-api-key-123');
+    const res = await summarizeCashFlow(50000000, 30000000, 20000000);
+    expect(res).toContain('Phân tích dòng tiền của Giám đốc Tài chính (CFO)');
   });
 });

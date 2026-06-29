@@ -89,7 +89,16 @@ export async function getAiChatResponse(
       let simulatedReply =
         'Xin chào! [Hệ thống đang chịu tải cao - Chế độ Trợ lý Ngoại tuyến] VComm đã tiếp nhận ý kiến của bạn. Bộ phận CSKH sẽ phản hồi trực tiếp sau ít phút nữa.';
 
-      if (lowerMsg.includes('đơn') || lowerMsg.includes('order') || lowerMsg.includes('mua')) {
+      if (lowerMsg.includes('tồn') || lowerMsg.includes('reorder') || lowerMsg.includes('ngưỡng')) {
+        simulatedReply =
+          "Hệ thống ngoại tuyến: Đề xuất nhập thêm hàng hóa khẩn cấp do tồn kho chạm ngưỡng tối thiểu. Khuyến nghị lập phiếu yêu cầu mua hàng (Purchase Requisition) trên hệ thống gửi Trưởng phòng mua hàng duyệt.";
+      } else if (lowerMsg.includes('kpi') || lowerMsg.includes('hiệu suất') || lowerMsg.includes('đánh giá')) {
+        simulatedReply =
+          "Hệ thống ngoại tuyến: Nhận xét đánh giá hiệu suất năm: Nhân viên hoàn thành tốt các chỉ tiêu KPI được giao, tinh thần làm việc tích cực, cần tiếp tục phát huy năng lực trong các dự án sắp tới.";
+      } else if (lowerMsg.includes('dòng tiền') || lowerMsg.includes('cash-in') || lowerMsg.includes('cfo')) {
+        simulatedReply =
+          "Hệ thống ngoại tuyến: Phân tích dòng tiền của Giám đốc Tài chính (CFO):\n- Dòng tiền biến động lớn cần theo dõi chặt chẽ.\n- Khuyến nghị: 1. Đôn đốc thu hồi nợ phải thu. 2. Thương lượng giãn nợ nhà cung cấp. 3. Tiết giảm chi phí hành chính không thiết yếu.";
+      } else if (lowerMsg.includes('đơn') || lowerMsg.includes('order') || lowerMsg.includes('mua')) {
         simulatedReply =
           "Chào bạn, về câu hỏi liên quan đến đơn hàng, hệ thống CSKH VComm khuyên bạn nên kiểm tra trạng thái trong phần 'Quản lý Đơn hàng' hoặc cung cấp Mã đơn để bắt đầu quy trình hỗ trợ đổi trả RMA tự động nhanh chóng.";
       } else if (
@@ -113,4 +122,29 @@ export async function getAiChatResponse(
 
     return 'Xin lỗi, hệ thống AI đang bận. Vui lòng liên hệ nhân viên hỗ trợ trực tiếp.';
   }
+}
+
+export async function suggestStockReorder(item: { code: string; name: string; currentStock: number; minStock: number }) {
+  const prompt = `Hàng hóa '${item.name}' (Mã: ${item.code}) hiện có lượng tồn là ${item.currentStock}, chạm ngưỡng tồn tối thiểu ${item.minStock}. 
+  Hãy phân tích và viết một đề xuất ngắn gọn gửi Trưởng bộ phận mua hàng để lập kế hoạch nhập thêm hàng, kèm theo một số lưu ý về thời gian vận chuyển và chu kỳ bán hàng dịp cuối năm.`;
+  return await getAiChatResponse(prompt);
+}
+
+export async function generatePerformanceReview(employee: { name: string; kpiScore: number; achievements: string[] }) {
+  const prompt = `Soạn thảo nhận xét đánh giá hiệu suất năm cho nhân sự ${employee.name}.
+  - Điểm KPI: ${employee.kpiScore}/100
+  - Thành tích nổi bật: ${employee.achievements.join(', ')}
+  
+  Yêu cầu: Lời nhận xét mang tính xây dựng, nêu bật điểm mạnh, khuyến khích các điểm cần cải thiện nhẹ nhàng, văn phong công sở chuyên nghiệp, lịch thiệp bằng tiếng Việt.`;
+  return await getAiChatResponse(prompt);
+}
+
+export async function summarizeCashFlow(cashIn: number, cashOut: number, netChange: number) {
+  const prompt = `Báo cáo dòng tiền tháng này ghi nhận:
+  - Tổng thu (Cash-in): ${cashIn.toLocaleString('vi-VN')} VND
+  - Tổng chi (Cash-out): ${cashOut.toLocaleString('vi-VN')} VND
+  - Thay đổi ròng (Net cash flow): ${netChange.toLocaleString('vi-VN')} VND
+  
+  Hãy đóng vai là một Giám đốc Tài chính (CFO), phân tích nhanh ý nghĩa của các con số trên, cảnh báo nếu dòng tiền ròng âm và đưa ra 3 khuyến nghị tối ưu hóa chi tiêu ngắn hạn.`;
+  return await getAiChatResponse(prompt);
 }

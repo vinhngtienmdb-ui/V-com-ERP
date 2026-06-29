@@ -37,6 +37,7 @@ import {
   Lock
 } from 'lucide-react';
 import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
+import { summarizeCashFlow } from '../services/geminiService';
 import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../lib/firebase';
 import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
@@ -91,6 +92,23 @@ export function Finance() {
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [unpostingId, setUnpostingId] = useState<string | null>(null);
   const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('1121');
+
+  // AI Cashflow Analysis States
+  const [isAnalyzingCashFlow, setIsAnalyzingCashFlow] = useState(false);
+  const [cashFlowAnalysisText, setCashFlowAnalysisText] = useState("");
+
+  const handleAnalyzeCashFlow = async (totalCfIn: number, totalCfOut: number, netCashFlow: number) => {
+    setIsAnalyzingCashFlow(true);
+    try {
+      const response = await summarizeCashFlow(totalCfIn, totalCfOut, netCashFlow);
+      setCashFlowAnalysisText(response);
+    } catch (err: any) {
+      console.error(err);
+      alert('Lỗi phân tích dòng tiền bằng AI: ' + (err.message || err));
+    } finally {
+      setIsAnalyzingCashFlow(false);
+    }
+  };
 
   // Trạng thái nâng cấp Khóa sổ & Báo cáo nâng cao
   const [closingLockDate, setClosingLockDate] = useState<string | null>(null);
@@ -1664,6 +1682,32 @@ export function Finance() {
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* AI CFO Financial Analysis Block */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 mt-4 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-indigo-650 text-indigo-600 animate-pulse" />
+                        <h4 className="font-extrabold text-sm text-slate-800 uppercase tracking-wider">CFO Trợ lý Tài chính AI</h4>
+                      </div>
+                      <button
+                        onClick={() => handleAnalyzeCashFlow(totalCfIn, totalCfOut, netCashFlow)}
+                        disabled={isAnalyzingCashFlow}
+                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-[#FAF9F5] text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        {isAnalyzingCashFlow ? 'AI đang phân tích dòng tiền...' : 'Phân tích dòng tiền bằng AI'}
+                      </button>
+                    </div>
+
+                    {cashFlowAnalysisText ? (
+                      <div className="bg-white border border-slate-200 p-4 rounded-lg text-xs leading-relaxed text-slate-700 font-medium whitespace-pre-line shadow-inner animate-in fade-in duration-300">
+                        {cashFlowAnalysisText}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 italic">Nhấn nút phía trên để Trợ lý AI CFO phân tích tự động xu hướng dòng tiền ròng, cảnh báo rủi ro và đề xuất 3 giải pháp cải thiện.</p>
+                    )}
                   </div>
                 </div>
               )}

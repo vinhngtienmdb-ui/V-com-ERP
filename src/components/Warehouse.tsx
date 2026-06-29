@@ -42,6 +42,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useAuditLog } from '../hooks/useAuditLog';
+import { suggestStockReorder } from '../services/geminiService';
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';
@@ -589,7 +590,20 @@ export function WarehouseModule() {
       colRef.tenantId = tenantId;
       
       const title = `Đề xuất mua hàng dự báo: ${item.productName}`;
-      const content = `Hệ thống phân tích AI dự báo mặt hàng ${item.productName} (${item.productId}) có lượng tiêu thụ trung bình hàng ngày là ${item.dailyConsumption} đơn vị, tồn kho hiện tại còn ${item.currentStock} đơn vị và dự kiến sẽ hết hàng trong ${item.daysOfStockLeft} ngày. Khuyến nghị nhập thêm gấp ${item.recommendedOrderQty} đơn vị để đáp ứng nhu cầu 14 ngày tới.`;
+      
+      // Call AI to generate custom reorder proposal content
+      let content = '';
+      try {
+        content = await suggestStockReorder({
+          code: item.productId,
+          name: item.productName,
+          currentStock: item.currentStock,
+          minStock: item.recommendedOrderQty
+        });
+      } catch (aiErr) {
+        console.warn('AI Stock reorder proposal failed, using fallback template:', aiErr);
+        content = `Hệ thống phân tích AI dự báo mặt hàng ${item.productName} (${item.productId}) có lượng tiêu thụ trung bình hàng ngày là ${item.dailyConsumption} đơn vị, tồn kho hiện tại còn ${item.currentStock} đơn vị và dự kiến sẽ hết hàng trong ${item.daysOfStockLeft} ngày. Khuyến nghị nhập thêm gấp ${item.recommendedOrderQty} đơn vị để đáp ứng nhu cầu 14 ngày tới.`;
+      }
       
       await addDoc(colRef, {
         title,
