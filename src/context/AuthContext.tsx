@@ -89,125 +89,131 @@ const logAdminAudit = async (
    });
  }, 5000);
 
- const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  setUser(user);
-  if (user) {
-    let twoFactorEnabled = false;
-    try {
-      const staffDoc = await getDoc(doc(db, 'staff', user.uid));
-      if (staffDoc.exists()) {
-        twoFactorEnabled = !!staffDoc.data().twoFactorEnabled;
-      }
-    } catch (err) {
-      console.warn("Could not check 2FA status from Firestore:", err);
-    }
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+   setUser(user);
+   if (user) {
+     let twoFactorEnabled = false;
+     try {
+       const { data: userRow } = await supabase
+         .from('users')
+         .select('*')
+         .eq('id', user.uid)
+         .maybeSingle();
+       if (userRow && userRow.data) {
+         twoFactorEnabled = !!userRow.data.twoFactorEnabled;
+       }
+     } catch (err) {
+       console.warn("Could not check 2FA status from Supabase:", err);
+     }
 
-    if (twoFactorEnabled) {
-      setIsMfaRequired(true);
-      setMfaUserEmail(user.email || '');
-      // Keep mfaVerified false so user is hidden until OTP is validated
-    } else {
-      setIsMfaRequired(false);
-      setMfaVerified(true);
-    }
-  } else {
-    setIsMfaRequired(false);
-    setMfaVerified(false);
-  }
-  if (user) {
-  try {
-    // 1. Fetch role from user_roles in Supabase
-    const { data: roleRow } = await supabase
-      .from('user_roles')
-      .select('*')
-      .eq('user_id', user.uid)
-      .maybeSingle();
+     if (twoFactorEnabled) {
+       setIsMfaRequired(true);
+       setMfaUserEmail(user.email || '');
+       // Keep mfaVerified false so user is hidden until OTP is validated
+     } else {
+       setIsMfaRequired(false);
+       setMfaVerified(true);
+     }
 
-    const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+     try {
+       // 1. Fetch role from user_roles in Supabase
+       const { data: roleRow } = await supabase
+         .from('user_roles')
+         .select('*')
+         .eq('user_id', user.uid)
+         .maybeSingle();
 
-    if (roleRow && !isBootstrapped) {
-      const isStaffRole = roleRow.role !== 'customer';
-      setIsStaff(isStaffRole);
-      const isUserAdmin = roleRow.role === 'super_admin' || roleRow.role === 'store_manager';
-      setIsAdmin(isUserAdmin);
-      setStaffInfo({
-        name: user.displayName || (roleRow.role === 'super_admin' ? 'Super Admin' : 'Staff Member'),
-        role: roleRow.role,
-        username: user.email?.split('@')[0] || 'staff',
-        tenantId: roleRow.tenant_id
-      });
-      if (isUserAdmin) {
-        logAdminAudit(user.email || 'Admin', 'Login', 'Success', user.uid, roleRow.tenant_id).catch(console.error);
-      }
-    } else {
-      // Fallback: Check staff Firestore document
-      const staffDoc = await Promise.race([
-       getDoc(doc(db, 'staff', user.uid)),
-       new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
-      ]);
-      if (staffDoc.exists()) {
-        const data = staffDoc.data();
-        setIsStaff(true);
-        const isUserAdmin = data.role === 'admin';
-        setIsAdmin(isUserAdmin);
-        setStaffInfo(data);
-        
-        if (isUserAdmin) {
-          logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01').catch(console.error);
-        }
-      } else {
-  // Check if it's the bootstrapped admin
-  const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
-  if (isBootstrapped) {
-  setIsStaff(true);
-  setIsAdmin(true);
-  const adminInfo = { 
-    name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
-    role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
-    username: user.email?.split('@')[0],
-    tenantId: 'tenant-vcomm-prod-01'
-  };
-  setStaffInfo(adminInfo);
-  logAdminAudit(user.email, 'Login (Bootstrapped)', 'Success', user.uid, 'tenant-vcomm-prod-01').catch(console.error);
-  } else {
-  setIsStaff(false);
-  setIsAdmin(false);
-  setStaffInfo(null);
-  }
-  }
-  }
-  } catch (error: any) {
-  if (error.message?.includes('offline') || error.message?.includes('client is offline')) {
-  console.warn("Firebase client is operating in offline mode. Falling back to cached session for", user.email);
-  } else {
-  console.error("Error fetching staff info:", error);
-  }
-  
-  // STRICT FIX for bootstrapped security flaw:
-  // Only grant staff and admin status in error/offline fallbacks to AUTHENTICATED/VERIFIED bootstrap accounts
-  const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
-  if (isAuthorizedBootstrap) {
-    setIsStaff(true);
-    setIsAdmin(user.email !== 'seller@v-erp.com');
-    setStaffInfo({ 
-      name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
-      role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
-      username: user.email ? user.email.split('@')[0] : 'admin',
-      tenantId: 'tenant-vcomm-prod-01'
-    });
-  } else {
-    setIsStaff(false);
-    setIsAdmin(false);
-    setStaffInfo(null);
-  }
-  }
-  } else {
-  setIsStaff(false);
-  setIsAdmin(false);
-  setStaffInfo(null);
-  }
-  setUser(user);
-  setLoading(false);
+       const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+
+       if (roleRow && !isBootstrapped) {
+         const isStaffRole = roleRow.role !== 'customer';
+         setIsStaff(isStaffRole);
+         const isUserAdmin = roleRow.role === 'super_admin' || roleRow.role === 'store_manager';
+         setIsAdmin(isUserAdmin);
+         setStaffInfo({
+           name: user.displayName || (roleRow.role === 'super_admin' ? 'Super Admin' : 'Staff Member'),
+           role: roleRow.role,
+           username: user.email?.split('@')[0] || 'staff',
+           tenantId: roleRow.tenant_id,
+           twoFactorEnabled: twoFactorEnabled
+         });
+         if (isUserAdmin) {
+           logAdminAudit(user.email || 'Admin', 'Login', 'Success', user.uid, roleRow.tenant_id).catch(console.error);
+         }
+       } else {
+         // Fallback: Check staff Firestore document
+         const staffDoc = await Promise.race([
+          getDoc(doc(db, 'staff', user.uid)),
+          new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+         ]);
+         if (staffDoc.exists()) {
+           const data = staffDoc.data();
+           setIsStaff(true);
+           const isUserAdmin = data.role === 'admin';
+           setIsAdmin(isUserAdmin);
+           setStaffInfo({
+             ...data,
+             twoFactorEnabled: twoFactorEnabled
+           });
+           
+           if (isUserAdmin) {
+             logAdminAudit(user.email || data.email || 'Admin', 'Login', 'Success', user.uid, data.tenantId || 'tenant-vcomm-prod-01').catch(console.error);
+           }
+         } else {
+           // Check if it's the bootstrapped admin
+           const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
+           if (isBootstrapped) {
+             setIsStaff(true);
+             setIsAdmin(true);
+             const adminInfo = { 
+               name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
+               role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
+               username: user.email?.split('@')[0],
+               tenantId: 'tenant-vcomm-prod-01',
+               twoFactorEnabled: twoFactorEnabled
+             };
+             setStaffInfo(adminInfo);
+             logAdminAudit(user.email, 'Login (Bootstrapped)', 'Success', user.uid, 'tenant-vcomm-prod-01').catch(console.error);
+           } else {
+             setIsStaff(false);
+             setIsAdmin(false);
+             setStaffInfo(null);
+           }
+         }
+       }
+     } catch (error: any) {
+       if (error.message?.includes('offline') || error.message?.includes('client is offline')) {
+         console.warn("Firebase client is operating in offline mode. Falling back to cached session for", user.email);
+       } else {
+         console.error("Error fetching staff info:", error);
+       }
+       
+       const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
+       if (isAuthorizedBootstrap) {
+         setIsStaff(true);
+         setIsAdmin(user.email !== 'seller@v-erp.com');
+         setStaffInfo({ 
+           name: user.displayName || (user.email?.startsWith('super') ? 'Super Admin' : (user.email?.startsWith('seller') ? 'Seller Demo' : 'Vinh Nguyen')), 
+           role: user.email?.startsWith('seller') ? 'seller' : 'admin', 
+           username: user.email ? user.email.split('@')[0] : 'admin',
+           tenantId: 'tenant-vcomm-prod-01',
+           twoFactorEnabled: twoFactorEnabled
+         });
+       } else {
+         setIsStaff(false);
+         setIsAdmin(false);
+         setStaffInfo(null);
+       }
+     }
+   } else {
+     setIsMfaRequired(false);
+     setMfaVerified(false);
+     setIsStaff(false);
+     setIsAdmin(false);
+     setStaffInfo(null);
+   }
+   setUser(user);
+   setLoading(false);
   });
 
   return () => {

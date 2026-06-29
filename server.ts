@@ -3657,17 +3657,34 @@ ${summaryText}`;
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số thiết lập.' });
     }
     try {
-      if (!db) throw new Error('Firestore not initialized');
+      if (!supabaseClient) throw new Error('Supabase client not initialized');
       const isValid = verifyTOTP(secret, code);
       if (!isValid) {
         return res.status(400).json({ status: 'error', message: 'Mã xác thực không chính xác hoặc đã hết hạn.' });
       }
       
-      const staffDocRef = doc(db, 'staff', uid);
-      await updateDoc(staffDocRef, {
+      const { data: userRow, error: getErr } = await supabaseClient
+        .from('users')
+        .select('*')
+        .eq('id', uid)
+        .maybeSingle();
+
+      if (getErr || !userRow) {
+        return res.status(404).json({ status: 'error', message: 'Không tìm thấy người dùng trên Supabase.' });
+      }
+
+      const updatedData = {
+        ...(userRow.data || {}),
         twoFactorEnabled: true,
         twoFactorSecret: secret
-      });
+      };
+
+      const { error: updErr } = await supabaseClient
+        .from('users')
+        .update({ data: updatedData })
+        .eq('id', uid);
+
+      if (updErr) throw updErr;
 
       const auditPayload = {
         email: email || 'User',
@@ -3680,7 +3697,9 @@ ${summaryText}`;
         ipAddress: req.ip || '127.0.0.1',
         tenantId: 'tenant-vcomm-prod-01'
       };
-      await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      if (db) {
+        await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      }
 
       res.json({ status: 'success', message: 'Kích hoạt 2FA thành công!' });
     } catch (err: any) {
@@ -3696,15 +3715,20 @@ ${summaryText}`;
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số vô hiệu hóa.' });
     }
     try {
-      if (!db) throw new Error('Firestore not initialized');
+      if (!supabaseClient) throw new Error('Supabase client not initialized');
       
-      const staffDocRef = doc(db, 'staff', uid);
-      const staffSnap = await getDoc(staffDocRef);
-      if (!staffSnap.exists()) {
-        return res.status(404).json({ status: 'error', message: 'Không tìm thấy người dùng.' });
+      const { data: userRow, error: getErr } = await supabaseClient
+        .from('users')
+        .select('*')
+        .eq('id', uid)
+        .maybeSingle();
+
+      if (getErr || !userRow) {
+        return res.status(404).json({ status: 'error', message: 'Không tìm thấy người dùng trên Supabase.' });
       }
-      const staffData = staffSnap.data();
-      const secret = staffData.twoFactorSecret;
+
+      const userData = userRow.data || {};
+      const secret = userData.twoFactorSecret;
       if (!secret) {
         return res.status(400).json({ status: 'error', message: 'Tài khoản chưa được kích hoạt 2FA.' });
       }
@@ -3714,13 +3738,21 @@ ${summaryText}`;
         return res.status(400).json({ status: 'error', message: 'Mã xác thực không chính xác.' });
       }
       
-      await updateDoc(staffDocRef, {
+      const updatedData = {
+        ...userData,
         twoFactorEnabled: false,
         twoFactorSecret: null
-      });
+      };
+
+      const { error: updErr } = await supabaseClient
+        .from('users')
+        .update({ data: updatedData })
+        .eq('id', uid);
+
+      if (updErr) throw updErr;
 
       const auditPayload = {
-        email: email || staffData.email || 'User',
+        email: email || userData.email || 'User',
         userId: uid,
         action: '2FA Disabled',
         status: 'Success',
@@ -3730,7 +3762,9 @@ ${summaryText}`;
         ipAddress: req.ip || '127.0.0.1',
         tenantId: 'tenant-vcomm-prod-01'
       };
-      await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      if (db) {
+        await addDoc(collection(db, 'admin_audit_logs'), auditPayload);
+      }
 
       res.json({ status: 'success', message: 'Đã vô hiệu hóa 2FA.' });
     } catch (err: any) {
@@ -3745,15 +3779,20 @@ ${summaryText}`;
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số xác thực.' });
     }
     try {
-      if (!db) throw new Error('Firestore not initialized');
+      if (!supabaseClient) throw new Error('Supabase client not initialized');
       
-      const staffDocRef = doc(db, 'staff', uid);
-      const staffSnap = await getDoc(staffDocRef);
-      if (!staffSnap.exists()) {
+      const { data: userRow, error: getErr } = await supabaseClient
+        .from('users')
+        .select('*')
+        .eq('id', uid)
+        .maybeSingle();
+
+      if (getErr || !userRow) {
         return res.status(404).json({ status: 'error', message: 'Không tìm thấy thông tin người dùng.' });
       }
-      const staffData = staffSnap.data();
-      const secret = staffData.twoFactorSecret;
+
+      const userData = userRow.data || {};
+      const secret = userData.twoFactorSecret;
       if (!secret) {
         return res.status(400).json({ status: 'error', message: 'Tài khoản chưa được kích hoạt 2FA.' });
       }
