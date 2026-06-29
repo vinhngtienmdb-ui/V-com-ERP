@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged } from '../lib/firebase';
 import { supabase } from '../lib/supabase';
+import { safeLocalStorage } from '../lib/storage';
 
 interface AuthContextType {
  user: User | null;

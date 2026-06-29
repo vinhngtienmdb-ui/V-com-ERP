@@ -227,6 +227,7 @@ const modulesList = [
 ];
 
 export function Dashboard() {
+  const { staffInfo } = useAuth();
  const navigate = useNavigate();
  const { layoutEditable } = usePreferences();
  const [activeTab, setActiveTab] = useState<'overview'|'performance'|'finance'>('overview');
@@ -777,6 +778,7 @@ export function Dashboard() {
      </div>
    </div>
    </div>
+   )}
    {activeTab === 'performance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500">
  
