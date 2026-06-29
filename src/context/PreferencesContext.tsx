@@ -3,8 +3,8 @@ import { safeLocalStorage } from '../lib/storage';
 
 type Theme = 'light' | 'dark' | 'nature';
 type Language = 'vi' | 'en';
-type PrimaryColor = 'indigo' | 'blue' | 'emerald' | 'rose' | 'amber' | 'slate';
-type BorderRadius = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none';
+type PrimaryColor = 'indigo' | 'blue' | 'emerald' | 'rose' | 'amber' | 'slate' | 'vcomm';
+type BorderRadius = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none' | 'vcomm';
 type HolidayTheme = 'none' | 'tet' | 'christmas' | 'mid-autumn' | 'halloween';
 
 interface PreferencesContextType {
@@ -34,11 +34,11 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
  });
 
  const [primaryColor, setPrimaryColor] = useState<PrimaryColor>(() => {
- return (safeLocalStorage.getItem('app_primary_color') as PrimaryColor) || 'indigo';
+ return (safeLocalStorage.getItem('app_primary_color') as PrimaryColor) || 'vcomm';
  });
 
  const [borderRadius, setBorderRadius] = useState<BorderRadius>(() => {
- return (safeLocalStorage.getItem('app_border_radius') as BorderRadius) || 'lg'; // default to lg for slight curve
+ return (safeLocalStorage.getItem('app_border_radius') as BorderRadius) || 'vcomm';
  });
 
  const [holidayTheme, setHolidayTheme] = useState<HolidayTheme>(() => {

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VComm ERP - Quản lý sản phẩm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#171c20",
+                    "tertiary-fixed": "#d3e4fe",
+                    "tertiary-container": "#47576d",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "surface-tint": "#2a59bc",
+                    "on-primary": "#ffffff",
+                    "secondary-container": "#dce0e5",
+                    "on-background": "#111c2d",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "background": "#f9f9ff",
+                    "inverse-surface": "#263143",
+                    "surface-container-highest": "#d8e3fb",
+                    "surface-container": "#e7eeff",
+                    "on-secondary-container": "#5e6367",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "tertiary": "#304055",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-primary-fixed": "#001848",
+                    "outline-variant": "#c3c6d5",
+                    "inverse-on-surface": "#ecf1ff",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#dee8ff",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#cfdaf2",
+                    "on-surface-variant": "#434652",
+                    "secondary-fixed": "#dfe3e8",
+                    "surface-bright": "#f9f9ff",
+                    "primary": "#003991",
+                    "outline": "#737784",
+                    "primary-fixed": "#dae2ff",
+                    "primary-container": "#1e50b3",
+                    "inverse-primary": "#b2c5ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#b9caff",
+                    "surface-container-low": "#f0f3ff",
+                    "secondary": "#5a5f63",
+                    "on-tertiary-container": "#bccde6",
+                    "surface-variant": "#d8e3fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-mobile": "16px",
+                    "sidebar-width": "260px",
+                    "margin-desktop": "24px",
+                    "gutter": "16px",
+                    "container-max": "1600px"
+            },
+            "fontFamily": {
+                    "label-xs": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "title-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+        }
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        /* Custom Table Height Logic from Design System */
+        .erp-table-row { height: 44px; }
+        .erp-table-compact { height: 32px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full h-16 px-margin-desktop bg-surface sticky top-0 z-50 border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<h1 class="font-display-lg text-display-lg font-bold text-primary">VComm ERP</h1>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-2 py-1 font-title-sm text-title-sm" href="#">Hệ thống</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-2 py-1 font-title-sm text-title-sm" href="#">Điều hành</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-2 py-1 font-title-sm text-title-sm" href="#">Hành chính</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-body-md focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Tìm kiếm nhanh..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-outline">psychology</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors relative">
+<span class="material-symbols-outlined text-outline">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-outline">grid_view</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a senior system administrator in a clean modern office, soft high-key lighting, focused look, wearing a sleek navy blue polo shirt. The background is a blurred corporate environment with cool tones and minimalist glass partitions. High resolution, professional commercial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA6RXze0I7Fv69wElL8uTEA-pVH5euBKAkBygJIwrFO7gxGuTtTVKcAQd6rXiVA3PoIs09MD-87VGfrawOZaIKpEPLjZExdys-b0mQqO5Kj8Ig7kY7KJz9fmhVUyqfJ4fe_h_4hhE_Sj_wcWvgvVTk4TOtuSYWeorfpAhfBHu4IwcWs2Ltl_p_Oyu4p4idlRKkgZhVHHuc5AMM8zbaav0np8nTriJkmSD19_TP5nZtX6m_57y96k-pig"/>
+<div class="hidden xl:block">
+<p class="font-title-sm text-title-sm leading-tight">Admin User</p>
+<p class="font-label-xs text-label-xs text-outline">System Lead</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-[calc(100vh-64px)] border-r border-outline-variant bg-surface w-sidebar-width fixed left-0 overflow-y-auto z-40">
+<div class="p-4 space-y-6">
+<!-- Header Info -->
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</span>
+<span class="font-label-xs text-label-xs text-outline tracking-wider uppercase">Enterprise Intelligence</span>
+</div>
+<!-- Navigation Groups -->
+<div class="space-y-4">
+<div>
+<p class="px-4 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-widest">Tổng Quan</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Trang chủ</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span>Siêu thị VComm</span>
+</a>
+</nav>
+</div>
+<div>
+<p class="px-4 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-widest">Kinh Doanh</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 bg-surface-container text-primary border-l-4 border-primary font-bold font-body-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Quản lý sản phẩm</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span>Quản lý Đơn hàng</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">live_tv</span>
+<span>Quản lý Livestream</span>
+</a>
+</nav>
+</div>
+<div>
+<p class="px-4 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-widest">Hệ Thống</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Phân tích dữ liệu</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span>Trung tâm vận hành AI</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Footer Nav -->
+<div class="pt-6 border-t border-outline-variant">
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Cấu hình</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low transition-all font-body-md" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Trợ giúp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-error hover:bg-error-container transition-all font-body-md mt-4" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Đăng xuất</span>
+</a>
+</nav>
+</div>
+<div class="mt-4 p-4 bg-primary-container rounded-xl">
+<p class="font-title-sm text-on-primary-container mb-2">Enterprise Plan</p>
+<button class="w-full py-2 bg-surface text-primary rounded font-bold font-body-sm hover:bg-opacity-90 transition-all">Nâng cấp Enterprise</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width flex-1 p-margin-desktop bg-surface-container-lowest min-h-screen">
+<!-- PIM Dashboard Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex items-center gap-2 text-outline font-label-xs mb-1">
+<span>Sản phẩm</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Danh sách sản phẩm</span>
+</nav>
+<h2 class="font-display-lg text-display-lg font-bold text-on-background">Quản lý sản phẩm</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg font-body-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">upload_file</span>
+                        Nhập File
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg font-bold font-body-md shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Thêm sản phẩm
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Filters Sidebar (Embedded) -->
+<aside class="col-span-12 lg:col-span-3 space-y-gutter">
+<div class="bg-surface border border-outline-variant rounded-xl p-5 space-y-6 sticky top-20">
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-title-sm text-title-sm">Bộ lọc nâng cao</h3>
+<button class="text-primary font-label-xs hover:underline">Đặt lại</button>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block font-label-xs text-label-xs text-outline mb-1.5">Trạng thái kho</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-body-md focus:ring-primary">
+<option>Tất cả trạng thái</option>
+<option>Còn hàng</option>
+<option>Sắp hết hàng</option>
+<option>Hết hàng</option>
+</select>
+</div>
+<div>
+<label class="block font-label-xs text-label-xs text-outline mb-1.5">Danh mục</label>
+<div class="space-y-2 max-h-48 overflow-y-auto pr-2">
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="font-body-md">Thiết bị điện tử</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="font-body-md">Thời trang &amp; Phụ kiện</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="font-body-md">Đồ gia dụng</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="font-body-md">Mỹ phẩm &amp; Làm đẹp</span>
+</label>
+</div>
+</div>
+<div>
+<label class="block font-label-xs text-label-xs text-outline mb-1.5">Thương hiệu</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-md mb-2" placeholder="Tìm thương hiệu..." type="text"/>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant rounded font-label-xs border border-outline-variant">Sony</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant rounded font-label-xs border border-outline-variant">Samsung</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant rounded font-label-xs border border-outline-variant">LG</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant rounded font-label-xs border border-outline-variant">Apple</span>
+</div>
+</div>
+<div>
+<label class="block font-label-xs text-label-xs text-outline mb-1.5">Khoảng giá (VNĐ)</label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-body-md" placeholder="Từ" type="number"/>
+<span class="text-outline">-</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-body-md" placeholder="Đến" type="number"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Product Table Area -->
+<div class="col-span-12 lg:col-span-9 space-y-gutter">
+<!-- Metrics Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface border border-outline-variant rounded-xl p-5 hover:shadow-md transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="p-2 bg-surface-container text-primary rounded-lg material-symbols-outlined">inventory_2</span>
+<span class="text-primary font-label-xs flex items-center gap-1">+4.2% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+</div>
+<p class="font-label-xs text-outline uppercase mb-1">Tổng sản phẩm</p>
+<h4 class="font-headline-md text-headline-md">1,429</h4>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-5 hover:shadow-md transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="p-2 bg-error-container text-error rounded-lg material-symbols-outlined">report_problem</span>
+<span class="text-error font-label-xs flex items-center gap-1">-12% <span class="material-symbols-outlined text-[14px]">trending_down</span></span>
+</div>
+<p class="font-label-xs text-outline uppercase mb-1">Sắp hết hàng</p>
+<h4 class="font-headline-md text-headline-md">28</h4>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-5 hover:shadow-md transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="p-2 bg-tertiary-fixed text-primary rounded-lg material-symbols-outlined">monetization_on</span>
+<span class="text-primary font-label-xs flex items-center gap-1">+8.5% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+</div>
+<p class="font-label-xs text-outline uppercase mb-1">Giá trị tồn kho</p>
+<h4 class="font-headline-md text-headline-md">4.2B ₫</h4>
+</div>
+</div>
+<!-- Main Table -->
+<div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface">
+<div class="flex gap-4 items-center">
+<h3 class="font-title-sm text-title-sm">Danh sách lưu kho</h3>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded font-label-xs">124 sản phẩm khớp</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-low"><span class="material-symbols-outlined text-outline">sort</span></button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-low"><span class="material-symbols-outlined text-outline">file_download</span></button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-low"><span class="material-symbols-outlined text-outline">settings_applications</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-outline font-label-xs uppercase tracking-wider">
+<th class="px-6 py-3 font-medium border-b border-outline-variant w-10">
+<input class="rounded text-primary focus:ring-primary" type="checkbox"/>
+</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">Sản phẩm</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">SKU</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">Danh mục</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant text-right">Tồn kho</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant text-right">Giá niêm yết</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant text-center">Trạng thái</th>
+<th class="px-6 py-3 font-medium border-b border-outline-variant"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Table Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><input class="rounded text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-lg object-cover border border-outline-variant" data-alt="A studio shot of a sleek modern smartphone with triple camera system, obsidian black finish, resting on a white marble surface. Studio lighting with soft blue accents, minimalist 8k resolution, crisp commercial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuf2xNv84t0EhqgKizIj9QUJxlyL0aw3O5RC0bQiAR3pMbYagP02m6M0nK5zN9LpeQcHp6azLsdqNZGNnK1biU92SesXkYRBzdLiD-KfQp4DE2f8UkS7Gyl_oxIkpRml3FgrqkNVqkyj6pbX46BZKFXByv7jLHFe2NlgHNyicJua_q1qlWMOL7MoLJ60gIbxiQEx4_DFVKRq9mh9GnECDwdaNBtujF6ReI60PLKeUBrgHrqWF81I08bg"/>
+<div>
+<p class="font-title-sm text-title-sm leading-none mb-1">iPhone 15 Pro Max 256GB</p>
+<p class="font-label-xs text-outline">Apple Inc.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 font-label-xs text-on-surface-variant">APL-IP15-PM-256</td>
+<td class="px-4 py-4"><span class="px-2 py-1 bg-surface-container text-on-surface-variant rounded font-body-sm">Thiết bị điện tử</span></td>
+<td class="px-4 py-4 text-right font-body-md font-bold">42</td>
+<td class="px-4 py-4 text-right font-body-md">28.990.000 ₫</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[11px] font-bold uppercase">Còn hàng</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><input class="rounded text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-lg object-cover border border-outline-variant" data-alt="Product photography of high-performance wireless noise-canceling headphones in silver finish, leather headband, macro shot. Soft atmospheric lighting, neutral background, sharp focus, professional tech advertisement style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq1XmMo6TiGn_Ko251Y0fsTRQ8u_6kcR6x42CKzU_WExg8dis8ZOhNz7fKyA6k4YUjA0OiSwWaFdOt5eFuNm5p3DRMxhsqfqd4_QlAf4aBmnY09V64lUjCH_jVJUlVT2VkKyDbeXYG7fccglkPqLH1Dogl9zM5QH4IEJVso72pS_hi7mF38F9SErvbshpyPQRdkzNMhpIycH8SdTlxxDAlbIdeGFWZDbdiwf3jKmHgtIMbaWchTOmXPg"/>
+<div>
+<p class="font-title-sm text-title-sm leading-none mb-1">Sony WH-1000XM5 Silver</p>
+<p class="font-label-xs text-outline">Sony Corp.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 font-label-xs text-on-surface-variant">SNY-WH1-M5-SLV</td>
+<td class="px-4 py-4"><span class="px-2 py-1 bg-surface-container text-on-surface-variant rounded font-body-sm">Phụ kiện công nghệ</span></td>
+<td class="px-4 py-4 text-right font-body-md font-bold">12</td>
+<td class="px-4 py-4 text-right font-body-md">8.490.000 ₫</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold uppercase">Sắp hết</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><input class="rounded text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-lg object-cover border border-outline-variant" data-alt="A luxury smart watch with titanium casing and orange rubber strap, outdoor adventure setting, high resolution, glowing display with health metrics. Rugged professional style, bright daylight lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoAK88FyQI681kOCuea43B-YeribJlDqem-b5dzvyVpjTM7cX0VyznOR3nurjCQztcyRdFRZ0jgHSF9x42koqlfdK9TqDME6G90-QmM1PFImnyobFytwWHfNI4cM89afPIbob6RKCOTt5VX7jh9JFRokVb4ou1zJfK9IeMxTQgbjKLvukQHKYoGXCEfzXQbkenymUFtz48d_HCXeO2cgGV8KSl9ZSsQxSRfnZZO2AKqsP2lsc2yRcQiw"/>
+<div>
+<p class="font-title-sm text-title-sm leading-none mb-1">Apple Watch Ultra 2</p>
+<p class="font-label-xs text-outline">Apple Inc.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 font-label-xs text-on-surface-variant">APL-WAT-U2-TIT</td>
+<td class="px-4 py-4"><span class="px-2 py-1 bg-surface-container text-on-surface-variant rounded font-body-sm">Wearables</span></td>
+<td class="px-4 py-4 text-right font-body-md font-bold text-error">0</td>
+<td class="px-4 py-4 text-right font-body-md">21.500.000 ₫</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-[11px] font-bold uppercase">Hết hàng</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><input class="rounded text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-lg object-cover border border-outline-variant" data-alt="A professional mirrorless camera with 24-70mm lens, mounted on a sleek carbon fiber tripod in a studio environment. Clean lighting, highlighting lens coatings, neutral grey background, high-end photography equipment style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyxYTg0Rf6pXufxBzSJ7vfMwX5sC3BOroTf9XVQDp7RY7tREV6D3DznzHx71-_5KqWOhS6xNR4NNIXO0Az8O1TRDtRMtnKlGaBZ4TYQ7zTOAHShXKlh8hBEaZCDrzw9KmaM-nI3P0N09J-lL_Wso6Q4HTl_Q-Nfb7XNtNTgLP_RAJOWaHc2qP7WG4c_mzqBYaEn15OHSNyqd-jtk9ylj5xazYQtpPonjPNsBSRFWIJn02-HFQyNFModw"/>
+<div>
+<p class="font-title-sm text-title-sm leading-none mb-1">Sony Alpha a7 IV Body</p>
+<p class="font-label-xs text-outline">Sony Corp.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 font-label-xs text-on-surface-variant">SNY-A7M4-BODY</td>
+<td class="px-4 py-4"><span class="px-2 py-1 bg-surface-container text-on-surface-variant rounded font-body-sm">Máy ảnh</span></td>
+<td class="px-4 py-4 text-right font-body-md font-bold">8</td>
+<td class="px-4 py-4 text-right font-body-md">59.900.000 ₫</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[11px] font-bold uppercase">Còn hàng</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t border-outline-variant flex justify-between items-center bg-surface">
+<span class="font-label-xs text-outline">Hiển thị 1 - 10 trên 124 kết quả</span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-outline hover:bg-surface-container-low">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-label-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low font-label-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low font-label-xs">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low font-label-xs">13</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-outline hover:bg-surface-container-low">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="ml-sidebar-width flex justify-between items-center w-full px-margin-desktop py-4 bg-surface-container-lowest border-t border-outline-variant z-50">
+<div class="flex items-center gap-6">
+<p class="font-label-xs text-label-xs text-secondary">© 2024 VComm Enterprise Edition. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Bản quyền hệ thống</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Cẩm nang HDSD</a>
+</div>
+</div>
+<div>
+<p class="font-label-xs text-label-xs text-secondary font-medium">Hỗ trợ kỹ thuật: 1900 8888</p>
+</div>
+</footer>
+<script>
+        // Micro-interactions for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.05)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.boxShadow = 'none';
+            });
+        });
+
+        // Search bar animation focus
+        const searchInput = document.querySelector('input[type="text"]');
+        if(searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+            });
+        }
+    </script>
+</body></html>

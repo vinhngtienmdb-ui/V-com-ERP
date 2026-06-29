@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Marketing & Social | VComm ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#171c20",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-container": "#47576d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9ff",
+                        "surface-tint": "#2a59bc",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#dce0e5",
+                        "on-background": "#111c2d",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "background": "#f9f9ff",
+                        "inverse-surface": "#263143",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-container": "#5e6367",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "tertiary": "#304055",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#001848",
+                        "outline-variant": "#c3c6d5",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dee8ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#cfdaf2",
+                        "on-surface-variant": "#434652",
+                        "secondary-fixed": "#dfe3e8",
+                        "surface-bright": "#f9f9ff",
+                        "primary": "#003991",
+                        "outline": "#737784",
+                        "primary-fixed": "#dae2ff",
+                        "primary-container": "#1e50b3",
+                        "inverse-primary": "#b2c5ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-surface": "#111c2d",
+                        "on-primary-container": "#b9caff",
+                        "surface-container-low": "#f0f3ff",
+                        "secondary": "#5a5f63",
+                        "on-tertiary-container": "#bccde6",
+                        "surface-variant": "#d8e3fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "24px",
+                        "gutter": "16px",
+                        "container-max": "1600px"
+                    },
+                    "fontFamily": {
+                        "label-xs": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "title-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-sidebar-item {
+            background-color: #F0F4F9; /* As per Style Guidance */
+            border-left: 4px solid #003991;
+            color: #003991;
+            font-weight: 700;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface overflow-hidden flex h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface border-r border-outline-variant flex flex-col z-50">
+<div class="px-6 py-8">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</h1>
+<p class="font-label-xs text-label-xs text-secondary mt-1 uppercase tracking-wider">Enterprise Intelligence</p>
+</div>
+<nav class="flex-1 overflow-y-auto px-2 space-y-6 pb-20">
+<!-- Cluster 1: Tổng Quan -->
+<div>
+<p class="px-4 font-label-xs text-label-xs text-outline mb-2 uppercase">Tổng Quan</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="font-body-md text-body-md">Siêu thị VComm</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+<span class="font-body-md text-body-md">Quản lý Đơn hàng</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">live_tv</span>
+<span class="font-body-md text-body-md">Quản lý Livestream</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+<span class="font-body-md text-body-md">Mạng xã hội</span>
+</a>
+</div>
+</div>
+<!-- Cluster 2: Kinh Doanh (Active) -->
+<div>
+<p class="px-4 font-label-xs text-label-xs text-outline mb-2 uppercase">Kinh Doanh</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="font-body-md text-body-md">Quản lý sản phẩm</span>
+</a>
+<a class="active-sidebar-item flex items-center gap-3 px-4 py-2 transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+<span class="font-body-md text-body-md">Marketing & Social</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span class="font-body-md text-body-md">Flash Sale</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="font-body-md text-body-md">KOL/KOC</span>
+</a>
+</div>
+</div>
+<!-- Cluster 3: Other -->
+<div>
+<p class="px-4 font-label-xs text-label-xs text-outline mb-2 uppercase">Hệ Thống</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-md text-body-md">Cấu hình</span>
+</a>
+</div>
+</div>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<button class="w-full bg-primary text-white py-2 px-4 rounded-lg font-body-md hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">upgrade</span>
+                Nâng cấp Enterprise
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-[260px] overflow-y-auto bg-surface-container-low">
+<!-- TopAppBar -->
+<header class="h-16 bg-surface border-b border-outline-variant flex items-center justify-between px-margin-desktop sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<h2 class="font-title-sm text-title-sm text-on-surface">Marketing & Social Management</h2>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-primary font-bold border-b-2 border-primary pb-4 mt-4" href="#">Tổng quan</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary pb-4 mt-4 transition-colors" href="#">Chiến dịch</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary pb-4 mt-4 transition-colors" href="#">Phân tích</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="bg-surface-container-lowest border border-outline-variant rounded-full py-1.5 px-4 pl-10 text-body-sm w-64 focus:ring-2 focus:ring-primary focus:outline-none transition-all" placeholder="Tìm kiếm chiến dịch..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-outline">search</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female digital marketing director, high-end corporate style, soft studio lighting, professional attire, clean office background in soft focus, representing reliability and enterprise leadership for a tech executive role." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg4AbNQrzo9Mrr8ZKaY7FY4s2jxGlW6ttoyXz9E5dyA527Bvmw3jTpag-GDl7uibhsiwBgy2LPzfpYVH7k06SEXVL_z9nzAoaN8ZI7N-CRjelODBjfqz7tXQY6LZztjbz69_6tyKMMZI1l2iKGVFF26IMVBWP2U15TO9Nm_M1k68xV37amDbtsswPu4kg6a9s9AmdyDMAL8gl_3UNswmIeiv5u8QcA_6TvKwz3q1roN_85lfFCTfR7YQ"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-margin-desktop max-w-container-max mx-auto space-y-6">
+<!-- Page Header -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Bảng điều khiển Marketing</h3>
+<p class="text-body-md text-on-surface-variant">Quản lý các chiến dịch đa kênh và tương tác xã hội thời gian thực.</p>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-body-md shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                    Create Campaign
+                </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="bento-grid">
+<!-- Performance Metrics (Span 8) -->
+<div class="col-span-8 bg-surface border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-title-sm text-title-sm">Active Promotions Performance</h4>
+<div class="flex gap-2">
+<select class="text-body-sm border-outline-variant rounded-lg bg-surface py-1">
+<option>7 ngày qua</option>
+<option>30 ngày qua</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant text-label-xs text-outline uppercase tracking-wider">
+<th class="pb-3 font-medium">Chiến dịch</th>
+<th class="pb-3 font-medium">Kênh</th>
+<th class="pb-3 font-medium text-right">Lượt tiếp cận</th>
+<th class="pb-3 font-medium text-right">Chuyển đổi</th>
+<th class="pb-3 font-medium text-right">ROI</th>
+<th class="pb-3 font-medium">Trạng thái</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4">
+<div class="font-body-md font-bold text-on-surface">Summer Sale 2024</div>
+<div class="text-label-xs text-outline">ID: CAM-9921</div>
+</td>
+<td class="py-4">
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-[18px] text-primary">face_nod</span>
+<span class="material-symbols-outlined text-[18px] text-error">video_library</span>
+</div>
+</td>
+<td class="py-4 text-right font-label-xs">124,500</td>
+<td class="py-4 text-right font-label-xs">3.2%</td>
+<td class="py-4 text-right font-label-xs text-primary font-bold">4.2x</td>
+<td class="py-4">
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">Đang chạy</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4">
+<div class="font-body-md font-bold text-on-surface">Back to School</div>
+<div class="text-label-xs text-outline">ID: CAM-8842</div>
+</td>
+<td class="py-4">
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-[18px] text-tertiary">mail</span>
+</div>
+</td>
+<td class="py-4 text-right font-label-xs">45,200</td>
+<td class="py-4 text-right font-label-xs">1.8%</td>
+<td class="py-4 text-right font-label-xs text-primary font-bold">2.1x</td>
+<td class="py-4">
+<span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded uppercase">Chờ duyệt</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4">
+<div class="font-body-md font-bold text-on-surface">Brand Awareness X</div>
+<div class="text-label-xs text-outline">ID: CAM-7710</div>
+</td>
+<td class="py-4">
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-[18px] text-on-background">share</span>
+<span class="material-symbols-outlined text-[18px] text-primary">ads_click</span>
+</div>
+</td>
+<td class="py-4 text-right font-label-xs">890,000</td>
+<td class="py-4 text-right font-label-xs">0.5%</td>
+<td class="py-4 text-right font-label-xs text-primary font-bold">--</td>
+<td class="py-4">
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">Đang chạy</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Social Integration Status (Span 4) -->
+<div class="col-span-4 space-y-6">
+<div class="bg-surface border border-outline-variant rounded-xl p-6">
+<h4 class="font-title-sm text-title-sm mb-4">Social Integration</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">face_nod</span>
+</div>
+<div>
+<div class="text-body-md font-bold">Facebook Ads</div>
+<div class="text-label-xs text-green-600 flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Connected
+                                        </div>
+</div>
+</div>
+<button class="text-label-xs text-primary font-bold uppercase">Settings</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">video_library</span>
+</div>
+<div>
+<div class="text-body-md font-bold">TikTok Shop</div>
+<div class="text-label-xs text-error flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-error rounded-full"></span> Re-auth required
+                                        </div>
+</div>
+</div>
+<button class="text-label-xs text-error font-bold uppercase">Fix</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg bg-surface-container-lowest opacity-60">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<div class="text-body-md font-bold">Email Marketing</div>
+<div class="text-label-xs text-outline">Not configured</div>
+</div>
+</div>
+<button class="text-label-xs text-primary font-bold uppercase">Setup</button>
+</div>
+</div>
+</div>
+<!-- Quick Insight Card -->
+<div class="bg-primary text-white rounded-xl p-6 relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-title-sm text-title-sm text-on-primary-container">Campaign Insight AI</h4>
+<p class="text-body-sm mt-2 opacity-90">Chiến dịch "Summer Sale" đang có CTR cao hơn 20% so với trung bình. Chúng tôi khuyên bạn nên tăng ngân sách lên 15%.</p>
+<button class="mt-4 bg-white text-primary px-4 py-1.5 rounded-lg text-label-xs font-bold uppercase">Áp dụng ngay</button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">psychology</span>
+</div>
+</div>
+</div>
+<!-- Campaign Calendar (Span 12) -->
+<div class="col-span-12 bg-surface border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<h4 class="font-title-sm text-title-sm">Campaign Calendar</h4>
+<div class="flex items-center bg-surface-container-high rounded-lg p-1">
+<button class="px-4 py-1 bg-white shadow-sm rounded-md text-body-sm font-bold">Tháng</button>
+<button class="px-4 py-1 text-body-sm text-on-surface-variant">Tuần</button>
+<button class="px-4 py-1 text-body-sm text-on-surface-variant">Ngày</button>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<span class="font-body-md font-bold">Tháng 6, 2024</span>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="calendar-grid border-t border-l border-outline-variant">
+<!-- Days of Week -->
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Mon</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Tue</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Wed</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Thu</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Fri</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Sat</div>
+<div class="py-2 text-center border-r border-b border-outline-variant bg-surface-container-low font-label-xs text-outline uppercase">Sun</div>
+<!-- Empty Days -->
+<div class="h-32 border-r border-b border-outline-variant bg-surface-container-lowest/30"></div>
+<div class="h-32 border-r border-b border-outline-variant bg-surface-container-lowest/30"></div>
+<div class="h-32 border-r border-b border-outline-variant bg-surface-container-lowest/30"></div>
+<!-- Day Cells with Content -->
+<div class="h-32 border-r border-b border-outline-variant p-2 relative group hover:bg-surface-container-low transition-colors">
+<span class="text-label-xs text-outline">01</span>
+<div class="mt-2 space-y-1">
+<div class="bg-primary-container text-white text-[10px] px-1.5 py-0.5 rounded truncate font-medium">Summer Launch</div>
+</div>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">02</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low bg-surface-container-low">
+<span class="text-label-xs text-primary font-bold">03</span>
+<div class="mt-2 space-y-1">
+<div class="bg-tertiary-container text-white text-[10px] px-1.5 py-0.5 rounded truncate font-medium">Flash Sale Live</div>
+<div class="bg-error-container text-error text-[10px] px-1.5 py-0.5 rounded truncate font-medium">TikTok Live #42</div>
+</div>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">04</span>
+</div>
+<!-- More Days -->
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">05</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">06</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">07</span>
+<div class="mt-2 space-y-1">
+<div class="bg-green-100 text-green-800 text-[10px] px-1.5 py-0.5 rounded truncate font-medium border border-green-200">Email Blast</div>
+</div>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">08</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">09</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">10</span>
+</div>
+<div class="h-32 border-r border-b border-outline-variant p-2 group hover:bg-surface-container-low">
+<span class="text-label-xs text-outline">11</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto border-t border-outline-variant py-4 px-margin-desktop flex justify-between items-center bg-surface-container-lowest">
+<p class="font-label-xs text-label-xs text-secondary">© 2024 VComm Enterprise Edition. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Hỗ trợ kỹ thuật: 1900 8888</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Bản quyền hệ thống</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Cẩm nang HDSD</a>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for table rows and hover states
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VComm ERP - Quản trị Vận chuyển</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#001848",
+                    "on-error-container": "#93000a",
+                    "surface": "#f9f9ff",
+                    "tertiary-container": "#47576d",
+                    "surface-dim": "#cfdaf2",
+                    "surface-container-low": "#f0f3ff",
+                    "on-surface-variant": "#434652",
+                    "outline-variant": "#c3c6d5",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "on-secondary-fixed": "#171c20",
+                    "on-primary-container": "#b9caff",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "surface-variant": "#d8e3fb",
+                    "primary-fixed": "#dae2ff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#304055",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "primary": "#003991",
+                    "surface-container": "#e7eeff",
+                    "secondary-fixed": "#dfe3e8",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#263143",
+                    "on-surface": "#111c2d",
+                    "outline": "#737784",
+                    "secondary-container": "#dce0e5",
+                    "inverse-primary": "#b2c5ff",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#2a59bc",
+                    "surface-container-highest": "#d8e3fb",
+                    "secondary": "#5a5f63",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-secondary-container": "#5e6367",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-container": "#bccde6",
+                    "primary-container": "#1e50b3",
+                    "on-background": "#111c2d",
+                    "tertiary-fixed": "#d3e4fe",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "surface-container-high": "#dee8ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "gutter": "16px",
+                    "margin-desktop": "24px",
+                    "container-max": "1600px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-xs": ["JetBrains Mono"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "title-sm": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d8e3fb; border-radius: 10px; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+        .sidebar-active { background-color: #e7eeff; color: #003991; border-left: 4px solid #003991; font-weight: 700; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden flex h-screen">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface border-r border-outline-variant flex flex-col z-50">
+<div class="p-6 flex flex-col gap-1">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</h1>
+<p class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Enterprise Intelligence</p>
+</div>
+<nav class="flex-1 overflow-y-auto custom-scrollbar px-3 space-y-6">
+<!-- Category: Tổng Quan -->
+<div>
+<p class="px-4 py-2 font-label-xs text-label-xs text-outline uppercase">Tổng Quan</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span> Siêu thị VComm
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">shopping_cart</span> Quản lý Đơn hàng
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">live_tv</span> Quản lý Livestream
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">public</span> Mạng xã hội
+                    </a>
+</div>
+</div>
+<!-- Category: Logistics (Active) -->
+<div>
+<p class="px-4 py-2 font-label-xs text-label-xs text-outline uppercase">Logistics</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span> Quản trị Kho vận
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 sidebar-active" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span> Vận chuyển
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">shopping_bag</span> Mua hàng
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">verified_user</span> Tuân thủ
+                    </a>
+</div>
+</div>
+<!-- Category: Khác -->
+<div>
+<p class="px-4 py-2 font-label-xs text-label-xs text-outline uppercase">Hệ thống</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">settings</span> Cấu hình
+                    </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">logout</span> Đăng xuất
+                    </a>
+</div>
+</div>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<button class="w-full bg-primary-container text-white py-3 rounded-xl font-body-md font-bold flex items-center justify-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined">bolt</span> Nâng cấp Enterprise
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[260px] flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top App Bar -->
+<header class="h-16 flex items-center justify-between px-margin-desktop bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<h2 class="font-title-sm text-title-sm font-bold text-primary">Quản trị Vận chuyển</h2>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+<span class="font-body-sm text-body-sm">Tháng 10, 2024</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 text-body-sm focus:ring-2 focus:ring-primary" placeholder="Tìm mã vận đơn, khách hàng..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 hover:bg-surface-container-low rounded-full transition-colors text-on-surface-variant">psychology</button>
+<button class="material-symbols-outlined p-2 hover:bg-surface-container-low rounded-full transition-colors text-on-surface-variant relative">
+                        notifications
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a corporate male administrator in a tailored navy blue suit, smiling confidently. The lighting is soft and professional with a clean, high-end office background in soft focus, emphasizing a premium enterprise software user profile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKIEAsSSV4dMADe7haVJKp5zaQM5J6Wq2m22m62weaArkLzMbKp_nN3meSQFlxphnlfUQ8lwzhu1bRKpT6BGmulM8h9collMQs96rnia9Kms86gB5ZrF0iSJ8RgU-lK3KirPLXx8MSz53iR0oieKl2AOvGxp0U7N1T8FY_SXvvYeWoFaAHPP0h8rY4-YNZ4DgtPQvN9R5f8uV6kJIK9keBBCvPmTSiZA7Ny7rka_25m0CX78IJObDjnQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Dashboard -->
+<div class="flex-1 overflow-y-auto p-margin-desktop custom-scrollbar space-y-6">
+<!-- Statistics Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl flex flex-col gap-2 hover:shadow-md transition-all">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-sm">Tổng vận đơn</span>
+<div class="p-2 bg-primary-fixed rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg font-bold">12,842</h3>
+<span class="text-primary font-body-sm flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 8.4%</span>
+</div>
+<div class="h-12 w-full mt-2">
+
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl flex flex-col gap-2 hover:shadow-md transition-all">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-sm">Đang vận chuyển</span>
+<div class="p-2 bg-secondary-fixed rounded-lg text-secondary">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg font-bold">1,205</h3>
+<span class="text-error font-body-sm flex items-center"><span class="material-symbols-outlined text-[14px]">priority_high</span> Delay 2.1%</span>
+</div>
+<div class="h-12 w-full mt-2">
+
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl flex flex-col gap-2 hover:shadow-md transition-all">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-sm">Chi phí vận chuyển</span>
+<div class="p-2 bg-tertiary-fixed rounded-lg text-tertiary">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg font-bold">842.5M</h3>
+<span class="text-on-surface-variant font-body-sm">VNĐ</span>
+</div>
+<div class="h-12 w-full mt-2">
+
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl flex flex-col gap-2 hover:shadow-md transition-all">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-sm">Tỉ lệ giao thành công</span>
+<div class="p-2 bg-green-100 rounded-lg text-green-700">
+<span class="material-symbols-outlined text-[20px]">task_alt</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg font-bold">98.2%</h3>
+<span class="text-green-600 font-body-sm flex items-center"><span class="material-symbols-outlined text-[14px]">check</span> +0.4%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full mt-4">
+<div class="w-[98%] h-full bg-green-500 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Map and Partner Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Real-time Tracking Map -->
+<div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden relative group">
+<div class="absolute top-4 left-4 z-10 flex gap-2">
+<span class="px-3 py-1 bg-white border border-outline-variant rounded-full text-body-sm font-medium shadow-sm flex items-center gap-2">
+<span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span> Theo dõi thời gian thực
+                        </span>
+</div>
+<div class="w-full h-[400px] bg-surface-variant relative">
+<!-- Placeholder for Map -->
+<div class="absolute inset-0 grayscale opacity-40" data-alt="A high-tech digital world map visualization of Vietnam, featuring glowing node points for major logistics hubs like Hanoi, Da Nang, and Ho Chi Minh City. Interconnecting glowing lines represent active shipping routes. The aesthetic is clean, professional, and data-driven, using shades of corporate blue and slate gray." data-location="Vietnam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCELudTFLmNM0qaL-EJCMwXZqsrGQtbBhTVzQ1Wz5L02enFtplV8TcqlY5zezZYxUrZHEzBmoDa_eIosdGbCOW2lLzg6mWgcbbs0Dke84ozY3NY5qRBKe48yP5t1tYAvPCByLuB67riIt-rsarWDz3IRuycv-d9P6n9KiXroyaBSfWFszpXjACwaRw3Pvmg1NZktK55ZJtgMiTBp67_VGZYsAGZnEV8UetX81nrS1QAHAr8bCQ6KqoKAQ')"></div>
+<!-- Marker Overlays -->
+<div class="absolute top-1/4 left-1/3 flex flex-col items-center">
+<div class="w-6 h-6 bg-primary rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">local_shipping</span>
+</div>
+<span class="mt-1 px-2 py-0.5 bg-white text-[10px] rounded border border-outline-variant shadow-sm">VC-10293</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 flex flex-col items-center">
+<div class="w-6 h-6 bg-error rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">warning</span>
+</div>
+<span class="mt-1 px-2 py-0.5 bg-white text-[10px] rounded border border-outline-variant shadow-sm">Delay (Bão)</span>
+</div>
+</div>
+<div class="p-4 flex justify-between items-center border-t border-outline-variant bg-white">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-label-xs text-outline">Đang xử lý</span>
+<span class="font-bold">428</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-xs text-outline">Trên đường giao</span>
+<span class="font-bold">892</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-xs text-outline">Hoàn trả</span>
+<span class="font-bold text-error">12</span>
+</div>
+</div>
+<button class="text-primary font-body-sm font-bold flex items-center gap-1 hover:underline">
+                            Xem chi tiết bản đồ <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Shipping Partners -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h4 class="font-title-sm text-title-sm font-bold">Đối tác vận chuyển</h4>
+<button class="material-symbols-outlined text-outline">more_vert</button>
+</div>
+<div class="space-y-4">
+<!-- Partner Item -->
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold italic">GHTK</div>
+<div>
+<p class="font-body-md font-bold">Giao Hàng Tiết Kiệm</p>
+<p class="text-label-xs text-outline">Trạng thái: Hoạt động</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-green-500">check_circle</span>
+</div>
+<!-- Partner Item -->
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold italic">GHN</div>
+<div>
+<p class="font-body-md font-bold">Giao Hàng Nhanh</p>
+<p class="text-label-xs text-outline">Trạng thái: Hoạt động</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-green-500">check_circle</span>
+</div>
+<!-- Partner Item -->
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600 font-bold italic">Viettel</div>
+<div>
+<p class="font-body-md font-bold">Viettel Post</p>
+<p class="text-label-xs text-outline">Trạng thái: Bảo trì API</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">pause_circle</span>
+</div>
+</div>
+<button class="mt-auto w-full py-2 border border-dashed border-outline rounded-lg text-on-surface-variant font-body-sm flex items-center justify-center gap-2 hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span> Kết nối đối tác mới
+                    </button>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-4 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<h4 class="font-title-sm text-title-sm font-bold">Danh sách Vận đơn gần đây</h4>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm font-medium hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Lọc
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm font-medium hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span> Xuất Excel
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg text-body-sm font-bold hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">add</span> Tạo vận đơn
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Mã Vận Đơn</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Khách Hàng</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Đơn Vị</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Lộ Trình</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Phí</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Trạng Thái</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase text-right">Thao Tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4 font-label-xs text-primary font-bold">#VC-9921-2034</td>
+<td class="px-6 py-4">
+<p class="font-body-md font-bold">Nguyễn Văn An</p>
+<p class="text-label-xs text-outline">0987 *** 321</p>
+</td>
+<td class="px-6 py-4 font-body-sm">Giao Hàng Tiết Kiệm</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="text-outline">HN</span>
+<span class="w-8 h-[1px] bg-outline-variant relative after:content-[''] after:absolute after:right-0 after:-top-0.5 after:w-1 after:h-1 after:bg-outline-variant after:rounded-full"></span>
+<span>HCM</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm font-bold text-right">32,500đ</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] font-bold">Đang giao</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4 font-label-xs text-primary font-bold">#VC-9921-2035</td>
+<td class="px-6 py-4">
+<p class="font-body-md font-bold">Trần Thị Bé</p>
+<p class="text-label-xs text-outline">0905 *** 888</p>
+</td>
+<td class="px-6 py-4 font-body-sm">GHN Express</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="text-outline">DN</span>
+<span class="w-8 h-[1px] bg-outline-variant relative after:content-[''] after:absolute after:right-0 after:-top-0.5 after:w-1 after:h-1 after:bg-outline-variant after:rounded-full"></span>
+<span>Cần Thơ</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm font-bold text-right">45,000đ</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[11px] font-bold">Đã hoàn thành</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4 font-label-xs text-primary font-bold">#VC-9921-2036</td>
+<td class="px-6 py-4">
+<p class="font-body-md font-bold">Lê Minh Tuấn</p>
+<p class="text-label-xs text-outline">0932 *** 555</p>
+</td>
+<td class="px-6 py-4 font-body-sm">Viettel Post</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="text-outline">HP</span>
+<span class="w-8 h-[1px] bg-outline-variant relative after:content-[''] after:absolute after:right-0 after:-top-0.5 after:w-1 after:h-1 after:bg-outline-variant after:rounded-full"></span>
+<span>Bình Dương</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm font-bold text-right">28,000đ</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-[11px] font-bold">Hoàn trả</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center">
+<span class="text-body-sm text-outline">Hiển thị 10 trong số 1,284 vận đơn</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white text-body-sm font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors text-body-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors text-body-sm">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="h-12 flex items-center justify-between px-margin-desktop bg-surface-container-lowest border-t border-outline-variant">
+<span class="font-label-xs text-label-xs text-secondary">© 2024 VComm Enterprise Edition. All rights reserved.</span>
+<div class="flex gap-6 items-center">
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Hỗ trợ kỹ thuật: 1900 8888</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Bản quyền hệ thống</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Cẩm nang HDSD</a>
+</div>
+</footer>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-20 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group z-50">
+<span class="material-symbols-outlined text-[28px]">local_shipping</span>
+<span class="absolute right-full mr-4 px-3 py-1 bg-on-background text-white rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Tạo vận đơn nhanh</span>
+</button>
+<script>
+        // Micro-interactions and side effects can go here
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Logistics Management System initialized.');
+        });
+    </script>
+</body></html>

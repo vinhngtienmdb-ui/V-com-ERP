@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VComm ERP - Omni-channel Order Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .kanban-column {
+            min-height: calc(100vh - 280px);
+        }
+        .order-card:hover {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#171c20",
+                    "tertiary-fixed": "#d3e4fe",
+                    "tertiary-container": "#47576d",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "surface-tint": "#2a59bc",
+                    "on-primary": "#ffffff",
+                    "secondary-container": "#dce0e5",
+                    "on-background": "#111c2d",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "background": "#f9f9ff",
+                    "inverse-surface": "#263143",
+                    "surface-container-highest": "#d8e3fb",
+                    "surface-container": "#e7eeff",
+                    "on-secondary-container": "#5e6367",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "tertiary": "#304055",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-primary-fixed": "#001848",
+                    "outline-variant": "#c3c6d5",
+                    "inverse-on-surface": "#ecf1ff",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#dee8ff",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#cfdaf2",
+                    "on-surface-variant": "#434652",
+                    "secondary-fixed": "#dfe3e8",
+                    "surface-bright": "#f9f9ff",
+                    "primary": "#003991",
+                    "outline": "#737784",
+                    "primary-fixed": "#dae2ff",
+                    "primary-container": "#1e50b3",
+                    "inverse-primary": "#b2c5ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#b9caff",
+                    "surface-container-low": "#f0f3ff",
+                    "secondary": "#5a5f63",
+                    "on-tertiary-container": "#bccde6",
+                    "surface-variant": "#d8e3fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-mobile": "16px",
+                    "sidebar-width": "260px",
+                    "margin-desktop": "24px",
+                    "gutter": "16px",
+                    "container-max": "1600px"
+            },
+            "fontFamily": {
+                    "label-xs": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "title-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation -->
+<aside class="flex flex-col h-full border-r border-outline-variant bg-surface w-[260px] flex-shrink-0 z-30">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</h1>
+<p class="font-label-xs text-label-xs text-secondary">Enterprise Intelligence</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto sidebar-scroll px-3 space-y-6 pb-6">
+<!-- Group: Tổng Quan -->
+<div>
+<p class="px-3 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-wider">Tổng Quan</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Trang chủ</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container text-primary border-l-4 border-primary font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span>Quản lý Đơn hàng</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">live_tv</span>
+<span>Quản lý Livestream</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+<span>Mạng xã hội</span>
+</a>
+</div>
+</div>
+<!-- Group: Kinh Doanh -->
+<div>
+<p class="px-3 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-wider">Kinh Doanh</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Quản lý sản phẩm</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span>Marketing &amp; Social</span>
+</a>
+</div>
+</div>
+<!-- Group: Logistics -->
+<div>
+<p class="px-3 mb-2 font-label-xs text-label-xs text-outline uppercase tracking-wider">Logistics</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">warehouse</span>
+<span>Quản trị Kho vận</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span>Vận chuyển</span>
+</a>
+</div>
+</div>
+</nav>
+<div class="p-4 border-t border-outline-variant space-y-2">
+<button class="w-full py-2 bg-primary-container text-on-primary-container rounded font-bold text-body-sm hover:opacity-90 transition-opacity">
+                    Nâng cấp Enterprise
+                </button>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span>Cấu hình</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full h-16 px-6 bg-surface border-b border-outline-variant sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<h2 class="font-title-sm text-title-sm font-bold text-primary">Quản lý Đơn hàng</h2>
+<div class="hidden md:flex gap-6">
+<a class="text-primary border-b-2 border-primary font-bold py-5" href="#">Đơn Omni-channel</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors py-5" href="#">Đối soát tài chính</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors py-5" href="#">Yêu cầu hoàn trả</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:ring-2 focus:ring-primary focus:outline-none w-64" placeholder="Tìm kiếm đơn hàng..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional business administrator portrait in a corporate setting, soft studio lighting, sharp focus on eyes, wearing a dark suit, modern enterprise executive style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFJOJhsTJEB-PQNKtJV1mU459YlkXc3A_rredOeuoX5j6Lzq4zK9RxZCt28Z_tivYYhBsife-Cc6IYU8UpBMUHzT0nuP6Y3B9UoPQGF8Uv01dGXvweQcjPT84zY7fINYxjkqv00MIMJ-2KjEKqAFj_kxU2kG68AMOpy3KGKvA_AmlTlA_SFb-5EMUQKPZOjarOniYQQqomiAVMZ5h9KfLpgCOjG2AOY8_KW5uXJciAPDkj0L-WpnARMw"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<div class="flex-1 overflow-y-auto px-6 py-4 space-y-6 max-w-[1600px] mx-auto w-full">
+<!-- AI Suggestion Banner -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary to-primary-container p-4 text-on-primary flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4 relative z-10">
+<div class="bg-white/20 p-2 rounded-lg backdrop-blur-md">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h3 class="font-title-sm text-title-sm font-bold">Tối ưu hóa Vận hành AI</h3>
+<p class="text-body-sm opacity-90">Có 12 đơn hàng TikTok Shop đang đợi xử lý từ kho Quận 7. Đề xuất: Gom đơn theo tuyến Quận 1 để giảm 15% phí vận chuyển.</p>
+</div>
+</div>
+<div class="flex gap-3 relative z-10">
+<button class="px-4 py-1.5 bg-white text-primary font-bold rounded text-body-sm hover:bg-on-primary-container transition-colors">
+                            Áp dụng ngay
+                        </button>
+<button class="px-4 py-1.5 bg-transparent border border-white/40 text-white rounded text-body-sm hover:bg-white/10 transition-colors">
+                            Bỏ qua
+                        </button>
+</div>
+<!-- Decorative background glow -->
+<div class="absolute top-0 right-0 w-64 h-full bg-white/10 skew-x-[-20deg] translate-x-12"></div>
+</div>
+<!-- Kanban Board -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 overflow-x-auto pb-6">
+<!-- Column: Pending -->
+<div class="flex flex-col gap-4 min-w-[280px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-bold uppercase text-label-xs tracking-widest text-secondary">Chờ xử lý</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded text-label-xs font-bold">08</span>
+</div>
+<button class="material-symbols-outlined text-outline">more_horiz</button>
+</div>
+<div class="kanban-column flex flex-col gap-3">
+<!-- Card 1 -->
+<div class="order-card bg-surface border border-outline-variant p-4 rounded-lg cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-primary">#VC-92831</span>
+<div class="bg-[#EEF2FF] p-1 rounded flex items-center" title="TikTok Shop">
+<span class="material-symbols-outlined text-[16px] text-[#FF0050]">shopping_bag</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Nguyễn Thị Minh An</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">Giao hỏa tốc</span>
+<span class="font-bold text-primary text-title-sm">1.450.000đ</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="order-card bg-surface border border-outline-variant p-4 rounded-lg cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-primary">#VC-92835</span>
+<div class="bg-[#FEF2F2] p-1 rounded flex items-center" title="Shopee">
+<span class="material-symbols-outlined text-[16px] text-[#EE4D2D]">storefront</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Trần Văn Hoàng</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">Thanh toán COD</span>
+<span class="font-bold text-primary text-title-sm">420.000đ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Processing -->
+<div class="flex flex-col gap-4 min-w-[280px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-bold uppercase text-label-xs tracking-widest text-primary-container">Đang xử lý</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded text-label-xs font-bold">14</span>
+</div>
+<button class="material-symbols-outlined text-outline">more_horiz</button>
+</div>
+<div class="kanban-column flex flex-col gap-3">
+<div class="order-card bg-surface border border-outline-variant p-4 rounded-lg cursor-pointer transition-all border-l-4 border-l-primary-container">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-primary">#VC-92710</span>
+<div class="bg-[#F0FDFA] p-1 rounded flex items-center" title="Website">
+<span class="material-symbols-outlined text-[16px] text-primary">language</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Lê Quốc Khánh</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">Đã in bill</span>
+<span class="font-bold text-primary text-title-sm">3.200.000đ</span>
+</div>
+</div>
+<div class="order-card bg-surface border border-outline-variant p-4 rounded-lg cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-primary">#VC-92715</span>
+<div class="bg-[#FFFBEB] p-1 rounded flex items-center" title="Lazada">
+<span class="material-symbols-outlined text-[16px] text-[#00008B]">shopping_cart_checkout</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Phạm Bảo Thy</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">Gói quà</span>
+<span class="font-bold text-primary text-title-sm">890.000đ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Shipping -->
+<div class="flex flex-col gap-4 min-w-[280px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-bold uppercase text-label-xs tracking-widest text-tertiary">Đang giao</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded text-label-xs font-bold">25</span>
+</div>
+<button class="material-symbols-outlined text-outline">more_horiz</button>
+</div>
+<div class="kanban-column flex flex-col gap-3">
+<div class="order-card bg-surface border border-outline-variant p-4 rounded-lg cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-primary">#VC-92600</span>
+<div class="bg-[#EEF2FF] p-1 rounded flex items-center" title="TikTok Shop">
+<span class="material-symbols-outlined text-[16px] text-[#FF0050]">shopping_bag</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Gia đình Tùng Sơn</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">GHN: 8234...90</span>
+<span class="font-bold text-primary text-title-sm">1.820.000đ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Delivered -->
+<div class="flex flex-col gap-4 min-w-[280px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-bold uppercase text-label-xs tracking-widest text-primary">Đã giao</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded text-label-xs font-bold">142</span>
+</div>
+<button class="material-symbols-outlined text-outline">more_horiz</button>
+</div>
+<div class="kanban-column flex flex-col gap-3">
+<div class="order-card bg-surface-container-lowest border border-outline-variant p-4 rounded-lg opacity-80 transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-xs text-label-xs font-bold text-outline">#VC-92501</span>
+<div class="bg-surface-container p-1 rounded flex items-center">
+<span class="material-symbols-outlined text-[16px] text-outline">check_circle</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface-variant mb-1">Huỳnh Minh Tuấn</h4>
+<div class="flex justify-between items-end">
+<span class="text-label-xs text-outline">Hoàn tất 10:30 AM</span>
+<span class="font-bold text-secondary text-title-sm">2.100.000đ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="flex justify-between items-center w-full px-6 py-4 bg-surface-container-lowest border-t border-outline-variant mt-auto">
+<div class="flex gap-6 items-center">
+<p class="font-label-xs text-label-xs text-secondary">© 2024 VComm Enterprise Edition. All rights reserved.</p>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<div class="flex gap-4">
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">Hỗ trợ kỹ thuật: 1900 8888</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors underline decoration-dotted" href="#">Cẩm nang HDSD</a>
+</div>
+</div>
+<div class="flex items-center gap-4 text-secondary font-label-xs">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> API Status: Connected</span>
+<span class="flex items-center gap-1">Server: VN-CENTER-01</span>
+</div>
+</footer>
+</main>
+</div>
+<!-- Floating Action Button (Optional logic: visible on mobile or as global quick add) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform z-50 md:hidden">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Simple drag scroll simulation for kanban board
+        const slider = document.querySelector('.overflow-x-auto');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body></html>

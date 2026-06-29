@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VComm ERP - Trang chủ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#737784",
+                    "background": "#f9f9ff",
+                    "surface-container": "#e7eeff",
+                    "on-background": "#111c2d",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary-container": "#bccde6",
+                    "tertiary-container": "#47576d",
+                    "on-primary-container": "#b9caff",
+                    "surface-variant": "#d8e3fb",
+                    "on-surface": "#111c2d",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#dfe3e8",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#003991",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#b2c5ff",
+                    "on-secondary-fixed": "#171c20",
+                    "surface-container-low": "#f0f3ff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f9f9ff",
+                    "on-surface-variant": "#434652",
+                    "tertiary-fixed": "#d3e4fe",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "primary-container": "#1e50b3",
+                    "outline-variant": "#c3c6d5",
+                    "surface": "#f9f9ff",
+                    "primary-fixed": "#dae2ff",
+                    "surface-container-highest": "#d8e3fb",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "secondary-container": "#dce0e5",
+                    "inverse-surface": "#263143",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#001848",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "on-secondary-container": "#5e6367",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#2a59bc",
+                    "surface-container-high": "#dee8ff",
+                    "secondary": "#5a5f63",
+                    "tertiary": "#304055",
+                    "surface-dim": "#cfdaf2",
+                    "inverse-on-surface": "#ecf1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "sidebar-width": "260px",
+                    "unit": "4px",
+                    "container-max": "1600px",
+                    "margin-desktop": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "title-sm": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "label-xs": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .active-nav-border { position: relative; }
+        .active-nav-border::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #003991;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[260px] border-r border-outline-variant bg-surface z-50 flex flex-col">
+<div class="p-6 flex flex-col gap-1">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</h1>
+<p class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Enterprise Intelligence</p>
+</div>
+<nav class="flex-1 overflow-y-auto sidebar-scroll px-4">
+<div class="mb-6">
+<span class="px-2 font-label-xs text-label-xs text-outline uppercase">Tổng quan</span>
+<div class="mt-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-container text-primary font-bold border-l-4 border-primary transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-body-md text-body-md">Trang chủ</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Phân tích dữ liệu</span>
+</a>
+</div>
+</div>
+<div class="mb-6">
+<span class="px-2 font-label-xs text-label-xs text-outline uppercase">AI &amp; Vận hành</span>
+<div class="mt-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-body-md text-body-md">Trung tâm vận hành AI</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-body-md text-body-md">Dự báo &amp; Giám định</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-md text-body-md">Điều hành &amp; Workflow</span>
+</a>
+</div>
+</div>
+<div class="mb-6">
+<span class="px-2 font-label-xs text-label-xs text-outline uppercase">Thương mại</span>
+<div class="mt-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-body-md text-body-md">Siêu thị VComm</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-md text-body-md">Quản lý Đơn hàng</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">live_tv</span>
+<span class="font-body-md text-body-md">Quản lý Livestream</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+<span class="font-body-md text-body-md">Mạng xã hội</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Quản lý sản phẩm</span>
+</a>
+</div>
+</div>
+</nav>
+<div class="p-4 bg-surface-container-low border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-2.5 rounded-lg font-body-md flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" style="font-size: 18px;">bolt</span>
+                Nâng cấp Enterprise
+            </button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant hover:text-primary transition-colors text-body-sm" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+                    Cấu hình
+                </a>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant hover:text-primary transition-colors text-body-sm" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">help</span>
+                    Trợ giúp
+                </a>
+<a class="flex items-center gap-3 px-2 py-1.5 text-error hover:opacity-80 transition-opacity text-body-sm mt-2" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
+                    Đăng xuất
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[260px] h-screen flex flex-col overflow-hidden">
+<!-- Top App Bar -->
+<header class="h-16 flex justify-between items-center px-margin-desktop bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-6">
+<a class="font-body-md text-primary font-bold border-b-2 border-primary h-16 flex items-center" href="#">Hệ thống</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors h-16 flex items-center" href="#">Điều hành</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors h-16 flex items-center" href="#">Hành chính</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="bg-surface-container-low border-none rounded-full px-5 py-2 w-64 text-body-sm focus:ring-2 focus:ring-primary" placeholder="Tìm kiếm hệ thống..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-outline" style="font-size: 20px;">search</span>
+</div>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full">
+<span class="material-symbols-outlined">psychology</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<div class="flex items-center gap-3 ml-2 hover:bg-surface-container-low p-1 pr-3 rounded-full cursor-pointer transition-colors">
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="Professional corporate headshot of a female administrator with a friendly expression, wearing a navy blue blazer, set against a clean, light grey studio background. High-quality corporate photography style with soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-LgoS2KpRy9N3jWcuONwtHEdJRl_XmaAW4Si_faiC06dyKXb0jsdLDNfijjoB0H2j13djA7RnDKIRXp1Sr6FkvgaT4fKsfTznEed2R8fSmsdwFYenZnjHpkF7m158CamYwkQRaAW5zh687vmVrWeYw-rUMub-wtmnjIqpzpSSS8CrlBgRbpMQWQmOS9ePc5h6rgFa47HdNJEBIfVg8HhCu0FeUrZp34HJrdbEh-kJKD_prcXGEXLQ6w"/>
+<div class="hidden lg:block">
+<p class="text-body-sm font-bold leading-none">admin@vcomm.vn</p>
+<p class="text-[10px] text-outline uppercase tracking-tighter">Hệ Quản Trị</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 overflow-y-auto bg-background p-margin-desktop">
+<div class="max-w-container-max mx-auto space-y-8">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Chào buổi sáng, admin@vcomm.vn</h2>
+<p class="text-on-surface-variant mt-2 font-body-md">Hệ thống ghi nhận 12 luồng công việc đang chờ bạn xử lý trong hôm nay.</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-surface border border-outline-variant p-4 rounded-xl flex items-center gap-4 min-w-[200px]">
+<div class="p-2 bg-primary-container/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<div>
+<p class="text-label-xs text-outline uppercase">Hôm nay</p>
+<p class="text-body-md font-bold">24 Tháng 5, 2024</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Intelligence Summary -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 relative overflow-hidden rounded-2xl bg-primary p-8 text-on-primary">
+
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined">auto_awesome</span>
+<h3 class="font-title-sm text-title-sm">AI Intelligence Summary</h3>
+</div>
+<div class="space-y-4">
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 flex items-start gap-4">
+<span class="material-symbols-outlined text-tertiary-fixed">warning</span>
+<div>
+<p class="font-body-md font-bold text-white">Dự báo tồn kho: SKU 'V-PHONE-15' đang ở mức báo động</p>
+<p class="text-body-sm text-blue-100 mt-1">Hệ thống AI đề xuất nhập thêm 500 đơn vị từ Nhà cung cấp A để tối ưu chi phí vận chuyển.</p>
+</div>
+</div>
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 flex items-start gap-4">
+<span class="material-symbols-outlined text-green-300">verified_user</span>
+<div>
+<p class="font-body-md font-bold text-white">Đối soát tài chính hoàn tất</p>
+<p class="text-body-sm text-blue-100 mt-1">Toàn bộ 4,281 đơn hàng Livestream ngày hôm qua đã được đối soát thành công. Không có sai lệch.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-2xl p-6 flex flex-col justify-between">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-4">Sử dụng gần đây</h3>
+<div class="space-y-3">
+<a class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant" href="#">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<p class="font-body-md font-medium">Bảng điều khiển</p>
+<span class="material-symbols-outlined ml-auto text-outline" style="font-size: 18px;">arrow_forward_ios</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant" href="#">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">draw</span>
+</div>
+<p class="font-body-md font-medium">Đề xuất &amp; Trình ký</p>
+<span class="material-symbols-outlined ml-auto text-outline" style="font-size: 18px;">arrow_forward_ios</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant" href="#">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<p class="font-body-md font-medium">Quản lý Đơn hàng</p>
+<span class="material-symbols-outlined ml-auto text-outline" style="font-size: 18px;">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+<button class="text-primary text-body-sm font-bold flex items-center justify-center gap-2 mt-4 hover:underline">
+                            Xem tất cả hoạt động
+                        </button>
+</div>
+</section>
+<!-- Core Modules Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-title-sm text-title-sm text-on-surface">Hệ sinh thái Module Core</h3>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<button class="p-2 border border-outline-variant rounded-lg bg-primary text-on-primary">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- Module 1 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">settings_applications</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Hệ thống chính</h4>
+<p class="text-body-sm text-outline leading-tight">Cấu hình lõi và quản trị phân quyền.</p>
+</div>
+<!-- Module 2 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">account_tree</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Điều hành &amp; Hệ thống</h4>
+<p class="text-body-sm text-outline leading-tight">Workflow và quy trình phối hợp.</p>
+</div>
+<!-- Module 3 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">edit_document</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Hành chính &amp; Ký số</h4>
+<p class="text-body-sm text-outline leading-tight">Quản lý công văn và chữ ký điện tử.</p>
+</div>
+<!-- Module 4 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">sell</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Kinh doanh Đa kênh</h4>
+<p class="text-body-sm text-outline leading-tight">Omni-channel sales &amp; CRM.</p>
+</div>
+<!-- Module 5 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">campaign</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Sản phẩm &amp; Marketing</h4>
+<p class="text-body-sm text-outline leading-tight">PIM và các chiến dịch quảng bá.</p>
+</div>
+<!-- Module 6 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">local_shipping</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Chuỗi cung ứng &amp; Kho</h4>
+<p class="text-body-sm text-outline leading-tight">Logistics và quản trị tồn kho.</p>
+</div>
+<!-- Module 7 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">payments</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Tài chính &amp; Thanh toán</h4>
+<p class="text-body-sm text-outline leading-tight">Kế toán và quản lý dòng tiền.</p>
+</div>
+<!-- Module 8 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">groups</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Đối tác &amp; Khách hàng</h4>
+<p class="text-body-sm text-outline leading-tight">Quản lý Vendor và Loyalty.</p>
+</div>
+<!-- Module 9 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">badge</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Nhân sự &amp; Tổ chức</h4>
+<p class="text-body-sm text-outline leading-tight">HRM và cơ cấu doanh nghiệp.</p>
+</div>
+<!-- Module 10 -->
+<div class="group bg-surface border border-outline-variant p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">tune</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Cấu hình</h4>
+<p class="text-body-sm text-outline leading-tight">Tùy biến tham số và Dashboard.</p>
+</div>
+</div>
+</section>
+<!-- Footer Section -->
+<footer class="mt-12 pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4 text-outline font-label-xs text-label-xs">
+<p>© 2024 VComm Enterprise Edition. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors hover:underline" href="#">Hỗ trợ kỹ thuật: 1900 8888</a>
+<a class="hover:text-primary transition-colors hover:underline" href="#">Bản quyền hệ thống</a>
+<a class="hover:text-primary transition-colors hover:underline" href="#">Cẩm nang HDSD</a>
+</div>
+</footer>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

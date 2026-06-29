@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VComm ERP - Quản lý Mua hàng &amp; Nhà cung cấp</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#001848",
+                    "on-error-container": "#93000a",
+                    "surface": "#f9f9ff",
+                    "tertiary-container": "#47576d",
+                    "surface-dim": "#cfdaf2",
+                    "surface-container-low": "#f0f3ff",
+                    "on-surface-variant": "#434652",
+                    "outline-variant": "#c3c6d5",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "on-secondary-fixed": "#171c20",
+                    "on-primary-container": "#b9caff",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "surface-variant": "#d8e3fb",
+                    "primary-fixed": "#dae2ff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#304055",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "primary": "#003991",
+                    "surface-container": "#e7eeff",
+                    "secondary-fixed": "#dfe3e8",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#263143",
+                    "on-surface": "#111c2d",
+                    "outline": "#737784",
+                    "secondary-container": "#dce0e5",
+                    "inverse-primary": "#b2c5ff",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#2a59bc",
+                    "surface-container-highest": "#d8e3fb",
+                    "secondary": "#5a5f63",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-secondary-container": "#5e6367",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-container": "#bccde6",
+                    "primary-container": "#1e50b3",
+                    "on-background": "#111c2d",
+                    "tertiary-fixed": "#d3e4fe",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "surface-container-high": "#dee8ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "gutter": "16px",
+                    "margin-desktop": "24px",
+                    "container-max": "1600px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-xs": ["JetBrains Mono"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "title-sm": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f8fafc;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .table-container {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .custom-glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full h-16 px-margin-desktop bg-surface sticky top-0 z-50 border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<h1 class="font-display-lg text-display-lg font-bold text-primary">VComm ERP</h1>
+<nav class="hidden md:flex gap-6">
+<a class="font-title-sm text-title-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-1" href="#">Hệ thống</a>
+<a class="font-title-sm text-title-sm text-primary border-b-2 border-primary font-bold px-3 py-1" href="#">Điều hành</a>
+<a class="font-title-sm text-title-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-1" href="#">Hành chính</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg w-64 focus:ring-2 focus:ring-primary focus:outline-none text-body-md font-body-md" placeholder="Tìm kiếm dữ liệu..." type="text"/>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-full"><span class="material-symbols-outlined text-on-surface-variant">psychology</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full"><span class="material-symbols-outlined text-on-surface-variant">grid_view</span></button>
+<div class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-4">
+<div class="text-right hidden sm:block">
+<p class="text-body-md font-bold leading-none">Admin VComm</p>
+<p class="text-label-xs font-label-xs text-outline">Enterprise Admin</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a corporate administrator, looking confident and smiling slightly, clean high-key studio lighting with a neutral blurred background. The style is modern and minimalist to match a high-end enterprise ERP interface dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdCDlexmsrmViBfXgamHaeFRtDBQElNoh1d80QbrWWU300JrXgOSjCqooWqZo5d1lCpuRkVevPcO1KSyuVAtMlz7k4v3k5knPrn8yDMeKK93y_uRMGZQVuNzvi3a0PhujrQgnXLIOxbdTF6aXsZaSJAIrLQMzlqqPWmZDvSbDe6X5_aUdrZeir8PxmBrE7k3B3bP_WBFQ9m6VpxPEyU7q_qfHhhrN0qC-1P2HEqbPcKC2daM3C5pyh6A"/>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full border-r border-outline-variant bg-surface w-sidebar-width shrink-0 sidebar-scroll overflow-y-auto">
+<div class="p-4 border-b border-outline-variant mb-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md font-bold text-primary">VComm ERP</p>
+<p class="text-label-xs font-label-xs text-outline uppercase tracking-wider">Enterprise Intelligence</p>
+</div>
+</div>
+</div>
+<div class="px-3 py-4 space-y-6">
+<!-- Group 1: Tổng Quan -->
+<div>
+<p class="px-4 mb-2 text-label-xs font-label-xs text-outline uppercase tracking-widest">Tổng Quan</p>
+<ul class="space-y-1">
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">home</span> Trang chủ</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span> Bảng điều khiển</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">analytics</span> Phân tích dữ liệu</a></li>
+</ul>
+</div>
+<!-- Group 4: Logistics (Active Section) -->
+<div>
+<p class="px-4 mb-2 text-label-xs font-label-xs text-outline uppercase tracking-widest">Logistics</p>
+<ul class="space-y-1">
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">warehouse</span> Quản trị Kho vận</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-surface-container text-primary border-l-4 border-primary font-bold text-body-md transition-all" href="#"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">shopping_cart</span> Mua hàng &amp; NCC</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">local_shipping</span> Vận chuyển</a></li>
+</ul>
+</div>
+<!-- Other Groups Simplified -->
+<div>
+<p class="px-4 mb-2 text-label-xs font-label-xs text-outline uppercase tracking-widest">Hệ thống</p>
+<ul class="space-y-1">
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">settings</span> Cấu hình</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-all" href="#"><span class="material-symbols-outlined text-[20px]">help</span> Trợ giúp</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-error font-body-md text-body-md hover:bg-error-container transition-all" href="#"><span class="material-symbols-outlined text-[20px]">logout</span> Đăng xuất</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-auto p-4">
+<button class="w-full py-3 bg-primary-container text-on-primary-container font-bold rounded-lg text-body-md hover:opacity-90 transition-opacity">
+                    Nâng cấp Enterprise
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto bg-background p-margin-desktop">
+<div class="max-w-container-max mx-auto space-y-gutter">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-2 text-label-xs font-label-xs text-outline mb-2">
+<span>Logistics</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-primary font-bold">Mua hàng &amp; Nhà cung cấp</span>
+</nav>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">Tổng quan Mua hàng</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Quản lý hiệu quả chuỗi cung ứng và quan hệ đối tác.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant text-on-surface font-bold rounded-lg hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span> Xuất báo cáo
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold rounded-lg hover:shadow-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span> Tạo yêu cầu RFQ
+                        </button>
+</div>
+</div>
+<!-- Bento Grid: Analytics Overviews -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant table-container hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-fixed rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory</span>
+</div>
+<span class="flex items-center gap-1 text-label-xs font-label-xs text-success-container bg-green-100 px-2 py-0.5 rounded text-green-700">+12.4% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Đơn mua hàng (PO)</p>
+<h3 class="text-display-lg font-display-lg font-bold text-on-surface">1,248</h3>
+<div class="mt-4 h-8 flex items-end gap-1">
+<!-- Simple sparkline mock -->
+<div class="w-full h-1/2 bg-primary/10 rounded-t-sm group-hover:h-3/4 transition-all"></div>
+<div class="w-full h-2/3 bg-primary/10 rounded-t-sm group-hover:h-full transition-all"></div>
+<div class="w-full h-1/3 bg-primary/10 rounded-t-sm group-hover:h-1/2 transition-all"></div>
+<div class="w-full h-3/4 bg-primary/10 rounded-t-sm group-hover:h-1/3 transition-all"></div>
+<div class="w-full h-1/2 bg-primary/10 rounded-t-sm group-hover:h-2/3 transition-all"></div>
+<div class="w-full h-full bg-primary rounded-t-sm"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant table-container hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary-fixed rounded-lg text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">request_quote</span>
+</div>
+<span class="flex items-center gap-1 text-label-xs font-label-xs bg-red-100 px-2 py-0.5 rounded text-red-700">-2.1% <span class="material-symbols-outlined text-[14px]">trending_down</span></span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Yêu cầu báo giá (RFQ)</p>
+<h3 class="text-display-lg font-display-lg font-bold text-on-surface">432</h3>
+<div class="mt-4 h-8 flex items-end gap-1">
+<div class="w-full h-full bg-secondary/10 rounded-t-sm group-hover:h-3/4 transition-all"></div>
+<div class="w-full h-3/4 bg-secondary/10 rounded-t-sm group-hover:h-1/2 transition-all"></div>
+<div class="w-full h-1/2 bg-secondary/10 rounded-t-sm group-hover:h-full transition-all"></div>
+<div class="w-full h-1/3 bg-secondary rounded-t-sm"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant table-container hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-fixed rounded-lg text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+<span class="flex items-center gap-1 text-label-xs font-label-xs bg-blue-100 px-2 py-0.5 rounded text-blue-700">85 Active</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Nhà cung cấp</p>
+<h3 class="text-display-lg font-display-lg font-bold text-on-surface">156</h3>
+<div class="mt-4 flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-white" data-alt="A clean professional headshot of a supplier representative, corporate portrait photography, sharp focus, vibrant enterprise color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArWwFw5zfh9IxlUvyTcTkEUV8HMUgjNJyDGitk7moVMGgYPCJsnbko8gRqJ6qwI-0H9lxuJkmCf4GiYGwkMQyiAzkjq0CPTk0kLVr30mROcHQOndFWQC4mNfg05TIziDiJpY-1Q9drfO7szfxGnuWC2F4PwKvpCMYwVjTNF9yRg3IeKiz-_23fbpn0Plurwoz6ClVkf6NBOpC15JrVapssVHCgfOuhYoNnvpOhD2iZ-_MT2TAPDpwZgw"/>
+<img class="w-6 h-6 rounded-full border border-white" data-alt="A clean professional headshot of a female logistics manager, bright corporate lighting, modern minimalist professional style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRsQAz16wCpeA5lW3TBlMDpD-eyxqRa6VkQ4VNROzWvWPRPzBI5kl5IObfXGfTQtFPUBga-sHvoUlvAUhphfL_tycUnnrUOLPT5eNSRSuWg5HW2CG9Cy74oopeeLpBLeySoI3WiQ4ikof9ziB6oWJqlvI0tiwCyk4y_fUj-XeHyYQ4eopKpgjj7Z0c4oVGqA_v2QF6x8bn495RFr6wxj0kXYcqAKNMQv1MS4I1glO-L09_lAWhtfPEyw"/>
+<img class="w-6 h-6 rounded-full border border-white" data-alt="A professional portrait of a senior supply chain expert, neutral professional background, high quality enterprise photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBW7DtUm_SHNEq3CHmf_Bi4Jq74ve_lSJX0gK4RT2Dke_M1g6I-LFo1MfJ02reTTE9D6osNswrtPwowiYG_KCeD-h_udyGSzgMthlhtxktQVaadIbjJUOyRsxYBEfBeP1DeOfESq79mhsRPjcuDiH5zHByv3MuP55ZAL7iY4qpq_reCMyEpf8T4wkQQk4ihJfADK3ZG3TMi2mv5CVPStS0saXDZl5bdySk5d-DpeuBUsgFOfvimNUpRjg"/>
+<div class="w-6 h-6 rounded-full bg-outline-variant text-[10px] flex items-center justify-center text-on-surface border border-white font-bold">+12</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant table-container hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-error-container rounded-lg text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">reviews</span>
+</div>
+<span class="flex items-center gap-1 text-label-xs font-label-xs bg-green-100 px-2 py-0.5 rounded text-green-700">4.8 Avg</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Hiệu suất NCC</p>
+<h3 class="text-display-lg font-display-lg font-bold text-on-surface">94.2%</h3>
+<div class="mt-4 w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[94.2%]"></div>
+</div>
+</div>
+</div>
+<!-- Main Data View: Tabbed Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden table-container">
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant px-6 pt-4 gap-8">
+<button class="pb-4 text-body-md font-bold text-primary border-b-2 border-primary">Danh mục Nhà cung cấp</button>
+<button class="pb-4 text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors">Yêu cầu báo giá (RFQ)</button>
+<button class="pb-4 text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors">Đơn mua hàng (PO)</button>
+<button class="pb-4 text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors">Đánh giá hiệu suất</button>
+</div>
+<!-- Filters & Search Row -->
+<div class="p-4 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg text-body-md focus:ring-1 focus:ring-primary focus:outline-none w-80" placeholder="Tìm tên NCC, mã số thuế..." type="text"/>
+</div>
+<button class="flex items-center gap-1 px-3 py-2 border border-outline-variant rounded-lg text-body-sm font-medium hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[18px]">filter_alt</span> Lọc
+                            </button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-xs font-label-xs text-outline">Sắp xếp:</span>
+<select class="border-none bg-transparent text-body-sm font-bold focus:ring-0 cursor-pointer">
+<option>Hiệu suất (Cao - Thấp)</option>
+<option>Tên (A - Z)</option>
+<option>Ngày hợp tác gần nhất</option>
+</select>
+</div>
+</div>
+<!-- Detailed Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-y border-outline-variant">
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Nhà cung cấp</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Lĩnh vực</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Trạng thái</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase">Tổng giá trị PO</th>
+<th class="px-6 py-3 font-label-xs text-label-xs text-outline uppercase text-right">Đánh giá</th>
+<th class="px-6 py-3"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center font-bold text-primary">SC</div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Sino-Continental Logistics</p>
+<p class="text-label-xs font-label-xs text-outline">MST: 0102938475</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant font-body-md">Logistics &amp; Freight</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full text-label-xs font-bold bg-green-100 text-green-700">Đang hoạt động</span>
+</td>
+<td class="px-6 py-4 font-label-xs text-on-surface">2,450,000,000 ₫</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-1 text-yellow-500">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;"></span></div></td></tr></tbody></table></div></div></div></main></div></body></html>

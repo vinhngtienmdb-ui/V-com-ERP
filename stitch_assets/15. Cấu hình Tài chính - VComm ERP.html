@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cấu hình Hệ thống Tài chính - VComm Enterprise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #003991;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3c6d5;
+            border-radius: 3px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1e50b3",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-secondary-fixed": "#171c20",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "on-primary-container": "#b9caff",
+                        "secondary-container": "#dce0e5",
+                        "on-secondary-container": "#5e6367",
+                        "tertiary": "#304055",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#dae2ff",
+                        "primary": "#003991",
+                        "outline": "#737784",
+                        "on-background": "#111c2d",
+                        "surface-dim": "#cfdaf2",
+                        "tertiary-container": "#47576d",
+                        "on-primary-fixed": "#001848",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-container": "#bccde6",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "background": "#f9f9ff",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "surface-container-high": "#dee8ff",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-container": "#e7eeff",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-surface": "#111c2d",
+                        "on-error": "#ffffff",
+                        "secondary": "#5a5f63",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-variant": "#d8e3fb",
+                        "surface-tint": "#2a59bc",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#263143",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#dfe3e8",
+                        "surface-container-low": "#f0f3ff",
+                        "on-surface-variant": "#434652",
+                        "surface": "#f9f9ff",
+                        "surface-bright": "#f9f9ff",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "24px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "sidebar-width": "260px",
+                        "container-max": "1600px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-xs": ["JetBrains Mono"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "title-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-sidebar-width h-screen sticky left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col py-4 z-50">
+<div class="px-6 mb-8">
+<h1 class="font-title-sm text-title-sm font-bold text-on-surface">VComm Enterprise</h1>
+<p class="text-on-surface-variant opacity-70 text-[12px]">Phân hệ Tài chính</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Tổng Quan</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span>Tài chính - Kế toán</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">rebase_edit</span>
+<span>Đối soát &amp; Công nợ</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Ví &amp; Thanh toán</span>
+</a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container border-l-4 border-primary px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Cấu hình Hệ thống</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span>Hỗ trợ</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col min-w-0 bg-background relative">
+<!-- TopAppBar -->
+<header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-margin-desktop sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined cursor-pointer">menu</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Cấu hình Hệ thống</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Tìm kiếm cấu hình..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-high p-2 rounded-full transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-high p-2 rounded-full transition-colors">help</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-high p-2 rounded-full transition-colors">settings</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-[12px]">AD</div>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Breadcrumbs -->
+<nav class="flex text-label-xs text-on-surface-variant mb-6 gap-2">
+<a class="hover:text-primary transition-colors" href="#">Tài chính</a>
+<span>/</span>
+<span class="text-on-surface font-medium">Cấu hình Hệ thống</span>
+</nav>
+<div class="bento-grid">
+<!-- 1. Thiết lập kỳ kế toán (Glassmorphism Bento Item) -->
+<section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-6 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<h3 class="font-title-sm text-title-sm">Kỳ kế toán</h3>
+</div>
+<span class="text-label-xs bg-primary/10 text-primary px-2 py-1 rounded">Hoạt động</span>
+</div>
+<div class="space-y-4 flex-1">
+<div class="p-4 bg-surface-container rounded-lg">
+<p class="text-label-xs text-on-surface-variant mb-1">Kỳ hiện tại</p>
+<p class="font-bold text-headline-md">T05 / 2024</p>
+<div class="mt-2 w-full bg-outline-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-3/4 h-full"></div>
+</div>
+<p class="text-label-xs mt-2 text-on-surface-variant">Còn 8 ngày đến kỳ kết chuyển</p>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Ngày bắt đầu kỳ</span>
+<span class="font-medium">01/05/2024</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Tần suất đóng kỳ</span>
+<span class="font-medium">Hàng tháng</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Tự động kết chuyển</span>
+<div class="w-10 h-5 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-primary text-on-primary rounded-lg font-medium hover:opacity-90 transition-opacity">
+                            Quản lý Kỳ kế toán
+                        </button>
+</section>
+<!-- 2. Danh mục tài khoản (Chart of Accounts) -->
+<section class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-tertiary-container rounded-lg flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div>
+<h3 class="font-title-sm text-title-sm">Hệ thống tài khoản</h3>
+<p class="text-label-xs text-on-surface-variant">Hệ thống tài khoản chuẩn theo TT200/2014</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-low transition-colors">Xuất Excel</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                    Thêm tài khoản
+                                </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant text-label-xs text-on-surface-variant uppercase tracking-wider">
+<th class="pb-3 px-2 font-semibold">Mã TK</th>
+<th class="pb-3 px-2 font-semibold">Tên tài khoản</th>
+<th class="pb-3 px-2 font-semibold">Loại</th>
+<th class="pb-3 px-2 font-semibold">Tính chất</th>
+<th class="pb-3 px-2 font-semibold text-right">Hành động</th>
+</tr>
+</thead>
+<tbody class="text-body-sm divide-y divide-outline-variant/30">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2 font-label-xs font-bold">111</td>
+<td class="py-4 px-2">Tiền mặt</td>
+<td class="py-4 px-2">Tài sản</td>
+<td class="py-4 px-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[11px]">Dư Nợ</span></td>
+<td class="py-4 px-2 text-right">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">edit</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2 font-label-xs font-bold">112</td>
+<td class="py-4 px-2">Tiền gửi ngân hàng</td>
+<td class="py-4 px-2">Tài sản</td>
+<td class="py-4 px-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[11px]">Dư Nợ</span></td>
+<td class="py-4 px-2 text-right">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">edit</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2 font-label-xs font-bold pl-6 text-on-surface-variant italic">1121</td>
+<td class="py-4 px-2 pl-6">Tiền Việt Nam (VNĐ) tại NH</td>
+<td class="py-4 px-2">Tài sản</td>
+<td class="py-4 px-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[11px]">Dư Nợ</span></td>
+<td class="py-4 px-2 text-right">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">edit</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2 font-label-xs font-bold">131</td>
+<td class="py-4 px-2">Phải thu của khách hàng</td>
+<td class="py-4 px-2">Tài sản</td>
+<td class="py-4 px-2"><span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-[11px]">Lưỡng tính</span></td>
+<td class="py-4 px-2 text-right">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">edit</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2 font-label-xs font-bold">331</td>
+<td class="py-4 px-2">Phải trả người bán</td>
+<td class="py-4 px-2">Nợ phải trả</td>
+<td class="py-4 px-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-[11px]">Dư Có</span></td>
+<td class="py-4 px-2 text-right">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">edit</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 text-right">
+<a class="text-primary text-body-sm font-medium hover:underline" href="#">Xem toàn bộ danh mục →</a>
+</div>
+</section>
+<!-- 3. Quy tắc tự động hạch toán (Asymmetric Visual Pattern) -->
+<section class="col-span-12 lg:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col md:flex-row">
+<div class="md:w-1/3 bg-primary-container p-6 text-on-primary-container flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-[40px] mb-4">automation</span>
+<h3 class="font-headline-md text-headline-md leading-tight mb-2">Quy tắc tự động</h3>
+<p class="text-body-sm opacity-80">Thiết lập cách hệ thống tự động định khoản từ dữ liệu đơn hàng và kho.</p>
+</div>
+<div class="mt-8">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="text-label-xs">98% Độ chính xác</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span class="text-label-xs">Xử lý thời gian thực</span>
+</div>
+</div>
+</div>
+<div class="md:w-2/3 p-6 space-y-4">
+<div class="p-4 border border-outline-variant rounded-lg flex items-center gap-4 hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary/10">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-body-md">Đơn hàng bán lẻ</h4>
+<p class="text-label-xs text-on-surface-variant">Nợ 131 / Có 5111, 33311</p>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<div class="p-4 border border-outline-variant rounded-lg flex items-center gap-4 hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary/10">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-body-md">Xuất kho bán hàng</h4>
+<p class="text-label-xs text-on-surface-variant">Nợ 632 / Có 156</p>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<div class="p-4 border border-outline-variant rounded-lg flex items-center gap-4 hover:bg-surface-container transition-colors cursor-pointer group opacity-60">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">assignment_return</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-body-md">Hàng bán bị trả lại</h4>
+<p class="text-label-xs text-on-surface-variant">Chưa thiết lập quy tắc</p>
+</div>
+<button class="text-primary text-label-xs font-bold hover:underline">Thiết lập ngay</button>
+</div>
+</div>
+</section>
+<!-- 4. Phân quyền người dùng (User Matrix Cards) -->
+<section class="col-span-12 lg:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-title-sm text-title-sm">Phân quyền phân hệ</h3>
+<button class="text-primary text-label-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+                                Phân quyền nâng cao
+                            </button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional corporate headshot of a female accountant in a clean, modern workspace with soft sunlight and professional ERP UI on her laptop screen. The aesthetic is bright, high-key, and minimalist, echoing the VComm brand colors of professional blue and clean whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe7WqUkN4D4KUZ9yxNp3rOQmdxgRvD_z3ueUXWsfvFo7NDUe78FrquOOcNCh-F958LTxwCYBdvz4VggMOakdPpYkwDeCQq1rlZPdtYrDPW-EeWjX-DQJ3T9HQRllAqAFwCRN8iiGlEw5Is_D2wRDw2guSYdcEW9FAvsdyTtnhmOH7meTdgEzoRKOUpw9jsPm8DG3lr15bpjT2dQxdSPKakRlpTqAGdaojNRTMzIakHQRFZYri6rfzFUA"/>
+</div>
+<div>
+<p class="text-body-sm font-bold">Nguyễn Thu Hà</p>
+<p class="text-label-xs text-on-surface-variant">Kế toán trưởng</p>
+</div>
+</div>
+<div class="flex gap-1">
+<span class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center" title="Quyền Admin"><span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">stars</span></span>
+<span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center" title="Xem báo cáo"><span class="material-symbols-outlined text-[14px] text-green-700">analytics</span></span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male financial analyst in a modern office, wearing a professional navy polo shirt. The background shows a blurry corporate environment with glass walls and professional blue lighting accents. The style is crisp, high-definition, and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWkIDannOo1_zUPXpGhBjsZnpZf_7oVzm8CaKY4gc9Lzqlclnk3JBRh-yApV_0-eDlArD7kWnCc6yDz77xjQeblwaw3sGB9hkFKqu1Pv1lhnIKgzS1d87bzXKf_nAxNqoTR9RkKBA60m6dmoorDFgGW-ZWgpMbx5IhHLgymUqNY92nfBGjXqCObT87rjRHDbIi-PYeY_lJcVkivq44j0-k5ab_xmPLVpAAk56B_lLXLUEDQPmbMYRXtQ"/>
+</div>
+<div>
+<p class="text-body-sm font-bold">Trần Minh Quân</p>
+<p class="text-label-xs text-on-surface-variant">Kế toán tổng hợp</p>
+</div>
+</div>
+<div class="flex gap-1">
+<span class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center" title="Nhập liệu"><span class="material-symbols-outlined text-[14px] text-blue-700">edit_note</span></span>
+<span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center" title="Xem báo cáo"><span class="material-symbols-outlined text-[14px] text-green-700">analytics</span></span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A friendly profile photo of a young professional woman working in a collaborative workspace with lush plants and soft ambient lighting. She represents the approachable yet efficient spirit of the modern VComm ERP user. Colors are warm neutrals with corporate blue highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhm2na7fgP7VcOKQXpym-aEfgGLXX51Zwc1ci86MUwXdvpEJ3i_Qk6GqHd7fDOvVH7wYNvhebk1aw-L73x1Zqwfr2nfLFrQK09FeWZGGLNZwjYujGQ_iL93ee48t7o3LV1MnGvmUCgQaqqJFjMa-P_bdEsOT_TzGQ12mkUB5dDSWXu2WQxTy6BfVVot_RtyGTB_tEYdVEm9z6p891maBuwJWOSkfTggBnzk5ByCPP-lzh44Iqr2pZMjw"/>
+</div>
+<div>
+<p class="text-body-sm font-bold">Lê Thùy Dương</p>
+<p class="text-label-xs text-on-surface-variant">Kế toán viên</p>
+</div>
+</div>
+<div class="flex gap-1">
+<span class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center" title="Nhập liệu"><span class="material-symbols-outlined text-[14px] text-blue-700">edit_note</span></span>
+</div>
+</div>
+<button class="w-full py-3 border-2 border-dashed border-outline-variant rounded-lg text-on-surface-variant text-label-xs font-bold hover:bg-surface-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">person_add</span>
+                                THÊM NGƯỜI DÙNG MỚI
+                            </button>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-4 border-t border-outline-variant bg-surface-container-lowest flex flex-row justify-between items-center px-margin-desktop mt-auto">
+<p class="font-label-xs text-label-xs text-on-surface-variant">© 2024 VComm Enterprise Solution. Hệ thống quản trị tài chính tập trung.</p>
+<div class="flex gap-6">
+<a class="font-label-xs text-label-xs text-on-surface-variant hover:text-primary underline transition-colors" href="#">Điều khoản sử dụng</a>
+<a class="font-label-xs text-label-xs text-on-surface-variant hover:text-primary underline transition-colors" href="#">Chính sách bảo mật</a>
+<a class="font-label-xs text-label-xs text-on-surface-variant hover:text-primary underline transition-colors" href="#">Hướng dẫn nghiệp vụ</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('.glass-card, section').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.05)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+            });
+            card.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+
+        // Search highlight micro-interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+        });
+    </script>
+</body></html>

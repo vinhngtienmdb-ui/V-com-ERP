@@ -1408,12 +1408,12 @@ export function SettingsPage() {
  <div className="space-y-4">
   <h4 className="font-semibold text-slate-900">Màu sắc chủ đạo (Primary Color)</h4>
   <div className="flex gap-4">
-  {(['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate'] as const).map(color => (
+  {(['indigo', 'blue', 'emerald', 'rose', 'amber', 'slate', 'vcomm'] as const).map(color => (
   <button
   key={color}
   onClick={() => setPrimaryColor(color)}
   className={`w-10 h-10 rounded-full flex items-center justify-center ${primaryColor === color ? 'ring-2 ring-offset-2 ring-slate-800' : ''}`}
-  style={{ backgroundColor: `var(--color-${color}-600)` }}
+  style={{ backgroundColor: color === 'vcomm' ? '#003991' : `var(--color-${color}-600)` }}
   >
   {primaryColor === color && <Check className="w-5 h-5 text-white" />}
   </button>
@@ -1427,6 +1427,7 @@ export function SettingsPage() {
   <button onClick={() => setBorderRadius('none')} className={`px-4 py-2 border ${borderRadius === 'none' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-none flex-1 font-medium`}>Sắc cạnh (none)</button>
   <button onClick={() => setBorderRadius('sm')} className={`px-4 py-2 border ${borderRadius === 'sm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-sm flex-1 font-medium`}>Nhẹ (sm)</button>
   <button onClick={() => setBorderRadius('lg')} className={`px-4 py-2 border ${borderRadius === 'lg' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Vừa (lg)</button>
+   <button onClick={() => setBorderRadius('vcomm')} className={`px-4 py-2 border ${borderRadius === 'vcomm' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>VComm Classic</button>
   <button onClick={() => setBorderRadius('xl')} className={`px-4 py-2 border ${borderRadius === 'xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Cong (xl)</button>
   <button onClick={() => setBorderRadius('2xl')} className={`px-4 py-2 border ${borderRadius === '2xl' ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-slate-300'} rounded-lg flex-1 font-medium`}>Rất cong (2xl)</button>
   </div>
