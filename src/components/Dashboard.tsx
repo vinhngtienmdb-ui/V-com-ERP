@@ -212,6 +212,20 @@ const defaultOverviewLayout = {
   ]
 };
 
+
+const modulesList = [
+  { label: 'Hệ thống chính', icon: Settings2, desc: 'Cấu hình lõi và quản trị phân quyền.', path: '/settings' },
+  { label: 'Điều hành & Hệ thống', icon: Activity, desc: 'Workflow và quy trình phối hợp.', path: '/' },
+  { label: 'Hành chính & Ký số', icon: ShieldCheck, desc: 'Quản lý công văn và chữ ký điện tử.', path: '/signature' },
+  { label: 'Kinh doanh Đa kênh', icon: Store, desc: 'Omni-channel sales & CRM.', path: '/vcomm-supermarket' },
+  { label: 'Sản phẩm & Marketing', icon: Package, desc: 'PIM và các chiến dịch quảng bá.', path: '/pim' },
+  { label: 'Chuỗi cung ứng & Kho', icon: ListOrdered, desc: 'Logistics và quản trị tồn kho.', path: '/warehouse' },
+  { label: 'Tài chính & Thanh toán', icon: Wallet, desc: 'Kế toán và quản lý dòng tiền.', path: '/finance' },
+  { label: 'Đối tác & Khách hàng', icon: Users, desc: 'Quản lý Vendor và Loyalty.', path: '/customers' },
+  { label: 'Nhân sự & Tổ chức', icon: Users, desc: 'HRM và cơ cấu doanh nghiệp.', path: '/org' },
+  { label: 'Cấu hình', icon: Settings2, desc: 'Tùy biến tham số và Dashboard.', path: '/settings' }
+];
+
 export function Dashboard() {
  const navigate = useNavigate();
  const { layoutEditable } = usePreferences();
@@ -292,73 +306,83 @@ export function Dashboard() {
  }, []);
 
  return (
- <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
- {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-lg p-6 md:p-6 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
- {/* Decorative background glass circles */}
- <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
- <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
- 
- <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none  group-hover:rotate-6 transition-transform duration-700">
- <BrainCircuit className="w-64 h-64" />
- </div>
- 
- <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 h-full">
- <div className="space-y-4">
- <div className="flex items-center gap-4">
- <div className="bg-white/15 p-3 rounded-lg backdrop-blur-xl border border-white/20 shadow-sm group-hover:rotate-12 transition-transform duration-500">
- <Sparkles className="w-7 h-7 text-blue-200" />
- </div>
- <div>
- <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Trung tâm Trí tuệ</span>
- <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" />
- </div>
- <h2 className="text-3xl font-black tracking-tight leading-none">Trung tâm Điều hành VComm</h2>
- <p className="text-blue-100/60 text-xs font-medium mt-2 max-w-md">Kiến trúc AI-First giúp tối ưu hóa 35% hiệu suất vận hành chuỗi cung ứng.</p>
- </div>
- </div>
- 
- <div className="flex flex-wrap gap-2 pt-2">
- {[
- { icon: Zap, label: 'Dự đoán: BẬT', color: 'text-amber-300' },
- { icon: Store, label: 'Kho vận: TỐT', color: 'text-emerald-400' },
- { icon: Bot, label: 'Omni Agent: HOẠT ĐỘNG', color: 'text-cyan-300' }
- ].map((chip) => (
- <div key={chip.label} className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors">
- <chip.icon className={cn("w-3 h-3", chip.color)} />
- <span className="text-[10px] font-bold tracking-wide uppercase">{chip.label}</span>
- </div>
- ))}
- </div>
- </div>
+  <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
+  
+  {/* Welcome Section */}
+  <div className="flex flex-col md:flex-row justify-between items-end gap-4 pb-4 border-b border-slate-200">
+    <div>
+      <h2 className="text-3xl font-black tracking-tight text-primary-900 font-sans">Chào buổi sáng, {staffInfo?.email || 'admin@vcomm.vn'}</h2>
+      <p className="text-slate-500 mt-1 text-sm font-medium">Hệ thống ghi nhận 12 luồng công việc đang chờ bạn xử lý trong hôm nay.</p>
+    </div>
+    <div className="bg-white border border-slate-300 p-3 rounded-lg flex items-center gap-3 shadow-sm text-xs font-bold text-slate-700">
+      <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+      <span>Hôm nay: {new Date().toLocaleDateString('vi-VN')}</span>
+    </div>
+  </div>
 
- {/* AI Insights Card - Styled to match screenshot */}
- <div className="relative flex-shrink-0 w-full md:w-auto h-full flex items-center md:items-stretch">
- <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-lg border border-white/20 backdrop-blur-2xl shadow-sm w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-slate-900/5 flex flex-col justify-center">
- <div className="flex items-center justify-between mb-4">
- <div className="flex items-center gap-2">
- <div className="p-1 px-2 bg-white/10 rounded border border-white/20">
- <span className="text-[9px] font-black uppercase tracking-widest text-blue-300">AI Đề xuất Ưu tiên</span>
- </div>
- </div>
- <div className="relative flex h-2 w-2">
- <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
- <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
- </div>
- </div>
- 
- <p className="text-xs font-semibold leading-relaxed mb-5 text-slate-300 italic">
- "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
- </p>
- 
- <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
- Thực thi Đề xuất AI
- </button>
- </div>
- </div>
- </div>
- </div>
+  {/* Intelligence Summary Bento Grid */}
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {/* AI Summary Card (col-span-2) */}
+    <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-primary-500 p-6 text-white shadow-sm hover:shadow-md transition-shadow duration-300 group">
+      <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none group-hover:rotate-6 transition-transform duration-700">
+        <BrainCircuit className="w-48 h-48" />
+      </div>
+      <div className="relative z-10 space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-amber-300" />
+          <h3 className="font-bold text-lg">AI Intelligence Summary</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg border border-white/20 flex items-start gap-3">
+            <Bot className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-xs text-white">Dự báo tồn kho: SKU 'V-PHONE-15' đang ở mức báo động</p>
+              <p className="text-[11px] text-blue-100 mt-1">Hệ thống AI đề xuất nhập thêm 500 đơn vị từ Nhà cung cấp A để tối ưu chi phí vận chuyển.</p>
+            </div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg border border-white/20 flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-xs text-white">Đối soát tài chính hoàn tất</p>
+              <p className="text-[11px] text-blue-100 mt-1">Toàn bộ 4,281 đơn hàng Livestream ngày hôm qua đã được đối soát thành công. Không có sai lệch.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Recently Used Card (col-span-1) */}
+    <div className="bg-white border border-slate-300 rounded-lg p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+      <div>
+        <h3 className="font-bold text-slate-900 mb-3 text-sm">Sử dụng gần đây</h3>
+        <div className="space-y-2">
+          {[
+            { label: 'Bảng điều khiển', icon: LayoutDashboard, path: '/' },
+            { label: 'Quản lý sản phẩm', icon: Package, path: '/pim' },
+            { label: 'Quản lý Đơn hàng', icon: ListOrdered, path: '/orders' }
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={() => navigate(item.path)}
+              className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group"
+            >
+              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-primary-600 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
+                <item.icon className="w-4 h-4" />
+              </div>
+              <span className="font-bold text-slate-800 text-xs">{item.label}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-auto text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          ))}
+        </div>
+      </div>
+      <button 
+        onClick={() => navigate('/audit-logs')}
+        className="text-primary-600 text-xs font-bold flex items-center justify-center gap-2 mt-3 hover:underline"
+      >
+        Xem tất cả hoạt động
+      </button>
+    </div>
+  </div>
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
  <div>
  <div className="flex items-center gap-3 mb-2">
@@ -730,9 +754,30 @@ export function Dashboard() {
   </div>
   )}
  </ResponsiveGridLayout>
-  </div>
-  )}
- {activeTab === 'performance' && (
+
+   {/* Core Modules Grid */}
+   <div className="space-y-4 pt-6 border-t border-slate-200">
+     <h3 className="font-bold text-slate-900 text-base">Hệ sinh thái Module Core</h3>
+     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+       {modulesList.map((mod, idx) => (
+         <div 
+           key={idx}
+           onClick={() => navigate(mod.path)}
+           className="group bg-white border border-slate-300 p-5 rounded-lg hover:border-primary-500 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between min-h-[140px] hover:-translate-y-1 duration-300"
+         >
+           <div>
+             <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-primary-600 mb-3 group-hover:bg-primary-600 group-hover:text-white transition-colors">
+               <mod.icon className="w-5 h-5" />
+             </div>
+             <h4 className="font-bold text-xs text-slate-800 mb-1 group-hover:text-primary-700 transition-colors">{mod.label}</h4>
+             <p className="text-[10px] text-slate-500 leading-tight">{mod.desc}</p>
+           </div>
+         </div>
+       ))}
+     </div>
+   </div>
+   </div>
+   {activeTab === 'performance' && (
  <div className="space-y-6 animate-in fade-in slide-in- duration-500">
  
  <ResponsiveGridLayout
