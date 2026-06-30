@@ -550,29 +550,31 @@ html[data-border-radius="2xl"] table {
   border-radius: 16px !important;
 }
 
-/* Default table radius */
+/* Default table styles (Flat design) */
 .erp-modernized div[class*="rounded-"]:has(table),
 .erp-modernized div:has(> table),
 .erp-modernized .table-container,
 .erp-modernized table {
   border-radius: 8px !important;
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .erp-modernized th {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
-  letter-spacing: 0.06em !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
   color: #64748B !important;
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
   background-color: #f8fafc !important;
-  border-bottom: 2px solid #edf2f7 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
 
 .erp-modernized td {
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
   border-bottom: 1px solid #f1f5f9 !important;
-  font-size: 15px !important;
+  font-size: 14px !important;
   color: #334155 !important;
 }
 

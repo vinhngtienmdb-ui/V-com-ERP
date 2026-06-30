@@ -121,7 +121,7 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: any) => (
- <div className={cn("bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:shadow-slate-200/40 transition-all duration-300 group  relative overflow-hidden", color)}>
+ <div className={cn("bg-white p-4 rounded-lg border border-slate-300 hover:border-slate-400 transition-all duration-300 group  relative overflow-hidden", color)}>
  <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500  pointer-events-none">
  <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
  </div>
@@ -152,10 +152,10 @@ const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any
  <button 
  onClick={onClick}
  className={cn(
- "relative group overflow-hidden p-6 rounded-lg border transition-all duration-300 hover:shadow-sm text-left",
- color === 'bg-slate-900' ? "bg-white border-slate-900 hover:shadow-slate-900/5" : 
- color === 'bg-emerald-600' ? "bg-white border-emerald-500 hover:shadow-emerald-500/30" : 
- "bg-white border-slate-700 hover:shadow-slate-900/30"
+ "relative group overflow-hidden p-4 rounded-lg border transition-all duration-300 text-left",
+ color === 'bg-slate-900' ? "bg-white border-slate-900 hover:border-slate-700" : 
+ color === 'bg-emerald-600' ? "bg-white border-emerald-500 hover:border-emerald-600" : 
+ "bg-white border-slate-700 hover:border-slate-800"
  )}
  >
  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
@@ -322,9 +322,9 @@ export function Dashboard() {
   </div>
 
   {/* Intelligence Summary Bento Grid */}
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
     {/* AI Summary Card (col-span-2) */}
-    <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-primary-500 p-4 md:p-5 text-white shadow-sm hover:shadow-md transition-shadow duration-300 group">
+    <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-primary-500 p-4 text-white hover:bg-primary-600 transition-colors duration-300 group">
       <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none group-hover:rotate-6 transition-transform duration-700">
         <BrainCircuit className="w-40 h-40" />
       </div>
@@ -353,7 +353,7 @@ export function Dashboard() {
     </div>
 
     {/* Recently Used Card (col-span-1) */}
-    <div className="bg-white border border-slate-300 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+    <div className="bg-white border border-slate-300 rounded-lg p-4 flex flex-col justify-between hover:border-slate-400 transition-all duration-300">
       <div>
         <h3 className="font-bold text-slate-900 mb-2.5 text-xs uppercase tracking-wider text-slate-500">Sử dụng gần đây</h3>
         <div className="space-y-1.5">
