@@ -322,30 +322,30 @@ export function Dashboard() {
   </div>
 
   {/* Intelligence Summary Bento Grid */}
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
     {/* AI Summary Card (col-span-2) */}
-    <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-primary-500 p-6 text-white shadow-sm hover:shadow-md transition-shadow duration-300 group">
-      <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none group-hover:rotate-6 transition-transform duration-700">
-        <BrainCircuit className="w-48 h-48" />
+    <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-primary-500 p-4 md:p-5 text-white shadow-sm hover:shadow-md transition-shadow duration-300 group">
+      <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none group-hover:rotate-6 transition-transform duration-700">
+        <BrainCircuit className="w-40 h-40" />
       </div>
-      <div className="relative z-10 space-y-4">
+      <div className="relative z-10 space-y-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-300" />
-          <h3 className="font-bold text-lg">AI Intelligence Summary</h3>
+          <Sparkles className="w-4.5 h-4.5 text-amber-300" />
+          <h3 className="font-bold text-base">AI Intelligence Summary</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg border border-white/20 flex items-start gap-3">
-            <Bot className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
+          <div className="bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/20 flex items-start gap-2.5">
+            <Bot className="w-4.5 h-4.5 text-amber-300 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-xs text-white">Dự báo tồn kho: SKU 'V-PHONE-15' đang ở mức báo động</p>
-              <p className="text-[11px] text-blue-100 mt-1">Hệ thống AI đề xuất nhập thêm 500 đơn vị từ Nhà cung cấp A để tối ưu chi phí vận chuyển.</p>
+              <p className="font-bold text-xs text-white">Dự báo tồn kho: SKU 'V-PHONE-15' đang ở mức báo động</p>
+              <p className="text-[11px] text-blue-100 mt-0.5 leading-relaxed">Hệ thống AI đề xuất nhập thêm 500 đơn vị từ Nhà cung cấp A để tối ưu chi phí vận chuyển.</p>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg border border-white/20 flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0 mt-0.5" />
+          <div className="bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/20 flex items-start gap-2.5">
+            <CheckCircle2 className="w-4.5 h-4.5 text-emerald-300 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-xs text-white">Đối soát tài chính hoàn tất</p>
-              <p className="text-[11px] text-blue-100 mt-1">Toàn bộ 4,281 đơn hàng Livestream ngày hôm qua đã được đối soát thành công. Không có sai lệch.</p>
+              <p className="font-bold text-xs text-white">Đối soát tài chính hoàn tất</p>
+              <p className="text-[11px] text-blue-100 mt-0.5 leading-relaxed">Toàn bộ 4,281 đơn hàng Livestream ngày hôm qua đã được đối soát thành công. Không có sai lệch.</p>
             </div>
           </div>
         </div>
@@ -353,10 +353,10 @@ export function Dashboard() {
     </div>
 
     {/* Recently Used Card (col-span-1) */}
-    <div className="bg-white border border-slate-300 rounded-lg p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+    <div className="bg-white border border-slate-300 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
       <div>
-        <h3 className="font-bold text-slate-900 mb-3 text-sm">Sử dụng gần đây</h3>
-        <div className="space-y-2">
+        <h3 className="font-bold text-slate-900 mb-2.5 text-xs uppercase tracking-wider text-slate-500">Sử dụng gần đây</h3>
+        <div className="space-y-1.5">
           {[
             { label: 'Bảng điều khiển', icon: LayoutDashboard, path: '/' },
             { label: 'Quản lý sản phẩm', icon: Package, path: '/pim' },
@@ -365,20 +365,20 @@ export function Dashboard() {
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group"
+              className="w-full flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group"
             >
-              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-primary-600 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
-                <item.icon className="w-4 h-4" />
+              <div className="w-7 h-7 bg-slate-100 rounded-lg flex items-center justify-center text-primary-600 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
+                <item.icon className="w-3.5 h-3.5" />
               </div>
               <span className="font-bold text-slate-800 text-xs">{item.label}</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-auto text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3 h-3 ml-auto text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           ))}
         </div>
       </div>
       <button 
         onClick={() => navigate('/audit-logs')}
-        className="text-primary-600 text-xs font-bold flex items-center justify-center gap-2 mt-3 hover:underline"
+        className="text-primary-600 text-xs font-bold flex items-center justify-center gap-2 mt-2.5 hover:underline"
       >
         Xem tất cả hoạt động
       </button>

@@ -20,6 +20,10 @@ interface PreferencesContextType {
  setHolidayTheme: (theme: HolidayTheme) => void;
  layoutEditable: boolean;
  setLayoutEditable: (editable: boolean) => void;
+ fontSize: 'standard' | 'large';
+ setFontSize: (size: 'standard' | 'large') => void;
+ cardDensity: 'comfortable' | 'compact';
+ setCardDensity: (density: 'comfortable' | 'compact') => void;
 }
 
 const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);
@@ -53,6 +57,14 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
  return safeLocalStorage.getItem('app_layout_editable') === 'true';
  });
 
+ const [fontSize, setFontSize] = useState<'standard' | 'large'>(() => {
+  return (safeLocalStorage.getItem('app_font_size') as any) || 'large';
+ });
+
+ const [cardDensity, setCardDensity] = useState<'comfortable' | 'compact'>(() => {
+  return (safeLocalStorage.getItem('app_card_density') as any) || 'compact';
+ });
+
  useEffect(() => {
  safeLocalStorage.setItem('app_theme', theme);
  document.documentElement.setAttribute('data-theme', theme);
@@ -81,6 +93,16 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
  safeLocalStorage.setItem('app_layout_editable', String(layoutEditable));
  }, [layoutEditable]);
 
+ useEffect(() => {
+  safeLocalStorage.setItem('app_font_size', fontSize);
+  document.documentElement.setAttribute('data-font-size', fontSize);
+ }, [fontSize]);
+
+ useEffect(() => {
+  safeLocalStorage.setItem('app_card_density', cardDensity);
+  document.documentElement.setAttribute('data-card-density', cardDensity);
+ }, [cardDensity]);
+
  return (
  <PreferencesContext.Provider value={{
   theme, setTheme,
@@ -88,7 +110,9 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
   primaryColor, setPrimaryColor,
   borderRadius, setBorderRadius,
   holidayTheme, setHolidayTheme,
-  layoutEditable, setLayoutEditable
+  layoutEditable, setLayoutEditable,
+  fontSize, setFontSize,
+  cardDensity, setCardDensity
  }}>
   {children}
  </PreferencesContext.Provider>

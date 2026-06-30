@@ -500,7 +500,57 @@ table th, table td {
   background-color: #ffffff !important;
 }
 
-/* 8. Table Aesthetics Restyled */
+/* 8. Table Aesthetics Restyled & Dynamically Controlled */
+html[data-border-radius="none"] div[class*="rounded-"]:has(table),
+html[data-border-radius="none"] div:has(> table),
+html[data-border-radius="none"] .table-container,
+html[data-border-radius="none"] table {
+  border-radius: 0px !important;
+}
+
+html[data-border-radius="sm"] div[class*="rounded-"]:has(table),
+html[data-border-radius="sm"] div:has(> table),
+html[data-border-radius="sm"] .table-container,
+html[data-border-radius="sm"] table {
+  border-radius: 4px !important;
+}
+
+html[data-border-radius="md"] div[class*="rounded-"]:has(table),
+html[data-border-radius="md"] div:has(> table),
+html[data-border-radius="md"] .table-container,
+html[data-border-radius="md"] table {
+  border-radius: 6px !important;
+}
+
+html[data-border-radius="lg"] div[class*="rounded-"]:has(table),
+html[data-border-radius="lg"] div:has(> table),
+html[data-border-radius="lg"] .table-container,
+html[data-border-radius="lg"] table {
+  border-radius: 8px !important;
+}
+
+html[data-border-radius="vcomm"] div[class*="rounded-"]:has(table),
+html[data-border-radius="vcomm"] div:has(> table),
+html[data-border-radius="vcomm"] .table-container,
+html[data-border-radius="vcomm"] table {
+  border-radius: 8px !important;
+}
+
+html[data-border-radius="xl"] div[class*="rounded-"]:has(table),
+html[data-border-radius="xl"] div:has(> table),
+html[data-border-radius="xl"] .table-container,
+html[data-border-radius="xl"] table {
+  border-radius: 12px !important;
+}
+
+html[data-border-radius="2xl"] div[class*="rounded-"]:has(table),
+html[data-border-radius="2xl"] div:has(> table),
+html[data-border-radius="2xl"] .table-container,
+html[data-border-radius="2xl"] table {
+  border-radius: 16px !important;
+}
+
+/* Default table radius */
 .erp-modernized div[class*="rounded-"]:has(table),
 .erp-modernized div:has(> table),
 .erp-modernized .table-container,
@@ -530,7 +580,53 @@ table th, table td {
   background-color: rgba(248, 250, 252, 0.5) !important;
 }
 
+/* Dynamic Typography Scaling */
+html[data-font-size="large"] {
+  --text-xs: 13px !important;
+  --text-sm: 15px !important;
+  --text-base: 17px !important;
+  --text-lg: 19px !important;
+  --text-xl: 21px !important;
+  --text-2xl: 25px !important;
+  --text-3xl: 32px !important;
+}
+
+html[data-font-size="standard"] {
+  --text-xs: 12px !important;
+  --text-sm: 14px !important;
+  --text-base: 16px !important;
+  --text-lg: 18px !important;
+  --text-xl: 20px !important;
+  --text-2xl: 24px !important;
+  --text-3xl: 30px !important;
+}
+
 /* Stat Cards / Flash Cards size reduction */
+html[data-card-density="compact"] .stat-card,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl),
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) {
+  padding: 14px !important;
+}
+
+html[data-card-density="compact"] .stat-card .icon-wrapper,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-12.h-12,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-12.h-12,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-11.h-11,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-11.h-11,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-10.h-10,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-10.h-10 {
+  width: 38px !important;
+  height: 38px !important;
+}
+
+html[data-card-density="compact"] .stat-card .stat-value,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg) .text-3xl,
+html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg) .text-2xl {
+  font-size: 1.35rem !important;
+  line-height: 1.75rem !important;
+}
+
+/* Also apply by default if erp-modernized is active and cardDensity is set */
 .erp-modernized .stat-card,
 .erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl),
 .erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) {

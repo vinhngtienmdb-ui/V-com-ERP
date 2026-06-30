@@ -12,7 +12,19 @@ import { useStore } from '../context/StoreContext';
 export function Header() {
   const { staffInfo } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
-  const { language, layoutEditable, setLayoutEditable } = usePreferences();
+  const { 
+    language, 
+    layoutEditable, 
+    setLayoutEditable, 
+    fontSize, 
+    setFontSize, 
+    cardDensity, 
+    setCardDensity, 
+    borderRadius, 
+    setBorderRadius, 
+    primaryColor, 
+    setPrimaryColor 
+  } = usePreferences();
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showViewSettings, setShowViewSettings] = useState(false);
@@ -88,47 +100,140 @@ export function Header() {
              <LayoutTemplate className="w-4.5 h-4.5" />
            </button>
 
-           {showViewSettings && (
-             <div className="absolute right-0 mt-3 w-64 bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden animate-in fade-in slide-in- duration-300 z-50">
-               <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-                 <h3 className="font-bold text-slate-900">Hiển thị Bảng/Biểu</h3>
-               </div>
-               <div className="p-4 space-y-4">
-                  <label className="flex items-center justify-between cursor-pointer">
-                     <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        {hideCharts ? <EyeOff className="w-4 h-4 text-slate-500" /> : <Eye className="w-4 h-4 text-orange-600" />}
-                        Biểu đồ hệ thống
-                     </span>
-                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideCharts ? 'bg-orange-600' : 'bg-slate-300'}`}>
-                        <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideCharts ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                     </div>
-                     <input type="checkbox" className="sr-only" checked={!hideCharts} onChange={() => setHideCharts(!hideCharts)} />
-                  </label>
+            {showViewSettings && (
+              <div className="absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden animate-in fade-in slide-in- duration-300 z-50">
+                <div className="p-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+                  <h3 className="font-bold text-slate-900 text-sm">Hiển thị Bảng/Biểu</h3>
+                </div>
+                <div className="p-3.5 space-y-3.5">
+                   <label className="flex items-center justify-between cursor-pointer">
+                      <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                         {hideCharts ? <EyeOff className="w-3.5 h-3.5 text-slate-500" /> : <Eye className="w-3.5 h-3.5 text-orange-600" />}
+                         Biểu đồ hệ thống
+                      </span>
+                      <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideCharts ? 'bg-orange-600' : 'bg-slate-300'}`}>
+                         <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideCharts ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                      </div>
+                      <input type="checkbox" className="sr-only" checked={!hideCharts} onChange={() => setHideCharts(!hideCharts)} />
+                   </label>
 
-                  <label className="flex items-center justify-between cursor-pointer">
-                     <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        {hideTables ? <EyeOff className="w-4 h-4 text-slate-500" /> : <Eye className="w-4 h-4 text-primary-600" />}
-                        Bảng dữ liệu báo cáo
-                     </span>
-                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideTables ? 'bg-primary-600' : 'bg-slate-300'}`}>
-                        <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideTables ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                     </div>
-                     <input type="checkbox" className="sr-only" checked={!hideTables} onChange={() => setHideTables(!hideTables)} />
-                  </label>
+                   <label className="flex items-center justify-between cursor-pointer">
+                      <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                         {hideTables ? <EyeOff className="w-3.5 h-3.5 text-slate-500" /> : <Eye className="w-3.5 h-3.5 text-primary-600" />}
+                         Bảng dữ liệu báo cáo
+                      </span>
+                      <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${!hideTables ? 'bg-primary-600' : 'bg-slate-300'}`}>
+                         <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${!hideTables ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                      </div>
+                      <input type="checkbox" className="sr-only" checked={!hideTables} onChange={() => setHideTables(!hideTables)} />
+                   </label>
 
-                  <label className="flex items-center justify-between cursor-pointer">
-                     <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        {layoutEditable ? <Eye className="w-4 h-4 text-emerald-600" /> : <EyeOff className="w-4 h-4 text-slate-500" />}
-                        Sắp xếp thẻ báo cáo
-                     </span>
-                     <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${layoutEditable ? 'bg-emerald-600' : 'bg-slate-300'}`}>
-                        <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${layoutEditable ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                     </div>
-                     <input type="checkbox" className="sr-only" checked={layoutEditable} onChange={() => setLayoutEditable(!layoutEditable)} />
-                  </label>
-               </div>
-             </div>
-           )}
+                   <label className="flex items-center justify-between cursor-pointer">
+                      <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                         {layoutEditable ? <Eye className="w-3.5 h-3.5 text-emerald-600" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
+                         Sắp xếp thẻ báo cáo
+                      </span>
+                      <div className={`w-10 h-5 rounded-full p-0.5 transition-colors ${layoutEditable ? 'bg-emerald-600' : 'bg-slate-300'}`}>
+                         <div className={`bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${layoutEditable ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                      </div>
+                      <input type="checkbox" className="sr-only" checked={layoutEditable} onChange={() => setLayoutEditable(!layoutEditable)} />
+                   </label>
+                </div>
+
+                <div className="p-3 border-t border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+                  <h3 className="font-bold text-slate-900 text-sm">Stitch Design Tuning</h3>
+                </div>
+
+                <div className="p-3.5 space-y-3.5 text-left">
+                  {/* Font Size Selector */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Cỡ chữ hệ thống</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <button
+                        onClick={() => setFontSize('standard')}
+                        className={`py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                          fontSize === 'standard'
+                            ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        Tiêu chuẩn
+                      </button>
+                      <button
+                        onClick={() => setFontSize('large')}
+                        className={`py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                          fontSize === 'large'
+                            ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        Chữ lớn
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Card Density Selector */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Mật độ Stat Cards</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <button
+                        onClick={() => setCardDensity('comfortable')}
+                        className={`py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                          cardDensity === 'comfortable'
+                            ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        Rộng rãi
+                      </button>
+                      <button
+                        onClick={() => setCardDensity('compact')}
+                        className={`py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                          cardDensity === 'compact'
+                            ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        Thu gọn
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Border Radius Selector */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Độ bo góc bảng biểu</span>
+                    <select
+                      value={borderRadius}
+                      onChange={(e: any) => setBorderRadius(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    >
+                      <option value="none">Không bo góc (0px)</option>
+                      <option value="sm">Cực kỳ sắc nét (4px)</option>
+                      <option value="vcomm">VComm Standard (8px)</option>
+                      <option value="xl">Trung bình (12px)</option>
+                      <option value="2xl">Tròn trịa (16px)</option>
+                    </select>
+                  </div>
+
+                  {/* Primary Color Selector */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Màu chủ đạo hệ thống</span>
+                    <select
+                      value={primaryColor}
+                      onChange={(e: any) => setPrimaryColor(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    >
+                      <option value="vcomm">VComm Blue</option>
+                      <option value="blue">Blue (Standard)</option>
+                      <option value="emerald">Emerald Green</option>
+                      <option value="rose">Rose Red</option>
+                      <option value="amber">Amber Yellow</option>
+                      <option value="slate">Slate Gray</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
          </div>
 
          <div className="relative" ref={dropdownRef}>
