@@ -25,6 +25,14 @@
   --color-primary-700: var(--app-primary-700);
   --color-primary-800: var(--app-primary-800);
   --color-primary-900: var(--app-primary-900);
+
+  --text-xs: 13px;
+  --text-sm: 15px;
+  --text-base: 17px;
+  --text-lg: 19px;
+  --text-xl: 21px;
+  --text-2xl: 25px;
+  --text-3xl: 32px;
 }
 
 :root {
@@ -493,6 +501,7 @@ table th, table td {
 }
 
 /* 8. Table Aesthetics Restyled */
+.erp-modernized div[class*="rounded-"]:has(table),
 .erp-modernized div:has(> table),
 .erp-modernized .table-container,
 .erp-modernized table {
@@ -523,18 +532,25 @@ table th, table td {
 
 /* Stat Cards / Flash Cards size reduction */
 .erp-modernized .stat-card,
-.erp-modernized div.bg-white.rounded-xl.shadow-sm.border.p-6 {
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl),
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) {
   padding: 16px !important;
 }
 
 .erp-modernized .stat-card .icon-wrapper,
-.erp-modernized div.bg-white.rounded-xl.shadow-sm.border.p-6 .w-12.h-12 {
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-12.h-12,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-12.h-12,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-11.h-11,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-11.h-11,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-2xl) .w-10.h-10,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg):has(.text-3xl) .w-10.h-10 {
   width: 40px !important;
   height: 40px !important;
 }
 
 .erp-modernized .stat-card .stat-value,
-.erp-modernized div.bg-white.rounded-xl.shadow-sm.border.p-6 .text-3xl {
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg) .text-3xl,
+.erp-modernized div[class*="bg-white"][class*="p-"]:has(svg) .text-2xl {
   font-size: 1.5rem !important;
   line-height: 2rem !important;
 }
