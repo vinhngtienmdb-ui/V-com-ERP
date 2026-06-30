@@ -15,11 +15,13 @@ import {
  Loader2,
  ShieldAlert
 } from 'lucide-react';
+import { ResizableTh } from './ui/ResizableTh';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { db, collection, getDocs, doc, updateDoc, serverTimestamp } from '../lib/firebase';
+import { useTableColumns, ColumnDef } from '../hooks/useTableColumns';
 
 const INITIAL_SIGNATURES = [
   { id: 'SIGN-001', docId: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'contract', requestDate: '25/03/2024', status: 'pending', requesters: 'Phòng Nhân sự' },
@@ -46,6 +48,34 @@ export function SignatureHub() {
   const [privateKeyInput, setPrivateKeyInput] = useState('');
   const [isSigningInProcess, setIsSigningInProcess] = useState(false);
 
+  // Drag and drop states for signature
+  const [stampPos, setStampPos] = useState({ x: 180, y: 40 });
+  const [isDraggingStamp, setIsDraggingStamp] = useState(false);
+  const canvasContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleStampMouseDown = (e: React.MouseEvent) => {
+    setIsDraggingStamp(true);
+    e.preventDefault();
+  };
+
+  const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingStamp || !canvasContainerRef.current) return;
+    const rect = canvasContainerRef.current.getBoundingClientRect();
+    const x = Math.min(Math.max(0, e.clientX - rect.left - 65), rect.width - 130);
+    const y = Math.min(Math.max(0, e.clientY - rect.top - 30), rect.height - 60);
+    setStampPos({ x, y });
+  };
+
+  const handleCanvasMouseUp = () => {
+    setIsDraggingStamp(false);
+  };
+
+  // Upload verification states
+  const [verificationFile, setVerificationFile] = useState<any>(null);
+  const [isVerifyingUpload, setIsVerifyingUpload] = useState(false);
+  const [uploadVerifyResult, setUploadVerifyResult] = useState<any>(null);
+  const [verificationFileStatus, setVerificationFileStatus] = useState<'verified' | 'tampered' | null>(null);
+
   // Verification States
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
   const [verifyingDoc, setVerifyingDoc] = useState<any>(null);
@@ -61,6 +91,28 @@ export function SignatureHub() {
 
   const userEmail = user?.email || 'admin@vcomm-erp.vn';
   const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+
+  // Table Columns Setup
+  const sigListColumns: ColumnDef[] = [
+    { id: 'id', label: 'Mã trình ký', initialWidth: 150 },
+    { id: 'ref', label: 'Tài liệu tham chiếu', initialWidth: 250 },
+    { id: 'type', label: 'Phân loại', initialWidth: 120 },
+    { id: 'flow', label: 'Tiến trình ký & Phân quyền', initialWidth: 250 },
+    { id: 'status', label: 'Trạng thái', initialWidth: 120 },
+    { id: 'date', label: 'Ngày', initialWidth: 150 }
+  ];
+  const { columns: listCols, handleResize: handleListResize, getPinOffset: getListPinOffset } = useTableColumns('sigList', sigListColumns);
+
+  const sigLogColumns: ColumnDef[] = [
+    { id: 'time', label: 'Thời gian', initialWidth: 180 },
+    { id: 'action', label: 'Thao tác', initialWidth: 200 },
+    { id: 'user', label: 'Người thực hiện', initialWidth: 150 },
+    { id: 'ip', label: 'IP & Thiết bị', initialWidth: 200 }
+  ];
+  const { columns: logCols, handleResize: handleLogResize, getPinOffset: getLogPinOffset } = useTableColumns('sigLogs', sigLogColumns);
+
+  // Batch Signing States
+  const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
 
   // Load signatures, certificates, keypair, and logs
   const fetchData = async () => {
@@ -339,6 +391,38 @@ export function SignatureHub() {
 
   const uniqueRequesters = Array.from(new Set(signatures.map(s => s.requesters)));
 
+  const handleToggleSelectDoc = (docId: string) => {
+    const newSet = new Set(selectedDocs);
+    if (newSet.has(docId)) newSet.delete(docId);
+    else newSet.add(docId);
+    setSelectedDocs(newSet);
+  };
+
+  const pendingDocs = filteredSignatures.filter(d => d.status === 'pending');
+  const handleSelectAllDocs = () => {
+    if (selectedDocs.size === pendingDocs.length && pendingDocs.length > 0) {
+      setSelectedDocs(new Set());
+    } else {
+      setSelectedDocs(new Set(pendingDocs.map(d => d.id)));
+    }
+  };
+
+  const handleBatchSignClick = () => {
+    if (selectedDocs.size === 0) return;
+    const firstDoc = signatures.find(d => selectedDocs.has(d.id));
+    if (firstDoc) {
+      setSelectedDoc({
+        ...firstDoc,
+        title: `Ký theo lô (${selectedDocs.size} tài liệu)`,
+        docId: Array.from(selectedDocs).join(','),
+        type: 'batch'
+      });
+      const storedKey = localStorage.getItem(`vcomm_private_key_${userEmail}`);
+      if (storedKey) setPrivateKeyInput(storedKey);
+      setSigningModalOpen(true);
+    }
+  };
+
   return (
     <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
       <div className="flex items-center justify-between">
@@ -367,28 +451,28 @@ export function SignatureHub() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="group bg-white border border-slate-300 p-6 rounded-lg shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="group bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8" />
           <div className="relative z-10">
             <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chờ tôi ký</h3>
-            <p className="text-4xl font-bold text-slate-900">{signatures.filter(s => s.status === 'pending').length}</p>
+            <p className="text-3xl font-bold text-slate-900">{signatures.filter(s => s.status === 'pending').length}</p>
             <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-amber-600">
               <Clock className="w-3 h-3" /> Cần xử lý gấp
             </div>
           </div>
         </div>
-        <div className="group bg-white border border-slate-300 p-6 rounded-lg shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
+        <div className="group bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8" />
           <div className="relative z-10">
             <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
-            <p className="text-4xl font-bold text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
+            <p className="text-3xl font-bold text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
             <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-primary-600">
               <CheckCircle2 className="w-3 h-3" /> Lưu trữ an toàn
             </div>
           </div>
         </div>
-        <div className="group bg-slate-900 p-6 rounded-lg shadow-sm relative overflow-hidden lg:col-span-2">
+        <div className="group bg-slate-900 p-4 rounded-xl shadow-sm relative overflow-hidden lg:col-span-2">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12" />
           <div className="relative z-10 flex justify-between items-center h-full">
             <div>
@@ -407,13 +491,15 @@ export function SignatureHub() {
         </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex gap-4">
         {/* Sidebar Tabs */}
         <div className="w-[240px] shrink-0 space-y-1">
           {[
             { id: 'pending', label: 'Chờ tôi ký', icon: Clock },
             { id: 'signed', label: 'Đã ký / Lịch sử', icon: CheckCircle2 },
+            { id: 'verify', label: 'Xác minh Tài liệu', icon: ShieldCheck },
             { id: 'certificates', label: 'Quản lý Chứng thư số', icon: Key },
+            { id: 'seals', label: 'Quản lý Con dấu', icon: Building2 },
             { id: 'permissions', label: 'Phân quyền Ký số', icon: UserCheck },
             { id: 'logs', label: 'Nhật ký hệ thống', icon: Lock },
           ].map(tab => (
@@ -481,24 +567,43 @@ export function SignatureHub() {
                 <button onClick={fetchData} className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-lg shadow-sm shrink-0">
                   <RefreshCw className="w-4 h-4" />
                 </button>
+                {activeTab === 'pending' && selectedDocs.size > 0 && (
+                  <button 
+                    onClick={handleBatchSignClick}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 shrink-0 flex items-center gap-2"
+                  >
+                    <Key className="w-4 h-4" />
+                    Ký Lô ({selectedDocs.size})
+                  </button>
+                )}
               </div>
 
               <div className="p-0 overflow-auto">
-                <table className="w-full text-left border-collapse whitespace-nowrap">
+                <table className="w-max min-w-full text-left border-collapse whitespace-nowrap">
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ngày</th>
-                      <th className="px-4 py-3"></th>
+                      {activeTab === 'pending' && (
+                        <th className="px-4 py-3 w-10 text-center">
+                          <input type="checkbox" checked={selectedDocs.size === pendingDocs.length && pendingDocs.length > 0} onChange={handleSelectAllDocs} className="rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
+                        </th>
+                      )}
+                      <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'ref')?.currentWidth} onResize={(w) => handleListResize('ref', w)} isPinned={listCols.find(c => c.id === 'ref')?.isPinned} pinOffset={getListPinOffset('ref')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'date')?.currentWidth} onResize={(w) => handleListResize('date', w)} isPinned={listCols.find(c => c.id === 'date')?.isPinned} pinOffset={getListPinOffset('date')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ngày</ResizableTh>
+                      <th className="px-4 py-3 w-10"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredSignatures.map(doc => (
                       <tr key={doc.id} className="hover:bg-slate-50 transition-colors">
+                        {activeTab === 'pending' && (
+                          <td className="px-4 py-3 text-center">
+                            <input type="checkbox" checked={selectedDocs.has(doc.id)} onChange={() => handleToggleSelectDoc(doc.id)} className="rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
+                          </td>
+                        )}
                         <td className="px-4 py-3">
                           <p className="text-[13px] font-bold text-slate-900">{doc.id}</p>
                         </td>
@@ -578,6 +683,61 @@ export function SignatureHub() {
                 </table>
               </div>
             </>
+          )}
+
+          {activeTab === 'seals' && (
+            <div className="p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Quản lý Con dấu (Seal Management)</h3>
+                  <p className="text-xs text-slate-600 mt-1">Quản lý con dấu mộc đỏ, chữ ký lãnh đạo và vị trí ký mặc định (Visual Signature Placement).</p>
+                </div>
+                <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Thêm con dấu mới
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col group">
+                  <div className="bg-slate-100 h-32 flex items-center justify-center p-4 relative">
+                    <div className="w-24 h-24 border-4 border-red-600 rounded-full flex items-center justify-center text-red-600 font-bold text-center transform -rotate-12 opacity-80">
+                      <span className="text-[10px] uppercase leading-tight">Công ty Cổ phần<br/>VComm<br/>MDB</span>
+                    </div>
+                    <div className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button className="bg-white text-slate-900 px-3 py-1.5 rounded text-xs font-bold shadow-sm">Visual Placement</button>
+                    </div>
+                  </div>
+                  <div className="p-4 flex-1">
+                    <h4 className="font-bold text-slate-900">Mộc tròn Công ty (MDB)</h4>
+                    <p className="text-xs text-slate-500 mt-1">Con dấu chính thức của pháp nhân. Được sử dụng cho Hợp đồng và Văn bản đi.</p>
+                    <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-slate-600">
+                      <span>Người giữ dấu:</span>
+                      <span className="bg-slate-100 px-2 py-1 rounded">Văn thư</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col group">
+                  <div className="bg-slate-100 h-32 flex items-center justify-center p-4 relative">
+                    <div className="text-blue-800 font-cursive text-2xl opacity-80 transform -rotate-6">
+                      Nguyễn Văn A
+                    </div>
+                    <div className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button className="bg-white text-slate-900 px-3 py-1.5 rounded text-xs font-bold shadow-sm">Visual Placement</button>
+                    </div>
+                  </div>
+                  <div className="p-4 flex-1">
+                    <h4 className="font-bold text-slate-900">Chữ ký mẫu - CEO</h4>
+                    <p className="text-xs text-slate-500 mt-1">Sử dụng cho trình ký nội bộ, đính kèm kèm con dấu công ty.</p>
+                    <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-slate-600">
+                      <span>Quyền sử dụng:</span>
+                      <span className="bg-slate-100 px-2 py-1 rounded">Nguyễn Văn A</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {activeTab === 'permissions' && (
@@ -678,13 +838,13 @@ export function SignatureHub() {
                 <p className="text-xs text-slate-600 mt-1">Lưu trữ lịch sử thao tác, xác thực và ký số trên toàn hệ thống.</p>
               </div>
               <div className="overflow-auto max-h-[500px]">
-                <table className="w-full text-left whitespace-nowrap">
+                <table className="w-max min-w-full text-left whitespace-nowrap">
                   <thead className="bg-slate-50 sticky top-0">
                     <tr>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thời gian</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thao tác</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Người thực hiện</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">IP & Thiết bị</th>
+                      <ResizableTh width={logCols.find(c => c.id === 'time')?.currentWidth} onResize={(w) => handleLogResize('time', w)} className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thời gian</ResizableTh>
+                      <ResizableTh width={logCols.find(c => c.id === 'action')?.currentWidth} onResize={(w) => handleLogResize('action', w)} className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thao tác</ResizableTh>
+                      <ResizableTh width={logCols.find(c => c.id === 'user')?.currentWidth} onResize={(w) => handleLogResize('user', w)} className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Người thực hiện</ResizableTh>
+                      <ResizableTh width={logCols.find(c => c.id === 'ip')?.currentWidth} onResize={(w) => handleLogResize('ip', w)} className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">IP & Thiết bị</ResizableTh>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -698,6 +858,145 @@ export function SignatureHub() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'verify' && (
+            <div className="p-6 space-y-6">
+              <div className="border-b border-slate-200 pb-3">
+                <h3 className="text-lg font-bold text-slate-900">Xác minh Tính toàn vẹn Tài liệu</h3>
+                <p className="text-xs text-slate-600 mt-1">Tải lên tệp đã ký số để đối chiếu chứng thư và phát hiện tài liệu có bị chỉnh sửa hay không.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Upload File Section */}
+                <div className="space-y-4">
+                  <div 
+                    onClick={() => {
+                      setIsVerifyingUpload(true);
+                      setUploadVerifyResult(null);
+                      setVerificationFileStatus(null);
+                      setTimeout(() => {
+                        setIsVerifyingUpload(false);
+                        setVerificationFile({ name: 'Hop_dong_B2B_VComm_signed.pdf', size: '1.4 MB' });
+                        setVerificationFileStatus('verified');
+                        setUploadVerifyResult({
+                          hash: '7a8b9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b',
+                          signer: 'Nguyễn Văn A (Tổng Giám Đốc)',
+                          date: new Date().toLocaleString('vi-VN'),
+                          ca: 'VComm CA Root Certification Authority',
+                          serialNumber: '5409384918239401'
+                        });
+                      }, 1200);
+                    }}
+                    className="border-2 border-dashed border-slate-300 hover:border-primary-500 rounded-xl p-8 text-center bg-slate-50 hover:bg-slate-100/50 cursor-pointer transition-colors flex flex-col items-center justify-center min-h-[220px]"
+                  >
+                    {isVerifyingUpload ? (
+                      <>
+                        <RefreshCw className="w-10 h-10 text-primary-500 animate-spin mb-3" />
+                        <p className="text-sm font-bold text-slate-800">Đang băm SHA-256 & truy vết blockchain...</p>
+                      </>
+                    ) : verificationFile ? (
+                      <>
+                        <ShieldCheck className="w-10 h-10 text-emerald-500 mb-3" />
+                        <p className="text-sm font-bold text-slate-800">{verificationFile.name}</p>
+                        <p className="text-xs text-slate-500 mt-1">{verificationFile.size} • Đã quét hoàn tất</p>
+                        <button className="mt-4 px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm">Tải lên tệp khác</button>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-10 h-10 text-slate-400 mb-3" />
+                        <p className="text-sm font-bold text-slate-800">Kéo thả tệp PDF đã ký vào đây</p>
+                        <p className="text-xs text-slate-500 mt-1">Hỗ trợ đối chiếu ký số doanh nghiệp</p>
+                        <button className="mt-4 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded text-xs font-bold transition-all shadow-sm">Chọn tệp từ máy</button>
+                      </>
+                    )}
+                  </div>
+
+                  {verificationFile && (
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setVerificationFileStatus('verified');
+                        }}
+                        className={cn("px-4 py-1.5 text-xs font-bold rounded-lg border", verificationFileStatus === 'verified' ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-white text-slate-700 border-slate-300")}
+                      >
+                        Mô phỏng Khớp chữ ký
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setVerificationFileStatus('tampered');
+                        }}
+                        className={cn("px-4 py-1.5 text-xs font-bold rounded-lg border", verificationFileStatus === 'tampered' ? "bg-rose-50 text-rose-600 border-rose-200" : "bg-white text-slate-700 border-slate-300")}
+                      >
+                        Mô phỏng Sai lệch dữ liệu (Tampered)
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Verification Results Panel */}
+                <div>
+                  {uploadVerifyResult ? (
+                    <div className="space-y-4">
+                      {verificationFileStatus === 'verified' ? (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3">
+                          <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-bold text-emerald-800">Xác minh Thành công!</h4>
+                            <p className="text-xs text-emerald-700 mt-1 leading-relaxed">
+                              Tài liệu nguyên vẹn 100%. Hàm băm SHA-256 khớp hoàn toàn với bản ghi lưu trữ trên nhật ký số.
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 flex items-start gap-3 animate-bounce">
+                          <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-bold text-rose-800">Cảnh báo: Dữ liệu đã bị thay đổi!</h4>
+                            <p className="text-xs text-rose-700 mt-1 leading-relaxed">
+                              Lỗi toàn vẹn dữ liệu: File PDF đã bị chỉnh sửa nội dung hoặc ký số không hợp lệ so với bản ghi lưu gốc.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="bg-slate-900 text-white rounded-lg p-4 space-y-3 shadow-md border border-slate-950">
+                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Thông tin Chứng thư & Chữ ký</span>
+                        
+                        <div className="space-y-2 text-[11px] leading-tight">
+                          <div>
+                            <p className="text-slate-400">Người ký số đại diện:</p>
+                            <p className="font-bold text-slate-100">{uploadVerifyResult.signer}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Thời gian ký số hệ thống:</p>
+                            <p className="font-bold text-slate-100">{uploadVerifyResult.date}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Nhà cung cấp chứng thư CA:</p>
+                            <p className="font-bold text-slate-100">{uploadVerifyResult.ca}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Số hiệu chứng chỉ (Serial Number):</p>
+                            <p className="font-bold text-slate-100 font-mono">{uploadVerifyResult.serialNumber}</p>
+                          </div>
+                          <div className="border-t border-slate-800 pt-2">
+                            <p className="text-slate-400 mb-0.5">Mã SHA-256 Seal Hash:</p>
+                            <p className="font-bold text-slate-100 font-mono text-[9px] truncate bg-slate-950 p-1.5 rounded">{uploadVerifyResult.hash}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-200 rounded-xl p-6 bg-slate-50 flex flex-col items-center justify-center text-center text-slate-400 min-h-[220px]">
+                      <ShieldCheck className="w-12 h-12 mb-3 opacity-30" />
+                      <p className="text-xs font-bold">Chưa có tệp nào được tải lên để xác minh</p>
+                      <p className="text-[11px] mt-1">Kết quả đối chiếu chứng thư sẽ hiển thị tại đây.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -719,6 +1018,46 @@ export function SignatureHub() {
               <div className="p-4 bg-primary-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800 font-bold leading-relaxed">Tài liệu: {selectedDoc?.title}</p>
                 <p className="text-xs text-primary-600 font-mono mt-1">Ref ID: {selectedDoc?.docId || selectedDoc?.id}</p>
+              </div>
+
+              {/* Visual Placement Mock - Fully Interactive */}
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-slate-700">Định vị Con dấu & Chữ ký trực quan</label>
+                <div 
+                  ref={canvasContainerRef}
+                  onMouseMove={handleCanvasMouseMove}
+                  onMouseUp={handleCanvasMouseUp}
+                  onMouseLeave={handleCanvasMouseUp}
+                  className="border border-slate-300 rounded-lg p-4 bg-slate-100 flex flex-col items-center justify-center relative overflow-hidden h-48 select-none"
+                >
+                  {/* Simulated document background */}
+                  <div className="absolute inset-0 bg-white/60 flex flex-col p-4 text-[9px] text-slate-400 font-serif leading-tight">
+                    <p className="font-bold border-b border-slate-300 pb-1 mb-1">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                    <p className="font-bold">ĐIỀU 3: ĐIỀU KHOẢN THI HÀNH</p>
+                    <p className="mt-1">Quyết định này có hiệu lực kể từ ngày ký. Các đơn vị liên quan chịu trách nhiệm thi hành quyết định...</p>
+                    <p className="mt-2 text-right">Đại diện pháp luật ký tên đóng dấu bên dưới.</p>
+                  </div>
+                  
+                  {/* Draggable Stamp */}
+                  <div 
+                    onMouseDown={handleStampMouseDown}
+                    style={{ 
+                      position: 'absolute',
+                      left: `${stampPos.x}px`,
+                      top: `${stampPos.y}px`,
+                      cursor: isDraggingStamp ? 'grabbing' : 'grab',
+                    }}
+                    className={cn(
+                      "w-[130px] h-[55px] border-2 rounded flex flex-col items-center justify-center shadow-md select-none transition-shadow z-20",
+                      isDraggingStamp ? "border-emerald-500 bg-emerald-50/90 shadow-lg" : "border-rose-500 bg-rose-50/80"
+                    )}
+                  >
+                     <span className="text-[8px] font-black text-rose-600 uppercase tracking-tighter leading-none">CÔNG TY CP VCOMM</span>
+                     <span className="text-[8px] font-black text-rose-500 border border-rose-500 px-1 py-0.2 mt-0.5 rounded leading-none">ĐÃ KÝ SỐ</span>
+                     <span className="text-[7px] text-slate-500 font-mono mt-0.5 leading-none">Vị trí: ${Math.round(stampPos.x)}, ${Math.round(stampPos.y)}</span>
+                  </div>
+                </div>
+                <p className="text-[9px] text-slate-500 text-center italic">Kéo hộp dấu đỏ ở trên và thả vào vị trí muốn đặt trên tài liệu.</p>
               </div>
 
               {!userKeyPair ? (

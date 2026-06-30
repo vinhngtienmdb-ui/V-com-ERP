@@ -34,13 +34,12 @@ const SellerFinance = React.lazy(() => import('./components/SellerFinance').then
 const SocialCommerce = React.lazy(() => import('./components/SocialCommerce').then(m => ({ default: m.SocialCommerce })));
 const OmniChat = React.lazy(() => import('./components/OmniChat').then(m => ({ default: m.OmniChat })));
 const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m => ({ default: m.WorkflowHub })));
-const AIOperations = React.lazy(() => import('./components/AIOperations').then(m => ({ default: m.AIOperations })));
-const AIPredictions = React.lazy(() => import('./components/AIPredictions').then(m => ({ default: m.AIPredictions })));
-const ErpCopilot = React.lazy(() => import('./components/ErpCopilot').then(m => ({ default: m.ErpCopilot })));
+
 const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m => ({ default: m.OrgStructure })));
 const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
 const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
 const RequestHub = React.lazy(() => import('./components/RequestHub').then(m => ({ default: m.RequestHub })));
+const DynamicRequestForm = React.lazy(() => import('./components/requests/DynamicRequestForm').then(m => ({ default: m.DynamicRequestForm })));
 const ContractManager = React.lazy(() => import('./components/ContractManager').then(m => ({ default: m.ContractManager })));
 const DocumentManager = React.lazy(() => import('./components/DocumentManager').then(m => ({ default: m.DocumentManager })));
 const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
@@ -294,7 +293,15 @@ function AppLayout() {
   <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
   <div className="w-full mx-auto h-full col-span-12">
   <ErrorBoundary>
-  <Suspense fallback={<LoadingScreen />}>
+  <Suspense fallback={
+    <div className="w-full h-full min-h-[50vh] flex items-center justify-center flex-col gap-4">
+      <div className="relative w-12 h-12">
+        <div className="absolute inset-0 border-4 border-primary-100 rounded-full" />
+        <div className="absolute inset-0 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+      <p className="text-sm font-medium text-slate-500 animate-pulse">Đang tải phân hệ...</p>
+    </div>
+  }>
             <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/dashboard" element={<Dashboard />} />
@@ -325,11 +332,11 @@ function AppLayout() {
     <Route path="/social" element={<SocialCommerce />} />
     <Route path="/workflow" element={<WorkflowHub />} />
     <Route path="/requests" element={<RequestHub />} />
+    <Route path="/requests/new" element={<DynamicRequestForm />} />
     <Route path="/contracts" element={<ContractManager />} />
     <Route path="/documents" element={<DocumentManager />} />
     <Route path="/signature" element={<SignatureHub />} />
-    <Route path="/ai-ops" element={<AIOperations />} />
-    <Route path="/ai-predictions" element={<AIPredictions />} />
+
     <Route path="/org" element={<OrgStructure />} />
     <Route path="/vcomm-supermarket" element={<VCommSupermarket />} />
     <Route path="/device-leasing" element={<DeviceLeasing />} />
@@ -340,7 +347,6 @@ function AppLayout() {
   </Routes>
   </Suspense>        
         </ErrorBoundary>
-  <ErpCopilot />
   </div>
   </main>
   </div>

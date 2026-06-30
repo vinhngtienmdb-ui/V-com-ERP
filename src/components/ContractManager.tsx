@@ -31,6 +31,7 @@ import {
  Info
 } from 'lucide-react';
 import { Modal } from './ui/Modal';
+import { ResizableTh } from './ui/ResizableTh';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -46,10 +47,27 @@ export function ContractManager() {
  const [activeTab, setActiveTab] = useState('labor');
  const [contracts, setContracts] = useState(MOCK_CONTRACTS);
  const [selectedContract, setSelectedContract] = useState<any>(null);
- const [signingModalOpen, setSigningModalOpen] = useState(false);
- const [showCreateModal, setShowCreateModal] = useState(false);
- const [newComment, setNewComment] = useState('');
- const navigate = useNavigate();
+  const [signingModalOpen, setSigningModalOpen] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const navigate = useNavigate();
+
+  // Legal AI & External E-signing States
+  const [rightPanelTab, setRightPanelTab] = useState<'info' | 'ai' | 'external'>('info');
+  const [isAiAuditing, setIsAiAuditing] = useState(false);
+  const [aiAuditReport, setAiAuditReport] = useState<any>(null);
+  const [externalSignEmail, setExternalSignEmail] = useState('');
+  const [externalSignSent, setExternalSignSent] = useState(false);
+  const [externalSignOtp, setExternalSignOtp] = useState('');
+  const [isOtpVerifying, setIsOtpVerifying] = useState(false);
+
+  useEffect(() => {
+    setRightPanelTab('info');
+    setAiAuditReport(null);
+    setExternalSignSent(false);
+    setExternalSignEmail('');
+    setExternalSignOtp('');
+  }, [selectedContract]);
 
  // Workflow structures for: labor, sales, service
  const [workflows, setWorkflows] = useState<any[]>([
@@ -343,6 +361,7 @@ export function ContractManager() {
     maxWidth="full"
     hideFooter
     noPadding
+    fullscreen
   >
   <div className="flex flex-col h-full overflow-hidden">
  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
@@ -644,7 +663,7 @@ export function ContractManager() {
  </div>
  </div>
 
- <div className="flex gap-6">
+ <div className="flex gap-4">
  {/* Sidebar */}
  <div className="w-[240px] shrink-0 space-y-1">
  {[
@@ -686,14 +705,14 @@ export function ContractManager() {
  </div>
 
  <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
- <table className="min-w-[680px] w-full text-left border-collapse">
+ <table className="min-w-full w-max text-left border-collapse whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest">Mã HĐ / Tiêu đề</th>
- <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-40">Đối tác / Nhân sự</th>
- <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-32 whitespace-nowrap">Giá trị</th>
- <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-40 whitespace-nowrap text-center">Trạng thái</th>
- <th className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày hết hạn</th>
+ <ResizableTh tableId="contractList" columnId="idTitle" initialWidth={250} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Mã HĐ / Tiêu đề</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="partner" initialWidth={200} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Đối tác / Nhân sự</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="value" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Giá trị</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="status" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="date" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-right">Ngày hết hạn</ResizableTh>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -757,6 +776,7 @@ export function ContractManager() {
     maxWidth="md"
     hideFooter
     noPadding
+    fullscreen
   >
  <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
  <h3 className="text-lg font-bold text-slate-900">Tạo hợp đồng mới</h3>

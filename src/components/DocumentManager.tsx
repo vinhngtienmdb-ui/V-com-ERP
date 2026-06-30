@@ -42,10 +42,14 @@ import {
   FileSpreadsheet,
   Grid3X3,
   AlignLeft,
-  Image as ImageIcon
+  Image as ImageIcon,
+  History,
+  Link as LinkIcon
 } from 'lucide-react';
+import { ResizableTh } from './ui/ResizableTh';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTableColumns, ColumnDef } from '../hooks/useTableColumns';
 
 const MOCK_DOCS = [
   { id: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc Khối Vận hành', type: 'outbound', status: 'signed', date: '20/03/2024', signer: 'CEO', category: 'Quyết định', aiSummary: 'Bổ nhiệm ông Nguyễn Văn A giữ chức vụ Giám đốc Khối Vận hành từ ngày 01/04/2024.', department: 'Ban Giám đốc', urgency: 'high', fileType: 'pdf' },
@@ -70,6 +74,25 @@ export function DocumentManager() {
   const [showRoutingForm, setShowRoutingForm] = useState(false);
   const [showSignForm, setShowSignForm] = useState(false);
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
+  const [activeDetailTab, setActiveDetailTab] = useState('flow');
+  const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+
+  const docListCols: ColumnDef[] = [
+    { id: 'id', label: 'SỐ KH/Ký hiệu', initialWidth: 150 },
+    { id: 'title', label: 'Trích yếu', initialWidth: 300 },
+    { id: 'type', label: 'Hình thức', initialWidth: 120 },
+    { id: 'flow', label: 'Thiết lập luồng', initialWidth: 150 },
+    { id: 'status', label: 'Trạng thái', initialWidth: 150 }
+  ];
+  const { columns: listCols, handleResize: handleListResize, getPinOffset: getListPinOffset } = useTableColumns('docList', docListCols);
+
+  const docRolesCols: ColumnDef[] = [
+    { id: 'role', label: 'Vai trò / Chức danh', initialWidth: 200 },
+    { id: 'dept', label: 'Phòng ban', initialWidth: 200 },
+    { id: 'perms', label: 'Quyền hạn hệ thống', initialWidth: 250 },
+    { id: 'actions', label: 'Thao tác', initialWidth: 100 }
+  ];
+  const { columns: rolesCols, handleResize: handleRolesResize, getPinOffset: getRolesPinOffset } = useTableColumns('docRoles', docRolesCols);
   
   const navigate = useNavigate();
 
@@ -119,7 +142,7 @@ export function DocumentManager() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* Sidebar */}
         {!selectedDoc && (
           <div className="w-full lg:w-[240px] shrink-0 space-y-1">
@@ -275,10 +298,10 @@ export function DocumentManager() {
               )}
 
               {/* Detail Content */}
-              <DraggableGrid className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 flex-1 overflow-auto bg-slate-50/30" columns={3} gap={24}>
+              <DraggableGrid className="p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 flex-1 overflow-auto bg-slate-50/30" columns={3} gap={16}>
                 <div className="xl:col-span-2 flex flex-col gap-4 h-[calc(100vh-200px)]">
                   {/* Header info */}
-                  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm shrink-0">
+                  <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm shrink-0">
                     <div className="flex items-center gap-3 mb-2">
                       <span className={cn(
                         "px-2.5 py-1 text-[11px] font-bold rounded uppercase tracking-tight",
@@ -314,7 +337,7 @@ export function DocumentManager() {
                         <div className="w-px h-4 bg-slate-600"></div>
                         <span className="text-xs font-mono">Trang 1 / 1</span>
                         <div className="w-px h-4 bg-slate-600"></div>
-                        <button className="p-1 hover:bg-slate-700 rounded text-slate-300 transition"><Maximize2 className="w-4 h-4" /></button>
+                        <button onClick={() => setIsViewerModalOpen(true)} className="p-1 hover:bg-slate-700 rounded text-slate-300 transition"><Maximize2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                     
@@ -485,12 +508,14 @@ export function DocumentManager() {
                   {/* Flow / Info Tabs */}
                   <div className="bg-white border border-slate-300 rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden">
                      {/* Mini tabs */}
-                     <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
-                       <button className="flex-1 py-3 text-xs justify-center font-bold text-slate-900 border-b-2 border-orange-600 flex items-center gap-1"><RefreshCw className="w-3 h-3"/> Luồng xử lý</button>
-                       <button className="flex-1 py-3 text-xs justify-center font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-1"><MessageCircle className="w-3 h-3"/> Bút phê & Ý kiến</button>
+                     <div className="flex border-b border-slate-200 bg-slate-50 shrink-0 overflow-x-auto">
+                       <button onClick={() => setActiveDetailTab('flow')} className={cn("flex-1 py-3 px-2 text-xs justify-center font-bold flex items-center gap-1 whitespace-nowrap", activeDetailTab === 'flow' ? "text-slate-900 border-b-2 border-orange-600" : "text-slate-600 hover:bg-slate-100")}><RefreshCw className="w-3 h-3"/> Luồng xử lý</button>
+                       <button onClick={() => setActiveDetailTab('versions')} className={cn("flex-1 py-3 px-2 text-xs justify-center font-bold flex items-center gap-1 whitespace-nowrap", activeDetailTab === 'versions' ? "text-slate-900 border-b-2 border-orange-600" : "text-slate-600 hover:bg-slate-100")}><History className="w-3 h-3"/> Phiên bản</button>
+                       <button onClick={() => setActiveDetailTab('relations')} className={cn("flex-1 py-3 px-2 text-xs justify-center font-bold flex items-center gap-1 whitespace-nowrap", activeDetailTab === 'relations' ? "text-slate-900 border-b-2 border-orange-600" : "text-slate-600 hover:bg-slate-100")}><LinkIcon className="w-3 h-3"/> VB Liên quan</button>
                      </div>
                      
                      <div className="p-4 overflow-auto flex-1">
+                        {activeDetailTab === 'flow' && (
                         <div className="space-y-6">
                           <div className="flex gap-4">
                              <div className="flex flex-col items-center">
@@ -547,6 +572,58 @@ export function DocumentManager() {
                              </div>
                           </div>
                         </div>
+                        )}
+
+                        {activeDetailTab === 'versions' && (
+                          <div className="space-y-4">
+                            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50 flex justify-between items-center">
+                               <div>
+                                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600"/> Phiên bản v1.2 (Hiện tại)</h4>
+                                  <p className="text-xs text-slate-600 mt-1">Bởi: Trần Văn Sếp • 20/03/2024 10:15</p>
+                               </div>
+                               <button className="px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold shadow-sm hover:bg-slate-50">So sánh</button>
+                            </div>
+                            <div className="border border-slate-200 rounded-lg p-3 bg-white flex justify-between items-center opacity-70">
+                               <div>
+                                  <h4 className="text-sm font-bold text-slate-700">Phiên bản v1.1</h4>
+                                  <p className="text-xs text-slate-500 mt-1">Bởi: Lê Văn Phụ Trách • 20/03/2024 09:30</p>
+                               </div>
+                               <button className="px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold shadow-sm hover:bg-slate-50">Xem</button>
+                            </div>
+                            <div className="border border-slate-200 rounded-lg p-3 bg-white flex justify-between items-center opacity-70">
+                               <div>
+                                  <h4 className="text-sm font-bold text-slate-700">Phiên bản v1.0</h4>
+                                  <p className="text-xs text-slate-500 mt-1">Bởi: Lê Văn Phụ Trách • 20/03/2024 09:00</p>
+                               </div>
+                               <button className="px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold shadow-sm hover:bg-slate-50">Xem</button>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeDetailTab === 'relations' && (
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center mb-2">
+                               <h4 className="text-sm font-bold text-slate-900">Văn bản liên quan</h4>
+                               <button className="text-xs text-primary-600 font-semibold hover:underline flex items-center gap-1"><Plus className="w-3 h-3"/> Thêm liên kết</button>
+                            </div>
+                            <div className="border border-slate-200 rounded-lg p-3 bg-white hover:bg-slate-50 cursor-pointer transition">
+                               <div className="flex items-center justify-between">
+                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase">Văn bản đến</span>
+                                  <span className="text-xs text-slate-500">19/03/2024</span>
+                               </div>
+                               <p className="text-sm font-bold text-slate-900 mt-2">CV-2024-001</p>
+                               <p className="text-xs text-slate-600 mt-1 line-clamp-2">Công văn từ Sở Kế hoạch Đầu tư về việc cung cấp hồ sơ năng lực.</p>
+                            </div>
+                            <div className="border border-slate-200 rounded-lg p-3 bg-white hover:bg-slate-50 cursor-pointer transition">
+                               <div className="flex items-center justify-between">
+                                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase">Hồ sơ</span>
+                                  <span className="text-xs text-slate-500">18/03/2024</span>
+                               </div>
+                               <p className="text-sm font-bold text-slate-900 mt-2">HS-24-005</p>
+                               <p className="text-xs text-slate-600 mt-1 line-clamp-2">Hồ sơ năng lực công ty cập nhật năm 2024.</p>
+                            </div>
+                          </div>
+                        )}
                      </div>
                   </div>
                 </div>
@@ -580,28 +657,28 @@ export function DocumentManager() {
                   </div>
 
                   <div className="p-0 overflow-auto flex-1">
-<table className="w-full text-left border-collapse whitespace-nowrap">
+                    <table className="w-max min-w-full text-left border-collapse whitespace-nowrap">
                       <thead className="bg-slate-50 border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm">
                         <tr>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Số KH/Ký hiệu</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trích yếu</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hình thức</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thiết lập luồng</th>
-                          <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+                          <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">SỐ KH/Ký hiệu</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'title')?.currentWidth} onResize={(w) => handleListResize('title', w)} isPinned={listCols.find(c => c.id === 'title')?.isPinned} pinOffset={getListPinOffset('title')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trích yếu</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hình thức</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thiết lập luồng</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</ResizableTh>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F3F4F6]">
-                        {MOCK_DOCS.filter(doc => doc.type === activeTab).map(doc => (
+                        {documents.filter(doc => doc.type === activeTab).map(doc => (
                           <tr 
                             key={doc.id} 
                             onClick={() => handleDocClick(doc)}
                             className="hover:bg-slate-50 transition-colors cursor-pointer group"
                           >
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-3">
                               <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors">{doc.id}</p>
                               <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-3">
                               <p className="text-sm font-medium text-slate-900 line-clamp-2">{doc.title}</p>
                               {doc.urgency === 'critical' && (
                                 <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1 bg-red-50 px-1.5 py-0.5 rounded">
@@ -609,7 +686,7 @@ export function DocumentManager() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-3">
                               <span className={cn(
                                 "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight",
                                 doc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
@@ -618,7 +695,7 @@ export function DocumentManager() {
                                 {doc.category || 'Văn bản'}
                               </span>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-3">
                                {/* Preview of routing to show it handles direct specific deps */}
                                <div className="flex items-center gap-2">
                                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded truncate max-w-[120px]">{doc.department}</span>
@@ -626,7 +703,7 @@ export function DocumentManager() {
                                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">NV Xử lý</span>
                                </div>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-4 py-3 text-right">
                                <div className="flex justify-end">
                                   {doc.status === 'processing' ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-primary-50 border border-primary-100 rounded-md">
@@ -645,7 +722,7 @@ export function DocumentManager() {
                             </td>
                           </tr>
                         ))}
-                        {MOCK_DOCS.filter(doc => doc.type === activeTab).length === 0 && (
+                        {documents.filter(doc => doc.type === activeTab).length === 0 && (
                           <tr>
                             <td colSpan={5} className="px-6 py-6 text-center text-slate-600">
                               <div className="flex flex-col items-center gap-3">
@@ -698,13 +775,13 @@ export function DocumentManager() {
                    <div className="space-y-6">
                      <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden shadow-sm p-6 overflow-x-auto min-w-0">
                        <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-primary-600" /> Cấu hình vai trò & Phân quyền</h4>
-                       <table className="w-full text-left border-collapse whitespace-nowrap">
+                       <table className="w-max min-w-full text-left border-collapse whitespace-nowrap">
                          <thead className="bg-slate-50 border-b border-[#F3F4F6]">
                            <tr>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Vai trò / Chức danh</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Phòng ban</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Quyền hạn hệ thống</th>
-                             <th className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase text-right">Thao tác</th>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'role')?.currentWidth} onResize={(w) => handleRolesResize('role', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Vai trò / Chức danh</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'dept')?.currentWidth} onResize={(w) => handleRolesResize('dept', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Phòng ban</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'perms')?.currentWidth} onResize={(w) => handleRolesResize('perms', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Quyền hạn hệ thống</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'actions')?.currentWidth} onResize={(w) => handleRolesResize('actions', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase text-right">Thao tác</ResizableTh>
                            </tr>
                          </thead>
                          <tbody className="divide-y divide-[#F3F4F6]">
@@ -945,6 +1022,50 @@ export function DocumentManager() {
                </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Viewer Modal */}
+      {isViewerModalOpen && selectedDoc && (
+        <div className="fixed inset-0 bg-slate-900/90 z-[60] flex flex-col animate-in fade-in duration-200">
+           <div className="flex justify-between items-center p-4 bg-slate-900 text-white shrink-0 shadow-sm border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                 <div className="bg-slate-800 p-2 rounded"><FileText className="w-5 h-5 text-blue-400"/></div>
+                 <div>
+                    <h3 className="font-bold text-slate-100">{selectedDoc.title}</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">ID: {selectedDoc.id} • PDF Viewer</p>
+                 </div>
+              </div>
+              <div className="flex items-center gap-4">
+                 <button className="p-2 hover:bg-slate-800 rounded transition"><Download className="w-5 h-5" /></button>
+                 <button onClick={() => setIsViewerModalOpen(false)} className="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition"><X className="w-6 h-6" /></button>
+              </div>
+           </div>
+           <div className="flex-1 overflow-auto p-4 md:p-8 flex justify-center bg-slate-800">
+              <div className="bg-white w-full max-w-[900px] h-fit min-h-[1200px] shadow-2xl rounded p-12 text-slate-900 font-serif relative">
+                 {/* Re-use mock PDF content */}
+                 <div className="flex justify-between items-start mb-12">
+                   <div className="text-center w-48">
+                     <h4 className="font-bold text-sm uppercase">CÔNG TY CỔ PHẦN MDB</h4>
+                     <p className="text-xs mt-1 border-t border-slate-800 pt-1">Số: {selectedDoc.id}</p>
+                   </div>
+                   <div className="text-center">
+                     <h4 className="font-bold text-sm uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+                     <h5 className="font-bold text-xs uppercase underline">Độc lập - Tự do - Hạnh phúc</h5>
+                     <p className="text-xs italic mt-2">Hà Nội, ngày {selectedDoc.date}</p>
+                   </div>
+                 </div>
+                 <h2 className="text-xl font-bold text-center uppercase px-6 leading-relaxed mb-6">
+                   {selectedDoc.title}
+                 </h2>
+                 <div className="text-sm space-y-4 text-justify leading-relaxed">
+                   <p>Căn cứ Luật Doanh nghiệp số 59/2020/QH14 được Quốc hội thông qua ngày 17 tháng 06 năm 2020;</p>
+                   <p>Căn cứ Điều lệ tổ chức và hoạt động của Công ty Cổ phần MDB;</p>
+                   <p>Căn cứ yêu cầu hoạt động và năng lực cán bộ;</p>
+                   <p className="italic bg-yellow-50 p-2 border-l-4 border-yellow-400">{selectedDoc.aiSummary}</p>
+                 </div>
+              </div>
+           </div>
         </div>
       )}
     </div>

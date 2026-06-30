@@ -206,6 +206,7 @@ export function FlashSale() {
     confirmText="Khởi chạy Mua Chung Sập Giá"
     confirmVariant="danger"
     onConfirm={() => setIsModalOpen(false)}
+    fullscreen
   >
   <form className="space-y-6">
   {/* General Settings */}
@@ -384,6 +385,7 @@ export function FlashSale() {
     confirmText="Lưu & Khởi chạy Flash Sale"
     confirmVariant="warning"
     onConfirm={() => setIsModalOpen(false)}
+    fullscreen
   >
   <form className="space-y-4">
   <div>
@@ -452,6 +454,7 @@ export function FlashSale() {
     confirmText="Phát hành Voucher"
     confirmVariant="success"
     onConfirm={() => setIsModalOpen(false)}
+    fullscreen
   >
   <form className="space-y-4">
   <div className="grid grid-cols-2 gap-4">

@@ -576,7 +576,7 @@ export function HumanResources() {
  const [payrollList, setPayrollList] = useState<Payroll[]>(MOCK_PAYROLL);
  const [editingPayrollId, setEditingPayrollId] = useState<string | null>(null);
  const [editPayrollForm, setEditPayrollForm] = useState<Partial<Payroll>>({});
- const [aiPayrollSuggestion, setAiPayrollSuggestion] = useState<string | null>(null);
+//  const [aiPayrollSuggestion, setAiPayrollSuggestion] = useState<string | null>(null);
  
  // New features state
  const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
@@ -587,11 +587,11 @@ export function HumanResources() {
  const [activeATSView, setActiveATSView] = useState<'request' | 'candidates' | 'interview' | 'email'>('candidates');
  
  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
- const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+//  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
  const [copilotMessages, setCopilotMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
  { role: 'assistant', content: 'Xin chào! Tôi là AI Copilot hỗ trợ nhân sự. Bạn muốn tôi phân tích dữ liệu, xuất báo cáo hay tìm kiếm nhân viên có kỹ năng cụ thể?' }
  ]);
- const [copilotInput, setCopilotInput] = useState('');
+//  const [copilotInput, setCopilotInput] = useState('');
 
  const [searchEmployee, setSearchEmployee] = useState('');
  const [filterDept, setFilterDept] = useState('all');
@@ -670,7 +670,7 @@ export function HumanResources() {
  content: `Dựa trên dữ liệu hiện tại, tôi đã nhận yêu cầu của bạn về: "${copilotInput}". Đang cập nhật báo cáo và đánh giá kỹ năng liên quan.` 
  }]);
  }, 1000);
- setCopilotInput('');
+//  setCopilotInput('');
  };
 
   const handleRoleChange = (employeeId: string, newRole: string) => {
@@ -2421,7 +2421,7 @@ export function HumanResources() {
  <h4 className="font-bold text-purple-900 text-sm mb-1">AI Phân tích & Đề xuất lương</h4>
  <div className="text-sm text-purple-800 whitespace-pre-line leading-relaxed">{aiPayrollSuggestion}</div>
  </div>
- <button onClick={() => setAiPayrollSuggestion(null)} className="ml-auto text-purple-400 hover:text-purple-600">
+//  <button onClick={() => setAiPayrollSuggestion(null)} className="ml-auto text-purple-400 hover:text-purple-600">
  <X className="w-4 h-4" />
  </button>
  </div>
@@ -2560,7 +2560,7 @@ export function HumanResources() {
  notes.push('• Không có đề xuất thay đổi dựa trên dữ liệu hiện tại.');
  }
  
- setAiPayrollSuggestion(notes.join('\n'));
+//  setAiPayrollSuggestion(notes.join('\n'));
  
  setEditPayrollForm(prev => {
  const p = { ...prev, bonus: suggestBonus, deduction: suggestDed };
@@ -2573,14 +2573,14 @@ export function HumanResources() {
  >
  <Sparkles className="w-4 h-4" /> Phân tích AI
  </button>
- <button onClick={() => { setEditingPayrollId(null); setAiPayrollSuggestion(null); }} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
+//  <button onClick={() => { setEditingPayrollId(null); setAiPayrollSuggestion(null); }} className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
  Hủy
  </button>
  <button 
  onClick={() => {
  setPayrollList(prev => prev.map(p => p.id === editingPayrollId ? editPayrollForm as Payroll : p));
  setEditingPayrollId(null);
- setAiPayrollSuggestion(null);
+//  setAiPayrollSuggestion(null);
  }}
  className="px-6 py-2.5 text-sm font-bold text-[#FAF9F5] bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors shadow-sm shadow-slate-900/5 flex items-center gap-2">
  <CheckCircle2 className="w-4 h-4" /> Lưu bảng lương
@@ -3190,18 +3190,17 @@ export function HumanResources() {
  {/* 360 Employee Slide-out Panel */}
  <AnimatePresence>
  {selectedEmployee && (
- <>
- <motion.div 
- initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
- onClick={() => setSelectedEmployee(null)}
- className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
- />
- <motion.div 
- initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
- transition={{ type: "spring", damping: 25, stiffness: 200 }}
- className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-sm z-50 border-l border-slate-300 flex flex-col overflow-y-auto"
- >
- <div className="p-6 border-b border-slate-200 flex justify-between items-start bg-white to-white sticky top-0 z-10">
+   <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+    <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
+     <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm shrink-0">
+      <h3 className="text-lg font-bold text-slate-900">Chi tiết Hồ sơ Nhân sự</h3>
+      <button onClick={() => setSelectedEmployee(null)} className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors">
+       <X className="w-5 h-5"/>
+      </button>
+     </div>
+     <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+      <div className="w-full md:w-[400px] border-b md:border-b-0 md:border-r border-slate-200 overflow-y-auto custom-scrollbar p-6 bg-white shrink-0">
+       <div className="flex items-start justify-between mb-4">
  <div className="flex gap-4 items-center">
  <div className="w-16 h-16 bg-[#EAE7DF] text-orange-700 rounded-full flex items-center justify-center text-xl font-bold shadow-sm border border-orange-200">
  {selectedEmployee?.fullName?.charAt(0) || '?'}
@@ -3214,10 +3213,6 @@ export function HumanResources() {
  </div>
  </div>
  </div>
- <button onClick={() => setSelectedEmployee(null)} className="p-2 bg-white border border-slate-300 hover:bg-slate-50 rounded-full transition-colors text-slate-600 shadow-sm active:scale-95">
- <span className="sr-only">Đóng</span>
- <X className="w-5 h-5" />
- </button>
  </div>
  
  <div className="p-6 space-y-10 flex-1">
@@ -3475,11 +3470,13 @@ export function HumanResources() {
  <p className="text-sm font-medium text-slate-800 leading-relaxed">
  {selectedEmployee.recentSentiment === 'critical' ? 'Nhân viên có biểu hiện quá tải công việc, thường làm thêm giờ. Đề xuất: 1-on-1 trong tuần này.' : 'Trạng thái tích cực, kỹ năng phù hợp để tham gia dự án chiến lược Q3.'}
  </p>
+    </div>
  </div>
  </div>
  </div>
- </motion.div>
- </>
+ </div>
+ </div>
+ </div>
  )}
  </AnimatePresence>
 
@@ -3554,17 +3551,18 @@ export function HumanResources() {
  </div>
  <AnimatePresence>
  {showATSModal && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-lg w-full max-w-4xl p-6 shadow-sm">
- <div className="flex justify-between items-center mb-6">
- <h2 className="text-2xl font-bold text-[#111827]">Quản lý Tuyển dụng (ATS) - {
+  <div className="fixed inset-0 bg-slate-50 z-50 flex flex-col animate-in slide-in-from-right-4 duration-300">
+  <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
+  <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+  <h2 className="text-xl font-bold text-slate-900">Quản lý Tuyển dụng (ATS) - {
  activeATSView === 'request' ? 'Đề xuất tuyển dụng' : 
  activeATSView === 'candidates' ? 'Hồ sơ ứng viên' : 
  activeATSView === 'interview' ? 'Lịch phỏng vấn' : 'Email ứng viên'
  }</h2>
- <button onClick={() => setShowATSModal(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500"><X className="w-6 h-6" /></button>
- </div>
- <div className="flex gap-4 mb-8 border-b border-slate-200 pb-4">
+  <button onClick={() => setShowATSModal(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500"><X className="w-6 h-6" /></button>
+  </div>
+  <div className="flex-1 overflow-y-auto p-6">
+  <div className="flex gap-4 mb-8 border-b border-slate-200 pb-4">
  {['request', 'candidates', 'interview', 'email'].map(t => (
  <button key={t} onClick={() => setActiveATSView(t as any)} className={cn("px-5 py-2.5 text-sm font-bold rounded-lg transition-all", activeATSView === t ? 'bg-primary-600 text-[#FAF9F5] shadow-sm' : 'bg-slate-50 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-primary-600')}>
  {t === 'request' ? 'Đề xuất' : t === 'candidates' ? 'Ứng viên' : t === 'interview' ? 'Lịch phỏng vấn' : 'Email'}
@@ -3624,10 +3622,11 @@ export function HumanResources() {
  )}
  {/* Add placeholders for other views */}
  {activeATSView !== 'candidates' && <div className="flex items-center justify-center h-full text-slate-500 text-sm mt-20 font-medium">Nội dung chức năng {activeATSView} đang được xây dựng...</div>}
- </div>
- </motion.div>
- </div>
- )}
+    </div>
+  </div>
+  </div>
+  </div>
+  )}
  </AnimatePresence>
 
  {/* Add/Edit Employee Modal */}

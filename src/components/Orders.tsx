@@ -32,7 +32,7 @@ import { useAuditLog } from '../hooks/useAuditLog';
 import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
-import { generateRMAResponse } from '../services/geminiService';
+
 import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where, search } from '../lib/firebase';
 import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
@@ -90,7 +90,7 @@ const OrderDetailModal = ({
   const handleDraftRma = async (order: any) => {
     setIsGenerating(true);
     try {
-      const resp = await generateRMAResponse(order);
+//       const resp = await generateRMAResponse(order);
       setAiResponse(resp);
     } catch (err) {
       console.error(err);
@@ -341,17 +341,16 @@ const OrderDetailModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-sm animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-start mb-6">
+    <div className="fixed inset-0 bg-slate-50 z-50 flex flex-col animate-in slide-in-from-right-4 duration-300">
+      <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-[#111827]">Chi tiết đơn hàng {order.id}</h2>
-            <p className="text-sm text-slate-600 font-medium">Đặt ngày: {order.date}</p>
+            <h2 className="text-xl font-bold text-slate-900">Chi tiết đơn hàng {order.id}</h2>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">Đặt ngày: {order.date}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-600">
-            <X className="w-6 h-6" />
-          </button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X className="w-5 h-5" /></button>
         </div>
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="space-y-2">
@@ -817,6 +816,7 @@ const OrderDetailModal = ({
           </div>
         </div>
       </div>
+      </div>
     </div>
   );
 };
@@ -1185,7 +1185,7 @@ export function Orders() {
   const handleDraftRma = async (order: any) => {
     setIsGenerating(true);
     try {
-      const response = await generateRMAResponse(order);
+//       const response = await generateRMAResponse(order);
       setAiResponse(response);
     } catch (e) {
       setAiResponse('Lỗi khi tạo phản hồi AI.');

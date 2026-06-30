@@ -688,7 +688,7 @@ export function AnalyticsBI() {
  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400">Security Node</span>
  <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" />
  </div>
- <h3 className="text-2xl font-black tracking-tight">AI Fraud Detection Guardian</h3>
+ <h3 className="text-2xl font-black tracking-tight">Fraud Detection Guardian</h3>
  </div>
  </div>
  
@@ -701,7 +701,7 @@ export function AnalyticsBI() {
  Open Security Console
  </button>
  <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">
- Configure AI Policy
+ Configure Policy
  </button>
  </div>
  </div>

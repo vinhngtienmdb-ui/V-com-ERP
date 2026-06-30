@@ -37,7 +37,6 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
-import { generateCustomerCareMessage } from '../services/geminiService';
 import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../lib/firebase';
 import { syncCustomerToMisa } from '../services/misaService';
 import { supabase } from '../lib/supabase';
@@ -82,7 +81,6 @@ const CustomerDetailModal = ({
 }) => {
   const [emailSubject, setEmailSubject] = useState<string>('');
   const [emailContent, setEmailContent] = useState<string>('');
-  const [loadingAi, setLoadingAi] = useState(false);
   const [showConvertPanel, setShowConvertPanel] = useState(false);
   const [convertAmount, setConvertAmount] = useState<number>(0);
   const [converting, setConverting] = useState(false);
@@ -154,23 +152,6 @@ const CustomerDetailModal = ({
     }
   };
 
-  const handleGenerateAiMessage = async () => {
-    setLoadingAi(true);
-    try {
-      const msg = await generateCustomerCareMessage(customer);
-      // Try to parse a subject if AI returned something like "Subject: ..." or "Tiêu đề: ..."
-      const subjectMatch = msg.match(/^(?:Tiêu đề|Subject):\s*(.+?)(?:\n|$)/i);
-      if (subjectMatch) {
-        setEmailSubject(subjectMatch[1].trim());
-        setEmailContent(msg.replace(subjectMatch[0], '').trim());
-      } else {
-        setEmailSubject(`Chương trình tri ân khách hàng ${customer.name}`);
-        setEmailContent(msg.trim());
-      }
-    } finally {
-      setLoadingAi(false);
-    }
-  };
 
   // Logic for tier progress (Mock)
   const nextTierThreshold = 50000000;
@@ -211,6 +192,7 @@ const CustomerDetailModal = ({
       maxWidth="5xl"
       hideFooter
       noPadding
+      fullscreen
     >
       <div className="flex flex-col h-full">
         {/* Header */}
@@ -434,16 +416,8 @@ const CustomerDetailModal = ({
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 -mr-8 -mt-8 rounded-full opacity-50"></div>
                   <div className="flex justify-between items-center mb-5 relative z-10">
                     <h4 className="font-bold text-primary-900 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary-600" /> CSKH thông minh (AI Assist)
+                      <Mail className="w-5 h-5 text-primary-600" /> CSKH qua Email
                     </h4>
-                    <button 
-                      onClick={handleGenerateAiMessage}
-                      disabled={loadingAi}
-                      className="text-[10px] bg-primary-600 text-[#FAF9F5] px-3 py-1.5 rounded-lg font-bold hover:bg-primary-700 disabled:opacity-50 transition-all flex items-center gap-2 shadow-sm shadow-indigo-100"
-                    >
-                      {loadingAi ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                      QUÉT RFM & SOẠN TIN
-                    </button>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg border border-primary-100/50 shadow-inner relative z-10 mb-4 focus-within:border-primary-300 transition-colors">
@@ -452,29 +426,21 @@ const CustomerDetailModal = ({
                       placeholder="Tiêu đề email tự động..." 
                       className="w-full border-b border-slate-200 pb-2 mb-2 text-sm focus:outline-none font-bold text-slate-900 placeholder:font-normal placeholder:italic bg-transparent"
                       value={emailSubject}
-                      readOnly={loadingAi}
+                      
                       onChange={(e) => setEmailSubject(e.target.value)}
                     />
                     <textarea 
                       className="w-full h-32 text-sm resize-none focus:outline-none text-slate-800 placeholder:italic bg-transparent scrollbar-hide"
-                      placeholder={loadingAi ? "AI đang phân tích & soạn thảo thảo phù hợp với phân khúc khách hàng..." : "Soạn thảo nội dung hoặc dùng AI soạn nhanh tích hợp dữ liệu CRM..."}
+                      placeholder="Soạn thảo nội dung chăm sóc..."
                       value={emailContent}
-                      readOnly={loadingAi}
+                      
                       onChange={(e) => setEmailContent(e.target.value)}
                     />
-                    {loadingAi && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-lg backdrop-blur-[1px]">
-                        <div className="flex flex-col items-center gap-2">
-                          <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
-                          <span className="text-[10px] font-bold text-primary-600 uppercase tracking-widest">Đang soạn thảo...</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                   
                   <div className="flex justify-end gap-3 relative z-10">
                     <button 
-                      disabled={!emailSubject || !emailContent || loadingAi}
+                      disabled={!emailSubject || !emailContent}
                       className="bg-primary-600 text-[#FAF9F5] px-6 py-3 rounded-lg text-xs font-bold shadow-sm shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all flex items-center gap-2"
                       onClick={() => {
                         alert('Tin nhắn chăm sóc đã được gửi tới ' + customer.email);
@@ -879,88 +845,6 @@ const CustomerDetailModal = ({
   );
 };
 
-const AiMessageQuickModal = ({ customer, onClose }: { customer: Customer; onClose: () => void }) => {
-  const [aiMessage, setAiMessage] = useState<string | null>(null);
-  const [loadingAi, setLoadingAi] = useState(false);
-
-  const handleGenerate = async () => {
-    setLoadingAi(true);
-    try {
-      const msg = await generateCustomerCareMessage(customer);
-      setAiMessage(msg);
-    } finally {
-      setLoadingAi(false);
-    }
-  };
-
-  return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      maxWidth="lg"
-      hideFooter
-      noPadding
-    >
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h3 className="text-xl font-black text-[#111827]">Chăm sóc AI: {customer.name}</h3>
-            <p className="text-xs text-slate-600 font-medium mt-1">Hệ thống sẽ dựa trên RFM & lịch sử mua hàng để soạn tin.</p>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        <div className="bg-primary-50/50 border border-primary-100 p-6 rounded-lg min-h-[180px] flex flex-col items-center justify-center text-center relative mb-6">
-          {loadingAi ? (
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-              <p className="text-xs font-bold text-primary-600 animate-pulse">Đang phân tích dữ liệu khách hàng...</p>
-            </div>
-          ) : aiMessage ? (
-            <div className="w-full">
-              <p className="text-sm text-slate-800 leading-relaxed text-left whitespace-pre-line italic">"{aiMessage}"</p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-4">
-              <Sparkles className="w-10 h-10 text-primary-300" />
-              <button 
-                onClick={handleGenerate}
-                className="bg-primary-600 text-[#FAF9F5] px-6 py-2.5 rounded-lg font-bold hover:bg-primary-700 shadow-sm shadow-indigo-200 transition-all flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" /> Soạn tin nhắn cá nhân hóa
-              </button>
-            </div>
-          )}
-        </div>
-
-        {aiMessage && (
-          <div className="flex gap-3">
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(aiMessage);
-                alert('Đã copy tin nhắn!');
-              }}
-              className="flex-1 py-3 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
-            >
-              Sao chép nội dung
-            </button>
-            <button 
-              className="flex-1 py-3 bg-primary-600 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-primary-700 transition-all shadow-sm shadow-indigo-100"
-              onClick={() => {
-                alert('Tin nhắn đã được chuyển sang module Omnichannel Chat!');
-                onClose();
-              }}
-            >
-              Dùng tin nhắn này
-            </button>
-          </div>
-        )}
-      </div>
-    </Modal>
-  );
-};
 
 const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
   const [activeTab, setActiveTab] = useState<'tier' | 'points' | 'tags' | 'sources'>('tier');
@@ -1212,6 +1096,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
       title="Thêm Khách hàng mới"
       hideFooter
       noPadding
+      fullscreen
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div>
@@ -1263,7 +1148,6 @@ export function Customers() {
  const [activeView, setActiveView] = useState<'list' | 'pipeline'>('list');
  const [activeChannel, setActiveChannel] = useState<'all' | 'zalo' | 'facebook' | 'web' | 'hotline'>('all');
  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
- const [aiQuickModalCustomer, setAiQuickModalCustomer] = useState<Customer | null>(null);
  const [showConfigModal, setShowConfigModal] = useState(false);
  const [showAddModal, setShowAddModal] = useState(false);
  const [adjustingCustomer, setAdjustingCustomer] = useState<Customer | null>(null);
@@ -1288,7 +1172,6 @@ export function Customers() {
   const [totalCount, setTotalCount] = useState(0);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
- const [aiPipelineInsights, setAiPipelineInsights] = useState<string | null>(null);
  const [pipelineStages, setPipelineStages] = useState([
  { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-slate-800', 
  deals: [
@@ -1346,7 +1229,6 @@ export function Customers() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedCustomer(null);
-        setAiQuickModalCustomer(null);
         setShowConfigModal(false);
         setShowAddModal(false);
         setAdjustingCustomer(null);
@@ -1354,7 +1236,7 @@ export function Customers() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCustomer, aiQuickModalCustomer, showConfigModal, showAddModal, adjustingCustomer]);
+  }, [selectedCustomer, showConfigModal, showAddModal, adjustingCustomer]);
 
   // Debounce search query
   useEffect(() => {
@@ -1674,12 +1556,6 @@ export function Customers() {
   sellers={sellers}
   payouts={payouts}
   />
- )}
- {aiQuickModalCustomer && (
- <AiMessageQuickModal 
- customer={aiQuickModalCustomer} 
- onClose={() => setAiQuickModalCustomer(null)} 
- />
  )}
  {showConfigModal && (
  <CustomerConfigModal onClose={() => setShowConfigModal(false)} />
@@ -2009,13 +1885,6 @@ export function Customers() {
  {customer.status === 'locked' ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
  </button>
  <button 
- onClick={() => setAiQuickModalCustomer(customer)}
- className="p-1.5 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-600 hover:text-[#FAF9F5] transition-all shadow-sm"
- title="Soạn tin AI nhanh"
- >
- <Sparkles className="w-3.5 h-3.5" />
- </button>
- <button 
  onClick={() => setSelectedCustomer(customer)}
  className="p-1.5 bg-slate-50 text-slate-500 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm"
  >
@@ -2060,42 +1929,9 @@ export function Customers() {
  <div className="p-4 border-b border-slate-300 bg-white flex justify-between items-center z-10 relative w-full">
  <div className="flex items-center gap-3">
  <h2 className="font-bold text-slate-900">Sales Pipeline B2B (Mẫu)</h2>
- <button 
- onClick={() => {
- const totalDeals = pipelineStages.reduce((sum, stage) => sum + stage.deals.length, 0);
- const wonDeals = pipelineStages.find(s => s.id === 'won')?.deals.length || 0;
- const valWon = pipelineStages.find(s => s.id === 'won')?.deals.reduce((acc, d) => acc + d.val, 0) || 0;
- 
- let insights = `• Tổng số Deal đang xử lý: ${totalDeals}.\n`;
- insights += `• Tỷ lệ chuyển đổi (Đoạt HĐ): ${Math.round((wonDeals / (totalDeals || 1)) * 100)}% (${wonDeals} deals).\n`;
- insights += `• Giá trị HĐ đã chốt: ${formatCurrency(valWon)}.\n`;
- if ((pipelineStages.find(s => s.id === 'proposal')?.deals.length || 0) > 1) {
- insights += `• Gợi ý: Có khá nhiều Deal ở bước "Gửi Báo Giá", hãy theo dõi sát sao để tăng khả năng chốt sale.`;
- }
- if ((pipelineStages.find(s => s.id === 'negotiation')?.deals.length || 0) > 0) {
- insights += `\n• Sales đang trong giai đoạn "Thương Lượng", tập trung resources hỗ trợ chốt nhanh.`;
- }
- setAiPipelineInsights(insights);
- }}
- className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold flex items-center gap-1.5 hover:bg-purple-100 transition-colors shadow-sm cursor-pointer"
- >
- <Sparkles className="w-3.5 h-3.5" /> Phân tích Pipeline (AI)
- </button>
  </div>
  <button className="text-xs px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 shadow-sm">+ Thêm Deal mới</button>
  </div>
- {aiPipelineInsights && (
- <div className="m-4 mb-0 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-start gap-3 relative animate-in slide-in-">
- <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
- <div>
- <h4 className="font-bold text-purple-900 text-sm mb-1">AI Phân tích Pipeline</h4>
- <div className="text-sm text-purple-800 whitespace-pre-line leading-relaxed">{aiPipelineInsights}</div>
- </div>
- <button onClick={() => setAiPipelineInsights(null)} className="ml-auto text-purple-400 hover:text-purple-600">
- <X className="w-4 h-4" />
- </button>
- </div>
- )}
  <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal min-w-0">
  <div className="flex gap-6 h-full items-start">
  {pipelineStages.map(stage => (

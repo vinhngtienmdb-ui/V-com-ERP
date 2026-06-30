@@ -17,6 +17,7 @@ export interface ModalProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | 'full';
   hideFooter?: boolean;
   noPadding?: boolean;
+  fullscreen?: boolean;
 }
 
 export function Modal({
@@ -34,6 +35,7 @@ export function Modal({
   maxWidth = '2xl',
   hideFooter = false,
   noPadding = false,
+  fullscreen = false,
 }: ModalProps) {
   // Handle ESC key to close
   useEffect(() => {
@@ -75,6 +77,70 @@ export function Modal({
     'warning': 'bg-orange-600 hover:bg-orange-700 text-white shadow-sm shadow-orange-500/25',
     'success': 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/25',
   };
+
+  if (fullscreen) {
+    return (
+      <div className="fixed inset-0 bg-slate-50 z-[9999] flex flex-col animate-in slide-in-from-right-4 duration-300">
+        <div className={cn("flex-1 flex flex-col w-full mx-auto relative", maxWidthClasses[maxWidth] !== 'max-w-[95vw]' ? maxWidthClasses[maxWidth] : 'max-w-7xl')}>
+          {/* Header */}
+          {title && (
+            <div className="flex justify-between items-center p-4 border-b border-slate-200 shrink-0 bg-white sticky top-0 z-10 shadow-sm">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={onClose} 
+                  className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex items-center justify-center"
+                  title="Quay l?i (ESC)"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <div className="w-px h-6 bg-slate-200"></div>
+                <div className="flex items-center gap-2">
+                  {icon && <div className="text-primary-600">{icon}</div>}
+                  <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Body */}
+          <div className={cn("flex-1 overflow-y-auto custom-scrollbar relative", !noPadding && "p-6")}>
+            {children}
+          </div>
+
+          {/* Footer */}
+          {!hideFooter && (
+            <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-end gap-3 shrink-0 sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+              {footer ? footer : (
+                <>
+                  <button 
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors"
+                  >
+                    {cancelText}
+                  </button>
+                  {onConfirm && (
+                    <button 
+                      type="button"
+                      onClick={onConfirm}
+                      disabled={confirmDisabled}
+                      className={cn(
+                        "px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2",
+                        confirmBtnClasses[confirmVariant],
+                        confirmDisabled && "opacity-50 cursor-not-allowed hover:bg-auto hover:opacity-50"
+                      )}
+                    >
+                      {confirmText}
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">

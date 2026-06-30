@@ -40,7 +40,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
 import { db, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from '../lib/firebase';
-import { getAiChatResponse } from '../services/geminiService';
+
 import {
   ResponsiveContainer,
   PieChart,
@@ -414,7 +414,7 @@ export function DeviceLeasing() {
 
   // AI assessment states
   const [aiEvaluating, setAiEvaluating] = useState(false);
-  const [aiResult, setAiResult] = useState('');
+//   const [aiResult, setAiResult] = useState('');
   const [aiRiskLevel, setAiRiskLevel] = useState<'low' | 'medium' | 'high' | ''>('');
   const [aiCreditScore, setAiCreditScore] = useState<number>(0);
   const [cicLoading, setCicLoading] = useState(false);
@@ -490,7 +490,7 @@ export function DeviceLeasing() {
 
   // Reset contextual parameters when contract changes
   useEffect(() => {
-    setAiResult('');
+//     setAiResult('');
     setAiRiskLevel('');
     setAiCreditScore(0);
     setGpsFetched(false);
@@ -895,7 +895,7 @@ export function DeviceLeasing() {
   const handleAIEvaluate = async (app: LeaseApplication) => {
     if (aiEvaluating) return;
     setAiEvaluating(true);
-    setAiResult('');
+//     setAiResult('');
     setAiRiskLevel('');
     setAiCreditScore(0);
 
@@ -975,11 +975,11 @@ export function DeviceLeasing() {
     Hãy trả về văn phong xúc tích chuyên nghiệp.`;
 
     try {
-      const response = await getAiChatResponse(promptText);
-      setAiResult(response);
+//       const response = await getAiChatResponse(promptText);
+//       setAiResult(response);
     } catch (e) {
       console.error(e);
-      setAiResult(`[Thẩm định nội bộ] Khách hàng ${app.customerName} có chỉ số DTI đạt tốt ở mức ${ratioPriceIncome}% (Ngưỡng an toàn tối đa 35%). CCCD định dạng tốt. Đề xuất: Phê duyệt giải ngân bàn giao máy nguyên seal không kèm hạn mức bổ sung.`);
+//       setAiResult(`[Thẩm định nội bộ] Khách hàng ${app.customerName} có chỉ số DTI đạt tốt ở mức ${ratioPriceIncome}% (Ngưỡng an toàn tối đa 35%). CCCD định dạng tốt. Đề xuất: Phê duyệt giải ngân bàn giao máy nguyên seal không kèm hạn mức bổ sung.`);
     }
 
     setAiCreditScore(evaluatedScore);
@@ -1814,91 +1814,11 @@ export function DeviceLeasing() {
                   </div>
                 )}
 
-                {/* TAB 3: AI Credit Audit Assessments (Gemini) */}
+                {/* TAB 3: CIC Audit Assessments */}
                 {detailTab === 'ai-audit' && (
                   <div className="space-y-4 animate-in fade-in duration-200 pb-2">
-                    <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3">
-                      <div className="flex items-center gap-1.5 border-b border-slate-205 pb-2">
-                        <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
-                        <span className="font-extrabold text-slate-800 text-xs">Báo cáo kiểm soát Tín dụng của Gemini AI</span>
-                      </div>
-
-                      {aiEvaluating ? (
-                        <div className="py-6 space-y-3 text-center text-slate-400">
-                          <RefreshCw className="w-6 h-6 text-indigo-600 animate-spin mx-auto animate-duration-1000" />
-                          <div className="space-y-1 font-mono text-[9px]">
-                            <p className="animate-pulse">Đang rà soát dữ liệu nợ hệ thống...</p>
-                            <p className="animate-pulse text-indigo-500">Gemini AI đang chấm điểm tín chỉ tài chính...</p>
-                          </div>
-                        </div>
-                      ) : aiCreditScore > 0 ? (
-                        <div className="space-y-3 animate-in fade-in duration-300">
-                          {/* Credit gauge simulation */}
-                          <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200">
-                            <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Điểm Tín Dụng AI Est.</p>
-                              <p className="text-xl font-black text-indigo-700 font-mono mt-0.5">{aiCreditScore}/850</p>
-                              <span className={cn(
-                                "text-[9px] font-bold px-1.5 py-0.5 rounded border block mt-1 text-center w-max",
-                                aiCreditScore >= 700 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                aiCreditScore >= 550 ? "bg-amber-50 text-amber-700 border-amber-200" :
-                                "bg-rose-50 text-rose-700 border-rose-250"
-                              )}>
-                                {aiCreditScore >= 700 ? "Hạng Tốt (AA)" : aiCreditScore >= 550 ? "Hạng Trung Bình (B)" : "Hạng Rủi Ro Thấp (C)"}
-                              </span>
-                            </div>
-
-                            <div className="text-right">
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Nhân Định Rủi Ro</p>
-                              <div className="mt-1">
-                                {aiRiskLevel === 'low' && (
-                                  <span className="px-2.5 py-1 bg-emerald-500 text-white font-extrabold text-[10px] rounded-lg">Rủi Ro Thấp</span>
-                                )}
-                                {aiRiskLevel === 'medium' && (
-                                  <span className="px-2.5 py-1 bg-amber-500 text-slate-900 font-extrabold text-[10px] rounded-lg">Rủi Ro Vừa</span>
-                                )}
-                                {aiRiskLevel === 'high' && (
-                                  <span className="px-2.5 py-1 bg-rose-600 text-white font-extrabold text-[10px] rounded-lg animate-pulse">Rủi Ro Cao</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Detail feedback */}
-                          <div className="bg-indigo-50/30 border border-indigo-100 rounded-lg p-3 text-slate-700 leading-relaxed text-[11px] font-medium max-h-[150px] overflow-y-auto custom-scrollbar">
-                            {aiResult}
-                          </div>
-
-                          {/* Option to recalculate with altered incomes */}
-                          <div className="pt-2 flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => handleAIEvaluate(selectedLease)}
-                              className="text-[10px] text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1 shrink-0"
-                            >
-                              <RefreshCw className="w-2.5 h-2.5" /> Thẩm định lại
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="py-2 text-center space-y-3">
-                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
-                            Chạy phân tích hồ sơ thông minh dựa trên dữ liệu CIC và Gemini AI để đánh giá rủi ro tín dụng.
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleAIEvaluate(selectedLease)}
-                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-lg text-[11px] flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm"
-                          >
-                            <Sparkles className="w-3.5 h-3.5" /> Thẩm định với Gemini AI
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
                     {/* CIC Lookup Section */}
                     <div className="bg-white rounded-lg border border-slate-200 p-3 space-y-2">
-
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
@@ -1977,18 +1897,6 @@ export function DeviceLeasing() {
                         </div>
                       )}
                     </div>
-
-                    {/* Option to re-run AI eval with CIC data */}
-                    {selectedLease.cicGroup && (
-                      <button
-                        type="button"
-                        onClick={() => handleAIEvaluate(selectedLease)}
-                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 transition-all text-white font-black px-4 py-2 rounded-lg text-[10.5px] flex items-center gap-1.5 justify-center cursor-pointer"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" /> Thẩm định AI ngay với dữ liệu CIC
-                      </button>
-                    )}
-
                   </div>
                 )}
 

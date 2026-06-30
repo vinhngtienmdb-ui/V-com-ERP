@@ -164,11 +164,11 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
   };
 
   return (
-    <div className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm flex justify-end z-50 transition-all font-sans">
-      <div className="bg-white w-full max-w-2xl h-full flex flex-col shadow-2xl relative animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+      <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 flex justify-between items-center shadow-sm shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-mono font-bold bg-slate-200 text-slate-800 px-2 py-1 rounded">
               {task.id}

@@ -513,20 +513,17 @@ export function SettingsPage() {
  const [adminAuditLogs, setAdminAuditLogs] = useState<any[]>([]);
  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState<{
-    gemini: string;
-    sepayToken: string;
+        sepayToken: string;
     sepayId: string;
     sepaySecret: string;
   }>({
-    gemini: safeLocalStorage.getItem('api_gemini_api_key') || '',
-    sepayToken: safeLocalStorage.getItem('api_sepay_api_token') || '',
+        sepayToken: safeLocalStorage.getItem('api_sepay_api_token') || '',
     sepayId: safeLocalStorage.getItem('api_sepay_client_id') || '',
     sepaySecret: safeLocalStorage.getItem('api_sepay_client_secret') || '',
   });
 
   const saveApiKeys = () => {
-    safeLocalStorage.setItem('api_gemini_api_key', apiKeys.gemini);
-    safeLocalStorage.setItem('api_sepay_api_token', apiKeys.sepayToken);
+        safeLocalStorage.setItem('api_sepay_api_token', apiKeys.sepayToken);
     safeLocalStorage.setItem('api_sepay_client_id', apiKeys.sepayId);
     safeLocalStorage.setItem('api_sepay_client_secret', apiKeys.sepaySecret);
   };

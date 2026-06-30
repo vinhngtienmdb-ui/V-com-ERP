@@ -768,6 +768,7 @@ export function SellerManagement() {
    maxWidth="4xl"
    hideFooter
    noPadding
+   fullscreen
    title={
      <div className="flex flex-col">
        <span className="text-xl font-bold text-slate-900 leading-tight">Cấu hình Hệ sinh thái & Phân quyền ứng dụng</span>
@@ -937,6 +938,7 @@ export function SellerManagement() {
    maxWidth="4xl"
    hideFooter
    noPadding
+   fullscreen
    title={
      <div className="flex flex-col">
        <span className="text-xl font-bold text-slate-900 leading-tight">Duyệt hồ sơ Đối tác mới</span>

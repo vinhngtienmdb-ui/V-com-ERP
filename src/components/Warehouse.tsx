@@ -42,7 +42,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useAuditLog } from '../hooks/useAuditLog';
-import { suggestStockReorder } from '../services/geminiService';
+
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';

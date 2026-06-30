@@ -17,29 +17,31 @@ export const StatCard: React.FC<StatCardProps> = ({
   title, value, change, icon: Icon, trend, subValue, color, iconBg
 }) => (
   <div className={cn(
-    'bg-white p-4 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 group relative overflow-hidden',
+    'bg-white p-3 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 group relative overflow-hidden flex flex-col justify-between',
     color
   )}>
-    <div className="flex justify-between items-start mb-4">
-      <div className={cn(
-        'w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform  duration-200',
-        iconBg || 'bg-blue-500'
-      )}>
-        <Icon className="w-5 h-5 text-white" />
+    <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-2">
+        <div className={cn(
+          'w-6 h-6 rounded flex items-center justify-center shrink-0 transition-transform duration-200',
+          iconBg || 'bg-blue-500'
+        )}>
+          <Icon className="w-3.5 h-3.5 text-white" />
+        </div>
+        <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{title}</div>
       </div>
       <div className={cn(
-        'text-xs flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full',
+        'text-[10px] flex items-center gap-0.5 font-bold px-1.5 py-0.5 rounded border',
         trend === 'up'
-          ? 'text-emerald-700 bg-emerald-50'
-          : 'text-rose-700 bg-rose-50'
+          ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+          : 'text-rose-700 bg-rose-50 border-rose-200'
       )}>
         {trend === 'up' ? '↗' : '↘'} {change}%
       </div>
     </div>
-    <div className="text-[12px] text-slate-500 font-medium mb-1">{title}</div>
-    <div className="text-xl font-bold text-slate-900 tracking-tight">{value}</div>
+    <div className="text-xl font-bold text-slate-900 tracking-tight mt-auto">{value}</div>
     {subValue && (
-      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 text-[12px] text-slate-500">
+      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100 text-[10px] text-slate-500">
         {subValue}
       </div>
     )}

@@ -541,23 +541,25 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
 
       {/* PO PDF visualizer modal */}
       {selectedRequestForPo && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-2xl relative flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+          <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm shrink-0">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Chi tiết Đơn đặt hàng (Purchase Order PDF)</h3>
-                <p className="text-xs text-slate-600 mt-0.5">Xuất PO mẫu chuẩn và mô phỏng tự động hóa quy trình</p>
+                <h3 className="text-xl font-bold text-slate-900">Chi tiết Đơn đặt hàng (Purchase Order PDF)</h3>
+                <p className="text-xs text-slate-500 mt-0.5 font-medium">Xuất PO mẫu chuẩn và mô phỏng tự động hóa quy trình</p>
               </div>
               <button 
                 onClick={() => setSelectedRequestForPo(null)} 
-                className="p-1 hover:bg-slate-100 rounded text-slate-600"
+                className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors"
               >
-                Đóng
+                <X className="w-5 h-5"/>
               </button>
             </div>
 
             {/* Visual PDF Body */}
-            <div className="flex-1 overflow-y-auto my-6 p-6 border border-slate-350 bg-slate-50 rounded-lg font-mono text-slate-800 text-xs space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              
+              <div className="border border-slate-350 bg-slate-50 rounded-lg font-mono text-slate-800 text-xs space-y-6 p-6">
               
               {/* PDF Header */}
               <div className="flex justify-between items-start pb-4 border-b border-dashed border-slate-400">
@@ -668,12 +670,11 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
                   )}
                 </button>
               </div>
+                          </div>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -121,57 +121,54 @@ const sellerData = [
 ];
 
 const StatCard = ({ title, value, change, icon: Icon, trend, subValue, color }: any) => (
- <div className={cn("bg-white p-4 rounded-lg border border-slate-300 hover:border-slate-400 transition-all duration-300 group  relative overflow-hidden", color)}>
- <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500  pointer-events-none">
- <Icon className="w-24 h-24 -mr-6 -mt-6 text-slate-900" />
- </div>
- <div className="relative z-10">
- <div className="flex justify-between items-start mb-4">
- <div className="p-3 bg-slate-50 text-slate-700 rounded-lg group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100 shadow-sm">
- <Icon className="w-5 h-5" />
- </div>
- <div className={cn(
- "text-xs flex items-center gap-1 font-bold px-2.5 py-1 rounded-full border shadow-sm",
- trend === 'up' ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200"
- )}>
- {trend === 'up' ? '↗' : '↘'} {change}%
- </div>
- </div>
- <div className="text-[11px] text-slate-600 font-bold uppercase tracking-wider mb-1.5">{title}</div>
- <div className="text-2xl font-black text-slate-900 tracking-tight">{value}</div>
- {subValue && (
- <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-200 text-[11px] text-slate-600 font-medium">
- {subValue}
- </div>
- )}
- </div>
- </div>
+  <div className={cn("bg-white p-3 rounded-lg border border-slate-300 hover:border-slate-400 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between", color)}>
+    <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 pointer-events-none">
+      <Icon className="w-16 h-16 -mr-4 -mt-4 text-slate-900" />
+    </div>
+    <div className="relative z-10 flex flex-col h-full">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-slate-50 text-slate-700 rounded-md group-hover:text-primary-700 group-hover:bg-primary-50 transition-colors border border-slate-200 group-hover:border-primary-100">
+            <Icon className="w-4 h-4" />
+          </div>
+          <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{title}</div>
+        </div>
+        <div className={cn(
+          "text-[10px] flex items-center gap-0.5 font-bold px-1.5 py-0.5 rounded border",
+          trend === 'up' ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200"
+        )}>
+          {trend === 'up' ? '↗' : '↘'} {change}%
+        </div>
+      </div>
+      <div className="text-xl font-black text-slate-900 tracking-tight mt-auto">{value}</div>
+      {subValue && (
+        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-200 text-[10px] text-slate-600 font-medium">
+          {subValue}
+        </div>
+      )}
+    </div>
+  </div>
 );
 
 const QuickActionCard = ({ title, icon: Icon, onClick, color, description }: any) => (
- <button 
- onClick={onClick}
- className={cn(
- "relative group overflow-hidden p-4 rounded-lg border transition-all duration-300 text-left",
- color === 'bg-slate-900' ? "bg-white border-slate-900 hover:border-slate-700" : 
- color === 'bg-emerald-600' ? "bg-white border-emerald-500 hover:border-emerald-600" : 
- "bg-white border-slate-700 hover:border-slate-800"
- )}
- >
- <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none"></div>
- <div className="relative z-10 flex flex-col h-full">
- <div className="p-3 bg-white/20 rounded-lg w-fit mb-4 backdrop-blur-md  group-hover:-rotate-3 transition-transform shadow-sm border border-white/10">
- <Icon className="w-5 h-5 text-[#FAF9F5]" />
- </div>
- <div className="mt-auto relative z-10">
- <h3 className="text-[#FAF9F5] font-bold tracking-tight text-lg mb-1 group-hover:translate-x-1 transition-transform">{title}</h3>
- <p className="text-[#FAF9F5]/70 text-xs font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{description}</p>
- </div>
- </div>
- <div className="absolute -top-8 -right-8 p-4 opacity-[0.08] group-hover:opacity-[0.15] group-hover:rotate-12 transition-all transform scale-150 duration-500 pointer-events-none">
- <Icon className="w-32 h-32 text-[#FAF9F5]" />
- </div>
- </button>
+  <button 
+    onClick={onClick}
+    className={cn(
+      "relative group overflow-hidden p-3 rounded-lg border transition-all duration-300 text-left flex items-center gap-3",
+      color === 'bg-slate-900' ? "bg-white border-slate-900 hover:border-slate-700" : 
+      color === 'bg-emerald-600' ? "bg-white border-emerald-500 hover:border-emerald-600" : 
+      "bg-white border-slate-700 hover:border-slate-800"
+    )}
+  >
+    <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+    <div className="p-2 bg-slate-100 rounded-lg shrink-0 group-hover:-rotate-3 transition-transform border border-slate-200 z-10">
+      <Icon className="w-4 h-4 text-slate-700 group-hover:text-primary-700" />
+    </div>
+    <div className="relative z-10 flex-1">
+      <h3 className="text-slate-900 font-bold tracking-tight text-sm mb-0.5 group-hover:translate-x-1 transition-transform">{title}</h3>
+      <p className="text-slate-500 text-[10px] font-medium leading-tight group-hover:translate-x-1 transition-transform delay-75 line-clamp-1">{description}</p>
+    </div>
+  </button>
 );
 
 
@@ -214,16 +211,16 @@ const defaultOverviewLayout = {
 
 
 const modulesList = [
-  { label: 'Hệ thống chính', icon: Settings2, desc: 'Cấu hình lõi và quản trị phân quyền.', path: '/settings' },
-  { label: 'Điều hành & Hệ thống', icon: Activity, desc: 'Workflow và quy trình phối hợp.', path: '/' },
-  { label: 'Hành chính & Ký số', icon: ShieldCheck, desc: 'Quản lý công văn và chữ ký điện tử.', path: '/signature' },
-  { label: 'Kinh doanh Đa kênh', icon: Store, desc: 'Omni-channel sales & CRM.', path: '/vcomm-supermarket' },
-  { label: 'Sản phẩm & Marketing', icon: Package, desc: 'PIM và các chiến dịch quảng bá.', path: '/pim' },
-  { label: 'Chuỗi cung ứng & Kho', icon: ListOrdered, desc: 'Logistics và quản trị tồn kho.', path: '/warehouse' },
-  { label: 'Tài chính & Thanh toán', icon: Wallet, desc: 'Kế toán và quản lý dòng tiền.', path: '/finance' },
-  { label: 'Đối tác & Khách hàng', icon: Users, desc: 'Quản lý Vendor và Loyalty.', path: '/customers' },
-  { label: 'Nhân sự & Tổ chức', icon: Users, desc: 'HRM và cơ cấu doanh nghiệp.', path: '/org' },
-  { label: 'Cấu hình', icon: Settings2, desc: 'Tùy biến tham số và Dashboard.', path: '/settings' }
+  { label: 'Hệ thống chính', icon: Settings2, desc: 'Cấu hình lõi và quản trị phân quyền.', path: '/settings', iconColor: 'text-blue-600 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white' },
+  { label: 'Điều hành & Hệ thống', icon: Activity, desc: 'Workflow và quy trình phối hợp.', path: '/', iconColor: 'text-purple-600 bg-purple-50 group-hover:bg-purple-600 group-hover:text-white' },
+  { label: 'Hành chính & Ký số', icon: ShieldCheck, desc: 'Quản lý công văn và chữ ký điện tử.', path: '/signature', iconColor: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white' },
+  { label: 'Kinh doanh Đa kênh', icon: Store, desc: 'Omni-channel sales & CRM.', path: '/vcomm-supermarket', iconColor: 'text-amber-600 bg-amber-50 group-hover:bg-amber-600 group-hover:text-white' },
+  { label: 'Sản phẩm & Marketing', icon: Package, desc: 'PIM và các chiến dịch quảng bá.', path: '/pim', iconColor: 'text-rose-600 bg-rose-50 group-hover:bg-rose-600 group-hover:text-white' },
+  { label: 'Chuỗi cung ứng & Kho', icon: ListOrdered, desc: 'Logistics và quản trị tồn kho.', path: '/warehouse', iconColor: 'text-cyan-600 bg-cyan-50 group-hover:bg-cyan-600 group-hover:text-white' },
+  { label: 'Tài chính & Thanh toán', icon: Wallet, desc: 'Kế toán và quản lý dòng tiền.', path: '/finance', iconColor: 'text-green-600 bg-green-50 group-hover:bg-green-600 group-hover:text-white' },
+  { label: 'Đối tác & Khách hàng', icon: Users, desc: 'Quản lý Vendor và Loyalty.', path: '/customers', iconColor: 'text-orange-600 bg-orange-50 group-hover:bg-orange-600 group-hover:text-white' },
+  { label: 'Nhân sự & Tổ chức', icon: Users, desc: 'HRM và cơ cấu doanh nghiệp.', path: '/org', iconColor: 'text-pink-600 bg-pink-50 group-hover:bg-pink-600 group-hover:text-white' },
+  { label: 'Cấu hình', icon: Settings2, desc: 'Tùy biến tham số và Dashboard.', path: '/settings', iconColor: 'text-slate-600 bg-slate-50 group-hover:bg-slate-600 group-hover:text-white' }
 ];
 
 export function Dashboard() {
@@ -315,7 +312,7 @@ export function Dashboard() {
       <h2 className="text-3xl font-black tracking-tight text-primary-900 font-sans">Chào buổi sáng, {staffInfo?.email || 'admin@vcomm.vn'}</h2>
       <p className="text-slate-500 mt-1 text-sm font-medium">Hệ thống ghi nhận 12 luồng công việc đang chờ bạn xử lý trong hôm nay.</p>
     </div>
-    <div className="bg-white border border-slate-300 p-3 rounded-lg flex items-center gap-3 shadow-sm text-xs font-bold text-slate-700">
+    <div className="bg-white border border-slate-300 p-3 rounded-lg flex items-center gap-3 text-xs font-bold text-slate-700">
       <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
       <span>Hôm nay: {new Date().toLocaleDateString('vi-VN')}</span>
     </div>
@@ -387,7 +384,7 @@ export function Dashboard() {
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
  <div>
  <div className="flex items-center gap-3 mb-2">
- <span className="px-3 py-1 bg-slate-100 text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60 shadow-sm">Bảng điều khiển Trực tiếp</span>
+ <span className="px-3 py-1 bg-slate-100 text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60">Bảng điều khiển Trực tiếp</span>
  <span className="text-[11px] text-slate-600 font-bold uppercase tracking-wider flex items-center gap-1.5">
  <span className="relative flex h-2 w-2">
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -401,16 +398,16 @@ export function Dashboard() {
  </div>
  
  <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-primary-600 transition-all flex items-center justify-center gap-2 shadow-sm">
+ <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-primary-600 transition-all flex items-center justify-center gap-2">
  <Activity className="w-4 h-4 text-emerald-500" />
  Báo cáo Vận hành
  </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5">
+ <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-900 transition-all hover:">
  Xuất dữ liệu BI
  </button>
  <button 
  onClick={() => setIsConfigOpen(true)}
- className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
+ className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shrink-0"
  >
  <Settings2 className="w-4 h-4 text-orange-600" />
  Tùy biến
@@ -420,16 +417,16 @@ export function Dashboard() {
 
  {config.showQuickNav && (
  <div className="flex flex-wrap items-center gap-3">
- <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 shadow-sm group">
- <Package className="w-4 h-4 text-orange-600  transition-transform" />
+ <button onClick={() => navigate('/pim')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-orange-800 transition-all flex items-center gap-2 group">
+ <Package className="w-4 h-4 text-orange-600 transition-transform" />
  Hệ thống PIM
  </button>
- <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 shadow-sm group">
- <ListOrdered className="w-4 h-4 text-emerald-500  transition-transform" />
+ <button onClick={() => navigate('/orders')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center gap-2 group">
+ <ListOrdered className="w-4 h-4 text-emerald-500 transition-transform" />
  Quản lý Đơn hàng
  </button>
- <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 shadow-sm group">
- <Users className="w-4 h-4 text-slate-800  transition-transform" />
+ <button onClick={() => navigate('/sellers')} className="bg-white border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 group">
+ <Users className="w-4 h-4 text-slate-800 transition-transform" />
  Trung tâm Đối tác
  </button>
  </div>
@@ -438,10 +435,10 @@ export function Dashboard() {
  {delayedOrdersCount > 0 && (
  <div 
  onClick={() => navigate('/orders')}
- className="bg-white to-white border border-red-200 p-4 rounded-lg cursor-pointer hover:shadow-sm transition-all group"
+ className="bg-white to-white border border-red-200 p-4 rounded-lg cursor-pointer transition-all group"
  >
  <div className="flex items-start gap-4">
- <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-[#FAF9F5] transition-all shadow-sm shrink-0 mt-0.5">
+ <div className="p-2.5 bg-red-100 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-[#FAF9F5] transition-all shrink-0 mt-0.5">
  <ShoppingCart className="w-5 h-5" />
  </div>
  <div>
@@ -477,7 +474,7 @@ export function Dashboard() {
    <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
     <LayoutDashboard className="w-3.5 h-3.5 text-orange-600" /> Bố cục nhanh:
    </span>
-   <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex gap-1 shadow-inner">
+   <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex gap-1">
     <button 
      onClick={() => {
        setActiveTab('overview');
@@ -499,7 +496,7 @@ export function Dashboard() {
      }}
      className={cn(
        "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-       activeTab === 'overview' ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+       activeTab === 'overview' ? "bg-white text-slate-900  border border-slate-200" : "text-slate-500 hover:text-slate-800"
      )}
     >
      Tổng hợp
@@ -525,7 +522,7 @@ export function Dashboard() {
      }}
      className={cn(
        "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-       activeTab === 'finance' ? "bg-white text-[#0F172A] shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+       activeTab === 'finance' ? "bg-white text-[#0F172A]  border border-slate-200" : "text-slate-500 hover:text-slate-800"
      )}
     >
      <DollarSign className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Tài chính
@@ -551,7 +548,7 @@ export function Dashboard() {
      }}
      className={cn(
        "px-3 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-       activeTab === 'performance' ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-800"
+       activeTab === 'performance' ? "bg-white text-slate-900  border border-slate-200" : "text-slate-500 hover:text-slate-800"
      )}
     >
      <Package className="w-3.5 h-3.5 text-orange-600 shrink-0" /> Vận hành
@@ -563,7 +560,7 @@ export function Dashboard() {
  <div className="space-y-6">
  {isConfigOpen && (
  <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-end">
- <div className="bg-white w-full max-w-sm h-full shadow-sm animate-in slide-in-from-right duration-300 flex flex-col">
+ <div className="bg-white w-full max-w-sm h-full animate-in slide-in-from-right duration-300 flex flex-col">
  <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
  <div className="flex items-center gap-3">
  <div className="p-2 bg-[#EAE7DF] text-orange-700 rounded-lg">
@@ -596,8 +593,8 @@ export function Dashboard() {
  <item.icon className={cn("w-5 h-5", config[item.id] ? "text-orange-600" : "text-slate-500 group-hover:text-orange-500")} />
  <span className={cn("text-sm font-bold", config[item.id] ? "text-slate-900" : "text-slate-600 group-hover:text-slate-800")}>{item.label}</span>
  </div>
- <div className={cn("w-11 h-6 rounded-full p-1 transition-colors relative shadow-inner", config[item.id] ? "bg-slate-900" : "bg-slate-300")}>
- <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200", config[item.id] ? "translate-x-5" : "translate-x-0")}></div>
+ <div className={cn("w-11 h-6 rounded-full p-1 transition-colors relative ", config[item.id] ? "bg-slate-900" : "bg-slate-300")}>
+ <div className={cn("w-4 h-4 bg-white rounded-full  transition-transform duration-200", config[item.id] ? "translate-x-5" : "translate-x-0")}></div>
  </div>
  <input type="checkbox" className="sr-only" checked={config[item.id]} onChange={() => handleConfigChange(item.id)} />
  </label>
@@ -605,7 +602,7 @@ export function Dashboard() {
  </div>
  </div>
  <div className="p-5 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
- <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-900 shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5 transition-all flex justify-center items-center gap-2">
+ <button onClick={() => setIsConfigOpen(false)} className="px-6 py-3 w-full bg-slate-900 text-[#FAF9F5] rounded-lg text-sm font-bold hover:bg-slate-900 transition-all flex justify-center items-center gap-2">
  <CheckCircle2 className="w-5 h-5" /> Lưu tùy chỉnh
  </button>
  </div>
@@ -647,7 +644,7 @@ export function Dashboard() {
   isResizable={layoutEditable}
  >
   {config.showMainChart && (
-  <div key="mainChart" className="bg-white rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div key="mainChart" className="bg-white rounded-lg border border-slate-300 overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 hover:bg-slate-100 transition-colors">
   <div>
   <h3 className="font-bold text-primary-900 tracking-tight text-lg pointer-events-none">Biểu đồ Tăng trưởng & Xu hướng</h3>
@@ -676,7 +673,7 @@ export function Dashboard() {
   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} dy={12}/>
   <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value}T`} />
   <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94A3B8' }} tickFormatter={(value) => `${value / 1000}k`} />
-  <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}/>
+  <Tooltip cursor={{ stroke: '#E2E8F0', strokeWidth: 1 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'none', padding: '12px' }}/>
   <Area yAxisId="left" type="monotone" dataKey="gmv" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
   {/* @ts-ignore */}
   <Bar yAxisId="right" dataKey="traffic" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.6} />
@@ -687,10 +684,10 @@ export function Dashboard() {
   )}
 
   {config.showCommunity && (
-  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm shadow-slate-900/10 border border-slate-800 flex flex-col justify-between h-full w-full">
+  <div key="community" className="bg-gradient-to-br from-slate-900 to-[#0B1120] rounded-lg text-[#FAF9F5] relative overflow-hidden border border-slate-800 flex flex-col justify-between h-full w-full">
   <div className="drag-handle cursor-move px-6 py-6 relative z-10 hover:bg-white/5 transition-colors rounded-t-xl rounded-b-xl h-full flex flex-col">
   <div className="flex items-center gap-4 mb-6 pointer-events-none">
-  <div className="p-3 bg-slate-800 rounded-lg shadow-sm shadow-slate-900/5 shadow-inner border border-slate-700">
+  <div className="p-3 bg-slate-800 rounded-lg border border-slate-700">
   <Users className="w-6 h-6 text-[#FAF9F5]" />
   </div>
   <div>
@@ -699,7 +696,7 @@ export function Dashboard() {
   </div>
   <p className="text-slate-500 text-xs leading-relaxed max-w-sm pointer-events-none mb-6">Hơn 2,400 SKU mới đang chờ duyệt trong 24h tới.</p>
   <div className="relative z-10 w-full mt-auto">
-  <button className="px-5 w-fit py-2 pointer-events-auto bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all shadow-sm">Duyệt Seller mới</button>
+  <button className="px-5 w-fit py-2 pointer-events-auto bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-slate-100 transition-all">Duyệt Seller mới</button>
   </div>
   </div>
   <Users className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F5] opacity-[0.02] pointer-events-none" />
@@ -707,7 +704,7 @@ export function Dashboard() {
   )}
 
   {config.showCategorySplit && (
-  <div key="categorySplit" className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden flex flex-col h-full w-full">
+  <div key="categorySplit" className="bg-white rounded-lg border border-slate-300 overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50 transition-colors px-5 py-4 border-b border-slate-200 flex items-center justify-between">
   <h3 className="font-bold text-primary-900 text-sm pointer-events-none">Tỷ trọng Ngành</h3>
   </div>
@@ -726,7 +723,7 @@ export function Dashboard() {
   )}
 
   {config.showTopSellers && (
-  <div key="topSellers" className="bg-white rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-shadow overflow-hidden flex flex-col h-full w-full">
+  <div key="topSellers" className="bg-white rounded-lg border border-slate-300 overflow-hidden flex flex-col h-full w-full">
   <div className="drag-handle cursor-move hover:bg-slate-50/90 transition-colors sticky top-0 z-10 px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90 backdrop-blur-sm rounded-t-xl">
   <h3 className="font-bold text-primary-900 text-sm tracking-tight pointer-events-none">Top Sellers</h3>
   <button className="text-[10px] font-bold text-orange-700 uppercase tracking-widest hover:text-blue-800 transition-colors pointer-events-auto">Xem tất cả</button>
@@ -759,19 +756,21 @@ export function Dashboard() {
    {/* Core Modules Grid */}
    <div className="space-y-4 pt-6 border-t border-slate-200">
      <h3 className="font-bold text-slate-900 text-base">Hệ sinh thái Module Core</h3>
-     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
        {modulesList.map((mod, idx) => (
          <div 
            key={idx}
            onClick={() => navigate(mod.path)}
-           className="group bg-white border border-slate-300 p-5 rounded-lg hover:border-primary-500 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between min-h-[140px] hover:-translate-y-1 duration-300"
+           className="group bg-white border border-slate-200 p-4 rounded-xl hover:border-slate-300 hover:shadow-sm transition-all cursor-pointer"
          >
-           <div>
-             <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-primary-600 mb-3 group-hover:bg-primary-600 group-hover:text-white transition-colors">
+           <div className="flex items-center gap-3">
+             <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors", mod.iconColor || "text-primary-600 bg-primary-50 group-hover:bg-primary-600 group-hover:text-white")}>
                <mod.icon className="w-5 h-5" />
              </div>
-             <h4 className="font-bold text-xs text-slate-800 mb-1 group-hover:text-primary-700 transition-colors">{mod.label}</h4>
-             <p className="text-[10px] text-slate-500 leading-tight">{mod.desc}</p>
+             <div className="flex-1 min-w-0">
+              <h4 className="font-bold text-sm text-slate-900 mb-0.5 group-hover:text-primary-700 transition-colors truncate">{mod.label}</h4>
+              <p className="text-[11px] text-slate-500 leading-tight truncate">{mod.desc}</p>
+            </div>
            </div>
          </div>
        ))}
@@ -794,7 +793,7 @@ export function Dashboard() {
   isResizable={layoutEditable}
  >
   {config.showSLA && (
-  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-lg shadow-sm relative overflow-hidden group flex flex-col h-full w-full">
+  <div key="sla" className="bg-slate-900 text-[#FAF9F5] rounded-lg relative overflow-hidden group flex flex-col h-full w-full">
   <div className="drag-handle cursor-move p-6 relative z-10 flex items-center justify-between mb-2">
   <h3 className="font-bold text-[#FAF9F5] text-lg flex items-center gap-2 pointer-events-none">
   <Activity className="w-5 h-5 text-orange-500" />
@@ -831,7 +830,7 @@ export function Dashboard() {
   <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1">-0.2h <TrendingDown className="w-3 h-3"/> so với hôm qua</div>
   </div>
   <div className="w-24 h-12 opacity-80">
-  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-shadow-sm">
+  <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible drop-">
   <path d="M0,30 L20,25 L40,35 L60,15 L80,20 L100,5" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
   </div>
@@ -861,7 +860,7 @@ export function Dashboard() {
   )}
 
   {config.showHourlyOrders && (
-  <div key="hourlyOrders" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col overflow-hidden h-full w-full">
+  <div key="hourlyOrders" className="bg-white rounded-lg border border-slate-300 flex flex-col overflow-hidden h-full w-full">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-slate-900 text-lg pointer-events-none">Đơn hàng theo Giờ</h3>
   </div>
@@ -871,7 +870,7 @@ export function Dashboard() {
   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
   <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} dy={8} />
   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} />
-  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }} />
+  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: 'none', padding: '12px' }} />
   <Line type="monotone" dataKey="orders" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
   </LineChart>
   </ResponsiveContainer>
@@ -905,7 +904,7 @@ export function Dashboard() {
   )}
 
   {config.showRevenueExpense && (
-  <div key="revenueExpense" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div key="revenueExpense" className="bg-white rounded-lg border border-slate-300 flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-primary-900 text-lg flex items-center gap-2 pointer-events-none">
   <LineChartIcon className="w-5 h-5 text-orange-700" />
@@ -920,7 +919,7 @@ export function Dashboard() {
   <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
   <Tooltip 
   cursor={{ fill: '#F3F4F6' }}
-  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'none' }}
   formatter={(value) => [`${value} triệu VNĐ`, '']}
   />
   <Legend wrapperStyle={{ paddingTop: '20px' }} />
@@ -933,7 +932,7 @@ export function Dashboard() {
   )}
 
   {config.showCashFlow && (
-  <div key="cashFlow" className="bg-white rounded-lg border border-slate-300 shadow-sm flex flex-col h-full w-full overflow-hidden">
+  <div key="cashFlow" className="bg-white rounded-lg border border-slate-300 flex flex-col h-full w-full overflow-hidden">
   <div className="drag-handle cursor-move px-6 py-5 border-b border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors">
   <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2 pointer-events-none">
   <Wallet className="w-5 h-5 text-emerald-600" />
@@ -958,7 +957,7 @@ export function Dashboard() {
   <YAxis tickFormatter={(value) => `${value}tr`} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dx={-10} />
   <Tooltip 
   cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
-  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'none' }}
   formatter={(value) => [`${value} triệu VNĐ`, '']}
   />
   <Legend wrapperStyle={{ paddingTop: '20px' }} />

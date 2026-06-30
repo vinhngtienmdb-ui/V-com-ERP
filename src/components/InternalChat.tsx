@@ -19,7 +19,6 @@ import {
 import { cn } from '../lib/utils';
 import { useNotifications } from '../context/NotificationContext';
 import { MOCK_MEMBERS } from '../types/task';
-import { getAiChatResponse } from '../services/geminiService';
 
 interface ChatMessage {
   id: string;
@@ -159,7 +158,7 @@ export function InternalChat() {
       }));
 
       try {
-        const responseText = await getAiChatResponse(cleanPrompt || 'Chào bạn, bạn có thể giúp tôi làm gì?', chatHistory);
+//         const responseText = await getAiChatResponse(cleanPrompt || 'Chào bạn, bạn có thể giúp tôi làm gì?', chatHistory);
         
         setTimeout(() => {
           const aiMsg: ChatMessage = {

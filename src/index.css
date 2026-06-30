@@ -555,13 +555,13 @@ html[data-border-radius="2xl"] table {
 .erp-modernized div:has(> table),
 .erp-modernized .table-container,
 .erp-modernized table {
-  border-radius: 8px !important;
+  border-radius: 4px !important;
   box-shadow: none !important;
   border: 1px solid #e2e8f0 !important;
 }
 
 .erp-modernized th {
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
@@ -574,12 +574,34 @@ html[data-border-radius="2xl"] table {
 .erp-modernized td {
   padding: 8px 12px !important;
   border-bottom: 1px solid #f1f5f9 !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   color: #334155 !important;
 }
 
 .erp-modernized tr:hover td {
   background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+/* Global compact card sizing & shape */
+.erp-modernized .p-6 {
+  padding: 1.25rem !important; /* 20px instead of 24px */
+}
+
+.erp-modernized .p-5 {
+  padding: 1rem !important; /* 16px instead of 20px */
+}
+
+/* Global reduce border radius */
+.erp-modernized .rounded-lg {
+  border-radius: 4px !important;
+}
+
+.erp-modernized .rounded-xl {
+  border-radius: 6px !important;
+}
+
+.erp-modernized .rounded-2xl {
+  border-radius: 8px !important;
 }
 
 /* Dynamic Typography Scaling */

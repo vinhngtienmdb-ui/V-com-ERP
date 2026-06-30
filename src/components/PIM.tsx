@@ -189,11 +189,7 @@ export function PIM() {
     }
     setAiSearchLoading(true);
     try {
-      const res = await fetch('/api/gemini/vector-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q, tenantId: 'tenant-vcomm-prod-01' })
-      });
+      const res = await fetch("/api/mock/vector-search");
       const data = await res.json();
       if (data.success && Array.isArray(data.products)) {
         setAiSearchResults(data.products);
@@ -211,11 +207,7 @@ export function PIM() {
   const handleEmbedAllProducts = async () => {
     setIsEmbedding(true);
     try {
-      const res = await fetch('/api/gemini/embed-all-products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tenantId: 'tenant-vcomm-prod-01' })
-      });
+      const res = await fetch("/api/mock/embed-all-products");
       const data = await res.json();
       if (data.success) {
         alert(data.message || 'Đồng bộ vector thành công!');
@@ -640,9 +632,9 @@ export function PIM() {
 
  {/* Modal Bổ sung sản phẩm */}
  {isUploadModalOpen && (
- <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#111827]/70 backdrop-blur-md animate-in fade-in duration-300">
- <div className="bg-white w-full max-w-4xl rounded-lg shadow-sm border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
- <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50/50">
+ <div className="fixed inset-0 bg-slate-50 z-[110] flex flex-col animate-in slide-in-from-right-4 duration-300">
+ <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative">
+ <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-white sticky top-0 z-10 shadow-sm">
  <div className="flex items-center gap-4">
  <div className="p-4 bg-slate-900 rounded-[1.5rem] shadow-sm shadow-slate-900/5">
  <ArrowUpCircle className="w-8 h-8 text-[#FAF9F5]" />
@@ -674,7 +666,7 @@ export function PIM() {
 
  <form onSubmit={handleAddProduct} className="flex-1 overflow-y-auto flex flex-col">
  {uploadMode === 'single' ? (
- <div className="p-6 space-y-8">
+ <div className="p-6 space-y-8 max-w-4xl mx-auto w-full">
  <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
  <label className="text-[11px] font-black text-[#111827] uppercase tracking-widest px-1">Tên sản phẩm</label>
@@ -837,7 +829,7 @@ export function PIM() {
   </div>
   </div>
   ) : (
- <div className="p-6 space-y-8 flex-1 flex flex-col justify-center">
+ <div className="p-6 space-y-8 flex-1 flex flex-col justify-center max-w-4xl mx-auto w-full">
  <div 
  onDragOver={handleDragOver}
  onDrop={handleDrop}
@@ -948,7 +940,7 @@ export function PIM() {
  </div>
  )}
 
- <div className="flex gap-4 p-6 border-t border-slate-200 bg-white mt-auto">
+ <div className="flex gap-4 p-6 border-t border-slate-200 bg-white mt-auto justify-center">
  <button 
  type="button"
  onClick={() => setIsUploadModalOpen(false)}
@@ -959,7 +951,7 @@ export function PIM() {
  <button 
  type="submit"
  disabled={uploadMode === 'bulk' && fileValidation.status !== 'success'}
- className="flex-1 py-5 bg-[#111827] text-[#FAF9F5] font-black rounded-lg text-[11px] hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="px-12 py-5 bg-[#111827] text-[#FAF9F5] font-black rounded-lg text-[11px] hover:bg-slate-800 transition-all uppercase tracking-[0.2em] shadow-sm shadow-slate-900/40 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  {uploadMode === 'bulk' ? 'Import Dữ Liệu' : 'Duyệt & Thêm vào hệ thống'} <Plus className="w-5 h-5" />
  </button>
@@ -1562,10 +1554,10 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  
  {/* P&L Details Modal */}
  {showPnLForProduct && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-all">
- <div className="bg-white rounded-lg w-full max-w-3xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
+ <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+ <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative">
  {/* Header */}
- <div className="px-6 py-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+ <div className="px-6 py-6 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10 shadow-sm">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-primary-750">
  <Calculator className="w-6 h-6" />
@@ -1602,7 +1594,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase tracking-widest">
  {showPnLForProduct.category || 'N/A'}
  </span>
- <span className="px-2.5 py-1 bg-slate-100 text-primary-750 rounded-lg text-[10px] font-black uppercase tracking-widest">
+ <span className="px-2.5 py-1 bg-primary-750 text-white rounded-lg text-[10px] font-black uppercase tracking-widest">
  {showPnLForProduct.brand || 'No Brand'}
  </span>
  </div>
@@ -1833,10 +1825,10 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  )}
 
   {showDetailForProduct && (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-all">
-      <div className="bg-white rounded-lg w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+      <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <div className="px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 flex justify-between items-center shadow-sm shrink-0">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-primary-750">
               <Package className="w-6 h-6" />
@@ -2343,9 +2335,9 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
             </div>
           )}
         </div>
+              </div>
       </div>
-    </div>
-  )}
+    )}
   </div>
   );
 }

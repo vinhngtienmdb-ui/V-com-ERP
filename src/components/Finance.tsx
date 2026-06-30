@@ -37,7 +37,6 @@ import {
   Lock
 } from 'lucide-react';
 import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
-import { summarizeCashFlow } from '../services/geminiService';
 import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../lib/firebase';
 import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
@@ -94,19 +93,18 @@ export function Finance() {
   const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('1121');
 
   // AI Cashflow Analysis States
-  const [isAnalyzingCashFlow, setIsAnalyzingCashFlow] = useState(false);
-  const [cashFlowAnalysisText, setCashFlowAnalysisText] = useState("");
+    const [cashFlowAnalysisText, setCashFlowAnalysisText] = useState("");
 
   const handleAnalyzeCashFlow = async (totalCfIn: number, totalCfOut: number, netCashFlow: number) => {
-    setIsAnalyzingCashFlow(true);
+    
     try {
-      const response = await summarizeCashFlow(totalCfIn, totalCfOut, netCashFlow);
+      
       setCashFlowAnalysisText(response);
     } catch (err: any) {
       console.error(err);
       alert('Lỗi phân tích dòng tiền bằng AI: ' + (err.message || err));
     } finally {
-      setIsAnalyzingCashFlow(false);
+      
     }
   };
 
@@ -264,7 +262,7 @@ export function Finance() {
       const ledgerContentHash = String(Math.abs(netProfit) + totalRevenue + totalExpenses);
 
       // Remote Cloud HSM signing
-      const hsmRes = await fetch('/api/gemini/hsm-sign-ledger', {
+      const hsmRes = await fetch('/api/mock/hsm-sign-ledger', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -558,7 +556,7 @@ export function Finance() {
  <Zap className="w-8 h-8 text-[#FAF9F5]" />
  </div>
  <div className="space-y-1 text-center">
- <p className="text-sm font-black text-slate-900 animate-pulse">Gemini AI đang phân tích...</p>
+ <p className="text-sm font-black text-slate-900 animate-pulse">Hệ thống đang xử lý...</p>
  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Trích xuất Header & Line Items</p>
  </div>
  <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
@@ -574,7 +572,7 @@ export function Finance() {
  <Sparkles className="w-6 h-6 text-primary-300" />
  </div>
  <div>
- <h4 className="text-sm font-bold uppercase tracking-widest mb-1 italic">AI Productivity Tip</h4>
+ <h4 className="text-sm font-bold uppercase tracking-widest mb-1 italic">Productivity Tip</h4>
  <p className="text-[11px] text-primary-100/70 leading-relaxed font-medium">Sử dụng Smart OCR có thể giúp bạn giảm 90% lỗi sai sót trong quá trình nhập liệu hóa đơn đỏ. Độ chính xác đạt 99.2% với các hóa đơn chuẩn E-Invoice.</p>
  </div>
  </div>
@@ -596,7 +594,7 @@ export function Finance() {
  <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
  <div className="flex justify-between items-center pb-4 border-b border-slate-200">
  <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
- <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả Trích xuất AI
+ <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả Trích xuất
  </h3>
  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Match: 99.4%</span>
  </div>
@@ -663,7 +661,7 @@ export function Finance() {
  )}
  
  <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 italic">
-<AlertCircle className="w-3.5 h-3.5" /> Lưu ý: Hệ thống đang sử dụng mô hình Gemini 1.5 Pro cho độ chính xác cao nhất trên các định dạng hóa đơn phức tạp.
+
  </div>
  </div>
  </div>
@@ -1693,11 +1691,11 @@ export function Finance() {
                       </div>
                       <button
                         onClick={() => handleAnalyzeCashFlow(totalCfIn, totalCfOut, netCashFlow)}
-                        disabled={isAnalyzingCashFlow}
+                        disabled={false}
                         className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-[#FAF9F5] text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50"
                       >
                         <Zap className="w-3.5 h-3.5" />
-                        {isAnalyzingCashFlow ? 'AI đang phân tích dòng tiền...' : 'Phân tích dòng tiền bằng AI'}
+                        {false ? 'AI đang phân tích dòng tiền...' : 'Phân tích dòng tiền bằng AI'}
                       </button>
                     </div>
 

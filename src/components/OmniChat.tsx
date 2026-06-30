@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
-import { getAiChatResponse } from '../services/geminiService';
+
 
 const MOCK_TỗREADS: ChatThread[] = [
  { id: 'T1', channel: 'zalo', userName: 'ohạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
@@ -71,7 +71,7 @@ export function OmniChat() {
  content: m.text
  }));
 
- const aiText = await getAiChatResponse(inputValue, history);
+//  const aiText = await getAiChatResponse(inputValue, history);
 
  const aiMsg: ChatMessage = {
  id: (Date.now() + 1).toString(),
@@ -96,7 +96,7 @@ export function OmniChat() {
  const lastCustomerMsg = [...messages].reverse().find(m => m.senderId === 'user')?.text;
  if (lastCustomerMsg) {
  const prompt = `Dựa trên tin nhắn này của khách hàng: "${lastCustomerMsg}", hãy gợi ý 3 câu trả lời ngắn gọn, chuyên nghiệp và thân thiện cho nhân viên CSKỗ (ngôn ngữ Tiếng Việt).`;
- const response = await getAiChatResponse(prompt, []);
+//  const response = await getAiChatResponse(prompt, []);
  // Split by newline or common separators if AI returns a list
  const suggestions = response.split('\n').filter(s => s.trim().length > 5).slice(0, 3);
  setSuggestedReplies(suggestions);

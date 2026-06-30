@@ -468,19 +468,20 @@ export function Marketing() {
  )}
 
  {isModalOpen && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
- <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-sm animate-in zoom-in-95 duration-200">
- <div className="flex justify-between items-center mb-6">
- <div className="flex items-center gap-2 text-primary-600">
- <Megaphone className="w-5 h-5 fill-current" />
- <h2 className="text-lg font-bold text-[#111827]">Tạo chiến dịch Marketing</h2>
- </div>
- <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
- <X className="w-5 h-5" />
- </button>
- </div>
- 
- <form className="space-y-4">
+   <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-in slide-in-from-right-4 duration-300">
+   <div className="bg-white w-full max-w-7xl mx-auto flex flex-col flex-1 relative shadow-sm border-x border-slate-200">
+   <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm shrink-0">
+   <div className="flex items-center gap-2 text-primary-600">
+   <Megaphone className="w-5 h-5 fill-current" />
+   <h2 className="text-xl font-bold text-slate-900">Tạo chiến dịch Marketing</h2>
+   </div>
+   <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+   <X className="w-5 h-5" />
+   </button>
+   </div>
+   
+   <div className="flex-1 overflow-y-auto p-6 flex justify-center">
+   <form className="space-y-4 w-full max-w-lg">
  <div>
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
  <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" required />
@@ -513,10 +514,11 @@ export function Marketing() {
  <button className="w-full bg-primary-600 text-[#FAF9F5] py-3 rounded-lg font-bold mt-6 hover:bg-primary-700 shadow-sm shadow-slate-900/5 transition-all">
  Khởi tạo chiến dịch Đa kênh
  </button>
- </form>
- </div>
- </div>
- )}
+   </form>
+   </div>
+   </div>
+   </div>
+   )}
  </div>
  );
 }

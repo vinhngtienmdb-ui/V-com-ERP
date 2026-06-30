@@ -40,8 +40,6 @@ export const navGroups = [
  { icon: Home, label: 'Trang chủ', path: '/', color: 'blue', description: 'Tổng quan và truy cập nhanh tất cả module' },
  { icon: LayoutDashboard, label: 'Bảng điều khiển', path: '/dashboard', color: 'indigo', description: 'Báo cáo và thông số vận hành realtime' },
  { icon: PieChart, label: 'Phân tích dữ liệu', path: '/bi', color: 'violet', description: 'Công cụ BI và phân tích chuyên sâu' },
- { icon: Sparkles, label: 'Trung tâm vận hành AI', path: '/ai-ops', color: 'cyan', description: 'Tối ưu vận hành bằng trí tuệ nhân tạo' },
- { icon: Zap, label: 'Dự báo & Giá động AI', path: '/ai-predictions', color: 'cyan', description: 'Dự báo nhu cầu tồn kho và giá bán động bằng AI' },
  { icon: Activity, label: 'Điều hành & Workflow', path: '/workflow', color: 'emerald', description: 'Quản lý quy trình và luồng công việc' },
  ]
  },

@@ -61,7 +61,7 @@ const FUNCTIONAL_GROUPS: FunctionalGroup[] = [
     desc: 'Công cụ phân tích BI, trí tuệ nhân tạo và workflow.',
     icon: Activity,
     color: 'emerald',
-    modulePaths: ['/bi', '/ai-ops', '/workflow']
+    modulePaths: ['/bi', '/workflow']
   },
   {
     id: 'hanh_chinh_phap_ly',
@@ -323,7 +323,7 @@ export function Home() {
                       <div 
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-center hover:shadow-sm hover:border-slate-300 transition-all cursor-pointer relative overflow-hidden group"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button 
@@ -454,7 +454,7 @@ export function Home() {
                       <div
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-center hover:shadow-sm hover:border-slate-300 transition-all cursor-pointer relative overflow-hidden group"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
@@ -465,23 +465,27 @@ export function Home() {
                           <Star className="w-3.5 h-3.5 fill-amber-500" />
                         </button>
 
-                        {/* Large circle squircle around icon */}
-                        <div className={cn(
-                          "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
-                          COLOR_MAP[visuals.color] || COLOR_MAP.blue
-                        )}>
-                          <IconComponent className="w-6 h-6" />
+                        <div className="flex items-center gap-3 w-full relative z-10">
+                          {/* Large circle squircle around icon */}
+                          <div className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                            COLOR_MAP[visuals.color] || COLOR_MAP.blue
+                          )}>
+                            <IconComponent className="w-5 h-5" />
+                          </div>
+
+                          <div className="flex-1 min-w-0 text-left">
+                            {/* Title */}
+                            <h4 className="font-bold text-slate-900 text-sm mb-0.5 group-hover:text-primary-700 transition-colors truncate">
+                              {item.label}
+                            </h4>
+
+                            {/* Subtitle / Description */}
+                            <p className="text-[11px] text-slate-500 leading-tight truncate">
+                              {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
+                            </p>
+                          </div>
                         </div>
-
-                        {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-primary-600 transition-colors tracking-tight">
-                          {item.label}
-                        </h4>
-
-                        {/* Subtitle / Description */}
-                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                          {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
-                        </p>
 
                         {/* Fancy indicator bar */}
                         <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />
@@ -515,7 +519,7 @@ export function Home() {
                       <div
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-center hover:shadow-sm hover:border-slate-300 transition-all cursor-pointer relative overflow-hidden group"
                       >
                         {/* Star icon badge absolute right-4 top-4 */}
                         <button
@@ -526,23 +530,27 @@ export function Home() {
                           <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
                         </button>
 
-                        {/* Large circle squircle around icon */}
-                        <div className={cn(
-                          "w-14 h-14 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 ",
-                          COLOR_MAP[visuals.color] || COLOR_MAP.blue
-                        )}>
-                          <IconComponent className="w-6 h-6" />
+                        <div className="flex items-center gap-3 w-full relative z-10">
+                          {/* Large circle squircle around icon */}
+                          <div className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                            COLOR_MAP[visuals.color] || COLOR_MAP.blue
+                          )}>
+                            <IconComponent className="w-5 h-5" />
+                          </div>
+
+                          <div className="flex-1 min-w-0 text-left">
+                            {/* Title */}
+                            <h4 className="font-bold text-slate-900 text-sm mb-0.5 group-hover:text-primary-700 transition-colors truncate">
+                              {item.label}
+                            </h4>
+
+                            {/* Subtitle / Description */}
+                            <p className="text-[11px] text-slate-500 leading-tight truncate">
+                              {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
+                            </p>
+                          </div>
                         </div>
-
-                        {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-primary-600 transition-colors tracking-tight">
-                          {item.label}
-                        </h4>
-
-                        {/* Subtitle / Description */}
-                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                          {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
-                        </p>
 
                         {/* Fancy indicator bar */}
                         <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-primary-600/10 transition-colors" />

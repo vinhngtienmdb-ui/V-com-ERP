@@ -1,6 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
-import { generatePerformanceReview } from '../services/geminiService';
+
 import { 
  Trophy,
   Sparkles,

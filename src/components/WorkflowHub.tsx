@@ -38,6 +38,8 @@ import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ResizableTh } from './ui/ResizableTh';
+import { useTableColumns } from '../hooks/useTableColumns';
 import {
  linkGoogleCalendar,
  getGoogleCalendarSession,
@@ -81,6 +83,14 @@ export function WorkflowHub() {
  const [syncingTask, setSyncingTask] = useState<WorkflowTask | null>(null);
  const [isSyncingAllTasks, setIsSyncingAllTasks] = useState(false);
  const [isSyncingInProgress, setIsSyncingInProgress] = useState(false);
+
+ const { columns: taskColumns, handleResize: handleTaskResize } = useTableColumns('taskList', [
+   { id: 'id', initialWidth: 120, label: 'ID / Module' },
+   { id: 'title', initialWidth: 350, label: 'Nhiệm vụ' },
+   { id: 'priority', initialWidth: 120, label: 'Độ ưu tiên' },
+   { id: 'deadline', initialWidth: 150, label: 'Hạn chót' },
+   { id: 'actions', initialWidth: 180, label: 'Thao tác' }
+ ]);
 
  const handleConnectCalendar = async () => {
   try {
@@ -198,26 +208,26 @@ export function WorkflowHub() {
  </div>
  </div>
 
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
  {[
  { label: 'Cần Phê duyệt', value: 18, sub: '8 ưu tiên cao', icon: ShieldAlert, color: 'rose' },
  { label: 'Đang Vận hành', value: 45, sub: '24 quy trình tự động', icon: Boxes, color: 'blue' },
  { label: 'Workflow Hoàn tất', value: '92%', sub: '+12 so với tháng trước', icon: CheckCircle2, color: 'emerald' },
  { label: 'Nhân sự trực tuyến', value: '42/48', sub: 'Trên 6 bộ phận', icon: Users2, color: 'indigo' },
  ].map((stat) => (
- <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
+ <div key={stat.label} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 group hover:shadow-md transition-all cursor-pointer relative overflow-hidden">
  <div className={cn(
- "p-4 rounded-none shadow-sm transition-transform  group-hover:rotate-6 duration-500",
+ "p-2.5 rounded-lg shadow-sm transition-transform group-hover:rotate-6 duration-500 shrink-0 relative z-10",
  stat.color === 'rose' ? "bg-rose-50 text-rose-600 shadow-rose-100" :
  stat.color === 'blue' ? "bg-slate-100 text-orange-700 shadow-blue-100" :
  stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600 shadow-emerald-100" :
  "bg-primary-50 text-primary-600 shadow-indigo-100"
  )}>
- <stat.icon className="w-6 h-6" />
+ <stat.icon className="w-5 h-5" />
  </div>
- <div>
- <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{stat.label}</p>
- <div className="text-3xl font-black text-slate-900 tracking-tight">
+ <div className="flex-1 min-w-0 text-left z-10">
+ <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-0.5 truncate">{stat.label}</p>
+ <div className="text-xl font-black text-slate-900 truncate">
  {stat.value}
  </div>
  <p className="text-[10px] text-slate-600 font-bold mt-0.5">{stat.sub}</p>
@@ -324,65 +334,70 @@ export function WorkflowHub() {
  </div>
 
  <div className="space-y-4">
- {tasks.filter(t => filter === 'all' || t.priority === filter).map((task) => (
- <div key={task.id} className="p-6 bg-white border border-slate-200 rounded-lg hover:border-orange-200 hover:shadow-sm hover:shadow-slate-900/5 transition-all group flex flex-wrap items-center gap-6 border-b-2">
- <div className={cn(
- "p-4 rounded-lg shadow-sm transition-all ",
- task.priority === 'critical' ? "bg-rose-50 text-rose-500 shadow-rose-200/30" : 
- task.priority === 'high' ? "bg-orange-50 text-orange-500 shadow-orange-200/30" :
- "bg-slate-100 text-orange-600 shadow-blue-200/30"
- )}>
- {task.status === 'completed' ? <CheckCircle2 className="w-7 h-7" /> : 
- task.status === 'in_progress' ? <RefreshCw className="w-7 h-7 animate-spin-slow" /> : 
- <ShieldAlert className="w-7 h-7" />}
+ {tasks.filter(t => filter === 'all' || t.priority === filter).length > 0 ? (
+ <div className="overflow-x-auto min-w-0 custom-scrollbar-x border border-slate-200 rounded-lg">
+  <table className="min-w-full w-max text-left border-collapse whitespace-nowrap bg-white">
+   <thead className="bg-slate-50 border-b border-slate-200">
+    <tr>
+     <ResizableTh columnId="id" width={taskColumns.find(c=>c.id==='id')?.currentWidth || 120} onResize={(w) => handleTaskResize('id', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">ID / Module</ResizableTh>
+     <ResizableTh columnId="title" width={taskColumns.find(c=>c.id==='title')?.currentWidth || 350} onResize={(w) => handleTaskResize('title', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhiệm vụ</ResizableTh>
+     <ResizableTh columnId="priority" width={taskColumns.find(c=>c.id==='priority')?.currentWidth || 120} onResize={(w) => handleTaskResize('priority', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Độ ưu tiên</ResizableTh>
+     <ResizableTh columnId="deadline" width={taskColumns.find(c=>c.id==='deadline')?.currentWidth || 150} onResize={(w) => handleTaskResize('deadline', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Hạn chót</ResizableTh>
+     <ResizableTh columnId="actions" width={taskColumns.find(c=>c.id==='actions')?.currentWidth || 180} onResize={(w) => handleTaskResize('actions', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-right">Thao tác</ResizableTh>
+    </tr>
+   </thead>
+   <tbody className="divide-y divide-slate-100">
+    {tasks.filter(t => filter === 'all' || t.priority === filter).map((task) => (
+     <tr key={task.id} className="hover:bg-slate-50 transition-colors group">
+      <td className="px-4 py-3">
+       <span className="text-[10px] font-black text-orange-700 uppercase tracking-widest block">{task.module}</span>
+       <span className="text-xs font-bold text-slate-900">{task.id}</span>
+      </td>
+      <td className="px-4 py-3">
+       <div className="flex items-center gap-2">
+        <div className={cn("p-1.5 rounded-md", task.status === 'completed' ? "bg-emerald-50 text-emerald-600" : task.status === 'in_progress' ? "bg-blue-50 text-blue-600" : "bg-amber-50 text-amber-600")}>
+         {task.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : task.status === 'in_progress' ? <RefreshCw className="w-4 h-4 animate-spin-slow" /> : <ShieldAlert className="w-4 h-4" />}
+        </div>
+        <span className="text-[13px] font-bold text-slate-900 uppercase tracking-tight">{task.title}</span>
+       </div>
+      </td>
+      <td className="px-4 py-3 text-center">
+       {task.priority === 'critical' ? (
+        <span className="px-2.5 py-1 bg-rose-50 text-rose-600 rounded text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 w-fit mx-auto"><AlertCircle className="w-3 h-3" /> Critical</span>
+       ) : task.priority === 'high' ? (
+        <span className="px-2.5 py-1 bg-orange-50 text-orange-600 rounded text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 w-fit mx-auto"><AlertCircle className="w-3 h-3" /> High</span>
+       ) : (
+        <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 w-fit mx-auto"><Activity className="w-3 h-3" /> Medium</span>
+       )}
+      </td>
+      <td className="px-4 py-3">
+       <div className="flex flex-col gap-1">
+        <span className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {task.deadline}</span>
+        {syncedTaskIds.includes(task.id) && <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded w-fit flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Đã đồng bộ Lịch</span>}
+       </div>
+      </td>
+      <td className="px-4 py-3 text-right">
+       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onClick={() => handleApprove(task.id)} className="p-2 bg-emerald-50 text-emerald-600 rounded hover:bg-emerald-100 transition-all border border-emerald-100" title="Phê duyệt"><CheckCircle2 className="w-4 h-4" /></button>
+        <button onClick={() => handleSignRequest(task.id)} className="p-2 bg-slate-100 text-orange-700 rounded hover:bg-[#EAE7DF] transition-all border border-slate-300" title="Ký số"><FileSignature className="w-4 h-4" /></button>
+        {calendarSession && (
+         <button onClick={() => setSyncingTask(task)} disabled={syncedTaskIds.includes(task.id)} className={cn("p-2 rounded transition-all border", syncedTaskIds.includes(task.id) ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-100")} title={syncedTaskIds.includes(task.id) ? "Đã đồng bộ" : "Đồng bộ Calendar"}><Calendar className="w-4 h-4" /></button>
+        )}
+        <button onClick={() => navigate(task.link)} className="p-2 bg-slate-900 text-[#FAF9F5] rounded shadow-sm shadow-slate-900/20 active:scale-95 transition-all" title="Mở chi tiết"><ArrowUpRight className="w-4 h-4" /></button>
+       </div>
+      </td>
+     </tr>
+    ))}
+   </tbody>
+  </table>
  </div>
- <div className="flex-1 w-full">
- <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black text-orange-700 uppercase tracking-widest">{task.module} • {task.id}</span>
- {task.priority === 'critical' && <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />}
- </div>
- <h4 className="text-base font-black text-slate-900 group-hover:text-primary-600 transition-colors uppercase tracking-tight">{task.title}</h4>
- <div className="flex flex-wrap items-center gap-2 mt-2">
-  <p className="text-[11px] text-slate-600 font-bold flex items-center gap-1.5 shadow-inner bg-slate-50 px-3 py-1 rounded-full w-fit">
-   <Clock className="w-3.5 h-3.5" /> Hạn chót: {task.deadline}
-  </p>
-  {syncedTaskIds.includes(task.id) && (
-   <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full flex items-center gap-1 animate-pulse">
-    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Đã đồng bộ Lịch
-   </span>
-  )}
- </div>
- </div>
- <div className="flex items-center gap-4">
- <div className="flex gap-2">
- <button onClick={() => handleApprove(task.id)} className="p-3 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-all opacity-0 group-hover:opacity-100 border border-emerald-100">
- <CheckCircle2 className="w-5 h-5" />
- </button>
- <button onClick={() => handleSignRequest(task.id)} className="p-3 bg-slate-100 text-orange-700 rounded-lg hover:bg-[#EAE7DF] transition-all opacity-0 group-hover:opacity-100 border border-slate-300">
- <FileSignature className="w-5 h-5" />
- </button>
- {calendarSession && (
-  <button 
-   onClick={() => setSyncingTask(task)}
-   className={cn(
-    "p-3 rounded-lg transition-all border",
-    syncedTaskIds.includes(task.id)
-     ? "bg-emerald-50 text-emerald-600 border-emerald-100 opacity-100"
-     : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-100 group-hover:opacity-100 opacity-0"
-   )}
-   title={syncedTaskIds.includes(task.id) ? "Đã đồng bộ Lịch" : "Đồng bộ Google Calendar"}
-   disabled={syncedTaskIds.includes(task.id)}
-  >
-   <Calendar className="w-5 h-5" />
-  </button>
+ ) : (
+  <div className="p-12 text-center bg-white border border-slate-200 rounded-lg">
+   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 mx-auto mb-4"><CheckCircle2 className="w-8 h-8" /></div>
+   <h3 className="text-lg font-bold text-slate-900">Không có nhiệm vụ nào</h3>
+   <p className="text-sm text-slate-500 mt-1">Tất cả quy trình đều đang trơn tru.</p>
+  </div>
  )}
- <button onClick={() => navigate(task.link)} className="p-3 bg-slate-900 text-[#FAF9F5] rounded-lg shadow-sm shadow-slate-900/20  active:scale-95 transition-all">
- <ArrowUpRight className="w-5 h-5" />
- </button>
- </div>
- </div>
- </div>
- ))}
  </div>
  </div>
 

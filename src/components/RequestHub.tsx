@@ -40,9 +40,13 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { TemplateGalleryModal } from './TemplateGalleryModal';
 import { FormConfigModal } from './FormConfigModal';
+import { ResizableTh } from './ui/ResizableTh';
+import { useTableColumns } from '../hooks/useTableColumns';
 import { Modal } from './ui/Modal';
 import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../lib/firebase';
 import { syncTransactionToMisa } from '../services/misaService';
+import { INITIAL_FORM_CONFIGS } from '../lib/formConfigs';
+import { RequestDetail } from './requests/RequestDetail';
 
 const INITIAL_REQUESTS = [
  { id: 'REQ-001', type: 'admin', subtype: 'Nghỉ phép', title: 'Xin nghỉ phép thường niên', requester: 'Lê Hoàng Minh', status: 'pending', date: '25/03/2024' },
@@ -50,14 +54,6 @@ const INITIAL_REQUESTS = [
  { id: 'REQ-003', type: 'other', subtype: 'Tuyển dụng', title: 'Đề nghị tuyển dụng Marketing', requester: 'Trần B', status: 'rejected', date: '23/03/2024' },
 ];
 
-const INITIAL_FORM_CONFIGS = [
- { id: 'F01', name: 'Đơn xin nghỉ phép', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Từ ngày', type: 'date', required: true}, {id: 'f2', label: 'Đến ngày', type: 'date', required: true}, {id: 'f3', label: 'Loại phép', type: 'select', options: ['Phép năm', 'Phép không lương', 'Nghỉ ốm'], required: true}] },
- { id: 'F02', name: 'Đăng ký OT', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }], fields: [{id: 'f1', label: 'Ngày OT', type: 'date', required: true}, {id: 'f2', label: 'Số giờ', type: 'number', required: true}] },
- { id: 'F03', name: 'Tạm ứng', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
- { id: 'F04', name: 'Thanh toán', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
- { id: 'F05', name: 'Mua sắm', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }], fields: [{id: 'f1', label: 'Danh sách mặt hàng', type: 'textarea', required: true}, {id: 'f2', label: 'Kinh phí dự kiến (VNĐ)', type: 'number', required: true}] },
- { id: 'F06', name: 'Tuyển dụng', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Vị trí cần tuyển', type: 'text', required: true}, {id: 'f2', label: 'Số lượng', type: 'number', required: true}, {id: 'f3', label: 'Hạn chót cần offer', type: 'date', required: true}] },
-];
 
 export function RequestHub() {
  const [activeTab, setActiveTab] = useState('all');
@@ -66,6 +62,14 @@ export function RequestHub() {
  const { addNotification } = useNotifications();
  const [requests, setRequests] = useState(INITIAL_REQUESTS);
  const [dbRequestIds, setDbRequestIds] = useState<Set<string>>(new Set());
+
+ const { columns: reqColumns, handleResize: handleReqResize } = useTableColumns('reqList', [
+   { id: 'type', initialWidth: 150, label: 'Loại / Mã phiếu' },
+   { id: 'content', initialWidth: 300, label: 'Nội dung' },
+   { id: 'requester', initialWidth: 150, label: 'Người đề xuất' },
+   { id: 'status', initialWidth: 120, label: 'Trạng thái' },
+   { id: 'date', initialWidth: 120, label: 'Ngày gửi' }
+ ]);
 
  useEffect(() => {
  const q = query(collection(db, 'requests'), orderBy('createdAt', 'desc'), limit(100));
@@ -95,10 +99,7 @@ export function RequestHub() {
  const [signingRequestId, setSigningRequestId] = useState<string | null>(null);
  const [legalAuditResult, setLegalAuditResult] = useState<string | null>(null);
  const [isAuditing, setIsAuditing] = useState(false);
- const canvasRef = useRef<HTMLCanvasElement | null>(null);
- const [isCanvasDrawing, setIsCanvasDrawing] = useState(false);
- const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
- const [drawnSignatureData, setDrawnSignatureData] = useState<string | null>(() => {
+    const [drawnSignatureData, setDrawnSignatureData] = useState<string | null>(() => {
   try {
     return localStorage.getItem('vcomm_saved_signature') || null;
   } catch {
@@ -452,125 +453,8 @@ export function RequestHub() {
  const uniqueRequesters = Array.from(new Set(requests.map(r => r.requester)));
 
  // Create Request Modal State
- const [showAddModal, setShowAddModal] = useState(false);
- const [newRequest, setNewRequest] = useState<any>({ 
- subtype: 'Đơn xin nghỉ phép', 
- title: '', 
- requester: 'Tôi (Người đang đăng nhập)', 
- formData: {},
- isUrgent: false,
- customReviewers: [{ step: 1, reviewer: 'Quản lý trực tiếp' }]
- });
-
- const handleAddRequest = () => {
- if (!newRequest.title) return alert("Vui lòng nhập nội dung đề xuất");
+  
  
- const matchedConfig = formConfigs.find(c => c.name === newRequest.subtype);
- let type = 'other';
- if (matchedConfig?.category === 'Hành chính') type = 'admin';
- if (matchedConfig?.category === 'Tài chính') type = 'finance';
- 
- const request = {
- id: `REQ-00${requests.length + 1}`,
- type,
- subtype: newRequest.subtype,
- title: newRequest.title,
- requester: newRequest.requester,
- status: 'pending',
- date: new Date().toLocaleDateString('en-GB'),
- currentLevel: 1,
- approvalLog: [],
- formData: newRequest.formData,
- isUrgent: newRequest.isUrgent,
- customReviewers: newRequest.customReviewers
- };
- 
- addDoc(collection(db, 'requests'), { ...request, createdAt: serverTimestamp() })
-  .catch(err => console.error('RequestHub addRequest error:', err));
- setRequests([request, ...requests]);
- setShowAddModal(false);
- setNewRequest({ 
- subtype: formConfigs[0]?.name || '', 
- title: '', 
- requester: 'Tôi (Người đang đăng nhập)', 
- formData: {},
- isUrgent: false,
- customReviewers: [{ step: 1, reviewer: 'Quản lý trực tiếp' }]
- });
- };
-
- // --- START OF HANDDRAWN SIGNATURE PAD HELPERS ---
- const startCanvasDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-  if (!canvasRef.current) return;
-  const canvas = canvasRef.current;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  setIsCanvasDrawing(true);
-  setIsCanvasEmpty(false);
-
-  // Setup drawing appearance
-  ctx.strokeStyle = '#1e3a8a'; // Deep primary blue-900 for executive signing feel
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  const pos = getCanvasPosition(e, canvas);
-  ctx.beginPath();
-  ctx.moveTo(pos.x, pos.y);
- };
-
- const drawCanvas = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-  if (!isCanvasDrawing || !canvasRef.current) return;
-  const canvas = canvasRef.current;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  const pos = getCanvasPosition(e, canvas);
-  ctx.lineTo(pos.x, pos.y);
-  ctx.stroke();
- };
-
- const stopCanvasDrawing = () => {
-  setIsCanvasDrawing(false);
-  saveCanvasSignature();
- };
-
- const getCanvasPosition = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) => {
-  const rect = canvas.getBoundingClientRect();
-  const clientX = 'touches' in e ? (e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX) : e.clientX;
-  const clientY = 'touches' in e ? (e.touches[0] ? e.touches[0].clientY : e.changedTouches[0].clientY) : e.clientY;
-  return {
-   x: clientX - rect.left,
-   y: clientY - rect.top
-  };
- };
-
- const clearCanvasSignature = () => {
-  if (!canvasRef.current) return;
-  const canvas = canvasRef.current;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  setIsCanvasEmpty(true);
-  setDrawnSignatureData(null);
-  try {
-    localStorage.removeItem('vcomm_saved_signature');
-  } catch {}
- };
-
- const saveCanvasSignature = () => {
-  if (!canvasRef.current || isCanvasEmpty) return;
-  try {
-    const dataUrl = canvasRef.current.toDataURL('image/png');
-    setDrawnSignatureData(dataUrl);
-    localStorage.setItem('vcomm_saved_signature', dataUrl);
-  } catch (err) {
-    console.error('Failed to save drawn signature:', err);
-  }
- };
- // --- END OF HANDDRAWN SIGNATURE PAD HELPERS ---
 
  // --- START OF LEGAL AI AUDITOR ENGINE ---
  const handleAiLegalAudit = async (req: any) => {
@@ -578,17 +462,7 @@ export function RequestHub() {
   setIsAuditing(true);
   setLegalAuditResult(null);
   try {
-    const response = await fetch('/api/gemini/legal-audit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        documentId: req.id,
-        type: req.type || 'admin',
-        subtype: req.subtype || 'Nghỉ phép',
-        title: req.title || '',
-        formData: req.formData || {}
-      })
-    });
+    const response = await fetch("/api/mock/legal-audit");
     
     if (!response.ok) throw new Error('API Legal Audit failed');
     const data = await response.json();
@@ -715,10 +589,7 @@ export function RequestHub() {
  Trung tâm Ký số
  </button>
  <button 
- onClick={() => {
-   setTemplateAction('submit_request');
-   setShowTemplateGallery(true);
- }}
+ onClick={() => navigate('/requests/new')}
  className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
  <Plus className="w-4 h-4" />
  Tạo đề xuất
@@ -726,26 +597,26 @@ export function RequestHub() {
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-primary-600" /> Tôi gửi đi</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
- </div>
- </div>
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
+  <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
+  </div>
+  <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-primary-600" /> Tôi gửi đi</h3>
+  <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
+  </div>
+  <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
+  <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
+  </div>
+  <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
+  <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
+  </div>
+  </div>
 
- <div className="flex gap-6">
+  <div className="flex gap-4">
  {/* Sidebar */}
  <div className="w-[240px] shrink-0 space-y-1">
  {[
@@ -856,14 +727,14 @@ export function RequestHub() {
  </div>
 
  <div className="overflow-x-auto min-w-0 custom-scrollbar-x">
- <table className="min-w-[680px] w-full text-left border-collapse">
+ <table className="min-w-full w-max text-left border-collapse whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Loại / Mã phiếu</th>
- <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</th>
- <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap">Người đề xuất</th>
- <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-center">Trạng thái</th>
- <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-36 whitespace-nowrap text-right">Ngày gửi</th>
+ <ResizableTh columnId="type" width={reqColumns.find(c=>c.id==='type')?.currentWidth || 150} onResize={(w) => handleReqResize('type', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Loại / Mã phiếu</ResizableTh>
+ <ResizableTh columnId="content" width={reqColumns.find(c=>c.id==='content')?.currentWidth || 300} onResize={(w) => handleReqResize('content', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</ResizableTh>
+ <ResizableTh columnId="requester" width={reqColumns.find(c=>c.id==='requester')?.currentWidth || 150} onResize={(w) => handleReqResize('requester', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Người đề xuất</ResizableTh>
+ <ResizableTh columnId="status" width={reqColumns.find(c=>c.id==='status')?.currentWidth || 120} onResize={(w) => handleReqResize('status', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</ResizableTh>
+ <ResizableTh columnId="date" width={reqColumns.find(c=>c.id==='date')?.currentWidth || 120} onResize={(w) => handleReqResize('date', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-right">Ngày gửi</ResizableTh>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -1159,552 +1030,26 @@ export function RequestHub() {
  </div>
  </div>
 
- {showAddModal && (
- <Modal
-   isOpen={true}
-   onClose={() => setShowAddModal(false)}
-   title="Tạo đề xuất mới"
-   maxWidth="md"
-   hideFooter
-   noPadding
- >
- <div className="p-6 space-y-4">
- <div>
- <label className="block text-[13px] font-bold text-slate-800 mb-2">Loại đề xuất</label>
- <select 
- value={newRequest.subtype}
- onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
- className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
- >
- {Array.from(new Set(formConfigs.map(c => c.category))).map(cat => (
- <optgroup key={cat} label={cat}>
- {formConfigs.filter(c => c.category === cat).map(c => (
- <option key={c.id} value={c.name}>{c.name}</option>
- ))}
- </optgroup>
- ))}
- </select>
- </div>
- <div>
- <label className="block text-[13px] font-bold text-slate-800 mb-2">Lý do / Nội dung chung</label>
- <textarea 
- value={newRequest.title}
- onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
- className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
- placeholder="Ví dụ: Nghỉ phép 2 ngày đi du lịch gia đình..."
- />
- </div>
-
- {/* Dynamic Fields */}
- <div className="pt-2 border-t border-slate-200 mt-2">
- <div className="grid grid-cols-2 gap-4">
- {formConfigs.find(c => c.name === newRequest.subtype)?.fields?.map(field => (
- <div key={field.id} className={cn(field.type === 'textarea' ? "col-span-2" : "")}>
- <label className="block text-xs font-bold text-slate-800 mb-1">
- {field.label} {field.required && <span className="text-red-500">*</span>}
- </label>
- {field.type === 'textarea' ? (
- <textarea 
- className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- />
- ) : field.type === 'select' ? (
- <select
- className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- >
- <option value="">-- Chọn --</option>
- {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
- </select>
- ) : (
- <input 
- type={field.type} 
- className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- />
- )}
- </div>
- ))}
- </div>
- </div>
- </div>
-  {/* Workflow Enhancements in Modal */}
-  <div className="pt-6 border-t border-slate-200 mt-4">
-  <h4 className="text-[13px] font-bold text-slate-900 mb-4 flex items-center gap-2">
-  <UserPlus className="w-4 h-4 text-emerald-600" />
-  Tùy chỉnh luồng xử lý
-  </h4>
-  <div className="space-y-4">
-  <label className="flex items-center gap-3 p-3 bg-rose-50/50 border border-rose-100 rounded-lg cursor-pointer hover:bg-rose-50 transition-colors">
-  <input 
-  type="checkbox"
-  checked={newRequest.isUrgent}
-  onChange={(e) => setNewRequest({...newRequest, isUrgent: e.target.checked})}
-  className="w-4 h-4 text-rose-600 rounded border-slate-400 focus:ring-rose-500"
-  />
-  <div className="flex gap-2 items-center">
-  <AlertTriangle className="w-4 h-4 text-rose-500" />
-  <div>
-  <p className="text-[13px] font-bold text-rose-900">Yêu cầu xử lý khẩn cấp</p>
-  <p className="text-xs text-rose-600/80">Bỏ qua SLA rườm rà, thông báo ưu tiên trực tiếp tới người phê duyệt.</p>
-  </div>
-  </div>
-  </label>
-
-  <div className="bg-slate-50 rounded-lg border border-slate-300 overflow-hidden">
-  <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
-  <p className="text-[13px] font-bold text-slate-800">Người phê duyệt từng bước</p>
-  <button 
-  type="button" 
-  onClick={() => setNewRequest({...newRequest, customReviewers: [...(newRequest.customReviewers||[]), { step: (newRequest.customReviewers?.length || 0) + 1, reviewer: '' }]})}
-  className="text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
-  >
-  <Plus className="w-3 h-3" /> Thêm bước
-  </button>
-  </div>
-  <div className="p-4 space-y-3">
-  {(newRequest.customReviewers || []).map((reviewer: any, index: number) => (
-  <div key={index} className="flex items-center gap-3">
-  <div className="w-16 shrink-0 text-xs font-bold text-slate-600 uppercase tracking-widest">
-  Bước {reviewer.step}
-  </div>
-  <select 
-  value={reviewer.reviewer}
-  onChange={(e) => {
-  const newRef = [...(newRequest.customReviewers||[])];
-  newRef[index].reviewer = e.target.value;
-  setNewRequest({...newRequest, customReviewers: newRef});
-  }}
-  className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-  required
-  >
-  <option value="">-- Chọn người phê duyệt --</option>
-  <option value="Quản lý trực tiếp">Quản lý trực tiếp</option>
-  <option value="Giám đốc Nhân sự">Giám đốc Nhân sự</option>
-  <option value="Kế toán trưởng">Kế toán trưởng</option>
-  <option value="Giám đốc Điều hành">Giám đốc Điều hành (CEO)</option>
-  <option value="Nguyễn Văn A (IT)">Nguyễn Văn A (IT)</option>
-  </select>
-  {(newRequest.customReviewers || []).length > 1 && (
-  <button 
-  type="button"
-  onClick={() => {
-  const newRef = [...(newRequest.customReviewers||[])];
-  newRef.splice(index, 1);
-  newRef.forEach((r, idx) => r.step = idx + 1);
-  setNewRequest({...newRequest, customReviewers: newRef});
-  }}
-  className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-  >
-  <Trash2 className="w-4 h-4" />
-  </button>
-  )}
-  </div>
-  ))}
-  </div>
-  </div>
-
-  {signatureMethod === 'personal_image' && (
-  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
-   <div className="flex justify-between items-center text-xs">
-    <span className="font-bold text-slate-700 flex items-center gap-1.5 font-sans">
-     <PenTool className="w-4 h-4 text-primary-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
-    </span>
-    {drawnSignatureData && (
-     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
-      Đã thiết lập chữ ký
-     </span>
-    )}
-   </div>
-   <div className="relative border border-slate-300 rounded-lg bg-white overflow-hidden h-40 shadow-inner">
-    <canvas
-     ref={canvasRef}
-     width={600}
-     height={160}
-     className="w-full h-full cursor-crosshair rounded-lg block touch-none"
-     onMouseDown={startCanvasDrawing}
-     onMouseMove={drawCanvas}
-     onMouseUp={stopCanvasDrawing}
-     onMouseLeave={stopCanvasDrawing}
-     onTouchStart={startCanvasDrawing}
-     onTouchMove={drawCanvas}
-     onTouchEnd={stopCanvasDrawing}
-    />
-    {isCanvasEmpty && !drawnSignatureData && (
-     <div className="absolute inset-0 flex items-center justify-center p-4 text-center pointer-events-none select-none">
-      <p className="text-[11px] text-slate-400 font-medium">Sử dụng chuột, bút cảm ứng hoặc ngón tay để vẽ chữ ký của bạn vào đây...</p>
-     </div>
-    )}
-   </div>
-   <div className="flex justify-between items-center gap-4">
-    <button
-     type="button"
-     onClick={clearCanvasSignature}
-     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200"
-    >
-     <X className="w-3.5 h-3.5 text-slate-500" /> Xóa nét vẽ
-    </button>
-    <p className="text-[9px] text-slate-400 leading-snug font-medium text-right italic max-w-xs">Chữ ký tay sẽ được lưu tự động cục bộ và kết xuất trên văn bản trình in A4.</p>
-   </div>
-  </div>
-  )}
-  </div>
-  </div>
- <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors shadow-sm">
- Hủy
- </button>
- <button 
- onClick={handleAddRequest}
- className="px-6 py-2.5 text-[13px] font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
- Gửi đề xuất
- </button>
- </div>
- </Modal>
- )}
  {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {/* Removed hidden old inline modal */}
  
   {/* Selected Request Detail Slide-over Panel */}
   <AnimatePresence>
   {selectedRequestForView && (
-    <Modal
-      isOpen={true}
-      onClose={() => setSelectedRequestForView(null)}
-      maxWidth="3xl"
-      hideFooter
-      noPadding
-    >
-        <div className="px-4 py-3 border-b border-emerald-100 bg-emerald-50/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-lg">
-              <FileSignature className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Chi tiết Đề xuất</h3>
-              <p className="text-xs text-emerald-700 font-medium">Phiếu: {selectedRequestForView.id} | {selectedRequestForView.subtype}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => {
-                setSelectedRequestForPrint(selectedRequestForView);
-                setShowPrintModal(true);
-              }}
-              className="p-2 text-slate-500 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"
-            >
-              <Printer className="w-4 h-4" /> In
-            </button>
-            <button onClick={() => setSelectedRequestForView(null)} className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-        
-        <div className="p-6 flex-1 space-y-8">
-          {/* Header Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Người đề xuất</p>
-              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.requester}</p>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Ngày gửi</p>
-              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.date}</p>
-            </div>
-            <div className="col-span-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Tiêu đề / Lý do</p>
-              <p className="text-[13px] font-bold text-slate-900">{selectedRequestForView.title}</p>
-            </div>
-          </div>
-
-          {/* Form Data */}
-          <div>
-            <h4 className="text-[13px] font-bold text-slate-900 mb-3 border-b border-emerald-100 pb-2 text-emerald-800 flex items-center gap-2">
-              <Layout className="w-4 h-4" /> Dữ liệu biểu mẫu
-            </h4>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.fields?.map((field: any) => (
-                <div key={field.id} className={field.type === 'textarea' ? "col-span-2" : ""}>
-                  <p className="text-xs font-bold text-slate-500 border-b border-slate-200 pb-1 mb-1">{field.label}</p>
-                  <p className="text-[13px] font-medium text-slate-900 mt-1">{(selectedRequestForView.formData || {})[field.id] || '---'}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Thẩm định Pháp lý & Tuân thủ AI */}
-          <div>
-            <h4 className="text-[13px] font-bold text-slate-900 mb-3 border-b border-rose-100 pb-2 text-rose-800 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Scale className="w-4 h-4" /> Thẩm định Pháp chế & Tuân thủ AI
-              </span>
-              <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 px-2 py-0.5 rounded tracking-wider leading-none">
-                Luật Lao động & Kế toán VN
-              </span>
-            </h4>
-
-            {legalAuditResult ? (
-              <div className="bg-rose-50/50 border border-rose-100 rounded-lg p-5 space-y-4">
-                <div className="prose prose-slate max-w-none text-xs leading-relaxed text-slate-700 whitespace-pre-line font-medium md:text-[13px]">
-                  {legalAuditResult}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleAiLegalAudit(selectedRequestForView)}
-                    disabled={isAuditing}
-                    className="px-3.5 py-1.5 bg-white border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-50 text-rose-700 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                  >
-                    <RefreshCw className={cn("w-3.5 h-3.5", isAuditing && "animate-spin")} /> Chạy lại kiểm tra
-                  </button>
-                  <button
-                    onClick={() => setLegalAuditResult(null)}
-                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600 transition-all cursor-pointer"
-                  >
-                    Đóng kết quả
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-[#fafafa] border border-slate-200 rounded-lg p-6 text-center space-y-3">
-                <div className="w-12 h-12 bg-rose-50 border border-rose-100 text-rose-600 rounded-lg flex items-center justify-center mx-auto shadow-sm">
-                  <Sparkles className="w-5 h-5 animate-pulse" />
-                </div>
-                <div className="max-w-md mx-auto">
-                  <p className="text-[13px] font-bold text-slate-800">Quét rủi ro pháp lý bằng trí tuệ nhân tạo (Generative AI)</p>
-                  <p className="text-[11px] text-slate-500 mt-1 font-medium leading-normal">
-                    Tự động rà soát nội dung phiếu so với Bộ luật Lao động 2019, Luật Kế toán 2015, định ngạch chi tiêu nội bộ, trần OT, và phát hiện lỗi trước khi quản cấp cao tiến hành "Ký số" phê duyệt.
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleAiLegalAudit(selectedRequestForView)}
-                  disabled={isAuditing}
-                  className="px-5 py-2.5 bg-rose-950 text-rose-200 border border-rose-900 rounded-lg text-xs font-bold hover:bg-rose-900 hover:text-white transition-all flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50 shadow-sm"
-                >
-                  {isAuditing ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang thẩm định điều khoản...
-                    </>
-                  ) : (
-                    <>
-                      <Scale className="w-4 h-4 text-rose-400" /> BẮT ĐẦU THẨM ĐỊNH TUÂN THỦ <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Chứng thư tài liệu / Security Sealed block */}
-          {selectedRequestForView.signatureStatus === 'signed' && (
-            <div className="space-y-3">
-              {/* Integrity status alert banners */}
-              {verificationLoading ? (
-                <div className="bg-slate-100 border border-slate-300 text-slate-700 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold animate-pulse">
-                  <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
-                  Đang xác thực tính toàn vẹn chữ ký số...
-                </div>
-              ) : verificationStatus === 'verified' ? (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold shadow-sm">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 animate-pulse" />
-                  Chữ ký số hợp lệ: Nội dung văn bản nguyên vẹn (Verified).
-                </div>
-              ) : verificationStatus === 'tampered' ? (
-                <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-lg flex items-center gap-2 text-xs font-bold shadow-sm border-l-4 border-l-rose-600 animate-bounce">
-                  <ShieldAlert className="w-4 h-4 text-rose-600" />
-                  CẢNH BÁO LỖI TOÀN VẸN: Dữ liệu đã bị thay đổi trái phép sau khi ký số!
-                </div>
-              ) : null}
-
-              <div className="bg-slate-900 text-white rounded-lg p-5 border border-slate-950 shadow-sm space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-emerald-950 text-emerald-400 border border-emerald-900/50 rounded-lg">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-100 font-sans leading-none">Chứng Thư Niêm Phong Điện Tử</h4>
-                      <span className="text-[9px] text-slate-400 font-medium">Xác thực mã hóa qua {selectedRequestForView.caProvider || 'CA'}</span>
-                    </div>
-                  </div>
-                  <span className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded border",
-                    verificationStatus === 'verified' 
-                      ? "bg-emerald-950 text-emerald-400 border-emerald-900/40" 
-                      : "bg-rose-950 text-rose-400 border-rose-900/40"
-                  )}>
-                    {verificationStatus === 'verified' ? 'SECURE INTEGRITY' : 'TAMPERED ALERT'}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-[11px] leading-tight font-medium pb-2">
-                  <div>
-                    <p className="text-slate-400 mb-0.5">Xác thực chứng thư:</p>
-                    <p className="font-bold text-slate-100">{selectedRequestForView.signedBy || 'Quản trị viên'}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-400 mb-0.5">Thời gian ký số:</p>
-                    <p className="font-bold text-slate-100">{selectedRequestForView.signedAt || '---'}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-slate-400 mb-0.5">Mã định danh bảo mật SHA-256 Seal:</p>
-                    <p className="font-bold text-slate-100 text-[10px] font-mono tracking-tight bg-slate-950 p-2 rounded-lg border border-slate-800 truncate">
-                      {selectedRequestForView.secureHash || 'AES-SHA256-D93B8C1D0F1C3E4'}
-                    </p>
-                  </div>
-                </div>
-                
-                {selectedRequestForView.signatureDraw && (
-                  <div className="border-t border-slate-800 pt-3">
-                    <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
-                    <div className="bg-white p-2 rounded-lg flex items-center justify-center max-w-[200px] border border-slate-700">
-                      <img src={selectedRequestForView.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Approval Workflow */}
-          <div>
-            <h4 className="text-[13px] font-bold text-slate-900 mb-4 border-b border-indigo-100 pb-2 text-indigo-800 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Luồng Phê duyệt
-            </h4>
-            <div className="relative pl-4 space-y-6">
-              <div className="absolute left-[7px] top-4 bottom-4 w-px bg-slate-200" />
-              {(selectedRequestForView.approvalLog || []).map((log: any, idx: number) => (
-                <div key={idx} className="relative z-10 flex gap-4">
-                  <div className={cn(
-                    "w-[14px] h-[14px] rounded-full shrink-0 border-2 mt-1 bg-white",
-                    log.status === 'approved' ? "border-emerald-500" : "border-rose-500"
-                  )} />
-                  <div className="flex-1 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
-                    <div className="flex justify-between items-start mb-1">
-                      <p className="text-xs font-bold text-slate-800">{log.stepName}</p>
-                      <span className={cn(
-                        "text-[10px] font-bold px-2 py-0.5 rounded",
-                        log.status === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
-                      )}>{log.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}</span>
-                    </div>
-                    <p className="text-[13px] font-medium text-slate-900">{log.by}</p>
-                    <p className="text-[10px] text-slate-500 mt-1">{log.time}</p>
-                  </div>
-                </div>
-              ))}
-              
-              {formConfigs.find((c: any) => c.name === selectedRequestForView.subtype)?.workflow?.slice((selectedRequestForView.approvalLog || []).length).map((_: any, idx: number) => (
-                <div key={'w-'+idx} className="relative z-10 flex gap-4 opacity-50">
-                  <div className="w-[14px] h-[14px] rounded-full shrink-0 border-2 border-slate-300 bg-slate-100 mt-1" />
-                  <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg p-3">
-                    <p className="text-xs font-bold text-slate-600 mb-1">Cấp duyệt {(selectedRequestForView.approvalLog || []).length + idx + 1}</p>
-                    <p className="text-[10px] font-bold text-amber-600">Đang chờ xử lý...</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Action Area based on Rules */}
-          <div className="pt-6 border-t border-slate-200">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Thao tác</h4>
-            <div className="flex flex-wrap gap-3">
-              {/* Creator Revoke */}
-              {(selectedRequestForView.status === 'pending') && (!selectedRequestForView.approvalLog || selectedRequestForView.approvalLog.length === 0) && (
-                <button 
-                  onClick={() => handleRevokeRequest(selectedRequestForView.id)}
-                  className="px-4 py-2 border border-rose-300 text-rose-600 rounded-lg text-[13px] font-bold hover:bg-rose-50 transition-colors flex items-center gap-2"
-                >
-                  <X className="w-4 h-4" /> Thu hồi đề xuất
-                </button>
-              )}
-
-              {/* Delete Request */}
-              {(selectedRequestForView.status === 'revoked' || selectedRequestForView.status === 'rejected') && (
-                <button 
-                  onClick={() => handleDeleteRequest(selectedRequestForView.id)}
-                  className="px-4 py-2 bg-rose-600 text-white rounded-lg text-[13px] font-bold hover:bg-rose-700 transition-colors flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" /> Xóa vĩnh viễn
-                </button>
-              )}
-              
-              {/* Approver Action */}
-              {selectedRequestForView.status === 'pending' && (
-                <>
-                  <button 
-                    onClick={() => {
-                      handleStatusChange(selectedRequestForView.id, 'approved');
-                      const updatedReq = { ...selectedRequestForView, status: 'approved' };
-                      setSelectedRequestForView(updatedReq);
-                    }}
-                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-[13px] font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
-                  >
-                    <CheckCircle2 className="w-4 h-4" /> Phê duyệt
-                  </button>
-                  <button 
-                    onClick={() => setSigningRequestId(selectedRequestForView.id)}
-                    className="px-4 py-2 border border-blue-600 text-primary-600 rounded-lg text-[13px] font-bold hover:bg-primary-50 transition-colors flex items-center gap-2"
-                  >
-                    <FileSignature className="w-4 h-4" /> Ký & Duyệt
-                  </button>
-                  <button 
-                    onClick={() => {
-                      handleStatusChange(selectedRequestForView.id, 'rejected');
-                      setSelectedRequestForView({ ...selectedRequestForView, status: 'rejected' });
-                    }}
-                    className="px-4 py-2 bg-slate-800 text-white rounded-lg text-[13px] font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
-                  >
-                    Từ chối
-                  </button>
-                </>
-              )}
-
-              {/* Change Approval */}
-              {(selectedRequestForView.status === 'approved' || selectedRequestForView.status === 'rejected') && (
-                 <button 
-                    onClick={() => {
-                      if(window.confirm('Bạn muốn lùi trạng thái về chờ duyệt?')) {
-                        handleStatusChange(selectedRequestForView.id, 'pending');
-                        setSelectedRequestForView({ ...selectedRequestForView, status: 'pending' });
-                      }
-                    }}
-                    className="px-4 py-2 border border-amber-500 text-amber-600 rounded-lg text-[13px] font-bold hover:bg-amber-50 transition-colors flex items-center gap-2"
-                 >
-                   <RefreshCw className="w-4 h-4" /> Reset trạng thái
-                 </button>
-              )}
-
-              {selectedRequestForView.status === 'approved' && (
-                syncedMisaRequests[selectedRequestForView.id] ? (
-                  <span className="px-4 py-2 bg-emerald-50 text-emerald-700 text-[13px] font-bold border border-emerald-200 rounded-lg flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4" /> Đã ghi sổ Chi phí 🟢
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleSyncRequestToMisa(selectedRequestForView)}
-                    disabled={syncingMisaId === selectedRequestForView.id}
-                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {syncingMisaId === selectedRequestForView.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Calculator className="w-4 h-4" />
-                    )}
-                    Ghi sổ Chi phí
-                  </button>
-                )
-              )}
-
-            </div>
-          </div>
-
-        </div>
-  </Modal>
+    <RequestDetail 
+      request={selectedRequestForView} 
+      formConfigs={formConfigs} 
+      onClose={() => setSelectedRequestForView(null)} 
+      onPrint={() => {
+        setSelectedRequestForView(null);
+        setSelectedRequestForPrint(selectedRequestForView);
+        setShowPrintModal(true);
+      }}
+      onSign={() => {
+        setSelectedRequestForView(null);
+        setSigningRequestId(selectedRequestForView.id);
+      }}
+      isAdmin={isAdmin}
+    />
   )}
   </AnimatePresence>
 
@@ -2198,8 +1543,7 @@ export function RequestHub() {
      setEditingFormConfig({ id: nextId, name: template.title, category: template.category, isActive: true, workflow: [], fields: [], templateRef: template.id });
      setShowConfigModal(true);
    } else {
-     setNewRequest({ subtype: template.title, title: '', requester: 'Tôi (Người đang đăng nhập)', formData: {} });
-     setShowAddModal(true);
+      navigate('/requests/new');
    }
    }}
    onCreateNew={() => {
@@ -2209,8 +1553,7 @@ export function RequestHub() {
      setEditingFormConfig({ id: nextId, name: 'Loại phiếu mới', category: 'Khác', isActive: true, workflow: [], fields: [] });
      setShowConfigModal(true);
    } else {
-     setNewRequest({ subtype: formConfigs[0]?.name || 'Loại phiếu mới', title: '', requester: 'Tôi (Người đang đăng nhập)', formData: {} });
-     setShowAddModal(true);
+     navigate('/requests/new');
    }
    }}
  />
