@@ -6,7 +6,7 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history'];
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -20,6 +20,18 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'hiddenCosts') return 'hidden_costs';
       if (field === 'sellerName') return 'seller_name';
       if (field === 'videoUrl') return 'video_url';
+      if (field === 'barcode') return 'barcode';
+      if (field === 'vatRate') return 'vat_rate';
+      if (field === 'specification') return 'specification';
+      if (field === 'supplierId') return 'supplier_id';
+    } else if (tableName === 'product_price_history') {
+      if (field === 'productId') return 'product_id';
+      if (field === 'oldPrice') return 'old_price';
+      if (field === 'newPrice') return 'new_price';
+      if (field === 'oldCostPrice') return 'old_cost_price';
+      if (field === 'newCostPrice') return 'new_cost_price';
+      if (field === 'changedBy') return 'changed_by';
+      if (field === 'changedAt') return 'changed_at';
     } else if (tableName === 'customers') {
       if (field === 'createdAt') return 'created_at';
     } else if (tableName === 'orders') {
@@ -109,6 +121,10 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.video_url = jsData.videoUrl || null;
     payload.images = Array.isArray(jsData.images) ? jsData.images : (jsData.images ? [jsData.images] : null);
     payload.specs = jsData.specs || null;
+    payload.barcode = jsData.barcode || null;
+    payload.vat_rate = Number(jsData.vatRate || jsData.vat_rate) || 0.00;
+    payload.specification = jsData.specification || null;
+    payload.supplier_id = jsData.supplierId || jsData.supplier_id || null;
     
     if (jsData.description_embedding) {
       payload.description_embedding = jsData.description_embedding;
@@ -192,6 +208,14 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.payment_gateway = jsData.paymentGateway || null;
     payload.status = jsData.status || 'success';
     payload.created_at = jsData.createdAt || new Date().toISOString();
+  } else if (tableName === 'product_price_history') {
+    payload.product_id = jsData.productId || null;
+    payload.old_price = Number(jsData.oldPrice || 0) || 0.00;
+    payload.new_price = Number(jsData.newPrice || 0) || 0.00;
+    payload.old_cost_price = Number(jsData.oldCostPrice || 0) || 0.00;
+    payload.new_cost_price = Number(jsData.newCostPrice || 0) || 0.00;
+    payload.changed_by = jsData.changedBy || 'system';
+    payload.changed_at = jsData.changedAt || new Date().toISOString();
   }
 
   return payload;
@@ -228,6 +252,10 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.videoUrl = row.video_url;
     jsData.images = row.images || [];
     jsData.specs = row.specs || [];
+    jsData.barcode = row.barcode;
+    jsData.vatRate = Number(row.vat_rate || 0);
+    jsData.specification = row.specification;
+    jsData.supplierId = row.supplier_id;
     
     if (row.description_embedding) {
       jsData.description_embedding = row.description_embedding;
@@ -314,6 +342,14 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.paymentGateway = row.payment_gateway;
     jsData.status = row.status;
     jsData.createdAt = row.created_at;
+  } else if (tableName === 'product_price_history') {
+    jsData.productId = row.product_id;
+    jsData.oldPrice = Number(row.old_price || 0);
+    jsData.newPrice = Number(row.new_price || 0);
+    jsData.oldCostPrice = Number(row.old_cost_price || 0);
+    jsData.newCostPrice = Number(row.new_cost_price || 0);
+    jsData.changedBy = row.changed_by;
+    jsData.changedAt = row.changed_at;
   }
 
   return jsData;
@@ -839,6 +875,42 @@ async function handleOrderPaymentTrigger(orderId: string, orderData: any, tenant
   }
 }
 
+async function handleProductPriceHistoryTrigger(productId: string, newProductData: any, tenantId: string | null) {
+  try {
+    const { data: currentProduct } = await supabase
+      .from('products')
+      .select('price, cost_price')
+      .eq('id', productId)
+      .maybeSingle();
+
+    if (currentProduct) {
+      const oldPrice = Number(currentProduct.price || 0);
+      const oldCostPrice = Number(currentProduct.cost_price || 0);
+      
+      const newPrice = Number(newProductData.price !== undefined ? newProductData.price : oldPrice);
+      const newCostPrice = Number(newProductData.costPrice !== undefined ? newProductData.costPrice : (newProductData.cost_price !== undefined ? newProductData.cost_price : oldCostPrice));
+
+      if (Math.abs(newPrice - oldPrice) > 0.01 || Math.abs(newCostPrice - oldCostPrice) > 0.01) {
+        const historyId = `prh-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        await supabase.from('product_price_history').insert({
+          id: historyId,
+          tenant_id: tenantId || 'tenant-vcomm-prod-01',
+          product_id: productId,
+          old_price: oldPrice,
+          new_price: newPrice,
+          old_cost_price: oldCostPrice,
+          new_cost_price: newCostPrice,
+          changed_by: 'system-pim-user',
+          changed_at: new Date().toISOString()
+        });
+        console.log(`[Price-History-Trigger] Recorded price change for product ${productId}: Price ${oldPrice} -> ${newPrice}, Cost ${oldCostPrice} -> ${newCostPrice}`);
+      }
+    }
+  } catch (e) {
+    console.error('[Price-History-Trigger] Failed to record price change history:', e);
+  }
+}
+
 export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): Promise<any> => {
   const cacheKey = `fs_cache_doc_${docRef.path}`;
   try {
@@ -860,6 +932,10 @@ export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): 
         };
 
     safeLocalStorage.setItem(cacheKey, JSON.stringify({ exists: true, data: serializedData }));
+
+    if (docRef.tableName === 'products') {
+      await handleProductPriceHistoryTrigger(docRef.id, serializedData, tenantId);
+    }
 
     const { error } = await supabase
       .from(docRef.tableName)
@@ -932,6 +1008,10 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
         };
 
     safeLocalStorage.setItem(cacheKey, JSON.stringify({ exists: true, data: mergedData }));
+
+    if (docRef.tableName === 'products') {
+      await handleProductPriceHistoryTrigger(docRef.id, mergedData, tenantId);
+    }
 
     const { error } = await supabase
       .from(docRef.tableName)
