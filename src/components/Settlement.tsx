@@ -1,4 +1,4 @@
-import { db, collection, getDocs, query, where, addDoc, updateDoc } from '../services/dbService';
+import { db, collection, getDocs, query, where, addDoc, updateDoc, recordPartnerLedgerEntry } from '../services/dbService';
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -184,6 +184,15 @@ export function SettlementManagement() {
       const mockDocRef = { path: `settlements/${settlement.id}`, tableName: 'settlements', id: settlement.id };
       await updateDoc(mockDocRef as any, { status: 'completed' });
       
+      await recordPartnerLedgerEntry({
+        partnerId: settlement.sellerId,
+        partnerType: 'seller',
+        refType: 'settlement',
+        refId: settlement.id,
+        debit: 0,
+        credit: settlement.netPayout
+      });
+      
       alert('Đã duyệt chuyển tiền vào ví gian hàng!');
       fetchSettlements();
     } catch (err) {
@@ -197,6 +206,15 @@ export function SettlementManagement() {
     try {
       const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
       await updateDoc(mockDocRef as any, { status: 'processed' });
+      
+      await recordPartnerLedgerEntry({
+        partnerId: withdrawal.userId,
+        partnerType: withdrawal.userType === 'seller' ? 'seller' : 'agent',
+        refType: 'withdrawal',
+        refId: withdrawal.id,
+        debit: withdrawal.amount,
+        credit: 0
+      });
       
       alert('Đã cập nhật trạng thái chi thành công!');
       fetchSettlements();

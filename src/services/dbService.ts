@@ -6,7 +6,7 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers'];
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -32,6 +32,12 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'newCostPrice') return 'new_cost_price';
       if (field === 'changedBy') return 'changed_by';
       if (field === 'changedAt') return 'changed_at';
+    } else if (tableName === 'partner_ledgers') {
+      if (field === 'partnerId') return 'partner_id';
+      if (field === 'partnerType') return 'partner_type';
+      if (field === 'refType') return 'ref_type';
+      if (field === 'refId') return 'ref_id';
+      if (field === 'createdAt') return 'created_at';
     } else if (tableName === 'customers') {
       if (field === 'createdAt') return 'created_at';
     } else if (tableName === 'orders') {
@@ -216,6 +222,15 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.new_cost_price = Number(jsData.newCostPrice || 0) || 0.00;
     payload.changed_by = jsData.changedBy || 'system';
     payload.changed_at = jsData.changedAt || new Date().toISOString();
+  } else if (tableName === 'partner_ledgers') {
+    payload.partner_id = jsData.partnerId || null;
+    payload.partner_type = jsData.partnerType || null;
+    payload.ref_type = jsData.refType || null;
+    payload.ref_id = jsData.refId || null;
+    payload.debit = Number(jsData.debit || 0) || 0.00;
+    payload.credit = Number(jsData.credit || 0) || 0.00;
+    payload.balance = Number(jsData.balance || 0) || 0.00;
+    payload.created_at = jsData.createdAt || new Date().toISOString();
   }
 
   return payload;
@@ -350,6 +365,15 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.newCostPrice = Number(row.new_cost_price || 0);
     jsData.changedBy = row.changed_by;
     jsData.changedAt = row.changed_at;
+  } else if (tableName === 'partner_ledgers') {
+    jsData.partnerId = row.partner_id;
+    jsData.partnerType = row.partner_type;
+    jsData.refType = row.ref_type;
+    jsData.refId = row.ref_id;
+    jsData.debit = Number(row.debit || 0);
+    jsData.credit = Number(row.credit || 0);
+    jsData.balance = Number(row.balance || 0);
+    jsData.createdAt = row.created_at;
   }
 
   return jsData;
@@ -1350,3 +1374,51 @@ export const updateWalletBalance = async (
     throw err;
   }
 };
+
+export async function recordPartnerLedgerEntry(params: {
+  tenantId?: string | null;
+  partnerId: string;
+  partnerType: 'seller' | 'supplier' | 'agent';
+  refType: 'settlement' | 'order' | 'withdrawal' | 'purchase';
+  refId: string;
+  debit: number;
+  credit: number;
+}) {
+  try {
+    const { tenantId, partnerId, partnerType, refType, refId, debit, credit } = params;
+    
+    const { data: lastRecord } = await supabase
+      .from('partner_ledgers')
+      .select('balance')
+      .eq('partner_id', partnerId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const previousBalance = Number(lastRecord?.balance || 0);
+    const newBalance = previousBalance + credit - debit;
+
+    const entryId = `ple-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const { error: insertErr } = await supabase
+      .from('partner_ledgers')
+      .insert({
+        id: entryId,
+        tenant_id: tenantId || 'tenant-vcomm-prod-01',
+        partner_id: partnerId,
+        partner_type: partnerType,
+        ref_type: refType,
+        ref_id: refId,
+        debit: debit,
+        credit: credit,
+        balance: newBalance,
+        created_at: new Date().toISOString()
+      });
+
+    if (insertErr) throw insertErr;
+    console.log(`[Partner-Ledger] Recorded entry ${entryId} for partner ${partnerId}: Debit ${debit}, Credit ${credit}, Balance ${newBalance}`);
+    return newBalance;
+  } catch (e) {
+    console.error('[Partner-Ledger] Failed to record ledger entry:', e);
+    throw e;
+  }
+}
