@@ -3032,6 +3032,7 @@ export function WarehouseModule() {
                     <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                       <th className="px-6 py-4">Mã Nguyên liệu</th>
                       <th className="px-6 py-4 text-center">Tồn kho thực tế</th>
+                      <th className="px-6 py-4 text-center">Tồn khả dụng</th>
                       <th className="px-6 py-4 text-center">Đơn vị</th>
                       <th className="px-6 py-4">Cập nhật lần cuối</th>
                       <th className="px-6 py-4 text-right">Thao tác</th>
@@ -3045,7 +3046,7 @@ export function WarehouseModule() {
                             <span className="text-sm font-bold text-slate-900">
                               {item.materialId}
                             </span>
-                            {item.quantity < 20 && (
+                            {(Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)) < 20 && (
                               <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">
                                 Sắp hết
                               </span>
@@ -3053,13 +3054,18 @@ export function WarehouseModule() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
+                          <span className="text-sm font-black text-slate-900 text-lg">
+                            {item.quantity.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
                           <span
                             className={cn(
                               'text-sm font-black',
-                              item.quantity < 20 ? 'text-rose-600' : 'text-slate-900 text-lg'
+                              (Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)) < 20 ? 'text-rose-600' : 'text-slate-900 text-lg'
                             )}
                           >
-                            {item.quantity.toFixed(2)}
+                            {(Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)).toFixed(2)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center text-xs font-bold text-slate-600">

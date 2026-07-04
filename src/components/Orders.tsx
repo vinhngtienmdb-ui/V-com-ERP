@@ -188,7 +188,7 @@ const OrderDetailModal = ({
         return items.every((item: any) => {
           const pid = item.productId || item.id;
           const stockEntry = warehouseStock.find(s => s.product_id === pid && s.warehouse_id === wh.id);
-          const qty = stockEntry ? stockEntry.quantity : 0;
+          const qty = stockEntry ? (Number(stockEntry.quantity) - Number(stockEntry.allocated || 0) - Number(stockEntry.pendingProcessing || 0)) : 0;
           return qty >= (item.quantity || 1);
         });
       });
@@ -515,9 +515,9 @@ const OrderDetailModal = ({
               
               const stockStatus = (order.items || []).map((item: any) => {
                 const pid = item.productId || item.id;
-                const stockEntry = warehouseStock.find(s => s.product_id === pid && s.warehouse_id === wh.id);
-                const qty = stockEntry ? stockEntry.quantity : 0;
-                const required = item.quantity || 1;
+                 const stockEntry = warehouseStock.find(s => s.product_id === pid && s.warehouse_id === wh.id);
+                 const qty = stockEntry ? (Number(stockEntry.quantity) - Number(stockEntry.allocated || 0) - Number(stockEntry.pendingProcessing || 0)) : 0;
+                 const required = item.quantity || 1;
                 return {
                   name: item.name,
                   qty,

@@ -38,6 +38,8 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'productId' || field === 'materialId') return 'product_id';
       if (field === 'productName' || field === 'materialName') return 'product_name';
       if (field === 'safetyStock') return 'safety_stock';
+      if (field === 'allocated') return 'allocated';
+      if (field === 'pendingProcessing') return 'pending_processing';
       if (field === 'updatedAt') return 'updated_at';
     } else if (tableName === 'sellers') {
       if (field === 'totalProducts') return 'total_products';
@@ -139,6 +141,8 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.product_name = jsData.productName || jsData.materialName || jsData.product_name || null;
     payload.quantity = Number(jsData.quantity) || 0.00;
     payload.safety_stock = Number(jsData.safetyStock || jsData.safety_stock) || 0.00;
+    payload.allocated = Number(jsData.allocated) || 0.00;
+    payload.pending_processing = Number(jsData.pendingProcessing || jsData.pending_processing) || 0.00;
     payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
   } else if (tableName === 'sellers') {
     payload.name = jsData.name || '';
@@ -251,6 +255,8 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.materialName = row.product_name; // backward compatibility
     jsData.quantity = Number(row.quantity);
     jsData.safetyStock = Number(row.safety_stock);
+    jsData.allocated = Number(row.allocated || 0);
+    jsData.pendingProcessing = Number(row.pending_processing || 0);
     jsData.updatedAt = row.updated_at;
   } else if (tableName === 'sellers') {
     jsData.name = row.name;
