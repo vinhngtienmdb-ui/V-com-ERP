@@ -66,6 +66,8 @@ export function useSepayListener() {
 
               let orderId = '';
               let isMatchedOrder = false;
+              let hasPriceDiscrepancy = false;
+              let expectedAmount = 0;
               const match = transactionContent.match(/(?:IPOS_PAY_|ORD-|VCOM-)(\w+)/i);
               if (match) {
                 orderId = match[0];
@@ -73,7 +75,14 @@ export function useSepayListener() {
                   const orderRef = doc(db, 'orders', orderId);
                   const orderSnap = await getDoc(orderRef);
                   if (orderSnap.exists()) {
-                    isMatchedOrder = true;
+                    const orderData = orderSnap.data();
+                    expectedAmount = Number(orderData.total || orderData.totalPrice || 0);
+                    if (Math.abs(amount - expectedAmount) > 0.01) {
+                      hasPriceDiscrepancy = true;
+                      console.warn(`[SePay-Listener] Lệch tiền phát hiện cho đơn hàng ${orderId}: Nhận ${amount}đ, Kì vọng ${expectedAmount}đ`);
+                    } else {
+                      isMatchedOrder = true;
+                    }
                   }
                 } catch (errOrder) {
                   console.warn('[SePay-Listener] Lỗi kiểm tra sự tồn tại của đơn hàng:', errOrder);
@@ -120,6 +129,36 @@ export function useSepayListener() {
                 } catch (updateErr: any) {
                   console.error(`[SePay-Listener] Không thể cập nhật trạng thái đơn hàng ${orderId} sang 'paid':`, updateErr.message || updateErr);
                 }
+              } else if (hasPriceDiscrepancy) {
+                creditAccount = misaConfig.partnerLiabilitiesAccount || '3388';
+                description = `SePay: Lệch tiền đơn hàng ${orderId} - Nhận ${amount}đ, kì vọng ${expectedAmount}đ`;
+                
+                try {
+                  const { updateDoc: firebaseUpdateDoc } = await import('../services/dbService');
+                  await firebaseUpdateDoc(doc(db, 'orders', orderId), { paymentStatus: 'discrepancy' });
+                } catch (updateErr: any) {
+                  console.error('[SePay-Listener] Không thể cập nhật trạng thái lỗi thanh toán:', updateErr);
+                }
+
+                try {
+                  await sendZnsNotification(
+                    '0987654321',
+                    'ZNS_TICKET_REPLIED',
+                    {
+                      'Tên_Khách_Hàng': 'Kế toán viên',
+                      'Mã_Phiếu': `TX-${id}`,
+                      'Tiêu_Đề': 'CẢNH BÁO LỆCH TIỀN SEPAY',
+                      'Nội_Dung_Phản_Hồi': `Phát hiện lệch tiền đơn hàng ${orderId}. Nhận: ${amount.toLocaleString('vi-VN')}đ, Kì vọng: ${expectedAmount.toLocaleString('vi-VN')}đ. Trạng thái đã tạm giữ để kiểm soát.`
+                    },
+                    {
+                      customerName: 'Kế toán viên',
+                      orderId: `TX-${id}`
+                    }
+                  );
+                  console.log('[SePay-Listener] Đã gửi ZNS cảnh báo lệch tiền thành công');
+                } catch (znsErr) {
+                  console.error('[SePay-Listener] Không thể gửi ZNS cảnh báo lệch tiền:', znsErr);
+                }
               } else {
                 // Áp dụng Phương án A (An toàn): Hạch toán tạm treo vào tài khoản Có 3388 và gửi cảnh báo ZNS
                 creditAccount = misaConfig.partnerLiabilitiesAccount || '3388';
@@ -160,7 +199,7 @@ export function useSepayListener() {
                 category: 'Doanh thu bán hàng',
                 bankAccount: accountNo,
                 referenceNumber: event.referenceNumber || event.reference_number || `SEPAY-${event.id}`,
-                orderId: isMatchedOrder ? orderId : '',
+                orderId: (isMatchedOrder || hasPriceDiscrepancy) ? orderId : '',
                 date: serverTimestamp(),
                 createdAt: serverTimestamp(),
                 createdBy: 'system-sepay-webhook',

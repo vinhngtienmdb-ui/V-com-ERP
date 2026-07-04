@@ -153,7 +153,7 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
     const { getDoc } = await import('../services/dbService');
     vi.mocked(getDoc).mockResolvedValue({
       exists: () => true,
-      data: () => ({ id: 'IPOS_PAY_ORD123' })
+      data: () => ({ id: 'IPOS_PAY_ORD123', total: 250000 })
     } as any);
 
     const React = await import('react');
@@ -317,6 +317,94 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
       '/api/zns/send',
       expect.objectContaining({
         templateId: 'ZNS-004' // templateId mapped for ZNS_TICKET_REPLIED
+      })
+    );
+
+    setIntervalSpy.mockRestore();
+    root.unmount();
+  });
+
+  it('useSepayListener nên hạch toán tạm vào TK 3388 và gửi cảnh báo ZNS khi nhận tiền lệch', async () => {
+    const mockEvents = [
+      { id: 955, transactionContent: 'IPOS_PAY_ORD955', transferAmount: 150000, bankAccountNumber: '999888777' }
+    ];
+    vi.mocked(axios.get).mockResolvedValue({ data: { events: mockEvents } });
+    vi.mocked(axios.post).mockResolvedValue({ data: { status: 'success' } });
+
+    let checkCallback: any = null;
+    const setIntervalSpy = vi.spyOn(global, 'setInterval').mockImplementation((cb: any) => {
+      checkCallback = cb;
+      return 955 as any;
+    });
+
+    (addDoc as any).mockClear();
+    (setDoc as any).mockClear();
+
+    const { getDoc } = await import('../services/dbService');
+    // Giả lập đơn hàng ORD955 có tổng tiền kì vọng là 200000đ (nhưng thực nhận 150000đ -> lệch tiền)
+    vi.mocked(getDoc).mockResolvedValue({
+      exists: () => true,
+      data: () => ({ id: 'IPOS_PAY_ORD955', total: 200000 })
+    } as any);
+
+    const { saveZnsConfig } = await import('../services/znsService');
+    saveZnsConfig({
+      oaId: 'live-oa-id',
+      appId: 'live-app-id',
+      accessToken: 'live-access-token-xyz',
+      autoRefresh: true,
+      isActive: true
+    });
+
+    const React = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    const { useSepayListener } = await import('../hooks/useSepayListener');
+
+    const TestComponent = () => {
+      useSepayListener();
+      return null;
+    };
+
+    const container = document.createElement('div');
+    const root = createRoot(container);
+    root.render(React.createElement(TestComponent));
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(checkCallback).not.toBeNull();
+
+    vi.mocked(axios.post).mockClear();
+    await checkCallback();
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    // Verify hạch toán tạm Có 3388 do lệch tiền
+    expect(addDoc).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        orderId: 'IPOS_PAY_ORD955',
+        amount: 150000,
+        creditAccount: '3388'
+      })
+    );
+
+    expect(setDoc).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        id: 'JE-SP-955',
+        ref: 'IPOS_PAY_ORD955',
+        items: expect.arrayContaining([
+          expect.objectContaining({ accountId: '1121', debit: 150000, credit: 0 }),
+          expect.objectContaining({ accountId: '3388', debit: 0, credit: 150000 })
+        ])
+      })
+    );
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    // Verify gửi ZNS cảnh báo lệch tiền cho Admin
+    expect(axios.post).toHaveBeenCalledWith(
+      '/api/zns/send',
+      expect.objectContaining({
+        templateId: 'ZNS-004'
       })
     );
 
