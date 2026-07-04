@@ -86,6 +86,7 @@ const OrderDetailModal = ({
   const [isSigningHsm, setIsSigningHsm] = useState(false);
   const [showXml, setShowXml] = useState(false);
   const [taxCode, setTaxCode] = useState<string>(order.taxCode || '0101234567');
+  const isPaidOrBeyond = ['paid', 'confirmed', 'allocated', 'picking', 'packed', 'shipped', 'delivered', 'completed'].includes(order.status);
 
   const handleDraftRma = async (order: any) => {
     setIsGenerating(true);
@@ -176,6 +177,10 @@ const OrderDetailModal = ({
   };
 
   const handleAutoRoute = async () => {
+    if (isPaidOrBeyond) {
+      alert('Đơn hàng đã thanh toán hoặc đang vận hành, không được phép điều phối lại!');
+      return;
+    }
     setIsRouting(true);
     try {
       const items = order.items || [];
@@ -218,6 +223,10 @@ const OrderDetailModal = ({
 
   const handleManualRoute = async (whId: string) => {
     if (!whId) return;
+    if (isPaidOrBeyond) {
+      alert('Đơn hàng đã thanh toán hoặc đang vận hành, không được phép điều phối lại!');
+      return;
+    }
     setIsRouting(true);
     try {
       const selectedWh = warehouses.find(w => w.id === whId);
@@ -429,11 +438,14 @@ const OrderDetailModal = ({
                 onChange={e => onUpdateStatus(order.id, e.target.value)}
                 className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent cursor-pointer"
               >
-                {Object.entries(statusLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
+                {Object.entries(statusLabels).map(([key, label]) => {
+                  const isBackward = ['draft', 'pending'].includes(key) && isPaidOrBeyond;
+                  return (
+                    <option key={key} value={key} disabled={isBackward}>
+                      {label}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
@@ -586,7 +598,7 @@ const OrderDetailModal = ({
             </div>
             <button
               onClick={handleAutoRoute}
-              disabled={isRouting || isLoadingStock}
+              disabled={isRouting || isLoadingStock || isPaidOrBeyond}
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-xs font-bold rounded-lg flex items-center gap-2 shadow-sm transition-all self-end sm:self-auto"
             >
               {isRouting ? (

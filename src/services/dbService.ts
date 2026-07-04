@@ -6,7 +6,7 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments'];
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -66,6 +66,12 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'paidAt') return 'paid_at';
       if (field === 'createdAt') return 'created_at';
       if (field === 'updatedAt') return 'updated_at';
+    } else if (tableName === 'payments') {
+      if (field === 'orderId') return 'order_id';
+      if (field === 'paymentMethod') return 'payment_method';
+      if (field === 'transactionId') return 'transaction_id';
+      if (field === 'paymentGateway') return 'payment_gateway';
+      if (field === 'createdAt') return 'created_at';
     }
     // Default snake_case fallback for other fields in relational tables
     return field.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -178,6 +184,14 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.paid_at = jsData.paidAt || jsData.paid_at || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
     payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'payments') {
+    payload.order_id = jsData.orderId || null;
+    payload.amount = Number(jsData.amount) || 0.00;
+    payload.payment_method = jsData.paymentMethod || null;
+    payload.transaction_id = jsData.transactionId || null;
+    payload.payment_gateway = jsData.paymentGateway || null;
+    payload.status = jsData.status || 'success';
+    payload.created_at = jsData.createdAt || new Date().toISOString();
   }
 
   return payload;
@@ -292,6 +306,14 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.paidAt = row.paid_at;
     jsData.createdAt = row.created_at;
     jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'payments') {
+    jsData.orderId = row.order_id;
+    jsData.amount = Number(row.amount || 0);
+    jsData.paymentMethod = row.payment_method;
+    jsData.transactionId = row.transaction_id;
+    jsData.paymentGateway = row.payment_gateway;
+    jsData.status = row.status;
+    jsData.createdAt = row.created_at;
   }
 
   return jsData;
@@ -782,6 +804,41 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
   }
 };
 
+async function handleOrderPaymentTrigger(orderId: string, orderData: any, tenantId: string | null) {
+  if (orderData.status === 'paid' || orderData.paymentStatus === 'paid') {
+    try {
+      const { data: existing } = await supabase
+        .from('payments')
+        .select('id')
+        .eq('order_id', orderId)
+        .eq('status', 'success')
+        .maybeSingle();
+
+      if (!existing) {
+        const paymentId = `pm-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        const amount = Number(orderData.total || orderData.totalPrice || 0);
+        const paymentMethod = orderData.paymentMethod || 'vietqr';
+        const transactionId = orderData.transactionId || `tx-${Date.now()}`;
+        
+        await supabase.from('payments').insert({
+          id: paymentId,
+          tenant_id: tenantId || 'tenant-vcomm-prod-01',
+          order_id: orderId,
+          amount: amount,
+          payment_method: paymentMethod,
+          transaction_id: transactionId,
+          payment_gateway: 'sepay',
+          status: 'success',
+          created_at: new Date().toISOString()
+        });
+        console.log(`[Order-Payment-Trigger] Automatically recorded payment ${paymentId} for order ${orderId}`);
+      }
+    } catch (e) {
+      console.error('[Order-Payment-Trigger] Failed to check/record payment:', e);
+    }
+  }
+}
+
 export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): Promise<any> => {
   const cacheKey = `fs_cache_doc_${docRef.path}`;
   try {
@@ -809,6 +866,9 @@ export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): 
       .upsert(dbPayload);
 
     if (error) throw error;
+    if (docRef.tableName === 'orders') {
+      await handleOrderPaymentTrigger(docRef.id, serializedData, tenantId);
+    }
     return true;
   } catch (error: any) {
     console.warn(`[SupabaseAdapter] setDoc failed:`, error.message || error);
@@ -878,6 +938,9 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
       .upsert(dbPayload);
 
     if (error) throw error;
+    if (docRef.tableName === 'orders') {
+      await handleOrderPaymentTrigger(docRef.id, mergedData, tenantId);
+    }
     return true;
   } catch (error: any) {
     console.warn(`[SupabaseAdapter] updateDoc failed:`, error.message || error);
