@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { db, collection, query, orderBy, getDocs } from '../lib/firebase';
-import { range, search, ilike } from '../lib/firebase';
+import { db, collection, query, orderBy, getDocs } from '../services/dbService';
+import { range, search, ilike } from '../services/dbService';
 import axios from 'axios';
 
 vi.mock('axios');

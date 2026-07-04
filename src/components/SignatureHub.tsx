@@ -20,7 +20,7 @@ import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { db, collection, getDocs, doc, updateDoc, serverTimestamp } from '../lib/firebase';
+import { db, collection, getDocs, doc, updateDoc, serverTimestamp } from '../services/dbService';
 import { useTableColumns, ColumnDef } from '../hooks/useTableColumns';
 
 const INITIAL_SIGNATURES = [

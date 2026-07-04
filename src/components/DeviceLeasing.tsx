@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
-import { db, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from '../lib/firebase';
+import { db, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, Timestamp } from '../services/dbService';
 
 import {
   ResponsiveContainer,

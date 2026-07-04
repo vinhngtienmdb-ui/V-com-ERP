@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { sePayService } from '../services/sepayService';
-import { db, collection, addDoc, serverTimestamp, query, where, limit, getDocs, doc, getDoc, setDoc } from '../lib/firebase';
+import { db, collection, addDoc, serverTimestamp, query, where, limit, getDocs, doc, getDoc, setDoc } from '../services/dbService';
 import { getMisaConfig } from '../services/misaService';
 import { sendZnsNotification } from '../services/znsService';
 
@@ -114,7 +114,7 @@ export function useSepayListener() {
                 
                 // Cập nhật trạng thái đơn hàng sang 'paid' để kích hoạt trigger trừ kho và hạch toán tự động
                 try {
-                  const { updateDoc: firebaseUpdateDoc } = await import('../lib/firebase');
+                  const { updateDoc: firebaseUpdateDoc } = await import('../services/dbService');
                   await firebaseUpdateDoc(doc(db, 'orders', orderId), { status: 'paid' });
                   console.log(`[SePay-Listener] Đã cập nhật trạng thái đơn hàng ${orderId} sang 'paid'`);
                 } catch (updateErr: any) {

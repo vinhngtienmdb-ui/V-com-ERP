@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { db, doc, getDoc, updateDoc, collection, query, where, limit, getDocs } from '../lib/firebase';
+import { db, doc, getDoc, updateDoc, collection, query, where, limit, getDocs } from '../services/dbService';
 import { supabase } from '../lib/supabase';
 import { FinanceTransaction } from '../types/erp';
 import { safeLocalStorage } from '../lib/storage';
@@ -734,7 +734,7 @@ export const syncTransactionToMisa = async (transactionId: string, fallbackTxDat
         items
       };
 
-      const { setDoc: fbSetDoc, doc: fbDoc } = await import('../lib/firebase');
+      const { setDoc: fbSetDoc, doc: fbDoc } = await import('../services/dbService');
       await fbSetDoc(fbDoc(db, 'journal_entries', journalEntryId), journalEntry);
 
       responseData = {

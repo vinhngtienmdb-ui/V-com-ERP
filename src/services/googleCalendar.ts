@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, auth, googleProvider } from '../lib/firebase';
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, auth, googleProvider } from '../services/dbService';
 import { WorkflowTask } from '../types/erp';
 
 // In-memory cache for Google Access Token and linked email

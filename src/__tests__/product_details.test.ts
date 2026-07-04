@@ -2,9 +2,9 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { vi } from 'vitest';
 
 // Unmock the firebase module to test the actual implementation of mapping functions and Supabase operations
-vi.unmock('../lib/firebase');
+vi.unmock('../services/dbService');
 
-import { toRelationalPayload, fromRelationalRow, updateDoc, getDoc, doc, db } from '../lib/firebase';
+import { toRelationalPayload, fromRelationalRow, updateDoc, getDoc, doc, db } from '../services/dbService';
 import { Product } from '../types/erp';
 
 describe('Product Details Adapter Mapping & Supabase Integration', () => {
@@ -138,7 +138,7 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
     expect(retrievedData.specs).toEqual(sampleProduct.specs);
     
     // Clean up
-    const { deleteDoc } = await import('../lib/firebase');
+    const { deleteDoc } = await import('../services/dbService');
     await deleteDoc(productRef);
   });
 });

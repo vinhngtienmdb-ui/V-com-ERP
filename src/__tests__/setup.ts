@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
 // Mock Firebase để test không cần kết nối thật
-vi.mock('../lib/firebase', () => ({
+vi.mock('../services/dbService', () => ({
   db: {},
   auth: { currentUser: { uid: 'test-user-123', email: 'admin@test.com' } },
   logout: vi.fn(),

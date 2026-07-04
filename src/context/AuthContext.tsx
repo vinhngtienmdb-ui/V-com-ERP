@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged } from '../lib/firebase';
+import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged } from '../services/dbService';
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
 

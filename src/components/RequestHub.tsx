@@ -43,7 +43,7 @@ import { FormConfigModal } from './FormConfigModal';
 import { ResizableTh } from './ui/ResizableTh';
 import { useTableColumns } from '../hooks/useTableColumns';
 import { Modal } from './ui/Modal';
-import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../lib/firebase';
+import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../services/dbService';
 import { syncTransactionToMisa } from '../services/misaService';
 import { INITIAL_FORM_CONFIGS } from '../lib/formConfigs';
 import { RequestDetail } from './requests/RequestDetail';

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { db, collection, getDocs, query, where, setDoc, doc } from '../lib/firebase';
+import { db, collection, getDocs, query, where, setDoc, doc } from '../services/dbService';
 import { safeLocalStorage } from '../lib/storage';
 
 export interface StoreNode {

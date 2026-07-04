@@ -33,7 +33,7 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { formatCurrency, cn } from '../lib/utils';
 import { Order } from '../types/erp';
 
-import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where, search } from '../lib/firebase';
+import { db, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, getDocs, range, where, search } from '../services/dbService';
 import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
 import { syncOrderToMisa } from '../services/misaService';
@@ -202,7 +202,7 @@ const OrderDetailModal = ({
       const sorted = eligibleWarehouses.sort((a, b) => getDistance(a) - getDistance(b));
       const bestWh = sorted[0];
 
-      const { doc, updateDoc } = await import('../lib/firebase');
+      const { doc, updateDoc } = await import('../services/dbService');
       await updateDoc(doc(db, 'orders', order.id), { routedWarehouse: bestWh.id });
       
       setRoutedWarehouse(bestWh.id);
@@ -221,7 +221,7 @@ const OrderDetailModal = ({
     setIsRouting(true);
     try {
       const selectedWh = warehouses.find(w => w.id === whId);
-      const { doc, updateDoc } = await import('../lib/firebase');
+      const { doc, updateDoc } = await import('../services/dbService');
       await updateDoc(doc(db, 'orders', order.id), { routedWarehouse: whId });
       setRoutedWarehouse(whId);
       onUpdateStatus(order.id, order.status);
@@ -306,7 +306,7 @@ const OrderDetailModal = ({
   </Signature>
 </HuyenHoaDon>`;
 
-      const { doc, updateDoc } = await import('../lib/firebase');
+      const { doc, updateDoc } = await import('../services/dbService');
       await updateDoc(doc(db, 'orders', order.id), {
         einvoiceStatus: 'issued',
         einvoiceXml: xml,
@@ -1024,7 +1024,7 @@ export function Orders() {
       setMockOrders(updated);
     } else {
       try {
-        const { doc, updateDoc } = await import('../lib/firebase');
+        const { doc, updateDoc } = await import('../services/dbService');
         await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
       log({ action: 'order.updated', targetId: orderId, meta: { event: 'Status/payment update' } });
         matchedOrder = dbOrders.find(o => o.id === orderId);
@@ -1194,7 +1194,7 @@ export function Orders() {
   };
 
   const addDemoOrders = async () => {
-    const { getAuth } = await import('../lib/firebase');
+    const { getAuth } = await import('../services/dbService');
     const auth = getAuth();
     const currentUser = auth.currentUser;
     if (!currentUser) {

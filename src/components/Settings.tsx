@@ -61,7 +61,7 @@ import { formatCurrency, cn } from '../lib/utils';
 import { PermissionRole, WebhookConfig, AiFeeSuggestion } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
-import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../lib/firebase';
+import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../services/dbService';
 import { PageEditorModal } from './PageEditorModal';
 import { Modal } from './ui/Modal';
 

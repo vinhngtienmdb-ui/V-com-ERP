@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { db, auth, collection, addDoc, serverTimestamp } from '../lib/firebase';
+import { db, auth, collection, addDoc, serverTimestamp } from '../services/dbService';
 
 export type AuditAction =
   | 'order.status_changed' | 'order.created' | 'order.deleted'

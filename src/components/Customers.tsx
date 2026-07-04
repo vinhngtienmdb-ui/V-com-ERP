@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
-import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../lib/firebase';
+import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../services/dbService';
 import { syncCustomerToMisa } from '../services/misaService';
 import { supabase } from '../lib/supabase';
 import { Modal } from './ui/Modal';

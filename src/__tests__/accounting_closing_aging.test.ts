@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { db, addDoc, doc, setDoc, getDoc } from '../lib/firebase';
+import { db, addDoc, doc, setDoc, getDoc } from '../services/dbService';
 import { syncTransactionToMisa, unpostTransaction } from '../services/misaService';
 import axios from 'axios';
 
@@ -390,7 +390,7 @@ describe('Advanced Accounting Extensions (Closing, Lock Date, Cash Flow, FIFO Ag
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Clear all firebase write spy calls
-      const { addDoc: fbAddDoc, setDoc: fbSetDoc } = await import('../lib/firebase');
+      const { addDoc: fbAddDoc, setDoc: fbSetDoc } = await import('../services/dbService');
       vi.mocked(fbAddDoc).mockClear();
       vi.mocked(fbSetDoc).mockClear();
 

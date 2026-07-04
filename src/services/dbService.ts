@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import { safeLocalStorage } from './storage';
+import { supabase } from '../lib/supabase';
+import { safeLocalStorage } from '../lib/storage';
 
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
@@ -143,7 +143,7 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.email = jsData.email || null;
     payload.phone = jsData.phone || null;
     payload.total_products = Number(jsData.totalProducts) || 0;
-    payload.rating = Number(jsData.rating) || 0;
+    payload.rating = Number(row => row.rating) || 0;
     payload.gmv = Number(jsData.gmv) || 0;
     payload.wallet_balance = Number(jsData.walletBalance) || 0;
     payload.status = jsData.status || 'pending';
@@ -1199,5 +1199,3 @@ export const updateWalletBalance = async (
     throw err;
   }
 };
-
-

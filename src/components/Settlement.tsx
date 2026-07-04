@@ -1,4 +1,4 @@
-import { db, collection, getDocs, query, where, addDoc, updateDoc } from '../lib/firebase';
+import { db, collection, getDocs, query, where, addDoc, updateDoc } from '../services/dbService';
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -174,7 +174,7 @@ export function SettlementManagement() {
     try {
       if (!settlement.sellerId || !settlement.netPayout) return;
       
-      const { updateWalletBalance } = await import('../lib/firebase');
+      const { updateWalletBalance } = await import('../services/dbService');
       await updateWalletBalance(settlement.sellerId, settlement.netPayout, {
         type: 'deposit',
         gateway: 'system_reconciliation',
@@ -209,7 +209,7 @@ export function SettlementManagement() {
   const rejectWithdrawal = async (withdrawal: WithdrawalRequest) => {
     if (!confirm('Từ chối yêu cầu và hoàn tiền vào ví?')) return;
     try {
-      const { updateWalletBalance } = await import('../lib/firebase');
+      const { updateWalletBalance } = await import('../services/dbService');
       await updateWalletBalance(withdrawal.userId, withdrawal.amount, {
         type: 'refund',
         gateway: 'system_rejection',

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
-import { db, collection, addDoc, serverTimestamp } from '../../lib/firebase';
+import { db, collection, addDoc, serverTimestamp } from '../../services/dbService';
 import { ArrowLeft, Send, AlertTriangle, UserPlus, DollarSign, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { INITIAL_FORM_CONFIGS } from '../../lib/formConfigs';

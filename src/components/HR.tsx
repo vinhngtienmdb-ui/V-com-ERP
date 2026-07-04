@@ -66,7 +66,7 @@ import { formatCurrency, cn } from '../lib/utils';
 import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
 import { EmployeeDetailModal } from './EmployeeDetailModal';
 import { supabase } from '../lib/supabase';
-import { db, collection, addDoc, serverTimestamp } from '../lib/firebase';
+import { db, collection, addDoc, serverTimestamp } from '../services/dbService';
 import {
  BarChart,
  Bar,

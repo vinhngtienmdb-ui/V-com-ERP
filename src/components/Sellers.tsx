@@ -2,7 +2,7 @@ import { DraggableGrid } from './ui/DraggableGrid';
 import { Modal } from './ui/Modal';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { collection, getDocs, updateDoc, doc, db } from '../lib/firebase';
+import { collection, getDocs, updateDoc, doc, db } from '../services/dbService';
 import { 
  Users, 
  ShieldCheck, 

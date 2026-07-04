@@ -39,8 +39,8 @@ import {
 import { formatCurrency, cn } from '../lib/utils';
 import { SellerCreditScore, EarlyPayoutRequest } from '../types/erp';
 import { useNotifications } from '../context/NotificationContext';
-import { db, doc, getDoc, collection, query, where, getDocs, addDoc } from '../lib/firebase';
-import { updateWalletBalance } from '../lib/firebase';
+import { db, doc, getDoc, collection, query, where, getDocs, addDoc } from '../services/dbService';
+import { updateWalletBalance } from '../services/dbService';
 
 // Extended type for Simulator
 interface SimulatedSeller {

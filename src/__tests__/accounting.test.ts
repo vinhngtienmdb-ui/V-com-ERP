@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { db, collection, addDoc, doc, setDoc, getDocs, query, where } from '../lib/firebase';
+import { db, collection, addDoc, doc, setDoc, getDocs, query, where } from '../services/dbService';
 
 describe('Double-Entry Bookkeeping Integration Tests', () => {
   beforeEach(() => {

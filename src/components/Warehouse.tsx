@@ -45,7 +45,7 @@ import { useAuditLog } from '../hooks/useAuditLog';
 
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
-import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';
+import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../services/dbService';
 import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';

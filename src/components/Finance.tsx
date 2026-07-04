@@ -37,7 +37,7 @@ import {
   Lock
 } from 'lucide-react';
 import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
-import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../lib/firebase';
+import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../services/dbService';
 import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
 

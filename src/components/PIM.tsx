@@ -54,7 +54,7 @@ import {
   updateDoc,
   deleteDoc,
   where
-} from '../lib/firebase';
+} from '../services/dbService';
 import nexhubProducts from '../constants/nexhub_products.json';
 
 export function PIM() {

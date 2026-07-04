@@ -13,7 +13,7 @@ import {
 } from '../services/misaService';
 import { safeLocalStorage } from '../lib/storage';
 import axios from 'axios';
-import { addDoc, getDoc, updateDoc, doc } from '../lib/firebase';
+import { addDoc, getDoc, updateDoc, doc } from '../services/dbService';
 
 vi.mock('axios');
 

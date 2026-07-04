@@ -3,7 +3,7 @@ import { sePayService } from '../services/sepayService';
 import { sendZnsNotification, getZnsConfig, saveZnsConfig, refreshZnsToken } from '../services/znsService';
 import { safeLocalStorage } from '../lib/storage';
 import axios from 'axios';
-import { addDoc, setDoc } from '../lib/firebase';
+import { addDoc, setDoc } from '../services/dbService';
 
 vi.mock('axios');
 
@@ -150,7 +150,7 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
     (addDoc as any).mockClear();
     (setDoc as any).mockClear();
 
-    const { getDoc } = await import('../lib/firebase');
+    const { getDoc } = await import('../services/dbService');
     vi.mocked(getDoc).mockResolvedValue({
       exists: () => true,
       data: () => ({ id: 'IPOS_PAY_ORD123' })
@@ -241,7 +241,7 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
     (addDoc as any).mockClear();
     (setDoc as any).mockClear();
 
-    const { getDoc } = await import('../lib/firebase');
+    const { getDoc } = await import('../services/dbService');
     vi.mocked(getDoc).mockResolvedValue({
       exists: () => false
     } as any);
