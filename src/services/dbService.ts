@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
 
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
+
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged } from '../services/dbService';
+import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged, DEMO_MODE } from '../services/dbService';
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
 
@@ -134,7 +134,7 @@ const logAdminAudit = async (
          .eq('user_id', user.uid)
          .maybeSingle();
 
-       const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn';
+        const isBootstrapped = DEMO_MODE && (user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn');
 
        if (roleRow && !isBootstrapped) {
          const isStaffRole = roleRow.role !== 'customer';
@@ -172,7 +172,7 @@ const logAdminAudit = async (
            }
          } else {
            // Check if it's the bootstrapped admin
-           const isBootstrapped = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
+           const isBootstrapped = DEMO_MODE && (user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com');
            if (isBootstrapped) {
              setIsStaff(true);
              setIsAdmin(true);
@@ -199,7 +199,7 @@ const logAdminAudit = async (
          console.error("Error fetching staff info:", error);
        }
        
-       const isAuthorizedBootstrap = user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com';
+       const isAuthorizedBootstrap = DEMO_MODE && (user.email === 'admin@v-erp.com' || user.email === 'superadmin@v-erp.com' || user.email === 'vinh.ngtienmdb@gmail.com' || user.email === 'admin@vcomm.vn' || user.email === 'superadmin@vcomm.vn' || user.email === 'seller@v-erp.com');
        if (isAuthorizedBootstrap) {
          setIsStaff(true);
          setIsAdmin(user.email !== 'seller@v-erp.com');
@@ -246,7 +246,7 @@ const logAdminAudit = async (
       // Standard bootstrap check if database is online but user does not exist in Auth
       const isUserNotFound = error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential';
       
-      if ((isBootstrapAdmin || isBootstrapSeller) && isUserNotFound) {
+      if (DEMO_MODE && (isBootstrapAdmin || isBootstrapSeller) && isUserNotFound) {
         try {
           const userCredential = await createUser(auth, email, password);
           // Create staff doc
@@ -268,7 +268,7 @@ const logAdminAudit = async (
 
       // If the account is a valid bootstrapped account with correct password,
       // we bypass Firebase Auth entirely to ensure login is always possible (e.g. when offline).
-      if (isBootstrapAdmin || isBootstrapSeller) {
+      if (DEMO_MODE && (isBootstrapAdmin || isBootstrapSeller)) {
         console.warn("Firebase Auth failed or offline. Logging in via offline bootstrapped fallback.");
         const mockUser = {
           uid: username === 'superadmin' ? 'mock-uid-superadmin' : (username === 'seller' ? 'mock-uid-seller' : 'mock-uid-admin'),

@@ -49,6 +49,7 @@ const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').th
 const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
 
 
+import { DEMO_MODE } from './services/dbService';
 import { useAuth } from './context/AuthContext';
 import { useSepayListener } from './hooks/useSepayListener';
 import { StoreProvider } from './context/StoreContext';
@@ -270,7 +271,9 @@ function AppLayout() {
       checkAndSeed('fs_cache_docs_products', PRODUCTS_DATA);
     };
 
-    seedLocalStorageDemoData();
+    if (DEMO_MODE) {
+      seedLocalStorageDemoData();
+    }
 
     const defaultFavicon = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='8' height='4' x='8' y='2' rx='1' ry='1'/><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><path d='M9 12h6'/><path d='M9 16h6'/></svg>`;
     const savedFavicon = safeLocalStorage.getItem('system-favicon') || defaultFavicon;
