@@ -1,5 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import { Modal } from './ui/Modal';
+import { db, collection, getDocs } from '../services/dbService';
 import { 
   BarChart, 
   Bar, 
@@ -101,6 +102,32 @@ export function CustomerService() {
   const [activeTab, setActiveTab] = useState<any>('dashboard');
   const [tickets, setTickets] = useState(MOCK_TICKETS);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
+
+  const fetchTickets = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'support_tickets'));
+      const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+      if (data.length > 0) {
+        const formatted = data.map((t: any) => ({
+          id: t.id,
+          customerName: t.customerName,
+          subject: t.subject,
+          status: t.status,
+          priority: t.priority,
+          type: t.type,
+          slaDeadline: t.slaDeadline,
+          createdAt: t.createdAt ? new Date(t.createdAt).toLocaleDateString('vi-VN') : 'Vừa xong'
+        }));
+        setTickets(formatted);
+      }
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTickets();
+  }, []);
   
   // Zalo ZNS state variables
   const [znsLogs, setZnsLogs] = useState<any[]>([]);
@@ -862,7 +889,12 @@ export function CustomerService() {
  ticket.sentiment === 'negative' ? <span className="w-2 h-2 rounded-full bg-orange-500" /> : 
  <span className="w-2 h-2 rounded-full bg-emerald-500" />}
  <div>
+ <div className="flex items-center gap-2">
  <p className="text-sm font-bold text-slate-800">{ticket.subject}</p>
+ {ticket.slaDeadline && ticket.status !== 'closed' && new Date() > new Date(ticket.slaDeadline) && (
+   <span className="px-1.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded text-[9px] font-bold">⚠️ TRỄ SLA</span>
+ )}
+ </div>
  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{ticket.type}</p>
  </div>
  </div>

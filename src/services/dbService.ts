@@ -6,7 +6,7 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers', 'loyalty_points_ledger', 'support_tickets'];
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -37,6 +37,19 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'partnerType') return 'partner_type';
       if (field === 'refType') return 'ref_type';
       if (field === 'refId') return 'ref_id';
+      if (field === 'createdAt') return 'created_at';
+    } else if (tableName === 'loyalty_points_ledger') {
+      if (field === 'customerId') return 'customer_id';
+      if (field === 'pointsChange') return 'points_change';
+      if (field === 'transactionType') return 'transaction_type';
+      if (field === 'referenceType') return 'reference_type';
+      if (field === 'referenceId') return 'reference_id';
+      if (field === 'createdAt') return 'created_at';
+    } else if (tableName === 'support_tickets') {
+      if (field === 'customerId') return 'customer_id';
+      if (field === 'customerName') return 'customer_name';
+      if (field === 'slaDeadline') return 'sla_deadline';
+      if (field === 'resolvedAt') return 'resolved_at';
       if (field === 'createdAt') return 'created_at';
     } else if (tableName === 'customers') {
       if (field === 'createdAt') return 'created_at';
@@ -231,6 +244,24 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.credit = Number(jsData.credit || 0) || 0.00;
     payload.balance = Number(jsData.balance || 0) || 0.00;
     payload.created_at = jsData.createdAt || new Date().toISOString();
+  } else if (tableName === 'loyalty_points_ledger') {
+    payload.customer_id = jsData.customerId || null;
+    payload.points_change = Number(jsData.pointsChange || 0) || 0;
+    payload.transaction_type = jsData.transactionType || null;
+    payload.description = jsData.description || null;
+    payload.reference_type = jsData.referenceType || null;
+    payload.reference_id = jsData.referenceId || null;
+    payload.created_at = jsData.createdAt || new Date().toISOString();
+  } else if (tableName === 'support_tickets') {
+    payload.customer_id = jsData.customerId || null;
+    payload.customer_name = jsData.customerName || null;
+    payload.subject = jsData.subject || null;
+    payload.status = jsData.status || 'open';
+    payload.priority = jsData.priority || 'medium';
+    payload.type = jsData.type || 'inquiry';
+    payload.sla_deadline = jsData.slaDeadline || null;
+    payload.resolved_at = jsData.resolvedAt || null;
+    payload.created_at = jsData.createdAt || new Date().toISOString();
   }
 
   return payload;
@@ -373,6 +404,24 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.debit = Number(row.debit || 0);
     jsData.credit = Number(row.credit || 0);
     jsData.balance = Number(row.balance || 0);
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'loyalty_points_ledger') {
+    jsData.customerId = row.customer_id;
+    jsData.pointsChange = Number(row.points_change || 0);
+    jsData.transactionType = row.transaction_type;
+    jsData.description = row.description;
+    jsData.referenceType = row.reference_type;
+    jsData.referenceId = row.reference_id;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'support_tickets') {
+    jsData.customerId = row.customer_id;
+    jsData.customerName = row.customer_name;
+    jsData.subject = row.subject;
+    jsData.status = row.status;
+    jsData.priority = row.priority;
+    jsData.type = row.type;
+    jsData.slaDeadline = row.sla_deadline;
+    jsData.resolvedAt = row.resolved_at;
     jsData.createdAt = row.created_at;
   }
 

@@ -1057,6 +1057,19 @@ export function Orders() {
           console.error('[Accounting] Failed to post order journal entries:', accErr);
           alert(`Lỗi hạch toán kế toán: ${accErr.message || accErr}`);
         }
+
+        if (matchedOrder.customerId) {
+          try {
+            const { calculateRfmScores, addLoyaltyPoints } = await import('../services/crmService');
+            const pointsToEarn = Math.round((matchedOrder.total || 0) / 10000);
+            if (pointsToEarn > 0) {
+              await addLoyaltyPoints(matchedOrder.customerId, pointsToEarn, 'earn', `Tích lũy từ đơn hàng ${matchedOrder.id}`, 'order', matchedOrder.id);
+            }
+            await calculateRfmScores(matchedOrder.customerId);
+          } catch (crmErr: any) {
+            console.error('[CRM] Failed to trigger loyalty points or RFM calculation:', crmErr);
+          }
+        }
       }
 
       if (selectedOrder && selectedOrder.id === orderId) {
