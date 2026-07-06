@@ -14,7 +14,9 @@ import {
  Receipt,
  Truck,
  AlertCircle,
- Loader2
+ Loader2,
+ Coins,
+ Store
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { SettlementRow, WithdrawalRequest, Order } from '../types/erp';
@@ -57,12 +59,110 @@ const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  }
 ];
 
+const MOCK_AFFILIATE_SETTLEMENTS = [
+  {
+    id: 'AFF-001',
+    affiliateName: 'KOL Thùy Chi',
+    period: '01/04 - 07/04',
+    totalOrders: 145,
+    gmv: 45000000,
+    commissionEarned: 4500000,
+    status: 'pending'
+  },
+  {
+    id: 'AFF-002',
+    affiliateName: 'Đại lý Hoàng Nam',
+    period: '01/04 - 07/04',
+    totalOrders: 82,
+    gmv: 24000000,
+    commissionEarned: 2400000,
+    status: 'completed'
+  }
+];
+
+const MOCK_PICKUP_SETTLEMENTS = [
+  {
+    id: 'PKP-001',
+    hubName: 'Điểm nhận Hàng Quận 7',
+    period: '01/04 - 07/04',
+    totalOrders: 120,
+    pickupFee: 600000,
+    status: 'pending'
+  },
+  {
+    id: 'PKP-002',
+    hubName: 'Điểm nhận Hàng Thủ Đức',
+    period: '01/04 - 07/04',
+    totalOrders: 250,
+    pickupFee: 1250000,
+    status: 'completed'
+  }
+];
+
 export function SettlementManagement() {
-  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod'>('settlement');
+  const [activeTab, setActiveTab] = useState<'settlement' | 'withdrawal' | 'einvoice' | 'cod' | 'affiliate' | 'pickup'>('settlement');
   const [settlements, setSettlements] = useState<SettlementRow[]>([]);
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
+  const [affiliateSettlements, setAffiliateSettlements] = useState(MOCK_AFFILIATE_SETTLEMENTS);
+  const [pickupSettlements, setPickupSettlements] = useState(MOCK_PICKUP_SETTLEMENTS);
   const [loading, setLoading] = useState(true);
   const [isReconciling, setIsReconciling] = useState(false);
+
+  const approveAffiliateSettlement = async (aff: any) => {
+    if (!confirm('Duyệt chi trả hoa hồng cho CTV này?')) return;
+    try {
+      const { postWithdrawalJournalEntries } = await import('../services/accountingService');
+      await postWithdrawalJournalEntries({
+        id: aff.id,
+        userId: aff.id,
+        userType: 'agent',
+        amount: aff.commissionEarned
+      });
+
+      await recordPartnerLedgerEntry({
+        partnerId: aff.id,
+        partnerType: 'agent',
+        refType: 'settlement',
+        refId: aff.id,
+        debit: aff.commissionEarned,
+        credit: 0
+      });
+
+      setAffiliateSettlements(prev => prev.map(a => a.id === aff.id ? { ...a, status: 'completed' } : a));
+      alert('Đã duyệt chi trả hoa hồng thành công!');
+    } catch (err: any) {
+      console.error(err);
+      alert('Lỗi duyệt chi hoa hồng: ' + err.message);
+    }
+  };
+
+  const approvePickupSettlement = async (hub: any) => {
+    if (!confirm('Duyệt thanh toán phí vận hành cho Điểm nhận hàng này?')) return;
+    try {
+      const { postWithdrawalJournalEntries } = await import('../services/accountingService');
+      await postWithdrawalJournalEntries({
+        id: hub.id,
+        userId: hub.id,
+        userType: 'agent',
+        amount: hub.pickupFee
+      });
+
+      await recordPartnerLedgerEntry({
+        partnerId: hub.id,
+        partnerType: 'agent',
+        refType: 'settlement',
+        refId: hub.id,
+        debit: hub.pickupFee,
+        credit: 0
+      });
+
+      setPickupSettlements(prev => prev.map(p => p.id === hub.id ? { ...p, status: 'completed' } : p));
+      alert('Đã duyệt chi trả phí vận hành thành công!');
+    } catch (err: any) {
+      console.error(err);
+      alert('Lỗi duyệt chi phí vận hành: ' + err.message);
+    }
+  };
 
   const fetchSettlements = async () => {
     setLoading(true);
@@ -296,6 +396,8 @@ export function SettlementManagement() {
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
+ { id: 'affiliate', label: 'Hoa hồng CTV / Affiliate', icon: Coins },
+ { id: 'pickup', label: 'Đối soát Điểm nhận (Pickup)', icon: Store },
  { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
  { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
  { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
@@ -364,6 +466,25 @@ export function SettlementManagement() {
  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái Kế toán</th>
  </tr>
  )}
+ {activeTab === 'affiliate' && (
+  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cộng tác viên / KOL</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số Đơn</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng Doanh số (GMV)</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng phát sinh</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+  </tr>
+  )}
+  {activeTab === 'pickup' && (
+  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Điểm nhận hàng (Hub)</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số đơn xử lý</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phí vận hành (5k/đơn)</th>
+  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+  </tr>
+  )}
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
  {activeTab === 'settlement' && settlements.map((stl) => {
@@ -468,6 +589,59 @@ export function SettlementManagement() {
  </td>
  </tr>
  ))}
+ {activeTab === 'affiliate' && affiliateSettlements.map((aff) => (
+  <tr key={aff.id} className="hover:bg-[#F9FAFB] group transition-colors">
+  <td className="px-6 py-4">
+  <p className="text-sm font-bold text-[#111827]">{aff.affiliateName}</p>
+  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{aff.id}</p>
+  </td>
+  <td className="px-6 py-4 text-xs text-[#4B5563]">{aff.period}</td>
+  <td className="px-6 py-4 text-right text-xs font-semibold text-slate-800">{aff.totalOrders}</td>
+  <td className="px-6 py-4 text-right font-semibold text-slate-800">{formatCurrency(aff.gmv)}</td>
+  <td className="px-6 py-4 text-right">
+  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(aff.commissionEarned)}</p>
+  </td>
+  <td className="px-6 py-4">
+  <div className="flex justify-end gap-2 items-center">
+  <span className={cn(
+  "px-2 py-0.5 rounded-full text-[10px] font-bold",
+  aff.status === 'completed' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+  )}>
+  {aff.status === 'completed' ? 'Đã Thanh toán' : 'Chờ Duyệt'}
+  </span>
+  {aff.status === 'pending' && (
+    <button onClick={() => approveAffiliateSettlement(aff)} className="px-2 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700">Duyệt chi</button>
+  )}
+  </div>
+  </td>
+  </tr>
+  ))}
+  {activeTab === 'pickup' && pickupSettlements.map((hub) => (
+  <tr key={hub.id} className="hover:bg-[#F9FAFB] group transition-colors">
+  <td className="px-6 py-4">
+  <p className="text-sm font-bold text-[#111827]">{hub.hubName}</p>
+  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{hub.id}</p>
+  </td>
+  <td className="px-6 py-4 text-xs text-[#4B5563]">{hub.period}</td>
+  <td className="px-6 py-4 text-right text-xs font-semibold text-slate-800">{hub.totalOrders}</td>
+  <td className="px-6 py-4 text-right">
+  <p className="text-sm font-bold text-[#10B981]">{formatCurrency(hub.pickupFee)}</p>
+  </td>
+  <td className="px-6 py-4">
+  <div className="flex justify-end gap-2 items-center">
+  <span className={cn(
+  "px-2 py-0.5 rounded-full text-[10px] font-bold",
+  hub.status === 'completed' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+  )}>
+  {hub.status === 'completed' ? 'Đã Thanh toán' : 'Chờ Duyệt'}
+  </span>
+  {hub.status === 'pending' && (
+    <button onClick={() => approvePickupSettlement(hub)} className="px-2 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700">Duyệt chi</button>
+  )}
+  </div>
+  </td>
+  </tr>
+  ))}
  </tbody>
  </table>
  </div>
