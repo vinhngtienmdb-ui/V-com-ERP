@@ -45,6 +45,7 @@ import { useTableColumns } from '../hooks/useTableColumns';
 import { Modal } from './ui/Modal';
 import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../services/dbService';
 import { syncTransactionToMisa } from '../services/misaService';
+import { sendZnsNotification } from '../services/znsService';
 import { INITIAL_FORM_CONFIGS } from '../lib/formConfigs';
 import { RequestDetail } from './requests/RequestDetail';
 
@@ -339,69 +340,110 @@ export function RequestHub() {
  setShowRouteModal(false);
  };
 
- const handleStatusChange = (id: string, newStatus: string) => {
- const isDbRecord = dbRequestIds.has(id);
- setRequests(requests.map(req => {
- if (req.id === id) {
- const config = formConfigs.find(c => c.name === req.subtype);
- const currentLevel = (req as any).currentLevel || 1;
- const workflowSteps = config?.workflow || [];
- const totalLevels = workflowSteps.length || 1;
- const approvalLog = (req as any).approvalLog || [];
+  const handleStatusChange = (id: string, newStatus: string) => {
+    const isDbRecord = dbRequestIds.has(id);
+    const currentReq = requests.find(r => r.id === id);
+    if (!currentReq) return;
 
- if (newStatus === 'approved') {
- // Check if there are more steps
- if (currentLevel < totalLevels) {
- // Move to next level
- return { 
- ...req, 
- currentLevel: currentLevel + 1, 
- status: 'pending',
- approvalLog: [...approvalLog, { 
- level: currentLevel, 
- status: 'approved', 
- by: user?.displayName || 'Cấp duyệt 1', 
- time: new Date().toLocaleString('vi-VN'),
- stepName: `Duyệt cấp ${currentLevel}`
- }]
- };
- } else {
- // Final approval
- return { 
- ...req, 
- status: 'approved',
- approvalLog: [...approvalLog, { 
- level: currentLevel, 
- status: 'approved', 
- by: user?.displayName || 'Director', 
- time: new Date().toLocaleString('vi-VN'),
- stepName: 'Duyệt cấp cuối'
- }]
- };
- }
- } else if (newStatus === 'rejected') {
- return {
- ...req,
- status: 'rejected',
- approvalLog: [...approvalLog, { 
- level: currentLevel, 
- status: 'rejected', 
- by: user?.displayName || 'Manager', 
- time: new Date().toLocaleString('vi-VN'),
- stepName: `Từ chối tại cấp ${currentLevel}`
- }]
- };
- }
- 
- return { ...req, status: newStatus };
- }
- return req;
- }));
- if (isDbRecord) {
-  updateDoc(doc(db, 'requests', id), { status: newStatus, updatedAt: serverTimestamp() })
-  .catch(err => console.error('RequestHub status update error:', err));
- }
- };
+    // Role-based approval limit validation
+    const amount = Number((currentReq as any).amount || 0);
+    const isFinancial = ['finance', 'admin', 'other'].includes(currentReq.type) && amount > 0;
+    const userRole = user?.role || 'staff';
+    const isManager = userRole === 'manager' || userRole === 'lead';
+    const isDirector = userRole === 'director' || userRole === 'admin' || isAdmin;
+
+    if (newStatus === 'approved' && isFinancial) {
+      if (isManager && amount > 20000000) {
+        alert(`Không thể duyệt: Số tiền ${amount.toLocaleString('vi-VN')}đ vượt quá hạn mức tối đa của Trưởng phòng (20,000,000đ).`);
+        return;
+      }
+      if (!isManager && !isDirector) {
+        alert('Không thể duyệt: Bạn không có quyền phê duyệt đề xuất tài chính này.');
+        return;
+      }
+    }
+
+    let updatedReq = null;
+
+    setRequests(requests.map(req => {
+      if (req.id === id) {
+        const config = formConfigs.find(c => c.name === req.subtype);
+        const currentLevel = (req as any).currentLevel || 1;
+        const workflowSteps = config?.workflow || [];
+        const totalLevels = workflowSteps.length || 1;
+        const approvalLog = (req as any).approvalLog || [];
+
+        if (newStatus === 'approved') {
+          if (currentLevel < totalLevels) {
+            updatedReq = { 
+              ...req, 
+              currentLevel: currentLevel + 1, 
+              status: 'pending',
+              approvalLog: [...approvalLog, { 
+                level: currentLevel, 
+                status: 'approved', 
+                by: user?.displayName || 'Cấp duyệt 1', 
+                time: new Date().toLocaleString('vi-VN'),
+                stepName: `Duyệt cấp ${currentLevel}`
+              }]
+            };
+          } else {
+            updatedReq = { 
+              ...req, 
+              status: 'approved',
+              approvalLog: [...approvalLog, { 
+                level: currentLevel, 
+                status: 'approved', 
+                by: user?.displayName || 'Director', 
+                time: new Date().toLocaleString('vi-VN'),
+                stepName: 'Duyệt cấp cuối'
+              }]
+            };
+
+            // Trigger Zalo ZNS notification upon final approval
+            try {
+              sendZnsNotification('0912345678', 'ZNS_TICKET_CLOSED', {
+                'Tên_Khách_Hàng': req.requester || 'Nhân viên đề xuất',
+                'Mã_Phiếu': req.id
+              }, {
+                ticketId: req.id,
+                customerName: req.requester
+              });
+            } catch (znsErr) {
+              console.error('Failed to send approval ZNS notification:', znsErr);
+            }
+          }
+        } else if (newStatus === 'rejected') {
+          updatedReq = {
+            ...req,
+            status: 'rejected',
+            approvalLog: [...approvalLog, { 
+              level: currentLevel, 
+              status: 'rejected', 
+              by: user?.displayName || 'Manager', 
+              time: new Date().toLocaleString('vi-VN'),
+              stepName: `Từ chối tại cấp ${currentLevel}`
+            }]
+          };
+        } else {
+          updatedReq = { ...req, status: newStatus };
+        }
+        
+        return updatedReq;
+      }
+      return req;
+    }));
+
+    if (isDbRecord && updatedReq) {
+      updateDoc(doc(db, 'requests', id), {
+        status: updatedReq.status,
+        currentLevel: updatedReq.currentLevel || 1,
+        approvalLog: updatedReq.approvalLog || [],
+        updatedAt: serverTimestamp()
+      })
+      .catch(err => console.error('RequestHub status update error:', err));
+    }
+  };
  const [searchReqQuery, setSearchReqQuery] = useState('');
  const [statusFilter, setStatusFilter] = useState('all');
  const [requesterFilter, setRequesterFilter] = useState('all');
