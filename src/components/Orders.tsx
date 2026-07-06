@@ -1049,6 +1049,16 @@ export function Orders() {
     }
 
     if (matchedOrder) {
+      if (newStatus === 'completed') {
+        try {
+          const { postOrderJournalEntries } = await import('../services/accountingService');
+          await postOrderJournalEntries(matchedOrder);
+        } catch (accErr: any) {
+          console.error('[Accounting] Failed to post order journal entries:', accErr);
+          alert(`Lỗi hạch toán kế toán: ${accErr.message || accErr}`);
+        }
+      }
+
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder(matchedOrder);
       }

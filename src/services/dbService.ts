@@ -682,6 +682,25 @@ async function saveJournalEntry(docId: string, serializedData: any, tenantId: an
     }
   }
 
+  // Check if period is locked
+  const { data: settingsRow } = await supabase
+    .from('tenant_settings')
+    .select('data')
+    .eq('id', 'config')
+    .maybeSingle();
+  const lockDateStr = settingsRow?.data?.closingLockDate;
+  if (lockDateStr) {
+    const lockDate = new Date(lockDateStr);
+    const entryDate = new Date(serializedData.date || serializedData.dateStr || new Date());
+    
+    lockDate.setUTCHours(0, 0, 0, 0);
+    entryDate.setUTCHours(0, 0, 0, 0);
+    
+    if (entryDate.getTime() <= lockDate.getTime()) {
+      throw new Error(`Kỳ kế toán đã khóa sổ (Ngày khóa sổ: ${lockDate.toLocaleDateString('vi-VN')}). Không thể ghi nhận chứng từ vào ngày ${entryDate.toLocaleDateString('vi-VN')}!`);
+    }
+  }
+
   const { items: journalItems, ...mainEntry } = serializedData;
   const dbPayload = {
     id: docId,
