@@ -6,7 +6,12 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers', 'loyalty_points_ledger', 'support_tickets'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers', 'loyalty_points_ledger', 'support_tickets', 'combos', 'combo_items', 'group_buy_sessions', 'stock_vouchers', 'stock_voucher_items', 'journal_entries', 'wallet_transactions', 'seller_transactions'];
+
+export function getRealTableName(tableName: string): string {
+  if (tableName === 'wallet_transactions') return 'seller_transactions';
+  return tableName;
+}
 
 export function mapJsFieldToDbColumn(tableName: string, field: string): string {
   if (field === 'id') return 'id';
@@ -176,6 +181,7 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.settlement_id = jsData.settlementId || jsData.settlement_id || null;
     payload.payment_status = jsData.paymentStatus || jsData.payment_status || 'unpaid';
     payload.payment_method = jsData.paymentMethod || jsData.payment_method || 'cod';
+    payload.channel = jsData.channel || null;
   } else if (tableName === 'warehouse_stock') {
     payload.warehouse_id = jsData.warehouseId || jsData.warehouse_id || jsData.storeId || jsData.store_id || null;
     payload.product_id = jsData.productId || jsData.materialId || jsData.product_id || null;
@@ -262,6 +268,49 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.sla_deadline = jsData.slaDeadline || null;
     payload.resolved_at = jsData.resolvedAt || null;
     payload.created_at = jsData.createdAt || new Date().toISOString();
+  } else if (tableName === 'combos') {
+    payload.name = jsData.name || '';
+    payload.description = jsData.description || null;
+    payload.price = Number(jsData.price || 0) || 0.00;
+    payload.cost_price = Number(jsData.costPrice || jsData.cost_price || 0) || 0.00;
+    payload.status = jsData.status || 'active';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'combo_items') {
+    payload.combo_id = jsData.comboId || jsData.combo_id || null;
+    payload.product_id = jsData.productId || jsData.product_id || null;
+    payload.quantity = Number(jsData.quantity) || 1;
+  } else if (tableName === 'group_buy_sessions') {
+    payload.combo_id = jsData.comboId || jsData.combo_id || null;
+    payload.status = jsData.status || 'open';
+    payload.min_qty = Number(jsData.minQty || jsData.min_qty) || 10;
+    payload.current_qty = Number(jsData.currentQty || jsData.current_qty) || 0;
+    payload.end_time = jsData.endTime || jsData.end_time || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'stock_vouchers') {
+    payload.code = jsData.code || '';
+    payload.type = jsData.type || '';
+    payload.status = jsData.status || 'draft';
+    payload.source_warehouse_id = jsData.sourceWarehouseId || jsData.source_warehouse_id || null;
+    payload.target_warehouse_id = jsData.targetWarehouseId || jsData.target_warehouse_id || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.approved_by = jsData.approvedBy || jsData.approved_by || null;
+    payload.approved_at = jsData.approvedAt || jsData.approved_at || null;
+  } else if (tableName === 'stock_voucher_items') {
+    payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
+    payload.product_id = jsData.productId || jsData.product_id || null;
+    payload.quantity = Number(jsData.quantity) || 0;
+  } else if (tableName === 'journal_entries') {
+    payload.date = jsData.date || jsData.dateStr || new Date().toISOString();
+    payload.ref = jsData.ref || null;
+    payload.description = jsData.description || null;
+  } else if (tableName === 'wallet_transactions' || tableName === 'seller_transactions') {
+    payload.seller_id = jsData.userId || jsData.sellerId || jsData.seller_id || null;
+    payload.type = jsData.type || '';
+    payload.amount = Number(jsData.amount) || 0.00;
+    payload.reference_id = jsData.referenceId || jsData.gateway || null;
+    payload.status = jsData.status || 'success';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
   }
 
   return payload;
@@ -334,6 +383,7 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.settlementId = row.settlement_id;
     jsData.paymentStatus = row.payment_status;
     jsData.paymentMethod = row.payment_method;
+    jsData.channel = row.channel;
   } else if (tableName === 'warehouse_stock') {
     jsData.warehouseId = row.warehouse_id || row.store_id;
     jsData.storeId = row.warehouse_id || row.store_id; // Keep storeId for backward compatibility
@@ -423,6 +473,53 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.slaDeadline = row.sla_deadline;
     jsData.resolvedAt = row.resolved_at;
     jsData.createdAt = row.created_at;
+  } else if (tableName === 'combos') {
+    jsData.name = row.name;
+    jsData.description = row.description;
+    jsData.price = Number(row.price || 0);
+    jsData.costPrice = Number(row.cost_price || 0);
+    jsData.status = row.status;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'combo_items') {
+    jsData.comboId = row.combo_id;
+    jsData.productId = row.product_id;
+    jsData.quantity = Number(row.quantity || 0);
+  } else if (tableName === 'group_buy_sessions') {
+    jsData.comboId = row.combo_id;
+    jsData.status = row.status;
+    jsData.minQty = Number(row.min_qty || 0);
+    jsData.currentQty = Number(row.current_qty || 0);
+    jsData.endTime = row.end_time;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'stock_vouchers') {
+    jsData.code = row.code;
+    jsData.type = row.type;
+    jsData.status = row.status;
+    jsData.sourceWarehouseId = row.source_warehouse_id;
+    jsData.targetWarehouseId = row.target_warehouse_id;
+    jsData.createdBy = row.created_by;
+    jsData.createdAt = row.created_at;
+    jsData.approvedBy = row.approved_by;
+    jsData.approvedAt = row.approved_at;
+  } else if (tableName === 'stock_voucher_items') {
+    jsData.voucherId = row.voucher_id;
+    jsData.productId = row.product_id;
+    jsData.quantity = Number(row.quantity || 0);
+  } else if (tableName === 'journal_entries') {
+    jsData.date = row.date;
+    jsData.ref = row.ref;
+    jsData.description = row.description;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'wallet_transactions' || tableName === 'seller_transactions') {
+    jsData.userId = row.seller_id;
+    jsData.sellerId = row.seller_id;
+    jsData.type = row.type;
+    jsData.amount = Number(row.amount);
+    jsData.referenceId = row.reference_id;
+    jsData.gateway = row.reference_id;
+    jsData.status = row.status;
+    jsData.createdAt = row.created_at;
+    jsData.timestamp = new Date(row.created_at).toLocaleString('vi-VN');
   }
 
   return jsData;
@@ -648,7 +745,7 @@ export const serverTimestamp = () => {
 // Internal query engine that maps constraints to Supabase filters
 async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
   const tableName = q instanceof SupabaseCollectionRef ? q.tableName : q.tableName;
-  let builder = supabase.from(tableName).select('*', { count: 'exact' });
+  let builder = supabase.from(getRealTableName(tableName)).select('*', { count: 'exact' });
 
   const constraints = q instanceof SupabaseQuery ? q.constraints : [];
   const tenantId = q instanceof SupabaseCollectionRef ? q.tenantId : q.collectionRef.tenantId;
@@ -676,6 +773,8 @@ async function executeQuery(q: SupabaseQuery | SupabaseCollectionRef) {
         builder = builder.lte(targetColumn, value);
       } else if (op === 'in') {
         builder = builder.in(targetColumn, value);
+      } else if (op === '!=' || op === '!==') {
+        builder = builder.neq(targetColumn, value);
       } else if (op === 'array-contains') {
         if (RELATIONAL_TABLES.includes(tableName)) {
           builder = builder.contains(targetColumn, [value]);
@@ -753,9 +852,10 @@ async function saveJournalEntry(docId: string, serializedData: any, tenantId: an
   const { items: journalItems, ...mainEntry } = serializedData;
   const dbPayload = {
     id: docId,
-    tenant_id: tenantId,
-    data: mainEntry,
-    updated_at: new Date().toISOString()
+    tenant_id: tenantId || mainEntry.tenantId || 'tenant-vcomm-prod-01',
+    date: mainEntry.date || mainEntry.dateStr || new Date().toISOString(),
+    ref: mainEntry.ref || null,
+    description: mainEntry.description || null
   };
 
   const { error: entryError } = await supabase
@@ -791,7 +891,7 @@ export const getDoc = async (docRef: SupabaseDocRef): Promise<any> => {
   const cacheKey = `fs_cache_doc_${docRef.path}`;
   try {
     const { data, error } = await supabase
-      .from(docRef.tableName)
+      .from(getRealTableName(docRef.tableName))
       .select('*')
       .eq('id', docRef.id)
       .maybeSingle();
@@ -1030,7 +1130,7 @@ export const setDoc = async (docRef: SupabaseDocRef, data: any, options?: any): 
     }
 
     const { error } = await supabase
-      .from(docRef.tableName)
+      .from(getRealTableName(docRef.tableName))
       .upsert(dbPayload);
 
     if (error) throw error;
@@ -1054,7 +1154,7 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
     } else {
       const selectFields = RELATIONAL_TABLES.includes(docRef.tableName) ? '*' : 'data';
       const { data: row } = await supabase
-        .from(docRef.tableName)
+        .from(getRealTableName(docRef.tableName))
         .select(selectFields)
         .eq('id', docRef.id)
         .maybeSingle();
@@ -1106,7 +1206,7 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
     }
 
     const { error } = await supabase
-      .from(docRef.tableName)
+      .from(getRealTableName(docRef.tableName))
       .upsert(dbPayload);
 
     if (error) throw error;
@@ -1140,7 +1240,7 @@ export const deleteDoc = async (docRef: SupabaseDocRef): Promise<any> => {
   try {
     safeLocalStorage.removeItem(cacheKey);
     const { error } = await supabase
-      .from(docRef.tableName)
+      .from(getRealTableName(docRef.tableName))
       .delete()
       .eq('id', docRef.id);
     if (error) throw error;

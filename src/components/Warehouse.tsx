@@ -40,8 +40,11 @@ import {
   Camera,
   QrCode,
   RefreshCw,
+  Loader2,
+  X,
 } from 'lucide-react';
 import { useAuditLog } from '../hooks/useAuditLog';
+import { supabase } from '../lib/supabase';
 
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
@@ -537,8 +540,234 @@ export function WarehouseModule() {
   const [showScanner, setShowScanner] = useState<boolean>(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
 
+  const [stockVouchers, setStockVouchers] = useState<any[]>([]);
+  const [inventoryLogs, setInventoryLogs] = useState<any[]>([]);
+  const [productsList, setProductsList] = useState<any[]>([]);
+  const [warehousesList, setWarehousesList] = useState<any[]>([]);
+  const [vouchersLoading, setVouchersLoading] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState<any | null>(null);
+  const [showCreateVoucherModal, setShowCreateVoucherModal] = useState(false);
+  
+  const [voucherType, setVoucherType] = useState<'in' | 'out' | 'transfer'>('in');
+  const [sourceWh, setSourceWh] = useState('');
+  const [targetWh, setTargetWh] = useState('');
+  const [selectedProdId, setSelectedProdId] = useState('');
+  const [selectedQty, setSelectedQty] = useState(1);
+  const [voucherItems, setVoucherItems] = useState<any[]>([]);
+
   const { staffInfo } = useAuth();
   const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+
+  const loadWmsData = async () => {
+    try {
+      setVouchersLoading(true);
+      // Fetch warehouses
+      const { data: whs } = await supabase.from('warehouses').select('*');
+      if (whs) setWarehousesList(whs);
+
+      // Fetch products
+      const { data: prods } = await supabase.from('products').select('id, name, sku, price');
+      if (prods) setProductsList(prods);
+
+      // Fetch vouchers
+      const { data: vouchers } = await supabase
+        .from('stock_vouchers')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (vouchers) {
+        // Fetch voucher items
+        const { data: items } = await supabase.from('stock_voucher_items').select('*');
+        const mapped = vouchers.map(v => ({
+          ...v,
+          items: items ? items.filter((i: any) => i.voucher_id === v.id) : []
+        }));
+        setStockVouchers(mapped);
+      }
+
+      // Fetch inventory logs
+      const { data: logs } = await supabase
+        .from('inventory_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (logs) setInventoryLogs(logs);
+
+    } catch (err) {
+      console.error('Lỗi khi tải dữ liệu WMS:', err);
+    } finally {
+      setVouchersLoading(false);
+    }
+  };
+
+  const handleAddVoucherItem = () => {
+    if (!selectedProdId || selectedQty <= 0) return;
+    const prod = productsList.find(p => p.id === selectedProdId);
+    if (!prod) return;
+    if (voucherItems.some(item => item.productId === selectedProdId)) {
+      setVoucherItems(prev => prev.map(item => item.productId === selectedProdId ? { ...item, quantity: item.quantity + selectedQty } : item));
+    } else {
+      setVoucherItems(prev => [...prev, { productId: selectedProdId, name: prod.name, sku: prod.sku, quantity: selectedQty }]);
+    }
+    setSelectedProdId('');
+    setSelectedQty(1);
+  };
+
+  const handleCreateVoucher = async () => {
+    if (voucherItems.length === 0) {
+      alert('Vui lòng thêm ít nhất một mặt hàng!');
+      return;
+    }
+    if ((voucherType === 'out' || voucherType === 'transfer') && !sourceWh) {
+      alert('Vui lòng chọn kho nguồn!');
+      return;
+    }
+    if ((voucherType === 'in' || voucherType === 'transfer') && !targetWh) {
+      alert('Vui lòng chọn kho đích!');
+      return;
+    }
+    try {
+      const voucherId = `sv-${Date.now()}`;
+      const code = `SV-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+      
+      await supabase.from('stock_vouchers').insert({
+        id: voucherId,
+        tenant_id: tenantId,
+        code,
+        type: voucherType,
+        status: 'pending_approval',
+        source_warehouse_id: sourceWh || null,
+        target_warehouse_id: targetWh || null,
+        created_by: staffInfo?.fullName || 'system',
+        created_at: new Date().toISOString()
+      });
+
+      for (const item of voucherItems) {
+        await supabase.from('stock_voucher_items').insert({
+          id: `svi-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          tenant_id: tenantId,
+          voucher_id: voucherId,
+          product_id: item.productId,
+          quantity: item.quantity
+        });
+      }
+
+      alert('Đã tạo và gửi duyệt phiếu kho thành công!');
+      setShowCreateVoucherModal(false);
+      setVoucherItems([]);
+      setSourceWh('');
+      setTargetWh('');
+      loadWmsData();
+    } catch (err: any) {
+      console.error(err);
+      alert('Tạo phiếu kho thất bại: ' + err.message);
+    }
+  };
+
+  const handleApproveVoucher = async (voucher: any) => {
+    try {
+      const { data: items } = await supabase
+        .from('stock_voucher_items')
+        .select('*')
+        .eq('voucher_id', voucher.id);
+
+      if (!items || items.length === 0) {
+        alert('Phiếu kho không có mặt hàng nào!');
+        return;
+      }
+
+      for (const item of items) {
+        if (voucher.type === 'in' || voucher.type === 'transfer') {
+          const { data: targetStock } = await supabase
+            .from('warehouse_stock')
+            .select('*')
+            .eq('product_id', item.product_id)
+            .eq('warehouse_id', voucher.target_warehouse_id)
+            .maybeSingle();
+
+          if (targetStock) {
+            await supabase
+              .from('warehouse_stock')
+              .update({ quantity: Number(targetStock.quantity) + Number(item.quantity) })
+              .eq('id', targetStock.id);
+          } else {
+            const prod = productsList.find(p => p.id === item.product_id);
+            await supabase.from('warehouse_stock').insert({
+              id: `ws-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+              tenant_id: tenantId,
+              warehouse_id: voucher.target_warehouse_id,
+              product_id: item.product_id,
+              product_name: prod ? prod.name : 'Sản phẩm mới',
+              quantity: Number(item.quantity),
+              safety_stock: 10,
+              allocated: 0,
+              pending_processing: 0,
+              updated_at: new Date().toISOString()
+            });
+          }
+        }
+
+        if (voucher.type === 'out' || voucher.type === 'transfer') {
+          const { data: sourceStock } = await supabase
+            .from('warehouse_stock')
+            .select('*')
+            .eq('product_id', item.product_id)
+            .eq('warehouse_id', voucher.source_warehouse_id)
+            .maybeSingle();
+
+          if (sourceStock) {
+            await supabase
+              .from('warehouse_stock')
+              .update({ quantity: Math.max(0, Number(sourceStock.quantity) - Number(item.quantity)) })
+              .eq('id', sourceStock.id);
+          }
+        }
+
+        await supabase.from('inventory_logs').insert({
+          product_id: item.product_id,
+          type: voucher.type,
+          quantity: Number(item.quantity),
+          reason: `Từ phiếu kho ${voucher.code}`,
+          created_at: new Date().toISOString(),
+          seller_id: staffInfo?.id
+        });
+      }
+
+      await supabase
+        .from('stock_vouchers')
+        .update({
+          status: 'approved',
+          approved_by: staffInfo?.fullName || 'system',
+          approved_at: new Date().toISOString()
+        })
+        .eq('id', voucher.id);
+
+      alert('Đã phê duyệt phiếu kho thành công!');
+      loadWmsData();
+    } catch (err: any) {
+      console.error(err);
+      alert('Phê duyệt thất bại: ' + err.message);
+    }
+  };
+
+  const handleCancelVoucher = async (voucherId: string) => {
+    try {
+      await supabase
+        .from('stock_vouchers')
+        .update({ status: 'cancelled' })
+        .eq('id', voucherId);
+      alert('Đã hủy phiếu kho!');
+      loadWmsData();
+    } catch (err: any) {
+      console.error(err);
+      alert('Hủy phiếu kho thất bại: ' + err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'wh_in_out' || activeTab === 'wh_transfer_history') {
+      loadWmsData();
+    }
+  }, [activeTab]);
 
   // AI Demand Forecasting States
   const [forecastData, setForecastData] = useState<any[]>([]);
@@ -583,6 +812,9 @@ export function WarehouseModule() {
   }, [activeTab]);
 
   const handleCreateAutoRequest = async (item: any) => {
+    const suggestStockReorder = async (p: any) => {
+      throw new Error("AI disabled");
+    };
     setCreatingRequest(true);
     setRequestSuccessMessage(null);
     try {
@@ -3118,10 +3350,439 @@ export function WarehouseModule() {
         </div>
       )}
 
+      {activeTab === 'wh_in_out' && (
+        <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+          <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-slate-300 transition-all shadow-sm group"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-primary-600" />
+              </button>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 leading-none mb-1">
+                  Phiếu kho (Nhập/Xuất/Luân chuyển)
+                </h3>
+                <p className="text-[10px] text-slate-600 font-medium">
+                  Quản lý phiếu nhập, phiếu xuất và phiếu điều chuyển kho
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => {
+                setVoucherItems([]);
+                setSourceWh('');
+                setTargetWh('');
+                setShowCreateVoucherModal(true);
+              }}
+              className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5 hover:bg-slate-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Tạo phiếu kho
+            </button>
+          </div>
+
+          <div className="p-6 flex-1 overflow-x-auto">
+            {vouchersLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
+              </div>
+            ) : stockVouchers.length === 0 ? (
+              <div className="text-center py-12 text-slate-500 font-medium">
+                Chưa có phiếu kho nào được tạo.
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                    <th className="p-4">Mã phiếu</th>
+                    <th className="p-4">Loại</th>
+                    <th className="p-4">Trạng thái</th>
+                    <th className="p-4">Kho nguồn</th>
+                    <th className="p-4">Kho đích</th>
+                    <th className="p-4">Người tạo</th>
+                    <th className="p-4">Ngày tạo</th>
+                    <th className="p-4 text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+                  {stockVouchers.map((voucher) => (
+                    <tr key={voucher.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-4 text-primary-600 font-bold">{voucher.code}</td>
+                      <td className="p-4">
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          voucher.type === 'in' && "bg-emerald-50 text-emerald-700",
+                          voucher.type === 'out' && "bg-rose-50 text-rose-700",
+                          voucher.type === 'transfer' && "bg-blue-50 text-blue-700"
+                        )}>
+                          {voucher.type === 'in' ? 'Nhập kho' : voucher.type === 'out' ? 'Xuất kho' : 'Điều chuyển'}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          voucher.status === 'draft' && "bg-slate-100 text-slate-700",
+                          voucher.status === 'pending_approval' && "bg-amber-50 text-amber-700",
+                          voucher.status === 'approved' && "bg-emerald-50 text-emerald-700",
+                          voucher.status === 'cancelled' && "bg-rose-50 text-rose-700"
+                        )}>
+                          {voucher.status === 'draft' ? 'Nháp' : voucher.status === 'pending_approval' ? 'Chờ duyệt' : voucher.status === 'approved' ? 'Đã duyệt' : 'Đã hủy'}
+                        </span>
+                      </td>
+                      <td className="p-4">{warehousesList.find(w => w.id === voucher.source_warehouse_id)?.name || '-'}</td>
+                      <td className="p-4">{warehousesList.find(w => w.id === voucher.target_warehouse_id)?.name || '-'}</td>
+                      <td className="p-4">{voucher.created_by}</td>
+                      <td className="p-4 text-slate-600 font-medium">{new Date(voucher.created_at).toLocaleString('vi-VN')}</td>
+                      <td className="p-4 text-right flex justify-end gap-2">
+                        <button 
+                          onClick={() => setSelectedVoucher(voucher)}
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded text-[11px] font-black uppercase tracking-wider"
+                        >
+                          Chi tiết
+                        </button>
+                        {voucher.status === 'pending_approval' && (
+                          <>
+                            <button 
+                              onClick={() => handleApproveVoucher(voucher)}
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-black uppercase tracking-wider shadow-sm"
+                            >
+                              Duyệt
+                            </button>
+                            <button 
+                              onClick={() => handleCancelVoucher(voucher.id)}
+                              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] font-black uppercase tracking-wider shadow-sm"
+                            >
+                              Hủy
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'wh_transfer_history' && (
+        <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
+          <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-slate-300 transition-all shadow-sm group"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-primary-600" />
+              </button>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 leading-none mb-1">
+                  Lịch sử Luân chuyển kho
+                </h3>
+                <p className="text-[10px] text-slate-600 font-medium">
+                  Chi tiết tất cả các giao dịch xuất nhập kho, điều chuyển
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 flex-1 overflow-x-auto">
+            {inventoryLogs.length === 0 ? (
+              <div className="text-center py-12 text-slate-500 font-medium">
+                Chưa có giao dịch kho nào được ghi nhận.
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                    <th className="p-4">Thời gian</th>
+                    <th className="p-4">Sản phẩm</th>
+                    <th className="p-4">Giao dịch</th>
+                    <th className="p-4">Số lượng</th>
+                    <th className="p-4">Lý do / Mô tả</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+                  {inventoryLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-4 text-slate-600 font-medium">{new Date(log.created_at).toLocaleString('vi-VN')}</td>
+                      <td className="p-4">
+                        <div className="font-bold text-slate-900">{productsList.find(p => p.id === log.product_id)?.name || 'Sản phẩm ' + log.product_id}</div>
+                        <div className="text-[10px] text-slate-500 font-medium mt-0.5">ID: {log.product_id}</div>
+                      </td>
+                      <td className="p-4">
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          log.type === 'in' && "bg-emerald-50 text-emerald-700",
+                          log.type === 'out' && "bg-rose-50 text-rose-700",
+                          log.type === 'transfer' && "bg-blue-50 text-blue-700",
+                          log.type === 'return' && "bg-amber-50 text-amber-700"
+                        )}>
+                          {log.type === 'in' ? 'Nhập kho' : log.type === 'out' ? 'Xuất kho' : log.type === 'transfer' ? 'Điều chuyển' : 'Hoàn hàng'}
+                        </span>
+                      </td>
+                      <td className="p-4 font-black">{log.quantity}</td>
+                      <td className="p-4 text-slate-600 font-medium">{log.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showCreateVoucherModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-300 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50">
+              <h3 className="text-base font-bold text-slate-900">Tạo phiếu kho mới</h3>
+              <button 
+                onClick={() => setShowCreateVoucherModal(false)}
+                className="p-1 text-slate-500 hover:text-slate-800 rounded hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Loại phiếu</label>
+                  <select 
+                    value={voucherType}
+                    onChange={(e) => setVoucherType(e.target.value as any)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  >
+                    <option value="in">Nhập kho</option>
+                    <option value="out">Xuất kho</option>
+                    <option value="transfer">Điều chuyển</option>
+                  </select>
+                </div>
+
+                {(voucherType === 'out' || voucherType === 'transfer') && (
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Kho nguồn</label>
+                    <select 
+                      value={sourceWh}
+                      onChange={(e) => setSourceWh(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    >
+                      <option value="">Chọn kho nguồn...</option>
+                      {warehousesList.map(w => (
+                        <option key={w.id} value={w.id}>{w.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {(voucherType === 'in' || voucherType === 'transfer') && (
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Kho đích</label>
+                    <select 
+                      value={targetWh}
+                      onChange={(e) => setTargetWh(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    >
+                      <option value="">Chọn kho đích...</option>
+                      {warehousesList.map(w => (
+                        <option key={w.id} value={w.id}>{w.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Add item row */}
+              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 space-y-4">
+                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Thêm mặt hàng</div>
+                <div className="grid grid-cols-4 gap-4 items-end">
+                  <div className="col-span-2 space-y-2">
+                    <label className="text-[10px] font-bold text-slate-600">Sản phẩm</label>
+                    <select
+                      value={selectedProdId}
+                      onChange={(e) => setSelectedProdId(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none"
+                    >
+                      <option value="">Chọn sản phẩm...</option>
+                      {productsList.map(p => (
+                        <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-600">Số lượng</label>
+                    <input 
+                      type="number"
+                      min="1"
+                      value={selectedQty}
+                      onChange={(e) => setSelectedQty(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none"
+                    />
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={handleAddVoucherItem}
+                    className="bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold h-fit transition-colors"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+
+              {/* Selected items list */}
+              <div className="space-y-2">
+                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Danh sách mặt hàng đã chọn</div>
+                {voucherItems.length === 0 ? (
+                  <div className="text-center py-6 text-slate-500 text-xs font-medium border border-dashed border-slate-300 rounded-lg">
+                    Chưa có sản phẩm nào được chọn.
+                  </div>
+                ) : (
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                          <th className="p-3">Sản phẩm</th>
+                          <th className="p-3">SKU</th>
+                          <th className="p-3">Số lượng</th>
+                          <th className="p-3 text-right">Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+                        {voucherItems.map(item => (
+                          <tr key={item.productId}>
+                            <td className="p-3">{item.name}</td>
+                            <td className="p-3 text-slate-600">{item.sku}</td>
+                            <td className="p-3 font-black">{item.quantity}</td>
+                            <td className="p-3 text-right">
+                              <button 
+                                onClick={() => setVoucherItems(prev => prev.filter(x => x.productId !== item.productId))}
+                                className="text-rose-600 hover:text-rose-800 font-bold"
+                              >
+                                Xóa
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-[#F3F4F6] flex justify-end gap-3 bg-slate-50">
+              <button 
+                onClick={() => setShowCreateVoucherModal(false)}
+                className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={handleCreateVoucher}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm transition-colors"
+              >
+                Gửi phê duyệt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedVoucher && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-300 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Chi tiết phiếu kho {selectedVoucher.code}</h3>
+                <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">
+                  Trạng thái: <span className="text-primary-600">{selectedVoucher.status}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedVoucher(null)}
+                className="p-1 text-slate-500 hover:text-slate-800 rounded hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              <div className="grid grid-cols-2 gap-4 text-xs font-bold text-slate-700">
+                <div>
+                  <span className="text-slate-500 font-medium">Loại phiếu:</span>{' '}
+                  {selectedVoucher.type === 'in' ? 'Nhập kho' : selectedVoucher.type === 'out' ? 'Xuất kho' : 'Điều chuyển'}
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium">Người tạo:</span> {selectedVoucher.created_by}
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium">Kho nguồn:</span>{' '}
+                  {warehousesList.find(w => w.id === selectedVoucher.source_warehouse_id)?.name || '-'}
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium">Kho đích:</span>{' '}
+                  {warehousesList.find(w => w.id === selectedVoucher.target_warehouse_id)?.name || '-'}
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium">Ngày tạo:</span>{' '}
+                  {new Date(selectedVoucher.created_at).toLocaleString('vi-VN')}
+                </div>
+                {selectedVoucher.approved_by && (
+                  <div>
+                    <span className="text-slate-500 font-medium">Người duyệt:</span> {selectedVoucher.approved_by} ({new Date(selectedVoucher.approved_at).toLocaleString('vi-VN')})
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Danh sách mặt hàng</div>
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                        <th className="p-3">Sản phẩm</th>
+                        <th className="p-3">SKU</th>
+                        <th className="p-3 text-right">Số lượng</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+                      {selectedVoucher.items?.map((item: any) => {
+                        const prod = productsList.find(p => p.id === item.product_id);
+                        return (
+                          <tr key={item.id}>
+                            <td className="p-3">{prod ? prod.name : 'Sản phẩm ' + item.product_id}</td>
+                            <td className="p-3 text-slate-600">{prod ? prod.sku : '-'}</td>
+                            <td className="p-3 font-black text-right">{item.quantity}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-[#F3F4F6] flex justify-end bg-slate-50">
+              <button 
+                onClick={() => setSelectedVoucher(null)}
+                className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg text-sm font-bold transition-colors"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab !== 'overview' &&
         activeTab !== 'wh_partners' &&
         !activeTab.startsWith('wh_ff_') &&
-        activeTab !== 'wh_stock' && (
+        activeTab !== 'wh_stock' &&
+        activeTab !== 'wh_in_out' &&
+        activeTab !== 'wh_transfer_history' && (
           <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
             <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
               <button

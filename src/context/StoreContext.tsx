@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { db, collection, getDocs, query, where, setDoc, doc } from '../services/dbService';
+import { db, collection, getDocs, query, where, setDoc, doc, DEMO_MODE } from '../services/dbService';
 import { safeLocalStorage } from '../lib/storage';
 
 export interface StoreNode {
@@ -81,7 +81,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
        let stores: StoreNode[] = [];
        
-       if (snap.empty) {
+       if (snap.empty && DEMO_MODE) {
          // Seed default stores to Firestore for this tenant under ipos_stores
          const seedPromises = SEED_STORES.map(async (st) => {
            const tenantStore = { ...st, companyId: userTenantId, tenantId: userTenantId };
@@ -89,6 +89,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
            return tenantStore;
          });
          stores = await Promise.all(seedPromises);
+       } else if (snap.empty) {
+         stores = [];
        } else {
          stores = snap.docs.map(doc => ({
            id: doc.id,

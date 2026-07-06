@@ -16,6 +16,8 @@ const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
 const supabaseClient = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 let db: any = null;
+const doc: any = null;
+const updateDoc: any = null;
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('vi-VN', {

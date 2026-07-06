@@ -348,7 +348,7 @@ export function RequestHub() {
     // Role-based approval limit validation
     const amount = Number((currentReq as any).amount || 0);
     const isFinancial = ['finance', 'admin', 'other'].includes(currentReq.type) && amount > 0;
-    const userRole = user?.role || 'staff';
+    const userRole = (user as any)?.role || 'staff';
     const isManager = userRole === 'manager' || userRole === 'lead';
     const isDirector = userRole === 'director' || userRole === 'admin' || isAdmin;
 

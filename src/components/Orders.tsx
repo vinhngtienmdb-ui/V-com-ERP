@@ -1021,6 +1021,85 @@ export function Orders() {
   const [printingOrder, setPrintingOrder] = useState<any | null>(null);
   const [dbOrders, setDbOrders] = useState<any[]>([]);
 
+  const adjustStockForOrderStatus = async (order: any, oldStatus: string, newStatus: string) => {
+    try {
+      const isOldAllocated = ['processing', 'paid'].includes(oldStatus);
+      const isNewAllocated = ['processing', 'paid'].includes(newStatus);
+      const isOldDeducted = ['shipped', 'delivered', 'completed'].includes(oldStatus);
+      const isNewDeducted = ['shipped', 'delivered', 'completed'].includes(newStatus);
+
+      const warehouseId = order.routedWarehouse || 'WH-MAIN-01';
+
+      for (const item of (order.items || [])) {
+        if (!item.productId) continue;
+
+        // Fetch current stock
+        const { data: stockRow } = await supabase
+          .from('warehouse_stock')
+          .select('*')
+          .eq('product_id', item.productId)
+          .eq('warehouse_id', warehouseId)
+          .maybeSingle();
+
+        if (!stockRow) continue;
+
+        let newQty = stockRow.quantity;
+        let newAllocated = stockRow.allocated || 0;
+
+        // 1. Handle Allocation changes
+        if (!isOldAllocated && !isOldDeducted && isNewAllocated) {
+          // Just allocated: increase allocation
+          newAllocated += item.quantity;
+        } else if (isOldAllocated && !isNewAllocated && !isNewDeducted) {
+          // Released allocation: decrease allocation
+          newAllocated = Math.max(0, newAllocated - item.quantity);
+        }
+
+        // 2. Handle Actual Deduction changes
+        if (!isOldDeducted && isNewDeducted) {
+          // Just deducted: decrease physical stock
+          newQty = Math.max(0, newQty - item.quantity);
+          if (isOldAllocated) {
+            // If it was allocated, decrease allocation
+            newAllocated = Math.max(0, newAllocated - item.quantity);
+          }
+          // Log inventory movement
+          await supabase.from('inventory_logs').insert({
+            product_id: item.productId,
+            type: 'out',
+            quantity: item.quantity,
+            reason: `Xuất kho cho đơn hàng ${order.id}`,
+            created_at: new Date().toISOString()
+          });
+        } else if (isOldDeducted && !isNewDeducted) {
+          // Returned: increase physical stock
+          newQty += item.quantity;
+          // Log inventory movement
+          await supabase.from('inventory_logs').insert({
+            product_id: item.productId,
+            type: 'return',
+            quantity: item.quantity,
+            reason: `Nhập lại kho do hủy/trả đơn hàng ${order.id}`,
+            created_at: new Date().toISOString()
+          });
+        }
+
+        // Save back to DB
+        await supabase
+          .from('warehouse_stock')
+          .update({
+            quantity: newQty,
+            allocated: newAllocated,
+            updated_at: new Date().toISOString()
+          })
+          .eq('product_id', item.productId)
+          .eq('warehouse_id', warehouseId);
+      }
+    } catch (err) {
+      console.error('Error adjusting stock for order status change:', err);
+    }
+  };
+
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
     const isMock = mockOrders.some(o => o.id === orderId);
     let matchedOrder: any = null;
@@ -1037,11 +1116,15 @@ export function Orders() {
     } else {
       try {
         const { doc, updateDoc } = await import('../services/dbService');
-        await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
-      log({ action: 'order.updated', targetId: orderId, meta: { event: 'Status/payment update' } });
         matchedOrder = dbOrders.find(o => o.id === orderId);
+        const oldStatus = matchedOrder ? matchedOrder.status : 'pending';
+        
+        await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+        log({ action: 'order.updated', targetId: orderId, meta: { event: 'Status/payment update', oldStatus, newStatus } });
+        
         if (matchedOrder) {
           matchedOrder = { ...matchedOrder, status: newStatus };
+          await adjustStockForOrderStatus(matchedOrder, oldStatus, newStatus);
         }
       } catch (err: any) {
         console.error('Firestore update failed:', err);

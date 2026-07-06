@@ -1,6 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import { Modal } from './ui/Modal';
 import { db, collection, getDocs } from '../services/dbService';
+import { supabase } from '../lib/supabase';
 import { 
   BarChart, 
   Bar, 
@@ -100,8 +101,10 @@ const MOCK_CAMPAIGNS = [
 // --- COMPONENT ---
 export function CustomerService() {
   const [activeTab, setActiveTab] = useState<any>('dashboard');
-  const [tickets, setTickets] = useState(MOCK_TICKETS);
+  const [tickets, setTickets] = useState<any[]>(MOCK_TICKETS);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [draftedMessage, setDraftedMessage] = useState('');
 
   const fetchTickets = async () => {
     try {
@@ -228,9 +231,19 @@ export function CustomerService() {
     });
   };
 
-  const handleCloseTicket = (ticket: any, replyText: string) => {
+  const handleCloseTicket = async (ticket: any, replyText: string) => {
     // Update ticket in state
     setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'closed' } : t));
+    
+    // Save to Supabase
+    try {
+      await supabase
+        .from('support_tickets')
+        .update({ status: 'closed', resolved_at: new Date().toISOString() })
+        .eq('id', ticket.id);
+    } catch (e) {
+      console.error('Failed to update ticket status in database:', e);
+    }
     
     const textOfReply = replyText.trim() || 'Chào anh/chị, yêu cầu hỗ trợ của anh/chị đã được giải quyết hoàn tất và bộ phận CSKH xin phép được đóng phiếu yêu cầu.';
     
@@ -364,8 +377,6 @@ export function CustomerService() {
  };
 
  const [roleScope, setRoleScope] = useState<'platform' | 'seller'>('platform');
- const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
-  const [draftedMessage, setDraftedMessage] = useState('');
 
  // OmniChat States
  const [activeThreadId, setActiveThreadId] = useState<string>('T1');

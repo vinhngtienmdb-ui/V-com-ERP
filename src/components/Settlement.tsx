@@ -1,4 +1,4 @@
-import { db, collection, getDocs, query, where, addDoc, updateDoc, recordPartnerLedgerEntry } from '../services/dbService';
+import { db, collection, getDocs, query, where, addDoc, updateDoc, recordPartnerLedgerEntry, range, orderBy } from '../services/dbService';
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -108,6 +108,13 @@ export function SettlementManagement() {
   const [loading, setLoading] = useState(true);
   const [isReconciling, setIsReconciling] = useState(false);
 
+  // Pagination states
+  const [settlementPage, setSettlementPage] = useState(1);
+  const [settlementsTotal, setSettlementsTotal] = useState(0);
+  const [withdrawalPage, setWithdrawalPage] = useState(1);
+  const [withdrawalsTotal, setWithdrawalsTotal] = useState(0);
+  const pageSize = 10;
+
   const approveAffiliateSettlement = async (aff: any) => {
     if (!confirm('Duyệt chi trả hoa hồng cho CTV này?')) return;
     try {
@@ -167,13 +174,31 @@ export function SettlementManagement() {
   const fetchSettlements = async () => {
     setLoading(true);
     try {
-      const snapshot = await getDocs(collection(db, 'settlements'));
-      const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as SettlementRow));
-      setSettlements(data.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()));
-
-      const withdrawalSnapshot = await getDocs(collection(db, 'withdrawals'));
-      const withdrawalData = withdrawalSnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as WithdrawalRequest));
-      setWithdrawals(withdrawalData.sort((a, b) => new Date(b.requestDate).getTime() - new Date(a.requestDate).getTime()));
+      if (activeTab === 'settlement') {
+        const from = (settlementPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        const q = query(
+          collection(db, 'settlements'),
+          orderBy('created_at', 'desc'),
+          range(from, to)
+        );
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as SettlementRow));
+        setSettlements(data);
+        setSettlementsTotal(snapshot.count || 0);
+      } else if (activeTab === 'withdrawal') {
+        const from = (withdrawalPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        const q = query(
+          collection(db, 'withdrawals'),
+          orderBy('created_at', 'desc'),
+          range(from, to)
+        );
+        const snapshot = await getDocs(q);
+        const withdrawalData = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as WithdrawalRequest));
+        setWithdrawals(withdrawalData);
+        setWithdrawalsTotal(snapshot.count || 0);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -183,7 +208,7 @@ export function SettlementManagement() {
 
   useEffect(() => {
     fetchSettlements();
-  }, []);
+  }, [activeTab, settlementPage, withdrawalPage]);
 
   const runAutoReconciliation = async () => {
     setIsReconciling(true);
@@ -644,6 +669,61 @@ export function SettlementManagement() {
   ))}
  </tbody>
  </table>
+
+      {/* Pagination Controls */}
+      {activeTab === 'settlement' && (
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+          <p className="text-xs text-slate-500 font-medium">
+            Hiển thị {settlementsTotal ? ((settlementPage - 1) * pageSize) + 1 : 0} - {Math.min(settlementPage * pageSize, settlementsTotal)} trong số {settlementsTotal} đối soát
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSettlementPage(prev => Math.max(prev - 1, 1))}
+              disabled={settlementPage === 1 || loading}
+              className="px-3 py-1.5 bg-white border border-slate-300 text-xs font-bold rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer text-slate-700"
+            >
+              Trước
+            </button>
+            <span className="text-xs font-bold text-slate-700">
+              Trang {settlementPage} / {Math.ceil(settlementsTotal / pageSize) || 1}
+            </span>
+            <button
+              onClick={() => setSettlementPage(prev => prev + 1)}
+              disabled={settlementPage >= Math.ceil(settlementsTotal / pageSize) || loading}
+              className="px-3 py-1.5 bg-white border border-slate-300 text-xs font-bold rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer text-slate-700"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'withdrawal' && (
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+          <p className="text-xs text-slate-500 font-medium">
+            Hiển thị {withdrawalsTotal ? ((withdrawalPage - 1) * pageSize) + 1 : 0} - {Math.min(withdrawalPage * pageSize, withdrawalsTotal)} trong số {withdrawalsTotal} yêu cầu rút tiền
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setWithdrawalPage(prev => Math.max(prev - 1, 1))}
+              disabled={withdrawalPage === 1 || loading}
+              className="px-3 py-1.5 bg-white border border-slate-300 text-xs font-bold rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer text-slate-700"
+            >
+              Trước
+            </button>
+            <span className="text-xs font-bold text-slate-700">
+              Trang {withdrawalPage} / {Math.ceil(withdrawalsTotal / pageSize) || 1}
+            </span>
+            <button
+              onClick={() => setWithdrawalPage(prev => prev + 1)}
+              disabled={withdrawalPage >= Math.ceil(withdrawalsTotal / pageSize) || loading}
+              className="px-3 py-1.5 bg-white border border-slate-300 text-xs font-bold rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer text-slate-700"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      )}
  </div>
  </div>
 

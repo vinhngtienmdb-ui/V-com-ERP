@@ -4,7 +4,7 @@ import {
   Users, Building2, Settings, BarChart2, FileSignature, GitBranch, 
   Calculator, ShoppingCart, CreditCard, Star, FileText, ArrowLeft,
   Briefcase, Search, Filter, BadgeDollarSign, Phone, Mail, 
-  Plus, Clock, CheckCircle2, AlertCircle, Loader2
+  Plus, Clock, CheckCircle2, AlertCircle, Loader2, X
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { syncVendorToMisa, syncTransactionToMisa } from '../services/misaService';

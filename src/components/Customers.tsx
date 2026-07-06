@@ -1156,6 +1156,7 @@ export function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshCount, setRefreshCount] = useState(0);
+  const [rfmCounts, setRfmCounts] = useState({ core: 0, old: 0, potential: 0, newReg: 0 });
   const triggerRefresh = () => setRefreshCount(prev => prev + 1);
  const [searchQuery, setSearchQuery] = useState('');
  const [orders, setOrders] = useState<any[]>([]);
@@ -1339,6 +1340,78 @@ export function Customers() {
   }, [currentPage, debouncedSearchQuery, refreshCount]);
 
   useEffect(() => {
+    const calculateRfmSegments = async () => {
+      try {
+        const { data: allCusts } = await supabase
+          .from('customers')
+          .select('id, email');
+          
+        if (!allCusts) return;
+        
+        const { data: allUsers } = await supabase
+          .from('users')
+          .select('id, data');
+          
+        if (!allUsers) return;
+        
+        const userMap = new Map();
+        allUsers.forEach(u => {
+          userMap.set(u.id, u.data || {});
+          if (u.data && u.data.email) userMap.set(u.data.email.toLowerCase(), u.data || {});
+        });
+        
+        let core = 0;
+        let old = 0;
+        let potential = 0;
+        let newReg = 0;
+        
+        allCusts.forEach(c => {
+          const uData = (c.email && userMap.has(c.email.toLowerCase())) 
+            ? userMap.get(c.email.toLowerCase()) 
+            : (userMap.get(c.id) || {});
+            
+          const totalSpent = Number(uData.totalSpent || 0);
+          const orderCount = Number(uData.orderCount || 0);
+          const lastOrderDateStr = uData.lastOrderDate || '';
+          
+          let recencyScore = 1; // 1: Old, 2: Medium, 3: Recent
+          if (lastOrderDateStr) {
+            const lastOrderDate = new Date(lastOrderDateStr);
+            const daysDiff = (Date.now() - lastOrderDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (daysDiff <= 30) recencyScore = 3;
+            else if (daysDiff <= 90) recencyScore = 2;
+          }
+          
+          let frequencyScore = 1;
+          if (orderCount >= 5) frequencyScore = 3;
+          else if (orderCount >= 2) frequencyScore = 2;
+          
+          let monetaryScore = 1;
+          if (totalSpent >= 1000000) monetaryScore = 3;
+          else if (totalSpent >= 500000) monetaryScore = 2;
+          
+          // Classify
+          if (orderCount === 0) {
+            newReg++;
+          } else if (recencyScore >= 2 && frequencyScore >= 2 && monetaryScore >= 2) {
+            core++;
+          } else if (recencyScore === 1) {
+            old++;
+          } else {
+            potential++;
+          }
+        });
+        
+        setRfmCounts({ core, old, potential, newReg });
+      } catch (err) {
+        console.error('Error calculating RFM segments:', err);
+      }
+    };
+    
+    calculateRfmSegments();
+  }, [refreshCount]);
+
+  useEffect(() => {
     // Fetch all completed orders to aggregate totalSpent per customer
     const unsubOrders = onSnapshot(collection(db, 'orders'), (snap) => {
       const ordersData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
@@ -1515,6 +1588,28 @@ export function Customers() {
 
       if (error) throw error;
 
+      if (adjustType === 'points') {
+        try {
+          const ledgerId = `lpl-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+          const ledgerPayload = {
+            id: ledgerId,
+            tenant_id: userRow.tenant_id || 'tenant-vcomm-prod-01',
+            customer_id: adjustingCustomer.id,
+            points_change: amount,
+            transaction_type: amount > 0 ? 'adjust_add' : 'adjust_sub',
+            description: `ERP Adjustment: ${amount > 0 ? '+' : ''}${amount} V-Xu`,
+            reference_type: 'manual',
+            reference_id: null,
+            created_at: new Date().toISOString()
+          };
+          const { error: ledgerError } = await supabase
+            .from('loyalty_points_ledger')
+            .insert(ledgerPayload);
+          if (ledgerError) throw ledgerError;
+        } catch (ledgerErr) {
+          console.error('[LoyaltyLedger] Failed to write point log:', ledgerErr);
+        }
+      }
       // Thông báo thành công
       const typeLabel = adjustType === 'wallet' ? 'số dư Ví' : 'V-Xu';
       const action = amount >= 0 ? 'Cộng' : 'Trừ';
@@ -1537,10 +1632,18 @@ export function Customers() {
  
  // Simulate active status based on recent purchase or base status
  // If they have any orders in the system they are active
- const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive';
+const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive';
 
  return { ...c, totalSpent, orderCount, status } as Customer;
  });
+
+
+
+ const totalRfm = rfmCounts.core + rfmCounts.old + rfmCounts.potential + rfmCounts.newReg || 1;
+ const corePct = Math.round((rfmCounts.core / totalRfm) * 100);
+ const oldPct = Math.round((rfmCounts.old / totalRfm) * 100);
+ const potentialPct = Math.round((rfmCounts.potential / totalRfm) * 100);
+ const newRegPct = Math.round((rfmCounts.newReg / totalRfm) * 100);
 
  const filteredCustomers = dynamicCustomers;
 

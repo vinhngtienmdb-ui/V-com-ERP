@@ -65,6 +65,7 @@ const MOCK_CATEGORIES = [
 ];
 
 export function DocumentManager() {
+  const [documents, setDocuments] = useState<any[]>(MOCK_DOCS);
   const [activeTab, setActiveTab] = useState('inbound');
   const [isCreatingBook, setIsCreatingBook] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);

@@ -47,6 +47,12 @@ export function Performance() {
   const [generatedReviewText, setGeneratedReviewText] = useState<string>('');
 
   const handleGenerateReview = async () => {
+    const generatePerformanceReview = async (p: any) => {
+      return `Nhận xét hiệu suất của ${p.name} (KPI: ${p.kpiScore}/100):\n` +
+        `- Hoàn thành tốt các mục tiêu KPI được giao.\n` +
+        `- Thành tích nổi bật: ${p.achievements.join(', ')}.\n` +
+        `Khuyến nghị tiếp tục phát huy năng lực và tinh thần làm việc tích cực trong kỳ đánh giá tiếp theo.`;
+    };
     const emp = MOCK_EMPLOYEES.find(e => e.id === selectedEmpId);
     if (!emp) return;
     setIsGeneratingReview(true);

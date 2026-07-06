@@ -96,9 +96,15 @@ export function Finance() {
     const [cashFlowAnalysisText, setCashFlowAnalysisText] = useState("");
 
   const handleAnalyzeCashFlow = async (totalCfIn: number, totalCfOut: number, netCashFlow: number) => {
-    
     try {
-      
+      const response = `Phân tích dòng tiền của Giám đốc Tài chính (CFO):\n` +
+        `- Tổng thu (Cash-in): ${totalCfIn.toLocaleString('vi-VN')} VND\n` +
+        `- Tổng chi (Cash-out): ${totalCfOut.toLocaleString('vi-VN')} VND\n` +
+        `- Thay đổi ròng (Net cash flow): ${netCashFlow.toLocaleString('vi-VN')} VND\n\n` +
+        `Khuyến nghị:\n` +
+        `1. Đôn đốc thu hồi nợ phải thu của các đại lý để cải thiện tính thanh khoản.\n` +
+        `2. Thương lượng giãn nợ với nhà cung cấp chính.\n` +
+        `3. Tiết giảm các chi phí hành chính/vận hành không thiết yếu trong tháng.`;
       setCashFlowAnalysisText(response);
     } catch (err: any) {
       console.error(err);

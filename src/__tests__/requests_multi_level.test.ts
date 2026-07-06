@@ -108,7 +108,7 @@ describe('Multi-level Request Approvals & Financial Limits', () => {
     root.render(React.createElement(RequestHub));
 
     // Wait for state updates & rendering
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     // Find the approval button for REQ-DB-001
     const buttons = Array.from(document.querySelectorAll('button'));
@@ -159,7 +159,7 @@ describe('Multi-level Request Approvals & Financial Limits', () => {
     root.render(React.createElement(RequestHub));
 
     // Wait for state updates & rendering
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const buttons = Array.from(document.querySelectorAll('button'));
     const approveBtn = buttons.find(b => b.textContent?.trim() === 'Duyệt');

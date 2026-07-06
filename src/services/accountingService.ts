@@ -30,7 +30,7 @@ export async function postOrderJournalEntries(order: Order): Promise<string> {
   }
 
   // 2. Build Journal Entry items
-  // Revenue entry: Debit 1311 (Receivable) / Credit 5111 (Revenue) + Credit 3331 (VAT)
+  // Revenue entry: Debit 131 (Receivable) / Credit 5111 (Revenue) + Credit 33311 (VAT)
   const netRevenue = Math.round(orderTotal / 1.1);
   const vat = orderTotal - netRevenue;
 
@@ -43,9 +43,9 @@ export async function postOrderJournalEntries(order: Order): Promise<string> {
     tenantId,
     items: [
       // Revenue
-      { accountId: '1311', debit: orderTotal, credit: 0, partnerId: order.customerId || null },
+      { accountId: '131', debit: orderTotal, credit: 0, partnerId: order.customerId || null },
       { accountId: '5111', debit: 0, credit: netRevenue },
-      { accountId: '3331', debit: 0, credit: vat }
+      { accountId: '33311', debit: 0, credit: vat }
     ]
   };
 
@@ -57,10 +57,10 @@ export async function postOrderJournalEntries(order: Order): Promise<string> {
     );
   }
 
-  // Commission entry: Debit 641 / Credit 3388
+  // Commission entry: Debit 642 / Credit 3388
   if (commission > 0) {
     journalEntry.items.push(
-      { accountId: '641', debit: commission, credit: 0 },
+      { accountId: '642', debit: commission, credit: 0 },
       { accountId: '3388', debit: 0, credit: commission, partnerId: order.sellerId || null }
     );
   }

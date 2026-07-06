@@ -35,10 +35,13 @@ import {
  Tv,
  Settings
 } from 'lucide-react';
+
 import { useAuditLog } from '../hooks/useAuditLog';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
 import { syncProductToMisa } from '../services/misaService';
+import { supabase } from '../lib/supabase';
+
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { 
   db, 
@@ -336,6 +339,113 @@ export function PIM() {
   const [uploadMode, setUploadMode] = useState<'single' | 'bulk'>('single');
  const [fileValidation, setFileValidation] = useState<{status: 'idle'|'validating'|'success'|'error', message: string, data?: any}>({status: 'idle', message: ''});
   const [editProductData, setEditProductData] = useState<any>({});
+
+  const [activePimTab, setActivePimTab] = useState<'products' | 'combos'>('products');
+  const [combos, setCombos] = useState<any[]>([]);
+  const [combosLoading, setCombosLoading] = useState(false);
+  const [showCreateComboModal, setShowCreateComboModal] = useState(false);
+  const [newCombo, setNewCombo] = useState({
+    name: '',
+    description: '',
+    price: 0,
+    costPrice: 0,
+    status: 'active' as const
+  });
+  const [newComboItems, setNewComboItems] = useState<any[]>([]);
+  const [selectedComboProdId, setSelectedComboProdId] = useState('');
+  const [selectedComboQty, setSelectedComboQty] = useState(1);
+
+  const loadCombos = async () => {
+    try {
+      setCombosLoading(true);
+      const { data: combosData } = await supabase.from('combos').select('*').order('created_at', { ascending: false });
+      if (combosData) {
+        const { data: itemsData } = await supabase.from('combo_items').select('*');
+        const mapped = combosData.map(c => ({
+          ...c,
+          items: itemsData ? itemsData.filter((i: any) => i.combo_id === c.id) : []
+        }));
+        setCombos(mapped);
+      }
+    } catch (err) {
+      console.error('Lỗi khi tải combo:', err);
+    } finally {
+      setCombosLoading(false);
+    }
+  };
+
+  const handleAddComboItem = () => {
+    if (!selectedComboProdId || selectedComboQty <= 0) return;
+    const prod = products.find(p => p.id === selectedComboProdId);
+    if (!prod) return;
+    if (newComboItems.some(item => item.productId === selectedComboProdId)) {
+      setNewComboItems(prev => prev.map(item => item.productId === selectedComboProdId ? { ...item, quantity: item.quantity + selectedComboQty } : item));
+    } else {
+      setNewComboItems(prev => [...prev, { productId: selectedComboProdId, name: prod.name, sku: prod.sku, quantity: selectedComboQty, price: prod.price, costPrice: prod.costPrice }]);
+    }
+    setSelectedComboProdId('');
+    setSelectedComboQty(1);
+  };
+
+  const handleCreateCombo = async () => {
+    if (!newCombo.name) {
+      alert('Vui lòng nhập tên combo!');
+      return;
+    }
+    if (newComboItems.length === 0) {
+      alert('Vui lòng thêm ít nhất một mặt hàng!');
+      return;
+    }
+    try {
+      const comboId = `combo-${Date.now()}`;
+      
+      const finalPrice = newCombo.price || newComboItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const finalCost = newCombo.costPrice || newComboItems.reduce((sum, item) => sum + (item.costPrice * item.quantity), 0);
+
+      await supabase.from('combos').insert({
+        id: comboId,
+        tenant_id: 'tenant-vcomm-prod-01',
+        name: newCombo.name,
+        description: newCombo.description || null,
+        price: finalPrice,
+        cost_price: finalCost,
+        status: newCombo.status,
+        created_at: new Date().toISOString()
+      });
+
+      for (const item of newComboItems) {
+        await supabase.from('combo_items').insert({
+          id: `ci-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          tenant_id: 'tenant-vcomm-prod-01',
+          combo_id: comboId,
+          product_id: item.productId,
+          quantity: item.quantity
+        });
+      }
+
+      alert('Đã tạo combo thành công!');
+      setShowCreateComboModal(false);
+      setNewComboItems([]);
+      setNewCombo({
+        name: '',
+        description: '',
+        price: 0,
+        costPrice: 0,
+        status: 'active'
+      });
+      loadCombos();
+    } catch (err: any) {
+      console.error(err);
+      alert('Tạo combo thất bại: ' + err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (activePimTab === 'combos') {
+      loadCombos();
+    }
+  }, [activePimTab]);
+
   const [newProduct, setNewProduct] = useState({
   name: '',
   category: 'Điện thoại',
@@ -1216,7 +1326,30 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  </div>
  </DraggableGrid>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+      {/* Tab Switcher */}
+      <div className="flex border-b border-slate-200 gap-6 mt-6">
+        <button
+          onClick={() => setActivePimTab('products')}
+          className={cn(
+            "pb-4 text-sm font-black uppercase tracking-wider transition-all relative",
+            activePimTab === 'products' ? "text-primary-600 border-b-2 border-primary-600" : "text-slate-500 hover:text-slate-800"
+          )}
+        >
+          Sản phẩm đơn lẻ
+        </button>
+        <button
+          onClick={() => setActivePimTab('combos')}
+          className={cn(
+            "pb-4 text-sm font-black uppercase tracking-wider transition-all relative",
+            activePimTab === 'combos' ? "text-primary-600 border-b-2 border-primary-600" : "text-slate-500 hover:text-slate-800"
+          )}
+        >
+          Combo mua chung
+        </button>
+      </div>
+
+      {activePimTab === 'products' && (
+        <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-6 border-b border-[#F3F4F6] space-y-4">
  <div className="flex flex-col xl:flex-row gap-4 justify-between items-start w-full">
  <div className="flex flex-col sm:flex-row gap-3 w-full xl:flex-1 max-w-3xl">
@@ -1479,14 +1612,252 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  >
  Xem chi tiết <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
  </button>
- </div>
- </div>
- </div>
- ))}
- </div>
- </div>
+  </div>
+  </div>
+  </div>
+  ))}
+  </div>
+  </div>
+      )}
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
+      {activePimTab === 'combos' && (
+        <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-6">
+          <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50 flex justify-between items-center">
+            <div>
+              <h3 className="text-base font-bold text-slate-900 leading-none mb-1">
+                Quản lý Combo sản phẩm
+              </h3>
+              <p className="text-[10px] text-slate-600 font-medium mt-1">
+                Tạo và bán các gói combo sản phẩm mua chung
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setNewComboItems([]);
+                setNewCombo({
+                  name: '',
+                  description: '',
+                  price: 0,
+                  costPrice: 0,
+                  status: 'active'
+                });
+                setShowCreateComboModal(true);
+              }}
+              className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-slate-900/5 hover:bg-slate-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Tạo Combo mới
+            </button>
+          </div>
+
+          <div className="p-6 flex-1">
+            {combosLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
+              </div>
+            ) : combos.length === 0 ? (
+              <div className="text-center py-12 text-slate-500 font-medium">
+                Chưa có combo nào được tạo.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {combos.map((combo) => (
+                  <div key={combo.id} className="border border-slate-200 rounded-xl p-5 hover:shadow-lg transition-all bg-white relative flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="text-base font-black text-slate-900">{combo.name}</h4>
+                        <span className={cn(
+                          "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider",
+                          combo.status === 'active' ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-700"
+                        )}>
+                          {combo.status === 'active' ? 'Đang bán' : 'Ngưng bán'}
+                        </span>
+                      </div>
+                      <p className="text-slate-600 text-xs mb-4 line-clamp-2">{combo.description || 'Không có mô tả'}</p>
+                      
+                      <div className="space-y-2 border-t border-slate-100 pt-3 mb-4">
+                        <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sản phẩm trong combo:</div>
+                        {combo.items?.map((item: any) => {
+                          const prod = products.find(p => p.id === item.product_id);
+                          return (
+                            <div key={item.id} className="flex justify-between items-center text-xs font-bold text-slate-700">
+                              <span className="truncate max-w-[180px]">{prod ? prod.name : 'Sản phẩm ' + item.product_id}</span>
+                              <span className="text-slate-600">x{item.quantity}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-4 flex justify-between items-end">
+                      <div>
+                        <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest">Giá Combo</div>
+                        <div className="text-lg font-black text-slate-900 font-mono">{formatCurrency(combo.price)}</div>
+                      </div>
+                      <div>
+                        <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest text-right">Giá vốn</div>
+                        <div className="text-sm font-black text-slate-600 font-mono text-right">{formatCurrency(combo.costPrice)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showCreateComboModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-300 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50">
+              <h3 className="text-base font-bold text-slate-900">Tạo Combo mới</h3>
+              <button 
+                onClick={() => setShowCreateComboModal(false)}
+                className="p-1 text-slate-500 hover:text-slate-800 rounded hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2 col-span-2">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Tên Combo</label>
+                  <input 
+                    type="text"
+                    required
+                    placeholder="VD: Combo Cơm trưa gia đình, Combo Dã ngoại..."
+                    value={newCombo.name}
+                    onChange={(e) => setNewCombo({ ...newCombo, name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Mô tả Combo</label>
+                  <textarea 
+                    placeholder="Nhập mô tả chi tiết sản phẩm..."
+                    value={newCombo.description}
+                    onChange={(e) => setNewCombo({ ...newCombo, description: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20 min-h-[80px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Giá Combo (để trống để tự tính)</label>
+                  <input 
+                    type="number"
+                    value={newCombo.price || ''}
+                    onChange={(e) => setNewCombo({ ...newCombo, price: Number(e.target.value) || 0 })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Giá vốn Combo (để trống để tự tính)</label>
+                  <input 
+                    type="number"
+                    value={newCombo.costPrice || ''}
+                    onChange={(e) => setNewCombo({ ...newCombo, costPrice: Number(e.target.value) || 0 })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  />
+                </div>
+              </div>
+
+              {/* Add item row */}
+              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 space-y-4">
+                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Thêm sản phẩm đơn lẻ vào Combo</div>
+                <div className="grid grid-cols-4 gap-4 items-end">
+                  <div className="col-span-2 space-y-2">
+                    <label className="text-[10px] font-bold text-slate-600">Sản phẩm</label>
+                    <select
+                      value={selectedComboProdId}
+                      onChange={(e) => setSelectedComboProdId(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none"
+                    >
+                      <option value="">Chọn sản phẩm...</option>
+                      {products.map(p => (
+                        <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-600">Số lượng</label>
+                    <input 
+                      type="number"
+                      min="1"
+                      value={selectedComboQty}
+                      onChange={(e) => setSelectedComboQty(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none"
+                    />
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={handleAddComboItem}
+                    className="bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-bold h-fit transition-colors"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+
+              {/* Selected items list */}
+              <div className="space-y-2">
+                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Sản phẩm đã chọn cho Combo</div>
+                {newComboItems.length === 0 ? (
+                  <div className="text-center py-6 text-slate-500 text-xs font-medium border border-dashed border-slate-300 rounded-lg">
+                    Chưa có sản phẩm nào được chọn.
+                  </div>
+                ) : (
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                          <th className="p-3">Sản phẩm</th>
+                          <th className="p-3">SKU</th>
+                          <th className="p-3">Số lượng</th>
+                          <th className="p-3 text-right">Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+                        {newComboItems.map(item => (
+                          <tr key={item.productId}>
+                            <td className="p-3">{item.name}</td>
+                            <td className="p-3 text-slate-600">{item.sku}</td>
+                            <td className="p-3 font-black">{item.quantity}</td>
+                            <td className="p-3 text-right">
+                              <button 
+                                onClick={() => setNewComboItems(prev => prev.filter(x => x.productId !== item.productId))}
+                                className="text-rose-600 hover:text-rose-800 font-bold"
+                              >
+                                Xóa
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-[#F3F4F6] flex justify-end gap-3 bg-slate-50">
+              <button 
+                onClick={() => setShowCreateComboModal(false)}
+                className="px-4 py-2 border border-slate-300 bg-white rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={handleCreateCombo}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg text-sm font-bold shadow-sm transition-colors"
+              >
+                Lưu Combo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={32}>
  <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden shadow-sm flex flex-col justify-between group">
  <div className="relative z-10 space-y-6">
  <div className="flex items-center gap-4">

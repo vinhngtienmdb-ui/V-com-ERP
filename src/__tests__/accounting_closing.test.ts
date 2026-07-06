@@ -66,18 +66,18 @@ describe('Accounting Period Closing & Auto-Posting Tests', () => {
     expect(fromSpy).toHaveBeenCalledWith('journal_items');
     expect(insertMock).toHaveBeenCalledWith(
       expect.arrayContaining([
-        // Debit 1311: 110k
-        expect.objectContaining({ account_id: '1311', debit: 110000, credit: 0 }),
+        // Debit 131: 110k
+        expect.objectContaining({ account_id: '131', debit: 110000, credit: 0 }),
         // Credit 5111: 100k
         expect.objectContaining({ account_id: '5111', debit: 0, credit: 100000 }),
-        // Credit 3331: 10k
-        expect.objectContaining({ account_id: '3331', debit: 0, credit: 10000 }),
+        // Credit 33311: 10k
+        expect.objectContaining({ account_id: '33311', debit: 0, credit: 10000 }),
         // Debit 632 (COGS): 50k
         expect.objectContaining({ account_id: '632', debit: 50000, credit: 0 }),
         // Credit 156: 50k
         expect.objectContaining({ account_id: '156', debit: 0, credit: 50000 }),
-        // Debit 641 (Commission): 5k
-        expect.objectContaining({ account_id: '641', debit: 5000, credit: 0 }),
+        // Debit 642 (Commission): 5k
+        expect.objectContaining({ account_id: '642', debit: 5000, credit: 0 }),
         // Credit 3388: 5k
         expect.objectContaining({ account_id: '3388', debit: 0, credit: 5000 })
       ])
@@ -118,6 +118,7 @@ describe('Accounting Period Closing & Auto-Posting Tests', () => {
     global.Date = class extends originalDate {
       constructor(...args: any[]) {
         if (args.length > 0) {
+          // @ts-ignore
           super(...args);
           return;
         }

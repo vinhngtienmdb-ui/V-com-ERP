@@ -81,7 +81,10 @@ const logAdminAudit = async (
  const [mfaUserEmail, setMfaUserEmail] = useState('');
  const [mfaVerified, setMfaVerified] = useState(false);
 
- useEffect(() => {
+  useEffect(() => {
+    if (!DEMO_MODE) {
+      console.info("[Security] VComm ERP is running in Zero-Trust Production Mode. Offline fallback logins and default credentials are disabled.");
+    }
  // Aggressive fallback to prevent loading screen hang
  const forceLoadTimer = setTimeout(() => {
    setLoading(prev => {

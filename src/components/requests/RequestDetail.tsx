@@ -156,6 +156,9 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -translate-y-6 hidden md:block z-0" />
             
             {(() => {
+              const matchedConfig = formConfigs.find((c: any) => c.name === request.subtype);
+              const workflowSteps = matchedConfig?.workflow || [];
+              
               const steps = [
                 {
                   role: 'Người lập',
@@ -164,20 +167,34 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
                   date: request.date || '---',
                   notes: 'Khởi tạo đề xuất'
                 },
-                {
-                  role: request.type === 'admin' ? 'Trưởng phòng' : 'Quản lý trực tiếp',
-                  name: request.type === 'admin' ? 'Trần Quốc Tuấn' : 'Phạm Văn Minh',
-                  status: request.status === 'pending' ? 'pending' : 'completed',
-                  date: request.status === 'pending' ? '---' : request.date,
-                  notes: request.status === 'pending' ? 'Đang thẩm định' : 'Đã xác nhận'
-                },
-                {
-                  role: request.type === 'finance' ? 'Kế toán trưởng (CFO)' : (request.type === 'admin' ? 'Giám đốc Nhân sự (HRD)' : 'Giám đốc Điều hành (CEO)'),
-                  name: request.type === 'finance' ? 'Vũ Hoài Nam' : (request.type === 'admin' ? 'Nguyễn Thị Minh Thư' : 'Nguyễn Văn A'),
-                  status: request.status === 'pending' ? 'waiting' : (request.status === 'rejected' ? 'rejected' : 'completed'),
-                  date: request.status === 'approved' ? request.date : '---',
-                  notes: request.status === 'approved' ? 'Đã ký số phê duyệt' : (request.status === 'rejected' ? 'Từ chối: Không được thông qua' : 'Chờ ký duyệt')
-                }
+                ...workflowSteps.map((stepConfig: any, index: number) => {
+                  const levelNum = index + 1;
+                  const logItem = (request.approvalLog || []).find((l: any) => l.level === levelNum);
+                  
+                  let role = stepConfig.specificUser || `Phê duyệt Cấp ${levelNum}`;
+                  let name = logItem ? logItem.by : (stepConfig.specificUser || 'Quản lý thẩm quyền');
+                  let status = 'waiting';
+                  let date = '---';
+                  let notes = 'Chờ duyệt';
+                  
+                  if (logItem) {
+                    status = logItem.status === 'approved' ? 'completed' : 'rejected';
+                    date = logItem.time || '---';
+                    notes = logItem.stepName || (logItem.status === 'approved' ? 'Đã phê duyệt' : 'Đã từ chối');
+                  } else if (request.status === 'rejected') {
+                    status = 'waiting';
+                    notes = 'Đã dừng';
+                  } else if (request.currentLevel === levelNum && request.status === 'pending') {
+                    status = 'pending';
+                    notes = 'Đang chờ xử lý';
+                  } else if (request.currentLevel > levelNum) {
+                    status = 'completed';
+                    date = request.date || '---';
+                    notes = 'Đã thông qua';
+                  }
+                  
+                  return { role, name, status, date, notes };
+                })
               ];
 
               return steps.map((step, idx) => {

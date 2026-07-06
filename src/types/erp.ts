@@ -687,3 +687,55 @@ export interface ChatThread {
  unreadCount: number;
  updatedAt: string;
 }
+
+export interface Combo {
+  id: string;
+  tenantId?: string;
+  name: string;
+  description?: string;
+  price: number;
+  costPrice: number;
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface ComboItem {
+  id: string;
+  tenantId?: string;
+  comboId: string;
+  productId: string;
+  quantity: number;
+}
+
+export interface GroupBuySession {
+  id: string;
+  tenantId?: string;
+  comboId: string;
+  status: 'open' | 'reached_minimum' | 'locked' | 'completed' | 'cancelled';
+  minQty: number;
+  currentQty: number;
+  endTime: string;
+  createdAt?: string;
+}
+
+export interface StockVoucher {
+  id: string;
+  tenantId?: string;
+  code: string;
+  type: 'in' | 'out' | 'transfer' | 'inventory' | 'adjust' | 'damage' | 'return';
+  status: 'draft' | 'pending_approval' | 'approved' | 'cancelled';
+  sourceWarehouseId?: string;
+  targetWarehouseId?: string;
+  createdBy?: string;
+  createdAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+}
+
+export interface StockVoucherItem {
+  id: string;
+  tenantId?: string;
+  voucherId: string;
+  productId: string;
+  quantity: number;
+}

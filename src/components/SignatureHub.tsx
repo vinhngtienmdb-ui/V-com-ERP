@@ -13,7 +13,8 @@ import {
  Building2,
  AlertTriangle,
  Loader2,
- ShieldAlert
+ ShieldAlert,
+ Upload
 } from 'lucide-react';
 import { ResizableTh } from './ui/ResizableTh';
 import { cn } from '../lib/utils';
@@ -319,7 +320,10 @@ export function SignatureHub() {
       if (selectedDoc.type === 'request' && selectedDoc.docId) {
         await updateDoc(doc(db, 'requests', selectedDoc.docId), {
           status: 'approved',
+          signatureStatus: 'signed',
           signedBy: user?.displayName || userEmail,
+          signedAt: new Date().toLocaleString('vi-VN'),
+          secureHash: data.signature ? (data.signature.substring(0, 24) + '...') : 'RSA-Signed',
           updatedAt: serverTimestamp()
         });
       }
