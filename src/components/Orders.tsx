@@ -91,8 +91,8 @@ const OrderDetailModal = ({
   const handleDraftRma = async (order: any) => {
     setIsGenerating(true);
     try {
-//       const resp = await generateRMAResponse(order);
-      setAiResponse(resp);
+//       const data = await generateRMAResponse(order);
+      setAiResponse(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -966,7 +966,7 @@ const paymentMethodLabels: Record<string, string> = {
 };
 
 export function Orders() {
-  const [resp, setResp] = useState<any>(null);
+  const [data, setResp] = useState<any>(null);
   const [response, setResponse] = useState<any>(null);
   const { log } = useAuditLog();
   const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
