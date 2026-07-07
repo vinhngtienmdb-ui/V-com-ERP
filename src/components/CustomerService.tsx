@@ -92,15 +92,12 @@ const MOCK_FEEDBACKS = [
  { id: 'FB-003', customerName: 'Bùi H', rating: 4, comment: 'Chất lượng oki, nhưng giá hơi cao so với thị trường một chút.', date: '18/04/2026', channel: 'web' },
 ];
 
-const MOCK_CAMPAIGNS = [
- { id: 'CMP-01', name: 'Chúc mừng Sinh nhật Tháng 4', type: 'email', target: 'Khách hàng có sinh nhật trong tháng', sent: 1250, openRate: 45, clickRate: 12, status: 'active' },
- { id: 'CMP-02', name: 'Nhắc nhở sử dụng Voucher', type: 'sms', target: 'Khách hàng có voucher sắp hết hạn', sent: 840, openRate: 92, clickRate: 35, status: 'active' },
- { id: 'CMP-03', name: 'Khảo sát CSAT Q1', type: 'zalo', target: 'Khách hàng mua hàng trong Q1', sent: 5000, openRate: 68, clickRate: 20, status: 'completed' },
-];
+
 
 // --- COMPONENT ---
 export function CustomerService() {
-  const [activeTab, setActiveTab] = useState<any>('chat');
+  const [activeTab, setActiveTab] = useState<any>('dashboard');
+  const [omniFilter, setOmniFilter] = useState('all');
   const [tickets, setTickets] = useState<any[]>(MOCK_TICKETS);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
@@ -489,61 +486,31 @@ export function CustomerService() {
   >
     <LayoutGridIcon className="w-4 h-4" /> Tổng quan Dashboard
   </button>
- <button 
- onClick={() => setActiveTab('tickets')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Ticket className="w-4 h-4" /> Quản lý Tickets
- </button>
- <button 
- onClick={() => setActiveTab('campaigns')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'campaigns' ? "bg-white text-emerald-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Mail className="w-4 h-4" /> Chiến dịch Chăm sóc (Loyalty)
- </button>
- <button 
- onClick={() => setActiveTab('feedback')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Star className="w-4 h-4" /> Phản hồi & Đánh giá
- </button>
- <button 
- onClick={() => setActiveTab('chat')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'chat' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageSquare className="w-4 h-4" /> Chat Đa kênh (FB/Zalo)
- </button>
- <button 
- onClick={() => setActiveTab('calls')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'calls' ? "bg-white text-emerald-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <PhoneCall className="w-4 h-4" /> Tổng đài OmiCall
- </button>
- <button 
- onClick={() => setActiveTab('livechat')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'livechat' ? "bg-white text-primary-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageCircle className="w-4 h-4" /> Livechat Website
- </button>
- <button 
- onClick={() => setActiveTab('agents')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'agents' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Users className="w-4 h-4" /> Đội ngũ & Extension
- </button>
- <button 
- onClick={() => setActiveTab('config')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Settings className="w-4 h-4" /> Cấu hình Kênh
- </button>
- <button 
- onClick={() => setActiveTab('zalo_zns')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'zalo_zns' ? "bg-white text-blue-700 shadow-sm border border-blue-200" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageSquare className="w-4 h-4 text-primary-600" /> Bản tin Zalo ZNS
- </button>
- </div>
+  <button 
+    onClick={() => setActiveTab('tickets')}
+    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+    <Ticket className="w-4 h-4" /> Quản lý Tickets
+  </button>
+  <button 
+    onClick={() => setActiveTab('omnichannel_support')}
+    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'omnichannel_support' ? "bg-white text-primary-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+    <MessageSquare className="w-4 h-4" /> Chăm sóc khách hàng đa kênh
+  </button>
+  <button 
+    onClick={() => setActiveTab('feedback')}
+    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+    <Star className="w-4 h-4" /> Phản hồi & Đánh giá
+  </button>
+  <button 
+    onClick={() => setActiveTab('config')}
+    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+    <Settings className="w-4 h-4" /> Cấu hình Kênh
+  </button>
+</div>
 
  {/* Filters */}
  <div className="p-4 border-b border-stone-50 flex flex-wrap gap-4 items-center justify-between">
@@ -890,54 +857,7 @@ export function CustomerService() {
  </table>
  )}
 
- {activeTab === 'campaigns' && (
- <div className="overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50/50 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Tên Chiến dịch</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Kênh / Đối tượng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Đã gửi</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Tỷ lệ Mở (Open Rate)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Trạng thái</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-100">
- {MOCK_CAMPAIGNS.map(camp => (
- <tr key={camp.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900">{camp.name}</p>
- <p className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">{camp.id}</p>
- </td>
- <td className="px-6 py-4">
- <p className="text-xs font-bold uppercase tracking-widest text-orange-700 mb-0.5">{camp.type}</p>
- <p className="text-xs text-slate-600">{camp.target}</p>
- </td>
- <td className="px-6 py-4 text-center font-mono font-bold text-slate-800">
- {camp.sent.toLocaleString()}
- </td>
- <td className="px-6 py-4">
- <div className="flex flex-col items-center gap-1">
- <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
- <div className="h-full bg-emerald-500" style={{ width: `${camp.openRate}%` }} />
- </div>
- <span className="text-[10px] font-bold text-slate-600">{camp.openRate}%</span>
- </div>
- </td>
- <td className="px-6 py-4 text-right">
- <span className={cn(
- "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest inline-block",
- camp.status === 'active' ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"
- )}>
- {camp.status === 'active' ? 'ĐANG CHẠY' : 'HOÀN THÀNH'}
- </span>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- )}
+ 
 
  {activeTab === 'feedback' && (
  <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -966,14 +886,156 @@ export function CustomerService() {
  </div>
  )}
 
- {activeTab === 'chat' && (
-  <div className="mt-4">
-    <OmniChat />
-  </div>
-)}
+ 
 
-{activeTab === 'calls' && (
- <div className="flex h-[600px]">
+
+ 
+
+ 
+
+ 
+ </div>
+ </div>
+
+ {/* Ticket Detail / AI Reply Modal */}
+ <AnimatePresence>
+ {selectedTicket && (
+  <Modal
+    isOpen={true}
+    onClose={() => setSelectedTicket(null)}
+    maxWidth="2xl"
+    hideFooter
+    noPadding
+  >
+    <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-start">
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 break-words pr-4">{selectedTicket.subject}</h2>
+        <div className="flex items-center gap-3 mt-2">
+          <span className="text-xs font-mono font-bold text-slate-500 uppercase">{selectedTicket.id}</span>
+          <span className={cn(
+            "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+            selectedTicket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : "bg-amber-100 text-amber-700"
+          )}>
+            {selectedTicket.status === 'open' ? 'MỚI' : 'ĐANG XỬ LÝ'}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div className="p-6 space-y-6">
+      {/* Customer Info */}
+      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+          <User className="w-5 h-5 text-slate-600" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
+          <p className="text-xs text-slate-600">Khách hàng Vàng • 12 đơn hàng</p>
+        </div>
+      </div>
+
+      {/* AI Sentiment analysis */}
+      <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
+        <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
+          <Sparkles className="w-3 h-3" /> Nhận định AI
+        </p>
+        <p className="text-sm font-medium text-slate-800">
+          {selectedTicket.sentiment === 'critical' ? 
+          "Khách hàng đang có thái độ rất bức xúc. Cần giải quyết và đền bù NGAY LẬP TỨC để tránh khủng hoảng truyền thông." : 
+          "Khách hàng đưa ra thắc mắc thông thường, giọng điệu trung tính. Có thể dùng template trả lời tự động."}
+        </p>
+      </div>
+
+      {/* Reply Action */}
+      <div className="space-y-3">
+        <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+          <MessageSquare className="w-4 h-4 text-orange-600" /> Phản hồi khách hàng
+        </h3>
+        <textarea 
+          className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none bg-slate-50"
+          placeholder="Nhập nội dung phản hồi..."
+          value={draftedMessage}
+          onChange={(e) => setDraftedMessage(e.target.value)}
+        />
+        
+        <div className="flex gap-2">
+                    <button 
+            onClick={() => handleCloseTicket(selectedTicket, draftedMessage)}
+            className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all font-mono"
+          >
+            Gửi & Đóng Ticket
+          </button>
+        </div>
+      </div>
+    </div>
+  </Modal>
+ )}
+ </AnimatePresence>
+
+  {/* Zalo ZNS Sentinel Success Floating Toast */}
+  {znsToast && znsToast.show && (
+    <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
+          Z
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">Zalo Notification Service (ZNS)</p>
+          <p className="text-xs font-semibold text-slate-100 mt-1 leading-snug">{znsToast.message}</p>
+          
+          <div className="mt-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1 font-mono">Bản tin đã gửi:</p>
+            <p className="text-[11px] text-slate-300 font-mono leading-relaxed max-h-24 overflow-y-auto">
+              {znsToast.logContent}
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-between mt-3 text-[10px]">
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              ● Đã chuyển tiếp thành công
+            </span>
+            <button 
+              onClick={() => setZnsToast(null)}
+              className="font-bold text-slate-400 hover:text-slate-100 underline transition"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+ 
+{activeTab === 'omnichannel_support' && (
+  <div className="flex flex-col gap-6 p-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex items-center gap-3 bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+       <span className="font-bold text-slate-700 flex items-center gap-2"><Filter className="w-4 h-4"/> Hiển thị kênh: </span>
+       <select value={omniFilter} onChange={e => setOmniFilter(e.target.value)} className="border border-slate-300 rounded-md px-3 py-1.5 font-medium focus:ring-2 focus:ring-primary-500/20 text-sm">
+         <option value="all">Tất cả màn hình (All-in-one)</option>
+         <option value="chat">Chat Đa kênh (FB/Zalo)</option>
+         <option value="calls">Tổng đài OmiCall</option>
+         <option value="livechat">Web Livechat</option>
+       </select>
+    </div>
+    
+    <div className={cn("transition-all duration-300", (omniFilter === 'all' || omniFilter === 'chat') ? 'block' : 'hidden')}>
+       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 font-bold text-slate-700 flex items-center gap-2">
+           <MessageSquare className="w-5 h-5 text-orange-600"/> Chat Đa kênh (Facebook, Zalo)
+         </div>
+         <div className="p-0"><div className="mt-4">
+    <OmniChat />
+  </div></div>
+       </div>
+    </div>
+    
+    <div className={cn("transition-all duration-300", (omniFilter === 'all' || omniFilter === 'calls') ? 'block' : 'hidden')}>
+       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 font-bold text-slate-700 flex items-center gap-2">
+           <PhoneCall className="w-5 h-5 text-emerald-600"/> Tổng đài OmiCall
+         </div>
+         <div className="p-4"><div className="flex h-[600px]">
  {/* OmiCall Dialer */}
  <div className="w-1/3 border-r border-slate-300 bg-slate-50/50 p-6 flex flex-col items-center">
  <h3 className="font-bold text-slate-900 text-lg mb-2 text-center w-full">Tổng đài OmiCall (VoIP)</h3>
@@ -1066,10 +1128,16 @@ export function CustomerService() {
  </table>
  </div>
  </div>
- </div>
- )}
- {activeTab === 'livechat' && (
- <div className="flex h-[600px]">
+ </div></div>
+       </div>
+    </div>
+
+    <div className={cn("transition-all duration-300", (omniFilter === 'all' || omniFilter === 'livechat') ? 'block' : 'hidden')}>
+       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 font-bold text-slate-700 flex items-center gap-2">
+           <MessageCircle className="w-5 h-5 text-primary-600"/> Web Livechat
+         </div>
+         <div className="p-4"><div className="flex h-[600px]">
  {/* Livechat Inbox Sidebar */}
  <div className="w-1/3 border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
  <div className="p-4 border-b border-slate-300 bg-white">
@@ -1196,11 +1264,156 @@ export function CustomerService() {
  </div>
  </div>
  </div>
+ </div></div>
+       </div>
+    </div>
+  </div>
+)}
+{activeTab === 'config' && (
+  <div className="flex flex-col gap-8 p-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="p-6 bg-slate-50 min-h-[600px]">
+ <div className="flex items-center justify-between mb-8">
+ <div>
+ <h3 className="font-bold text-slate-900 text-xl flex items-center gap-2">
+ <Settings className="w-6 h-6 text-slate-700" /> Cấu hình Kênh & Tích hợp (Omni-channel)
+ </h3>
+ <p className="text-sm text-slate-600 mt-1">Kết nối và quản lý các kênh giao tiếp với khách hàng tại một nơi.</p>
  </div>
- )}
+ </div>
+ 
+ <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
+ {/* Fanpage Config */}
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
+ <div className="flex justify-between items-start mb-6">
+ <div className="flex items-center gap-4">
+ <div className="w-12 h-12 bg-[#EAE7DF] rounded-lg flex items-center justify-center text-orange-700">
+ <Facebook className="w-6 h-6" />
+ </div>
+ <div>
+ <h4 className="font-bold text-slate-900 text-lg">Facebook Fanpage</h4>
+ <p className="text-xs text-slate-600">Đồng bộ tin nhắn & bình luận</p>
+ </div>
+ </div>
+ <ToggleRight className="w-8 h-8 text-orange-700 shrink-0 cursor-pointer" />
+ </div>
+ 
+ <div className="space-y-4 mb-6 flex-1">
+ <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
+ <div className="flex items-center gap-3">
+ <img src="https://ui-avatars.com/api/?name=VComm+Store&background=random" alt="" className="w-8 h-8 rounded-full" />
+ <div>
+ <p className="text-sm font-bold text-slate-900">VComm Official Store</p>
+ <p className="text-[10px] text-emerald-600 font-bold">Đã kết nối</p>
+ </div>
+ </div>
+ <button className="text-xs text-red-600 font-bold hover:underline">Hủy kết nối</button>
+ </div>
+ </div>
+ 
+ <button className="w-full py-2.5 border-2 border-dashed border-slate-400 rounded-lg text-slate-700 font-bold text-sm hover:border-slate-900 hover:text-primary-600 transition-all flex justify-center items-center gap-2">
+ <Plus className="w-4 h-4" /> Thêm Fanpage mới
+ </button>
+ </div>
 
- {activeTab === 'agents' && (
- <div className="p-6 bg-slate-50 min-h-[600px]">
+ {/* Zalo OA Config */}
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
+ <div className="flex justify-between items-start mb-6">
+ <div className="flex items-center gap-4">
+ <div className="w-12 h-12 bg-slate-800/10 rounded-lg flex items-center justify-center text-orange-600">
+ <MessageSquare className="w-6 h-6" />
+ </div>
+ <div>
+ <h4 className="font-bold text-slate-900 text-lg">Zalo Official Account</h4>
+ <p className="text-xs text-slate-600">Gửi ZNS & chat với khách hàng</p>
+ </div>
+ </div>
+ <ToggleRight className="w-8 h-8 text-orange-600 shrink-0 cursor-pointer" />
+ </div>
+ 
+ <div className="space-y-4 mb-6 flex-1">
+ <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center opacity-70 grayscale">
+ <div className="flex items-center gap-3">
+ <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-700">Z</div>
+ <div>
+ <p className="text-sm font-bold text-slate-900">Chưa kết nối OA nào</p>
+ <p className="text-[10px] text-slate-600 font-bold">Cần cấu hình API OA</p>
+ </div>
+ </div>
+ </div>
+ <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 flex items-start gap-2">
+ <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+ <p>Vui lòng tạo Zalo App và cấp quyền truy cập Zalo OA trước khi kết nối vào hệ thống.</p>
+ </div>
+ </div>
+ 
+ <button className="w-full py-2.5 bg-slate-800 text-[#FAF9F5] rounded-lg font-bold text-sm hover:bg-slate-900 transition-all flex justify-center items-center gap-2 shadow-sm">
+ <Plug className="w-4 h-4" /> Kết nối Zalo OA
+ </button>
+ </div>
+
+ {/* Web Livechat Widget */}
+ <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col lg:col-span-2">
+ <div className="flex justify-between items-start mb-6">
+ <div className="flex items-center gap-4">
+ <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600">
+ <Code2 className="w-6 h-6" />
+ </div>
+ <div>
+ <h4 className="font-bold text-slate-900 text-lg">Mã nhúng Livechat Website</h4>
+ <p className="text-xs text-slate-600">Chèn widget chat trực tiếp lên website của bạn</p>
+ </div>
+ </div>
+ <ToggleRight className="w-8 h-8 text-primary-600 shrink-0 cursor-pointer" />
+ </div>
+ 
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div>
+ <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Tùy chỉnh giao diện</h5>
+ <div className="space-y-4">
+ <div>
+ <label className="text-xs font-bold text-slate-700 block mb-1.5">Màu chủ đạo (Hex code)</label>
+ <div className="flex gap-2">
+ <input type="color" value="#4F46E5" readOnly className="w-8 h-8 rounded border-none cursor-pointer" />
+ <input type="text" value="#4F46E5" readOnly className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 font-mono text-sm text-slate-700" />
+ </div>
+ </div>
+ <div>
+ <label className="text-xs font-bold text-slate-700 block mb-1.5">Lời chào mặc định</label>
+ <input type="text" value="Chào bạn, VComm có thể giúp gì cho bạn?" readOnly className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 font-medium" />
+ </div>
+ </div>
+ </div>
+ 
+ <div>
+ <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Copy JavaScript Snippet</h5>
+ <div className="relative">
+ <pre className="bg-slate-900 text-emerald-400 p-4 rounded-lg text-[11px] font-mono overflow-x-auto min-w-0">
+{`<script>
+ window.VCommChatOptions = {
+ appId: "vcomm_live_9a8b7c6d",
+ color: "#4F46E5",
+ greeting: "Chào bạn..."
+ };
+</script>
+<script src="https://cdn.vcomm.io/chat.js" async></script>`}
+ </pre>
+ <button className="absolute top-2 right-2 bg-slate-900/10 hover:bg-white/20 text-[#FAF9F5] rounded p-1.5 transition-all text-[10px] font-bold">Copy Code</button>
+ </div>
+ <p className="text-[10px] text-slate-600 mt-2 italic">* Chèn đoạn mã này vào thẻ &lt;head&gt; hoặc trước thẻ đóng &lt;/body&gt; trên website của bạn.</p>
+ </div>
+ </div>
+ </div>
+ </DraggableGrid>
+ </div>
+    </div>
+    
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 font-bold text-slate-800 flex items-center gap-2 text-lg">
+        <Users className="w-5 h-5 text-rose-600"/> Quản lý Đội ngũ CSKH & Extensions
+      </div>
+      <div className="p-4">
+        <div className="p-6 bg-slate-50 min-h-[600px]">
  <div className="flex items-center justify-between mb-8">
  <div>
  <h3 className="font-bold text-slate-900 text-xl flex items-center gap-2">
@@ -1422,256 +1635,10 @@ export function CustomerService() {
  </div>
  </div>
  </div>
- )}
-
- {activeTab === 'config' && (
- <div className="p-6 bg-slate-50 min-h-[600px]">
- <div className="flex items-center justify-between mb-8">
- <div>
- <h3 className="font-bold text-slate-900 text-xl flex items-center gap-2">
- <Settings className="w-6 h-6 text-slate-700" /> Cấu hình Kênh & Tích hợp (Omni-channel)
- </h3>
- <p className="text-sm text-slate-600 mt-1">Kết nối và quản lý các kênh giao tiếp với khách hàng tại một nơi.</p>
- </div>
- </div>
- 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6" columns={2} gap={24}>
- {/* Fanpage Config */}
- <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
- <div className="flex justify-between items-start mb-6">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-[#EAE7DF] rounded-lg flex items-center justify-center text-orange-700">
- <Facebook className="w-6 h-6" />
- </div>
- <div>
- <h4 className="font-bold text-slate-900 text-lg">Facebook Fanpage</h4>
- <p className="text-xs text-slate-600">Đồng bộ tin nhắn & bình luận</p>
- </div>
- </div>
- <ToggleRight className="w-8 h-8 text-orange-700 shrink-0 cursor-pointer" />
- </div>
- 
- <div className="space-y-4 mb-6 flex-1">
- <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
- <div className="flex items-center gap-3">
- <img src="https://ui-avatars.com/api/?name=VComm+Store&background=random" alt="" className="w-8 h-8 rounded-full" />
- <div>
- <p className="text-sm font-bold text-slate-900">VComm Official Store</p>
- <p className="text-[10px] text-emerald-600 font-bold">Đã kết nối</p>
- </div>
- </div>
- <button className="text-xs text-red-600 font-bold hover:underline">Hủy kết nối</button>
- </div>
- </div>
- 
- <button className="w-full py-2.5 border-2 border-dashed border-slate-400 rounded-lg text-slate-700 font-bold text-sm hover:border-slate-900 hover:text-primary-600 transition-all flex justify-center items-center gap-2">
- <Plus className="w-4 h-4" /> Thêm Fanpage mới
- </button>
- </div>
-
- {/* Zalo OA Config */}
- <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col">
- <div className="flex justify-between items-start mb-6">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-slate-800/10 rounded-lg flex items-center justify-center text-orange-600">
- <MessageSquare className="w-6 h-6" />
- </div>
- <div>
- <h4 className="font-bold text-slate-900 text-lg">Zalo Official Account</h4>
- <p className="text-xs text-slate-600">Gửi ZNS & chat với khách hàng</p>
- </div>
- </div>
- <ToggleRight className="w-8 h-8 text-orange-600 shrink-0 cursor-pointer" />
- </div>
- 
- <div className="space-y-4 mb-6 flex-1">
- <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center opacity-70 grayscale">
- <div className="flex items-center gap-3">
- <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-700">Z</div>
- <div>
- <p className="text-sm font-bold text-slate-900">Chưa kết nối OA nào</p>
- <p className="text-[10px] text-slate-600 font-bold">Cần cấu hình API OA</p>
- </div>
- </div>
- </div>
- <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 flex items-start gap-2">
- <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
- <p>Vui lòng tạo Zalo App và cấp quyền truy cập Zalo OA trước khi kết nối vào hệ thống.</p>
- </div>
- </div>
- 
- <button className="w-full py-2.5 bg-slate-800 text-[#FAF9F5] rounded-lg font-bold text-sm hover:bg-slate-900 transition-all flex justify-center items-center gap-2 shadow-sm">
- <Plug className="w-4 h-4" /> Kết nối Zalo OA
- </button>
- </div>
-
- {/* Web Livechat Widget */}
- <div className="bg-white rounded-lg p-6 border border-slate-300 shadow-sm flex flex-col lg:col-span-2">
- <div className="flex justify-between items-start mb-6">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600">
- <Code2 className="w-6 h-6" />
- </div>
- <div>
- <h4 className="font-bold text-slate-900 text-lg">Mã nhúng Livechat Website</h4>
- <p className="text-xs text-slate-600">Chèn widget chat trực tiếp lên website của bạn</p>
- </div>
- </div>
- <ToggleRight className="w-8 h-8 text-primary-600 shrink-0 cursor-pointer" />
- </div>
- 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div>
- <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Tùy chỉnh giao diện</h5>
- <div className="space-y-4">
- <div>
- <label className="text-xs font-bold text-slate-700 block mb-1.5">Màu chủ đạo (Hex code)</label>
- <div className="flex gap-2">
- <input type="color" value="#4F46E5" readOnly className="w-8 h-8 rounded border-none cursor-pointer" />
- <input type="text" value="#4F46E5" readOnly className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 font-mono text-sm text-slate-700" />
- </div>
- </div>
- <div>
- <label className="text-xs font-bold text-slate-700 block mb-1.5">Lời chào mặc định</label>
- <input type="text" value="Chào bạn, VComm có thể giúp gì cho bạn?" readOnly className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 font-medium" />
- </div>
- </div>
- </div>
- 
- <div>
- <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Copy JavaScript Snippet</h5>
- <div className="relative">
- <pre className="bg-slate-900 text-emerald-400 p-4 rounded-lg text-[11px] font-mono overflow-x-auto min-w-0">
-{`<script>
- window.VCommChatOptions = {
- appId: "vcomm_live_9a8b7c6d",
- color: "#4F46E5",
- greeting: "Chào bạn..."
- };
-</script>
-<script src="https://cdn.vcomm.io/chat.js" async></script>`}
- </pre>
- <button className="absolute top-2 right-2 bg-slate-900/10 hover:bg-white/20 text-[#FAF9F5] rounded p-1.5 transition-all text-[10px] font-bold">Copy Code</button>
- </div>
- <p className="text-[10px] text-slate-600 mt-2 italic">* Chèn đoạn mã này vào thẻ &lt;head&gt; hoặc trước thẻ đóng &lt;/body&gt; trên website của bạn.</p>
- </div>
- </div>
- </div>
- </DraggableGrid>
- </div>
- )}
- </div>
- </div>
-
- {/* Ticket Detail / AI Reply Modal */}
- <AnimatePresence>
- {selectedTicket && (
-  <Modal
-    isOpen={true}
-    onClose={() => setSelectedTicket(null)}
-    maxWidth="2xl"
-    hideFooter
-    noPadding
-  >
-    <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-start">
-      <div>
-        <h2 className="text-lg font-bold text-slate-900 break-words pr-4">{selectedTicket.subject}</h2>
-        <div className="flex items-center gap-3 mt-2">
-          <span className="text-xs font-mono font-bold text-slate-500 uppercase">{selectedTicket.id}</span>
-          <span className={cn(
-            "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
-            selectedTicket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : "bg-amber-100 text-amber-700"
-          )}>
-            {selectedTicket.status === 'open' ? 'MỚI' : 'ĐANG XỬ LÝ'}
-          </span>
-        </div>
       </div>
     </div>
-
-    <div className="p-6 space-y-6">
-      {/* Customer Info */}
-      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-        <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-          <User className="w-5 h-5 text-slate-600" />
-        </div>
-        <div>
-          <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
-          <p className="text-xs text-slate-600">Khách hàng Vàng • 12 đơn hàng</p>
-        </div>
-      </div>
-
-      {/* AI Sentiment analysis */}
-      <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
-        <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
-          <Sparkles className="w-3 h-3" /> Nhận định AI
-        </p>
-        <p className="text-sm font-medium text-slate-800">
-          {selectedTicket.sentiment === 'critical' ? 
-          "Khách hàng đang có thái độ rất bức xúc. Cần giải quyết và đền bù NGAY LẬP TỨC để tránh khủng hoảng truyền thông." : 
-          "Khách hàng đưa ra thắc mắc thông thường, giọng điệu trung tính. Có thể dùng template trả lời tự động."}
-        </p>
-      </div>
-
-      {/* Reply Action */}
-      <div className="space-y-3">
-        <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-orange-600" /> Phản hồi khách hàng
-        </h3>
-        <textarea 
-          className="w-full h-32 border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none bg-slate-50"
-          placeholder="Nhập nội dung phản hồi..."
-          value={draftedMessage}
-          onChange={(e) => setDraftedMessage(e.target.value)}
-        />
-        
-        <div className="flex gap-2">
-                    <button 
-            onClick={() => handleCloseTicket(selectedTicket, draftedMessage)}
-            className="bg-slate-900 text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-800 transition-all font-mono"
-          >
-            Gửi & Đóng Ticket
-          </button>
-        </div>
-      </div>
-    </div>
-  </Modal>
- )}
- </AnimatePresence>
-
-  {/* Zalo ZNS Sentinel Success Floating Toast */}
-  {znsToast && znsToast.show && (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-950 border border-blue-500/50 text-[#FAF9F5] rounded-lg p-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center font-bold text-white shrink-0 shadow">
-          Z
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">Zalo Notification Service (ZNS)</p>
-          <p className="text-xs font-semibold text-slate-100 mt-1 leading-snug">{znsToast.message}</p>
-          
-          <div className="mt-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1 font-mono">Bản tin đã gửi:</p>
-            <p className="text-[11px] text-slate-300 font-mono leading-relaxed max-h-24 overflow-y-auto">
-              {znsToast.logContent}
-            </p>
-          </div>
-          
-          <div className="flex items-center justify-between mt-3 text-[10px]">
-            <span className="text-emerald-400 font-bold flex items-center gap-1">
-              ● Đã chuyển tiếp thành công
-            </span>
-            <button 
-              onClick={() => setZnsToast(null)}
-              className="font-bold text-slate-400 hover:text-slate-100 underline transition"
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )}
-
- </div>
- );
+  </div>
+)}
+  </div>
+  );
 }

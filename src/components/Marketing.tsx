@@ -28,6 +28,11 @@ import { formatCurrency, cn } from '../lib/utils';
 import { Campaign } from '../types/erp';
 import { motion, AnimatePresence } from 'motion/react';
 
+const MOCK_CSKH_CAMPAIGNS = [
+ { id: 'CMP-01', name: 'Chúc mừng Sinh nhật Tháng 4', type: 'email', target: 'Khách hàng có sinh nhật trong tháng', sent: 1250, openRate: 45, clickRate: 12, status: 'active' },
+ { id: 'CMP-02', name: 'Nhắc nhở sử dụng Voucher', type: 'sms', target: 'Khách hàng có voucher sắp hết hạn', sent: 840, openRate: 92, clickRate: 35, status: 'active' },
+ { id: 'CMP-03', name: 'Khảo sát CSAT Q1', type: 'zalo', target: 'Khách hàng mua hàng trong Q1', sent: 5000, openRate: 68, clickRate: 20, status: 'completed' },
+];
 const MOCK_CAMPAIGNS: Campaign[] = [
  {
  id: 'CMP-004',
