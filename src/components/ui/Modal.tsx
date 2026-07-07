@@ -39,14 +39,15 @@ export function Modal({
   fullscreen = false,
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
+  const onCloseRef = React.useRef(onClose);
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose();
+        onCloseRef.current();
       }
     };
     
@@ -60,7 +61,7 @@ export function Modal({
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen || !mounted) return null;
 

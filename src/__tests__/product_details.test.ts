@@ -16,7 +16,7 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
     stock: 50,
     category: 'Thiết bị điện tử',
     image: 'https://picsum.photos/seed/test/200/200',
-    image_url: 'https://picsum.photos/seed/test/200/200',
+    image_urls: 'https://picsum.photos/seed/test/200/200',
     sellerName: 'Nhà cung cấp ABC',
     brand: 'Samsung',
     costPrice: 1000000,
@@ -45,7 +45,7 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
     expect(payload.price).toBe(sampleProduct.price);
     expect(payload.sku).toBe(sampleProduct.sku);
     expect(payload.category).toBe(sampleProduct.category);
-    expect(payload.image_url).toBe(sampleProduct.image_url);
+    expect(payload.image_urls).toBe(sampleProduct.image_urls);
     expect(payload.brand).toBe(sampleProduct.brand);
     expect(payload.stock).toBe(sampleProduct.stock);
     expect(payload.cost_price).toBe(sampleProduct.costPrice);
@@ -69,7 +69,7 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
       price: sampleProduct.price,
       sku: sampleProduct.sku,
       category: sampleProduct.category,
-      image_url: sampleProduct.image_url,
+      image_urls: sampleProduct.image_urls,
       created_at: new Date().toISOString(),
       brand: sampleProduct.brand,
       stock: sampleProduct.stock,
@@ -93,8 +93,8 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
     expect(jsData.price).toBe(sampleProduct.price);
     expect(jsData.sku).toBe(sampleProduct.sku);
     expect(jsData.category).toBe(sampleProduct.category);
-    expect(jsData.image_url).toBe(sampleProduct.image_url);
-    expect(jsData.image).toBe(sampleProduct.image_url); // compatible mapping
+    expect(jsData.image_urls).toBe(sampleProduct.image_urls);
+    expect(jsData.image).toBe(sampleProduct.image_urls); // compatible mapping
     expect(jsData.brand).toBe(sampleProduct.brand);
     expect(jsData.stock).toBe(sampleProduct.stock);
     expect(jsData.costPrice).toBe(sampleProduct.costPrice);

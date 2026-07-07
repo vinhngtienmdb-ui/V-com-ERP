@@ -576,7 +576,7 @@ export function HumanResources() {
  const [payrollList, setPayrollList] = useState<Payroll[]>(MOCK_PAYROLL);
  const [editingPayrollId, setEditingPayrollId] = useState<string | null>(null);
  const [editPayrollForm, setEditPayrollForm] = useState<Partial<Payroll>>({});
-//  const [aiPayrollSuggestion, setAiPayrollSuggestion] = useState<string | null>(null);
+const [aiPayrollSuggestion, setAiPayrollSuggestion] = useState<string | null>(null);
  
  // New features state
  const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
@@ -587,11 +587,11 @@ export function HumanResources() {
  const [activeATSView, setActiveATSView] = useState<'request' | 'candidates' | 'interview' | 'email'>('candidates');
  
  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-//  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+const [isCopilotOpen, setIsCopilotOpen] = useState(false);
  const [copilotMessages, setCopilotMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
  { role: 'assistant', content: 'Xin chào! Tôi là AI Copilot hỗ trợ nhân sự. Bạn muốn tôi phân tích dữ liệu, xuất báo cáo hay tìm kiếm nhân viên có kỹ năng cụ thể?' }
  ]);
-//  const [copilotInput, setCopilotInput] = useState('');
+const [copilotInput, setCopilotInput] = useState('');
 
  const [searchEmployee, setSearchEmployee] = useState('');
  const [filterDept, setFilterDept] = useState('all');

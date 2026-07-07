@@ -1,5 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import { Modal } from './ui/Modal';
+import { OmniChat } from './OmniChat';
 import { db, collection, getDocs } from '../services/dbService';
 import { supabase } from '../lib/supabase';
 import { 
@@ -75,11 +76,7 @@ import {
 } from '../services/znsService';
 
 // --- MOCK DATA ---
-const MOCK_THREADS: ChatThread[] = [
- { id: 'T1', channel: 'zalo', userName: 'Phạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
- { id: 'T2', channel: 'facebook', userName: 'Hoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
- { id: 'T3', channel: 'web', userName: 'Khách vãng lai #42', lastMessage: 'Sản phẩm này có bảo hành không ạ?', unreadCount: 1, updatedAt: '10:15' },
-];
+
 
 const MOCK_TICKETS = [
  { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', status: 'open', priority: 'high', type: 'complaint', createdAt: '10:45 20/04/2026', sentiment: 'critical' },
@@ -103,7 +100,7 @@ const MOCK_CAMPAIGNS = [
 
 // --- COMPONENT ---
 export function CustomerService() {
-  const [activeTab, setActiveTab] = useState<any>('dashboard');
+  const [activeTab, setActiveTab] = useState<any>('chat');
   const [tickets, setTickets] = useState<any[]>(MOCK_TICKETS);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
@@ -298,44 +295,7 @@ export function CustomerService() {
    { id: 'TKT-1040', customerName: 'Lê Văn C', subject: 'Lỗi thanh toán Momo', priority: 'high', channel: 'web', waitingTime: '32 phút', sentiment: 'negative' },
  ]);
 
- const simulateNewTicket = () => {
-   setIsSimulatingTicket(true);
-   setTimeout(() => {
-     const customers = ['Đặng Văn Lâm', 'Nguyễn Thị Tuyết', 'Hồ Hoài Nam', 'Phạm Quỳnh Anh'];
-     const issues = ['Hỏi về mã khuyến mãi giảm 20%', 'Sản phẩm giao bị thiếu quà tặng', 'Lỗi thanh toán ngân hàng báo thành công nhưng app báo chờ', 'Tư vấn đóng gói quà sinh nhật'];
-     const channels = ['facebook', 'zalo', 'web', 'shopee'];
-     const priorities = ['high', 'medium', 'low'];
-     const sentiments = ['critical', 'neutral', 'negative'];
-
-     const randomCustomer = customers[Math.floor(Math.random() * customers.length)];
-     const randomIssue = issues[Math.floor(Math.random() * issues.length)];
-     const randomChannel = channels[Math.floor(Math.random() * channels.length)];
-     const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
-     const randomSentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-     const id = 'TKT-' + (1043 + Math.floor(Math.random() * 100));
-
-     const newAlert = {
-       id,
-       customerName: randomCustomer,
-       subject: randomIssue,
-       priority: randomPriority,
-       channel: randomChannel,
-       waitingTime: '1 phút',
-       sentiment: randomSentiment,
-       createdAt: 'Vừa xong',
-       type: 'complaint'
-     };
-
-     setActiveAlerts(prev => [newAlert, ...prev]);
-     setLiveTicketResolvedCount(prev => prev + 1);
-     setSuccessToast(`Nhận thành công Ticket mới ${id} từ ${randomCustomer}!`);
-     setIsSimulatingTicket(false);
-
-     setTimeout(() => {
-       setSuccessToast(null);
-     }, 4000);
-   }, 800);
- };
+ 
 
  const getSlaDistribution = () => {
    let modifier = 1.0;
@@ -395,7 +355,7 @@ export function CustomerService() {
       setIsCreatingOrder(false);
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        channel: activeThread?.channel || 'zalo',
+        channel: 'zalo',
         senderId: 'ai',
         senderName: 'Hệ thống ERP',
         text: '🎉 Đơn hàng mới ORD-9922 đã được tạo thành công! (Giá trị: 1,250,000đ). Link thanh toán đã được gửi tới Zalo.',
@@ -408,7 +368,7 @@ export function CustomerService() {
  const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
- const activeThread = MOCK_THREADS.find(t => t.id === activeThreadId);
+ const activeThread = null;
 
  useEffect(() => {
  if (activeTab === 'chat' && scrollRef.current) {
@@ -433,13 +393,7 @@ export function CustomerService() {
  setInputValue('');
   };
 
- const handleSimulateAiReply = () => {
  
- setTimeout(() => {
- setDraftedMessage(`Dạ em chào anh/chị ${selectedTicket.customerName}, em bên bộ phận CSKH xin ghi nhận thông tin về vấn đề "${selectedTicket.subject}". Bộ phận liên quan đang tiến hành kiểm tra lại và sẽ xử lý ngay lập tức ạ. Xin lỗi vì sự bất tiện này.`);
- 
- }, 1500);
- };
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
@@ -670,29 +624,7 @@ export function CustomerService() {
 							</select>
 						</div>
 
-						<div className="ml-auto flex items-center gap-2 max-sm:w-full max-sm:justify-between">
-							<span className="text-[11px] font-mono font-bold text-slate-500">Đăng ký tự động:</span>
-							<button 
-								onClick={() => simulateNewTicket()}
-								disabled={isSimulatingTicket}
-								className={cn(
-									"px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer",
-									isSimulatingTicket ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-orange-600 text-white hover:bg-orange-700"
-								)}
-							>
-								{isSimulatingTicket ? (
-									<>
-										<Loader2 className="w-3 h-3 animate-spin" />
-										Đang tạo...
-									</>
-								) : (
-									<>
-										<Plus className="w-3 h-3" />
-										Giả lập Ticket Mới (+1)
-									</>
-								)}
-							</button>
-						</div>
+						
 					</div>
 
 					{/* Recharts Bar Chart Container */}
@@ -1035,323 +967,12 @@ export function CustomerService() {
  )}
 
  {activeTab === 'chat' && (
- <div className="flex bg-white h-[600px] overflow-hidden">
- {/* Sidebar - Thread List */}
- <div className="w-[320px] border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
- <div className="p-4 border-b border-[#F3F4F6]">
- <h2 className="text-sm font-bold text-[#111827] flex items-center gap-2 mb-3">
- Kênh tương tác (API)
- </h2>
- <div className="flex gap-2">
- <button className="flex-1 bg-slate-900 text-[#FAF9F5] text-[10px] font-bold py-1.5 rounded-lg flex justify-center items-center gap-1 shadow-sm"><span className="w-3 h-3 flex items-center justify-center rounded-full bg-slate-900 text-orange-700">f</span> Fanpage</button>
- <button className="flex-1 bg-slate-800 text-[#FAF9F5] text-[10px] font-bold py-1.5 rounded-lg flex justify-center items-center gap-1 shadow-sm"><MessageSquare className="w-3 h-3" /> Zalo OA</button>
- </div>
- <div className="relative mt-4">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input 
- type="text" 
- placeholder="Tìm khách hàng..." 
- className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all shadow-sm"
- />
- </div>
- </div>
- <div className="flex-1 overflow-y-auto">
- {MOCK_THREADS.map(thread => (
- <button
- key={thread.id}
- onClick={() => setActiveThreadId(thread.id)}
- className={cn(
- "w-full p-4 flex gap-3 hover:bg-slate-50 transition-all border-b border-[#F3F4F6] text-left relative cursor-pointer",
- activeThreadId === thread.id && "bg-white border-l-2 border-l-blue-600 shadow-sm"
- )}
- >
- <div className="relative">
- <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
- {thread.userAvatar ? <img src={thread.userAvatar} alt="" className="rounded-full" /> : thread.userName[0]}
- </div>
- <div className={cn("absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white", thread.channel === 'facebook' ? "bg-slate-900" : thread.channel === 'zalo' ? "bg-slate-800" : "bg-slate-500")}>
- {thread.channel === 'facebook' ? <span className="text-[8px] font-bold text-[#FAF9F5]">f</span> : thread.channel === 'zalo' ? <MessageSquare className="w-2 h-2 text-[#FAF9F5]" /> : <Globe className="w-2 h-2 text-[#FAF9F5]" />}
- </div>
- </div>
- <div className="flex-1 min-w-0">
- <div className="flex justify-between items-start">
- <h3 className="text-sm font-bold text-[#111827] truncate">{thread.userName}</h3>
- <span className="text-[9px] text-[#9CA3AF]">{thread.updatedAt}</span>
- </div>
- <p className="text-xs text-[#6B7280] truncate mt-0.5">{thread.lastMessage}</p>
- </div>
- {thread.unreadCount > 0 && (
- <div className="absolute top-1/2 -translate-y-1/2 right-4 w-4 h-4 bg-red-500 text-[#FAF9F5] rounded-full text-[10px] font-bold flex items-center justify-center">
- {thread.unreadCount}
- </div>
- )}
- </button>
- ))}
- </div>
- </div>
-
- {/* Main Chat Area */}
- <div className="flex-1 flex flex-col bg-[#F9FAFB]">
- {/* Chat Header */}
- <div className="p-4 bg-white border-b border-[#F3F4F6] flex justify-between items-center z-10">
- <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs border border-slate-300 text-slate-600">
- {activeThread?.userName[0]}
- </div>
- <div>
- <h3 className="text-sm font-bold text-[#111827] flex items-center gap-2">
- {activeThread?.userName}
- <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
- </h3>
- <p className="text-[10px] text-emerald-600 font-medium">Đang hoạt động trên {activeThread?.channel}</p>
- </div>
- </div>
- <div className="flex items-center gap-2">
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-[#6B7280]" /></button>
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
- <div className="h-6 w-[1px] bg-slate-200 mx-2" />
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
- </div>
- </div>
-
- {/* Messages List */}
- <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" ref={scrollRef}>
- {messages.map((msg) => (
- <div key={msg.id} className={cn(
- "flex items-end gap-3",
- msg.senderId === 'ai' ? "flex-row" : "flex-row-reverse"
- )}>
- <div className={cn(
- "w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm",
- msg.senderId === 'ai' ? "bg-slate-900 text-[#FAF9F5]" : "bg-white border border-slate-300 text-slate-800"
- )}>
- {msg.senderId === 'ai' ? <Bot className="w-4 h-4" /> : 'CS'}
- </div>
- <div className={cn(
- "max-w-[70%] space-y-1",
- msg.senderId === 'ai' ? "items-start" : "items-end flex flex-col"
- )}>
- <div className={cn(
- "p-3 rounded-lg text-sm shadow-sm leading-relaxed",
- msg.senderId === 'ai' 
- ? "bg-white text-slate-900 border border-slate-300 rounded-bl-sm" 
- : "bg-slate-900 text-[#FAF9F5] rounded-br-sm"
- )}>
- {msg.text}
- </div>
- <div className="flex items-center gap-2 px-1">
- <span className={cn("text-[9px] font-medium tracking-wide", msg.senderId === 'ai' ? "text-slate-500" : "text-blue-300")}>{msg.senderName} • {msg.timestamp}</span>
- {msg.senderId === 'user' && <CheckCheck className="w-3.5 h-3.5 text-orange-600" />}
- </div>
- </div>
- </div>
- ))}
- {false && (
- <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-full bg-slate-900 text-[#FAF9F5] flex items-center justify-center shadow-sm shadow-slate-900/5">
- <Bot className="w-4 h-4 animate-bounce" />
- </div>
- <div className="bg-white border border-slate-300 p-4 rounded-lg rounded-bl-sm shadow-sm flex items-center gap-3">
- <span className="text-xs text-slate-700 font-bold tracking-wide">AI Assistant đang soạn câu trả lời</span>
- <div className="flex gap-1.5">
- <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-bounce [animation-delay:-0.3s]" />
- <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-bounce [animation-delay:-0.15s]" />
- <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-bounce" />
- </div>
- </div>
- </div>
- )}
- </div>
-
- {/* Input Area */}
- <div className="p-4 bg-white border-t border-slate-300 flex flex-col gap-3">
- <div className="flex gap-2 p-1 overflow-x-auto hidden-scrollbar min-w-0">
- <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin chào</button>
- <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Xin thông tin nhận hàng</button>
- <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Gửi mã freeship</button>
- <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full whitespace-nowrap transition-colors">Thông báo chậm hàng</button>
- </div>
- <div className="flex items-center gap-3">
- <button className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-all flex-shrink-0">
- <Plus className="w-5 h-5" />
- </button>
- <div className="flex-1 relative">
- <input 
- type="text" 
- value={inputValue}
- onChange={(e) => setInputValue(e.target.value)}
- onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
- placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-slate-900 focus:bg-white transition-all font-medium"
- />
- <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900 hover:bg-slate-800 text-[#FAF9F5] rounded-lg transition-all disabled:opacity-50 flex items-center justify-center shadow-sm shadow-slate-900/5" onClick={handleSendMessage} disabled={!inputValue.trim()}>
- <Send className="w-4 h-4 ml-0.5" />
- </button>
- </div>
- <button className="bg-amber-100 hover:bg-amber-200 p-3 rounded-lg transition-colors flex-shrink-0 relative group">
- <Zap className="w-5 h-5 text-amber-600 fill-current" />
- <div className="absolute bottom-full right-0 mb-2 whitespace-nowrap px-3 py-2 bg-slate-800 text-[#FAF9F5] text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
- Dùng AI trả lời
- </div>
- </button>
- </div>
- <div className="text-center mt-1">
+  <div className="mt-4">
+    <OmniChat />
   </div>
- </div>
- </div>
+)}
 
- 
-  {/* Right Sidebar - Info & Transactions */}
-  <div className="w-[320px] bg-slate-50/80 border-l border-slate-200 flex flex-col shrink-0">
-    <div className="flex bg-slate-200/50 rounded-lg p-1 m-4 shrink-0 border border-slate-200 shadow-inner">
-      <button 
-        onClick={() => setChatRightTab('info')}
-        className={cn(
-          "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
-          chatRightTab === 'info' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-        )}
-      >
-        Hồ sơ
-      </button>
-      <button 
-        onClick={() => setChatRightTab('transaction')}
-        className={cn(
-          "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
-          chatRightTab === 'transaction' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-        )}
-      >
-        Giao dịch
-      </button>
-    </div>
-
-    <div className="flex-1 overflow-y-auto p-4 space-y-6 pt-0 custom-scrollbar">
-      {chatRightTab === 'info' ? (
-        <>
-          <div className="text-center space-y-3">
-            <div className="w-20 h-20 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-2xl font-bold text-slate-500">
-              {activeThread?.userName[0]}
-            </div>
-            <div>
-              <h3 className="font-bold text-[#111827]">{activeThread?.userName}</h3>
-              <p className="text-xs text-[#6B7280]">{activeThread?.channel === 'zalo' ? 'Vietnam' : 'Social Hub'}</p>
-            </div>
-            <div className="flex justify-center gap-2">
-              <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
-              <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-bold">VIP Vàng</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Zalo Pipeline</h4>
-            <div className="space-y-4">
-              <div className="relative pl-4 border-l-2 border-emerald-500">
-                <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-white" />
-                <p className="text-xs font-bold text-slate-900 leading-none mb-1">Quan tâm sản phẩm</p>
-                <p className="text-[10px] text-slate-500">14:15 - Hôm nay</p>
-              </div>
-              <div className="relative pl-4 border-l-2 border-slate-200">
-                <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-slate-300 ring-4 ring-white" />
-                <p className="text-xs font-bold text-slate-400 leading-none mb-1">Đã Báo Giá</p>
-              </div>
-              <div className="relative pl-4 border-l-2 border-slate-200">
-                <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-slate-300 ring-4 ring-white" />
-                <p className="text-xs font-bold text-slate-400 leading-none mb-1">Chốt Đơn</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center border-b border-[#F3F4F6] pb-2">
-              <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest">Đơn hàng gần đây</h4>
-            </div>
-            <div className="space-y-3">
-              {[
-                { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
-                { id: 'ORD-8840', status: 'delivered', amount: 850000 }
-              ].map(order => (
-                <div key={order.id} className="p-3 bg-white rounded-lg border border-slate-300 shadow-sm space-y-1 hover:border-orange-200 transition-all cursor-pointer">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-[#111827] font-mono">{order.id}</span>
-                    <span className={cn(
-                      "text-[9px] font-bold uppercase",
-                      order.status === 'shipping' ? "text-orange-700" : "text-emerald-600"
-                    )}>{order.status}</span>
-                  </div>
-                  <p className="text-sm font-bold text-primary-600">{formatCurrency(order.amount)}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-primary-50 p-4 rounded-lg space-y-2 border border-primary-100 shadow-sm relative overflow-hidden group">
-            <div className="absolute right-0 top-0 w-16 h-16 bg-white/40 rounded-bl-full -z-0 transition-transform " />
-            <h4 className="text-[10px] font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2 relative z-10">
-              Ghi chú
-            </h4>
-            <p className="text-[11px] text-primary-900 leading-relaxed font-medium relative z-10">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng VIP, có thể chủ động đề nghị freeship đơn sau.</p>
-          </div>
-        </>
-      ) : (
-        <div className="space-y-4">
-          <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm animate-in fade-in zoom-in-95 duration-200">
-            <h4 className="text-xs font-bold text-slate-900 mb-3 flex items-center gap-2"><ShoppingCart className="w-4 h-4 text-emerald-600" /> Tạo đơn hàng nhanh</h4>
-            <div className="space-y-3">
-              <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Sản phẩm</label>
-                <select className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-xs text-slate-700 font-medium">
-                  <option>Chọn sản phẩm...</option>
-                  <option>Gói Dịch vụ VIP 1 năm</option>
-                  <option>Website Bán Hàng PRO</option>
-                  <option>Gói Hosting Doanh nghiệp</option>
-                </select>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Số lượng</label>
-                  <input type="number" defaultValue={1} className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-xs text-slate-700 font-medium text-center" />
-                </div>
-                <div className="flex-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Giảm giá</label>
-                  <input type="text" placeholder="VND hoặc %" className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-xs text-slate-700 font-medium" />
-                </div>
-              </div>
-              <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng tiền</label>
-                <div className="text-lg font-black text-primary-600 tracking-tight">1,250,000 ₫</div>
-              </div>
-              <button 
-                className={cn("w-full text-white font-bold text-xs py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2 shadow-sm", isCreatingOrder ? "bg-slate-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20")}
-                disabled={isCreatingOrder}
-                onClick={handleCreateOrder}
-              >
-                {isCreatingOrder ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShoppingCart className="w-3.5 h-3.5" />}
-                {isCreatingOrder ? 'Đang tạo...' : 'Tạo Đơn & Gửi Zalo'}
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm animate-in fade-in zoom-in-95 duration-200 delay-75">
-            <h4 className="text-xs font-bold text-slate-900 mb-3 flex items-center gap-2"><FileText className="w-4 h-4 text-blue-600" /> Báo giá (PDF)</h4>
-            <p className="text-[10px] text-slate-500 mb-3 leading-relaxed">Tạo file báo giá chuyên nghiệp (đính kèm logo) và gửi ngay cho khách hàng.</p>
-            <button className="w-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs py-2.5 rounded-lg hover:bg-blue-100 transition-colors flex justify-center items-center gap-2">
-              <FileText className="w-3.5 h-3.5" /> Soạn báo giá
-            </button>
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-sm animate-in fade-in zoom-in-95 duration-200 delay-100">
-            <h4 className="text-xs font-bold text-slate-900 mb-3 flex items-center gap-2"><Banknote className="w-4 h-4 text-violet-600" /> Link Thanh toán</h4>
-            <button className="w-full bg-violet-50 text-violet-700 border border-violet-200 font-bold text-xs py-2.5 rounded-lg hover:bg-violet-100 transition-colors flex justify-center items-center gap-2">
-              <Banknote className="w-3.5 h-3.5" /> Gửi QR SEPAY
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-  </div>
-  )}
-
-  {activeTab === 'calls' && (
+{activeTab === 'calls' && (
  <div className="flex h-[600px]">
  {/* OmiCall Dialer */}
  <div className="w-1/3 border-r border-slate-300 bg-slate-50/50 p-6 flex flex-col items-center">
