@@ -28,6 +28,20 @@ import {
 import { cn, formatCurrency } from '../lib/utils';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
 import { getConversations, getMessages, sendMessage, ChatwootConversation, ChatwootMessage } from '../services/chatwootService';
+import { db, collection, getDocs, setDoc, doc } from '../services/dbService';
+
+interface Customer { id: number | string; name: string; phone: string; email: string; debt: number; status: string; createdAt?: string; }
+interface Order { id: number | string; customerId: number | string; totalAmount: number; status: string; createdAt: string; }
+
+const getCustomers = async (): Promise<Customer[]> => {
+  const querySnapshot = await getDocs(collection(db, 'customers'));
+  return querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+};
+
+const getOrders = async (): Promise<Order[]> => {
+  const querySnapshot = await getDocs(collection(db, 'orders'));
+  return querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+};
 
 // -- Mock Real-time Hook --
 function useSimulatedWebSocket(onMessage: (msg: any) => void) {
@@ -61,6 +75,9 @@ export function OmniChat() {
   const [isInternalNote, setIsInternalNote] = useState(false);
   const [isAiorocessing, setIsAiorocessing] = useState(false);
   const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
+  const [erpCustomer, setErpCustomer] = useState<Customer | null>(null);
+  const [erpOrders, setErpOrders] = useState<Order[]>([]);
+  const [isLinking, setIsLinking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,6 +114,45 @@ export function OmniChat() {
   }, [activeConversationId]);
 
   const activeThread = conversations.find(c => c.id === activeConversationId);
+  useEffect(() => {
+    if (activeThread) {
+      const phone = activeThread.meta.sender.phone_number;
+      if (phone) {
+        getCustomers().then(customers => {
+          const matched = customers.find(c => c.phone === phone);
+          if (matched) {
+            setErpCustomer(matched);
+            getOrders().then(orders => {
+              const matchedOrders = orders.filter(o => o.customerId === matched.id).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+              setErpOrders(matchedOrders);
+            });
+          } else {
+            setErpCustomer(null);
+            setErpOrders([]);
+          }
+        });
+      } else {
+        setErpCustomer(null);
+        setErpOrders([]);
+      }
+    }
+  }, [activeThread]);
+
+  const handleLinkNewErp = () => {
+    setIsLinking(true);
+    setTimeout(() => {
+      setErpCustomer({
+        id: Math.floor(Math.random() * 10000),
+        name: activeThread?.meta.sender.name || 'Khách hàng mới',
+        phone: activeThread?.meta.sender.phone_number || '',
+        email: '',
+        status: 'active',
+        debt: 0,
+        createdAt: new Date().toISOString()
+      });
+      setIsLinking(false);
+    }, 1500);
+  };
 
  useEffect(() => {
  if (scrollRef.current) {
@@ -406,7 +462,7 @@ export function OmniChat() {
  <div>
  <h3 className="font-bold text-slate-900 flex items-center justify-center gap-1">
    {(activeThread?.meta.sender.name || 'Unknown')}
-   <CheckCheck className="w-4 h-4 text-primary-600" title="Đã đồng bộ ERP" />
+   <span title="Đã đồng bộ ERP"><CheckCheck className="w-4 h-4 text-primary-600" /></span>
  </h3>
  <p className="text-xs text-slate-500 font-mono mt-1">ERP ID: CUS-{(activeThread?.meta.sender.id || '9982').toString().padStart(4, '0')}</p>
  </div>

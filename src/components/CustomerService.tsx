@@ -98,6 +98,7 @@ const MOCK_FEEDBACKS = [
 export function CustomerService() {
     const [activeTab, setActiveTab] = useState<any>('dashboard');
   const [omniFilter, setOmniFilter] = useState('all');
+  const [isConnecting, setIsConnecting] = useState<string | null>(null);
   const [activeChannels, setActiveChannels] = useState<string[]>(() => {
     const saved = localStorage.getItem('vcomm_active_channels');
     if (saved) {
@@ -536,6 +537,16 @@ export function CustomerService() {
     <Settings className="w-4 h-4" /> Cấu hình Kênh
   </button>
 </div>
+
+ {isConnecting && (
+  <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center animate-in zoom-in-95 duration-200 border border-slate-200">
+      <div className="w-16 h-16 border-4 border-slate-100 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <h3 className="font-bold text-slate-900 text-lg">Đang xác thực kết nối...</h3>
+      <p className="text-sm text-slate-500 mt-2">Vui lòng đợi trong khi chúng tôi liên kết với {isConnecting.toUpperCase()}</p>
+    </div>
+  </div>
+)}
 
  {/* Filters */}
  <div className="p-4 border-b border-stone-50 flex flex-wrap gap-4 items-center justify-between">
