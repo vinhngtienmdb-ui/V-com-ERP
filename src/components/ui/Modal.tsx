@@ -38,8 +38,6 @@ export function Modal({
   noPadding = false,
   fullscreen = false,
 }: ModalProps) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const onCloseRef = React.useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -64,7 +62,7 @@ export function Modal({
     };
   }, [isOpen]);
 
-  if (!isOpen || !mounted) return null;
+  if (!isOpen) return null;
 
   const maxWidthClasses = {
     'sm': 'max-w-sm',

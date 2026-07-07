@@ -794,7 +794,7 @@ export function SellerManagement() {
  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Subdomain chính</label>
  <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg overflow-hidden">
  <span className="pl-4 pr-1 py-3 text-slate-500"><Globe className="w-4 h-4" /></span>
- <input type="text" className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-slate-900 focus:outline-none" defaultValue={selectedSeller.name.toLowerCase().replace(/\s/g, '')} />
+ <input type="text" className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-slate-900 focus:outline-none" defaultValue={(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')} />
  <span className="px-4 py-3 bg-slate-100 border-l border-slate-300 text-xs font-mono font-medium text-slate-600">.v-erp.com</span>
  </div>
  </div>
@@ -872,8 +872,8 @@ export function SellerManagement() {
  <div className="flex gap-3">
  <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 text-xs">AD</div>
  <div>
- <p className="text-sm font-bold text-slate-900">{selectedSeller.name} Admin</p>
- <p className="text-[10px] text-slate-600">admin@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-sm font-bold text-slate-900">{selectedSeller.name}</p>
+ <p className="text-[10px] text-slate-600">admin@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản trị viên (Admin)</span>
  </div>
@@ -890,7 +890,7 @@ export function SellerManagement() {
  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-orange-700 text-xs">MG</div>
  <div>
  <p className="text-sm font-bold text-slate-900">Quản lý Cửa hàng 1</p>
- <p className="text-[10px] text-slate-600">manager1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-[10px] text-slate-600">manager1@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-[#EAE7DF] text-orange-800 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản lý (Manager)</span>
  </div>
@@ -913,7 +913,7 @@ export function SellerManagement() {
  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center font-bold text-emerald-600 text-xs">ST</div>
  <div>
  <p className="text-sm font-bold text-slate-900">Thu Ngân (Ca 1)</p>
- <p className="text-[10px] text-slate-600">pos1@{selectedSeller.name.toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
+ <p className="text-[10px] text-slate-600">pos1@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
  <span className="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Nhân viên POS (Staff)</span>
  </div>
@@ -1147,7 +1147,7 @@ export function SellerManagement() {
  <div>
  <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Subdomain Khởi tạo truy cập ERP</label>
  <div className="flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden">
- <input type="text" className="flex-1 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" defaultValue={approvingSeller?.name.toLowerCase().replace(/\s/g, '') || ''} />
+ <input type="text" className="flex-1 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" defaultValue={approvingSeller?.name?.toLowerCase().replace(/\s/g, '') || ''} />
  <span className="bg-slate-100 text-slate-600 px-3 py-2 text-sm border-l border-slate-300">.v-erp.com</span>
  </div>
  </div>

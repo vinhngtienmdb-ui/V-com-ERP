@@ -160,23 +160,23 @@ const CustomerDetailModal = ({
   // Linked ERP Data Filter Logic
   const customerLeases = leases.filter(l => 
     (l.phone && l.phone === customer.phone) || 
-    (l.email && l.email.toLowerCase() === customer.email.toLowerCase())
+    (l.email && customer.email && l.email.toLowerCase() === customer.email.toLowerCase())
   );
 
   const customerTransactions = transactions.filter(t => 
-    (t.description && t.description.toLowerCase().includes(customer.name.toLowerCase())) ||
+    (t.description && customer.name && t.description.toLowerCase().includes(customer.name.toLowerCase())) ||
     (t.accountingObjectCode && t.accountingObjectCode === customer.id)
   );
 
   const customerContracts = contracts.filter(c => 
-    c.party && (
+    c.party && customer.name && (
       c.party.toLowerCase().includes(customer.name.toLowerCase()) || 
       customer.name.toLowerCase().includes(c.party.toLowerCase())
     )
   );
 
   const customerSeller = sellers.find(s => 
-    s.sellerName && (
+    s.sellerName && customer.name && (
       s.sellerName.toLowerCase().includes(customer.name.toLowerCase()) || 
       customer.name.toLowerCase().includes(s.sellerName.toLowerCase())
     )
