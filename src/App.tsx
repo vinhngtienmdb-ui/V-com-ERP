@@ -39,7 +39,7 @@ const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m
 const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
 const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
 const RequestHub = React.lazy(() => import('./components/RequestHub').then(m => ({ default: m.RequestHub })));
-const DynamicRequestForm = React.lazy(() => import('./components/requests/DynamicRequestForm').then(m => ({ default: m.DynamicRequestForm })));
+import { DynamicRequestForm } from './components/requests/DynamicRequestForm';
 const ContractManager = React.lazy(() => import('./components/ContractManager').then(m => ({ default: m.ContractManager })));
 const DocumentManager = React.lazy(() => import('./components/DocumentManager').then(m => ({ default: m.DocumentManager })));
 const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
