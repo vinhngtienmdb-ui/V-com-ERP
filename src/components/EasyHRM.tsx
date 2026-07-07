@@ -587,7 +587,7 @@ export function EasyHRMComponent() {
   const filteredEmployeesList = React.useMemo(() => {
     const q = deferredSearchQuery.trim().toLowerCase();
     return employees.filter(emp => {
-      const matchesQuery = !q || emp.name.toLowerCase().includes(q) || emp.id.toLowerCase().includes(q);
+      const matchesQuery = !q || emp.name?.toLowerCase().includes(q) || emp.id?.toLowerCase().includes(q);
       const matchesDept = deptFilter === "all" || emp.department === deptFilter;
       return matchesQuery && matchesDept;
     });

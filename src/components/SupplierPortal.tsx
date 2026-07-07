@@ -156,7 +156,7 @@ export function SupplierPortal() {
 
     if (!isApproved || !belongsToSupplier) return false;
 
-    const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = p.title?.toLowerCase().includes(searchTerm.toLowerCase()) || p.id?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || p.deliveryStatus === statusFilter || (statusFilter === 'pending' && !p.deliveryStatus);
     return matchesSearch && matchesStatus;
   });

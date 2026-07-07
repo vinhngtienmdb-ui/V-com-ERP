@@ -44,7 +44,7 @@ export function EMenu() {
 
  const filteredProducts = useMemo(() => {
  return products.filter(p => {
- const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+ const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase());
  const matchesCat = selectedCategory === 'All' || p.category === selectedCategory;
  return matchesSearch && matchesCat;
  });

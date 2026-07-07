@@ -624,7 +624,7 @@ const [copilotInput, setCopilotInput] = useState('');
  const filteredEmployees = React.useMemo(() => {
   const q = deferredSearchEmployee.trim().toLowerCase();
   return employees.filter(emp => {
-   if (q && !emp.fullName.toLowerCase().includes(q) && !emp.id.toLowerCase().includes(q)) return false;
+   if (q && !emp.fullName?.toLowerCase().includes(q) && !emp.id?.toLowerCase().includes(q)) return false;
    if (filterDept !== 'all' && emp.department !== filterDept) return false;
    if (filterPosition !== 'all' && emp.position !== filterPosition) return false;
    if (filterStatus !== 'all' && emp.status !== filterStatus) return false;

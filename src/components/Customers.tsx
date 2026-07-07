@@ -160,25 +160,25 @@ const CustomerDetailModal = ({
   // Linked ERP Data Filter Logic
   const customerLeases = leases.filter(l => 
     (l.phone && l.phone === customer.phone) || 
-    (l.email && customer.email && l.email.toLowerCase() === customer.email.toLowerCase())
+    (l.email && customer.email && l.email?.toLowerCase() === customer.email?.toLowerCase())
   );
 
   const customerTransactions = transactions.filter(t => 
-    (t.description && customer.name && t.description.toLowerCase().includes(customer.name.toLowerCase())) ||
+    (t.description && customer.name && t.description?.toLowerCase().includes(customer.name?.toLowerCase())) ||
     (t.accountingObjectCode && t.accountingObjectCode === customer.id)
   );
 
   const customerContracts = contracts.filter(c => 
     c.party && customer.name && (
-      c.party.toLowerCase().includes(customer.name.toLowerCase()) || 
-      customer.name.toLowerCase().includes(c.party.toLowerCase())
+      c.party?.toLowerCase().includes(customer.name?.toLowerCase()) || 
+      customer.name?.toLowerCase().includes(c.party?.toLowerCase())
     )
   );
 
   const customerSeller = sellers.find(s => 
     s.sellerName && customer.name && (
-      s.sellerName.toLowerCase().includes(customer.name.toLowerCase()) || 
-      customer.name.toLowerCase().includes(s.sellerName.toLowerCase())
+      s.sellerName?.toLowerCase().includes(customer.name?.toLowerCase()) || 
+      customer.name?.toLowerCase().includes(s.sellerName?.toLowerCase())
     )
   );
   const customerPayouts = customerSeller 
@@ -1357,7 +1357,7 @@ export function Customers() {
         const userMap = new Map();
         allUsers.forEach(u => {
           userMap.set(u.id, u.data || {});
-          if (u.data && u.data.email) userMap.set(u.data.email.toLowerCase(), u.data || {});
+          if (u.data && u.data.email) userMap.set(u.data.email?.toLowerCase(), u.data || {});
         });
         
         let core = 0;
@@ -1366,8 +1366,8 @@ export function Customers() {
         let newReg = 0;
         
         allCusts.forEach(c => {
-          const uData = (c.email && userMap.has(c.email.toLowerCase())) 
-            ? userMap.get(c.email.toLowerCase()) 
+          const uData = (c.email && userMap.has(c.email?.toLowerCase())) 
+            ? userMap.get(c.email?.toLowerCase()) 
             : (userMap.get(c.id) || {});
             
           const totalSpent = Number(uData.totalSpent || 0);
@@ -1552,7 +1552,7 @@ export function Customers() {
         
         if (allUsers) {
           userRow = allUsers.find((u: any) => 
-            u.data?.email && u.data.email.toLowerCase() === adjustingCustomer.email.toLowerCase()
+            u.data?.email && u.data.email?.toLowerCase() === adjustingCustomer.email?.toLowerCase()
           ) || null;
         }
       }

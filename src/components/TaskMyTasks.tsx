@@ -34,8 +34,8 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
 
   // Search filter
   const filteredTasks = myTasks.filter(t => {
-    const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (t.desc && t.desc.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesSearch = t.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (t.desc && t.desc?.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (activeTab === 'all') return matchesSearch;
     return t.status === activeTab && matchesSearch;

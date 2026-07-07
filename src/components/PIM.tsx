@@ -710,11 +710,11 @@ export function PIM() {
       
       const queries = searchQuery.split(',').map(q => q.trim().toLowerCase()).filter(Boolean);
       const matchSearch = queries.length === 0 || queries.some(q =>
-        p.name.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q) ||
-        p.sellerName.toLowerCase().includes(q) ||
-        (p.brand && p.brand.toLowerCase().includes(q)) ||
-        p.id.toLowerCase().includes(q)
+        p.name?.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q) ||
+        p.sellerName?.toLowerCase().includes(q) ||
+        (p.brand && p.brand?.toLowerCase().includes(q)) ||
+        p.id?.toLowerCase().includes(q)
       );
 
       return matchStatus && matchCategory && matchBrand && matchSearch;

@@ -463,9 +463,9 @@ export function RequestHub() {
  const filteredRequests = requests.filter(doc => {
  const matchesTab = activeTab === 'all' || doc.type === activeTab;
  const matchesSearch = 
- doc.title.toLowerCase().includes(searchReqQuery.toLowerCase()) || 
- doc.id.toLowerCase().includes(searchReqQuery.toLowerCase()) ||
- doc.subtype.toLowerCase().includes(searchReqQuery.toLowerCase());
+ doc.title?.toLowerCase().includes(searchReqQuery.toLowerCase()) || 
+ doc.id?.toLowerCase().includes(searchReqQuery.toLowerCase()) ||
+ doc.subtype?.toLowerCase().includes(searchReqQuery.toLowerCase());
  
  const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
  const matchesRequester = requesterFilter === 'all' || doc.requester === requesterFilter;

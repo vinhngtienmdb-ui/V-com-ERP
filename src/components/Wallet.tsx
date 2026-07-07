@@ -106,7 +106,7 @@ export function WalletHub() {
  const [crmHistoryTab, setCrmHistoryTab] = useState<'all' | 'cashback' | 'promo' | 'loyalty'>('all');
 
  const filteredTransactions = MOCK_TRANSACTIONS.filter((txn) => {
- if (searchHistory && !txn.id.toLowerCase().includes(searchHistory.toLowerCase()) && !txn.userId.toLowerCase().includes(searchHistory.toLowerCase())) return false;
+ if (searchHistory && !txn.id?.toLowerCase().includes(searchHistory.toLowerCase()) && !txn.userId?.toLowerCase().includes(searchHistory.toLowerCase())) return false;
  if (filterType !== 'all' && txn.type !== filterType) return false;
  if (filterStatus !== 'all' && txn.status !== filterStatus) return false;
  if (filterDate) {

@@ -294,11 +294,11 @@ export function InternalChat() {
   };
 
   // Filter channels based on search
-  const filteredChannels = channels.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredChannels = channels.filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const currentMessages = messages[activeChannelId] || [];
   const filteredMessages = currentMessages.filter(msg =>
-    msg.text.toLowerCase().includes(messageSearchQuery.toLowerCase())
+    msg.text?.toLowerCase().includes(messageSearchQuery.toLowerCase())
   );
 
   return (

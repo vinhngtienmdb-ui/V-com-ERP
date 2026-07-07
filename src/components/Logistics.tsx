@@ -126,8 +126,8 @@ export function Logistics() {
   };
 
   const filteredLogistics = mockLogistics.filter(item => {
-    const matchesSearch = item.trackingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          item.orderId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.trackingCode?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          item.orderId?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
     const matchesSeller = !isSeller || item.seller === 'Mobile World';
     return matchesSearch && matchesStatus && matchesSeller;
