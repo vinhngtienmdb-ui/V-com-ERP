@@ -688,3 +688,6 @@ html[data-card-density="compact"] div[class*="bg-white"][class*="p-"]:has(svg) .
   background: var(--app-primary-300, #94A3B8);
 }
 
+
+/* Lock scroll on main container when modal is open */
+body.modal-open #main-scroll-container { overflow: hidden !important; }

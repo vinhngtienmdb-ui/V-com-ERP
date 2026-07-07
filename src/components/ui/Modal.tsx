@@ -54,13 +54,13 @@ export function Modal({
     
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      // Prevent body scroll
-      document.body.style.overflow = 'hidden';
+      // Lock scroll on main container via class
+      document.body.classList.add('modal-open');
     }
     
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
     };
   }, [isOpen]);
 
@@ -89,6 +89,15 @@ export function Modal({
     return createPortal(
       <div className="fixed inset-0 bg-slate-50 z-[9999] flex flex-col animate-in slide-in-from-right-4 duration-300">
         <div className={cn("flex-1 flex flex-col w-full mx-auto relative", maxWidthClasses[maxWidth] !== 'max-w-[95vw]' ? maxWidthClasses[maxWidth] : 'max-w-7xl')}>
+          {/* Fallback close button for fullscreen modals without a header */}
+          {!title && (
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 z-[60] p-2 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full shadow-md transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
           {/* Header */}
           {title && (
             <div className="flex justify-between items-center p-4 border-b border-slate-200 shrink-0 bg-white sticky top-0 z-10 shadow-sm">

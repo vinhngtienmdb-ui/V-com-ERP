@@ -15,6 +15,23 @@ import {
  X,
  Plus,
  Sparkles,
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+ MessageSquare, 
+ Share2,
+ Globe, 
+ Search, 
+ Send, 
+ Bot, 
+ User, 
+ Zap, 
+ MoreVertical, 
+ PhoneCall,
+ History,
+ CheckCheck,
+ X,
+ Plus,
+ Sparkles,
  Smile,
  Frown,
  Meh
@@ -23,6 +40,22 @@ import { cn, formatCurrency } from '../lib/utils';
 import { ChatChannel, ChatMessage, ChatThread } from '../types/erp';
 import { getConversations, getMessages, sendMessage, ChatwootConversation, ChatwootMessage } from '../services/chatwootService';
 
+// -- Mock Real-time Hook --
+function useSimulatedWebSocket(onMessage: (msg: any) => void) {
+  useEffect(() => {
+    // In production, this would be: const ws = new WebSocket('wss://api.example.com/chat');
+    // ws.onmessage = (e) => onMessage(JSON.parse(e.data));
+    
+    // For demo, we simulate receiving a message every 45 seconds randomly if there is an active conversation
+    const timer = setInterval(() => {
+      if (Math.random() > 0.7) {
+        onMessage({ type: 'new_message', data: { content: 'Khách hàng vừa gửi ảnh đính kèm.', message_type: 0 }});
+      }
+    }, 45000);
+
+    return () => clearInterval(timer);
+  }, [onMessage]);
+}
 
 
 
@@ -49,18 +82,24 @@ export function OmniChat() {
       }
     };
     fetchConvos();
-    
-    // Fallback polling for new messages (In production, use WebSockets)
-    const interval = setInterval(fetchConvos, 30000);
-    return () => clearInterval(interval);
   }, []);
+
+  // WebSocket / Real-time Sync
+  useSimulatedWebSocket((event) => {
+    if (event.type === 'new_message' && activeConversationId) {
+       // Refresh messages when a real-time event occurs
+       getMessages(activeConversationId).then(msgs => {
+         setMessages(msgs.reverse());
+       });
+    }
+  });
 
   useEffect(() => {
     if (activeConversationId) {
       const fetchMsgs = async () => {
         setIsFetching(true);
         const msgs = await getMessages(activeConversationId);
-        setMessages(msgs.reverse()); // Chatwoot returns newest first usually, depending on API, adjust if needed
+        setMessages(msgs.reverse());
         setIsFetching(false);
       };
       fetchMsgs();
@@ -294,10 +333,10 @@ export function OmniChat() {
  </div>
  </div>
 
- {/* Right Sidebar - Info */}
- <div className="w-[300px] border-l border-slate-100 bg-white hidden xl:flex flex-col p-6 space-y-8 overflow-y-auto">
- <div className="text-center space-y-3">
- <div className="w-20 h-20 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-2xl font-bold text-slate-500">
+ {/* Right Sidebar - Info & Copilot */}
+ <div className="w-[320px] border-l border-slate-100 bg-white hidden xl:flex flex-col p-6 space-y-6 overflow-y-auto">
+ <div className="text-center space-y-3 pb-6 border-b border-slate-100">
+ <div className="w-16 h-16 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-xl font-bold text-slate-500">
  {(activeThread?.meta.sender.name || 'Unknown')[0]}
  </div>
  <div>
@@ -325,7 +364,12 @@ export function OmniChat() {
  </div>
 
  <div className="space-y-4">
- <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-b border-slate-100 pb-2">Đơn hàng gần đây</h4>
+ <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+   <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Đơn hàng & Tickets</h4>
+   <button className="text-[10px] font-bold text-primary-600 flex items-center gap-1 hover:underline">
+     <Plus className="w-3 h-3" /> Tạo mới
+   </button>
+ </div>
  <div className="space-y-3">
  {[
  { id: 'ORD-9921', status: 'shipping', amount: 1540000 },
@@ -345,11 +389,25 @@ export function OmniChat() {
  </div>
  </div>
 
- <div className="bg-slate-100 p-4 rounded-lg space-y-2 border border-slate-300">
- <h4 className="text-[10px] font-bold text-primary-600 uppercase flex items-center gap-2">
- <Bot className="w-3 h-3" /> AI Summary
- </h4>
- <p className="text-[11px] text-[#4B5563] leading-relaxed">Khách hàng hỏi về lịch giao đơn ORD-9921. Đây là khách hàng thân thiết, thường xuyên tương tác qua Zalo.</p>
+ {/* AI Copilot Section */}
+ <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner flex flex-col mt-4">
+   <h4 className="text-xs font-bold text-primary-700 uppercase flex items-center gap-2 mb-3">
+     <Bot className="w-4 h-4" /> V-Comm Copilot
+   </h4>
+   <div className="space-y-3">
+     <div className="bg-white p-3 rounded-lg shadow-sm border border-slate-100 text-[11px] text-slate-700 leading-relaxed">
+       Khách hàng vừa hỏi về lịch giao đơn <strong>ORD-9921</strong>. Hệ thống kiểm tra: đơn hàng đang ở kho trung chuyển Giao Hàng Nhanh.
+     </div>
+     
+     <div className="flex gap-2 flex-col">
+       <button className="w-full py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition-colors flex justify-center items-center gap-2 shadow-sm">
+         <Sparkles className="w-3.5 h-3.5" /> Tạo câu trả lời tự động
+       </button>
+       <button className="w-full py-2 bg-white text-slate-700 border border-slate-300 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors flex justify-center items-center gap-2 shadow-sm">
+         <Plus className="w-3.5 h-3.5" /> Tạo Ticket Hỗ trợ
+       </button>
+     </div>
+   </div>
  </div>
  </div>
  </div>
