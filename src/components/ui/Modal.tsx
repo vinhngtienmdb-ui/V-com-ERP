@@ -39,6 +39,7 @@ export function Modal({
   fullscreen = false,
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const onCloseRef = React.useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
