@@ -15,23 +15,7 @@ import {
  X,
  Plus,
  Sparkles,
-import React, { useState, useEffect, useRef } from 'react';
-import { 
- MessageSquare, 
- Share2,
- Globe, 
- Search, 
- Send, 
- Bot, 
- User, 
- Zap, 
- MoreVertical, 
- PhoneCall,
- History,
- CheckCheck,
- X,
- Plus,
- Sparkles,
+
  Smile,
  Frown,
  Meh
