@@ -57,7 +57,7 @@ export function CommandPalette({ onClose }: Props) {
 
     // Instant nav results
     const navHits = NAV_RESULTS.filter(
-      r => r.title?.toLowerCase().includes(lower) || (r.subtitle ?? '').toLowerCase().includes(lower)
+      r => (r.title?.toLowerCase() || '').includes(lower) || (r.subtitle ?? '').toLowerCase().includes(lower)
     );
     setResults(navHits);
     setSelected(0);

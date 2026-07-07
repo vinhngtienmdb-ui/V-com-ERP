@@ -378,9 +378,9 @@ export function SignatureHub() {
   // Filter signatures list
   const filteredSignatures = signatures.filter(doc => {
     const matchesTab = doc.status === activeTab;
-    const matchesSearch = doc.title?.toLowerCase().includes(searchSigQuery.toLowerCase()) || 
-                          doc.docId?.toLowerCase().includes(searchSigQuery.toLowerCase()) || 
-                          doc.id?.toLowerCase().includes(searchSigQuery.toLowerCase());
+    const matchesSearch = (doc.title?.toLowerCase() || '').includes(searchSigQuery.toLowerCase()) || 
+                          (doc.docId?.toLowerCase() || '').includes(searchSigQuery.toLowerCase()) || 
+                          (doc.id?.toLowerCase() || '').includes(searchSigQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || doc.type === typeFilter;
     const matchesRequester = requesterFilter === 'all' || doc.requesters === requesterFilter;
     

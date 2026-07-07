@@ -88,7 +88,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  };
 
  const filteredSuppliers = MOCK_SUPPLIERS.filter(sup => {
- const matchesSearch = sup.name?.toLowerCase().includes(searchTerm.toLowerCase()) || sup.id?.toLowerCase().includes(searchTerm.toLowerCase());
+ const matchesSearch = (sup.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || (sup.id?.toLowerCase() || '').includes(searchTerm.toLowerCase());
  const matchesCategory = categoryFilter === 'all' || sup.category === categoryFilter;
  return matchesSearch && matchesCategory;
  });
@@ -350,7 +350,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
   };
 
   const filteredRequests = requests.filter(req => {
-    const matchesSearch = req.title?.toLowerCase().includes(searchTerm.toLowerCase()) || req.id?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (req.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || (req.id?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

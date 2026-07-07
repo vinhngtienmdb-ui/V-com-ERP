@@ -91,9 +91,9 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
   // Filter tasks
   const filteredTasks = tasks.filter(t => {
-    const matchSearch = t.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                        (t.desc && t.desc?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                        t.id?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSearch = (t.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || 
+                        (t.desc && (t.desc?.toLowerCase() || '').includes(searchTerm.toLowerCase())) ||
+                        (t.id?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchScope = filterScope === 'all' || t.scope === filterScope;
     const matchDept = filterDept === 'all' || t.department === filterDept;
     const matchPriority = filterPriority === 'all' || t.priority === filterPriority;

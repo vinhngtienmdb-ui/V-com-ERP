@@ -200,15 +200,15 @@ export function Home() {
 
   // Filter modules based on search query
   const filteredSubModules = ALL_SUB_MODULES.filter(item => {
-    return item.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           item.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return (item.label?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+           (item.description?.toLowerCase() || '').includes(searchQuery.toLowerCase());
   });
 
   const filteredGroups = navGroups.map(group => ({
     ...group,
     items: group.items.filter(item => 
-      item.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      (item.label?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (item.description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
     )
   })).filter(group => group.items.length > 0);
 

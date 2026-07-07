@@ -37,7 +37,7 @@ export function TemplateGalleryModal({ onClose, onSelectTemplate, onCreateNew }:
 
   const filteredTemplates = TEMPLATES.filter(t => {
     if (activeCategory !== 'all' && t.category !== activeCategory) return false;
-    if (searchQuery && !t.title?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (searchQuery && !(t.title?.toLowerCase() || '').includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 

@@ -1050,10 +1050,10 @@ export function DeviceLeasing() {
   // Filter and search
   const filteredApps = applications.filter(app => {
     const matchesSearch = 
-      app.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (app.customerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
       app.phone.includes(searchQuery) ||
       app.id.includes(searchQuery) ||
-      app.deviceModel?.toLowerCase().includes(searchQuery.toLowerCase());
+      (app.deviceModel?.toLowerCase() || '').includes(searchQuery.toLowerCase());
     
     if (statusFilter === 'all') return matchesSearch;
     return matchesSearch && app.status === statusFilter;

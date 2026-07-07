@@ -375,9 +375,9 @@ export function VCommSupermarket() {
   // Filter Catalog lists
   const filteredProducts = products.filter((prod) => {
     const matchesSearch = 
-      prod.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (prod.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       prod.barcode.includes(searchTerm) ||
-      prod.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+      (prod.sku?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     if (categoryFilter === 'all') return matchesSearch;
     return matchesSearch && prod.category === categoryFilter;

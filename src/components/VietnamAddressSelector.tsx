@@ -242,7 +242,7 @@ export function VietnamProvinceBrowser({
   }, [expanded, wardMap]);
 
   const filtered = provinces.filter(p =>
-    p.name?.toLowerCase().includes(search.toLowerCase()) ||
+    (p.name?.toLowerCase() || '').includes(search.toLowerCase()) ||
     String(p.code).includes(search)
   );
 

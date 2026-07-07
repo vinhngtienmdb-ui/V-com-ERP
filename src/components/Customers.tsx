@@ -164,21 +164,21 @@ const CustomerDetailModal = ({
   );
 
   const customerTransactions = transactions.filter(t => 
-    (t.description && customer.name && t.description?.toLowerCase().includes(customer.name?.toLowerCase())) ||
+    (t.description && customer.name && (t.description?.toLowerCase() || '').includes(customer.name?.toLowerCase())) ||
     (t.accountingObjectCode && t.accountingObjectCode === customer.id)
   );
 
   const customerContracts = contracts.filter(c => 
     c.party && customer.name && (
-      c.party?.toLowerCase().includes(customer.name?.toLowerCase()) || 
-      customer.name?.toLowerCase().includes(c.party?.toLowerCase())
+      (c.party?.toLowerCase() || '').includes(customer.name?.toLowerCase()) || 
+      (customer.name?.toLowerCase() || '').includes(c.party?.toLowerCase())
     )
   );
 
   const customerSeller = sellers.find(s => 
     s.sellerName && customer.name && (
-      s.sellerName?.toLowerCase().includes(customer.name?.toLowerCase()) || 
-      customer.name?.toLowerCase().includes(s.sellerName?.toLowerCase())
+      (s.sellerName?.toLowerCase() || '').includes(customer.name?.toLowerCase()) || 
+      (customer.name?.toLowerCase() || '').includes(s.sellerName?.toLowerCase())
     )
   );
   const customerPayouts = customerSeller 

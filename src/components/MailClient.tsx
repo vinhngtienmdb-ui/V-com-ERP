@@ -321,10 +321,10 @@ export function MailClient() {
 
   const searchedEmails = activeFolderEmails.filter(m => {
     const matchesSearch = 
-      m.subject?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      m.senderName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      m.senderEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.body?.toLowerCase().includes(searchQuery.toLowerCase());
+      (m.subject?.toLowerCase() || '').includes(searchQuery.toLowerCase()) || 
+      (m.senderName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) || 
+      (m.senderEmail?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (m.body?.toLowerCase() || '').includes(searchQuery.toLowerCase());
     
     const matchesUnread = filterUnread ? !m.isRead : true;
     return matchesSearch && matchesUnread;
@@ -859,7 +859,7 @@ export function MailClient() {
                 {showAutocomplete && (
                   <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-300 rounded-lg shadow-md z-30 max-h-[160px] overflow-y-auto divide-y divide-slate-100">
                     {MOCK_MEMBERS
-                      .filter(m => m.name?.toLowerCase().includes(newMail.to?.toLowerCase()) || m.email?.toLowerCase().includes(newMail.to?.toLowerCase()))
+                      .filter(m => (m.name?.toLowerCase() || '').includes(newMail.to?.toLowerCase()) || (m.email?.toLowerCase() || '').includes(newMail.to?.toLowerCase()))
                       .map(member => (
                         <div
                           key={member.id}

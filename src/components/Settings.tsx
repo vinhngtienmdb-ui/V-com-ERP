@@ -3073,8 +3073,8 @@ export function SettingsPage() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700/30 text-xs">
                 {syncLogs
                   .filter(log => 
-                    log.platform?.toLowerCase().includes(syncLogsSearch.toLowerCase()) ||
-                    log.event?.toLowerCase().includes(syncLogsSearch.toLowerCase())
+                    (log.platform?.toLowerCase() || '').includes(syncLogsSearch.toLowerCase()) ||
+                    (log.event?.toLowerCase() || '').includes(syncLogsSearch.toLowerCase())
                   )
                   .map(log => (
                     <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
@@ -5904,9 +5904,9 @@ function IPosLicensesPanel() {
   };
 
   const filteredLicenses = licenses.filter(l => 
-    l.storeName?.toLowerCase().includes(search.toLowerCase()) ||
+    (l.storeName?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (l.customDomain || '').toLowerCase().includes(search.toLowerCase()) ||
-    l.apiToken?.toLowerCase().includes(search.toLowerCase())
+    (l.apiToken?.toLowerCase() || '').includes(search.toLowerCase())
   );
 
   return (
