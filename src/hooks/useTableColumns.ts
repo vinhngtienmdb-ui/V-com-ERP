@@ -13,6 +13,8 @@ export interface ColumnDef {
 export function useTableColumns(tableId: string, defaultColumns: ColumnDef[]) {
   const [columns, setColumns] = useState<ColumnDef[]>([]);
 
+  const defaultColsStr = JSON.stringify(defaultColumns);
+
   useEffect(() => {
     // Load from localStorage
     const savedStateStr = localStorage.getItem(`vcomm_table_width_${tableId}`);
@@ -32,7 +34,7 @@ export function useTableColumns(tableId: string, defaultColumns: ColumnDef[]) {
     }));
 
     setColumns(mergedColumns);
-  }, [tableId, defaultColumns]);
+  }, [tableId, defaultColsStr]);
 
   const handleResize = useCallback((columnId: string, newWidth: number) => {
     setColumns(prev => {
