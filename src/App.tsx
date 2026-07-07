@@ -359,36 +359,33 @@ function AppLayout() {
 
 function AppContent() {
   const { user, loading, isStaff } = useAuth();
+  const location = useLocation();
   
   // Public E-Menu and Supplier Portal routes bypass standard staff-only authentication checks
-  const isPublicEMenu = window.location.pathname.startsWith('/emenu/');
-  const isSupplierPortal = window.location.pathname.startsWith('/supplier-portal');
+  const isPublicEMenu = location.pathname.startsWith('/emenu/');
+  const isSupplierPortal = location.pathname.startsWith('/supplier-portal');
 
   if (isPublicEMenu) {
     return (
-      <Router>
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingScreen />}>
-            <Routes>
-              <Route path="/emenu/:tableId" element={<EMenu />} />
-            </Routes>
-          </Suspense>        
-        </ErrorBoundary>
-      </Router>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/emenu/:tableId" element={<EMenu />} />
+          </Routes>
+        </Suspense>        
+      </ErrorBoundary>
     );
   }
 
   if (isSupplierPortal) {
     return (
-      <Router>
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingScreen />}>
-            <Routes>
-              <Route path="/supplier-portal" element={<SupplierPortal />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </Router>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/supplier-portal" element={<SupplierPortal />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     );
   }
 
@@ -396,11 +393,7 @@ function AppContent() {
   if (!user) return <LoginPage />;
   if (!isStaff) return <AccessDenied />;
 
-  return (
-    <Router>
-      <AppLayout />
-    </Router>
-  );
+  return <AppLayout />;
 }
 
 import { PreferencesProvider } from './context/PreferencesContext';
@@ -408,6 +401,7 @@ import { NotificationProvider } from './context/NotificationContext';
 
 export default function App() {
   return (
+  <Router>
   <PreferencesProvider>
   <NotificationProvider>
   <StoreProvider>
@@ -415,5 +409,6 @@ export default function App() {
   </StoreProvider>
   </NotificationProvider>
   </PreferencesProvider>
+  </Router>
   );
 }
