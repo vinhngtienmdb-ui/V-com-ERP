@@ -419,7 +419,12 @@ export function CustomerService() {
  </p>
  </div>
  <div className="flex gap-3">
- <button onClick={() => setActiveTab('dashboard')} className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+ <select className="bg-white border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/20 cursor-pointer appearance-none shadow-sm">
+   <option value="online">🟢 Đang trực (Online)</option>
+   <option value="away">🟡 Tạm vắng (Away)</option>
+   <option value="busy">🔴 Bận (Busy)</option>
+ </select>
+ <button onClick={() => setActiveTab('dashboard')} className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
  <BarChart2 className="w-4 h-4 text-emerald-600" />
  Báo cáo SLA
  </button>
@@ -498,6 +503,12 @@ export function CustomerService() {
   >
     <MessageSquare className="w-4 h-4" /> Chăm sóc khách hàng đa kênh
   </button>
+   <button 
+     onClick={() => setActiveTab('wfm')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'wfm' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <Clock className="w-4 h-4" /> Phân ca & Chấm công
+   </button>
   <button 
     onClick={() => setActiveTab('feedback')}
     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
@@ -654,17 +665,17 @@ export function CustomerService() {
 						<div className="space-y-3.5">
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Tỷ Lệ Đạt SLA</p>
-									<p className="text-2xl font-black text-emerald-600 font-sans">92.5%</p>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Giải Quyết Lần Đầu (FCR)</p>
+									<p className="text-2xl font-black text-emerald-600 font-sans">85.2%</p>
 								</div>
 								<div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-extrabold font-mono border border-emerald-100">
-									Mục tiêu: 90%
+									Mục tiêu: 80%
 								</div>
 							</div>
 
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Xử Lý Trung Bình (ART)</p>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Thời Gian Xử Lý TB (AHT)</p>
 									<p className="text-2xl font-black text-indigo-700 font-sans">11.8 phút</p>
 								</div>
 								<div className="p-2 bg-indigo-50 text-indigo-100 rounded-lg text-xs font-extrabold font-mono border border-indigo-100">
@@ -674,11 +685,11 @@ export function CustomerService() {
 
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Tổng Vé Đã Đóng</p>
-									<p className="text-2xl font-black text-slate-800 font-sans">{liveTicketResolvedCount}</p>
+									<p className="text-[10px] font-bold text-slate-500 uppercase">Tỷ Lệ Đạt SLA</p>
+									<p className="text-2xl font-black text-blue-600 font-sans">92.5%</p>
 								</div>
-								<div className="p-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-extrabold font-mono font-sans">
-									Hôm nay
+								<div className="p-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-extrabold font-mono border border-blue-100">
+									Mục tiêu: 90%
 								</div>
 							</div>
 						</div>
@@ -859,6 +870,65 @@ export function CustomerService() {
 
  
 
+ {activeTab === 'wfm' && (
+ <div className="p-6">
+   <div className="flex justify-between items-center mb-6">
+     <h2 className="text-lg font-bold text-slate-900 font-serif">Bảng Phân Ca & Chấm Công CSKH</h2>
+     <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 transition-colors">
+       + Thêm Ca Trực Mới
+     </button>
+   </div>
+   <div className="bg-white border border-slate-300 rounded-xl shadow-sm overflow-hidden">
+     <table className="w-full text-left border-collapse">
+       <thead>
+         <tr className="bg-slate-50 border-b border-slate-200">
+           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Nhân viên</th>
+           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Ca trực</th>
+           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-right">Hiệu suất (SLA)</th>
+         </tr>
+       </thead>
+       <tbody className="divide-y divide-slate-100">
+         {[
+           { name: 'Nguyễn Văn A', shift: 'Ca Sáng (08:00 - 12:00)', status: 'online', sla: '98%' },
+           { name: 'Trần Thị B', shift: 'Ca Chiều (13:00 - 17:00)', status: 'offline', sla: '95%' },
+           { name: 'Lê Văn C', shift: 'Ca Sáng (08:00 - 12:00)', status: 'busy', sla: '92%' },
+         ].map((agent, i) => (
+           <tr key={i} className="hover:bg-slate-50 transition-colors">
+             <td className="px-6 py-4">
+               <div className="flex items-center gap-3">
+                 <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 font-bold flex items-center justify-center text-xs">
+                   {agent.name.charAt(0)}
+                 </div>
+                 <p className="text-sm font-bold text-slate-800">{agent.name}</p>
+               </div>
+             </td>
+             <td className="px-6 py-4 text-center">
+               <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium border border-slate-200">
+                 {agent.shift}
+               </span>
+             </td>
+             <td className="px-6 py-4 text-center">
+               <span className={cn(
+                 "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+                 agent.status === 'online' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                 agent.status === 'busy' ? "bg-red-50 text-red-700 border border-red-200" :
+                 "bg-slate-100 text-slate-600 border border-slate-200"
+               )}>
+                 {agent.status === 'online' ? '🟢 Online' : agent.status === 'busy' ? '🔴 Đang bận' : '⚪ Offline'}
+               </span>
+             </td>
+             <td className="px-6 py-4 text-right">
+               <p className="text-sm font-bold text-emerald-600">{agent.sla}</p>
+             </td>
+           </tr>
+         ))}
+       </tbody>
+     </table>
+   </div>
+ </div>
+ )}
+
  {activeTab === 'feedback' && (
  <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
  {MOCK_FEEDBACKS.map(fb => (
@@ -923,14 +993,33 @@ export function CustomerService() {
     </div>
 
     <div className="p-6 space-y-6">
-      {/* Customer Info */}
-      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-        <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-          <User className="w-5 h-5 text-slate-600" />
+      {/* Customer Info & ERP Integration */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+            <User className="w-5 h-5 text-slate-600" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
+            <p className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded w-fit uppercase tracking-widest mt-1 border border-emerald-100">Khách hàng Vàng</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
-          <p className="text-xs text-slate-600">Khách hàng Vàng • 12 đơn hàng</p>
+
+        <div className="flex flex-col justify-center p-3 bg-[#FAF9F5] rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
+          <div className="absolute right-0 top-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-50" />
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-primary-500 animate-pulse" /> Tích hợp Dữ Liệu ERP
+          </p>
+          <div className="mt-1 flex items-center justify-between relative z-10">
+            <div>
+              <p className="text-xs font-bold text-slate-800">12 Đơn Hàng</p>
+              <p className="text-[10px] text-slate-500 font-mono">LTV: 15,400,000đ</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 rounded">Gần nhất: Đang giao</p>
+              <p className="text-[10px] font-mono text-slate-500 mt-0.5 hover:text-primary-600 cursor-pointer">Mã: ORD-2026</p>
+            </div>
+          </div>
         </div>
       </div>
 

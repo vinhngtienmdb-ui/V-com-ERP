@@ -15,7 +15,12 @@ import {
  X,
  Plus,
  Sparkles,
-
+ MessageCircle,
+ Smartphone,
+ Video,
+ Hash,
+ Camera,
+ Lock,
  Smile,
  Frown,
  Meh
@@ -53,6 +58,7 @@ export function OmniChat() {
   const [response, setResponse] = useState<any>(null);
   const [messages, setMessages] = useState<ChatwootMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isInternalNote, setIsInternalNote] = useState(false);
   const [isAiorocessing, setIsAiorocessing] = useState(false);
   const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -172,9 +178,20 @@ export function OmniChat() {
  {thread.meta.sender.avatar_url ? <img src={thread.meta.sender.avatar_url} alt="" /> : (thread.meta.sender.name || 'Unknown')[0]}
  </div>
  <div className="absolute -bottom-1 -right-1 p-1 bg-white rounded-full shadow-sm">
- {(thread.meta.channel || 'web') === 'zalo' && <div className="w-3.5 h-3.5 bg-slate-800 rounded-full flex items-center justify-center text-[8px] text-white font-bold">Z</div>}
- {(thread.meta.channel || 'web') === 'facebook' && <Share2 className="w-3.5 h-3.5 text-orange-800" />}
- {(thread.meta.channel || 'web') === 'web' && <Globe className="w-3.5 h-3.5 text-slate-600" />}
+ {(() => {
+   const channel = thread.meta.channel || 'web';
+   switch(channel) {
+     case 'zalo': return <div className="w-3.5 h-3.5 bg-slate-800 rounded-full flex items-center justify-center text-[8px] text-white font-bold">Z</div>;
+     case 'zalo_personal': return <Smartphone className="w-3.5 h-3.5 text-slate-800" />;
+     case 'facebook': return <MessageCircle className="w-3.5 h-3.5 text-blue-600" />;
+     case 'instagram': return <Camera className="w-3.5 h-3.5 text-pink-600" />;
+     case 'threads': return <Hash className="w-3.5 h-3.5 text-slate-900" />;
+     case 'wechat': return <MessageSquare className="w-3.5 h-3.5 text-green-500" />;
+     case 'telegram': return <Send className="w-3.5 h-3.5 text-sky-500" />;
+     case 'tiktok': return <Video className="w-3.5 h-3.5 text-slate-800" />;
+     default: return <Globe className="w-3.5 h-3.5 text-slate-600" />;
+   }
+ })()}
  </div>
  </div>
  <div className="flex-1 min-w-0">
@@ -207,7 +224,23 @@ export function OmniChat() {
  {(activeThread?.meta.sender.name || 'Unknown')}
  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
  </h3>
- <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{(activeThread?.meta.channel || 'web')} OA Channel</p>
+ <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+ {(() => {
+   const c = activeThread?.meta.channel || 'web';
+   const map: Record<string, string> = {
+     'zalo': 'Zalo OA',
+     'zalo_personal': 'Zalo Cá Nhân',
+     'facebook': 'Messenger',
+     'instagram': 'Instagram Direct',
+     'threads': 'Threads',
+     'wechat': 'WeChat',
+     'telegram': 'Telegram',
+     'tiktok': 'TikTok Shop',
+     'web': 'Livechat Website'
+   };
+   return map[c] || c;
+ })()}
+ </p>
  </div>
  </div>
  <div className="flex items-center gap-2">
@@ -220,6 +253,19 @@ export function OmniChat() {
 
  {/* Messages List */}
  <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={scrollRef}>
+ {/* AI Summary Banner */}
+ <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100 shadow-sm relative overflow-hidden group">
+   <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+   <div className="relative z-10">
+     <h4 className="text-xs font-extrabold text-indigo-900 uppercase tracking-widest flex items-center gap-2 mb-2">
+       <Sparkles className="w-4 h-4 text-indigo-600" /> AI Tóm tắt Hội thoại
+     </h4>
+     <p className="text-sm text-indigo-800 font-medium leading-relaxed">
+       Khách hàng khiếu nại về việc đơn hàng giao chậm 3 ngày. Khách đang có cảm xúc <strong>tiêu cực</strong> và dọa hủy đơn. Đã giải thích do thời tiết nhưng khách chưa hài lòng.
+     </p>
+   </div>
+ </div>
+
  {messages.map((msg, idx) => (
  <div key={msg.id} className={cn(
  "flex items-start gap-3 animate-in fade-in slide-in- duration-300",
@@ -245,6 +291,13 @@ export function OmniChat() {
  </div>
  <div className="flex items-center gap-2 px-1">
  <span className="text-[10px] text-[#9CA3AF] font-medium">{(msg.sender?.name || 'User')} • {(new Date(msg.created_at * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}</span>
+ {msg.message_type === 0 && (
+   <span className={cn("px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border", 
+     idx % 3 === 0 ? "bg-red-50 text-red-700 border-red-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
+   )}>
+     {idx % 3 === 0 ? 'Tiêu cực' : 'Tích cực'}
+   </span>
+ )}
  {msg.message_type === 0 && <CheckCheck className="w-3 h-3 text-primary-600" />}
  </div>
  </div>
@@ -294,21 +347,45 @@ export function OmniChat() {
  <Sparkles className={cn("w-5 h-5", isAiorocessing && "animate-spin")} />
  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AI Draft</span>
  </button>
- <div className="flex-1 relative">
+ <div className="flex-1 relative flex flex-col gap-2">
+ {isInternalNote && (
+   <div className="absolute -top-10 right-0 bg-amber-100 text-amber-800 text-xs px-3 py-1.5 rounded-t-lg font-bold flex items-center gap-1 border border-amber-200 border-b-0">
+     <Lock className="w-3 h-3" /> Chế độ Ghi chú Nội bộ
+   </div>
+ )}
+ {inputValue.startsWith('/') && (
+   <div className="absolute bottom-full mb-2 left-0 w-80 bg-white rounded-lg shadow-xl border border-slate-200 p-2 z-50">
+     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2 pb-2 mb-2 border-b border-slate-100">Mẫu câu trả lời nhanh</p>
+     <button onClick={() => setInputValue('Dạ V-com xin chào anh/chị, em có thể hỗ trợ gì ạ?')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/chao</span>Xin chào</button>
+     <button onClick={() => setInputValue('Dạ vâng, bên em sẽ kiểm tra ngay và phản hồi lại ạ.')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/wait</span>Chờ kiểm tra</button>
+     <button onClick={() => setInputValue('Dạ đơn hàng của anh/chị đang được chuẩn bị và sẽ sớm giao cho bên vận chuyển ạ.')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/ship</span>Tình trạng đơn</button>
+   </div>
+ )}
+ <div className="relative flex-1 flex items-center">
  <input 
  type="text" 
  value={inputValue}
  onChange={(e) => setInputValue(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
- placeholder="Nhập tin nhắn..." 
- className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
+ placeholder={isInternalNote ? "Nhập ghi chú nội bộ (chỉ nhân viên xem được)..." : "Nhập tin nhắn..."} 
+ className={cn(
+   "w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-all",
+   isInternalNote 
+     ? "bg-amber-50 border-amber-300 focus:ring-amber-500/30 placeholder:text-amber-700/50 text-amber-900" 
+     : "bg-slate-50 border-slate-200 focus:ring-primary-500/20 text-slate-900"
+ )}
  />
- <button className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600  transition-transform disabled:opacity-50 disabled:scale-100" onClick={handleSendMessage} disabled={isAiorocessing}>
+ <button className={cn("absolute right-3 p-1.5 transition-transform disabled:opacity-50 disabled:scale-100 rounded-md", isInternalNote ? "text-amber-600 hover:bg-amber-100" : "text-primary-600 hover:bg-primary-50")} onClick={handleSendMessage} disabled={isAiorocessing}>
  <Send className="w-5 h-5" />
  </button>
  </div>
- <button className="bg-slate-100 p-3 rounded-lg hover:bg-slate-200 transition-colors">
- <Zap className="w-5 h-5 text-orange-500 fill-current" />
+ </div>
+ <button 
+   onClick={() => setIsInternalNote(!isInternalNote)} 
+   className={cn("p-3 rounded-lg transition-colors border", isInternalNote ? "bg-amber-100 border-amber-300 text-amber-700" : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100")}
+   title="Ghi chú nội bộ"
+ >
+ <Lock className="w-5 h-5" />
  </button>
  </div>
  <div className="mt-2 text-center">
@@ -320,29 +397,47 @@ export function OmniChat() {
  {/* Right Sidebar - Info & Copilot */}
  <div className="w-[320px] border-l border-slate-100 bg-white hidden xl:flex flex-col p-6 space-y-6 overflow-y-auto">
  <div className="text-center space-y-3 pb-6 border-b border-slate-100">
- <div className="w-16 h-16 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-xl font-bold text-slate-500">
+ <div className="w-16 h-16 rounded-full bg-slate-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-xl font-bold text-slate-500 relative">
  {(activeThread?.meta.sender.name || 'Unknown')[0]}
+ <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+   <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-white" />
+ </div>
  </div>
  <div>
- <h3 className="font-bold text-slate-900">{(activeThread?.meta.sender.name || 'Unknown')}</h3>
- <p className="text-xs text-slate-500">{(activeThread?.meta.channel || 'web') === 'zalo' ? 'Vietnam' : 'Social ỗub'}</p>
+ <h3 className="font-bold text-slate-900 flex items-center justify-center gap-1">
+   {(activeThread?.meta.sender.name || 'Unknown')}
+   <CheckCheck className="w-4 h-4 text-primary-600" title="Đã đồng bộ ERP" />
+ </h3>
+ <p className="text-xs text-slate-500 font-mono mt-1">ERP ID: CUS-{(activeThread?.meta.sender.id || '9982').toString().padStart(4, '0')}</p>
  </div>
  <div className="flex justify-center gap-2">
- <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">New Customer</span>
- <span className="px-3 py-1 bg-slate-100 text-primary-600 rounded-lg text-[10px] font-bold">VIo ỗạng Bạc</span>
+ <span className="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1">
+   <Sparkles className="w-3 h-3" /> VIP BẠC
+ </span>
  </div>
  </div>
 
  <div className="space-y-4">
- <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-b border-slate-100 pb-2">Thông tin liên hệ</h4>
- <div className="space-y-3">
- <div>
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase">Số điện thoại</p>
- <p className="text-xs font-semibold text-slate-900">0901234xxx</p>
+ <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center justify-between">
+   <span>Dữ liệu ERP 360°</span>
+   <button className="text-[10px] text-primary-600 hover:underline">Đồng bộ lại</button>
+ </h4>
+ <div className="grid grid-cols-2 gap-3">
+ <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+ <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Số điện thoại</p>
+ <p className="text-xs font-bold text-slate-900">090 123 4567</p>
  </div>
- <div>
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase">Email</p>
- <p className="text-xs font-semibold text-slate-900">lan.pham@gmail.com</p>
+ <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+ <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Email</p>
+ <p className="text-xs font-bold text-slate-900 truncate" title="lan.pham@gmail.com">lan.pham@gmail.com</p>
+ </div>
+ <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+ <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Công nợ (Debt)</p>
+ <p className="text-xs font-bold text-red-600">{formatCurrency(1500000)}</p>
+ </div>
+ <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+ <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">LTV (Vòng đời)</p>
+ <p className="text-xs font-bold text-emerald-600">{formatCurrency(12500000)}</p>
  </div>
  </div>
  </div>
