@@ -75,6 +75,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
 };
 
 export function InternalChat() {
+  const [responseText, setResponseText] = useState("");
   const { addNotification } = useNotifications();
   
   // Channels and messages states

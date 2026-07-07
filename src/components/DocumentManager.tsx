@@ -1,5 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { getPresignedUploadUrl, generateUniqueFileName, PRIVATE_BUCKET } from '../services/storageService';
 import { 
   FileText, 
   Send, 
@@ -77,6 +78,47 @@ export function DocumentManager() {
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
   const [activeDetailTab, setActiveDetailTab] = useState('flow');
   const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      // 1. Tạo tên file độc nhất và đường dẫn
+      const uniqueName = generateUniqueFileName(file.name);
+      const objectPath = `documents/${uniqueName}`;
+
+      // 2. Lấy Presigned URL từ R2
+      const presignedUrl = await getPresignedUploadUrl(objectPath, PRIVATE_BUCKET, file.type);
+
+      // 3. Upload file trực tiếp lên R2 sử dụng fetch
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      // Cập nhật UI (Giả lập thêm tài liệu vào danh sách)
+      alert(`Tải lên thành công: ${file.name}`);
+    } catch (error) {
+      console.error('Lỗi khi upload:', error);
+      alert('Tải lên thất bại. Vui lòng kiểm tra lại cấu hình R2.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const docListCols: ColumnDef[] = [
     { id: 'id', label: 'SỐ KH/Ký hiệu', initialWidth: 150 },
@@ -952,11 +994,20 @@ export function DocumentManager() {
               </div>
 
               <div className="space-y-6">
-                 <div className="border border-dashed border-slate-400 rounded-lg p-6 flex flex-col items-center justify-center text-center bg-slate-50 transition-colors hover:bg-slate-100 cursor-pointer">
+                                  <div className="border border-dashed border-slate-400 rounded-lg p-6 flex flex-col items-center justify-center text-center bg-slate-50 transition-colors hover:bg-slate-100 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <Upload className="w-8 h-8 text-slate-500 mb-2" />
                     <p className="text-sm font-medium text-slate-800">Kéo thả tệp hoặc chọn file</p>
                     <p className="text-xs text-slate-600 mt-1">Hỗ trợ PDF, DOCX, XLSX (Tối đa 50MB)</p>
-                    <button className="mt-4 px-4 py-2 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm">Chọn file từ máy tính</button>
+                    <button type="button" className="mt-4 px-4 py-2 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm">
+                      {isUploading ? 'Đang tải lên...' : 'Chọn file từ máy tính'}
+                    </button>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    />
                  </div>
 
                  <div className="bg-orange-50/50 border border-orange-100 p-5 rounded-lg">

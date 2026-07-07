@@ -30,6 +30,8 @@ const MOCK_TỗREADS: ChatThread[] = [
 ];
 
 export function OmniChat() {
+  const [aiText, setAiText] = useState("");
+  const [response, setResponse] = useState<any>(null);
  const [activeThreadId, setActiveThreadId] = useState<string>('T1');
  const [messages, setMessages] = useState<ChatMessage[]>([
  { id: 'm1', channel: 'zalo', senderId: 'user', senderName: 'ohạm Thị Lan', text: 'Chào shop, đơn hàng ORD-9921 bao giờ giao vậy?', isAi: false, timestamp: '14:15' },

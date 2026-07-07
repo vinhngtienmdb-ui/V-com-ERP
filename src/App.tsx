@@ -65,6 +65,14 @@ function AppLayout() {
   const location = useLocation();
   const { addNotification } = useNotifications();
   
+  // Scroll to top on route change
+  React.useEffect(() => {
+    const main = document.getElementById('main-scroll-container');
+    if (main) {
+      main.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
+  
   // Start SePay Webhook event polling globally
   useSepayListener();
 
@@ -293,7 +301,7 @@ function AppLayout() {
   <Sidebar />
   <div className="flex-1 flex flex-col min-w-0">
   <Header />
-  <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+  <main id="main-scroll-container" className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
   <div className="w-full mx-auto h-full col-span-12">
   <ErrorBoundary>
   <Suspense fallback={

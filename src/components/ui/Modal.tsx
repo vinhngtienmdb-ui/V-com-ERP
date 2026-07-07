@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -37,7 +38,11 @@ export function Modal({
   noPadding = false,
   fullscreen = false,
 }: ModalProps) {
-  // Handle ESC key to close
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -57,7 +62,7 @@ export function Modal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const maxWidthClasses = {
     'sm': 'max-w-sm',
@@ -79,7 +84,7 @@ export function Modal({
   };
 
   if (fullscreen) {
-    return (
+    return createPortal(
       <div className="fixed inset-0 bg-slate-50 z-[9999] flex flex-col animate-in slide-in-from-right-4 duration-300">
         <div className={cn("flex-1 flex flex-col w-full mx-auto relative", maxWidthClasses[maxWidth] !== 'max-w-[95vw]' ? maxWidthClasses[maxWidth] : 'max-w-7xl')}>
           {/* Header */}
@@ -138,11 +143,12 @@ export function Modal({
             </div>
           )}
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div 
         className={cn(
@@ -203,6 +209,7 @@ export function Modal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

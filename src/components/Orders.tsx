@@ -966,6 +966,8 @@ const paymentMethodLabels: Record<string, string> = {
 };
 
 export function Orders() {
+  const [resp, setResp] = useState<any>(null);
+  const [response, setResponse] = useState<any>(null);
   const { log } = useAuditLog();
   const [activeStep, setActiveStep] = useState<'all' | 'rma'>('all');
   const [mockOrders, setMockOrders] = useState<any[]>(MOCK_ORDERS);
