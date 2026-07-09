@@ -34,6 +34,7 @@ import {
  Wallet
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
+import { VNeidVerificationModal, VNeidData } from './ui/VNeidVerificationModal';
 import { SellerMetric } from '../types/erp';
 
 interface SellerPosAccount {

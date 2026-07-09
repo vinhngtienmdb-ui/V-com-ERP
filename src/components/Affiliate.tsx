@@ -1,7 +1,8 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
- Users, 
+ Users,
+ ShieldCheck, 
  Link2, 
  DollarSign, 
  BarChart3, 
@@ -17,6 +18,7 @@ import {
  Share2
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
+import { VNeidVerificationModal } from './ui/VNeidVerificationModal';
 import { Affiliate } from '../types/erp';
 
 export const MOCK_AFFILIATES: Affiliate[] = [
@@ -72,6 +74,9 @@ export const MOCK_AFFILIATES: Affiliate[] = [
 
 export function AffiliateManagement() {
  const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
+  const [affiliates, setAffiliates] = useState(MOCK_AFFILIATES);
+  const [isVNeidModalOpen, setIsVNeidModalOpen] = useState(false);
+  const [selectedAffiliateForVNeid, setSelectedAffiliateForVNeid] = useState<Affiliate | null>(null);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
@@ -159,7 +164,7 @@ export function AffiliateManagement() {
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
- {MOCK_AFFILIATES.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
+ {affiliates.filter(a => activeTab === 'all' || a.status === 'pending').map((affiliate) => (
  <tr key={affiliate.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
@@ -167,7 +172,10 @@ export function AffiliateManagement() {
  {affiliate?.name?.charAt(0) || '?'}
  </div>
  <div>
- <p className="text-sm font-semibold text-[#111827]">{affiliate.name}</p>
+ <div className="flex items-center gap-1">
+  <p className="text-sm font-semibold text-[#111827]">{affiliate.name}</p>
+  {affiliate.vneidVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" title="Đã xác thực VNeID" />}
+</div>
  <div className="flex items-center gap-1 mt-0.5">
  <p className="text-[10px] text-[#6B7280] uppercase tracking-tight">{affiliate.type}</p>
  {affiliate.categoryTags && affiliate.categoryTags.length > 0 && (
@@ -218,7 +226,12 @@ export function AffiliateManagement() {
  </td>
  <td className="px-6 py-4 text-right">
  {affiliate.status === 'pending' ? (
- <button className="px-3 py-1.5 bg-primary-600 text-[#FAF9F5] text-[11px] font-bold rounded-md hover:bg-slate-800 shadow-sm">Duyệt KOL</button>
+ <div className="flex flex-col gap-1 items-end">
+  <button onClick={() => { setSelectedAffiliateForVNeid(affiliate); setIsVNeidModalOpen(true); }} className="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold rounded hover:bg-emerald-100 shadow-sm flex items-center gap-1"><ShieldCheck className="w-3 h-3"/> Xác thực VNeID</button>
+  <button onClick={() => {
+    setAffiliates(affiliates.map(a => a.id === affiliate.id ? {...a, status: 'active'} : a));
+  }} className="px-3 py-1 bg-primary-600 text-[#FAF9F5] text-[10px] font-bold rounded hover:bg-slate-800 shadow-sm">Duyệt thường</button>
+</div>
  ) : (
  <button className="text-xs font-semibold text-[#6B7280] hover:text-[#111827] p-2">Thiết lập & Book</button>
  )}
@@ -253,6 +266,22 @@ export function AffiliateManagement() {
  ))}
  </div>
  </div>
+      <VNeidVerificationModal 
+        isOpen={isVNeidModalOpen}
+        onClose={() => { setIsVNeidModalOpen(false); setSelectedAffiliateForVNeid(null); }}
+        targetName={selectedAffiliateForVNeid?.name}
+        onSuccess={(data) => {
+          if (selectedAffiliateForVNeid) {
+            setAffiliates(affiliates.map(a => 
+              a.id === selectedAffiliateForVNeid.id 
+                ? { ...a, vneidVerified: true, vneidLinkedAt: new Date().toLocaleDateString('vi-VN'), status: 'active' } 
+                : a
+            ));
+          }
+          setIsVNeidModalOpen(false);
+        }}
+      />
+
  </div>
  );
 }
