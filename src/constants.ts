@@ -12,6 +12,8 @@ import {
  Calculator,
  Wallet,
  UserCircle,
+ FileUser,
+ ListTodo,
  Trophy,
  Briefcase,
  PieChart,
@@ -41,6 +43,7 @@ export const navGroups = [
  { icon: LayoutDashboard, label: 'Bảng điều khiển', path: '/dashboard', color: 'indigo', description: 'Báo cáo và thông số vận hành realtime' },
  { icon: PieChart, label: 'Phân tích dữ liệu', path: '/bi', color: 'violet', description: 'Công cụ BI và phân tích chuyên sâu' },
  { icon: Activity, label: 'Điều hành & Workflow', path: '/workflow', color: 'emerald', description: 'Quản lý quy trình và luồng công việc' },
+ { icon: ListTodo, label: 'Quản lý Công việc', path: '/tasks', color: 'amber', description: 'Kanban, việc của tôi, giao việc & báo cáo' },
  ]
  },
  {
@@ -94,6 +97,7 @@ export const navGroups = [
  { icon: Headphones, label: 'Chăm sóc Khách hàng', path: '/cskh', color: 'blue', description: 'Tổng đài và hỗ trợ sau bán hàng' },
  { icon: UserPlus2, label: 'Đội ngũ Kinh doanh', path: '/sales', color: 'teal', description: 'Quản lý sales và chỉ tiêu doanh số' },
  { icon: UserCircle, label: 'Quản trị Nhân sự (HRM)', path: '/hr', color: 'rose', description: 'Tuyển dụng, hồ sơ và chế độ nhân viên' },
+ { icon: FileUser, label: 'Hồ sơ Nhân sự (EasyHRM)', path: '/easyhrm', color: 'orange', description: 'Hồ sơ nhân sự chi tiết, hợp đồng lao động & lưu trữ' },
  { icon: Building2, label: 'Sơ đồ tổ chức', path: '/org', color: 'slate', description: 'Quản lý cấu trúc và phân quyền tổ chức' },
  { icon: Trophy, label: 'Hiệu suất & Đào tạo', path: '/performance', color: 'amber', description: 'Đánh giá KPI và lộ trình phát triển' },
  { icon: Briefcase, label: 'Không gian làm việc', path: '/workspace', color: 'indigo', description: 'Cộng tác nội bộ và chia sẻ tài liệu' },

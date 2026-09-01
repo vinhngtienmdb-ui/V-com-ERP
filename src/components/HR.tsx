@@ -1,6 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
-import { EasyHRMComponent } from './EasyHRM';
+import { useNavigate } from 'react-router-dom';
 import { 
  Users, 
  Clock, 
@@ -439,6 +439,7 @@ const MOCK_TEAMS: Team[] = [
 
 export function HumanResources() {
  const [activeTab, setActiveTab] = useState<string>('overview');
+ const navigate = useNavigate();
  const [attendanceSettings, setAttendanceSettings] = useState<AttendanceSetting[]>(INITIAL_ATTENDANCE_SETTINGS);
 
  // Propose New HRM Features States
@@ -853,20 +854,6 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
 
- {activeTab === 'easyhrm' && (
- <div className="space-y-4">
-  <div className="bg-white rounded-lg border border-slate-300 shadow-sm p-4 w-fit">
-   <button 
-   onClick={() => setActiveTab('overview')} 
-   className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors"
-   >
-   <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
-   </button>
-  </div>
-  <EasyHRMComponent />
- </div>
- )}
-
  {activeTab === 'overview' && (
  <div className="space-y-8 animate-in fade-in duration-700">
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
@@ -926,7 +913,9 @@ const [copilotInput, setCopilotInput] = useState('');
  <button 
  key={item.id}
  onClick={() => {
- if (['rec_request', 'rec_candidates', 'rec_interview', 'rec_email'].includes(item.id)) {
+ if (item.id === 'easyhrm') {
+ navigate('/easyhrm');
+ } else if (['rec_request', 'rec_candidates', 'rec_interview', 'rec_email'].includes(item.id)) {
  setActiveATSView(item.id === 'rec_request' ? 'request' : item.id === 'rec_candidates' ? 'candidates' : item.id === 'rec_interview' ? 'interview' : 'email');
  setShowATSModal(true);
  } else {

@@ -22,29 +22,7 @@ import { formatCurrency, cn } from '../lib/utils';
 import { SettlementRow, WithdrawalRequest, Order } from '../types/erp';
 
 // Keep the old mocks for tabs that are not implemented yet
-const MOCK_COD_SETTLEMENTS = [
- {
- id: 'COD-GHTK-0301',
- carrier: 'Giao Hàng Tiết Kiệm',
- period: '01/04 - 07/04',
- totalOrders: 1450,
- expectedCod: 345000000,
- transferredCod: 345000000,
- shippingFee: 28500000,
- status: 'matched'
- },
- {
- id: 'COD-GHN-0301',
- carrier: 'Giao Hàng Nhanh',
- period: '01/04 - 07/04',
- totalOrders: 842,
- expectedCod: 124500000,
- transferredCod: 120000000,
- shippingFee: 15600000,
- status: 'discrepancy',
- note: 'Lệch 4.5M (Đã tạo Ticket xử lý)'
- }
-];
+// (Đã thay MOCK_COD_SETTLEMENTS bằng codSummary derive từ orders thật ở trên)
 
 const MOCK_WITHDRAWALS: WithdrawalRequest[] = [
  {
@@ -109,6 +87,12 @@ export function SettlementManagement() {
   const [isReconciling, setIsReconciling] = useState(false);
   const [pendingApproval, setPendingApproval] = useState<{ kind: string; data: any } | null>(null);
   const [approvalBusy, setApprovalBusy] = useState(false);
+  // COD tổng hợp theo đối tác vận chuyển — derive từ orders thật (thay MOCK_COD_SETTLEMENTS)
+  const [codSummary, setCodSummary] = useState<Array<{
+    id: string; carrier: string; period: string; totalOrders: number;
+    expectedCod: number; transferredCod: number; shippingFee: number;
+    status: string; note?: string;
+  }>>([]);
 
   // Pagination states
   const [settlementPage, setSettlementPage] = useState(1);
@@ -211,6 +195,39 @@ export function SettlementManagement() {
   useEffect(() => {
     fetchSettlements();
   }, [activeTab, settlementPage, withdrawalPage]);
+
+  // COD: gom orders có carrier theo đối tác — kỳ hiện hành (tháng này)
+  useEffect(() => {
+    if (activeTab !== 'cod') return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, 'orders'));
+        const rows = snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as any));
+        const byCarrier: Record<string, any> = {};
+        for (const o of rows) {
+          if (!o.carrier) continue;
+          const key = String(o.carrier);
+          if (!byCarrier[key]) {
+            byCarrier[key] = { id: 'COD-' + key.slice(0, 3).toUpperCase() + '-' + new Date().getMonth() + 1, carrier: key, period: 'Tháng ' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear(), totalOrders: 0, expectedCod: 0, transferredCod: 0, shippingFee: 0, status: 'matched' };
+          }
+          byCarrier[key].totalOrders++;
+          byCarrier[key].expectedCod += Number(o.total || 0);
+          // Đơn đã giao → coi như COD đã chuyển thành công; chưa giao → chưa chuyển
+          if (['delivered', 'completed'].includes(o.status)) {
+            byCarrier[key].transferredCod += Number(o.total || 0);
+          } else {
+            byCarrier[key].status = 'pending';
+          }
+          byCarrier[key].shippingFee += Number(o.shippingCost || o.shipping_cost || 0);
+        }
+        if (!cancelled) setCodSummary(Object.values(byCarrier));
+      } catch (err) {
+        console.warn('[Settlement] COD summary load lỗi:', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [activeTab]);
 
   const runAutoReconciliation = async () => {
     setIsReconciling(true);
@@ -422,8 +439,8 @@ export function SettlementManagement() {
  <div className="flex border-b border-[#F3F4F6]">
  {[
  { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
- { id: 'affiliate', label: 'Hoa hồng CTV / Affiliate', icon: Coins },
- { id: 'pickup', label: 'Đối soát Điểm nhận (Pickup)', icon: Store },
+ { id: 'affiliate', label: 'Hoa hồng CTV / Affiliate (Mẫu)', icon: Coins },
+ { id: 'pickup', label: 'Đối soát Điểm nhận (Mẫu)', icon: Store },
  { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
  { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
  { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
@@ -581,7 +598,7 @@ export function SettlementManagement() {
  </td>
  </tr>
  ))}
- {activeTab === 'cod' && MOCK_COD_SETTLEMENTS.map((cod) => (
+ {activeTab === 'cod' && codSummary.map((cod) => (
  <tr key={cod.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{cod.carrier}</p>

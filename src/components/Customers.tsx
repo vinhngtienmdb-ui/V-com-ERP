@@ -1,5 +1,5 @@
 import { DraggableGrid } from './ui/DraggableGrid';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -23,6 +23,7 @@ import {
   Loader2,
   Copy,
   Check,
+  CheckCircle2,
   Send,
   Settings,
   Lock,
@@ -1173,56 +1174,47 @@ export function Customers() {
   const [totalCount, setTotalCount] = useState(0);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
- const [pipelineStages, setPipelineStages] = useState([
- { id: 'new', name: 'Leads Mới', count: 0, color: 'bg-slate-800', 
- deals: [
- { id: 'd1', client: 'Công ty Cổ phần Sữa TH', val: 50000000, pd: 'Giày đồng phục 500 đôi' },
- { id: 'd2', client: 'Vinpearl Nha Trang', val: 120000000, pd: 'Khăn lạnh KS' }
- ] 
- },
- { id: 'qualified', name: 'Đã Thẩm Định', count: 0, color: 'bg-primary-500', 
- deals: [
- { id: 'd3', client: 'Kangaroo Việt Nam', val: 80000000, pd: 'Quà tặng Tết' }
- ] 
- },
- { id: 'proposal', name: 'Gửi Báo Giá', count: 0, color: 'bg-amber-500', 
- deals: [
- { id: 'd4', client: 'Viettel Telecom', val: 350000000, pd: 'Gói combo đồng phục' },
-{ id: 'd5', client: 'FPT Software', val: 45000000, pd: 'Balo laptop' }
- ] 
- },
- { id: 'negotiation', name: 'Thương Lượng', count: 0, color: 'bg-orange-500', 
- deals: [
-{ id: 'd6', client: 'Bệnh viện Tâm Anh', val: 210000000, pd: 'Khẩu trang Y tế sỉ' }
- ] 
- },
- { id: 'won', name: 'Chốt - Đoạt HĐ', count: 0, color: 'bg-emerald-500', 
- deals: [
- { id: 'd7', client: 'Techcombank', val: 560000000, pd: 'Đồng phục Giao dịch viên' }
- ] 
+ /*
+ * Pipeline KHÔNG phải hệ thống riêng — là cách XẾP khác của cùng dữ liệu khách hàng
+ * (dynamicCustomers từ DB). Cột = segment RFM derive từ rfmScore/tier:
+ *   new → Chưa mua (orderCount = 0)
+ *   potential → Mới hoạt động (đã mua ít)
+ *   core → Mua nhiều gần đây
+ *   old → Lâu chưa mua lại
+ *   vip → Hạng Vàng/Kim cương
+ * Kéo thẻ giữa cột = điều chỉnh segment cục bộ (visual only, không ghi DB).
+ */
+ type PipelineCard = { id: string; client: string; val: number; pd: string; customerId: string; channel?: string };
+ type PipelineStage = { id: string; name: string; color: string; deals: PipelineCard[] };
+
+ const [pipelineOverrides, setPipelineOverrides] = useState<Record<string, string>>({});
+
+ const deriveStageOfCustomer = (customer: any): string => {
+ const overridden = pipelineOverrides[customer.id];
+ if (overridden) return overridden;
+ if (customer.tier === 'Diamond' || customer.tier === 'Gold' || customer.tier === 'Vàng') return 'vip';
+ if (!customer.orderCount || customer.orderCount === 0) return 'new';
+ const rfm = customer.rfmScore;
+ if (rfm) {
+ if (rfm.recency > 90) return 'old';
+ if (rfm.frequency >= 3 && rfm.recency <= 30) return 'core';
+ if (rfm.frequency <= 1) return 'potential';
+ return 'core';
  }
- ]);
+ return (customer.orderCount >= 5) ? 'core' : 'potential';
+ };
 
  const handleDragStartPipeline = (e: React.DragEvent, dealId: string, sourceStageId: string) => {
  e.dataTransfer.setData('dealId', dealId);
  e.dataTransfer.setData('sourceStageId', sourceStageId);
  };
 
+ // Kéo giữa cột = đổi segment (visual override cục bộ — không ghi DB)
  const handleDropPipeline = (e: React.DragEvent, targetStageId: string) => {
- const dealId = e.dataTransfer.getData('dealId');
+ const customerId = e.dataTransfer.getData('dealId');
  const sourceStageId = e.dataTransfer.getData('sourceStageId');
  if (sourceStageId === targetStageId) return;
-
- setPipelineStages(prev => {
- const newStages = [...prev];
- const sIdx = newStages.findIndex(s => s.id === sourceStageId);
- const tIdx = newStages.findIndex(s => s.id === targetStageId);
- 
- const dealIdx = newStages[sIdx].deals.findIndex(d => d.id === dealId);
- const [dealToMove] = newStages[sIdx].deals.splice(dealIdx, 1);
- newStages[tIdx].deals.push(dealToMove);
- return newStages;
- });
+ setPipelineOverrides(prev => ({ ...prev, [customerId]: targetStageId }));
  };
 
     // Close modals on ESC keypress
@@ -1645,7 +1637,36 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  const potentialPct = Math.round((rfmCounts.potential / totalRfm) * 100);
  const newRegPct = Math.round((rfmCounts.newReg / totalRfm) * 100);
 
- const filteredCustomers = dynamicCustomers;
+  const filteredCustomers = dynamicCustomers;
+
+ // Pipeline stages — derive từ CÙNG dữ liệu dynamicCustomers (không phải hệ thống riêng)
+ const STAGE_DEFS: Array<{ id: string; name: string; color: string }> = [
+ { id: 'new', name: 'Chưa mua', color: 'bg-slate-400' },
+ { id: 'potential', name: 'Tiềm năng', color: 'bg-primary-500' },
+ { id: 'core', name: 'Thân thiết', color: 'bg-amber-500' },
+ { id: 'old', name: 'Lâu không mua', color: 'bg-rose-500' },
+ { id: 'vip', name: 'VIP / Vàng+', color: 'bg-emerald-500' }
+ ];
+
+ const pipelineStages: PipelineStage[] = useMemo(() => {
+ const buckets: Record<string, PipelineCard[]> = {};
+ for (const def of STAGE_DEFS) buckets[def.id] = [];
+ for (const customer of dynamicCustomers) {
+ const stage = deriveStageOfCustomer(customer);
+ if (!buckets[stage]) buckets[stage] = [];
+ buckets[stage].push({
+ id: customer.id,
+ customerId: customer.id,
+ client: customer.name,
+ val: customer.totalSpent || 0,
+ pd: `${customer.orderCount || 0} đơn • ${customer.tier || '—'} • ${customer.lastOrderDate ? 'Gần nhất: ' + customer.lastOrderDate : 'Chưa có đơn'}`,
+ channel: customer.channels?.[0]
+ });
+ }
+ return STAGE_DEFS.map(def => ({
+ id: def.id, name: def.name, color: def.color, deals: buckets[def.id] || []
+ }));
+ }, [dynamicCustomers, pipelineOverrides]);
 
  return (
  <div className="max-w-[1440px] mx-auto space-y-6 animate-in fade-in slide-in- duration-500 overflow-hidden pb-10">
@@ -1705,111 +1726,32 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
 
  {activeView === 'list' ? (
  <>
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] mb-3">Tổng khách hàng</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-semibold text-[#111827]">{totalCount}</span>
- <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
+ {/* KPI strip — 4 chỉ số 1 hàng mỏng */}
+ <div className="bg-white rounded-lg border border-slate-200 shadow-sm px-2 py-0">
+ <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100">
+ <div className="px-4 py-2.5 flex items-baseline justify-between gap-2">
+ <span className="text-[11px] text-slate-500">Tổng khách hàng</span>
+ <span className="text-lg font-semibold text-slate-900">{totalCount}</span>
  </div>
+ <div className="px-4 py-2.5 flex items-baseline justify-between gap-2">
+ <span className="text-[11px] text-slate-500">Đang hoạt động</span>
+ <span className="text-lg font-semibold text-emerald-600">{totalCount}</span>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] mb-3">Active (Hệ thống)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-semibold text-[#111827]">{totalCount}</span>
- <span className="text-[10px] text-orange-700 font-medium bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
+ <div className="px-4 py-2.5 flex items-baseline justify-between gap-2">
+ <span className="text-[11px] text-slate-500">Chi tiêu TB (CLV)</span>
+ <span className="text-lg font-semibold text-slate-900">{formatCurrency(24500000)}</span>
  </div>
+ <div className="px-4 py-2.5 flex items-baseline justify-between gap-2">
+ <span className="text-[11px] text-slate-500">Loyalty (Vàng+)</span>
+ <span className="text-lg font-semibold text-amber-600">{Math.round(totalCount * 0.15)}</span>
  </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] mb-3">Chi tiêu TB (CLV)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(24500000)}</span>
- <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">Synced</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] mb-3">Loyalty (Vàng+)</p>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-semibold text-amber-600">{Math.round(totalCount * 0.15)}</span>
- <span className="text-[10px] text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">High Value</span>
- </div>
- </div>
- </DraggableGrid>
-
- {/* CRM Intelligence & RFM Segmentation */}
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute top-0 right-0 p-4">
- <Sparkles className="w-5 h-5 text-primary-200 group-hover:text-primary-400 transition-colors animate-pulse" />
- </div>
- <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
- <Users className="w-5 h-5 text-primary-600" /> Phân đoạn Khách hàng (RFM Segmentation)
- </h3>
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
- {[
- { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
- { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
- { name: 'Tiềm năng', val: 28, color: 'bg-slate-800', desc: 'Sẵn sàng Upsell' },
- { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
- ].map((seg, i) => (
- <div key={i} className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
- <div className="flex justify-between items-start mb-2">
- <div className={cn("w-2 h-2 rounded-full", seg.color)} />
- <span className="text-xl font-semibold text-slate-900">{seg.val}%</span>
- </div>
- <p className="text-xs font-bold text-slate-900 mb-1">{seg.name}</p>
- <p className="text-[10px] text-slate-500 leading-tight">{seg.desc}</p>
- </div>
- ))}
- </div>
- 
- <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-lg flex items-center justify-between">
- <div className="flex items-center gap-4">
- <div className="p-3 bg-white text-primary-600 rounded-lg shadow-sm">
- <Mail className="w-5 h-5" />
- </div>
- <div>
- <h4 className="text-xs font-bold text-primary-900">Chiến dịch tự động (Marketing Automation)</h4>
- <p className="text-[10px] text-primary-700/70">Đang có 12 khách hàng thuộc nhóm "Tiềm năng" có thể gửi Voucher.</p>
- </div>
- </div>
- <button className="px-5 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-primary-700 transition-all shadow-sm">Kích hoạt Campaign</button>
  </div>
  </div>
 
- <div className="bg-slate-900 p-6 rounded-lg text-[#FAF9F5] relative overflow-hidden flex flex-col justify-between shadow-sm">
- <div className="relative z-10">
- <div className="flex items-center gap-3 mb-6">
- <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
- <Trophy className="w-6 h-6 text-amber-400" />
- </div>
- <h3 className="text-xl font-semibold italic tracking-tighter">Loyalty Wallet Insight</h3>
- </div>
- <div className="space-y-6">
- <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
- <div className="flex justify-between items-center text-[10px] text-slate-500 mb-2">Tổng điểm khả dụng</div>
- <div className="text-3xl font-semibold text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
- </div>
- <div className="flex gap-4">
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
- <p className="text-[10px] text-slate-500 mb-1">Số dư Ví khách</p>
- <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
- </div>
- <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
- <p className="text-[10px] text-slate-500 mb-1">Hạng Kim Cương</p>
- <p className="text-lg font-bold text-sky-400">08 KH</p>
- </div>
- </div>
- </div>
- </div>
- <button className="relative z-10 w-full mt-8 py-4 bg-white text-slate-900 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
- <Settings className="w-4 h-4" /> Quản lý chính sách Loyalty
- </button>
- <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
- </div>
- </DraggableGrid>
+ {/* Layout chính: bảng trái (2/3) + insight phải (1/3) */}
+ <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
+ <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden xl:col-span-2 min-w-0">
  <div className="p-4 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">
  <div className="relative">
@@ -1857,21 +1799,19 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <div className="overflow-x-auto bg-white border-t border-slate-200 min-w-0">
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
- <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-4 py-4 text-[10px] text-slate-500">Khách hàng</th>
- <th className="px-4 py-4 text-[10px] text-slate-500">Liên hệ</th>
- <th className="px-4 py-4 text-[10px] text-slate-500 text-center">Kênh</th>
- <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Chi tiêu</th>
- <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Ví / Loyalty</th>
- <th className="px-4 py-4 text-[10px] text-slate-500 text-center">Trạng thái</th>
-	<th className="px-4 py-4 text-[10px] text-slate-500 text-center">Trạng thái Ghi sổ</th>
- <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Action</th>
+ <tr className="bg-slate-50/50 border-b border-slate-200">
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium">Khách hàng</th>
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium">Liên hệ & Kênh</th>
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium text-right">Chi tiêu</th>
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium text-right">Ví / Loyalty</th>
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium text-center">Trạng thái</th>
+ <th className="px-4 py-3 text-[11px] text-slate-500 font-medium text-right">Action</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
  {loading ? (
  <tr>
- <td colSpan={7} className="px-6 py-6 text-center bg-white">
+ <td colSpan={6} className="px-6 py-6 text-center bg-white">
  <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-1" />
  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Đang truy xuất dữ liệu CRM...</p>
  </td>
@@ -1892,28 +1832,23 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <td className="px-4 py-4">
  <div className="space-y-1">
  <div className="flex items-center justify-between group/copy text-[11px]">
- <span className="text-slate-700 font-bold tracking-tight">{customer.phone}</span>
+ <span className="text-slate-700 font-medium tracking-tight">{customer.phone}</span>
  <CopyButton value={customer.phone} />
  </div>
  <div className="flex items-center justify-between group/copy text-[10px]">
  <span className="text-slate-500 truncate max-w-[120px] italic">{customer.email}</span>
  <CopyButton value={customer.email} />
  </div>
- </div>
- </td>
- <td className="px-4 py-4 text-center">
- <div className="flex justify-center flex-wrap gap-1">
- {customer.channels && customer.channels.slice(0, 3).map(channel => (
- <span key={channel} className="p-1 rounded bg-white border border-slate-200 shadow-sm" title={channel.toUpperCase()}>
+ <div className="flex gap-1 pt-0.5">
+ {customer.channels && customer.channels.slice(0, 4).map(channel => (
+ <span key={channel} className="p-0.5 rounded bg-white border border-slate-200" title={channel.toUpperCase()}>
  {channel === 'zalo' && <MessageSquare className="w-3 h-3 text-orange-600" />}
  {channel === 'facebook' && <Facebook className="w-3 h-3 text-orange-800" />}
  {channel === 'hotline' && <PhoneCall className="w-3 h-3 text-emerald-600" />}
  {channel === 'web' && <Globe className="w-3 h-3 text-slate-500" />}
  </span>
  ))}
- {customer.channels && customer.channels.length > 3 && (
- <span className="text-[8px] font-bold text-slate-500 self-center">+{customer.channels.length - 3}</span>
- )}
+ </div>
  </div>
  </td>
  <td className="px-4 py-4 text-right">
@@ -1925,52 +1860,45 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <p className="text-[9px] font-bold text-amber-600 flex items-center justify-end gap-1"><Trophy className="w-2.5 h-2.5" /> {customer.points || 0} pts</p>
  </td>
  <td className="px-4 py-4 text-center">
- <div className="flex justify-center">
+ <div className="flex flex-col items-center gap-1">
  <span className={cn(
- "px-2 py-0.5 rounded-md text-[9px] shadow-sm",
- customer.status === 'active' ? "bg-emerald-500 text-[#FAF9F5]" : customer.status === 'locked' ? "bg-red-500 text-[#FAF9F5]" : "bg-slate-100 text-slate-700"
+ "px-2 py-0.5 rounded-md text-[10px] font-medium",
+ customer.status === 'active' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : customer.status === 'locked' ? "bg-red-50 text-red-600 border border-red-200" : "bg-slate-100 text-slate-600 border border-slate-200"
  )}>
- {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
+ {customer.status === 'active' ? 'Hoạt động' : customer.status === 'locked' ? 'Đã khóa' : 'Tạm ngừng'}
  </span>
+ {/* Trạng thái ghi sổ MISA — gộp vào cột này; chi tiết lỗi xem tooltip */}
+ {customer.misaSynced ? (
+ <span className="text-[10px] text-emerald-600 flex items-center gap-1" title="Đã ghi sổ MISA">
+ <CheckCircle2 className="w-3 h-3" /> Ghi sổ
+ </span>
+ ) : customer.misaSyncError ? (
+ <span className="flex items-center gap-1">
+ <span className="text-[10px] text-rose-600 truncate max-w-[90px]" title={customer.misaSyncError}>Lỗi sổ</span>
+ <button
+ disabled={syncingCustomerId === customer.id}
+ onClick={async (e) => {
+ e.stopPropagation();
+ if (!customer.id) return;
+ setSyncingCustomerId(customer.id);
+ try {
+ await syncCustomerToMisa(customer.id);
+ alert("Ghi sổ khách hàng thành công!");
+ } catch (err) {
+ alert("Đồng bộ thất bại: " + err.message);
+ } finally {
+ setSyncingCustomerId(null);
+ }
+ }}
+ className="px-1.5 py-0.5 bg-slate-900 text-white rounded text-[10px] hover:bg-slate-800 disabled:opacity-50 transition-all">
+ {syncingCustomerId === customer.id ? 'Đang sync...' : 'Đồng bộ'}
+ </button>
+ </span>
+ ) : (
+ <span className="text-[10px] text-slate-400">Chưa ghi sổ</span>
+ )}
  </div>
  </td>
-              <td className="px-4 py-4 text-center">
-                <div className="flex flex-col items-center justify-center gap-1">
-                  {customer.misaSynced ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-medium flex items-center gap-1 shadow-sm">
-                      Đã ghi sổ 🟢
-                    </span>
-                  ) : customer.misaSyncError ? (
-                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-medium flex items-center gap-1 shadow-sm" title={customer.misaSyncError}>
-                      Lỗi kiểm tra 🔴
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 text-[10px] font-medium flex items-center gap-1 shadow-sm">
-                      Chờ ghi sổ 🟡
-                    </span>
-                  )}
-                  <button
-                    disabled={syncingCustomerId === customer.id}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!customer.id) return;
-                      setSyncingCustomerId(customer.id);
-                      try {
-                        await syncCustomerToMisa(customer.id);
-                        alert("Ghi sổ khách hàng thành công!");
-                      } catch (err) {
-                        alert("Đồng bộ thất bại: " + err.message);
-                      } finally {
-                        setSyncingCustomerId(null);
-                      }
-                    }}
-                    className="px-2 py-1 bg-slate-900 text-white rounded text-[10px] font-bold hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-1"
-                  >
-                    {syncingCustomerId === customer.id && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
-                    Đồng bộ
-                  </button>
-                </div>
-              </td>
  <td className="px-4 py-4 text-right">
  <div className="flex justify-end gap-2">
  <button 
@@ -2023,62 +1951,140 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
       >
         Trang sau
       </button>
-    </div>
-  </div>
-  </div>
-  </>
+     </div>
+   </div>
+   </div>
+
+ {/* Cột phải — CRM Insight (1/3) */}
+ <div className="space-y-6 xl:sticky xl:top-4">
+ {/* RFM Segmentation */}
+ <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+ <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+ <Users className="w-4 h-4 text-primary-600" /> Phân đoạn RFM
+ </h3>
+ <div className="space-y-2">
+ {[
+ { name: 'Khách hàng Core', val: 12, color: 'bg-emerald-500', desc: 'Mua nhiều & gần đây' },
+ { name: 'Khách hàng Cũ', val: 45, color: 'bg-rose-500', desc: 'Chưa mua lại > 3 tháng' },
+ { name: 'Tiềm năng', val: 28, color: 'bg-slate-800', desc: 'Sẵn sàng Upsell' },
+ { name: 'Mới đăng ký', val: 15, color: 'bg-primary-500', desc: 'Cần Onboarding' }
+ ].map((seg, i) => (
+ <div key={i} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg border border-slate-200/60 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+ <div className={cn("w-2 h-2 rounded-full shrink-0", seg.color)} />
+ <div className="flex-1 min-w-0">
+ <p className="text-xs font-medium text-slate-900">{seg.name}</p>
+ <p className="text-[10px] text-slate-500 leading-tight">{seg.desc}</p>
+ </div>
+ <span className="text-sm font-semibold text-slate-900">{seg.val}%</span>
+ </div>
+ ))}
+ </div>
+ </div>
+
+ {/* Loyalty Insight — thống nhất card trắng */}
+ <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+ <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+ <Trophy className="w-4 h-4 text-amber-500" /> Loyalty Wallet
+ </h3>
+ <div className="grid grid-cols-2 gap-3">
+ <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+ <p className="text-[10px] text-slate-500 mb-1">Tổng điểm khả dụng</p>
+ <p className="text-base font-semibold text-slate-900">1,245,600 <span className="text-[10px] text-slate-400">pts</span></p>
+ </div>
+ <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+ <p className="text-[10px] text-slate-500 mb-1">Số dư Ví khách</p>
+ <p className="text-base font-semibold text-emerald-600">{formatCurrency(450000000)}</p>
+ </div>
+ <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+ <p className="text-[10px] text-slate-500 mb-1">Hạng Kim Cương</p>
+ <p className="text-base font-semibold text-sky-600">08 KH</p>
+ </div>
+ <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+ <p className="text-[10px] text-slate-500 mb-1">Loyalty Vàng+</p>
+ <p className="text-base font-semibold text-amber-600">{Math.round(totalCount * 0.15)}</p>
+ </div>
+ </div>
+ <button className="w-full mt-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+ <Settings className="w-3.5 h-3.5" /> Quản lý chính sách Loyalty
+ </button>
+ </div>
+
+ {/* Campaign tự động */}
+ <div className="bg-primary-50 border border-primary-100 rounded-lg p-4">
+ <div className="flex items-start gap-3">
+ <div className="p-2 bg-white text-primary-600 rounded-lg shadow-sm shrink-0">
+ <Mail className="w-4 h-4" />
+ </div>
+ <div className="min-w-0 flex-1">
+ <h4 className="text-xs font-medium text-primary-900">Chiến dịch tự động</h4>
+ <p className="text-[11px] text-primary-700/80 mt-0.5 leading-snug">12 khách hàng nhóm "Tiềm năng" có thể gửi Voucher.</p>
+ </div>
+ </div>
+ <button className="w-full mt-3 px-4 py-2 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700 transition-all">Kích hoạt Campaign</button>
+ </div>
+ </div>
+ </div>
+ </>
  ) : (
  <div className="h-[calc(100vh-200px)] bg-slate-50 border border-slate-300 rounded-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
  <div className="p-4 border-b border-slate-300 bg-white flex justify-between items-center z-10 relative w-full">
- <div className="flex items-center gap-3">
- <h2 className="font-bold text-slate-900">Sales Pipeline B2B (Mẫu)</h2>
- </div>
- <button className="text-xs px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 shadow-sm">+ Thêm Deal mới</button>
- </div>
- <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal min-w-0">
- <div className="flex gap-6 h-full items-start">
- {pipelineStages.map(stage => (
- <div 
- key={stage.id} 
- className="w-80 shrink-0 bg-slate-100 rounded-lg flex flex-col max-h-full border border-slate-300 shadow-sm"
- onDragOver={(e) => e.preventDefault()}
- onDrop={(e) => handleDropPipeline(e, stage.id)}
- >
- <div className="p-3 border-b border-slate-300 flex justify-between items-center bg-white rounded-t-xl shrink-0">
- <div className="flex items-center gap-2">
- <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
- <span className="font-bold text-sm text-slate-900">{stage.name}</span>
- </div>
- <span className="bg-slate-100 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-full">{stage.deals.length}</span>
- </div>
- <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
- {stage.deals.map((deal) => (
- <div 
- key={deal.id} 
- draggable
- onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
- className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-300 cursor-grab hover:shadow-sm transition-all group"
- >
- <h4 className="font-bold text-sm text-slate-900 group-hover:text-primary-600 transition-colors">{deal.client}</h4>
- <p className="text-xs text-slate-600 mt-1 line-clamp-2">{deal.pd}</p>
- <div className="mt-3 flex items-center justify-between">
- <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>
- <div className="flex -space-x-1.5">
- <div className="w-5 h-5 rounded-full bg-[#EAE7DF] text-[8px] font-bold text-orange-800 flex items-center justify-center border border-white">S1</div>
- </div>
- </div>
- </div>
- ))}
- <button className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 rounded-lg transition-colors border border-dashed border-slate-400">
- + Thêm Deal
- </button>
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- )}
+  <div className="flex items-center gap-3">
+  <h2 className="font-bold text-slate-900">Pipeline Khách hàng <span className="text-xs font-medium text-slate-500">— cùng dữ liệu Danh sách, sắp theo phân đoạn RFM</span></h2>
+  </div>
+  <button onClick={() => setShowAddModal(true)} className="text-xs px-3 py-1.5 bg-slate-900 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-800 shadow-sm">+ Thêm Khách hàng</button>
+  </div>
+  <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar-horizontal min-w-0">
+  <div className="flex gap-6 h-full items-start">
+  {pipelineStages.map(stage => (
+  <div 
+  key={stage.id} 
+  className="w-80 shrink-0 bg-slate-100 rounded-lg flex flex-col max-h-full border border-slate-300 shadow-sm"
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={(e) => handleDropPipeline(e, stage.id)}
+  >
+  <div className="p-3 border-b border-slate-300 flex justify-between items-center bg-white rounded-t-xl shrink-0">
+  <div className="flex items-center gap-2">
+  <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
+  <span className="font-bold text-sm text-slate-900">{stage.name}</span>
+  </div>
+  <span className="bg-slate-100 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-full">{stage.deals.length}</span>
+  </div>
+  <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
+  {stage.deals.map((deal) => {
+  const customerRef = dynamicCustomers.find(c => c.id === deal.customerId);
+  return (
+  <div 
+  key={deal.id} 
+  draggable
+  onDragStart={(e) => handleDragStartPipeline(e, deal.id, stage.id)}
+  onClick={() => customerRef && setSelectedCustomer(customerRef)}
+  className="bg-white p-3.5 rounded-lg shadow-sm border border-slate-300 cursor-grab hover:shadow-md transition-all group"
+  title="Click để mở hồ sơ khách hàng — kéo để đổi phân đoạn"
+  >
+  <h4 className="font-bold text-sm text-slate-900 group-hover:text-primary-600 transition-colors">{deal.client}</h4>
+  <p className="text-xs text-slate-600 mt-1 line-clamp-2">{deal.pd}</p>
+  <div className="mt-3 flex items-center justify-between">
+  <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">{formatCurrency(deal.val)}</span>
+  <div className="w-6 h-6 rounded-full bg-primary-50 text-primary-600 text-[10px] font-semibold flex items-center justify-center border border-primary-100">
+  {deal.client?.split(' ').pop()?.charAt(0) || 'K'}
+  </div>
+  </div>
+  </div>
+  );
+  })}
+  {stage.deals.length === 0 && (
+  <p className="text-center text-[11px] text-slate-400 py-6">Chưa có khách hàng trong nhóm này</p>
+  )}
+  <button onClick={() => setShowAddModal(true)} className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 rounded-lg transition-colors border border-dashed border-slate-400">
+  + Thêm Khách hàng
+  </button>
+  </div>
+  </div>
+  ))}
+  </div>
+  </div>
+  </div>
+  )}
 
  {adjustingCustomer && (
  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">

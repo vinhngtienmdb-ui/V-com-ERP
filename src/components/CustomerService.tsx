@@ -498,45 +498,48 @@ export function CustomerService() {
 
  {/* Main Content Area */}
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
- {/* Navigation Tabs */}
- <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
-  <button 
-    onClick={() => setActiveTab('dashboard')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'dashboard' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
-  >
-    <LayoutGridIcon className="w-4 h-4" /> Tổng quan Dashboard
-  </button>
-  <button 
-    onClick={() => setActiveTab('tickets')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
-  >
-    <Ticket className="w-4 h-4" /> Quản lý Tickets
-  </button>
-  <button 
-    onClick={() => setActiveTab('omnichannel_support')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'omnichannel_support' ? "bg-white text-primary-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
-  >
-    <MessageSquare className="w-4 h-4" /> Chăm sóc khách hàng đa kênh
-  </button>
+  {/* Navigation Tabs — nhóm: Vận hành | Phân tích & Cấu hình */}
+  <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
+   <span className="text-[10px] text-slate-400 self-center pl-2 pr-1 shrink-0 hidden sm:block">VẬN HÀNH</span>
    <button 
-     onClick={() => setActiveTab('wfm')}
-     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'wfm' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+     onClick={() => setActiveTab('dashboard')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'dashboard' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
    >
-     <Clock className="w-4 h-4" /> Phân ca & Chấm công
+     <LayoutGridIcon className="w-4 h-4" /> Tổng quan Dashboard
    </button>
-  <button 
-    onClick={() => setActiveTab('feedback')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
-  >
-    <Star className="w-4 h-4" /> Phản hồi & Đánh giá
-  </button>
-  <button 
-    onClick={() => setActiveTab('config')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
-  >
-    <Settings className="w-4 h-4" /> Cấu hình Kênh
-  </button>
-</div>
+   <button 
+     onClick={() => setActiveTab('tickets')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <Ticket className="w-4 h-4" /> Quản lý Tickets
+   </button>
+   <button 
+     onClick={() => setActiveTab('omnichannel_support')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'omnichannel_support' ? "bg-white text-primary-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <MessageSquare className="w-4 h-4" /> Chăm sóc khách hàng đa kênh
+   </button>
+   <span className="w-px bg-slate-300 self-stretch my-1 shrink-0" />
+   <span className="text-[10px] text-slate-400 self-center px-1 shrink-0 hidden sm:block">ĐỘI NGŨ & PHÂN TÍCH</span>
+    <button 
+      onClick={() => setActiveTab('wfm')}
+      className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'wfm' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+    >
+      <Clock className="w-4 h-4" /> Phân ca & Chấm công
+    </button>
+   <button 
+     onClick={() => setActiveTab('feedback')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <Star className="w-4 h-4" /> Phản hồi & Đánh giá
+   </button>
+   <button 
+     onClick={() => setActiveTab('config')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <Settings className="w-4 h-4" /> Cấu hình Kênh
+   </button>
+ </div>
 
  {isConnecting && (
   <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">

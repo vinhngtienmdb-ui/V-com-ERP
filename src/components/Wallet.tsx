@@ -595,19 +595,19 @@ export function WalletHub() {
  </div>
  </DraggableGrid>
 
- <div className="bg-slate-900 rounded-lg p-6 text-[#FAF9F5] flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm shadow-blue-200 overflow-hidden relative">
- <div className="absolute top-0 right-0 p-6 opacity-10">
+ <div className="bg-white rounded-lg p-6 text-slate-900 border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm overflow-hidden relative">
+ <div className="absolute top-0 right-0 p-6 opacity-5">
  <Globe className="w-48 h-48" />
  </div>
  <div className="relative z-10 max-w-lg space-y-4">
- <div className="flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full w-fit">
- <Zap className="w-3.5 h-3.5 text-yellow-400" />
- <span className="text-[9px] tracking-[0.2em]">Live Settlement</span>
+ <div className="flex items-center gap-2 px-3 py-1 bg-primary-50 rounded-full w-fit border border-primary-100">
+ <Zap className="w-3.5 h-3.5 text-primary-500" />
+ <span className="text-[9px] tracking-[0.2em] text-primary-700">Live Settlement</span>
  </div>
- <h3 className="text-3xl font-semibold italic tracking-tighter uppercase leading-none">Instant Settlement Protocol</h3>
- <p className="text-sm text-blue-100/80 leading-relaxed uppercase font-bold tracking-tight">Rút tiền về ngay lập tức 24/7 kể cả ngày lễ và cuối tuần qua hệ thống Napas 247. Phí giao dịch cố định chỉ 1.100đ.</p>
+ <h3 className="text-3xl font-semibold italic tracking-tighter uppercase leading-none text-slate-900">Instant Settlement Protocol</h3>
+ <p className="text-sm text-slate-500 leading-relaxed">Rút tiền về ngay lập tức 24/7 kể cả ngày lễ và cuối tuần qua hệ thống Napas 247. Phí giao dịch cố định chỉ 1.100đ.</p>
  </div>
- <button className="relative z-10 px-6 py-5 bg-white text-primary-750 rounded-lg font-semibold text-sm uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">
+ <button className="relative z-10 px-6 py-5 bg-slate-900 text-white rounded-lg font-medium text-sm whitespace-nowrap shadow-sm hover:bg-slate-800 transition-all active:scale-95">
  Cấu hình Rút tiền nhanh
  </button>
  </div>
@@ -905,22 +905,22 @@ export function WalletHub() {
  </div>
 
  {/* View Histories */}
- <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 flex flex-col justify-between shadow-sm relative overflow-hidden">
- <div className="absolute top-0 right-0 p-4 opacity-10">
+ <div className="bg-white p-6 rounded-lg border border-slate-200 flex flex-col justify-between shadow-sm relative overflow-hidden">
+ <div className="absolute top-0 right-0 p-4 opacity-5">
  <History className="w-32 h-32" />
  </div>
  <div className="relative z-10">
- <h3 className="text-xl font-semibold text-white italic">Tra cứu Giao dịch</h3>
+ <h3 className="text-xl font-semibold text-slate-900">Tra cứu Giao dịch</h3>
  <p className="text-sm text-slate-500 mt-2">Truy xuất lịch sử giao dịch và biến động số dư của từng nền tảng ví riêng biệt.</p>
  </div>
  <div className="relative z-10 space-y-2 mt-6">
- <button onClick={() => alert('Đang mở: Lịch sử nạp rút Ví Cashback hoàn tiền.')} className="w-full bg-slate-800 hover:bg-emerald-900/50 text-emerald-400 border border-emerald-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <button onClick={() => alert('Đang mở: Lịch sử nạp rút Ví Cashback hoàn tiền.')} className="w-full bg-slate-50 hover:bg-emerald-50 text-emerald-700 border border-slate-200 hover:border-emerald-200 py-3 rounded-lg font-medium text-xs transition-all text-left px-4 flex justify-between items-center group">
  <span>Lịch Sử Cashback</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
  </button>
- <button onClick={() => alert('Đang mở: Báo cáo tiêu dùng Ví Khuyến mại voucher.')} className="w-full bg-slate-800 hover:bg-blue-900/50 text-blue-400 border border-blue-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <button onClick={() => alert('Đang mở: Báo cáo tiêu dùng Ví Khuyến mại voucher.')} className="w-full bg-slate-50 hover:bg-blue-50 text-blue-700 border border-slate-200 hover:border-blue-200 py-3 rounded-lg font-medium text-xs transition-all text-left px-4 flex justify-between items-center group">
  <span>Sổ Phụ Khuyến Mại</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
  </button>
- <button onClick={() => alert('Đang mở: Lịch sử tích lũy/đổi Ví Điểm Loyalty.')} className="w-full bg-slate-800 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50 py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-left px-4 flex justify-between items-center group">
+ <button onClick={() => alert('Đang mở: Lịch sử tích lũy/đổi Ví Điểm Loyalty.')} className="w-full bg-slate-50 hover:bg-purple-50 text-purple-700 border border-slate-200 hover:border-purple-200 py-3 rounded-lg font-medium text-xs transition-all text-left px-4 flex justify-between items-center group">
  <span>Lịch Sử Điểm Loyalty</span> <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
  </button>
  </div>
@@ -1018,29 +1018,29 @@ export function WalletHub() {
  </div>
  
  {/* Footer / AI Monitoring */}
- <div className="bg-slate-900 rounded-lg p-6 flex flex-col md:flex-row gap-6 items-center justify-between relative overflow-hidden">
- <div className="absolute right-0 top-0 opacity-10">
+ <div className="bg-white rounded-lg p-6 border border-slate-200 flex flex-col md:flex-row gap-6 items-center justify-between relative overflow-hidden shadow-sm">
+ <div className="absolute right-0 top-0 opacity-5">
  <Lock className="w-64 h-64 -rotate-12 translate-x-32" />
  </div>
  
  <div className="relative z-10 max-w-xl space-y-6">
  <div className="flex items-center gap-3">
- <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10">
- <Fingerprint className="w-6 h-6 text-primary-500" />
+ <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center border border-primary-100">
+ <Fingerprint className="w-6 h-6 text-primary-600" />
  </div>
  <div>
- <h3 className="text-xl font-bold text-[#FAF9F5] tracking-tight uppercase italic">Vault Guard™ AI Monitoring</h3>
- <p className="text-primary-500 text-xs font-bold uppercase tracking-widest mt-0.5">Real-time fraud detection active</p>
+ <h3 className="text-xl font-bold text-slate-900 tracking-tight">Vault Guard™ AI Monitoring</h3>
+ <p className="text-primary-600 text-xs font-medium mt-0.5">Giám sát gian lận theo thời gian thực</p>
  </div>
  </div>
  <p className="text-sm text-slate-500 leading-relaxed">Hệ thống AI giám sát mọi giao dịch 24/7 để phát hiện các hành vi bất thường như rửa tiền, gian lận thẻ hoặc nạp tiền ảo. Tự động đóng băng tài khoản khi có rủi ro cao để bảo vệ tài sản của Doanh nghiệp.</p>
  </div>
 
- <div className="relative z-10 flex flex-col gap-3 w-full">
- <button className="w-full py-4 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-all shadow-sm text-sm flex items-center justify-center gap-2">
+ <div className="relative z-10 flex flex-col gap-3 w-full md:w-64">
+ <button className="w-full py-4 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-all shadow-sm text-sm flex items-center justify-center gap-2">
  Fraud Analysis Report <BarChart2 className="w-4 h-4" />
  </button>
- <button className="w-full py-4 bg-slate-900/5 text-[#FAF9F5] font-bold rounded-lg hover:bg-slate-900/10 transition-all border border-white/10 text-sm flex items-center justify-center gap-2">
+ <button className="w-full py-4 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-all border border-slate-200 text-sm flex items-center justify-center gap-2">
  Security Audit Log <History className="w-4 h-4" />
  </button>
  </div>

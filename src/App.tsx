@@ -48,6 +48,8 @@ const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then
 const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
 const PublicLegalInfo = React.lazy(() => import('./components/PublicLegalInfo').then(m => ({ default: m.PublicLegalInfo })));
 const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
+const EasyHRM = React.lazy(() => import('./components/EasyHRM').then(m => ({ default: m.EasyHRMComponent })));
+const TasksPage = React.lazy(() => import('./components/TasksPage').then(m => ({ default: m.TasksPage })));
 
 
 import { DEMO_MODE } from './services/dbService';
@@ -331,6 +333,7 @@ function AppLayout() {
     <Route path="/finance" element={<Finance />} />
     <Route path="/settlement" element={<SettlementManagement />} />
     <Route path="/hr" element={<HumanResources />} />
+    <Route path="/easyhrm" element={<EasyHRM />} />
     <Route path="/performance" element={<Performance />} />
     <Route path="/workspace" element={<Workspace />} />
     <Route path="/bi" element={<AnalyticsBI />} />
@@ -343,6 +346,7 @@ function AppLayout() {
     <Route path="/seller-finance" element={<SellerFinance />} />
     <Route path="/social" element={<SocialCommerce />} />
     <Route path="/workflow" element={<WorkflowHub />} />
+    <Route path="/tasks" element={<TasksPage />} />
     <Route path="/requests" element={<RequestHub />} />
     <Route path="/requests/new" element={<DynamicRequestForm />} />
     <Route path="/contracts" element={<ContractManager />} />
