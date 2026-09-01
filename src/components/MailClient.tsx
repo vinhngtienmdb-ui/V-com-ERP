@@ -344,7 +344,7 @@ export function MailClient() {
               <Mail className="w-8 h-8" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-base font-black text-slate-900 uppercase tracking-tight">Liên kết Hộp thư Cá nhân</h2>
+              <h2 className="text-base font-semibold text-slate-900 uppercase tracking-tight">Liên kết Hộp thư Cá nhân</h2>
               <p className="text-xs text-slate-500 leading-relaxed font-sans font-medium">
                 VComm ERP hỗ trợ tích hợp sâu tài khoản email công tác của bạn thông qua giao thức API an toàn. Kết nối để quản lý thư ngay tại chỗ.
               </p>
@@ -407,7 +407,7 @@ export function MailClient() {
 
               {/* Folders List */}
               <div className="space-y-1">
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-3">Hộp thư</span>
+                <span className="text-[9px] text-slate-400 block px-3">Hộp thư</span>
                 <div className="space-y-0.5">
                   {[
                     { id: 'inbox', label: 'Hộp thư đến', icon: Inbox, count: unreadCount },
@@ -435,7 +435,7 @@ export function MailClient() {
                         <span>{item.label}</span>
                       </div>
                       {item.count !== undefined && item.count > 0 && (
-                        <span className="bg-blue-100 text-primary-600 font-bold px-2 py-0.5 rounded-full text-[9px] shadow-3xs">{item.count}</span>
+                        <span className="bg-blue-100 text-primary-600 font-medium px-2 py-0.5 rounded-full text-[9px] shadow-3xs">{item.count}</span>
                       )}
                     </button>
                   ))}
@@ -487,7 +487,7 @@ export function MailClient() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nhà cung cấp:</label>
+                    <label className="text-[10px] text-slate-400 block">Nhà cung cấp:</label>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -519,7 +519,7 @@ export function MailClient() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Chế độ hoạt động:</label>
+                    <label className="text-[10px] text-slate-400 block">Chế độ hoạt động:</label>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -548,7 +548,7 @@ export function MailClient() {
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Client ID (Application ID):</label>
+                      <label className="text-[10px] text-slate-400">Client ID (Application ID):</label>
                       <input
                         type="text"
                         value={clientId}
@@ -558,7 +558,7 @@ export function MailClient() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Client Secret (Mã khóa bảo mật):</label>
+                      <label className="text-[10px] text-slate-400">Client Secret (Mã khóa bảo mật):</label>
                       <input
                         type="password"
                         value={clientSecret}
@@ -572,7 +572,7 @@ export function MailClient() {
                   <div className="grid grid-cols-2 gap-4">
                     {accountType === 'microsoft' && (
                       <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tenant ID (Azure AD):</label>
+                        <label className="text-[10px] text-slate-400">Tenant ID (Azure AD):</label>
                         <input
                           type="text"
                           value={tenantId}
@@ -583,7 +583,7 @@ export function MailClient() {
                       </div>
                     )}
                     <div className="space-y-1 col-span-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">API Scope Permissions:</label>
+                      <label className="text-[10px] text-slate-400">API Scope Permissions:</label>
                       <input
                         type="text"
                         value={scope}
@@ -702,7 +702,7 @@ export function MailClient() {
                         <div className="flex justify-between items-center pt-1.5">
                           <div className="flex gap-1.5 items-center">
                             {mail.attachments && mail.attachments.length > 0 && (
-                              <span className="text-[9px] bg-slate-105 border border-slate-200 text-slate-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-bold">
+                              <span className="text-[9px] bg-slate-105 border border-slate-200 text-slate-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-medium">
                                 <Paperclip className="w-2.5 h-2.5" />
                                 {mail.attachments.length}
                               </span>
@@ -780,7 +780,7 @@ export function MailClient() {
 
                       {selectedMail.attachments && selectedMail.attachments.length > 0 && (
                         <div className="pt-6 border-t border-slate-150 space-y-3">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tài liệu đính kèm ({selectedMail.attachments.length})</span>
+                          <span className="text-[10px] text-slate-400 block">Tài liệu đính kèm ({selectedMail.attachments.length})</span>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {selectedMail.attachments.map((file, idx) => (
                               <div 
@@ -830,7 +830,7 @@ export function MailClient() {
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
                 <Send className="w-4 h-4 text-primary-600" />
-                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Soạn thư mới</h3>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Soạn thư mới</h3>
               </div>
               <button 
                 onClick={() => setShowComposeModal(false)}
@@ -843,7 +843,7 @@ export function MailClient() {
             {/* Compose Inputs */}
             <div className="p-5 space-y-4 flex-1 overflow-y-auto">
               <div className="space-y-1 relative">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tới (To):</label>
+                <label className="text-[10px] text-slate-400">Tới (To):</label>
                 <input
                   type="text"
                   value={newMail.to}
@@ -872,7 +872,7 @@ export function MailClient() {
                           <div className="font-semibold text-slate-805">
                             {member.name} <span className="text-[10px] font-medium text-slate-450">&lt;{member.email}&gt;</span>
                           </div>
-                          <span className="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">{member.position}</span>
+                          <span className="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">{member.position}</span>
                         </div>
                       ))}
                   </div>
@@ -880,7 +880,7 @@ export function MailClient() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tiêu đề (Subject):</label>
+                <label className="text-[10px] text-slate-400">Tiêu đề (Subject):</label>
                 <input
                   type="text"
                   value={newMail.subject}
@@ -891,7 +891,7 @@ export function MailClient() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nội dung (Message Body):</label>
+                <label className="text-[10px] text-slate-400">Nội dung (Message Body):</label>
                 <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-b-0 border-slate-250 rounded-t-xl">
                   <button
                     type="button"
@@ -1030,10 +1030,10 @@ export function MailClient() {
             
             <div className="p-6 space-y-5">
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center mx-auto border border-primary-100 font-serif font-black text-lg">
+                <div className="w-12 h-12 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center mx-auto border border-primary-100 font-sans font-semibold text-lg">
                   V
                 </div>
-                <h3 className="text-xs font-extrabold text-slate-905">Cấp quyền cho ứng dụng VComm ERP</h3>
+                <h3 className="text-xs font-bold text-slate-905">Cấp quyền cho ứng dụng VComm ERP</h3>
                 <p className="text-[10px] text-slate-450 leading-relaxed font-medium">
                   Ứng dụng VComm Cloud ERP muốn truy cập tài khoản email cá nhân của bạn trên {accountType === 'google' ? 'Google Workspace' : 'Microsoft 365'} để đọc, gửi và sắp xếp hộp thư.
                 </p>

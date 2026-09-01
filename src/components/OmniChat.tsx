@@ -280,7 +280,7 @@ export function OmniChat() {
  {(activeThread?.meta.sender.name || 'Unknown')}
  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
  </h3>
- <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+ <p className="text-[10px] text-slate-500">
  {(() => {
    const c = activeThread?.meta.channel || 'web';
    const map: Record<string, string> = {
@@ -313,7 +313,7 @@ export function OmniChat() {
  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100 shadow-sm relative overflow-hidden group">
    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
    <div className="relative z-10">
-     <h4 className="text-xs font-extrabold text-indigo-900 uppercase tracking-widest flex items-center gap-2 mb-2">
+     <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-widest flex items-center gap-2 mb-2">
        <Sparkles className="w-4 h-4 text-indigo-600" /> AI Tóm tắt Hội thoại
      </h4>
      <p className="text-sm text-indigo-800 font-medium leading-relaxed">
@@ -348,7 +348,7 @@ export function OmniChat() {
  <div className="flex items-center gap-2 px-1">
  <span className="text-[10px] text-[#9CA3AF] font-medium">{(msg.sender?.name || 'User')} • {(new Date(msg.created_at * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}</span>
  {msg.message_type === 0 && (
-   <span className={cn("px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border", 
+   <span className={cn("px-1.5 py-0.5 rounded text-[8px] border", 
      idx % 3 === 0 ? "bg-red-50 text-red-700 border-red-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
    )}>
      {idx % 3 === 0 ? 'Tiêu cực' : 'Tích cực'}
@@ -411,7 +411,7 @@ export function OmniChat() {
  )}
  {inputValue.startsWith('/') && (
    <div className="absolute bottom-full mb-2 left-0 w-80 bg-white rounded-lg shadow-xl border border-slate-200 p-2 z-50">
-     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2 pb-2 mb-2 border-b border-slate-100">Mẫu câu trả lời nhanh</p>
+     <p className="text-[10px] text-slate-500 px-2 pb-2 mb-2 border-b border-slate-100">Mẫu câu trả lời nhanh</p>
      <button onClick={() => setInputValue('Dạ V-com xin chào anh/chị, em có thể hỗ trợ gì ạ?')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/chao</span>Xin chào</button>
      <button onClick={() => setInputValue('Dạ vâng, bên em sẽ kiểm tra ngay và phản hồi lại ạ.')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/wait</span>Chờ kiểm tra</button>
      <button onClick={() => setInputValue('Dạ đơn hàng của anh/chị đang được chuẩn bị và sẽ sớm giao cho bên vận chuyển ạ.')} className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-primary-50 hover:text-primary-700 rounded-md transition-colors"><span className="font-bold text-slate-900 mr-2">/ship</span>Tình trạng đơn</button>
@@ -445,7 +445,7 @@ export function OmniChat() {
  </button>
  </div>
  <div className="mt-2 text-center">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest">oowered by Gemini AI Engine</p>
+ <p className="text-[10px] text-[#9CA3AF]">oowered by Gemini AI Engine</p>
  </div>
  </div>
  </div>
@@ -467,7 +467,7 @@ export function OmniChat() {
  <p className="text-xs text-slate-500 font-mono mt-1">ERP ID: CUS-{(activeThread?.meta.sender.id || '9982').toString().padStart(4, '0')}</p>
  </div>
  <div className="flex justify-center gap-2">
- <span className="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1">
+ <span className="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg text-[10px] flex items-center gap-1">
    <Sparkles className="w-3 h-3" /> VIP BẠC
  </span>
  </div>
@@ -480,19 +480,19 @@ export function OmniChat() {
  </h4>
  <div className="grid grid-cols-2 gap-3">
  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Số điện thoại</p>
+ <p className="text-[10px] text-[#9CA3AF] mb-1">Số điện thoại</p>
  <p className="text-xs font-bold text-slate-900">090 123 4567</p>
  </div>
  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Email</p>
+ <p className="text-[10px] text-[#9CA3AF] mb-1">Email</p>
  <p className="text-xs font-bold text-slate-900 truncate" title="lan.pham@gmail.com">lan.pham@gmail.com</p>
  </div>
  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Công nợ (Debt)</p>
+ <p className="text-[10px] text-[#9CA3AF] mb-1">Công nợ (Debt)</p>
  <p className="text-xs font-bold text-red-600">{formatCurrency(1500000)}</p>
  </div>
  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
- <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">LTV (Vòng đời)</p>
+ <p className="text-[10px] text-[#9CA3AF] mb-1">LTV (Vòng đời)</p>
  <p className="text-xs font-bold text-emerald-600">{formatCurrency(12500000)}</p>
  </div>
  </div>
@@ -514,7 +514,7 @@ export function OmniChat() {
  <div className="flex justify-between items-start">
  <span className="text-xs font-bold text-slate-900 font-mono">{order.id}</span>
  <span className={cn(
- "text-[9px] font-bold uppercase",
+ "text-[9px]",
  order.status === 'shipping' ? "text-primary-600" : "text-emerald-600"
  )}>{order.status}</span>
  </div>

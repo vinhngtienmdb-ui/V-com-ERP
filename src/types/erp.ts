@@ -1,28 +1,30 @@
 export interface Product {
- id: string;
- name: string;
- sku: string;
- price: number;
- stock: number;
- category: string;
- status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pending_approval' | 'hidden';
- image: string;
- sellerName: string;
- brand: string;
- costPrice: number; // Giá vốn
- hiddenCosts: number; // Chi phí ẩn (shipping, packing, etc)
- margin: number; // Biên lợi nhuận
- profit: number; // Lợi nhuận thực tế
- misaSynced?: boolean;
- misaSyncedAt?: string;
- misaSyncError?: string;
- similarity?: number; // Điểm tương đồng cho AI Vector Search
- description?: string;
- weight?: string;
- dimensions?: string;
- images?: string[];
- videoUrl?: string;
- specs?: { key: string; value: string }[];
+  id: string;
+  name: string;
+  sku: string;
+  price: number;
+  stock: number;
+  category: string;
+  status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pending_approval' | 'hidden' | 'draft' | 'published' | 'rejected' | 'archived';
+  image: string;
+  image_urls?: string | string[]; // Gallery (PIM product_details contract)
+  sellerName: string;
+  sellerId?: string; // FK sellers — dùng cho KYC gate publish (NĐ 52/2013)
+  brand: string;
+  costPrice: number; // Giá vốn
+  hiddenCosts: number; // Chi phí ẩn (shipping, packing, etc)
+  margin: number; // Biên lợi nhuận
+  profit: number; // Lợi nhuận thực tế
+  misaSynced?: boolean;
+  misaSyncedAt?: string;
+  misaSyncError?: string;
+  similarity?: number; // Điểm tương đồng cho AI Vector Search
+  description?: string;
+  weight?: string;
+  dimensions?: string;
+  images?: string[];
+  videoUrl?: string;
+  specs?: { key: string; value: string }[];
 }
 
 
@@ -156,6 +158,8 @@ export interface Affiliate {
  bookingPrice?: number;
  phone?: string;
  categoryTags?: string[];
+ vneidVerified?: boolean;   // Xác thực VNeID (NĐ 52/85) — Affiliate phải định danh thật
+ vneidLinkedAt?: string;
 }
 
 // --- SCM & PURCHASING ---
@@ -501,12 +505,12 @@ export interface WalletTransaction {
 }
 
 export interface EscrowAccount {
- orderId: string;
- amount: number;
- sellerId: string;
- buyerId: string;
- releaseStatus: 'locked' | 'released' | 'refunded';
- autoReleaseAt: string;
+  orderId: string;
+  amount: number;
+  sellerId: string;
+  buyerId: string;
+  releaseStatus: 'locked' | 'released' | 'refunded' | 'disputed';
+  autoReleaseAt: string;
 }
 
 export interface PaymentGateway {

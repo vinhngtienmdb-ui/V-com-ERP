@@ -498,26 +498,37 @@ export function RequestHub() {
   
  
 
- // --- START OF LEGAL AI AUDITOR ENGINE ---
- const handleAiLegalAudit = async (req: any) => {
-  if (!req) return;
-  setIsAuditing(true);
-  setLegalAuditResult(null);
-  try {
-    const response = await fetch("/api/mock/legal-audit");
-    
+  // --- START OF LEGAL AI AUDITOR ENGINE ---
+  const handleAiLegalAudit = async (req: any) => {
+   if (!req) return;
+   setIsAuditing(true);
+   setLegalAuditResult(null);
+   try {
+    // Gemini Legal Auditor thật — truyền hồ sơ để AI thẩm định theo nội dung
+    const response = await fetch("/api/gemini/legal-audit", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        documentId: req.id,
+        type: req.type || 'request',
+        subtype: req.subtype || '',
+        title: req.title || '',
+        formData: { requester: req.requester, amount: req.amount, description: req.description }
+      })
+    });
+
     if (!response.ok) throw new Error('API Legal Audit failed');
     const data = await response.json();
     setLegalAuditResult(data.text);
     addNotification('Thẩm định AI hoàn tất', `Pháp chế VComm đã hoàn tất thẩm định tính tuân thủ cho hồ sơ ${req.id}.`);
-  } catch (err) {
+   } catch (err) {
     console.error('AI Legal Audit Error:', err);
     addNotification('Lỗi Thẩm định AI', 'Hệ thống thẩm định pháp lý AI đang bận. Vui lòng thử lại sau.');
-  } finally {
+   } finally {
     setIsAuditing(false);
-  }
- };
- // --- END OF LEGAL AI AUDITOR ENGINE ---
+   }
+  };
+  // --- END OF LEGAL AI AUDITOR ENGINE ---
 
    const executeSignature = async () => {
     if (!signingRequestId) return;
@@ -641,19 +652,19 @@ export function RequestHub() {
 
  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
   <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
+  <h3 className="text-[10px] text-slate-500 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
   <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
   </div>
   <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-primary-600" /> Tôi gửi đi</h3>
+  <h3 className="text-[10px] text-slate-500 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-primary-600" /> Tôi gửi đi</h3>
   <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
   </div>
   <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
+  <h3 className="text-[10px] text-slate-500 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
   <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
   </div>
   <div className="bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
+  <h3 className="text-[10px] text-slate-500 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
   <p className="text-3xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
   </div>
   </div>
@@ -726,7 +737,7 @@ export function RequestHub() {
  </div>
 
  <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm">
- <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-500 px-2 border-r border-slate-200">
+ <div className="flex items-center gap-1.5 text-[10px] text-slate-500 px-2 border-r border-slate-200">
  <Clock className="w-3 h-3" /> Từ
  </div>
  <input 
@@ -736,7 +747,7 @@ export function RequestHub() {
  className="text-xs bg-transparent focus:outline-none font-bold text-slate-800"
  />
  <div className="text-slate-500 mx-1">/</div>
- <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-500 px-2 border-r border-slate-200">
+ <div className="flex items-center gap-1.5 text-[10px] text-slate-500 px-2 border-r border-slate-200">
  Đến
  </div>
  <input 
@@ -772,11 +783,11 @@ export function RequestHub() {
  <table className="min-w-full w-max text-left border-collapse whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <ResizableTh columnId="type" width={reqColumns.find(c=>c.id==='type')?.currentWidth || 150} onResize={(w) => handleReqResize('type', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Loại / Mã phiếu</ResizableTh>
- <ResizableTh columnId="content" width={reqColumns.find(c=>c.id==='content')?.currentWidth || 300} onResize={(w) => handleReqResize('content', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nội dung</ResizableTh>
- <ResizableTh columnId="requester" width={reqColumns.find(c=>c.id==='requester')?.currentWidth || 150} onResize={(w) => handleReqResize('requester', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Người đề xuất</ResizableTh>
- <ResizableTh columnId="status" width={reqColumns.find(c=>c.id==='status')?.currentWidth || 120} onResize={(w) => handleReqResize('status', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</ResizableTh>
- <ResizableTh columnId="date" width={reqColumns.find(c=>c.id==='date')?.currentWidth || 120} onResize={(w) => handleReqResize('date', w)} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-right">Ngày gửi</ResizableTh>
+ <ResizableTh columnId="type" width={reqColumns.find(c=>c.id==='type')?.currentWidth || 150} onResize={(w) => handleReqResize('type', w)} className="px-4 py-3 text-[10px] text-slate-500 whitespace-nowrap">Loại / Mã phiếu</ResizableTh>
+ <ResizableTh columnId="content" width={reqColumns.find(c=>c.id==='content')?.currentWidth || 300} onResize={(w) => handleReqResize('content', w)} className="px-4 py-3 text-[10px] text-slate-500">Nội dung</ResizableTh>
+ <ResizableTh columnId="requester" width={reqColumns.find(c=>c.id==='requester')?.currentWidth || 150} onResize={(w) => handleReqResize('requester', w)} className="px-4 py-3 text-[10px] text-slate-500 whitespace-nowrap">Người đề xuất</ResizableTh>
+ <ResizableTh columnId="status" width={reqColumns.find(c=>c.id==='status')?.currentWidth || 120} onResize={(w) => handleReqResize('status', w)} className="px-4 py-3 text-[10px] text-slate-500 whitespace-nowrap text-center">Trạng thái</ResizableTh>
+ <ResizableTh columnId="date" width={reqColumns.find(c=>c.id==='date')?.currentWidth || 120} onResize={(w) => handleReqResize('date', w)} className="px-4 py-3 text-[10px] text-slate-500 whitespace-nowrap text-right">Ngày gửi</ResizableTh>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -784,7 +795,7 @@ export function RequestHub() {
  <tr key={doc.id} onClick={() => setSelectedRequestForView(doc)} className="hover:bg-slate-50 transition-colors group cursor-pointer">
  <td className="px-4 py-3">
  <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block mb-1">{doc.subtype}</span>
- <p className="text-[10px] text-slate-600 font-bold uppercase">{doc.id}</p>
+ <p className="text-[10px] text-slate-600">{doc.id}</p>
  </td>
  <td className="px-4 py-3">
  <p className="text-[13px] font-medium text-slate-900">{doc.title}</p>
@@ -795,7 +806,7 @@ export function RequestHub() {
  <td className="px-4 py-3 text-center">
  <div className="flex flex-col gap-1 items-center">
  <span className={cn(
- "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[10px] rounded-lg tracking-tight inline-flex items-center gap-1",
  doc.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'revoked' ? 'bg-slate-100 text-slate-500' : doc.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
  )}>
@@ -807,7 +818,7 @@ export function RequestHub() {
  </span>
  {doc.status === 'approved' && (
  <span className={cn(
- "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[10px] rounded-lg tracking-tight inline-flex items-center gap-1",
  (doc as any).signatureStatus === 'signed' ? "bg-slate-100 text-primary-600" : "bg-slate-100 text-slate-700"
  )}>
  <FileSignature className="w-3 h-3" />
@@ -921,7 +932,7 @@ export function RequestHub() {
  <Layout className="w-6 h-6" />
  </div>
  <div>
- <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Cấu hình luồng cho phiếu</label>
+ <label className="block text-[10px] text-slate-500 mb-1">Cấu hình luồng cho phiếu</label>
  <select 
  value={selectedConfigForWorkflow}
  onChange={(e) => setSelectedConfigForWorkflow(e.target.value)}
@@ -966,7 +977,7 @@ export function RequestHub() {
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
  <h5 className="font-bold text-slate-900 text-sm uppercase tracking-tight">Bước {idx + 1}: {idx === 0 ? 'Phê duyệt cấp cơ sở' : 'Phê duyệt cấp cao'}</h5>
- {idx === 0 && <span className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold text-slate-600 rounded uppercase">Bắt buộc</span>}
+ {idx === 0 && <span className="px-2 py-0.5 bg-slate-100 text-[10px] text-slate-600 rounded">Bắt buộc</span>}
  </div>
  {idx > 0 && (
  <button onClick={() => {
@@ -982,7 +993,7 @@ export function RequestHub() {
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-1.5">
- <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phương thức xác thực</label>
+ <label className="block text-[10px] text-slate-500">Phương thức xác thực</label>
  <select 
  value={step.ruleType}
  onChange={(e) => {
@@ -1003,7 +1014,7 @@ export function RequestHub() {
  <div className="space-y-1.5">
  {step.ruleType === 'specific' ? (
  <>
- <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thành viên phê duyệt</label>
+ <label className="block text-[10px] text-slate-500">Thành viên phê duyệt</label>
  <select 
  value={step.specificUser}
  onChange={(e) => {
@@ -1023,7 +1034,7 @@ export function RequestHub() {
  </>
  ) : (
  <>
- <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời hạn xác thực (SLA)</label>
+ <label className="block text-[10px] text-slate-500">Thời hạn xác thực (SLA)</label>
  <select 
  value={step.sla}
  onChange={(e) => {
@@ -1053,7 +1064,7 @@ export function RequestHub() {
  <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center mx-2 text-slate-600">
  <CheckCircle2 className="w-4 h-4" />
  </div>
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phiếu được hoàn tất và lưu trữ vào WorkflowHub</p>
+ <p className="text-[10px] text-slate-500">Phiếu được hoàn tất và lưu trữ vào WorkflowHub</p>
  </div>
  </div>
 
@@ -1124,8 +1135,8 @@ export function RequestHub() {
  {/* Document Preview */}
  <div className="bg-slate-50 rounded-lg p-6 border border-slate-300 space-y-4">
  <div className="flex justify-between items-center border-b border-slate-300 pb-4">
- <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu phê duyệt</span>
- <span className="px-2 py-0.5 bg-[#EAE7DF] text-primary-600 text-[10px] font-bold rounded">Hash: 8A2F...3B9C</span>
+ <span className="text-[10px] text-slate-500">Tài liệu phê duyệt</span>
+ <span className="px-2 py-0.5 bg-[#EAE7DF] text-primary-600 text-[10px] font-medium rounded">Hash: 8A2F...3B9C</span>
  </div>
  <div className="space-y-3">
  <h4 className="text-xl font-bold text-slate-900">{requests.find(r => r.id === signingRequestId)?.title}</h4>
@@ -1144,7 +1155,7 @@ export function RequestHub() {
 
  {/* CA Selection */}
  <div className="space-y-4">
- <label className="text-[13px] font-bold text-slate-900 flex items-center gap-2">
+ <label className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-primary-600" /> Chọn Nhà cung cấp Chứng thực (CA)
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1280,15 +1291,15 @@ export function RequestHub() {
  </h3>
  <div className="grid grid-cols-2 gap-y-4 gap-x-8">
  <div className="border-b border-slate-300 pb-1">
- <p className="text-[10px] font-bold text-slate-600 uppercase">Người đề xuất</p>
+ <p className="text-[10px] text-slate-600">Người đề xuất</p>
  <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.requester}</p>
  </div>
  <div className="border-b border-slate-300 pb-1">
- <p className="text-[10px] font-bold text-slate-600 uppercase">Loại phiếu</p>
+ <p className="text-[10px] text-slate-600">Loại phiếu</p>
  <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.subtype}</p>
  </div>
  <div className="col-span-2 border-b border-slate-300 pb-1">
- <p className="text-[10px] font-bold text-slate-600 uppercase">Nội dung / Lý do</p>
+ <p className="text-[10px] text-slate-600">Nội dung / Lý do</p>
  <p className="text-[13px] font-bold text-slate-900">{selectedRequestForPrint.title}</p>
  </div>
  </div>
@@ -1301,15 +1312,15 @@ export function RequestHub() {
  <table className="w-full border-2 border-slate-900 whitespace-nowrap">
  <thead>
  <tr className="bg-primary-600 text-white">
- <th className="px-4 py-2 text-[10px] font-bold uppercase text-left border-r border-white/20">Trường thông tin</th>
- <th className="px-4 py-2 text-[10px] font-bold uppercase text-left">Giá trị</th>
+ <th className="px-4 py-2 text-[10px] text-left border-r border-white/20">Trường thông tin</th>
+ <th className="px-4 py-2 text-[10px] text-left">Giá trị</th>
  </tr>
  </thead>
  <tbody>
  {formConfigs.find(c => c.name === selectedRequestForPrint.subtype)?.fields.map((field: any) => (
  <tr key={field.id} className="border-b border-slate-900">
- <td className="px-4 py-3 text-xs font-bold text-slate-800 border-r border-slate-900 bg-slate-50">{field.label}</td>
- <td className="px-4 py-3 text-xs font-bold text-slate-900">
+ <td className="px-4 py-3 text-xs font-medium text-slate-800 border-r border-slate-900 bg-slate-50">{field.label}</td>
+ <td className="px-4 py-3 text-xs font-medium text-slate-900">
  {(selectedRequestForPrint as any).formData?.[field.id] || '---'}
  </td>
  </tr>
@@ -1325,7 +1336,7 @@ export function RequestHub() {
 
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 border-t-2 border-slate-900 pt-8 px-4">
  <div className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-bold text-slate-900 uppercase">NGƯỜI ĐỀ XUẤT</p>
+ <p className="text-[10px] text-slate-900">NGƯỜI ĐỀ XUẤT</p>
  <div className="h-24 w-full flex items-center justify-center italic text-slate-500 text-[10px] border border-dashed border-slate-400 bg-slate-50/50 p-2 text-center">
  (Ký hồ sơ điện tử, <br/>ghi rõ họ tên)
  </div>
@@ -1336,11 +1347,11 @@ export function RequestHub() {
  {/* Dynamic Approval Logs for N levels */}
  {(selectedRequestForPrint.approvalLog || []).map((log: any, lIdx: number) => (
  <div key={lIdx} className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-bold text-slate-900 uppercase text-center">{log.stepName.toUpperCase()}</p>
+ <p className="text-[10px] text-slate-900 text-center">{log.stepName.toUpperCase()}</p>
  <div className="h-24 w-full flex flex-col items-center justify-center relative border border-slate-400 bg-slate-50/30 p-2">
  <div className="text-center">
  <div className={cn(
- "font-mono text-[9px] border-2 p-1 rotate-[-5deg] tracking-tight font-bold uppercase mb-1 px-2 whitespace-nowrap",
+ "font-mono text-[9px] border-2 p-1 rotate-[-5deg] tracking-tight mb-1 px-2 whitespace-nowrap",
  log.status === 'approved' ? "text-emerald-700 border-emerald-700" : "text-rose-700 border-rose-700"
  )}>
  {log.status === 'approved' ? '✓ ĐÃ DUYỆT' : '✗ TỪ CHỐI'}
@@ -1355,7 +1366,7 @@ export function RequestHub() {
  {/* Waiting Steps */}
  {formConfigs.find(c => c.name === selectedRequestForPrint.subtype)?.workflow.slice((selectedRequestForPrint.approvalLog || []).length).map((_: any, sIdx: number) => (
  <div key={`wait-${sIdx}`} className="flex flex-col items-center gap-3 opacity-40">
- <p className="text-[10px] font-bold text-slate-500 uppercase text-center">Xác thực cấp {(selectedRequestForPrint.approvalLog || []).length + sIdx + 1}</p>
+ <p className="text-[10px] text-slate-500 text-center">Xác thực cấp {(selectedRequestForPrint.approvalLog || []).length + sIdx + 1}</p>
  <div className="h-24 w-full flex items-center justify-center relative border border-dashed border-slate-300 bg-slate-100">
  <span className="text-[8px] font-bold text-slate-500 italic">Đang chờ xử lý...</span>
  </div>
@@ -1364,7 +1375,7 @@ export function RequestHub() {
  
  {/* Digital Signature Slot */}
  <div className="flex flex-col items-center gap-3">
- <p className="text-[10px] font-bold text-slate-900 uppercase">NIÊM PHONG SỐ (CA)</p>
+ <p className="text-[10px] text-slate-900">NIÊM PHONG SỐ (CA)</p>
  <div className="h-24 w-full flex items-center justify-center relative border-2 border-slate-900 bg-slate-50/10">
  {selectedRequestForPrint.signatureStatus === 'signed' ? (
   selectedRequestForPrint.signatureDraw ? (
@@ -1389,7 +1400,7 @@ export function RequestHub() {
     </div>
   ) : (
     <div className="relative flex flex-col items-center gap-1 p-2 text-center scale-90">
-      <div className="text-orange-800 font-bold text-[8px] uppercase tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
+      <div className="text-orange-800 text-[8px] tracking-tighter border-2 border-blue-700 px-2 py-1 bg-slate-100/50">
         CERTIFICATE: {selectedRequestForPrint.caProvider}<br/>
         <span className="text-[10px] uppercase">{selectedRequestForPrint.signedBy}</span>
       </div>
@@ -1440,14 +1451,14 @@ export function RequestHub() {
     </svg>
    </div>
    <div className="space-y-1">
-    <p className="text-[9px] font-bold text-slate-900 uppercase">Xác thực chứng từ điện tử (VComm E-Verify Portal)</p>
+    <p className="text-[9px] text-slate-900">Xác thực chứng từ điện tử (VComm E-Verify Portal)</p>
     <p className="text-[8px] text-slate-500 leading-normal max-w-sm">
       Quét mã QR để đối soát nguyên trạng nội dung gốc và lịch sử lưu vết thay đổi của chứng từ lưu mã hóa trên mạng lưới của Omni-System ERP v2.0.
     </p>
    </div>
   </div>
   <div className="text-right space-y-1 shrink-0">
-   <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">Hệ thống Trình ký & Ký số VComm Legal v2.0</p>
+   <p className="text-[8px] text-slate-500 leading-none">Hệ thống Trình ký & Ký số VComm Legal v2.0</p>
    <p className="text-[7px] text-slate-400 font-mono mt-0.5">
     Secure Hash: {selectedRequestForPrint.secureHash || 'AES-PENDING-UNSEALED'}<br />
     Xác minh UTC: {new Date().toLocaleString('vi-VN')}
@@ -1501,7 +1512,7 @@ export function RequestHub() {
      {/* Content */}
      <div className="p-6 space-y-4">
        <div className="space-y-2">
-         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Chọn Bộ phận / Phòng ban tiếp nhận:</label>
+         <label className="text-[10px] text-slate-500 block">Chọn Bộ phận / Phòng ban tiếp nhận:</label>
          <div className="grid grid-cols-2 gap-3">
            {[
              { id: 'accounting', name: 'Phòng Kế toán & Tài chính', desc: 'Quyết toán, đối soát tạm ứng', color: 'blue' },
@@ -1531,7 +1542,7 @@ export function RequestHub() {
 
        {/* Recipient name */}
        <div className="space-y-1">
-         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Chỉ định đích danh người xử lý (Tùy chọn):</label>
+         <label className="text-[10px] text-slate-500 block">Chỉ định đích danh người xử lý (Tùy chọn):</label>
          <input 
            type="text"
            placeholder="Ví dụ: Nguyễn Văn A (Trưởng phòng), hoặc bỏ trống để tự động nhận..."
@@ -1543,7 +1554,7 @@ export function RequestHub() {
 
        {/* Ghi chú / Đi kèm */}
        <div className="space-y-1">
-         <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block">Ý kiến luân chuyển / Hướng dẫn xử lý:</label>
+         <label className="text-[10px] text-slate-500 block">Ý kiến luân chuyển / Hướng dẫn xử lý:</label>
          <textarea
            rows={3}
            placeholder="Nhập hướng dẫn xử lý hồ sơ..."

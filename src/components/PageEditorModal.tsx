@@ -426,13 +426,13 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
           <div className="bg-white rounded-lg shadow-sm p-6 w-96 space-y-4">
             <h3 className="font-bold text-slate-800 flex items-center gap-2"><Link className="w-4 h-4 text-blue-500" />Chèn liên kết</h3>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">URL</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">URL</label>
               <input autoFocus type="url" value={linkHref} onChange={e => setLinkHref(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && insertLink()}
                 placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Văn bản hiển thị</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Văn bản hiển thị</label>
               <input type="text" value={linkText} onChange={e => setLinkText(e.target.value)}
                 placeholder="Để trống = dùng văn bản đang chọn"
                 className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
@@ -464,12 +464,12 @@ export function PageEditorModal({ url, defaultTitle = '', onClose }: Props) {
             <div className="flex items-center gap-2 text-slate-300 text-xs"><hr className="flex-1" />hoặc<hr className="flex-1" /></div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">URL hình ảnh</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">URL hình ảnh</label>
               <input autoFocus type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
                 placeholder="https://..." className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Mô tả (alt text)</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Mô tả (alt text)</label>
               <input type="text" value={imageAlt} onChange={e => setImageAlt(e.target.value)}
                 placeholder="Mô tả hình ảnh..."
                 className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" />

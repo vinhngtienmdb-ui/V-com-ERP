@@ -309,7 +309,7 @@ export function InternalChat() {
         <div className="p-4 flex flex-col gap-4 overflow-y-auto">
           {/* Header & New Group button */}
           <div className="flex justify-between items-center shrink-0">
-            <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-primary-600" /> Chat nội bộ
             </h2>
             <button 
@@ -337,7 +337,7 @@ export function InternalChat() {
           <div className="space-y-4">
             {/* Department Rooms */}
             <div className="space-y-1">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-2">Phòng ban</span>
+              <span className="text-[9px] text-slate-400 block px-2">Phòng ban</span>
               {filteredChannels.filter(c => c.type === 'department').map(ch => (
                 <button
                   key={ch.id}
@@ -362,7 +362,7 @@ export function InternalChat() {
 
             {/* Groups */}
             <div className="space-y-1">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-2">Nhóm dự án</span>
+              <span className="text-[9px] text-slate-400 block px-2">Nhóm dự án</span>
               {filteredChannels.filter(c => c.type === 'group').map(ch => (
                 <button
                   key={ch.id}
@@ -387,7 +387,7 @@ export function InternalChat() {
 
             {/* Direct Messages */}
             <div className="space-y-1">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-2">Đồng nghiệp</span>
+              <span className="text-[9px] text-slate-400 block px-2">Đồng nghiệp</span>
               {filteredChannels.filter(c => c.type === 'direct').map(ch => (
                 <button
                   key={ch.id}
@@ -637,7 +637,7 @@ export function InternalChat() {
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     <button 
                       onClick={() => setInputValue(prev => prev + ' @AI ')}
-                      className="p-1 text-indigo-650 hover:bg-indigo-50 rounded-md font-bold text-[9px] uppercase border border-indigo-200 cursor-pointer"
+                      className="p-1 text-indigo-650 hover:bg-indigo-50 rounded-md text-[9px] border border-indigo-200 cursor-pointer"
                     >
                       🤖 @AI
                     </button>
@@ -669,7 +669,7 @@ export function InternalChat() {
             <div className="flex items-center justify-between p-4 border-b border-slate-250 bg-slate-50/50">
               <div className="flex items-center gap-2">
                 <Users className="w-4.5 h-4.5 text-primary-600" />
-                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Tạo nhóm chat nội bộ</h3>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Tạo nhóm chat nội bộ</h3>
               </div>
               <button 
                 onClick={() => setShowCreateGroupModal(false)}
@@ -681,7 +681,7 @@ export function InternalChat() {
 
             <div className="p-4 space-y-4 flex-1 overflow-y-auto">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tên nhóm *</label>
+                <label className="text-[10px] text-slate-400">Tên nhóm *</label>
                 <input
                   type="text"
                   value={newGroupName}
@@ -692,7 +692,7 @@ export function InternalChat() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mô tả nhóm</label>
+                <label className="text-[10px] text-slate-400">Mô tả nhóm</label>
                 <input
                   type="text"
                   value={newGroupDesc}
@@ -704,7 +704,7 @@ export function InternalChat() {
 
               {/* Members check list */}
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Mời thành viên</label>
+                <label className="text-[10px] text-slate-400 block">Mời thành viên</label>
                 <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-[160px] overflow-y-auto bg-slate-50/20">
                   {MOCK_MEMBERS.map(member => (
                     <div 
@@ -755,7 +755,7 @@ export function InternalChat() {
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-primary-600" />
-                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">Xem trước tài liệu đính kèm</h3>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Xem trước tài liệu đính kèm</h3>
               </div>
               <button 
                 onClick={() => setPreviewAttachment(null)}
@@ -788,7 +788,7 @@ export function InternalChat() {
                 </div>
               ) : (
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-left font-mono text-[10px] text-slate-650 space-y-2 leading-relaxed bg-slate-900/5 select-text shadow-inner">
-                  <p className="font-bold border-b border-slate-200 pb-1.5 text-[9px] uppercase tracking-wider text-slate-400">Nội dung văn bản trích xuất (AI Document OCR Preview):</p>
+                  <p className="border-b border-slate-200 pb-1.5 text-[9px] text-slate-400">Nội dung văn bản trích xuất (AI Document OCR Preview):</p>
                   <p>1. CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
                   <p>2. Đơn vị đề xuất: Bộ phận Vận hành sàn VComm ERP</p>
                   <p>3. Người thực hiện: Lê Hoàng Minh</p>

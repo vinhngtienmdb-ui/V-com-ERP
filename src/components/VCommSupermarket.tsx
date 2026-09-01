@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { formatCurrency, cn } from '../lib/utils';
+import { resolveVatRate } from '../services/taxService';
 import { db, collection, addDoc, onSnapshot, query, doc, updateDoc, arrayUnion } from '../services/dbService';
 
 interface SupermarketProduct {
@@ -187,7 +188,10 @@ export function VCommSupermarket() {
 
   // Pricing calculations
   const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const taxAmount = Math.round(subtotal * 0.08); // Fixed 8% VAT supermarket incentive rate
+  // Thuế suất cấu hình theo thời điểm (NĐ 72/2025: 8% đến 31/12/2026) — không hardcode
+  const vatRate = resolveVatRate('*');
+  const taxAmount = vatRate === null ? 0 : Math.round(subtotal * vatRate);
+  const vatRatePct = ((vatRate ?? 0) * 100).toFixed(0);
   const discountAmount = Math.round(subtotal * (discountPercent / 100));
   const finalTotal = subtotal + taxAmount - discountAmount;
 
@@ -245,7 +249,7 @@ export function VCommSupermarket() {
     // Save to server
     try {
       await addDoc(collection(db, 'vcomm_sm_orders'), billPayload);
-      
+
       // Update each product's stock in Firebase on a simple batch logic
       cart.forEach(async (item) => {
         try {
@@ -258,6 +262,21 @@ export function VCommSupermarket() {
           console.warn("Stock update fail:", e);
         }
       });
+
+      // ⑧ HẠCH TOÁN KẾ TOÁN POS (TT 99/2025): bán hàng tại quầy phải vào sổ kép.
+      // Nợ 1111/1121 (tiền mặt/chuyển khoản) — Có 5111 (doanh thu bán hàng).
+      try {
+        const { postOrderJournalEntries } = await import('../services/accountingService');
+        await postOrderJournalEntries({
+          id: orderId,
+          customerName: customerName || 'Khách lẻ POS',
+          total: finalTotal,
+          items: billItems,
+          paymentMethod
+        } as any);
+      } catch (accErr: any) {
+        console.warn('[Supermarket] Hạch toán POS thất bại (không chặn bán hàng):', accErr.message || accErr);
+      }
     } catch (err) {
       console.warn("Error recording billing order: ", err);
     }
@@ -406,12 +425,12 @@ export function VCommSupermarket() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-500/10 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full">COMMERCE RETALER</span>
-            <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <span className="bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 text-[10px] px-2.5 py-0.5 rounded-full">COMMERCE RETALER</span>
+            <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Building className="w-2.5 h-2.5" /> Chuỗi Siêu Thị Offline VComm
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-100">Siêu Thị Offline VComm</h2>
+          <h2 className="text-2xl md:text-3xl font-sans font-bold text-slate-100">Siêu Thị Offline VComm</h2>
           <p className="text-xs md:text-sm text-emerald-150 max-w-2xl mt-1.5">
             Phần mềm quản lý tính tiền tại quầy (POS), quản trị mã kho hàng, phân khu kệ quầy và in bill hóa đơn nhiệt mini khổ K80 tự động dành riêng cho các siêu thị do VComm trực tiếp sở hữu kinh doanh.
           </p>
@@ -512,19 +531,19 @@ export function VCommSupermarket() {
                           <div className="absolute top-0 right-0 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-bl">Cận phát</div>
                         )}
                         {isOutOfStock && (
-                          <div className="absolute inset-0 bg-slate-900/15 flex items-center justify-center text-[11px] font-bold text-slate-100 uppercase bg-opacity-70 dark:bg-slate-900/30">Hết hàng</div>
+                          <div className="absolute inset-0 bg-slate-900/15 flex items-center justify-center text-[11px] text-slate-100 bg-opacity-70 dark:bg-slate-900/30">Hết hàng</div>
                         )}
                         
                         <div className="space-y-1">
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{getCategoryLabel(prod.category)}</span>
-                          <h4 className="text-[11.5px] font-extrabold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2 h-8" title={prod.name}>
+                          <span className="text-[9px] text-slate-400">{getCategoryLabel(prod.category)}</span>
+                          <h4 className="text-[11.5px] font-bold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2 h-8" title={prod.name}>
                             {prod.name}
                           </h4>
                           <p className="font-mono text-[9px] text-slate-450">SKU: {prod.sku}</p>
                         </div>
 
                         <div className="mt-3 flex items-center justify-between border-t border-slate-200/60 pt-2">
-                          <span className="font-black text-slate-900 text-xs">{formatCurrency(prod.price)}</span>
+                          <span className="font-semibold text-slate-900 text-xs">{formatCurrency(prod.price)}</span>
                           <span className="text-[9.5px] font-bold text-slate-500 bg-slate-200/50 px-1.5 py-0.5 rounded">Tồn: {prod.stock}</span>
                         </div>
                       </div>
@@ -542,7 +561,7 @@ export function VCommSupermarket() {
               <div className="p-4 border-b border-slate-150 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <ShoppingCart className="w-4 h-4 text-emerald-600" />
-                  <span className="font-black text-xs uppercase text-slate-800">Giỏ Hàng Siêu Thị ({cart.length})</span>
+                  <span className="font-semibold text-xs uppercase text-slate-800">Giỏ Hàng Siêu Thị ({cart.length})</span>
                 </div>
                 {cart.length > 0 && (
                   <button onClick={clearCart} className="text-slate-400 hover:text-red-500 transition-colors">
@@ -562,7 +581,7 @@ export function VCommSupermarket() {
                   cart.map((item) => (
                     <div key={item.product.id} className="flex items-start justify-between gap-1.5 text-xs text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-200/60">
                       <div className="flex-1 min-w-0">
-                        <h5 className="font-extrabold text-slate-900 leading-tight truncate" title={item.product.name}>{item.product.name}</h5>
+                        <h5 className="font-bold text-slate-900 leading-tight truncate" title={item.product.name}>{item.product.name}</h5>
                         <p className="font-semibold text-slate-500 mt-0.5">{formatCurrency(item.product.price)} / sản phẩm</p>
                       </div>
                       
@@ -582,7 +601,7 @@ export function VCommSupermarket() {
                           <Plus className="w-2.5 h-2.5" />
                         </button>
                         
-                        <div className="w-16 text-right font-extrabold text-slate-900 ml-1">
+                        <div className="w-16 text-right font-bold text-slate-900 ml-1">
                           {formatCurrency(item.product.price * item.quantity)}
                         </div>
                       </div>
@@ -596,7 +615,7 @@ export function VCommSupermarket() {
                 {/* Customer selection */}
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b border-dashed border-slate-200">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Tên Người mua:</span>
+                    <span className="text-[10px] text-slate-400 block">Tên Người mua:</span>
                     <input 
                       type="text"
                       value={customerName}
@@ -605,7 +624,7 @@ export function VCommSupermarket() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Số điện thoại (Loyalty):</span>
+                    <span className="text-[10px] text-slate-400 block">Số điện thoại (Loyalty):</span>
                     <input 
                       type="text"
                       placeholder="09..."
@@ -623,7 +642,7 @@ export function VCommSupermarket() {
                     <span className="font-semibold text-slate-900">{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Thuế VAT siêu thị (8%):</span>
+                    <span>Thuế VAT siêu thị ({vatRatePct}%):</span>
                     <span className="font-semibold text-slate-950">+{formatCurrency(taxAmount)}</span>
                   </div>
                   {/* Promo code */}
@@ -647,7 +666,7 @@ export function VCommSupermarket() {
 
                 {/* Payment channel selector */}
                 <div className="pt-2 border-t border-dashed border-slate-200 space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Cách thức thanh toán:</span>
+                  <span className="text-[10px] text-slate-400 block">Cách thức thanh toán:</span>
                   <div className="grid grid-cols-3 gap-1 px-1 py-0.5 bg-slate-200/50 rounded-lg">
                     <button 
                       onClick={() => setPaymentMethod('cash')}
@@ -680,13 +699,13 @@ export function VCommSupermarket() {
 
                   {paymentMethod === 'cash' && (
                     <div className="flex items-center justify-between gap-2 mt-2 bg-slate-100 p-2 rounded-lg border border-slate-200 animate-in fade-in">
-                      <span className="font-bold text-slate-600 block text-[10px] uppercase">Khách đưa VNĐ:</span>
+                      <span className="text-slate-600 block text-[10px]">Khách đưa VNĐ:</span>
                       <input 
                         type="number"
                         placeholder="0"
                         value={cashAmountReceive || ''}
                         onChange={(e) => setCashAmountReceive(Number(e.target.value))}
-                        className="px-2 py-1 w-28 text-right bg-white border border-slate-250 text-xs font-black text-slate-900 rounded focus:ring-1 focus:ring-emerald-500"
+                        className="px-2 py-1 w-28 text-right bg-white border border-slate-250 text-xs font-semibold text-slate-900 rounded focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
                   )}
@@ -694,7 +713,7 @@ export function VCommSupermarket() {
                   {paymentMethod === 'vietqr' && (
                     <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-lg flex items-center justify-between text-xs animate-in fade-in">
                       <div>
-                        <p className="font-extrabold text-indigo-900">Quét Mã VietQR Dynamic</p>
+                        <p className="font-bold text-indigo-900">Quét Mã VietQR Dynamic</p>
                         <p className="text-[10px] text-slate-500 mt-1">Hệ thống sinh mã QR hạch toán tức thời</p>
                       </div>
                       <QrCode className="w-10 h-10 text-indigo-700 animate-pulse shrink-0" />
@@ -706,7 +725,7 @@ export function VCommSupermarket() {
                 <div className="pt-2 border-t border-slate-200">
                   <div className="flex justify-between items-baseline mb-3">
                     <span className="font-bold text-slate-800 text-[11px]">Tổng cần thanh toán:</span>
-                    <span className="font-black text-lg text-emerald-700">{formatCurrency(finalTotal)}</span>
+                    <span className="font-semibold text-lg text-emerald-700">{formatCurrency(finalTotal)}</span>
                   </div>
 
                   {paymentMethod === 'cash' && cashAmountReceive >= finalTotal && (
@@ -735,27 +754,27 @@ export function VCommSupermarket() {
           {/* Quick statistic cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
-              <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Tổng số danh mục SKUs</span>
-              <h4 className="text-xl font-extrabold text-slate-900 mt-1">{stats.totalSkus} mặt hàng</h4>
+              <span className="text-[10px] text-slate-400 block">Tổng số danh mục SKUs</span>
+              <h4 className="text-xl font-bold text-slate-900 mt-1">{stats.totalSkus} mặt hàng</h4>
             </div>
             <div className="bg-amber-50/40 border border-amber-200 p-4 rounded-lg">
-              <span className="text-[10px] font-bold text-amber-600 block uppercase tracking-wider">Cần nhập thêm hàng (Low-stock)</span>
-              <h4 className="text-xl font-extrabold text-amber-700 mt-1">{stats.lowStockSkus} SKUs</h4>
+              <span className="text-[10px] text-amber-600 block">Cần nhập thêm hàng (Low-stock)</span>
+              <h4 className="text-xl font-bold text-amber-700 mt-1">{stats.lowStockSkus} SKUs</h4>
             </div>
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
-              <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Tổng số lượng thùng / gói sẵn kho</span>
-              <h4 className="text-xl font-extrabold text-slate-900 mt-1">{stats.totalStockUnits} chiếc</h4>
+              <span className="text-[10px] text-slate-400 block">Tổng số lượng thùng / gói sẵn kho</span>
+              <h4 className="text-xl font-bold text-slate-900 mt-1">{stats.totalStockUnits} chiếc</h4>
             </div>
             <div className="bg-emerald-50/20 border border-emerald-250 p-4 rounded-lg">
-              <span className="text-[10px] font-bold text-emerald-600 block uppercase tracking-wider">Khấu hao giá trị kho tồn</span>
-              <h4 className="text-xl font-extrabold text-emerald-700 mt-1">{formatCurrency(stats.inventoryValuation)}</h4>
+              <span className="text-[10px] text-emerald-600 block">Khấu hao giá trị kho tồn</span>
+              <h4 className="text-xl font-bold text-emerald-700 mt-1">{formatCurrency(stats.inventoryValuation)}</h4>
             </div>
           </div>
 
           {/* Table display */}
           <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
             <div className="p-4 border-b border-slate-150 flex flex-col sm:flex-row justify-between items-center gap-3">
-              <h4 className="font-extrabold text-sm text-slate-800">Quản Trị Kệ Trưng Bày & Tồn Phát Siêu Thị</h4>
+              <h4 className="font-bold text-sm text-slate-800">Quản Trị Kệ Trưng Bày & Tồn Phát Siêu Thị</h4>
               {/* Category selector */}
               <div className="flex gap-2">
                 <select 
@@ -801,7 +820,7 @@ export function VCommSupermarket() {
                           <p className="font-bold text-slate-900">{p.barcode}</p>
                           <span className="text-[10px] text-slate-400 capitalize">{p.sku}</span>
                         </td>
-                        <td className="p-4 font-black text-slate-900">
+                        <td className="p-4 font-semibold text-slate-900">
                           {p.name}
                         </td>
                         <td className="p-4">
@@ -811,7 +830,7 @@ export function VCommSupermarket() {
                         </td>
                         <td className="p-4 whitespace-nowrap">
                           <p className="font-medium text-slate-450 text-[11px]">Nhập: {formatCurrency(p.cost)}</p>
-                          <p className="font-extrabold text-slate-900">Bán: {formatCurrency(p.price)}</p>
+                          <p className="font-bold text-slate-900">Bán: {formatCurrency(p.price)}</p>
                         </td>
                         <td className="p-4 italic font-medium text-slate-500">
                           {p.shelfLocation}
@@ -874,7 +893,7 @@ export function VCommSupermarket() {
           >
             <div className="bg-emerald-900 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-base">Thêm Mặt Hàng Siêu Thị VComm</h3>
+                <h3 className="font-sans font-semibold text-base">Thêm Mặt Hàng Siêu Thị VComm</h3>
                 <p className="text-[11px] text-slate-350">Tạo mã vạch, đặt giá và kê khai vị trí quầy trưng bày.</p>
               </div>
               <button onClick={() => setShowAddModal(false)} className="text-white/60 hover:text-white p-1 rounded-md">
@@ -885,7 +904,7 @@ export function VCommSupermarket() {
             <form onSubmit={handleAddNewProduct} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Mã SKU định vị:</label>
+                  <label className="font-medium text-slate-700 block">Mã SKU định vị:</label>
                   <input 
                     type="text" 
                     required 
@@ -896,7 +915,7 @@ export function VCommSupermarket() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Mã Barcode vạch lẻ:</label>
+                  <label className="font-medium text-slate-700 block">Mã Barcode vạch lẻ:</label>
                   <input 
                     type="text" 
                     placeholder="89311..."
@@ -908,7 +927,7 @@ export function VCommSupermarket() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700 block">Tên mặt hàng:</label>
+                <label className="font-medium text-slate-700 block">Tên mặt hàng:</label>
                 <input 
                   type="text" 
                   required 
@@ -921,7 +940,7 @@ export function VCommSupermarket() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Nhóm ngành hàng:</label>
+                  <label className="font-medium text-slate-700 block">Nhóm ngành hàng:</label>
                   <select 
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
@@ -934,7 +953,7 @@ export function VCommSupermarket() {
                   </select>
                 </div>
                 <div className="space-y-1 col-span-2">
-                  <label className="font-bold text-slate-700 block">Vị trí tủ / quầy kệ kệ:</label>
+                  <label className="font-medium text-slate-700 block">Vị trí tủ / quầy kệ kệ:</label>
                   <input 
                     type="text" 
                     placeholder="Kệ gia dụng B1"
@@ -947,7 +966,7 @@ export function VCommSupermarket() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Giá gốc nhập (đ):</label>
+                  <label className="font-medium text-slate-700 block">Giá gốc nhập (đ):</label>
                   <input 
                     type="number" 
                     placeholder="0"
@@ -957,7 +976,7 @@ export function VCommSupermarket() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Giá niêm yết bán lẻ (đ):</label>
+                  <label className="font-medium text-slate-700 block">Giá niêm yết bán lẻ (đ):</label>
                   <input 
                     type="number" 
                     placeholder="0"
@@ -971,7 +990,7 @@ export function VCommSupermarket() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Tồn kho ban đầu:</label>
+                  <label className="font-medium text-slate-700 block">Tồn kho ban đầu:</label>
                   <input 
                     type="number" 
                     placeholder="0"
@@ -981,7 +1000,7 @@ export function VCommSupermarket() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Hạn mức báo động cận kho:</label>
+                  <label className="font-medium text-slate-700 block">Hạn mức báo động cận kho:</label>
                   <input 
                     type="number" 
                     value={newMinStock}
@@ -1044,13 +1063,13 @@ export function VCommSupermarket() {
                 className="bg-white text-black p-4 w-[80mm] border border-slate-350 shadow-xs text-[10px] font-mono leading-tight select-none"
               >
                 <div className="text-center mb-4 space-y-1">
-                  <h1 className="font-serif tracking-tight text-sm font-black uppercase text-slate-900">VComm Supermarket</h1>
+                  <h1 className="font-sans tracking-tight text-sm font-semibold uppercase text-slate-900">VComm Supermarket</h1>
                   <p className="text-[9px] font-semibold">Cửa hàng Offline số 1 • Thành Phố Hà Nội</p>
                   <p className="text-[9px] font-semibold">Địa chỉ: 15 Lê Duẩn, Nguyễn Du, Hai Bà Trưng</p>
                   <p className="text-[9px] font-semibold">Hotline hỗ trợ: 1900.8198</p>
                   <div className="my-2 border-b-2 border-dashed border-gray-400"></div>
                   
-                  <h2 className="text-xs font-black uppercase tracking-wide py-1">HÓA ĐƠN BÁN LẺ</h2>
+                  <h2 className="text-xs font-semibold uppercase tracking-wide py-1">HÓA ĐƠN BÁN LẺ</h2>
                   
                   <div className="text-left py-1 text-[9px] space-y-0.5">
                     <p>Mã HĐ: <span className="font-bold">{completedBillData.orderId}</span></p>
@@ -1074,8 +1093,8 @@ export function VCommSupermarket() {
                   <tbody>
                     {completedBillData.items.map((item: any, idx: number) => (
                       <tr key={idx} className="border-b border-dashed border-gray-150">
-                        <td className="py-1 pr-1 font-bold">{item.name}</td>
-                        <td className="py-1 text-center font-bold">{item.quantity}</td>
+                        <td className="py-1 pr-1 font-medium">{item.name}</td>
+                        <td className="py-1 text-center font-medium">{item.quantity}</td>
                         <td className="py-1 text-right">{new Intl.NumberFormat('vi-VN').format(item.total)}</td>
                       </tr>
                     ))}
@@ -1089,7 +1108,7 @@ export function VCommSupermarket() {
                     <span>{new Intl.NumberFormat('vi-VN').format(completedBillData.subtotal)}đ</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Thuế VAT siêu thị (8%):</span>
+                    <span>Thuế VAT siêu thị ({vatRatePct}%):</span>
                     <span>+{new Intl.NumberFormat('vi-VN').format(completedBillData.tax)}đ</span>
                   </div>
                   {completedBillData.discount > 0 && (
@@ -1101,7 +1120,7 @@ export function VCommSupermarket() {
 
                   <div className="my-1 border-b border-dashed border-gray-300"></div>
 
-                  <div className="flex justify-between font-black text-xs">
+                  <div className="flex justify-between font-semibold text-xs">
                     <span>TỔNG THANH TOÁN:</span>
                     <span>{new Intl.NumberFormat('vi-VN').format(completedBillData.total)} VNĐ</span>
                   </div>
@@ -1131,8 +1150,8 @@ export function VCommSupermarket() {
 
                 {/* Footer and dynamic barcode */}
                 <div className="text-center space-y-1 mt-3">
-                  <p className="font-extrabold text-[9px]">Quét Barcode nhận tích điểm Loyalty 5% vào Ví!</p>
-                  <div className="mx-auto my-2 w-44 bg-slate-900 h-8 flex items-center justify-center text-white font-serif tracking-[0.4em] font-extrabold text-[12px] opacity-90 rounded">
+                  <p className="font-bold text-[9px]">Quét Barcode nhận tích điểm Loyalty 5% vào Ví!</p>
+                  <div className="mx-auto my-2 w-44 bg-slate-900 h-8 flex items-center justify-center text-white font-sans tracking-[0.4em] font-bold text-[12px] opacity-90 rounded">
                     ||||||||||||||||||
                   </div>
                   <p className="text-[8px] italic mt-2 text-slate-400">Cảm ơn quý khách đã đồng hành cùng VComm!</p>

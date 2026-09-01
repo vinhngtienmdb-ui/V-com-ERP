@@ -267,22 +267,29 @@ export function Finance() {
       // Generate hash representing the ledger state being locked
       const ledgerContentHash = String(Math.abs(netProfit) + totalRevenue + totalExpenses);
 
-      // Remote Cloud HSM signing
-      const hsmRes = await fetch('/api/mock/hsm-sign-ledger', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          periodId: `CLOSED-${closingMonth}/${closingYear}`,
-          hashString: ledgerContentHash,
-          tenantId: 'tenant-vcomm-prod-01'
-        })
-      });
-      const hsmData = await hsmRes.json();
-      const hsmSignatureVal = hsmData.success ? hsmData.signature : `MOCK-SIG-LOCAL-${Date.now()}`;
-      const hsmSignedAtVal = hsmData.success ? hsmData.signedAt : new Date().toISOString();
-      const hsmThumbprintVal = hsmData.success ? hsmData.thumbprint : 'LOCAL_THUMBPRINT';
+      // Remote Cloud HSM signing — qua Integration Config (server proxy giữ key).
+      // Chưa cấu hình HSM → fallback chữ ký local + cảnh báo rõ (khóa sổ vẫn hợp lệ,
+      // ký số CQT bổ sung sau khi add key trong Settings → Tích hợp Pháp lý).
+      let hsmSignatureVal = `LOCAL-SIG-${Date.now()}`;
+      let hsmSignedAtVal = new Date().toISOString();
+      let hsmNote = 'Chưa cấu hình HSM — chữ ký tạm thời local, ký lại sau khi thêm key (Settings → Tích hợp Pháp lý).';
+      try {
+        const { signWithHsm, isCqReportingReady } = await import('../services/cqReportingService');
+        if (await isCqReportingReady()) {
+          const hsmRes = await signWithHsm({
+            type: 'ledger_closing',
+            referenceId: `CLOSED-${closingMonth}/${closingYear}`,
+            contentHash: String(ledgerContentHash)
+          });
+          if (hsmRes.success && hsmRes.signature) {
+            hsmSignatureVal = hsmRes.signature;
+            hsmSignedAtVal = hsmRes.signedAt || hsmSignedAtVal;
+            hsmNote = `Đã ký số HSM thật (key ${hsmRes.keyId}).`;
+          }
+        }
+      } catch (hsmErr: any) {
+        console.warn('[Finance] HSM signing thất bại (fallback local):', hsmErr.message);
+      }
 
       const lockDateStr = endOfMonth.toISOString().split('T')[0];
       await setDoc(doc(db, 'tenant_settings', 'config'), {
@@ -290,12 +297,12 @@ export function Finance() {
         tenantId: 'tenant-vcomm-prod-01',
         hsmSignature: hsmSignatureVal,
         hsmSignedAt: hsmSignedAtVal,
-        hsmThumbprint: hsmThumbprintVal
+        hsmThumbprint: hsmSignatureVal.slice(0, 16)
       });
 
       setClosingStatus({
         type: 'success',
-        message: `Khóa sổ và Kết chuyển tự động thành công Tháng ${closingMonth}/${closingYear}! Hệ thống đã ghi nhận số dư, chặn toàn bộ các giao dịch trước/bằng ngày ${endOfMonth.toLocaleDateString('vi-VN')} và hoàn thành ký số audit trail bằng Cloud HSM (Mã CK: ${hsmSignatureVal}).`
+        message: `Khóa sổ và Kết chuyển tự động thành công Tháng ${closingMonth}/${closingYear}! Hệ thống đã ghi nhận số dư, chặn toàn bộ các giao dịch trước/bằng ngày ${endOfMonth.toLocaleDateString('vi-VN')}. ${hsmNote}`
       });
     } catch (err: any) {
       console.error('[Finance] Closing period failed:', err);
@@ -416,7 +423,7 @@ export function Finance() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Tài chính & Kế toán</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Tài chính & Kế toán</h1>
  </div>
  <p className="text-sm text-[#6B7280]">Quản lý doanh số, chi phí, dòng tiền và báo cáo thuế theo thời gian thực.</p>
  </div>
@@ -439,34 +446,34 @@ export function Finance() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-primary-600">Doanh thu Hệ thống (G.M.V)</span>
+ <span className="text-[10px] text-[#6B7280] text-primary-600">Doanh thu Hệ thống (G.M.V)</span>
  <TrendingUp className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(totalIncome)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(totalIncome)}</span>
+ <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">Real-time</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-rose-600">Tổng Chi phí & Quỹ lương</span>
+ <span className="text-[10px] text-[#6B7280] text-rose-600">Tổng Chi phí & Quỹ lương</span>
  <TrendingDown className="w-4 h-4 text-rose-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(totalExpense)}</span>
- <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(totalExpense)}</span>
+ <span className="text-[10px] text-rose-600 font-medium bg-rose-50 px-2 py-0.5 rounded">Sync Data</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest text-teal-600">Lợi nhuận ròng (P&L)</span>
+ <span className="text-[10px] text-[#6B7280] text-teal-600">Lợi nhuận ròng (P&L)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className={cn("text-2xl font-black", netProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
+ <span className={cn("text-2xl font-semibold", netProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
  {formatCurrency(netProfit)}
  </span>
- <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
+ <span className="text-[10px] text-teal-600 font-medium bg-teal-50 px-2 py-0.5 rounded">Kết quả KD</span>
  </div>
  </div>
  <div className="bg-primary-600 p-6 rounded-lg border border-primary-700 shadow-sm hover:shadow-indigo-500/20 transition-all relative overflow-hidden group">
@@ -474,12 +481,12 @@ export function Finance() {
  <Building2 className="w-16 h-16 text-[#FAF9F5]" />
  </div>
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-primary-200 font-bold uppercase tracking-widest">Dấu vân tay tài chính</span>
+ <span className="text-[10px] text-primary-200">Dấu vân tay tài chính</span>
  <ShieldCheck className="w-4 h-4 text-[#FAF9F5]" />
  </div>
  <div className="flex items-end justify-between">
  <span className="text-xl font-bold text-[#FAF9F5]">Trust Score: 9.8</span>
- <span className="text-[10px] text-[#FAF9F5] font-bold bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
+ <span className="text-[10px] text-[#FAF9F5] font-medium bg-white/20 px-2 py-0.5 rounded underline cursor-pointer">Verify</span>
  </div>
  </div>
  </DraggableGrid>
@@ -551,7 +558,7 @@ export function Finance() {
  <Upload className="w-10 h-10" />
  </div>
  <div>
- <p className="text-sm font-black text-slate-900">Tải lên hoặc Kéo thả Hóa đơn</p>
+ <p className="text-sm font-semibold text-slate-900">Tải lên hoặc Kéo thả Hóa đơn</p>
  <p className="text-xs text-slate-500 mt-2">Hỗ trợ JPG, PNG, PDF (Tối đa 10MB)</p>
  </div>
  <button className="px-6 py-2.5 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">Chọn tệp tin</button>
@@ -562,8 +569,8 @@ export function Finance() {
  <Zap className="w-8 h-8 text-[#FAF9F5]" />
  </div>
  <div className="space-y-1 text-center">
- <p className="text-sm font-black text-slate-900 animate-pulse">Hệ thống đang xử lý...</p>
- <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Trích xuất Header & Line Items</p>
+ <p className="text-sm font-semibold text-slate-900 animate-pulse">Hệ thống đang xử lý...</p>
+ <p className="text-[10px] text-slate-500">Trích xuất Header & Line Items</p>
  </div>
  <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
  <div className="h-full bg-slate-900 animate-[scan_2s_ease-in-out_infinite]" />
@@ -599,37 +606,37 @@ export function Finance() {
  ) : (
  <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
  <div className="flex justify-between items-center pb-4 border-b border-slate-200">
- <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
+ <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả Trích xuất
  </h3>
- <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Match: 99.4%</span>
+ <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Match: 99.4%</span>
  </div>
 
  <div className="grid grid-cols-2 gap-6">
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Nhà cung cấp</p>
- <p className="text-sm font-black text-slate-900 uppercase tracking-tight">Công ty Điện lực Hà Nội - EVNHANOI</p>
+ <p className="text-[10px] text-slate-500 tracking-tighter">Nhà cung cấp</p>
+ <p className="text-sm font-semibold text-slate-900 uppercase tracking-tight">Công ty Điện lực Hà Nội - EVNHANOI</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Mã số thuế</p>
- <p className="text-sm font-black text-slate-900 font-mono tracking-tighter">0100101114</p>
+ <p className="text-[10px] text-slate-500 tracking-tighter">Mã số thuế</p>
+ <p className="text-sm font-semibold text-slate-900 font-mono tracking-tighter">0100101114</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Số hóa đơn</p>
- <p className="text-sm font-black text-primary-600 font-mono">EVN-2023-99881</p>
+ <p className="text-[10px] text-slate-500 tracking-tighter">Số hóa đơn</p>
+ <p className="text-sm font-semibold text-primary-600 font-mono">EVN-2023-99881</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Ngày hóa đơn</p>
- <p className="text-sm font-black text-slate-900">15/12/2023</p>
+ <p className="text-[10px] text-slate-500 tracking-tighter">Ngày hóa đơn</p>
+ <p className="text-sm font-semibold text-slate-900">15/12/2023</p>
  </div>
  </div>
 
  <div className="space-y-4">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chi tiết dòng (Line Items)</p>
+ <p className="text-[10px] text-slate-500">Chi tiết dòng (Line Items)</p>
  <div className="p-4 bg-slate-50 rounded-lg space-y-3">
  <div className="flex justify-between text-xs items-center">
  <span className="font-bold text-slate-900">Điện năng tiêu thụ (Mức 3)</span>
- <span className="font-black text-slate-900">{formatCurrency(4850000)}</span>
+ <span className="font-semibold text-slate-900">{formatCurrency(4850000)}</span>
  </div>
  <div className="flex justify-between text-[10px] text-slate-600 font-medium">
  <span>Thuế GTGT (10%)</span>
@@ -640,10 +647,10 @@ export function Finance() {
 
  <div className="bg-slate-900 p-6 rounded-lg flex justify-between items-center shadow-sm shadow-blue-200">
  <div>
- <p className="text-[10px] font-bold text-blue-100 uppercase mb-1 tracking-widest">Tổng tiền cần thanh toán</p>
- <p className="text-2xl font-black text-[#FAF9F5]">{formatCurrency(5335000)}</p>
+ <p className="text-[10px] text-blue-100 mb-1">Tổng tiền cần thanh toán</p>
+ <p className="text-2xl font-semibold text-[#FAF9F5]">{formatCurrency(5335000)}</p>
  </div>
- <button className="px-6 py-3 bg-white text-orange-700 rounded-lg font-black text-xs uppercase tracking-widest  transition-transform active:scale-95 shadow-sm">
+ <button className="px-6 py-3 bg-white text-orange-700 rounded-lg font-semibold text-xs uppercase tracking-widest  transition-transform active:scale-95 shadow-sm">
  Tạo bút toán Chi
  </button>
  </div>
@@ -660,7 +667,7 @@ export function Finance() {
  setScanResult(true);
  }, 2500);
  }}
- className="w-full py-5 bg-slate-900 text-[#FAF9F5] rounded-lg font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-100 flex items-center justify-center gap-3"
+ className="w-full py-5 bg-slate-900 text-[#FAF9F5] rounded-lg font-semibold text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-blue-100 flex items-center justify-center gap-3"
  >
  <Scan className="w-5 h-5" /> Bắt đầu AI Scan
  </button>
@@ -692,14 +699,14 @@ export function Finance() {
    <table className="w-full text-left border-collapse whitespace-nowrap">
    <thead>
    <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày hạch toán</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Số chứng từ</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Diễn giải</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Tài khoản Nợ (Debit)</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Tài khoản Có (Credit)</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">Đối tượng</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền (VND)</th>
-   <th className="px-6 py-4 text-[10px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Ngày hạch toán</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Số chứng từ</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Diễn giải</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Tài khoản Nợ (Debit)</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Tài khoản Có (Credit)</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280]">Đối tượng</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280] text-right">Số tiền (VND)</th>
+   <th className="px-6 py-4 text-[10px] text-[#6B7280] text-center">Trạng thái Ghi sổ</th>
    </tr>
    </thead>
    <tbody className="divide-y divide-[#F3F4F6]">
@@ -777,12 +784,12 @@ export function Finance() {
            <td className="px-6 py-4 text-center">
              <div className="flex items-center justify-center gap-2">
                {isDateLocked(je.date) ? (
-                 <span className="px-2.5 py-1 bg-slate-50 text-slate-400 text-[10px] font-bold border border-slate-200 rounded-full flex items-center gap-1">
+                 <span className="px-2.5 py-1 bg-slate-50 text-slate-400 text-[10px] font-medium border border-slate-200 rounded-full flex items-center gap-1">
                    <Lock className="w-3 h-3 text-slate-400" /> Đã khóa sổ
                  </span>
                ) : !je.isSimulated ? (
                  <div className="flex items-center gap-2">
-                   <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+                   <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-medium border border-emerald-200 rounded-full">
                      Đã ghi sổ 🟢
                    </span>
                    {je.txId && (
@@ -827,7 +834,7 @@ export function Finance() {
           <p className="text-[11px] text-slate-500 mt-0.5">Truy vấn biến động và số dư lũy kế của tài khoản kế toán nội bộ.</p>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-xs font-bold text-slate-700">Chọn tài khoản:</label>
+          <label className="text-xs font-medium text-slate-700">Chọn tài khoản:</label>
           <select 
             value={selectedLedgerAccount} 
             onChange={(e) => setSelectedLedgerAccount(e.target.value)}
@@ -944,20 +951,20 @@ export function Finance() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white p-5 border border-slate-200 rounded-lg shadow-xs">
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Số dư đầu kỳ</span>
-                <p className="text-lg font-black text-slate-800 mt-1">{formatCurrency(startingBalance)}</p>
+                <span className="text-[10px] text-slate-400">Số dư đầu kỳ</span>
+                <p className="text-lg font-semibold text-slate-800 mt-1">{formatCurrency(startingBalance)}</p>
               </div>
               <div className="bg-white p-5 border border-slate-200 rounded-lg shadow-xs">
-                <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Tổng phát sinh NỢ</span>
-                <p className="text-lg font-black text-emerald-600 mt-1">+{formatCurrency(totalDebit)}</p>
+                <span className="text-[10px] text-emerald-500">Tổng phát sinh NỢ</span>
+                <p className="text-lg font-semibold text-emerald-600 mt-1">+{formatCurrency(totalDebit)}</p>
               </div>
               <div className="bg-white p-5 border border-slate-200 rounded-lg shadow-xs">
-                <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Tổng phát sinh CÓ</span>
-                <p className="text-lg font-black text-rose-600 mt-1">-{formatCurrency(totalCredit)}</p>
+                <span className="text-[10px] text-rose-500">Tổng phát sinh CÓ</span>
+                <p className="text-lg font-semibold text-rose-600 mt-1">-{formatCurrency(totalCredit)}</p>
               </div>
               <div className="bg-white p-5 border border-indigo-200 bg-indigo-50/20 rounded-lg shadow-xs">
-                <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider">Số dư cuối kỳ</span>
-                <p className="text-lg font-black text-indigo-700 mt-1">{formatCurrency(currentBalance)}</p>
+                <span className="text-[10px] text-indigo-600">Số dư cuối kỳ</span>
+                <p className="text-lg font-semibold text-indigo-700 mt-1">{formatCurrency(currentBalance)}</p>
               </div>
             </div>
 
@@ -979,10 +986,10 @@ export function Finance() {
                       <tr key={entry.id + '-' + idx} className="hover:bg-slate-50/50">
                         <td className="px-5 py-3 text-slate-500">{entry.date}</td>
                         <td className="px-5 py-3 text-slate-800">{entry.description}</td>
-                        <td className="px-5 py-3 font-mono text-slate-600 font-bold">{entry.counterAccount}</td>
+                        <td className="px-5 py-3 font-mono text-slate-600 font-medium">{entry.counterAccount}</td>
                         <td className="px-5 py-3 text-right font-mono text-emerald-600 font-semibold">{entry.debit > 0 ? formatCurrency(entry.debit) : '-'}</td>
                         <td className="px-5 py-3 text-right font-mono text-rose-600 font-semibold">{entry.credit > 0 ? formatCurrency(entry.credit) : '-'}</td>
-                        <td className="px-5 py-3 text-right font-mono font-bold text-slate-900">{formatCurrency(entry.runningBalance)}</td>
+                        <td className="px-5 py-3 text-right font-mono font-medium text-slate-900">{formatCurrency(entry.runningBalance)}</td>
                       </tr>
                     ))}
                     {displayLedger.length === 0 && (
@@ -1037,7 +1044,7 @@ export function Finance() {
           )}
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center justify-between">
             <div>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ngày khóa sổ hiện tại</span>
+              <span className="text-[10px] text-slate-400">Ngày khóa sổ hiện tại</span>
               <p className="text-sm font-bold text-slate-700 mt-0.5">
                 {closingLockDate ? new Date(closingLockDate).toLocaleDateString('vi-VN') : 'Chưa có kỳ nào bị khóa'}
               </p>
@@ -1054,7 +1061,7 @@ export function Finance() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Tháng khóa sổ:</label>
+              <label className="text-xs font-medium text-slate-700">Tháng khóa sổ:</label>
               <select 
                 value={closingMonth} 
                 onChange={(e) => setClosingMonth(Number(e.target.value))}
@@ -1066,7 +1073,7 @@ export function Finance() {
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Năm:</label>
+              <label className="text-xs font-medium text-slate-700">Năm:</label>
               <select 
                 value={closingYear} 
                 onChange={(e) => setClosingYear(Number(e.target.value))}
@@ -1393,10 +1400,10 @@ export function Finance() {
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Báo cáo Kết quả Hoạt động Kinh doanh (P&L)</h3>
+                      <h3 className="text-base font-bold text-slate-900">Báo cáo Kết quả Hoạt động Kinh doanh (P&L)</h3>
                       <p className="text-[11px] text-slate-500 mt-0.5">Trích xuất số liệu phát sinh từ tài khoản 5111, 632, 6421, 6422 nội bộ.</p>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded font-mono">Real-time accounting</span>
+                    <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded font-mono">Real-time accounting</span>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -1414,7 +1421,7 @@ export function Finance() {
                           <td className="px-4 py-3">1. Doanh thu bán hàng và cung cấp dịch vụ (Có TK 5111)</td>
                           <td className="px-4 py-3 text-center font-mono">01</td>
                           <td className="px-4 py-3 text-center font-mono">-</td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">{formatCurrency(revenue)}</td>
+                          <td className="px-4 py-3 text-right font-mono font-medium text-slate-900">{formatCurrency(revenue)}</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50">
                           <td className="px-4 py-3">2. Các khoản giảm trừ doanh thu</td>
@@ -1423,22 +1430,22 @@ export function Finance() {
                           <td className="px-4 py-3 text-right font-mono text-slate-400">0</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50 bg-slate-50/30">
-                          <td className="px-4 py-3 font-bold text-slate-800">3. Doanh thu thuần về bán hàng và cung cấp dịch vụ (10 = 01 - 02)</td>
-                          <td className="px-4 py-3 text-center font-mono font-bold">10</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">3. Doanh thu thuần về bán hàng và cung cấp dịch vụ (10 = 01 - 02)</td>
+                          <td className="px-4 py-3 text-center font-mono font-medium">10</td>
                           <td className="px-4 py-3 text-center font-mono">-</td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-indigo-700">{formatCurrency(revenue)}</td>
+                          <td className="px-4 py-3 text-right font-mono font-medium text-indigo-700">{formatCurrency(revenue)}</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50">
                           <td className="px-4 py-3">4. Giá vốn hàng bán (Nợ TK 632)</td>
                           <td className="px-4 py-3 text-center font-mono">11</td>
                           <td className="px-4 py-3 text-center font-mono">-</td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-rose-600">{formatCurrency(cogs)}</td>
+                          <td className="px-4 py-3 text-right font-mono font-medium text-rose-600">{formatCurrency(cogs)}</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50 bg-slate-50/30">
-                          <td className="px-4 py-3 font-bold text-slate-800">5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ (20 = 10 - 11)</td>
-                          <td className="px-4 py-3 text-center font-mono font-bold">20</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ (20 = 10 - 11)</td>
+                          <td className="px-4 py-3 text-center font-mono font-medium">20</td>
                           <td className="px-4 py-3 text-center font-mono">-</td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-indigo-700">{formatCurrency(grossProfit)}</td>
+                          <td className="px-4 py-3 text-right font-mono font-medium text-indigo-700">{formatCurrency(grossProfit)}</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50">
                           <td className="px-4 py-3">6. Chi phí bán hàng (Nợ TK 6421)</td>
@@ -1453,10 +1460,10 @@ export function Finance() {
                           <td className="px-4 py-3 text-right font-mono text-slate-800">{formatCurrency(adminExpense)}</td>
                         </tr>
                         <tr className="hover:bg-slate-50/50 bg-indigo-50/15">
-                          <td className="px-4 py-3 font-bold text-indigo-900">8. Lợi nhuận thuần từ hoạt động kinh doanh (30 = 20 - 25 - 26)</td>
-                          <td className="px-4 py-3 text-center font-mono font-bold text-indigo-900">30</td>
+                          <td className="px-4 py-3 font-medium text-indigo-900">8. Lợi nhuận thuần từ hoạt động kinh doanh (30 = 20 - 25 - 26)</td>
+                          <td className="px-4 py-3 text-center font-mono font-medium text-indigo-900">30</td>
                           <td className="px-4 py-3 text-center font-mono">-</td>
-                          <td className={cn("px-4 py-3 text-right font-mono font-black text-sm", operatingProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
+                          <td className={cn("px-4 py-3 text-right font-mono font-semibold text-sm", operatingProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>
                             {formatCurrency(operatingProfit)}
                           </td>
                         </tr>
@@ -1471,7 +1478,7 @@ export function Finance() {
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Bảng Cân đối Phát sinh Tài khoản (Trial Balance)</h3>
+                      <h3 className="text-base font-bold text-slate-900">Bảng Cân đối Phát sinh Tài khoản (Trial Balance)</h3>
                       <p className="text-[11px] text-slate-500 mt-0.5">Đối chiếu số dư đầu kỳ, phát sinh nợ/có và số dư cuối kỳ toàn hệ thống tài khoản.</p>
                     </div>
                   </div>
@@ -1479,7 +1486,7 @@ export function Finance() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px]">
                           <th rowSpan={2} className="px-4 py-3 border-r border-slate-200 align-middle">Tài khoản</th>
                           <th rowSpan={2} className="px-4 py-3 border-r border-slate-200 align-middle">Tên tài khoản</th>
                           <th colSpan={2} className="px-4 py-2 border-b border-r border-slate-200 text-center">Số dư đầu kỳ</th>
@@ -1498,14 +1505,14 @@ export function Finance() {
                       <tbody className="divide-y divide-slate-100 font-medium text-slate-700 font-mono">
                         {trialData.map(acc => (
                           <tr key={acc.id} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-2.5 font-bold text-slate-900 border-r border-slate-100">{acc.id}</td>
+                            <td className="px-4 py-2.5 font-medium text-slate-900 border-r border-slate-100">{acc.id}</td>
                             <td className="px-4 py-2.5 font-sans text-left border-r border-slate-100">{acc.name}</td>
                             <td className="px-4 py-2.5 text-right border-r border-slate-100">{acc.openDebit > 0 ? formatCurrency(acc.openDebit) : '-'}</td>
                             <td className="px-4 py-2.5 text-right border-r border-slate-100">{acc.openCredit > 0 ? formatCurrency(acc.openCredit) : '-'}</td>
                             <td className="px-4 py-2.5 text-right border-r border-slate-100 text-emerald-600">{acc.debit > 0 ? formatCurrency(acc.debit) : '-'}</td>
                             <td className="px-4 py-2.5 text-right border-r border-slate-100 text-rose-600">{acc.credit > 0 ? formatCurrency(acc.credit) : '-'}</td>
-                            <td className="px-4 py-2.5 text-right border-r border-slate-100 font-bold text-slate-900">{acc.closeDebit > 0 ? formatCurrency(acc.closeDebit) : '-'}</td>
-                            <td className="px-4 py-2.5 text-right font-bold text-slate-900">{acc.closeCredit > 0 ? formatCurrency(acc.closeCredit) : '-'}</td>
+                            <td className="px-4 py-2.5 text-right border-r border-slate-100 font-medium text-slate-900">{acc.closeDebit > 0 ? formatCurrency(acc.closeDebit) : '-'}</td>
+                            <td className="px-4 py-2.5 text-right font-medium text-slate-900">{acc.closeCredit > 0 ? formatCurrency(acc.closeCredit) : '-'}</td>
                           </tr>
                         ))}
                         <tr className="bg-slate-100 font-bold text-slate-900">
@@ -1536,7 +1543,7 @@ export function Finance() {
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Bảng Cân đối Kế toán (Balance Sheet)</h3>
+                      <h3 className="text-base font-bold text-slate-900">Bảng Cân đối Kế toán (Balance Sheet)</h3>
                       <p className="text-[11px] text-slate-500 mt-0.5">Kiểm tra tính cân đối của hệ thống: Tổng Tài sản = Tổng Nguồn vốn.</p>
                     </div>
                   </div>
@@ -1544,16 +1551,16 @@ export function Finance() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Left Column: Assets */}
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase text-indigo-700 tracking-wider pb-2 border-b border-slate-100">A. TÀI SẢN</h4>
+                      <h4 className="text-xs font-semibold uppercase text-indigo-700 tracking-wider pb-2 border-b border-slate-100">A. TÀI SẢN</h4>
                       <table className="w-full text-xs">
                         <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                           {closingAssets.map(acc => (
                             <tr key={acc.id} className="hover:bg-slate-50/50">
                               <td className="py-2.5 text-left">{acc.name} ({acc.id})</td>
-                              <td className="py-2.5 text-right font-mono font-bold text-slate-900">{formatCurrency(acc.closeDebit - acc.closeCredit)}</td>
+                              <td className="py-2.5 text-right font-mono font-medium text-slate-900">{formatCurrency(acc.closeDebit - acc.closeCredit)}</td>
                             </tr>
                           ))}
-                          <tr className="font-extrabold text-slate-900 bg-slate-50/50">
+                          <tr className="font-bold text-slate-900 bg-slate-50/50">
                             <td className="py-3 text-left">TỔNG CỘNG TÀI SẢN</td>
                             <td className="py-3 text-right font-mono text-indigo-600 text-sm">{formatCurrency(totalAssets)}</td>
                           </tr>
@@ -1563,30 +1570,30 @@ export function Finance() {
 
                     {/* Right Column: Liabilities & Equity */}
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase text-purple-700 tracking-wider pb-2 border-b border-slate-100">B. NGUỒN VỐN</h4>
+                      <h4 className="text-xs font-semibold uppercase text-purple-700 tracking-wider pb-2 border-b border-slate-100">B. NGUỒN VỐN</h4>
                       <table className="w-full text-xs">
                         <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                           <tr>
-                            <td colSpan={2} className="py-2 font-bold text-slate-800">I. Nợ phải trả (Liabilities)</td>
+                            <td colSpan={2} className="py-2 font-medium text-slate-800">I. Nợ phải trả (Liabilities)</td>
                           </tr>
                           {closingLiabilities.map(acc => (
                             <tr key={acc.id} className="hover:bg-slate-50/50">
                               <td className="py-2.5 pl-4 text-left">{acc.name} ({acc.id})</td>
-                              <td className="py-2.5 text-right font-mono font-bold text-slate-900">{formatCurrency(acc.closeCredit - acc.closeDebit)}</td>
+                              <td className="py-2.5 text-right font-mono font-medium text-slate-900">{formatCurrency(acc.closeCredit - acc.closeDebit)}</td>
                             </tr>
                           ))}
                           <tr>
-                            <td colSpan={2} className="py-2 font-bold text-slate-800">II. Vốn chủ sở hữu (Equity)</td>
+                            <td colSpan={2} className="py-2 font-medium text-slate-800">II. Vốn chủ sở hữu (Equity)</td>
                           </tr>
                           <tr className="hover:bg-slate-50/50">
                             <td className="py-2.5 pl-4 text-left">Vốn góp của chủ sở hữu</td>
-                            <td className="py-2.5 text-right font-mono font-bold text-slate-900">{formatCurrency(equityCapital)}</td>
+                            <td className="py-2.5 text-right font-mono font-medium text-slate-900">{formatCurrency(equityCapital)}</td>
                           </tr>
                           <tr className="hover:bg-slate-50/50">
                             <td className="py-2.5 pl-4 text-left">Lợi nhuận sau thuế chưa phân phối</td>
-                            <td className="py-2.5 text-right font-mono font-bold text-emerald-600">{formatCurrency(operatingProfit)}</td>
+                            <td className="py-2.5 text-right font-mono font-medium text-emerald-600">{formatCurrency(operatingProfit)}</td>
                           </tr>
-                          <tr className="font-extrabold text-slate-900 bg-slate-50/50">
+                          <tr className="font-bold text-slate-900 bg-slate-50/50">
                             <td className="py-3 text-left">TỔNG CỘNG NGUỒN VỐN</td>
                             <td className="py-3 text-right font-mono text-purple-600 text-sm">{formatCurrency(totalResources)}</td>
                           </tr>
@@ -1616,7 +1623,7 @@ export function Finance() {
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Báo cáo Lưu chuyển Tiền tệ (Phương pháp Trực tiếp)</h3>
+                      <h3 className="text-base font-bold text-slate-900">Báo cáo Lưu chuyển Tiền tệ (Phương pháp Trực tiếp)</h3>
                       <p className="text-[11px] text-slate-500 mt-0.5">Tổng hợp dòng tiền vào/ra từ hoạt động kinh doanh thực tế qua TK 1111 và 1121.</p>
                     </div>
                   </div>
@@ -1680,7 +1687,7 @@ export function Finance() {
                         <tr className="bg-indigo-50 font-bold text-slate-900 text-sm">
                           <td className="px-4 py-3">Lưu chuyển tiền thuần trong kỳ (50 = 10 - 30)</td>
                           <td className="px-4 py-3 text-center font-mono">50</td>
-                          <td className={cn("px-4 py-3 text-right font-mono font-black", netCashFlow >= 0 ? "text-emerald-700" : "text-rose-700")}>
+                          <td className={cn("px-4 py-3 text-right font-mono font-semibold", netCashFlow >= 0 ? "text-emerald-700" : "text-rose-700")}>
                             {formatCurrency(netCashFlow)}
                           </td>
                         </tr>
@@ -1693,7 +1700,7 @@ export function Finance() {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-indigo-650 text-indigo-600 animate-pulse" />
-                        <h4 className="font-extrabold text-sm text-slate-800 uppercase tracking-wider">CFO Trợ lý Tài chính AI</h4>
+                        <h4 className="font-bold text-sm text-slate-800 uppercase tracking-wider">CFO Trợ lý Tài chính AI</h4>
                       </div>
                       <button
                         onClick={() => handleAnalyzeCashFlow(totalCfIn, totalCfOut, netCashFlow)}
@@ -1721,7 +1728,7 @@ export function Finance() {
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Bảng phân tích Tuổi nợ Phải thu Khách hàng</h3>
+                      <h3 className="text-base font-bold text-slate-900">Bảng phân tích Tuổi nợ Phải thu Khách hàng</h3>
                       <p className="text-[11px] text-slate-500 mt-0.5">Phân loại nợ phải thu (TK 1311) quá hạn dựa trên phương pháp FIFO (First-In First-Out).</p>
                     </div>
                   </div>
@@ -1729,7 +1736,7 @@ export function Finance() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px]">
                           <th className="px-4 py-3">Mã Đối tượng</th>
                           <th className="px-4 py-3 text-right">Tổng nợ phải thu</th>
                           <th className="px-4 py-3 text-right text-emerald-600">Trong hạn (0-30 ngày)</th>
@@ -1741,8 +1748,8 @@ export function Finance() {
                       <tbody className="divide-y divide-slate-100 font-medium text-slate-700 font-mono">
                         {agingData.map((cust, idx) => (
                           <tr key={cust.partnerId + '-' + idx} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-2.5 font-sans font-bold text-slate-900">{cust.partnerId}</td>
-                            <td className="px-4 py-2.5 text-right font-bold text-slate-900">{formatCurrency(cust.totalOutstanding)}</td>
+                            <td className="px-4 py-2.5 font-sans font-medium text-slate-900">{cust.partnerId}</td>
+                            <td className="px-4 py-2.5 text-right font-medium text-slate-900">{formatCurrency(cust.totalOutstanding)}</td>
                             <td className="px-4 py-2.5 text-right text-emerald-600">{cust.bucket0_30 > 0 ? formatCurrency(cust.bucket0_30) : '-'}</td>
                             <td className="px-4 py-2.5 text-right text-amber-600">{cust.bucket31_60 > 0 ? formatCurrency(cust.bucket31_60) : '-'}</td>
                             <td className="px-4 py-2.5 text-right text-orange-600">{cust.bucket61_90 > 0 ? formatCurrency(cust.bucket61_90) : '-'}</td>
@@ -1848,12 +1855,12 @@ function Circular99Reports({
     const reportHtml = activeReport === 'B01' ? `
       <table class="header-table">
         <tr>
-          <td class="font-bold">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
-          <td class="text-right font-bold">Mẫu số B01-HKD</td>
+          <td class="font-medium">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
+          <td class="text-right font-medium">Mẫu số B01-HKD</td>
         </tr>
         <tr>
           <td>Địa chỉ: Tầng 6, VComm Building, Hà Nội</td>
-          <td class="text-right font-bold">Ban hành theo Thông tư số 99/2025/TT-BTC</td>
+          <td class="text-right font-medium">Ban hành theo Thông tư số 99/2025/TT-BTC</td>
         </tr>
       </table>
 
@@ -1974,12 +1981,12 @@ function Circular99Reports({
     ` : `
       <table class="header-table">
         <tr>
-          <td class="font-bold">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
-          <td class="text-right font-bold">Mẫu số B02-HKD</td>
+          <td class="font-medium">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
+          <td class="text-right font-medium">Mẫu số B02-HKD</td>
         </tr>
         <tr>
           <td>Địa chỉ: Tầng 6, VComm Building, Hà Nội</td>
-          <td class="text-right font-bold">Ban hành theo Thông tư số 99/2025/TT-BTC</td>
+          <td class="text-right font-medium">Ban hành theo Thông tư số 99/2025/TT-BTC</td>
         </tr>
       </table>
 
@@ -2111,7 +2118,7 @@ function Circular99Reports({
     <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
       <div className="flex justify-between items-center border-b border-slate-200 pb-4">
         <div>
-          <h3 className="text-base font-extrabold text-slate-900">Báo cáo chuẩn Thông tư 99/2025/TT-BTC</h3>
+          <h3 className="text-base font-bold text-slate-900">Báo cáo chuẩn Thông tư 99/2025/TT-BTC</h3>
           <p className="text-xs text-slate-500 mt-1">Đã áp dụng các quy chuẩn kế toán và biểu mẫu chính thức cho Hộ kinh doanh & Doanh nghiệp siêu nhỏ.</p>
         </div>
 
@@ -2156,7 +2163,7 @@ function Circular99Reports({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                <tr className="font-extrabold bg-slate-50/50">
+                <tr className="font-bold bg-slate-50/50">
                   <td className="px-4 py-3 border-r border-slate-200">A. TÀI SẢN (100 = 110 + 120 + 130 + 140)</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">100</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">320,000,000</td>
@@ -2187,7 +2194,7 @@ function Circular99Reports({
                   <td className="px-4 py-2.5 text-right font-semibold text-slate-700">{formatCurrency(advances)}</td>
                 </tr>
 
-                <tr className="font-extrabold bg-slate-50/50 border-t-2 border-slate-300">
+                <tr className="font-bold bg-slate-50/50 border-t-2 border-slate-300">
                   <td className="px-4 py-3 border-r border-slate-200">B. NGUỒN VỐN (200 = 210 + 220)</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">200</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">320,000,000</td>
@@ -2262,15 +2269,15 @@ function Circular99Reports({
                   <td className="px-4 py-3 border-r border-slate-200">1. Doanh thu bán hàng và cung cấp dịch vụ</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">01</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
-                  <td className="px-4 py-3 text-right font-bold text-slate-800">{formatCurrency(revenue)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-800">{formatCurrency(revenue)}</td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 border-r border-slate-200">2. Các khoản giảm trừ doanh thu</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">02</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
-                  <td className="px-4 py-3 text-right font-bold text-slate-800">0</td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-800">0</td>
                 </tr>
-                <tr className="font-extrabold bg-slate-50/30">
+                <tr className="font-bold bg-slate-50/30">
                   <td className="px-4 py-3 border-r border-slate-200">3. Doanh thu thuần về bán hàng và cung cấp dịch vụ (10 = 01 - 02)</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">10</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
@@ -2280,9 +2287,9 @@ function Circular99Reports({
                   <td className="px-4 py-3 border-r border-slate-200">4. Giá vốn hàng bán</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">11</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
-                  <td className="px-4 py-3 text-right font-bold text-slate-800">{formatCurrency(cogs)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-800">{formatCurrency(cogs)}</td>
                 </tr>
-                <tr className="font-extrabold bg-slate-50/50">
+                <tr className="font-bold bg-slate-50/50">
                   <td className="px-4 py-3 border-r border-slate-200">5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ (20 = 10 - 11)</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">20</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
@@ -2292,15 +2299,15 @@ function Circular99Reports({
                   <td className="px-4 py-3 border-r border-slate-200">6. Chi phí bán hàng</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">21</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
-                  <td className="px-4 py-3 text-right font-bold text-slate-800">{formatCurrency(sellingExpense)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-800">{formatCurrency(sellingExpense)}</td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 border-r border-slate-200">7. Chi phí quản lý doanh nghiệp</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">22</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>
-                  <td className="px-4 py-3 text-right font-bold text-slate-800">{formatCurrency(adminExpense)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-800">{formatCurrency(adminExpense)}</td>
                 </tr>
-                <tr className="font-extrabold bg-slate-100 border-t-2 border-slate-300">
+                <tr className="font-bold bg-slate-100 border-t-2 border-slate-300">
                   <td className="px-4 py-3 border-r border-slate-200">8. Lợi nhuận thuần từ hoạt động kinh doanh (30 = 20 - 21 - 22)</td>
                   <td className="px-4 py-3 text-center border-r border-slate-200">30</td>
                   <td className="px-4 py-3 text-right border-r border-slate-200">0</td>

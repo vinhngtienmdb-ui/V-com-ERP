@@ -108,12 +108,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
        } else {
          setActiveStore(null);
        }
-     } catch (err) {
-       console.error('Error loading tenant stores from Firestore:', err);
-       // Fallback offline tolerance with seed stores
-       setAvailableStores(SEED_STORES);
-       setActiveStore(SEED_STORES[0]);
-     } finally {
+      } catch (err) {
+        console.error('Error loading tenant stores from Firestore:', err);
+        // Offline fallback to seed stores is only acceptable in demo mode.
+        // Production must surface the failure instead of silently showing demo stores.
+        if (DEMO_MODE) {
+          setAvailableStores(SEED_STORES);
+          setActiveStore(SEED_STORES[0]);
+        } else {
+          setAvailableStores([]);
+          setActiveStore(null);
+        }
+      } finally {
        setLoadingStores(false);
      }
    };

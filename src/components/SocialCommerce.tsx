@@ -55,7 +55,7 @@ export function SocialCommerce() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Cộng đồng & Mạng xã hội TMĐT</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Cộng đồng & Mạng xã hội TMĐT</h1>
  <p className="text-sm text-[#6B7280] mt-1">Không gian chia sẻ nội dung UGC, tạo xu hướng mua sắm và kết nối cộng đồng người dùng.</p>
  </div>
  <div className="flex gap-3">
@@ -73,7 +73,7 @@ export function SocialCommerce() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng bài viết (Kho bài viết)</span>
+ <span className="text-[10px] text-[#6B7280]">Tổng bài viết (Kho bài viết)</span>
  <MessageSquare className="w-4 h-4 text-primary-600" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">12.5k</div>
@@ -81,7 +81,7 @@ export function SocialCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng lượt tương tác</span>
+ <span className="text-[10px] text-[#6B7280]">Tổng lượt tương tác</span>
  <Heart className="w-4 h-4 text-red-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">1.2M</div>
@@ -89,7 +89,7 @@ export function SocialCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cộng đồng (Nhóm)</span>
+ <span className="text-[10px] text-[#6B7280]">Cộng đồng (Nhóm)</span>
  <Users className="w-4 h-4 text-[#8B5CF6]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">420</div>
@@ -97,7 +97,7 @@ export function SocialCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">UGC Conversion Rate</span>
+ <span className="text-[10px] text-[#6B7280]">UGC Conversion Rate</span>
  <TrendingUp className="w-4 h-4 text-[#10B981]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">4.8%</div>
@@ -170,7 +170,7 @@ export function SocialCommerce() {
  <Share2 className="w-4 h-4" /> Chia sẻ
  </button>
  </div>
- <button className="bg-[#F9FAFB] px-4 py-2 rounded-lg text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition-all uppercase tracking-widest">Ghim sản phẩm trong bài</button>
+ <button className="bg-[#F9FAFB] px-4 py-2 rounded-lg text-[10px] text-slate-700 hover:bg-slate-100 transition-all">Ghim sản phẩm trong bài</button>
  </div>
  </div>
  ))}

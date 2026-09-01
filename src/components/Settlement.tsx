@@ -107,6 +107,8 @@ export function SettlementManagement() {
   const [pickupSettlements, setPickupSettlements] = useState(MOCK_PICKUP_SETTLEMENTS);
   const [loading, setLoading] = useState(true);
   const [isReconciling, setIsReconciling] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState<{ kind: string; data: any } | null>(null);
+  const [approvalBusy, setApprovalBusy] = useState(false);
 
   // Pagination states
   const [settlementPage, setSettlementPage] = useState(1);
@@ -295,77 +297,76 @@ export function SettlementManagement() {
   };
 
   const approveSettlement = async (settlement: SettlementRow) => {
-    if (!confirm('Duyệt đối soát và chuyển tiền vào ví gian hàng?')) return;
-    try {
-      if (!settlement.sellerId || !settlement.netPayout) return;
-      
-      const { updateWalletBalance } = await import('../services/dbService');
-      await updateWalletBalance(settlement.sellerId, settlement.netPayout, {
-        type: 'deposit',
-        gateway: 'system_reconciliation',
-        status: 'success'
-      });
-
-      const mockDocRef = { path: `settlements/${settlement.id}`, tableName: 'settlements', id: settlement.id };
-      await updateDoc(mockDocRef as any, { status: 'completed' });
-      
-      await recordPartnerLedgerEntry({
-        partnerId: settlement.sellerId,
-        partnerType: 'seller',
-        refType: 'settlement',
-        refId: settlement.id,
-        debit: 0,
-        credit: settlement.netPayout
-      });
-      
-      alert('Đã duyệt chuyển tiền vào ví gian hàng!');
-      fetchSettlements();
-    } catch (err) {
-      console.error(err);
-      alert('Lỗi khi duyệt đối soát');
-    }
+    setPendingApproval({ kind: 'settlement', data: settlement });
   };
 
   const approveWithdrawal = async (withdrawal: WithdrawalRequest) => {
-    if (!confirm('Xác nhận đã giải ngân qua ngân hàng?')) return;
-    try {
-      const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
-      await updateDoc(mockDocRef as any, { status: 'processed' });
-      
-      await recordPartnerLedgerEntry({
-        partnerId: withdrawal.userId,
-        partnerType: withdrawal.userType === 'seller' ? 'seller' : 'agent',
-        refType: 'withdrawal',
-        refId: withdrawal.id,
-        debit: withdrawal.amount,
-        credit: 0
-      });
-      
-      alert('Đã cập nhật trạng thái chi thành công!');
-      fetchSettlements();
-    } catch (err) {
-      console.error(err);
-      alert('Lỗi khi duyệt chi');
-    }
+    setPendingApproval({ kind: 'withdrawal', data: withdrawal });
   };
 
   const rejectWithdrawal = async (withdrawal: WithdrawalRequest) => {
-    if (!confirm('Từ chối yêu cầu và hoàn tiền vào ví?')) return;
+    setPendingApproval({ kind: 'withdrawal-reject', data: withdrawal });
+  };
+
+  const confirmPendingApproval = async () => {
+    if (!pendingApproval) return;
+    const { kind, data } = pendingApproval as any;
+    setApprovalBusy(true);
     try {
-      const { updateWalletBalance } = await import('../services/dbService');
-      await updateWalletBalance(withdrawal.userId, withdrawal.amount, {
-        type: 'refund',
-        gateway: 'system_rejection',
-        status: 'success'
-      });
-      
-      const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
-      await updateDoc(mockDocRef as any, { status: 'rejected' });
-      alert('Đã từ chối và hoàn tiền vào ví!');
+      if (kind === 'settlement') {
+        const settlement = data as SettlementRow;
+        if (!settlement.sellerId || !settlement.netPayout) return;
+
+        const { updateWalletBalance } = await import('../services/dbService');
+        await updateWalletBalance(settlement.sellerId, settlement.netPayout, {
+          type: 'deposit',
+          gateway: 'system_reconciliation',
+          status: 'success'
+        });
+
+        const mockDocRef = { path: `settlements/${settlement.id}`, tableName: 'settlements', id: settlement.id };
+        await updateDoc(mockDocRef as any, { status: 'completed' });
+
+        await recordPartnerLedgerEntry({
+          partnerId: settlement.sellerId,
+          partnerType: 'seller',
+          refType: 'settlement',
+          refId: settlement.id,
+          debit: 0,
+          credit: settlement.netPayout
+        });
+      } else if (kind === 'withdrawal') {
+        const withdrawal = data as WithdrawalRequest;
+        const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
+        await updateDoc(mockDocRef as any, { status: 'processed' });
+
+        await recordPartnerLedgerEntry({
+          partnerId: withdrawal.userId,
+          partnerType: withdrawal.userType === 'seller' ? 'seller' : 'agent',
+          refType: 'withdrawal',
+          refId: withdrawal.id,
+          debit: withdrawal.amount,
+          credit: 0
+        });
+      } else if (kind === 'withdrawal-reject') {
+        const withdrawal = data as WithdrawalRequest;
+        const { updateWalletBalance } = await import('../services/dbService');
+        await updateWalletBalance(withdrawal.userId, withdrawal.amount, {
+          type: 'refund',
+          gateway: 'system_rejection',
+          status: 'success'
+        });
+
+        const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
+        await updateDoc(mockDocRef as any, { status: 'rejected' });
+      }
+      setPendingApproval(null);
       fetchSettlements();
     } catch (err) {
       console.error(err);
-      alert('Lỗi khi từ chối');
+      alert('Lỗi khi xử lý phê duyệt');
+    } finally {
+      setApprovalBusy(false);
     }
   };
 
@@ -373,7 +374,7 @@ export function SettlementManagement() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Đối soát & Hóa đơn Điện tử</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Đối soát & Hóa đơn Điện tử</h1>
  <p className="text-sm text-[#6B7280] mt-1">Đối soát dòng tiền Seller, xử lý yêu cầu rút tiền và tự động xuất hóa đơn GTGT.</p>
  </div>
  <div className="flex gap-3">
@@ -394,24 +395,24 @@ export function SettlementManagement() {
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Số dư Ví Sàn (Tất cả)</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
  <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
  <CheckCircle2 className="w-3 h-3" /> Tài khoản Escrow an toàn
  </div>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đang chờ giải ngân (Payout)</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Đang chờ giải ngân (Payout)</p>
  <div className="text-2xl font-bold text-primary-600">{formatCurrency(2450000000)}</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Sẽ tự động chuyển sau 3 ngày</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lệnh rút tiền chờ duyệt</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Lệnh rút tiền chờ duyệt</p>
  <div className="text-2xl font-bold text-[#F59E0B]">42</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Ưu tiên: Nhà bán hàng (35)</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu hoa hồng (Margin)</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Doanh thu hoa hồng (Margin)</p>
  <div className="text-2xl font-bold text-[#10B981]">{formatCurrency(845000000)}</div>
  <p className="text-[10px] text-[#6B7280] mt-1">Tháng: 03/2024</p>
  </div>
@@ -464,50 +465,50 @@ export function SettlementManagement() {
  <thead>
  {activeTab === 'settlement' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhà bán hàng (Seller)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng Doanh số</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phí sàn/Ship</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tiền về (Payout)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Nhà bán hàng (Seller)</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Kỳ đối soát</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Tổng Doanh số</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Phí sàn/Ship</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Tiền về (Payout)</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
  </tr>
  )}
  {activeTab === 'withdrawal' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Người dùng / Đối tượng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thông tin Ngân hàng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số tiền rút</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Thời gian yêu cầu</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái duyệt</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Người dùng / Đối tượng</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Thông tin Ngân hàng</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Số tiền rút</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Thời gian yêu cầu</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái duyệt</th>
  </tr>
  )}
  {activeTab === 'cod' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đơn vị Vận chuyển</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát / Số ĐH</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng Cước phí</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">COD Hệ thống ghi nhận</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">COD Thực chuyển</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái Kế toán</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Đơn vị Vận chuyển</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Kỳ đối soát / Số ĐH</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Tổng Cước phí</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">COD Hệ thống ghi nhận</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">COD Thực chuyển</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái Kế toán</th>
  </tr>
  )}
  {activeTab === 'affiliate' && (
   <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cộng tác viên / KOL</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số Đơn</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tổng Doanh số (GMV)</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng phát sinh</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280]">Cộng tác viên / KOL</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280]">Kỳ đối soát</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Số Đơn</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Tổng Doanh số (GMV)</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Hoa hồng phát sinh</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
   </tr>
   )}
   {activeTab === 'pickup' && (
   <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Điểm nhận hàng (Hub)</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỳ đối soát</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Số đơn xử lý</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phí vận hành (5k/đơn)</th>
-  <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280]">Điểm nhận hàng (Hub)</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280]">Kỳ đối soát</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Số đơn xử lý</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Phí vận hành (5k/đơn)</th>
+  <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
   </tr>
   )}
  </thead>
@@ -520,7 +521,7 @@ export function SettlementManagement() {
  <tr key={stl.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{stl.sellerName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{stl.sellerId}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{stl.sellerId}</p>
  </td>
  <td className="px-6 py-4 text-xs text-[#4B5563]">{periodStr}</td>
  <td className="px-6 py-4 text-right font-semibold">{formatCurrency(stl.totalSales || 0)}</td>
@@ -550,7 +551,7 @@ export function SettlementManagement() {
  <tr key={wdr.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{wdr.userName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{wdr.userId} • {wdr.userType === 'seller' ? 'Nhà Bán' : 'Người Mua'}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{wdr.userId} • {wdr.userType === 'seller' ? 'Nhà Bán' : 'Người Mua'}</p>
  </td>
  <td className="px-6 py-4">
  <p className="text-xs font-semibold text-[#374151]">{wdr.bankAccount?.bankName}</p>
@@ -568,11 +569,11 @@ export function SettlementManagement() {
  </div>
  ) : wdr.status === 'rejected' ? (
  <div className="flex justify-end">
- <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-[10px] font-bold">ĐÃ TỪ CHỐI</span>
+ <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-[10px] font-medium">ĐÃ TỪ CHỐI</span>
  </div>
  ) : (
  <div className="flex justify-end">
- <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold flex items-center gap-1">
+ <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-medium flex items-center gap-1">
  <CheckCircle2 className="w-3 h-3" /> ĐÃ XỬ LÝ
  </span>
  </div>
@@ -584,7 +585,7 @@ export function SettlementManagement() {
  <tr key={cod.id} className="hover:bg-[#F9FAFB] group transition-colors">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-[#111827]">{cod.carrier}</p>
- <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{cod.id}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{cod.id}</p>
  </td>
  <td className="px-6 py-4">
  <p className="text-xs font-bold text-[#4B5563]">{cod.period}</p>
@@ -602,11 +603,11 @@ export function SettlementManagement() {
  <td className="px-6 py-4">
  <div className="flex justify-center">
  {cod.status === 'matched' ? (
- <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 flex items-center gap-1">
+ <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-600 flex items-center gap-1">
  <CheckCircle2 className="w-3 h-3" /> ĐÃ KHỚP COD
  </span>
  ) : (
- <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 flex items-center gap-1" title={cod.note}>
+ <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-50 text-rose-600 flex items-center gap-1" title={cod.note}>
  <AlertCircle className="w-3 h-3" /> LỆCH ĐỐI SOÁT
  </span>
  )}
@@ -618,7 +619,7 @@ export function SettlementManagement() {
   <tr key={aff.id} className="hover:bg-[#F9FAFB] group transition-colors">
   <td className="px-6 py-4">
   <p className="text-sm font-bold text-[#111827]">{aff.affiliateName}</p>
-  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{aff.id}</p>
+  <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{aff.id}</p>
   </td>
   <td className="px-6 py-4 text-xs text-[#4B5563]">{aff.period}</td>
   <td className="px-6 py-4 text-right text-xs font-semibold text-slate-800">{aff.totalOrders}</td>
@@ -645,7 +646,7 @@ export function SettlementManagement() {
   <tr key={hub.id} className="hover:bg-[#F9FAFB] group transition-colors">
   <td className="px-6 py-4">
   <p className="text-sm font-bold text-[#111827]">{hub.hubName}</p>
-  <p className="text-[10px] text-[#6B7280] font-mono uppercase tracking-tight">{hub.id}</p>
+  <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{hub.id}</p>
   </td>
   <td className="px-6 py-4 text-xs text-[#4B5563]">{hub.period}</td>
   <td className="px-6 py-4 text-right text-xs font-semibold text-slate-800">{hub.totalOrders}</td>
@@ -727,28 +728,88 @@ export function SettlementManagement() {
  </div>
  </div>
 
- <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-6 overflow-hidden relative">
- <div className="relative z-10 space-y-4">
- <div className="flex items-center gap-3">
- <div className="p-2 bg-slate-800 rounded-lg">
- <CreditCard className="w-6 h-6 text-[#FAF9F5]" />
- </div>
- <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
- </div>
- <p className="text-slate-500 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
- <div className="flex gap-4 pt-2">
- <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
- <span className="text-[10px] text-slate-600 font-bold uppercase">Hạn mức Payout Ngày</span>
- <span className="text-base font-bold text-[#FAF9F5] leading-none mt-1">2,000,000,000đ</span>
- </div>
- <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
- <span className="text-[10px] text-slate-600 font-bold uppercase">Phí Payout Trung bình</span>
- <span className="text-base font-bold text-orange-500 leading-none mt-1">1,200đ / Giao dịch</span>
- </div>
- </div>
- </div>
- <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/50 -rotate-12" />
- </div>
- </div>
- );
+  <div className="bg-slate-900 text-[#FAF9F5] rounded-lg p-6 overflow-hidden relative">
+  <div className="relative z-10 space-y-4">
+  <div className="flex items-center gap-3">
+  <div className="p-2 bg-slate-800 rounded-lg">
+  <CreditCard className="w-6 h-6 text-[#FAF9F5]" />
+  </div>
+  <h3 className="text-xl font-bold italic">Giải ngân tự động qua Cổng Payout</h3>
+  </div>
+  <p className="text-slate-500 text-sm max-w-xl leading-relaxed">Hệ thống đã kết nối trực tiếp với API Payout của Vietcombank và Techcombank. Lệnh rút tiền sau khi được Admin phê duyệt sẽ được giải ngân theo thời gian thực (24/7) mà không cần thao tác thủ công trên Internet Banking.</p>
+  <div className="flex gap-4 pt-2">
+  <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+  <span className="text-[10px] text-slate-600">Hạn mức Payout Ngày</span>
+  <span className="text-base font-bold text-[#FAF9F5] leading-none mt-1">2,000,000,000đ</span>
+  </div>
+  <div className="bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 flex flex-col">
+  <span className="text-[10px] text-slate-600">Phí Payout Trung bình</span>
+  <span className="text-base font-bold text-orange-500 leading-none mt-1">1,200đ / Giao dịch</span>
+  </div>
+  </div>
+  </div>
+  <ShieldCheck className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-900/50 -rotate-12" />
+  </div>
+
+  {pendingApproval && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+  <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
+  <div className="flex items-center gap-3">
+  <AlertCircle className="w-6 h-6 text-amber-500" />
+  <h3 className="text-lg font-bold text-slate-900">
+  {pendingApproval.kind === 'settlement' ? 'Duyệt đối soát gian hàng' : pendingApproval.kind === 'withdrawal' ? 'Xác nhận giải ngân' : 'Từ chối yêu cầu rút tiền'}
+  </h3>
+  </div>
+  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2 text-sm">
+  {pendingApproval.kind === 'settlement' && (() => {
+  const s = pendingApproval.data as SettlementRow;
+  return (
+  <>
+  <div className="flex justify-between"><span className="text-slate-500">Gian hàng</span><span className="font-bold">{s.sellerName || s.sellerId}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Doanh số kỳ</span><span className="font-mono">{formatCurrency(s.totalSales)}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Hoa hồng sàn</span><span className="font-mono text-rose-600">-{formatCurrency(s.commissionFee)}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Phí vận chuyển</span><span className="font-mono text-rose-600">-{formatCurrency(s.shippingFee)}</span></div>
+  <div className="flex justify-between pt-2 border-t border-slate-200"><span className="font-bold">Chiết tính ròng</span><span className="font-mono font-bold text-emerald-600">{formatCurrency(s.netPayout)}</span></div>
+  <p className="text-[11px] text-slate-400 pt-1">Bút toán: Nợ 3351 / Có 1111 — ghi sổ double-entry tự động.</p>
+  </>
+  );
+  })()}
+  {pendingApproval.kind === 'withdrawal' && (() => {
+  const w = pendingApproval.data as WithdrawalRequest;
+  return (
+  <>
+  <div className="flex justify-between"><span className="text-slate-500">Người yêu cầu</span><span className="font-bold">{w.userName}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Số tiền</span><span className="font-mono font-bold">{formatCurrency(w.amount)}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Ngân hàng</span><span className="text-sm">{w.bankAccount?.bankName}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">STK</span><span className="font-mono">{w.bankAccount?.accountNo}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Chủ TK</span><span className="text-sm">{w.bankAccount?.accountName}</span></div>
+  <p className="text-[11px] text-amber-600 pt-2 border-t border-slate-200">Xác nhận đã hoàn tất giải ngân qua ngân hàng. Bút toán Nợ 3388 sẽ được ghi.</p>
+  </>
+  );
+  })()}
+  {pendingApproval.kind === 'withdrawal-reject' && (() => {
+  const w = pendingApproval.data as WithdrawalRequest;
+  return (
+  <>
+  <div className="flex justify-between"><span className="text-slate-500">Người yêu cầu</span><span className="font-bold">{w.userName}</span></div>
+  <div className="flex justify-between"><span className="text-slate-500">Hoàn lại vào ví</span><span className="font-mono font-bold text-emerald-600">{formatCurrency(w.amount)}</span></div>
+  <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-200">Số tiền sẽ được hoàn về ví người bán và yêu cầu rút chuyển sang trạng thái đã từ chối.</p>
+  </>
+  );
+  })()}
+  </div>
+  <div className="flex gap-3 justify-end">
+  <button onClick={() => setPendingApproval(null)} disabled={approvalBusy} className="px-4 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">Đóng</button>
+  <button onClick={confirmPendingApproval} disabled={approvalBusy}
+  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 text-white",
+  pendingApproval.kind === 'withdrawal-reject' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-emerald-600 hover:bg-emerald-700')}>
+  {approvalBusy && <Loader2 className="w-4 h-4 animate-spin" />}
+  {pendingApproval.kind === 'withdrawal-reject' ? 'Xác nhận từ chối' : 'Xác nhận phê duyệt'}
+  </button>
+  </div>
+  </div>
+  </div>
+  )}
+  </div>
+  );
 }

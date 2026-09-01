@@ -77,14 +77,22 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
     setIsAuditing(true);
     setLegalAuditResult(null);
     try {
-      // Use mock API for now
-      const response = await fetch("/api/mock/legal-audit").catch(() => null);
-      
-      // Simulate network delay and response if mock fetch fails
-      await new Promise(r => setTimeout(r, 1500));
-      const text = "- [Luật Lao động 2019] Điều 107: Thời giờ làm thêm không quá 50% số giờ làm việc bình thường.\n- Không phát hiện rủi ro nghiêm trọng.\n- Đề xuất được đánh giá HỢP LỆ.";
-      
-      setLegalAuditResult(response ? (await response.json()).text : text);
+      // Gemini Legal Auditor thật — truyền nội dung hồ sơ
+      const response = await fetch("/api/gemini/legal-audit", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentId: request.id,
+          type: request.type || 'request',
+          subtype: request.subtype || '',
+          title: request.title || '',
+          formData: { requester: request.requester, amount: request.amount, description: request.description }
+        })
+      });
+
+      if (!response.ok) throw new Error('API Legal Audit failed');
+      const data = await response.json();
+      setLegalAuditResult(data.text);
       addNotification('Thẩm định AI hoàn tất', `Pháp chế VComm đã hoàn tất thẩm định tính tuân thủ cho hồ sơ ${request.id}.`);
     } catch (err) {
       console.error('AI Legal Audit Error:', err);
@@ -133,15 +141,15 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
         {/* Header Info */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Người đề xuất</p>
+            <p className="text-[10px] text-slate-500 mb-1">Người đề xuất</p>
             <p className="text-[13px] font-bold text-slate-900">{request.requester}</p>
           </div>
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Ngày gửi</p>
+            <p className="text-[10px] text-slate-500 mb-1">Ngày gửi</p>
             <p className="text-[13px] font-bold text-slate-900">{request.date}</p>
           </div>
           <div className="col-span-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Tiêu đề / Lý do</p>
+            <p className="text-[10px] text-slate-500 mb-1">Tiêu đề / Lý do</p>
             <p className="text-[13px] font-bold text-slate-900">{request.title}</p>
           </div>
         </div>
@@ -219,7 +227,7 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
                     {/* Step Details */}
                     <div className="flex flex-col md:items-center">
                       <span className={cn(
-                        "text-xs font-extrabold uppercase tracking-wider",
+                        "text-xs font-bold uppercase tracking-wider",
                         isCompleted && "text-emerald-700",
                         isPending && "text-amber-700",
                         isRejected && "text-rose-700",
@@ -263,7 +271,7 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
             </div>
             <div>
               <h4 className="text-[13px] font-bold text-amber-900 flex items-center gap-2">
-                Cảnh báo SLA Escalation <span className="text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded shadow-sm">Sắp vi phạm hạn chót</span>
+                Cảnh báo SLA Escalation <span className="text-[10px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded shadow-sm">Sắp vi phạm hạn chót</span>
               </h4>
               <p className="text-[12px] text-amber-800/90 mt-1 leading-relaxed font-medium">
                 Đề xuất này đã tồn đọng quá 80% thời gian cam kết dịch vụ (SLA) tại bước duyệt hiện tại. Hệ thống sẽ tự động escalate lên cấp quản lý cao hơn trong vòng <span className="font-bold text-rose-600">4 giờ tới</span>.
@@ -278,7 +286,7 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
             <span className="flex items-center gap-2">
               <Scale className="w-4 h-4" /> Thẩm định Pháp chế & Tuân thủ AI
             </span>
-            <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 px-2 py-0.5 rounded tracking-wider leading-none">
+            <span className="text-[10px] text-rose-500 bg-rose-50 px-2 py-0.5 rounded leading-none">
               Luật Lao động & Kế toán VN
             </span>
           </h4>
@@ -393,7 +401,7 @@ export function RequestDetail({ request, formConfigs, onClose, onPrint, onSign, 
               
               {request.signatureDraw && (
                 <div className="border-t border-slate-800 pt-3">
-                  <p className="text-[10px] text-slate-400 mb-1.5 uppercase font-bold tracking-wider">Bản quét Chữ ký tay điện tử:</p>
+                  <p className="text-[10px] text-slate-400 mb-1.5">Bản quét Chữ ký tay điện tử:</p>
                   <div className="bg-white p-2 rounded-lg flex items-center justify-center max-w-[200px] border border-slate-700">
                     <img src={request.signatureDraw} alt="Chữ ký tay điện tử" className="max-h-16 object-contain" referrerPolicy="no-referrer" />
                   </div>

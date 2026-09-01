@@ -13,7 +13,7 @@ export function AccessDenied() {
  </div>
  
  <div className="space-y-3">
- <h1 className="font-serif tracking-tight text-2xl font-black text-slate-900 leading-tight">Yêu cầu xác thực Nhân sự</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-slate-900 leading-tight">Yêu cầu xác thực Nhân sự</h1>
  <p className="text-slate-600 text-sm leading-relaxed">
  Chào <span className="font-bold text-slate-900">{user?.displayName}</span>, tài khoản của bạn chưa được cấp quyền truy cập hệ thống quản trị VComm ERP.
  </p>

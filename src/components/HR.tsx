@@ -804,12 +804,12 @@ const [copilotInput, setCopilotInput] = useState('');
       </div>
       <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Time to Fill</span>
+        <span className="text-[10px] text-slate-600 block mb-1">Time to Fill</span>
         <div className="text-2xl font-bold text-[#111827]">14 Ngày</div>
         <span className="text-[10px] text-emerald-600 font-bold block mt-1">-2 ngày vs Q1</span>
        </div>
        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest block mb-1">Employee NPS</span>
+        <span className="text-[10px] text-slate-600 block mb-1">Employee NPS</span>
         <div className="text-2xl font-bold text-[#111827]">78</div>
         <span className="text-[10px] text-emerald-600 font-bold block mt-1">Hạng A Industry</span>
        </div>
@@ -825,7 +825,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="flex items-center justify-between">
  <div className="flex flex-col gap-2">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Quản trị Nguồn nhân lực (HRM)</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý hồ sơ nhân sự, Skill Matrix và Onboarding Intelligence.</p>
  </div>
  </div>
@@ -872,39 +872,39 @@ const [copilotInput, setCopilotInput] = useState('');
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng nhân sự</span>
+ <span className="text-[10px] text-[#6B7280]">Tổng nhân sự</span>
  <Users className="w-4 h-4 text-orange-700" />
  </div>
- <div className="text-3xl font-black text-[#111827]">124</div>
+ <div className="text-3xl font-semibold text-[#111827]">124</div>
  <div className="mt-3 flex items-center gap-1.5 text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded w-fit">
  <Building2 className="w-3.5 h-3.5" /> 05 Phòng ban
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đang Onboarding</span>
+ <span className="text-[10px] text-[#6B7280]">Đang Onboarding</span>
  <Rocket className="w-4 h-4 text-emerald-600" />
  </div>
- <div className="text-3xl font-black text-emerald-600">12</div>
- <p className="text-[10px] text-[#6B7280] mt-3 font-bold uppercase">Bổ sung 4 nhân sự Kho</p>
+ <div className="text-3xl font-semibold text-emerald-600">12</div>
+ <p className="text-[10px] text-[#6B7280] mt-3">Bổ sung 4 nhân sự Kho</p>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Quỹ lương tháng</span>
+ <span className="text-[10px] text-[#6B7280]">Quỹ lương tháng</span>
  <Wallet className="w-4 h-4 text-slate-500" />
  </div>
- <div className="text-2xl font-black text-[#111827] truncate">{formatCurrency(1850000000)}</div>
- <p className="text-[10px] text-slate-500 mt-3 font-bold italic uppercase tracking-tighter">Tăng 5.2% so với T2</p>
+ <div className="text-2xl font-semibold text-[#111827] truncate">{formatCurrency(1850000000)}</div>
+ <p className="text-[10px] text-slate-500 mt-3 italic tracking-tighter">Tăng 5.2% so với T2</p>
  </div>
  <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group border border-slate-800">
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Skill Health</span>
+ <span className="text-[10px] text-slate-500">Skill Health</span>
  <Target className="w-4 h-4 text-orange-600" />
  </div>
  <div>
- <div className="text-3xl font-black text-[#FAF9F5] tracking-tighter">88.5%</div>
- <p className="text-[10px] text-orange-500 font-bold mt-1 uppercase">Top: Marketing Dept</p>
+ <div className="text-3xl font-semibold text-[#FAF9F5] tracking-tighter">88.5%</div>
+ <p className="text-[10px] text-orange-500 mt-1">Top: Marketing Dept</p>
  </div>
  </div>
  <BrainCircuit className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
@@ -964,7 +964,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="flex justify-between items-center text-sm">
  <span className="font-bold text-[#111827]">{m.name}</span>
  <span className={cn(
- "text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest",
+ "text-[10px] px-3 py-1 rounded-full",
  m.status === 'Done' ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-orange-700"
  )}>{m.status}</span>
  </div>
@@ -985,8 +985,8 @@ const [copilotInput, setCopilotInput] = useState('');
  <BrainCircuit className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-2xl font-extrabold italic font-serif tracking-tight">AI Skill Gap Analysis</h3>
- <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mt-1">Hạt nhân HRM v5.0</p>
+ <h3 className="text-2xl font-bold italic font-sans tracking-tight">AI Skill Gap Analysis</h3>
+ <p className="text-blue-100/60 text-[10px] mt-1">Hạt nhân HRM v5.0</p>
  </div>
  </div>
  <p className="text-blue-50 text-sm leading-relaxed max-w-sm">
@@ -1192,7 +1192,7 @@ const [copilotInput, setCopilotInput] = useState('');
  setting.enabled ? "translate-x-6" : "translate-x-1"
  )} />
  </button>
- <span className={cn("text-[10px] font-bold uppercase", setting.enabled ? "text-orange-700" : "text-slate-500")}>
+ <span className={cn("text-[10px]", setting.enabled ? "text-orange-700" : "text-slate-500")}>
  {setting.enabled ? 'Đang bật' : 'Đã tắt'}
  </span>
  </div>
@@ -1205,7 +1205,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Bán kính mặc định (m)</label>
+ <label className="text-[10px] text-slate-600">Bán kính mặc định (m)</label>
  <div className="relative">
  <input 
  type="number" 
@@ -1217,7 +1217,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Số lượng Vùng</label>
+ <label className="text-[10px] text-slate-600">Số lượng Vùng</label>
  <div className="px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-orange-700 flex justify-between items-center">
  {setting.config.zones?.length || 0} Vùng an toàn
  <button className="text-orange-600  transition-transform"><PlusCircle className="w-4 h-4" /></button>
@@ -1225,7 +1225,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Danh sách Vùng an toàn</label>
+ <label className="text-[10px] text-slate-600">Danh sách Vùng an toàn</label>
  <div className="space-y-2">
  {setting.config.zones?.map((zone: any, i: number) => (
  <div key={i} className="bg-white border border-slate-300 p-3 rounded-lg flex justify-between items-center group/item hover:border-primary-300 transition-colors">
@@ -1246,7 +1246,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {setting.method === 'wifi' && (
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Danh sách Wi-Fi Tin cậy</label>
+ <label className="text-[10px] text-slate-600">Danh sách Wi-Fi Tin cậy</label>
  <div className="flex flex-wrap gap-2">
  {setting.config.ssids?.map((ssid: string, i: number) => (
  <div key={i} className="flex items-center gap-2 bg-slate-100 text-orange-800 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-bold">
@@ -1262,7 +1262,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
- <p className="text-[11px] text-amber-800 leading-relaxed font-bold uppercase tracking-tight">Cảnh báo: Luôn kích hoạt "MAC Restricted" để tránh nhân viên fake SSID thủ công.</p>
+ <p className="text-[11px] text-amber-800 leading-relaxed tracking-tight">Cảnh báo: Luôn kích hoạt "MAC Restricted" để tránh nhân viên fake SSID thủ công.</p>
  </div>
  <div className="flex items-center justify-between p-4 bg-white border border-slate-300 rounded-lg">
  <div className="flex items-center gap-3">
@@ -1279,7 +1279,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {setting.method === 'face' && (
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Độ chính xác yêu cầu (0.8 - 0.99)</label>
+ <label className="text-[10px] text-slate-600">Độ chính xác yêu cầu (0.8 - 0.99)</label>
  <div className="flex items-center gap-4">
  <input 
  type="range" 
@@ -1318,7 +1318,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {setting.method === 'qr' && (
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Thời gian làm mới mã (giây)</label>
+ <label className="text-[10px] text-slate-600">Thời gian làm mới mã (giây)</label>
  <div className="relative">
  <input 
  type="number" 
@@ -1330,7 +1330,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="p-4 bg-primary-900/5 border border-primary-100 rounded-lg space-y-3">
- <h5 className="text-[10px] font-bold text-primary-900 uppercase tracking-widest flex items-center gap-2">
+ <h5 className="text-[10px] text-primary-900 flex items-center gap-2">
  <Lock className="w-3 h-3" /> Bảo mật & Mã hóa
  </h5>
  <div className="flex justify-between items-center">
@@ -1353,7 +1353,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Địa chỉ IP thiết bị</label>
+ <label className="text-[10px] text-slate-600">Địa chỉ IP thiết bị</label>
  <input 
  type="text" 
  placeholder="192.168.1.xxx"
@@ -1363,7 +1363,7 @@ const [copilotInput, setCopilotInput] = useState('');
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Cổng kết nối (Port)</label>
+ <label className="text-[10px] text-slate-600">Cổng kết nối (Port)</label>
  <input 
  type="number" 
  value={setting.config.port}
@@ -1373,7 +1373,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="space-y-1.5">
- <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Model thiết bị & Giao thức</label>
+ <label className="text-[10px] text-slate-600">Model thiết bị & Giao thức</label>
  <select 
  value={setting.config.model}
  onChange={(e) => updateSettingConfig('device', 'model', e.target.value)}
@@ -1388,7 +1388,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="flex items-center justify-between p-4 bg-white border border-slate-300 rounded-lg">
  <div className="space-y-0.5">
  <p className="text-xs font-bold text-slate-900">Khoảng cách đồng bộ</p>
- <p className="text-[10px] text-slate-600 uppercase font-bold tracking-tight">Sync every {setting.config.syncInterval} minutes</p>
+ <p className="text-[10px] text-slate-600 tracking-tight">Sync every {setting.config.syncInterval} minutes</p>
  </div>
  <div className="flex gap-2">
  <button className="px-4 py-2 bg-slate-900 text-[#FAF9F5] rounded-lg text-xs font-bold hover:bg-slate-800 transition-all">Ping test</button>
@@ -1412,7 +1412,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
 
  <div className="p-4 border-t border-stone-50 flex justify-between items-center bg-white px-6">
- <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest italic">Last Update: 2 mins ago</span>
+ <span className="text-[10px] text-slate-500 italic">Last Update: 2 mins ago</span>
  <button className={cn(
  "text-xs font-bold transition-all flex items-center gap-2",
  setting.enabled ? "text-orange-700 hover:text-blue-800" : "text-slate-500 cursor-not-allowed"
@@ -1431,7 +1431,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <Sparkles className="w-8 h-8 text-blue-300" />
  </div>
  <div>
- <h3 className="text-2xl font-extrabold tracking-tight">AI Smart-Sync Optimizer</h3>
+ <h3 className="text-2xl font-bold tracking-tight">AI Smart-Sync Optimizer</h3>
  <p className="text-blue-200/60 text-xs font-bold uppercase tracking-widest">Enterprise Edition features</p>
  </div>
  </div>
@@ -1453,65 +1453,65 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr className="bg-slate-50/50 border-b border-[#F3F4F6]">
  {activeTab === 'personnel' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Họ tên & ID</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phòng ban / Vị trí</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Loại hợp đồng</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Sentiment & Leave</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Ngày tham gia</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Họ tên & ID</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Phòng ban / Vị trí</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Loại hợp đồng</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Sentiment & Leave</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Ngày tham gia</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
  </>
  )}
  {activeTab === 'insurance' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Họ tên & Phân nhóm</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Lương đóng BH</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Tỷ lệ (NLĐ - NSDLĐ)</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái đóng</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Họ tên & Phân nhóm</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Lương đóng BH</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Tỷ lệ (NLĐ - NSDLĐ)</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Trạng thái đóng</th>
  </>
  )}
  {activeTab === 'skills' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân sự</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Kỹ năng cốt lõi</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Skill Coverage</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Đề xuất đào tạo</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Action</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Nhân sự</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Kỹ năng cốt lõi</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Skill Coverage</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Đề xuất đào tạo</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Action</th>
  </>
  )}
  {activeTab === 'leave' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Số ngày nghỉ phép</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Đã sử dụng</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Chờ duyệt</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Nhân viên</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Số ngày nghỉ phép</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Đã sử dụng</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Chờ duyệt</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Trạng thái</th>
  </>
  )}
  {activeTab === 'kpi' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chỉ số KPI</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Mục tiêu</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Hiện tại</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Tiến độ</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Nhân viên</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Chỉ số KPI</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Mục tiêu</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Hiện tại</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Tiến độ</th>
  </>
  )}
  {activeTab === 'sentiment' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cảm xúc gần đây</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Phân tích AI</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Gợi ý</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hành động</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Nhân viên</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Cảm xúc gần đây</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Phân tích AI</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Gợi ý</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Hành động</th>
  </>
  )}
  {activeTab === 'attendance' && (
  <>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên & Ngày</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Giờ vào/ra</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Phương thức & Thiết bị</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Vị trí xác thực</th>
- <th className="px-6 py-5 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Nhân viên & Ngày</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-center">Giờ vào/ra</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Phương thức & Thiết bị</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280]">Vị trí xác thực</th>
+ <th className="px-6 py-5 text-[11px] text-[#6B7280] text-right">Trạng thái</th>
  </>
  )}
  </tr>
@@ -1521,14 +1521,14 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={emp.id} onClick={() => setSelectedEmployee(emp)} className="hover:bg-slate-50 transition-colors cursor-pointer group">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors">{emp.fullName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight opacity-50">{emp.id}</p>
  </td>
  <td className="px-6 py-5">
  <p className="text-xs font-bold text-[#111827] tracking-tight">{emp.department}</p>
  <p className="text-[10px] text-[#6B7280] uppercase opacity-70 font-medium">{emp.position}</p>
  </td>
  <td className="px-6 py-5 font-mono">
- <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg uppercase">
+ <span className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">
  {emp.employeeType.replace('_', ' ')}
  </span>
  </td>
@@ -1547,7 +1547,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-5 text-xs text-[#4B5563] font-medium">{emp.joinDate}</td>
  <td className="px-6 py-5">
  <div className="flex justify-center">
- <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold shadow-sm inline-flex items-center gap-1.5 uppercase tracking-wide">
+ <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] shadow-sm inline-flex items-center gap-1.5">
  <CheckCircle2 className="w-3 h-3" /> Hoạt động
  </span>
  </div>
@@ -1558,9 +1558,9 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight">{emp.department}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight">{emp.department}</p>
  </td>
- <td className="px-6 py-5 text-right font-bold text-sm text-slate-800">10,000,000 ₫</td>
+ <td className="px-6 py-5 text-right font-medium text-sm text-slate-800">10,000,000 ₫</td>
  <td className="px-6 py-5 text-center">
  <p className="text-xs font-bold text-slate-900">10.5% - 21.5%</p>
  </td>
@@ -1571,11 +1571,11 @@ const [copilotInput, setCopilotInput] = useState('');
  ))}
  {activeTab === 'skills' && employees.map((emp) => (
  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-5 font-bold text-sm text-[#111827]">{emp.fullName}</td>
+ <td className="px-6 py-5 font-medium text-sm text-[#111827]">{emp.fullName}</td>
  <td className="px-6 py-5">
  <div className="flex gap-2">
  {emp.skills?.map((s, idx) => (
- <span key={idx} className="px-2 py-0.5 bg-slate-100 text-orange-700 text-[10px] font-bold rounded-lg border border-slate-300">
+ <span key={idx} className="px-2 py-0.5 bg-slate-100 text-orange-700 text-[10px] font-medium rounded-lg border border-slate-300">
  {s.name}
  </span>
  ))}
@@ -1589,11 +1589,11 @@ const [copilotInput, setCopilotInput] = useState('');
  <span className="text-[10px] font-bold text-slate-500">{(emp.skills?.[0]?.level || 50)}% Mastered</span>
  </div>
  </td>
- <td className="px-6 py-5 text-[10px] font-bold text-emerald-600 italic">
+ <td className="px-6 py-5 text-[10px] font-medium text-emerald-600 italic">
  AI Suggested: Advanced Analytics
  </td>
  <td className="px-6 py-5 text-right">
- <button className="px-4 py-1.5 bg-slate-900 text-[#FAF9F5] rounded-lg text-[10px] font-bold hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm">Đề cử Training</button>
+ <button className="px-4 py-1.5 bg-slate-900 text-[#FAF9F5] rounded-lg text-[10px] hover:bg-slate-800 transition-all shadow-sm">Đề cử Training</button>
  </td>
  </tr>
  ))}
@@ -1601,7 +1601,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight opacity-50">{emp.id}</p>
  </td>
  <td className="px-6 py-5 text-center">
  <span className="text-sm font-bold text-[#111827]">{emp.leaveBalance?.total ?? 0}</span>
@@ -1616,7 +1616,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-5 text-right">
  <div className="flex justify-end">
  <span className={cn(
- "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
+ "px-3 py-1 rounded-full text-[10px] shadow-sm inline-flex items-center gap-1.5",
  (emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
  )}>
  {(emp.leaveBalance?.total ?? 0) - (emp.leaveBalance?.used ?? 0) <= 2 ? <AlertCircle className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
@@ -1633,11 +1633,11 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={kpi.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-[#111827]">{emp?.fullName ?? 'Unknown'}</p>
- <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{kpi.employeeId}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight opacity-50">{kpi.employeeId}</p>
  </td>
  <td className="px-6 py-5">
  <p className="text-xs font-bold text-[#111827]">{kpi.title}</p>
- <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">Kỳ đánh giá: {kpi.period}</p>
+ <p className="text-[10px] text-slate-500 mt-1 tracking-tight">Kỳ đánh giá: {kpi.period}</p>
  </td>
  <td className="px-6 py-5 text-center">
  <span className="text-sm font-bold text-slate-700">{kpi.target.toLocaleString()} {kpi.unit}</span>
@@ -1663,7 +1663,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-[#111827]">{emp.fullName}</p>
- <p className="text-[10px] text-[#6B7280] font-mono font-bold uppercase tracking-tight opacity-50">{emp.id}</p>
+ <p className="text-[10px] text-[#6B7280] font-mono tracking-tight opacity-50">{emp.id}</p>
  </td>
  <td className="px-6 py-5">
  <div className="flex items-center gap-1.5 font-bold">
@@ -1728,13 +1728,13 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={record.id} className="hover:bg-slate-50 transition-colors">
  <td className="px-6 py-5">
  <p className="text-sm font-bold text-slate-900">{emp?.fullName ?? 'Hệ thống'}</p>
- <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">{record.date}</p>
+ <p className="text-[10px] text-slate-600">{record.date}</p>
  </td>
  <td className="px-6 py-5 text-center">
  <div className="flex flex-col items-center">
  <span className="text-xs font-bold text-emerald-600">In: {record.checkIn}</span>
  <span className="text-xs font-bold text-amber-600 mt-0.5">Out: {record.checkOut}</span>
- <span className="text-[10px] font-bold text-slate-500 mt-1 bg-slate-100 px-2 py-0.5 rounded-full">{hoursWorked} giờ (OT: {record.overtimeHours}h)</span>
+ <span className="text-[10px] font-medium text-slate-500 mt-1 bg-slate-100 px-2 py-0.5 rounded-full">{hoursWorked} giờ (OT: {record.overtimeHours}h)</span>
  </div>
  </td>
  <td className="px-6 py-5">
@@ -1757,7 +1757,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-5 text-right">
  <div className="flex flex-col items-end gap-2">
  <span className={cn(
- "px-3 py-1 rounded-full text-[10px] font-bold shadow-sm uppercase inline-flex items-center gap-1.5",
+ "px-3 py-1 rounded-full text-[10px] shadow-sm inline-flex items-center gap-1.5",
  record.status === 'on_time' ? "bg-emerald-50 text-emerald-600" :
  record.status === 'late' ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
  )}>
@@ -1765,7 +1765,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {record.status === 'on_time' ? 'Đúng giờ' : record.status === 'late' ? 'Muộn' : 'Vắng'}
  </span>
  {warning && (
- <span className="text-[9px] bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded flex items-center gap-1">
+ <span className="text-[9px] bg-rose-100 text-rose-600 font-medium px-2 py-0.5 rounded flex items-center gap-1">
  <AlertCircle className="w-3 h-3" /> {warning}
  </span>
  )}
@@ -1788,7 +1788,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
  <Clock className="w-6 h-6 text-orange-500" /> Quản lý Chấm công & Hiện diện
  </h2>
- <p className="text-[10px] text-slate-600 font-medium mt-1 uppercase tracking-wider">Dữ liệu được đồng bộ từ App GPS, Wifi Hub và Máy chấm công FaceID</p>
+ <p className="text-[10px] text-slate-600 font-medium mt-1">Dữ liệu được đồng bộ từ App GPS, Wifi Hub và Máy chấm công FaceID</p>
  </div>
  <div className="flex gap-3">
  <button 
@@ -1815,7 +1815,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] /20 via-transparent to-transparent opacity-50" />
  
  <div className="space-y-2 relative z-10">
- <div className="text-6xl font-black text-[#FAF9F5] tracking-widest tabular-nums">08:45:22</div>
+ <div className="text-6xl font-semibold text-[#FAF9F5] tracking-widest tabular-nums">08:45:22</div>
  <p className="text-orange-500 text-xs font-bold uppercase tracking-[0.3em]">Hệ thống đang sẵn sàng</p>
  </div>
 
@@ -1824,16 +1824,16 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="absolute top-0 left-0 w-full h-1 bg-slate-800 shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-[scan_3s_ease-in-out_infinite]" />
  <ScanFace className="w-24 h-24 text-orange-500/50 group-hover:text-orange-500 transition-colors" />
  
- <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
+ <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-slate-500 tracking-tighter">
  <Cpu className="w-3 h-3" /> AI Face Recognition
  </div>
  </div>
 
  <div className="grid grid-cols-2 gap-4 w-full max-w-md relative z-10">
- <button className="py-6 bg-emerald-600 text-[#FAF9F5] rounded-lg font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 shadow-sm shadow-emerald-900/40 active:scale-95">
+ <button className="py-6 bg-emerald-600 text-[#FAF9F5] rounded-lg font-semibold text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 shadow-sm shadow-emerald-900/40 active:scale-95">
  <CheckCircle2 className="w-6 h-6" /> VÀO CA
  </button>
- <button className="py-6 bg-rose-600 text-[#FAF9F5] rounded-lg font-black text-sm uppercase tracking-widest hover:bg-rose-700 transition-all flex flex-col items-center gap-2 shadow-sm shadow-rose-900/40 active:scale-95">
+ <button className="py-6 bg-rose-600 text-[#FAF9F5] rounded-lg font-semibold text-sm uppercase tracking-widest hover:bg-rose-700 transition-all flex flex-col items-center gap-2 shadow-sm shadow-rose-900/40 active:scale-95">
  <History className="w-6 h-6" /> HẾT CA
  </button>
  </div>
@@ -1841,7 +1841,7 @@ const [copilotInput, setCopilotInput] = useState('');
 
  <div className="space-y-6">
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm h-full">
- <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
+ <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
  <Activity className="w-4 h-4 text-emerald-500" /> Ghi nhận gần đây
  </h3>
  <div className="space-y-4">
@@ -1861,9 +1861,9 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="text-right">
- <p className="text-sm font-black text-slate-900">{l.time}</p>
+ <p className="text-sm font-semibold text-slate-900">{l.time}</p>
  <p className={cn(
- "text-[9px] font-bold uppercase tracking-tighter",
+ "text-[9px] tracking-tighter",
  l.status === 'In' ? "text-emerald-600" : "text-rose-600"
  )}>{l.status === 'In' ? 'Đã Check-in' : 'Đi muộn'}</p>
  </div>
@@ -1917,12 +1917,12 @@ const [copilotInput, setCopilotInput] = useState('');
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân viên</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Ca làm</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">In/Out</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Verify</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Lương ca</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500">Nhân viên</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500 text-center">Ca làm</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500 text-center">In/Out</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500 text-center">Verify</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500 text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] text-slate-500 text-right">Lương ca</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1932,7 +1932,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={i} className="hover:bg-primary-50/20 transition-colors group">
  <td className="px-6 py-5">
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-700 text-[10px] uppercase">
+ <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 text-[10px]">
  {emp?.fullName?.split(' ').pop()?.charAt(0) || '?'}
  </div>
  <div>
@@ -1942,12 +1942,12 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </td>
  <td className="px-6 py-5 text-center">
- <span className="text-[9px] font-bold text-slate-700 px-2 py-0.5 bg-slate-100 rounded uppercase tracking-tighter">Hành chính</span>
+ <span className="text-[9px] text-slate-700 px-2 py-0.5 bg-slate-100 rounded tracking-tighter">Hành chính</span>
  </td>
  <td className="px-6 py-5 text-center">
  <div className="flex flex-col items-center">
- <div className="text-xs font-black text-slate-900 tabular-nums">{att.checkIn} - {att.checkOut || '--:--'}</div>
- <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1 opacity-70">Total: {att.overtimeHours + 8}h</div>
+ <div className="text-xs font-semibold text-slate-900 tabular-nums">{att.checkIn} - {att.checkOut || '--:--'}</div>
+ <div className="text-[9px] text-slate-500 mt-1 opacity-70">Total: {att.overtimeHours + 8}h</div>
  </div>
  </td>
  <td className="px-6 py-5 text-center">
@@ -1970,14 +1970,14 @@ const [copilotInput, setCopilotInput] = useState('');
  </td>
  <td className="px-6 py-5 text-center">
  <span className={cn(
- "px-3 py-1 rounded text-[9px] font-black uppercase tracking-tighter shadow-sm",
+ "px-3 py-1 rounded text-[9px] tracking-tighter shadow-sm",
  att.status === 'on_time' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"
  )}>
  {att.status === 'on_time' ? 'Đúng giờ' : 'Đi muộn'}
  </span>
  </td>
  <td className="px-6 py-5 text-right">
- <span className="text-xs font-black text-slate-900 tabular-nums">{formatCurrency(450000)}</span>
+ <span className="text-xs font-semibold text-slate-900 tabular-nums">{formatCurrency(450000)}</span>
  </td>
  </tr>
  );
@@ -1996,8 +1996,8 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="space-y-6">
  <div className="flex justify-between items-end">
  <div>
- <p className="text-4xl font-black text-slate-900 tracking-tighter">94.2%</p>
- <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 tracking-widest">Tỷ lệ Presence Rate</p>
+ <p className="text-4xl font-semibold text-slate-900 tracking-tighter">94.2%</p>
+ <p className="text-[10px] text-slate-600 mt-1">Tỷ lệ Presence Rate</p>
  </div>
  <div className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
  <TrendingUp className="w-3 h-3" /> +1.2%
@@ -2013,7 +2013,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div key={i} className="space-y-2">
  <div className="flex justify-between text-[10px] font-bold">
  <span className="text-slate-600 uppercase">{s.label}</span>
- <span className="text-slate-900 font-black">{s.count} người</span>
+ <span className="text-slate-900 font-semibold">{s.count} người</span>
  </div>
  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
  <div 
@@ -2027,7 +2027,7 @@ const [copilotInput, setCopilotInput] = useState('');
  
  <div className="p-5 bg-primary-50 border border-primary-100 rounded-lg space-y-3 relative overflow-hidden">
  <Zap className="absolute -right-2 -top-2 w-12 h-12 text-primary-100 rotate-12" />
- <h4 className="text-[10px] font-black text-primary-900 uppercase tracking-[0.2em] flex items-center gap-2 relative z-10">
+ <h4 className="text-[10px] text-primary-900 tracking-[0.2em] flex items-center gap-2 relative z-10">
  <Sparkles className="w-3.5 h-3.5" /> AI Khuyến nghị
  </h4>
  <p className="text-[11px] text-primary-800 leading-relaxed font-medium italic relative z-10">Bộ phận "Kho" đang có tỷ lệ đi muộn cao đột biến vào thứ Hai. Cân nhắc điều chỉnh ca làm sớm hơn hoặc hỗ trợ xe đưa đón.</p>
@@ -2046,7 +2046,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <RefreshCcw className="w-8 h-8 text-primary-600 animate-spin-slow" />
  </div>
  </div>
- <p className="text-[10px] text-slate-500 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-primary-600 font-black">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
+ <p className="text-[10px] text-slate-500 mt-4 leading-relaxed font-bold italic text-center">Mã tự động reset sau <span className="text-primary-600 font-semibold">24s</span>. Chỉ cho phép thiết bị đã định danh quét.</p>
           </div>
           <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary-50 rounded-full opacity-50 transition-transform  duration-700" />
         </div>
@@ -2061,7 +2061,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 p-6 bg-white min-h-[600px]">
  <div className="flex justify-between items-end mb-8 border-b border-slate-200 pb-8">
  <div className="space-y-1">
- <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+ <h2 className="text-2xl font-semibold text-slate-900 flex items-center gap-3">
  <Target className="w-8 h-8 text-primary-600" /> KPI & Performance Analysis
  </h2>
  <p className="text-sm font-medium text-slate-500 italic">Đánh giá hiệu quả công việc dựa trên dữ liệu thời gian thực và AI Score.</p>
@@ -2080,11 +2080,11 @@ const [copilotInput, setCopilotInput] = useState('');
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" columns={3} gap={24}>
  <div className="bg-primary-50 border border-primary-100 p-6 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
- <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">Average Completion</p>
- <div className="w-10 h-10 bg-primary-600 text-[#FAF9F5] rounded-full flex items-center justify-center font-black text-sm shadow-sm">88%</div>
+ <p className="text-[10px] text-primary-400">Average Completion</p>
+ <div className="w-10 h-10 bg-primary-600 text-[#FAF9F5] rounded-full flex items-center justify-center font-semibold text-sm shadow-sm">88%</div>
  </div>
  <div className="space-y-1">
- <div className="text-3xl font-black text-primary-900 tabular-nums">88.45%</div>
+ <div className="text-3xl font-semibold text-primary-900 tabular-nums">88.45%</div>
  <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600">
  <TrendingUp className="w-3 h-3" /> +4.2% vs Last Month
  </div>
@@ -2092,22 +2092,22 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
- <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Top Performers</p>
+ <p className="text-[10px] text-emerald-400">Top Performers</p>
  <Trophy className="w-6 h-6 text-emerald-600" />
  </div>
  <div className="space-y-1">
- <div className="text-3xl font-black text-emerald-900 tabular-nums">12 KH</div>
- <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Đạt trên 120% mục tiêu</p>
+ <div className="text-3xl font-semibold text-emerald-900 tabular-nums">12 KH</div>
+ <p className="text-[10px] text-emerald-600 tracking-tighter">Đạt trên 120% mục tiêu</p>
  </div>
  </div>
  <div className="bg-rose-50 border border-rose-100 p-6 rounded-lg space-y-4">
  <div className="flex justify-between items-start">
- <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Critical Alert</p>
+ <p className="text-[10px] text-rose-400">Critical Alert</p>
  <AlertCircle className="w-6 h-6 text-rose-600" />
  </div>
  <div className="space-y-1">
- <div className="text-3xl font-black text-rose-900 tabular-nums">04 KH</div>
- <p className="text-[10px] font-bold text-rose-600 uppercase tracking-tighter">Dưới 60% - Cần 1-on-1</p>
+ <div className="text-3xl font-semibold text-rose-900 tabular-nums">04 KH</div>
+ <p className="text-[10px] text-rose-600 tracking-tighter">Dưới 60% - Cần 1-on-1</p>
  </div>
  </div>
  </DraggableGrid>
@@ -2115,7 +2115,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <DraggableGrid className="grid grid-cols-12 gap-6 mt-4" columns={12} gap={32}>
  <div className="col-span-12 lg:col-span-8 bg-white border border-slate-300 rounded-lg overflow-hidden shadow-sm">
  <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
- <h3 className="font-black text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
+ <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-[0.2em]">Bảng theo dõi mục tiêu chi tiết</h3>
  <div className="relative">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
  <input 
@@ -2129,10 +2129,10 @@ const [copilotInput, setCopilotInput] = useState('');
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/30 border-b border-slate-200 text-left">
- <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự & Vị trí</th>
- <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Chỉ tiêu trọng yếu</th>
- <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Tiến độ (%)</th>
- <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Phân tích AI</th>
+ <th className="px-6 py-5 text-[10px] text-slate-500">Nhân sự & Vị trí</th>
+ <th className="px-6 py-5 text-[10px] text-slate-500">Chỉ tiêu trọng yếu</th>
+ <th className="px-6 py-5 text-[10px] text-slate-500 text-center">Tiến độ (%)</th>
+ <th className="px-6 py-5 text-[10px] text-slate-500 text-right">Phân tích AI</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -2143,22 +2143,22 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={kpi.id} className="hover:bg-slate-50/80 transition-colors group">
  <td className="px-6 py-5">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center font-black text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
+ <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center font-semibold text-slate-900 text-sm shadow-sm group-hover:bg-white transition-all">
  {emp?.fullName?.split(' ').pop()?.charAt(0) || '?'}
  </div>
  <div>
- <p className="text-sm font-black text-slate-900 italic tracking-tight">{emp?.fullName}</p>
- <p className="text-[10px] text-slate-500 font-bold uppercase">{emp?.department}</p>
+ <p className="text-sm font-semibold text-slate-900 italic tracking-tight">{emp?.fullName}</p>
+ <p className="text-[10px] text-slate-500">{emp?.department}</p>
  </div>
  </div>
  </td>
  <td className="px-6 py-5">
  <p className="text-xs font-bold text-slate-900">{kpi.title}</p>
- <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-tighter">Target: {kpi.target} {kpi.unit}</p>
+ <p className="text-[10px] text-slate-500 mt-1 tracking-tighter">Target: {kpi.target} {kpi.unit}</p>
  </td>
  <td className="px-6 py-5 w-48">
  <div className="space-y-1.5">
- <div className="flex justify-between text-[10px] font-black">
+ <div className="flex justify-between text-[10px] font-semibold">
  <span className={cn(progress >= 100 ? "text-emerald-600" : progress >= 80 ? "text-orange-700" : "text-rose-600")}>{progress.toFixed(1)}%</span>
  <span className="text-slate-500 font-mono italic">#{kpi.id.slice(-4)}</span>
  </div>
@@ -2173,7 +2173,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-5 text-right">
  <div className="flex flex-col items-end gap-1">
  <div className={cn(
- "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest",
+ "px-2 py-0.5 rounded text-[10px]",
  progress >= 100 ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"
  )}>
  {progress >= 100 ? 'OUTSTANDING' : 'ON TRACK'}
@@ -2194,7 +2194,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="absolute top-0 right-0 p-4">
  <Trophy className="w-12 h-12 text-[#FAF9F5]/10 rotate-12" />
  </div>
- <h3 className="text-lg font-black italic tracking-widest mb-8 border-l-4 border-amber-400 pl-4">PERFORMANCE LEADERBOARD</h3>
+ <h3 className="text-lg font-semibold italic tracking-widest mb-8 border-l-4 border-amber-400 pl-4">PERFORMANCE LEADERBOARD</h3>
  <div className="space-y-6">
  {[
  { name: 'Hoàng Minh', score: 98, rank: 1, color: 'text-amber-400' },
@@ -2203,7 +2203,7 @@ const [copilotInput, setCopilotInput] = useState('');
  ].map((p, i) => (
  <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-3 rounded-lg transition-all">
  <div className="flex items-center gap-4">
- <span className={cn("text-xl font-black w-6", p.color)}>{p.rank}</span>
+ <span className={cn("text-xl font-semibold w-6", p.color)}>{p.rank}</span>
  <div>
  <p className="text-sm font-bold tracking-tight">{p.name}</p>
  <div className="h-1 w-12 bg-white/10 rounded-full mt-1.5 overflow-hidden">
@@ -2212,13 +2212,13 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </div>
  <div className="text-right">
- <p className="text-lg font-black tabular-nums">{p.score}</p>
- <p className="text-[9px] text-slate-600 font-bold uppercase">Points</p>
+ <p className="text-lg font-semibold tabular-nums">{p.score}</p>
+ <p className="text-[9px] text-slate-600">Points</p>
  </div>
  </div>
  ))}
  </div>
- <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+ <button className="w-full mt-10 py-5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-[10px] transition-all">
  Xem tất cả bảng xếp hạng
  </button>
  </div>
@@ -2229,7 +2229,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <MapIcon className="w-6 h-6" />
  <div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-ping" />
  </div>
- <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
+ <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest">Skill Matrix Heatmap</h3>
  </div>
  <div className="aspect-square bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 space-y-4 text-center group-hover:bg-white transition-all duration-500">
  <Layers className="w-16 h-16 text-slate-500 group-hover:text-primary-400 transition-all duration-500" />
@@ -2309,22 +2309,22 @@ const [copilotInput, setCopilotInput] = useState('');
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" columns={4} gap={16}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng lương cơ bản</p>
+ <p className="text-[10px] text-slate-500 relative z-10 mb-1">Tổng lương cơ bản</p>
  <p className="text-2xl font-bold text-slate-900 relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.baseSalary, 0))}</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng Phụ cấp & Thưởng</p>
+ <p className="text-[10px] text-slate-500 relative z-10 mb-1">Tổng Phụ cấp & Thưởng</p>
  <p className="text-2xl font-bold text-emerald-600 relative z-10">+{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.allowance + pay.bonus, 0))}</p>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Thuế TNCN & BH</p>
+ <p className="text-[10px] text-slate-500 relative z-10 mb-1">Thuế TNCN & BH</p>
  <p className="text-2xl font-bold text-red-500 relative z-10">-{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.pitAmount + pay.insuranceAmount, 0))}</p>
  </div>
  <div className="bg-gradient-to-br from-[#111827] to-slate-900 p-5 rounded-lg border border-slate-700 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform " />
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
+ <p className="text-[10px] text-slate-500 relative z-10 mb-1">Tổng chi trả Thực tế (Net Pay)</p>
  <p className="text-2xl font-bold text-[#FAF9F5] relative z-10">{formatCurrency(payrollList.reduce((acc, pay) => acc + pay.netSalary, 0))}</p>
  </div>
  </DraggableGrid>
@@ -2335,13 +2335,13 @@ const [copilotInput, setCopilotInput] = useState('');
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/80 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest">Mã / Tên Nhân viên</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right">Lương Cơ bản</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right">Thưởng / Phụ cấp</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right">Khấu trừ (Thuế, BH)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right">Thực lãnh</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right">Bảng lương</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600">Mã / Tên Nhân viên</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right">Lương Cơ bản</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right">Thưởng / Phụ cấp</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right">Khấu trừ (Thuế, BH)</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right">Thực lãnh</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right">Bảng lương</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -2349,9 +2349,9 @@ const [copilotInput, setCopilotInput] = useState('');
  <tr key={pay.id} className="hover:bg-slate-100/30 transition-colors group">
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900">{pay.employeeName}</p>
- <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{pay.employeeId}</p>
+ <p className="text-[10px] text-slate-500 mt-0.5">{pay.employeeId}</p>
  </td>
- <td className="px-6 py-4 text-right font-mono font-bold text-sm text-slate-700">{formatCurrency(pay.baseSalary)}</td>
+ <td className="px-6 py-4 text-right font-mono font-medium text-sm text-slate-700">{formatCurrency(pay.baseSalary)}</td>
  <td className="px-6 py-4 text-right">
  <p className="text-xs font-bold text-emerald-600 font-mono">+{formatCurrency(pay.allowance + pay.bonus)}</p>
  {pay.bonus > 0 && <span className="text-[9px] font-bold text-emerald-500 opacity-60">Gồm {formatCurrency(pay.bonus)} KPI/OT</span>}
@@ -2365,7 +2365,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-4">
  <div className="flex justify-center">
  <span className={cn(
- "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+ "px-3 py-1 rounded-full text-[10px]",
  pay.status === 'paid' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
  )}>
  {pay.status === 'paid' ? 'Đã thanh toán' : 'Chờ duyệt chi'}
@@ -2428,7 +2428,7 @@ const [copilotInput, setCopilotInput] = useState('');
  )}
  <div className="grid grid-cols-2 gap-6">
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Lương cơ bản</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Lương cơ bản</label>
  <input type="number" 
  value={editPayrollForm.baseSalary || 0}
  onChange={(e) => {
@@ -2444,7 +2444,7 @@ const [copilotInput, setCopilotInput] = useState('');
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Phụ cấp</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Phụ cấp</label>
  <input type="number" 
  value={editPayrollForm.allowance || 0}
  onChange={(e) => {
@@ -2459,7 +2459,7 @@ const [copilotInput, setCopilotInput] = useState('');
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Thưởng (OT, KPI...)</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Thưởng (OT, KPI...)</label>
  <input type="number" 
  value={editPayrollForm.bonus || 0}
  onChange={(e) => {
@@ -2474,7 +2474,7 @@ const [copilotInput, setCopilotInput] = useState('');
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Phạt (Đi trễ, vắng...)</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Phạt (Đi trễ, vắng...)</label>
  <input type="number" 
  value={editPayrollForm.deduction || 0}
  onChange={(e) => {
@@ -2489,7 +2489,7 @@ const [copilotInput, setCopilotInput] = useState('');
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-500" />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Thuế TNCN (-)</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Thuế TNCN (-)</label>
  <input type="number" 
  value={editPayrollForm.pitAmount || 0}
  onChange={(e) => {
@@ -2503,7 +2503,7 @@ const [copilotInput, setCopilotInput] = useState('');
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500" />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-2">Bảo hiểm xã hội (-)</label>
+ <label className="block text-xs font-medium text-slate-800 uppercase tracking-widest mb-2">Bảo hiểm xã hội (-)</label>
  <input type="number" 
  value={editPayrollForm.insuranceAmount || 0}
  onChange={(e) => {
@@ -2526,7 +2526,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <p className="text-sm font-medium text-slate-500">Đã trừ Thuế & BHXH</p>
  </div>
  <div className="relative z-10">
- <p className="text-4xl font-black font-mono tracking-tight">{formatCurrency(editPayrollForm.netSalary || 0)}</p>
+ <p className="text-4xl font-semibold font-mono tracking-tight">{formatCurrency(editPayrollForm.netSalary || 0)}</p>
  </div>
  </div>
  </div>
@@ -2608,7 +2608,7 @@ const [copilotInput, setCopilotInput] = useState('');
  <h3 className="font-bold text-slate-800 uppercase tracking-widest text-xs">
  {status === 'sourced' ? 'Sourced' : status === 'interview' ? 'Phỏng vấn' : status === 'offered' ? 'Đề nghị' : 'Đã tuyển'}
  </h3>
- <span className="bg-white px-2 py-0.5 rounded-full text-[10px] font-bold text-slate-600 shadow-sm">
+ <span className="bg-white px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-600 shadow-sm">
  {candidates.filter(c => c.status === status).length}
  </span>
  </div>
@@ -2671,8 +2671,8 @@ const [copilotInput, setCopilotInput] = useState('');
       <Trophy className="w-5 h-5" />
      </div>
      <div>
-      <p className="text-[10px] text-slate-500 font-bold uppercase">Quỹ điểm của tôi</p>
-      <p className="text-xl font-black text-amber-700">{userPoints.toLocaleString()} V-Pts</p>
+      <p className="text-[10px] text-slate-500">Quỹ điểm của tôi</p>
+      <p className="text-xl font-semibold text-amber-700">{userPoints.toLocaleString()} V-Pts</p>
      </div>
     </div>
    </div>
@@ -2685,7 +2685,7 @@ const [copilotInput, setCopilotInput] = useState('');
       </h3>
       <div className="space-y-3">
        <div>
-        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Nhân viên nhận</label>
+        <label className="block text-[10px] text-slate-600 mb-1">Nhân viên nhận</label>
         <select 
          value={pointEmpId}
          onChange={(e) => setPointEmpId(e.target.value)}
@@ -2697,7 +2697,7 @@ const [copilotInput, setCopilotInput] = useState('');
         </select>
        </div>
        <div>
-        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Số điểm (+ / -)</label>
+        <label className="block text-[10px] text-slate-600 mb-1">Số điểm (+ / -)</label>
         <input 
          type="number"
          value={pointValue}
@@ -2706,7 +2706,7 @@ const [copilotInput, setCopilotInput] = useState('');
         />
        </div>
        <div>
-        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Lý do điều chỉnh</label>
+        <label className="block text-[10px] text-slate-600 mb-1">Lý do điều chỉnh</label>
         <textarea 
          placeholder="Vd: Đóng góp ý tưởng tự động hóa Excel, hỗ trợ đồng nghiệp ngoài ca làm việc..."
          value={pointReason}
@@ -2748,10 +2748,10 @@ const [copilotInput, setCopilotInput] = useState('');
          <div className="space-y-1">
           <p className="text-xs font-bold text-slate-900">{item.employeeName}</p>
           <p className="text-[10px] text-slate-500 leading-normal">{item.reason}</p>
-          <p className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">{item.date} • {item.id}</p>
+          <p className="text-[9px] text-slate-600">{item.date} • {item.id}</p>
          </div>
          <span className={cn(
-          "text-xs font-black font-mono shrink-0 px-2 py-0.5 rounded",
+          "text-xs font-semibold font-mono shrink-0 px-2 py-0.5 rounded",
           item.type === 'plus' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
          )}>
           {item.type === 'plus' ? '+' : ''}{item.points}
@@ -2764,7 +2764,7 @@ const [copilotInput, setCopilotInput] = useState('');
 
     <div className="lg:col-span-8 space-y-6">
      <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm">
-      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
        <BadgeDollarSign className="w-4 h-4 text-orange-600" /> Cửa hàng đổi quà HRM (Thử nghiệm)
       </h3>
       <p className="text-xs text-slate-500 mb-6 leading-relaxed">Sử dụng điểm tích lũy của bạn để đổi các phần thưởng thiết thực hoặc voucher độc quyền từ đối tác doanh nghiệp.</p>
@@ -2779,7 +2779,7 @@ const [copilotInput, setCopilotInput] = useState('');
         return (
          <div key={idx} className="bg-slate-50/50 hover:bg-white rounded-lg border border-slate-200 hover:border-amber-400 p-4 transition-all duration-300 flex flex-col justify-between h-full hover:shadow-sm relative group text-slate-800">
           {item.badge && (
-           <span className="absolute top-3 right-3 bg-amber-500 text-white font-bold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full">
+           <span className="absolute top-3 right-3 bg-amber-500 text-white text-[8px] px-2 py-0.5 rounded-full">
             {item.badge}
            </span>
           )}
@@ -2788,7 +2788,7 @@ const [copilotInput, setCopilotInput] = useState('');
             <Icon className="w-5 h-5" />
            </div>
            <h4 className="font-bold text-xs text-slate-800 leading-snug">{item.title}</h4>
-           <p className="text-sm font-black font-mono text-amber-700">{item.price} V-Pts</p>
+           <p className="text-sm font-semibold font-mono text-amber-700">{item.price} V-Pts</p>
           </div>
           <button 
            onClick={() => {
@@ -2799,7 +2799,7 @@ const [copilotInput, setCopilotInput] = useState('');
             setUserPoints(prev => prev - item.price);
             alert(`Chúc mừng! Bạn đã đổi thành công [${item.title}]. Mã Code voucher đã được gửi qua email của bạn.`);
            }}
-           className="w-full mt-4 py-2 bg-white text-slate-800 hover:bg-amber-50 border border-slate-300 hover:border-amber-400 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors border-dashed"
+           className="w-full mt-4 py-2 bg-white text-slate-800 hover:bg-amber-50 border border-slate-300 hover:border-amber-400 text-[10px] rounded-lg transition-colors border-dashed"
           >
            Đổi ngay
           </button>
@@ -2815,8 +2815,8 @@ const [copilotInput, setCopilotInput] = useState('');
       </div>
       <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
        <div>
-        <h3 className="font-black italic tracking-wider text-base text-amber-400">GOLDEN BOARD • BẢNG VÀNG DANH VỌNG</h3>
-        <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Các tấm gương có đóng góp đột phá về hiệu suất và tinh thần đồng đội</p>
+        <h3 className="font-semibold italic tracking-wider text-base text-amber-400">GOLDEN BOARD • BẢNG VÀNG DANH VỌNG</h3>
+        <p className="text-[10px] text-slate-400 mt-1">Các tấm gương có đóng góp đột phá về hiệu suất và tinh thần đồng đội</p>
        </div>
        <Trophy className="w-8 h-8 text-amber-400 animate-pulse" />
       </div>
@@ -2829,19 +2829,19 @@ const [copilotInput, setCopilotInput] = useState('');
        ].map((champion, i) => (
         <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
          <div className="flex items-center gap-4">
-          <span className="text-xl font-black text-amber-400 w-12">{champion.rank}</span>
+          <span className="text-xl font-semibold text-amber-400 w-12">{champion.rank}</span>
           <div>
            <p className="text-sm font-bold text-white tracking-tight">{champion.name}</p>
-           <p className="text-[10px] text-slate-400 uppercase tracking-tight">{champion.role}</p>
+           <p className="text-[10px] text-slate-400 tracking-tight">{champion.role}</p>
           </div>
          </div>
          <div className="flex items-center gap-4 mt-2 sm:mt-0 justify-between sm:justify-end">
-          <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-[9px] font-bold uppercase border border-amber-500/20">
+          <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-[9px] border border-amber-500/20">
            {champion.badge}
           </span>
           <div className="text-right">
-           <p className="text-sm font-black font-mono text-amber-300">{champion.points.toLocaleString()}</p>
-           <p className="text-[8px] text-slate-400 uppercase font-bold">V-Pts</p>
+           <p className="text-sm font-semibold font-mono text-amber-300">{champion.points.toLocaleString()}</p>
+           <p className="text-[8px] text-slate-400">V-Pts</p>
           </div>
          </div>
         </div>
@@ -2867,25 +2867,25 @@ const [copilotInput, setCopilotInput] = useState('');
 
    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div className="lg:col-span-8 space-y-4">
-     <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider">Tất cả góp ý từ tập thể nhân sự</h3>
+     <h3 className="text-slate-800 text-xs font-semibold uppercase tracking-wider">Tất cả góp ý từ tập thể nhân sự</h3>
      {suggestions.map((item) => (
       <div key={item.id} className="bg-white rounded-lg border border-slate-300 p-5 shadow-sm space-y-4 relative overflow-hidden hover:border-indigo-300 transition-all text-slate-800 text-slate-800">
        <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-         <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold uppercase border border-slate-200">
+         <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] border border-slate-200">
           {item.category}
          </span>
          <span className="text-[10px] font-mono text-slate-500">#{item.id}</span>
         </div>
         <div className="flex items-center gap-2">
          <span className={cn(
-          "px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-tight",
+          "px-2.5 py-1 rounded text-[10px] tracking-tight",
           item.threatLevel === 'Cao' ? "bg-red-50 text-red-600 border border-red-100" :
           item.threatLevel === 'Trung bình' ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
          )}>
           Nguy cơ: {item.threatLevel}
          </span>
-         <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{item.date}</span>
+         <span className="text-[9px] text-slate-500">{item.date}</span>
         </div>
        </div>
 
@@ -2895,7 +2895,7 @@ const [copilotInput, setCopilotInput] = useState('');
 
        {item.replies.length > 0 && (
         <div className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-lg space-y-2 mt-4 ml-4">
-         <p className="text-[10px] font-black text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+         <p className="text-[10px] text-indigo-800 flex items-center gap-1.5">
           <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Phản hồi chính thức từ Ban Giám Đốc/HR:
          </p>
          {item.replies.map((reply, rIdx) => (
@@ -2947,12 +2947,12 @@ const [copilotInput, setCopilotInput] = useState('');
 
     <div className="lg:col-span-4 space-y-6">
      <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-4 text-slate-800">
-      <h3 className="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-3">
+      <h3 className="text-slate-800 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-3">
        <Smile className="w-4 h-4 text-emerald-500 animate-pulse" /> Đóng góp ý kiến mới (Ẩn danh)
       </h3>
       <div className="space-y-4">
        <div>
-        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Chủ đề đóng góp</label>
+        <label className="block text-[10px] text-slate-600 mb-1">Chủ đề đóng góp</label>
         <select 
          value={newSuggestionCategory}
          onChange={(e) => setNewSuggestionCategory(e.target.value)}
@@ -2965,7 +2965,7 @@ const [copilotInput, setCopilotInput] = useState('');
         </select>
        </div>
        <div>
-        <label className="block text-[10px] font-bold text-slate-600 uppercase mb-1">Nội dung đề xuất ẩn danh</label>
+        <label className="block text-[10px] text-slate-600 mb-1">Nội dung đề xuất ẩn danh</label>
         <textarea 
          placeholder="Hãy chia sẻ trực quan, góp ý trung thực nhất để cải thiện môi trường làm việc chung..."
          value={newSuggestionInput}
@@ -2999,7 +2999,7 @@ const [copilotInput, setCopilotInput] = useState('');
          setNewSuggestionInput('');
          alert('Đề xuất ẩn danh của bạn đã được gửi thành công vào Hòm thư chung của Ban Giám Đốc.');
         }}
-        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
        >
         <Send className="w-4 h-4" /> Gửi ẩn danh an toàn
        </button>
@@ -3030,12 +3030,12 @@ const [copilotInput, setCopilotInput] = useState('');
     ].map((item, idx) => (
      <div key={idx} className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex flex-col justify-between">
       <div className="space-y-1">
-       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black leading-none">{item.dept}</span>
-       <h3 className="text-xl font-black text-slate-900 mt-1">{item.risk}</h3>
+       <span className="text-[10px] text-slate-500 leading-none">{item.dept}</span>
+       <h3 className="text-xl font-semibold text-slate-900 mt-1">{item.risk}</h3>
        <p className="text-[11px] text-slate-600 leading-relaxed font-semibold">{item.stats}</p>
       </div>
       <div className="mt-5 space-y-1.5">
-       <div className="flex justify-between text-[10px] font-bold uppercase tracking-tight">
+       <div className="flex justify-between text-[10px] tracking-tight">
         <span>KPI Sức khỏe tập thể</span>
         <span className={cn(
          item.status === 'critical' ? "text-rose-600" :
@@ -3060,17 +3060,17 @@ const [copilotInput, setCopilotInput] = useState('');
    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div className="lg:col-span-8 bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden flex flex-col mt-4">
      <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center px-6">
-      <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Danh sách nhân sự cần theo dõi đặc biệt</h3>
-      <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Tháng 06/2026</span>
+      <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-widest">Danh sách nhân sự cần theo dõi đặc biệt</h3>
+      <span className="text-[10px] text-slate-500 font-mono">Tháng 06/2026</span>
      </div>
      <div className="overflow-x-auto min-w-0">
       <table className="w-full text-left border-collapse whitespace-nowrap">
        <thead>
         <tr className="bg-slate-50/20 border-b border-slate-200 text-left">
-         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nhân sự</th>
-         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">OT Tháng này</th>
-         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Chỉ số Burnout</th>
-         <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Hành động của HR</th>
+         <th className="px-6 py-4 text-[10px] text-slate-500">Nhân sự</th>
+         <th className="px-6 py-4 text-[10px] text-slate-500 text-center">OT Tháng này</th>
+         <th className="px-6 py-4 text-[10px] text-slate-500 text-center">Chỉ số Burnout</th>
+         <th className="px-6 py-4 text-[10px] text-slate-500 text-right">Hành động của HR</th>
         </tr>
        </thead>
        <tbody className="divide-y divide-slate-100">
@@ -3082,11 +3082,11 @@ const [copilotInput, setCopilotInput] = useState('');
          <tr key={emp.id} className="hover:bg-slate-50/50">
           <td className="px-6 py-4">
            <p className="text-xs font-bold text-slate-900">{emp.name}</p>
-           <p className="text-[10px] text-slate-500 uppercase tracking-tight">{emp.dept}</p>
+           <p className="text-[10px] text-slate-500 tracking-tight">{emp.dept}</p>
           </td>
           <td className="px-6 py-4 text-center">
            <span className="text-xs font-mono font-bold text-slate-800">{emp.hours} </span>
-           <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">+{emp.ot}</span>
+           <span className="text-[10px] font-medium text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">+{emp.ot}</span>
           </td>
           <td className="px-6 py-4 w-40">
            <div className="space-y-1">
@@ -3154,7 +3154,7 @@ const [copilotInput, setCopilotInput] = useState('');
       <div className="absolute top-0 right-0 p-4">
        <Sparkles className="w-12 h-12 text-white/5 rotate-12" />
       </div>
-      <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+      <h4 className="text-sm font-semibold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
        <Activity className="w-4 h-4 animate-pulse" /> Sổ tay Chăm sóc sức khỏe
       </h4>
       <p className="text-xs text-slate-300 leading-relaxed mb-4">Các hành động được đề xuất dựa trên quy tắc SLA Sức khỏe và phân tích thói quen nghỉ ngơi của nhân sự:</p>
@@ -3219,7 +3219,7 @@ const [copilotInput, setCopilotInput] = useState('');
   {/* Personal details (Thông tin cá nhân) section */}
   <div className="space-y-4">
    <div className="flex items-center justify-between col-span-2">
-    <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
+    <h3 className="text-[11px] text-slate-500 flex items-center gap-2">
      <User className="w-4 h-4 text-orange-600"/> Thông tin cá nhân
     </h3>
     <button 
@@ -3235,28 +3235,28 @@ const [copilotInput, setCopilotInput] = useState('');
    <div className="bg-slate-50 rounded-lg p-5 border border-slate-300 space-y-4 shadow-sm text-sm">
     <div className="grid grid-cols-2 gap-4 border-b border-slate-200 pb-3">
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Ngày sinh</span>
+      <span className="text-[10px] text-slate-500 block">Ngày sinh</span>
       <span className="font-medium text-slate-800">{selectedEmployee.dateOfBirth || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
      </div>
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Giới tính</span>
+      <span className="text-[10px] text-slate-500 block">Giới tính</span>
       <span className="font-medium text-slate-800">{selectedEmployee.gender || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
      </div>
     </div>
 
     <div className="border-b border-slate-200 pb-3 space-y-2">
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Số CCCD / CMND</span>
+      <span className="text-[10px] text-slate-500 block">Số CCCD / CMND</span>
       <span className="font-medium font-mono text-slate-800">{selectedEmployee.identityCard || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</span>
      </div>
      {selectedEmployee.identityCard && (
       <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
        <div>
-        <span className="text-[9px] uppercase font-bold text-slate-500 block">Ngày cấp</span>
+        <span className="text-[9px] text-slate-500 block">Ngày cấp</span>
         <span>{selectedEmployee.identityCardDate || '-'}</span>
        </div>
        <div>
-        <span className="text-[9px] uppercase font-bold text-slate-500 block">Nơi cấp</span>
+        <span className="text-[9px] text-slate-500 block">Nơi cấp</span>
         <span>{selectedEmployee.identityCardPlace || '-'}</span>
        </div>
       </div>
@@ -3265,7 +3265,7 @@ const [copilotInput, setCopilotInput] = useState('');
 
     <div className="border-b border-slate-200 pb-3 space-y-2">
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Thông tin liên lạc</span>
+      <span className="text-[10px] text-slate-500 block">Thông tin liên lạc</span>
       <div className="space-y-1.5 mt-1 text-slate-800 font-medium">
        <p className="flex items-center gap-1.5"><Smartphone className="w-3.5 h-3.5 text-slate-500"/> SĐT: {selectedEmployee.personalPhone || selectedEmployee.phone || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</p>
        <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-500"/> Email: {selectedEmployee.personalEmail || selectedEmployee.email || <span className="text-slate-400 italic text-xs">Chưa cập nhật</span>}</p>
@@ -3274,21 +3274,21 @@ const [copilotInput, setCopilotInput] = useState('');
     </div>
 
     <div className="border-b border-slate-200 pb-3 space-y-2">
-     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Địa chỉ liên hệ</span>
+     <span className="text-[10px] text-slate-500 block">Địa chỉ liên hệ</span>
      <div className="space-y-2 text-slate-800 font-medium leading-relaxed">
       <div>
-       <span className="text-[9px] uppercase font-bold text-slate-400 block">Quê quán / Thường trú</span>
+       <span className="text-[9px] text-slate-400 block">Quê quán / Thường trú</span>
        <p className="text-xs text-slate-700">{selectedEmployee.permanentAddress || <span className="text-slate-400 italic">Chưa cập nhật</span>}</p>
       </div>
       <div>
-       <span className="text-[9px] uppercase font-bold text-slate-400 block">Nơi ở hiện tại</span>
+       <span className="text-[9px] text-slate-400 block">Nơi ở hiện tại</span>
        <p className="text-xs text-slate-700">{selectedEmployee.currentAddress || <span className="text-slate-400 italic">Chưa cập nhật</span>}</p>
       </div>
      </div>
     </div>
 
     <div className="border-b border-slate-200 pb-3 space-y-2">
-     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Tài khoản ngân hàng</span>
+     <span className="text-[10px] text-slate-500 block">Tài khoản ngân hàng</span>
      {selectedEmployee.bankAccountNo ? (
       <div className="bg-slate-100 p-2.5 rounded-lg border border-slate-200 text-xs">
        <p className="font-bold text-slate-900 font-mono tracking-wider">{selectedEmployee.bankAccountNo}</p>
@@ -3301,17 +3301,17 @@ const [copilotInput, setCopilotInput] = useState('');
 
     <div className="grid grid-cols-2 gap-4 border-b border-slate-200 pb-3">
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Mã số thuế</span>
+      <span className="text-[10px] text-slate-500 block">Mã số thuế</span>
       <span className="font-semibold font-mono text-slate-700">{selectedEmployee.taxCode || <span className="text-slate-400 italic text-xs font-sans">Chưa cập nhật</span>}</span>
      </div>
      <div>
-      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Số BHXH</span>
+      <span className="text-[10px] text-slate-500 block">Số BHXH</span>
       <span className="font-semibold font-mono text-slate-700">{selectedEmployee.socialInsuranceNo || <span className="text-slate-400 italic text-xs font-sans">Chưa cập nhật</span>}</span>
      </div>
     </div>
 
     <div className="space-y-2">
-     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Liên hệ khẩn cấp</span>
+     <span className="text-[10px] text-slate-500 block">Liên hệ khẩn cấp</span>
      {selectedEmployee.emergencyName ? (
       <div className="text-xs space-y-1 bg-amber-500/5 p-2.5 rounded-lg border border-amber-500/10 text-slate-800">
        <p className="font-bold">{selectedEmployee.emergencyName} <span className="text-slate-500 font-medium">({selectedEmployee.emergencyRelation})</span></p>
@@ -3327,7 +3327,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {isAdmin && (
  <div className="space-y-6">
  <div className="space-y-4">
- <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
+ <h3 className="text-[11px] text-slate-500 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-emerald-500"/> Vai trò & Phân quyền
  </h3>
  <div className="bg-slate-50 p-4 rounded-lg border border-slate-300 flex items-center justify-between">
@@ -3376,7 +3376,7 @@ const [copilotInput, setCopilotInput] = useState('');
  checked={employeePerms[pAction as keyof typeof employeePerms]}
  onChange={(e) => handlePermissionChange(selectedEmployee.id, catKey, pAction as any, e.target.checked)}
  />
- <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600">{label}</span>
+ <span className="text-[10px] text-slate-600">{label}</span>
  </label>
  );
  })}
@@ -3391,7 +3391,7 @@ const [copilotInput, setCopilotInput] = useState('');
 
  {/* Skill Radar */}
  <div className="space-y-4">
- <h3 className="font-bold tracking-widest uppercase text-[11px] text-slate-500 flex items-center gap-2">
+ <h3 className="text-[11px] text-slate-500 flex items-center gap-2">
  <BrainCircuit className="w-4 h-4 text-orange-600"/> Skill Matrix (Radar)
  </h3>
  <div className="h-64 bg-slate-50 rounded-lg border border-slate-300 p-4 relative shadow-sm">
@@ -3445,18 +3445,18 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-slate-800 border-2 border-white shadow-sm" />
  <p className="text-xs font-bold text-slate-900">Cập nhật Lương</p>
  <p className="text-[10px] text-slate-600 font-medium">Tăng 15% lương cơ bản</p>
- <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">11/2023</p>
+ <p className="text-[10px] text-slate-500 mt-1">11/2023</p>
  </div>
  <div className="relative">
  <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-sm" />
  <p className="text-xs font-bold text-slate-900">Thăng tiến</p>
  <p className="text-[10px] text-slate-600 font-medium">Lên vị trí: {selectedEmployee.position}</p>
- <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">08/2023</p>
+ <p className="text-[10px] text-slate-500 mt-1">08/2023</p>
  </div>
  <div className="relative">
  <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-slate-300 border-2 border-white shadow-sm" />
  <p className="text-xs font-bold text-slate-900">Gia nhập công ty</p>
- <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">{selectedEmployee.joinDate}</p>
+ <p className="text-[10px] text-slate-500 mt-1">{selectedEmployee.joinDate}</p>
  </div>
  </div>
  </div>
@@ -3464,7 +3464,7 @@ const [copilotInput, setCopilotInput] = useState('');
  {/* AI Insight */}
  <div className="p-5 bg-white border border-primary-100/50 rounded-lg relative overflow-hidden">
  <div className="relative z-10">
- <h3 className="font-bold tracking-widest uppercase text-[10px] text-primary-500 flex items-center gap-1.5 mb-2">
+ <h3 className="text-[10px] text-primary-500 flex items-center gap-1.5 mb-2">
  <Sparkles className="w-3 h-3"/> AI Sentiment Insight
  </h3>
  <p className="text-sm font-medium text-slate-800 leading-relaxed">
@@ -3497,7 +3497,7 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  <div>
  <h3 className="font-bold text-sm">HR Copilot</h3>
- <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Online</p>
+ <p className="text-[10px] text-slate-500">Online</p>
  </div>
  </div>
  <button onClick={() => setIsCopilotOpen(false)} className="text-slate-500 hover:text-[#FAF9F5] transition">

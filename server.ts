@@ -466,6 +466,257 @@ async function startServer() {
     }
   });
 
+  // -------------------------------------------------------------------------
+  // Integration Config Layer — proxy 3 provider pháp lý (key đọc từ Supabase,
+  // không bao giờ nằm trong client bundle). Docs: specs/012-vn-legal-compliance
+  // -------------------------------------------------------------------------
+
+  const INTEGRATION_PROVIDERS: Record<string, { name: string; healthPath: string }> = {
+    einvoice: { name: 'E-Invoice (TT 78/2021)', healthPath: '/health' },
+    databank: { name: 'Databank BCT (TT 13/2023)', healthPath: '/status' },
+    cq_reporting: { name: 'CQT Reporting + HSM (NĐ 52/85)', healthPath: '/health' }
+  };
+
+  /** Đọc config provider từ Supabase (server giữ key) */
+  const getProviderConfig = async (providerKey: string): Promise<any | null> => {
+    try {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseKey) return null;
+      const r = await fetch(
+        `${supabaseUrl}/rest/v1/integration_configs?provider_key=eq.${providerKey}&select=*`,
+        { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
+      );
+      const rows = await r.json();
+      const row = Array.isArray(rows) ? rows[0] : null;
+      if (!row || !row.is_enabled) return null;
+      return row.config || null;
+    } catch {
+      return null;
+    }
+  };
+
+  /** Test kết nối provider: ping health endpoint với key của họ */
+  app.post('/api/integrations/test', async (req, res) => {
+    const { provider } = req.body || {};
+    const meta = INTEGRATION_PROVIDERS[provider];
+    if (!meta) return res.status(400).json({ status: 'error', message: `Không rõ provider: ${provider}` });
+
+    const cfg = await getProviderConfig(provider);
+    if (!cfg || !cfg.endpoint) {
+      return res.json({ status: 'error', message: 'Chưa cấu hình endpoint/key — thêm trong Settings → Integrations.' });
+    }
+    try {
+      const started = Date.now();
+      const healthUrl = cfg.endpoint.replace(/\/$/, '') + meta.healthPath;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (cfg.api_key) headers['Authorization'] = `Bearer ${cfg.api_key}`;
+      if (cfg.api_key && provider === 'einvoice') headers['X-API-Key'] = cfg.api_key;
+      const r = await fetch(healthUrl, { headers, signal: AbortSignal.timeout(10000) });
+      const latency = Date.now() - started;
+      if (r.ok) {
+        res.json({ status: 'success', message: `Kết nối ${meta.name} thành công`, latency_ms: latency });
+      } else {
+        res.json({ status: 'error', message: `Provider trả HTTP ${r.status} — kiểm tra lại key/endpoint`, latency_ms: latency });
+      }
+    } catch (e: any) {
+      res.json({ status: 'error', message: `Không gọi được endpoint: ${e.message}` });
+    }
+  });
+
+  /** E-Invoice: phát hành qua provider (MISA/VNPT/FPT theo cfg.vendor) */
+  app.post('/api/einvoice/issue', async (req, res) => {
+    const { draft } = req.body || {};
+    const cfg = await getProviderConfig('einvoice');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'E-Invoice chưa cấu hình — thêm API key trong Settings → Integrations.' });
+    if (!draft) return res.status(400).json({ status: 'error', message: 'Thiếu hóa đơn draft.' });
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cfg.api_key}`,
+        'X-API-Key': cfg.api_key
+      };
+      // Vendor endpoint mapping — mỗi provider có path phát hành riêng
+      const vendorPath: Record<string, string> = {
+        misa: '/invoices/publish',
+        vnpt: '/api/v1/invoices',
+        fpt: '/api/v3/invoices/create'
+      };
+      const url = cfg.endpoint.replace(/\/$/, '') + (vendorPath[cfg.vendor] || '/invoices/publish');
+      const r = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ ...draft, template_code: cfg.template_code, serial: cfg.serial_number, account_id: cfg.account_id }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        return res.status(502).json({ status: 'error', message: data.message || `Provider trả HTTP ${r.status}` });
+      }
+      res.json({
+        status: 'success',
+        invoiceNumber: data.invoiceNumber || data.invoice_no || draft.invoiceNumber,
+        lookupCode: data.lookupCode || data.tax_lookup_code || null,
+        signedAt: data.signedAt || data.signed_date || new Date().toISOString(),
+        xmlBlob: data.xml || data.invoice_xml || null,
+        message: `Đã phát hành qua ${cfg.vendor?.toUpperCase() || 'provider'}`
+      });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: `Gọi provider thất bại: ${e.message}` });
+    }
+  });
+
+  /** E-Invoice: hủy hóa đơn (TT 78 Điều 19) */
+  app.post('/api/einvoice/cancel', async (req, res) => {
+    const { orderId, reason } = req.body || {};
+    const cfg = await getProviderConfig('einvoice');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'E-Invoice chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.endpoint.replace(/\/$/, '') + '/invoices/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.api_key}`, 'X-API-Key': cfg.api_key },
+        body: JSON.stringify({ orderId, reason }),
+        signal: AbortSignal.timeout(15000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', message: 'Đã gửi thông báo hủy hóa đơn đến CQT' });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** Databank BCT: đăng tải sản phẩm */
+  app.post('/api/databank/publish', async (req, res) => {
+    const { product } = req.body || {};
+    const cfg = await getProviderConfig('databank');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'Databank chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.endpoint.replace(/\/$/, '') + '/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.api_key}` },
+        body: JSON.stringify({ ...product, org_code: cfg.org_code }),
+        signal: AbortSignal.timeout(20000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({
+        status: 'success',
+        databankRef: data.ref || data.databank_ref,
+        publicUrl: data.public_url || null,
+        message: 'Đã đăng tải thông tin sản phẩm lên databank BCT'
+      });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** Databank: truy vấn nguồn gốc */
+  app.get('/api/databank/verify-origin', async (req, res) => {
+    const sku = String(req.query.sku || '');
+    const cfg = await getProviderConfig('databank');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'Databank chưa cấu hình.' });
+    try {
+      const traceUrl = cfg.trace_endpoint || cfg.endpoint.replace(/\/$/, '') + '/trace';
+      const r = await fetch(`${traceUrl}?sku=${encodeURIComponent(sku)}`, {
+        headers: { 'Authorization': `Bearer ${cfg.api_key}` },
+        signal: AbortSignal.timeout(15000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', verified: !!data.verified, originInfo: data.origin_info || data.originInfo, message: data.message });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** Databank: token QR truy xuất */
+  app.post('/api/databank/trace-token', async (req, res) => {
+    const { sku } = req.body || {};
+    const cfg = await getProviderConfig('databank');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'Databank chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.endpoint.replace(/\/$/, '') + '/trace-tokens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.api_key}` },
+        body: JSON.stringify({ sku }),
+        signal: AbortSignal.timeout(15000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', traceToken: data.token || data.trace_token });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** CQT: thông báo hoạt động sàn lên cổng BCT */
+  app.post('/api/cq/notify-bct', async (req, res) => {
+    const payload = req.body || {};
+    const cfg = await getProviderConfig('cq_reporting');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'CQT Reporting chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.bct_endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.bct_token}` },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(20000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', notificationRef: data.ref || data.notification_ref, submittedAt: data.submitted_at || new Date().toISOString(), message: 'Đã gửi thông báo đến Bộ Công Thương' });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** CQT: trình báo định kỳ */
+  app.post('/api/cq/periodic-report', async (req, res) => {
+    const { period } = req.body || {};
+    const cfg = await getProviderConfig('cq_reporting');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'CQT Reporting chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.bct_endpoint.replace(/\/$/, '') + '/periodic-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.bct_token}` },
+        body: JSON.stringify({ period }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', reportRef: data.ref || data.report_ref, period: data.period, message: 'Đã trình báo định kỳ' });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
+  /** CQT: ký số HSM thật — thay cho mock */
+  app.post('/api/cq/hsm-sign', async (req, res) => {
+    const { document } = req.body || {};
+    const cfg = await getProviderConfig('cq_reporting');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'CQT Reporting chưa cấu hình.' });
+    try {
+      const r = await fetch(cfg.hsm_endpoint.replace(/\/$/, '') + '/sign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.api_key || cfg.bct_token}` },
+        body: JSON.stringify({
+          key_id: cfg.hsm_key_id,
+          cert_serial: cfg.hsm_cert,
+          data: document.contentHash,
+          doc_type: document.type,
+          ref_id: document.referenceId
+        }),
+        signal: AbortSignal.timeout(15000)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+      res.json({ status: 'success', signature: data.signature || data.sig, signedAt: data.signed_at || new Date().toISOString(), keyId: cfg.hsm_key_id, message: 'Đã ký số qua HSM tổ chức' });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: e.message });
+    }
+  });
+
   // API Route: Secure digital signature processing
   app.post('/api/signature/sign', (req, res) => {
     const { requestId, provider, signerName, signatureDraw } = req.body;

@@ -55,7 +55,7 @@ export function LiveCommerce() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Live-commerce Hub</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Live-commerce Hub</h1>
  <p className="text-sm text-[#6B7280] mt-1">Trung tâm điều hành Livestream toàn sàn, ghim sản phẩm và theo dõi tương tác thời gian thực.</p>
  </div>
  <div className="flex gap-3">
@@ -73,7 +73,7 @@ export function LiveCommerce() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tổng Livestreams hôm nay</span>
+ <span className="text-[10px] text-[#6B7280]">Tổng Livestreams hôm nay</span>
  <Video className="w-4 h-4 text-primary-600" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">420</div>
@@ -81,7 +81,7 @@ export function LiveCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Đang xem trực tiếp</span>
+ <span className="text-[10px] text-[#6B7280]">Đang xem trực tiếp</span>
  <Users className="w-4 h-4 text-[#8B5CF6]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">15,450</div>
@@ -89,7 +89,7 @@ export function LiveCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Doanh thu bán qua Live</span>
+ <span className="text-[10px] text-[#6B7280]">Doanh thu bán qua Live</span>
  <TrendingUp className="w-4 h-4 text-[#10B981]" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(4850000000)}</div>
@@ -97,7 +97,7 @@ export function LiveCommerce() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Engagement Rate</span>
+ <span className="text-[10px] text-[#6B7280]">Engagement Rate</span>
  <Heart className="w-4 h-4 text-emerald-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">18.5%</div>
@@ -146,11 +146,11 @@ export function LiveCommerce() {
  <div key={live.id} className="bg-white border border-slate-300 rounded-lg overflow-hidden group hover:border-primary-600 transition-all shadow-sm">
  <div className="relative h-48 bg-slate-100 flex items-center justify-center">
  {live.status === 'live' ? (
- <div className="absolute top-4 left-4 flex items-center gap-2 px-2 py-1 bg-red-600 rounded-lg text-[10px] font-bold text-[#FAF9F5] uppercase tracking-widest animate-pulse z-10">
+ <div className="absolute top-4 left-4 flex items-center gap-2 px-2 py-1 bg-red-600 rounded-lg text-[10px] text-[#FAF9F5] animate-pulse z-10">
  <Eye className="w-3.5 h-3.5" /> LIVE TRỰC TIẾP
  </div>
  ) : (
- <div className="absolute top-4 left-4 flex items-center gap-2 px-2 py-1 bg-slate-800 rounded-lg text-[10px] font-bold text-[#FAF9F5] uppercase tracking-widest z-10">
+ <div className="absolute top-4 left-4 flex items-center gap-2 px-2 py-1 bg-slate-800 rounded-lg text-[10px] text-[#FAF9F5] z-10">
  <Clock className="w-3.5 h-3.5" /> SẮP DIỄN RA
  </div>
  )}
@@ -208,7 +208,7 @@ export function LiveCommerce() {
  </div>
  <div className="hidden lg:block w-72 h-48 bg-slate-800/50 rounded-lg border border-slate-700 relative overflow-hidden">
  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
- <div className="absolute top-4 left-4 px-2 py-0.5 bg-red-600 rounded text-[9px] font-bold uppercase tracking-widest animate-pulse">REC</div>
+ <div className="absolute top-4 left-4 px-2 py-0.5 bg-red-600 rounded text-[9px] animate-pulse">REC</div>
  <div className="absolute inset-0 flex items-center justify-center">
  <PlayCircle className="w-12 h-12 text-[#FAF9F5]/50" />
  </div>

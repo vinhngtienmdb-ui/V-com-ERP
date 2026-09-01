@@ -615,10 +615,10 @@ export function EasyHRMComponent() {
       <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">Hệ thống EasyHRM</span>
+            <span className="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px]">Hệ thống EasyHRM</span>
             <span className="text-slate-400 text-xs">Vận hành thực tế (app.easyhrm.vn)</span>
           </div>
-          <h1 className="font-serif text-2xl font-bold tracking-tight mt-1 text-[#FFFFFF]">Chức Năng Thông Tin Nhân Sự Toàn Diện</h1>
+          <h1 className="font-sans text-2xl font-bold tracking-tight mt-1 text-[#FFFFFF]">Chức Năng Thông Tin Nhân Sự Toàn Diện</h1>
           <p className="text-xs text-slate-300 mt-1 leading-relaxed">Phòng Hành chính Nhân Sự - Cấu trúc gồm 17 phân hệ quản trị hồ sơ nhân học, biến động chính sách và ngạch lương.</p>
         </div>
         <div className="flex gap-2">
@@ -646,7 +646,7 @@ export function EasyHRMComponent() {
         <div className="w-full lg:w-72 bg-white border-r border-slate-300 p-4 space-y-6 shrink-0">
           {EASY_HRM_MODULES.map((group, idx) => (
             <div key={idx} className="space-y-2">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 px-2 py-1 rounded">{group.category}</h3>
+              <h3 className="text-[10px] text-slate-500 bg-slate-50 px-2 py-1 rounded">{group.category}</h3>
               <div className="space-y-1">
                 {group.items.map(subItem => (
                   <button
@@ -719,7 +719,7 @@ export function EasyHRMComponent() {
                     <Plus className="w-4 h-4" /> Thêm mới dữ liệu
                   </button>
                 ) : (
-                  <span className="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded inline-flex items-center gap-1.5">
+                  <span className="text-[10px] bg-red-50 text-red-600 font-medium px-2 py-1 rounded inline-flex items-center gap-1.5">
                     <Info className="w-3 h-3" /> Cảnh báo ký hợp đồng khẩn cấp
                   </span>
                 )}
@@ -734,37 +734,37 @@ export function EasyHRMComponent() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-xs">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Tổng nhân sự</span>
-                  <div className="text-2xl font-black text-slate-900 mt-1">{employees.length} Cán bộ</div>
+                  <span className="text-[10px] text-slate-500 block">Tổng nhân sự</span>
+                  <div className="text-2xl font-semibold text-slate-900 mt-1">{employees.length} Cán bộ</div>
                   <span className="text-[10px] text-indigo-600 font-semibold block mt-1">Đầy đủ hồ sơ thực tế</span>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-xs">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Thực tập sinh</span>
-                  <div className="text-2xl font-black text-amber-600 mt-1">
+                  <span className="text-[10px] text-slate-500 block">Thực tập sinh</span>
+                  <div className="text-2xl font-semibold text-amber-600 mt-1">
                     {internCount} Nhân viên
                   </div>
                   <span className="text-[10px] text-amber-600 font-medium block mt-1">Cần đánh giá định mục</span>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-xs">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Nhân sự thử việc</span>
-                  <div className="text-2xl font-black text-sky-600 mt-1">
+                  <span className="text-[10px] text-slate-500 block">Nhân sự thử việc</span>
+                  <div className="text-2xl font-semibold text-sky-600 mt-1">
                     {probationCount} Nhân viên
                   </div>
                   <span className="text-[10px] text-sky-600 font-medium block mt-1">Checklist 30-ngày</span>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-xs">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Mới gia nhập (Trong quý)</span>
-                  <div className="text-2xl font-black text-emerald-600 mt-1">2 Nhân sự</div>
+                  <span className="text-[10px] text-slate-500 block">Mới gia nhập (Trong quý)</span>
+                  <div className="text-2xl font-semibold text-emerald-600 mt-1">2 Nhân sự</div>
                   <span className="text-[10px] text-emerald-600 font-semibold block mt-1">Onboarding checklist</span>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-slate-300 shadow-xs">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Lương trung bình</span>
-                  <div className="text-2xl font-black text-slate-900 mt-1">{formatCurrency(14500000)}</div>
+                  <span className="text-[10px] text-slate-500 block">Lương trung bình</span>
+                  <div className="text-2xl font-semibold text-slate-900 mt-1">{formatCurrency(14500000)}</div>
                   <span className="text-[10px] text-slate-500 font-medium block mt-1">Ngạch chuyên viên v1.4</span>
                 </div>
                 <div className="bg-[#111827] p-4 rounded-lg border border-slate-800 shadow-xs text-white">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Chế độ thai sản</span>
-                  <div className="text-2xl font-black text-fuchsia-400 mt-1">{maternities.length} Ca nghỉ</div>
+                  <span className="text-[10px] text-slate-400 block">Chế độ thai sản</span>
+                  <div className="text-2xl font-semibold text-fuchsia-400 mt-1">{maternities.length} Ca nghỉ</div>
                   <span className="text-[10px] text-fuchsia-300 font-semibold block mt-1">Chính sách thai sản hoạt động</span>
                 </div>
               </div>
@@ -779,24 +779,24 @@ export function EasyHRMComponent() {
                       <span className="w-2 h-2 rounded-full bg-primary-500"></span>
                       Dữ liệu Nhân sự thực tập (Bảng 1)
                     </h3>
-                    <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">Thực tế</span>
+                    <span className="text-[10px] font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded">Thực tế</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="p-2 font-bold text-slate-600">STT</th>
-                          <th className="p-2 font-bold text-slate-600">Mã, Họ tên</th>
-                          <th className="p-2 font-bold text-slate-600">Chức vụ & Phòng ban</th>
-                          <th className="p-2 font-bold text-slate-600">Ngày vào thực tập</th>
-                          <th className="p-2 font-bold text-slate-600">Ngày kết thúc</th>
-                          <th className="p-2 font-bold text-slate-600">Phân loại</th>
+                          <th className="p-2 font-medium text-slate-600">STT</th>
+                          <th className="p-2 font-medium text-slate-600">Mã, Họ tên</th>
+                          <th className="p-2 font-medium text-slate-600">Chức vụ & Phòng ban</th>
+                          <th className="p-2 font-medium text-slate-600">Ngày vào thực tập</th>
+                          <th className="p-2 font-medium text-slate-600">Ngày kết thúc</th>
+                          <th className="p-2 font-medium text-slate-600">Phân loại</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {internEmployees.map((emp, i) => (
                           <tr key={emp.id} className="hover:bg-slate-50/55">
-                            <td className="p-2 font-mono font-bold text-slate-500">{i + 1}</td>
+                            <td className="p-2 font-mono font-medium text-slate-500">{i + 1}</td>
                             <td className="p-2">
                               <span className="font-bold text-slate-900 block">{emp.name}</span>
                               <span className="text-[10px] text-slate-500 font-bold">{emp.id}</span>
@@ -807,7 +807,7 @@ export function EasyHRMComponent() {
                             </td>
                             <td className="p-2 text-slate-600 font-mono">{emp.contractStartDate}</td>
                             <td className="p-2 text-slate-600 font-mono">{emp.contractEndDate}</td>
-                            <td className="p-2"><span className="px-2 py-0.5 bg-primary-50 text-blue-700 font-bold rounded text-[10px]">Cá nhân</span></td>
+                            <td className="p-2"><span className="px-2 py-0.5 bg-primary-50 text-blue-700 font-medium rounded text-[10px]">Cá nhân</span></td>
                           </tr>
                         ))}
                       </tbody>
@@ -822,24 +822,24 @@ export function EasyHRMComponent() {
                       <span className="w-2 h-2 rounded-full bg-sky-500"></span>
                       Dữ liệu Nhân sự thử việc (Bảng 2)
                     </h3>
-                    <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">3 Ca làm</span>
+                    <span className="text-[10px] font-medium text-sky-600 bg-sky-50 px-2 py-0.5 rounded">3 Ca làm</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="p-2 font-bold text-slate-600">STT</th>
-                          <th className="p-2 font-bold text-slate-600">Mã, Họ tên</th>
-                          <th className="p-2 font-bold text-slate-600">Chức vụ & Phòng ban</th>
-                          <th className="p-2 font-bold text-slate-600">Ngày thử việc</th>
-                          <th className="p-2 font-bold text-slate-600">Kết thúc</th>
-                          <th className="p-2 font-bold text-slate-600">Tình trạng</th>
+                          <th className="p-2 font-medium text-slate-600">STT</th>
+                          <th className="p-2 font-medium text-slate-600">Mã, Họ tên</th>
+                          <th className="p-2 font-medium text-slate-600">Chức vụ & Phòng ban</th>
+                          <th className="p-2 font-medium text-slate-600">Ngày thử việc</th>
+                          <th className="p-2 font-medium text-slate-600">Kết thúc</th>
+                          <th className="p-2 font-medium text-slate-600">Tình trạng</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {employees.map((emp, i) => (
                           <tr key={emp.id} className="hover:bg-slate-50/55">
-                            <td className="p-2 font-mono font-bold text-slate-500">{i + 1}</td>
+                            <td className="p-2 font-mono font-medium text-slate-500">{i + 1}</td>
                             <td className="p-2">
                               <span className="font-bold text-slate-900 block">{emp.name}</span>
                               <span className="text-[10px] text-slate-500 font-bold">{emp.id}</span>
@@ -850,7 +850,7 @@ export function EasyHRMComponent() {
                             </td>
                             <td className="p-2 text-slate-600 font-mono">{emp.probationStartDate || "2025-11-01"}</td>
                             <td className="p-2 text-slate-600 font-mono">{emp.officialStartDate || "2026-01-01"}</td>
-                            <td className="p-2"><span className="px-2 py-0.5 bg-sky-50 text-sky-700 font-bold rounded text-[10px]">Đang thử</span></td>
+                            <td className="p-2"><span className="px-2 py-0.5 bg-sky-50 text-sky-700 font-medium rounded text-[10px]">Đang thử</span></td>
                           </tr>
                         ))}
                       </tbody>
@@ -865,26 +865,26 @@ export function EasyHRMComponent() {
                       <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                       Danh sách Nhân sự mới bổ sung (Bảng 3)
                     </h3>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Gia nhập gần nhất</span>
+                    <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Gia nhập gần nhất</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="p-2 font-bold text-slate-600">STT</th>
-                          <th className="p-2 font-bold text-slate-600">Mã NV</th>
-                          <th className="p-2 font-bold text-slate-600">Tên nhân viên</th>
-                          <th className="p-2 font-bold text-slate-600">Chức danh nghề</th>
-                          <th className="p-2 font-bold text-slate-600">Phòng ban</th>
-                          <th className="p-2 font-bold text-slate-600">Ngày vào đơn vị</th>
+                          <th className="p-2 font-medium text-slate-600">STT</th>
+                          <th className="p-2 font-medium text-slate-600">Mã NV</th>
+                          <th className="p-2 font-medium text-slate-600">Tên nhân viên</th>
+                          <th className="p-2 font-medium text-slate-600">Chức danh nghề</th>
+                          <th className="p-2 font-medium text-slate-600">Phòng ban</th>
+                          <th className="p-2 font-medium text-slate-600">Ngày vào đơn vị</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {defaultNewHiresList.map((emp, i) => (
                           <tr key={emp.id} className="hover:bg-slate-50/55">
-                            <td className="p-2 font-mono font-bold text-slate-500">{i + 1}</td>
-                            <td className="p-2 font-mono font-bold text-slate-700">{emp.id}</td>
-                            <td className="p-2 font-bold text-slate-900">{emp.name}</td>
+                            <td className="p-2 font-mono font-medium text-slate-500">{i + 1}</td>
+                            <td className="p-2 font-mono font-medium text-slate-700">{emp.id}</td>
+                            <td className="p-2 font-medium text-slate-900">{emp.name}</td>
                             <td className="p-2 text-slate-700">{emp.title}</td>
                             <td className="p-2 text-slate-700">{emp.department}</td>
                             <td className="p-2 text-slate-600 font-mono">{emp.officialStartDate || emp.contractStartDate}</td>
@@ -902,24 +902,24 @@ export function EasyHRMComponent() {
                       <span className="w-2 h-2 rounded-full bg-violet-500"></span>
                       Thống kê Thâm niên nhân sự (Bảng 4)
                     </h3>
-                    <span className="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded">Thâm niên thực</span>
+                    <span className="text-[10px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded">Thâm niên thực</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="p-2 font-bold text-slate-600">STT</th>
-                          <th className="p-2 font-bold text-slate-600">Mã & Tên nhân viên</th>
-                          <th className="p-2 font-bold text-slate-600">Phòng ban</th>
-                          <th className="p-2 font-bold text-slate-600">Ngày vào</th>
-                          <th className="p-2 font-bold text-slate-600">Lên chính thức</th>
-                          <th className="p-2 font-bold text-slate-600 text-center">Thâm niên</th>
+                          <th className="p-2 font-medium text-slate-600">STT</th>
+                          <th className="p-2 font-medium text-slate-600">Mã & Tên nhân viên</th>
+                          <th className="p-2 font-medium text-slate-600">Phòng ban</th>
+                          <th className="p-2 font-medium text-slate-600">Ngày vào</th>
+                          <th className="p-2 font-medium text-slate-600">Lên chính thức</th>
+                          <th className="p-2 font-medium text-slate-600 text-center">Thâm niên</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {defaultNewHiresList.map((emp, i) => (
                           <tr key={emp.id} className="hover:bg-slate-50/55">
-                            <td className="p-2 font-mono font-bold text-slate-500">{i + 1}</td>
+                            <td className="p-2 font-mono font-medium text-slate-500">{i + 1}</td>
                             <td className="p-2">
                               <span className="font-bold text-slate-900 block">{emp.name}</span>
                               <span className="text-[10px] text-slate-500 font-mono">{emp.id}</span>
@@ -927,7 +927,7 @@ export function EasyHRMComponent() {
                             <td className="p-2 text-slate-800">{emp.department}</td>
                             <td className="p-2 text-slate-500 font-mono">{emp.contractStartDate}</td>
                             <td className="p-2 text-slate-500 font-mono">{emp.officialStartDate || "Chưa có"}</td>
-                            <td className="p-2 text-center font-bold text-slate-900 bg-slate-50 font-mono">{i === 0 ? "17 Tháng" : i === 1 ? "24 Tháng" : "4 Tháng"}</td>
+                            <td className="p-2 text-center font-medium text-slate-900 bg-slate-50 font-mono">{i === 0 ? "17 Tháng" : i === 1 ? "24 Tháng" : "4 Tháng"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -946,13 +946,13 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse font-sans">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Mã & Họ tên</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Bộ phận / Chức danh</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thông tin cá nhân (Giới tính, SĐT)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Hợp đồng lao động</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thuế & Bảo hiểm xã hội</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Trạng thái Ghi sổ</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Hành động</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Mã & Họ tên</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Bộ phận / Chức danh</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thông tin cá nhân (Giới tính, SĐT)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Hợp đồng lao động</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thuế & Bảo hiểm xã hội</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Trạng thái Ghi sổ</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -982,12 +982,12 @@ export function EasyHRMComponent() {
                         <td className="px-4 py-3 text-center">
                           {emp.misaSynced ? (
                             <div className="inline-flex flex-col items-center">
-                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[10px] uppercase border border-emerald-200">Đã ghi sổ 🟢</span>
+                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] border border-emerald-200">Đã ghi sổ 🟢</span>
                               {emp.misaSyncedAt && <span className="text-[9px] text-slate-400 mt-0.5 font-mono">{new Date(emp.misaSyncedAt).toLocaleDateString('vi-VN')}</span>}
                             </div>
                           ) : emp.misaSyncError ? (
                             <div className="inline-flex flex-col items-center" title={emp.misaSyncError}>
-                              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold rounded text-[10px] uppercase border border-rose-200 cursor-help">Lỗi kiểm tra 🔴</span>
+                              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-[10px] border border-rose-200 cursor-help">Lỗi kiểm tra 🔴</span>
                               <button 
                                 onClick={() => handleSyncEmployeeToMisa(emp)}
                                 disabled={syncingEmployeeId === emp.id}
@@ -1043,13 +1043,13 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">STT</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Mã & Tên nhân viên</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Lương thực tế (Real)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Lương cơ bản (Base)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Lương BHXH</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Các khoản phụ cấp & thưởng</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Ngày ghi nhận lý do biến động</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">STT</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Mã & Tên nhân viên</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Lương thực tế (Real)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Lương cơ bản (Base)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Lương BHXH</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Các khoản phụ cấp & thưởng</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Ngày ghi nhận lý do biến động</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -1061,7 +1061,7 @@ export function EasyHRMComponent() {
                           <span className="font-bold text-slate-900 block">{his.employeeName}</span>
                           <span className="text-[10px] text-slate-500 font-mono font-bold block">{his.employeeId}</span>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono font-bold text-slate-950">{formatCurrency(his.salaryReal)}</td>
+                        <td className="px-4 py-3 text-right font-mono font-medium text-slate-950">{formatCurrency(his.salaryReal)}</td>
                         <td className="px-4 py-3 text-right font-mono text-slate-700">{formatCurrency(his.salaryBase)}</td>
                         <td className="px-4 py-3 text-right font-mono text-slate-500">{formatCurrency(his.salaryInsurance)}</td>
                         <td className="px-4 py-3 text-right">
@@ -1095,12 +1095,12 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhân viên bảo lãnh</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Họ tên & Quan hệ thân nhân</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Ngày sinh thân nhân</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thuế (MST) & CCCD</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Ưu đãi học sinh & Trường học</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thời gian giảm trừ gia cảnh</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhân viên bảo lãnh</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Họ tên & Quan hệ thân nhân</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Ngày sinh thân nhân</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thuế (MST) & CCCD</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Ưu đãi học sinh & Trường học</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thời gian giảm trừ gia cảnh</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -1113,7 +1113,7 @@ export function EasyHRMComponent() {
                         </td>
                         <td className="px-4 py-3">
                           <span className="font-bold text-slate-900 block">{dep.relativeName}</span>
-                          <span className="px-2 py-0.5 bg-rose-50 text-rose-700 text-[10px] font-bold rounded">{dep.relationship}</span>
+                          <span className="px-2 py-0.5 bg-rose-50 text-rose-700 text-[10px] font-medium rounded">{dep.relationship}</span>
                         </td>
                         <td className="px-4 py-3 text-slate-700 font-mono">{dep.birthDate}</td>
                         <td className="px-4 py-3">
@@ -1156,12 +1156,12 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhân sự áp dụng</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Kỳ sinh con (Số lượng)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Ngày dự sinh vs Sinh thực tế</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thời gian nghỉ thai sản</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Phương án đi muộn về sớm</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Số văn bản & Phụ cấp</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhân sự áp dụng</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Kỳ sinh con (Số lượng)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Ngày dự sinh vs Sinh thực tế</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thời gian nghỉ thai sản</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Phương án đi muộn về sớm</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Số văn bản & Phụ cấp</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -1172,7 +1172,7 @@ export function EasyHRMComponent() {
                           <span className="font-bold text-slate-900 block">{mat.employeeName}</span>
                           <span className="text-[10px] text-slate-500 font-mono block">{mat.employeeId}</span>
                         </td>
-                        <td className="px-4 py-3 text-center font-bold text-slate-800">{mat.childrenCount} Bé</td>
+                        <td className="px-4 py-3 text-center font-medium text-slate-800">{mat.childrenCount} Bé</td>
                         <td className="px-4 py-3">
                           <span className="text-slate-700 block">Dự kiến: {mat.expectedBirthDate}</span>
                           <span className="text-[11px] font-bold text-emerald-600 block">Thực tế: {mat.actualBirthDate}</span>
@@ -1219,17 +1219,17 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">STT</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Họ tên & ID</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Giới tính & Ngày sinh</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Phòng ban đề xuất</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Trạng thái rủi ro</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">STT</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Họ tên & ID</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Giới tính & Ngày sinh</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Phòng ban đề xuất</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Trạng thái rủi ro</th>
                       <th className="px-4 py-3 text-center">Hành động khắc phục</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     <tr className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-bold text-slate-500">1</td>
+                      <td className="px-4 py-3 font-medium text-slate-500">1</td>
                       <td className="px-4 py-3">
                         <span className="font-bold text-slate-900 block">Lê Thu Quỳnh</span>
                         <span className="text-[10px] text-slate-500 font-mono block">EMP-2063</span>
@@ -1237,7 +1237,7 @@ export function EasyHRMComponent() {
                       <td className="px-4 py-3 font-mono">Nữ • 1998-03-12</td>
                       <td className="px-4 py-3 font-medium">Marketing (Thực tập sinh)</td>
                       <td className="px-4 py-3 text-center">
-                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-bold">Quá hạn 5 ngày</span>
+                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-medium">Quá hạn 5 ngày</span>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button
@@ -1261,27 +1261,27 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Quyết định số</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhân viên được đánh giá</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Năm & Kỳ đánh giá</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thẩm quyền đánh giá</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Xếp loại kết quả</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Mô tả nhận xét chi tiết</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Quyết định số</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhân viên được đánh giá</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Năm & Kỳ đánh giá</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thẩm quyền đánh giá</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Xếp loại kết quả</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Mô tả nhận xét chi tiết</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {evaluations.map((ev) => (
                       <tr key={ev.id} className="hover:bg-slate-50/55">
-                        <td className="px-4 py-3 font-mono font-bold text-indigo-600">{ev.decisionNumber}</td>
+                        <td className="px-4 py-3 font-mono font-medium text-indigo-600">{ev.decisionNumber}</td>
                         <td className="px-4 py-3">
                           <span className="font-bold text-slate-900 block">{ev.employeeName}</span>
                           <span className="text-[10px] text-slate-500 font-mono block">{ev.employeeId}</span>
                         </td>
-                        <td className="px-4 py-3 text-center font-bold text-slate-700">{ev.type} - {ev.year}</td>
+                        <td className="px-4 py-3 text-center font-medium text-slate-700">{ev.type} - {ev.year}</td>
                         <td className="px-4 py-3 font-medium text-slate-800">{ev.authority}</td>
                         <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px] uppercase">{ev.rating}</span>
+                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[10px]">{ev.rating}</span>
                         </td>
                         <td className="px-4 py-3 text-slate-600 leading-relaxed max-w-xs truncate" title={ev.note}>{ev.note}</td>
                         <td className="px-4 py-3 text-center">
@@ -1307,13 +1307,13 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Số quyết định (Loại)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhân sự áp dụng</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Ký & Ngày hiệu lực</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Người ban hành (Ký duyệt)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Phòng & Chức danh Bổ nhiệm mới</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Lương cơ bản mới</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Lương hiệu quả (KPIs)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Số quyết định (Loại)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhân sự áp dụng</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Ký & Ngày hiệu lực</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Người ban hành (Ký duyệt)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Phòng & Chức danh Bổ nhiệm mới</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Lương cơ bản mới</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Lương hiệu quả (KPIs)</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -1322,7 +1322,7 @@ export function EasyHRMComponent() {
                       <tr key={dec.id} className="hover:bg-slate-50/55">
                         <td className="px-4 py-3">
                           <span className="font-mono font-bold text-slate-900 block">{dec.decisionNumber}</span>
-                          <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded text-[10px]">{dec.decisionType}</span>
+                          <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-medium rounded text-[10px]">{dec.decisionType}</span>
                         </td>
                         <td className="px-4 py-3">
                           <span className="font-bold text-slate-900 block">{dec.staffName}</span>
@@ -1340,8 +1340,8 @@ export function EasyHRMComponent() {
                           <span className="font-bold text-indigo-900 block">{dec.newDepartment || "Giữ nguyên"}</span>
                           <span className="text-[10px] text-slate-600 block">{dec.newTitle || "Giữ nguyên"}</span>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-slate-700 font-bold">{dec.baseSalary ? formatCurrency(dec.baseSalary) : "N/A"}</td>
-                        <td className="px-4 py-3 text-right font-mono text-indigo-600 font-bold">{dec.kpisSalary ? formatCurrency(dec.kpisSalary) : "N/A"}</td>
+                        <td className="px-4 py-3 text-right font-mono text-slate-700 font-medium">{dec.baseSalary ? formatCurrency(dec.baseSalary) : "N/A"}</td>
+                        <td className="px-4 py-3 text-right font-mono text-indigo-600 font-medium">{dec.kpisSalary ? formatCurrency(dec.kpisSalary) : "N/A"}</td>
                         <td className="px-4 py-3 text-center">
                           <div className="flex justify-center gap-1.5">
                             <button
@@ -1375,13 +1375,13 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Loại hồ sơ</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Đợt phát động</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Số quyết định</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhân viên liên quan</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Lý do hình thức cụ thể</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-right">Số tiền khen/phạt</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Hạch toán lương</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Loại hồ sơ</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Đợt phát động</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Số quyết định</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhân viên liên quan</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Lý do hình thức cụ thể</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-right">Số tiền khen/phạt</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Hạch toán lương</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -1390,14 +1390,14 @@ export function EasyHRMComponent() {
                       <tr key={rd.id} className="hover:bg-slate-50/55">
                         <td className="px-4 py-3">
                           <span className={cn(
-                            "px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider block text-center w-full max-w-[100px]",
+                            "px-2.5 py-1 rounded text-[10px] block text-center w-full max-w-[100px]",
                             rd.type === "reward" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200"
                           )}>
                             {rd.type === "reward" ? "Khen thưởng" : "Kỷ luật"}
                           </span>
                         </td>
                         <td className="px-4 py-3 font-medium text-slate-800">{rd.phaseName}</td>
-                        <td className="px-4 py-3 font-mono text-slate-700 font-bold">{rd.decisionNumber}</td>
+                        <td className="px-4 py-3 font-mono text-slate-700 font-medium">{rd.decisionNumber}</td>
                         <td className="px-4 py-3">
                           <span className="font-bold text-slate-900 block">{rd.employeeName}</span>
                           <span className="text-[10px] text-slate-500 font-mono block">{rd.employeeId}</span>
@@ -1406,7 +1406,7 @@ export function EasyHRMComponent() {
                           <strong className="text-slate-800 block text-[11px]">{rd.formType}</strong>
                           <span className="text-[10px] block truncate max-w-xs">{rd.reason}</span>
                         </td>
-                        <td className={cn("px-4 py-3 text-right font-mono font-bold text-sm", rd.type === "reward" ? "text-emerald-600" : "text-red-500")}>
+                        <td className={cn("px-4 py-3 text-right font-mono font-medium text-sm", rd.type === "reward" ? "text-emerald-600" : "text-red-500")}>
                           {rd.type === "reward" ? "+" : "-"}{formatCurrency(rd.amount)}
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -1453,27 +1453,27 @@ export function EasyHRMComponent() {
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-4 py-3 font-bold text-slate-600">Mã phụ cấp</th>
-                        <th className="px-4 py-3 font-bold text-slate-600">Tên khoản hỗ trợ</th>
-                        <th className="px-4 py-3 font-bold text-slate-600 text-right">Mức hỗ trợ cơ sở</th>
-                        <th className="px-4 py-3 font-bold text-slate-600">Công thức tính (Payroll Formula)</th>
-                        <th className="px-4 py-3 font-bold text-slate-600">Phần tử tính lương</th>
-                        <th className="px-4 py-3 font-bold text-slate-600">Phòng ban áp dụng</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Mã phụ cấp</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Tên khoản hỗ trợ</th>
+                        <th className="px-4 py-3 font-medium text-slate-600 text-right">Mức hỗ trợ cơ sở</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Công thức tính (Payroll Formula)</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Phần tử tính lương</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Phòng ban áp dụng</th>
                         <th className="px-4 py-3 text-center">Hành động</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {allowanceConfigs.map((al) => (
                         <tr key={al.id} className="hover:bg-slate-50/55">
-                          <td className="px-4 py-3 font-mono font-bold text-teal-600">{al.code}</td>
-                          <td className="px-4 py-3 font-bold text-slate-900">{al.name}</td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-emerald-600">{formatCurrency(al.amount)}</td>
+                          <td className="px-4 py-3 font-mono font-medium text-teal-600">{al.code}</td>
+                          <td className="px-4 py-3 font-medium text-slate-900">{al.name}</td>
+                          <td className="px-4 py-3 text-right font-mono font-medium text-emerald-600">{formatCurrency(al.amount)}</td>
                           <td className="px-4 py-3">
                             <code className="text-[10px] bg-slate-100 border border-slate-300 p-1 rounded text-slate-800 font-mono select-all">{al.formula}</code>
                           </td>
                           <td className="px-4 py-3 text-slate-700">{al.salaryElement}</td>
                           <td className="px-4 py-3">
-                            <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded">Tất cả chi nhánh</span>
+                            <span className="text-[10px] bg-indigo-50 text-indigo-700 font-medium px-2 py-0.5 rounded">Tất cả chi nhánh</span>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <button
@@ -1496,7 +1496,7 @@ export function EasyHRMComponent() {
           {activeSubTab === "reports" && (
             <div className="bg-white border border-slate-300 shadow-sm rounded-lg p-6 space-y-6">
               <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                <h3 className="font-serif text-lg font-bold text-slate-900">Thư viện báo cáo theo quy chuẩn của EasyHRM</h3>
+                <h3 className="font-sans text-lg font-bold text-slate-900">Thư viện báo cáo theo quy chuẩn của EasyHRM</h3>
                 <span className="text-xs text-slate-500">Khởi tạo bởi bộ máy AI</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1551,36 +1551,36 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Tên bản lưu trữ (Snapshot)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Năm</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Tháng</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Thời gian lưu chốt</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Người thực hiện sao lưu</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center font-sans">Dùng thống kê</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Trạng thái Ghi sổ</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Tên bản lưu trữ (Snapshot)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Năm</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Tháng</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Thời gian lưu chốt</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Người thực hiện sao lưu</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center font-sans">Dùng thống kê</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Trạng thái Ghi sổ</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {backups.map((bk) => (
                       <tr key={bk.id} className="hover:bg-slate-50/55">
-                        <td className="px-4 py-3 font-bold text-slate-900">{bk.name}</td>
+                        <td className="px-4 py-3 font-medium text-slate-900">{bk.name}</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">{bk.year}</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">Tháng {bk.month}</td>
                         <td className="px-4 py-3 font-mono text-slate-500">{bk.createdAt}</td>
                         <td className="px-4 py-3 font-medium text-slate-800">{bk.creator}</td>
                         <td className="px-4 py-3 text-center">
-                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[10px] uppercase">Có áp dụng</span>
+                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px]">Có áp dụng</span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           {bk.misaSynced ? (
                             <div className="inline-flex flex-col items-center">
-                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[10px] uppercase border border-emerald-200">Đã ghi sổ 🟢</span>
+                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] border border-emerald-200">Đã ghi sổ 🟢</span>
                               {bk.misaSyncedAt && <span className="text-[9px] text-slate-400 mt-0.5 font-mono">{new Date(bk.misaSyncedAt).toLocaleDateString('vi-VN')}</span>}
                             </div>
                           ) : bk.misaSyncError ? (
                             <div className="inline-flex flex-col items-center" title={bk.misaSyncError}>
-                              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold rounded text-[10px] uppercase border border-rose-200 cursor-help">Lỗi kiểm tra 🔴</span>
+                              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-[10px] border border-rose-200 cursor-help">Lỗi kiểm tra 🔴</span>
                               <button 
                                 onClick={() => handleSyncPayrollToMisa(bk)}
                                 disabled={syncingPayrollId === bk.id}
@@ -1623,23 +1623,23 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Mã ngạch lương</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Tên ngạch thang lương</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Nhóm ngạch lương</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Thời gian nâng ngạch (Tháng)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600 text-center">Trạng thái áp dụng</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Mã ngạch lương</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Tên ngạch thang lương</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Nhóm ngạch lương</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Thời gian nâng ngạch (Tháng)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600 text-center">Trạng thái áp dụng</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {salaryScales.map((sc) => (
                       <tr key={sc.id} className="hover:bg-slate-50/55">
-                        <td className="px-4 py-3 font-mono font-bold text-indigo-600">{sc.code}</td>
-                        <td className="px-4 py-3 font-bold text-slate-900">{sc.name}</td>
+                        <td className="px-4 py-3 font-mono font-medium text-indigo-600">{sc.code}</td>
+                        <td className="px-4 py-3 font-medium text-slate-900">{sc.name}</td>
                         <td className="px-4 py-3 font-medium text-slate-800">{sc.group}</td>
-                        <td className="px-4 py-3 text-center font-mono font-bold text-slate-700">{sc.raiseTermMonths} tháng</td>
+                        <td className="px-4 py-3 text-center font-mono font-medium text-slate-700">{sc.raiseTermMonths} tháng</td>
                         <td className="px-4 py-3 text-center">
-                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[10px] uppercase font-bold">Hoạt động</span>
+                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[10px]">Hoạt động</span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <button
@@ -1664,19 +1664,19 @@ export function EasyHRMComponent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="px-4 py-3 font-bold text-slate-600">Mã mẫu văn bản</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Tên mẫu quyết định</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Loại văn bản bổ nhiệm</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Tên tệp Word đính kèm (.docx)</th>
-                      <th className="px-4 py-3 font-bold text-slate-600">Đơn vị ban hành quyết định</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Mã mẫu văn bản</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Tên mẫu quyết định</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Loại văn bản bổ nhiệm</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Tên tệp Word đính kèm (.docx)</th>
+                      <th className="px-4 py-3 font-medium text-slate-600">Đơn vị ban hành quyết định</th>
                       <th className="px-4 py-3 text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {templates.map((tmp) => (
                       <tr key={tmp.id} className="hover:bg-slate-50/55">
-                        <td className="px-4 py-3 font-mono font-bold text-amber-600">{tmp.code}</td>
-                        <td className="px-4 py-3 font-bold text-slate-900">{tmp.name}</td>
+                        <td className="px-4 py-3 font-mono font-medium text-amber-600">{tmp.code}</td>
+                        <td className="px-4 py-3 font-medium text-slate-900">{tmp.name}</td>
                         <td className="px-4 py-3 font-medium text-slate-700">{tmp.type}</td>
                         <td className="px-4 py-3 text-indigo-600 font-mono italic">{tmp.fileName}</td>
                         <td className="px-4 py-3 text-slate-800">{tmp.unitName}</td>
@@ -1722,7 +1722,7 @@ export function EasyHRMComponent() {
               {activeSubTab === "employees" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Mã nhân viên (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Mã nhân viên (*)</label>
                     <input
                       type="text"
                       required
@@ -1732,7 +1732,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Họ tên nhân viên (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Họ tên nhân viên (*)</label>
                     <input
                       type="text"
                       required
@@ -1742,7 +1742,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Tên thường gọi / Alias</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Tên thường gọi / Alias</label>
                     <input
                       type="text"
                       value={selectedEntity.aliasName || ""}
@@ -1751,7 +1751,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Tên nước ngoài</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Tên nước ngoài</label>
                     <input
                       type="text"
                       value={selectedEntity.foreignName || ""}
@@ -1760,7 +1760,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Giới tính</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Giới tính</label>
                     <select
                       value={selectedEntity.gender || "Nữ"}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, gender: e.target.value })}
@@ -1772,7 +1772,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Ngày sinh</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Ngày sinh</label>
                     <input
                       type="date"
                       value={selectedEntity.birthDate || ""}
@@ -1781,7 +1781,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Phòng ban</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Phòng ban</label>
                     <select
                       value={selectedEntity.department || "CSKH"}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, department: e.target.value })}
@@ -1793,7 +1793,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Cấp bậc / Chức vụ</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Cấp bậc / Chức vụ</label>
                     <input
                       type="text"
                       value={selectedEntity.position || ""}
@@ -1802,7 +1802,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hộ chiếu / CCCD</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Hộ chiếu / CCCD</label>
                     <input
                       type="text"
                       value={selectedEntity.identityNum || ""}
@@ -1811,7 +1811,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Điện thoại di động</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Điện thoại di động</label>
                     <input
                       type="text"
                       value={selectedEntity.personalEmail || ""}
@@ -1820,7 +1820,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Địa chỉ thường trú</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Địa chỉ thường trú</label>
                     <input
                       type="text"
                       value={selectedEntity.permanentAddress || ""}
@@ -1829,7 +1829,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Mã số thuế TNCN</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Mã số thuế TNCN</label>
                     <input
                       type="text"
                       value={selectedEntity.taxCode || ""}
@@ -1843,7 +1843,7 @@ export function EasyHRMComponent() {
               {activeSubTab === "history" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chọn Nhân viên (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Chọn Nhân viên (*)</label>
                     <select
                       value={selectedEntity.employeeId || ""}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, employeeId: e.target.value })}
@@ -1853,7 +1853,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Lương thực lãnh thực nhận</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Lương thực lãnh thực nhận</label>
                     <input
                       type="number"
                       value={selectedEntity.salaryReal || 0}
@@ -1862,7 +1862,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Lương đóng BHXH quy chuẩn</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Lương đóng BHXH quy chuẩn</label>
                     <input
                       type="number"
                       value={selectedEntity.salaryInsurance || 0}
@@ -1871,7 +1871,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hành chính lý do điều chỉnh</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Hành chính lý do điều chỉnh</label>
                     <input
                       type="text"
                       value={selectedEntity.reason || ""}
@@ -1885,7 +1885,7 @@ export function EasyHRMComponent() {
               {activeSubTab === "dependents" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Nhân viên bảo lãnh (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Nhân viên bảo lãnh (*)</label>
                     <select
                       value={selectedEntity.employeeId || ""}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, employeeId: e.target.value })}
@@ -1895,7 +1895,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Họ tên thân nhân (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Họ tên thân nhân (*)</label>
                     <input
                       type="text"
                       required
@@ -1905,7 +1905,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Quan hệ gia cảnh</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Quan hệ gia cảnh</label>
                     <select
                       value={selectedEntity.relationship || "Con"}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, relationship: e.target.value })}
@@ -1923,7 +1923,7 @@ export function EasyHRMComponent() {
               {activeSubTab === "maternity" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Nhân sự nữ áp dụng (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Nhân sự nữ áp dụng (*)</label>
                     <select
                       value={selectedEntity.employeeId || ""}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, employeeId: e.target.value })}
@@ -1933,7 +1933,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Số bé sinh (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Số bé sinh (*)</label>
                     <input
                       type="number"
                       value={selectedEntity.childrenCount || 1}
@@ -1942,7 +1942,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Phụ cấp con nhỏ (Tiền mặt)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Phụ cấp con nhỏ (Tiền mặt)</label>
                     <input
                       type="number"
                       value={selectedEntity.maternityAllowance || 0}
@@ -1956,7 +1956,7 @@ export function EasyHRMComponent() {
               {activeSubTab === "decisions" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans text-xs">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Mã Quyết Định (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Mã Quyết Định (*)</label>
                     <input
                       type="text"
                       required
@@ -1966,7 +1966,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Loại Quyết Định</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Loại Quyết Định</label>
                     <select
                       value={selectedEntity.decisionType || "Điều chuyển"}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, decisionType: e.target.value })}
@@ -1979,7 +1979,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Người áp dụng (*)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Người áp dụng (*)</label>
                     <select
                       value={selectedEntity.staffCode || ""}
                       onChange={(e) => setSelectedEntity({ ...selectedEntity, staffCode: e.target.value })}
@@ -1989,7 +1989,7 @@ export function EasyHRMComponent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Phòng ban mới</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Phòng ban mới</label>
                     <input
                       type="text"
                       value={selectedEntity.newDepartment || ""}
@@ -1998,7 +1998,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hiệu lực từ ngày</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Hiệu lực từ ngày</label>
                     <input
                       type="date"
                       value={selectedEntity.effectiveDate || ""}
@@ -2007,7 +2007,7 @@ export function EasyHRMComponent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Người ký (CEO/HRD)</label>
+                    <label className="block text-[10px] text-slate-500 mb-1">Người ký (CEO/HRD)</label>
                     <input
                       type="text"
                       value={selectedEntity.signerName || "Trần Bảo Sơn"}
@@ -2027,7 +2027,7 @@ export function EasyHRMComponent() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Mã lực / Tên đại diện (*)</label>
+                      <label className="block text-[10px] text-slate-500 mb-1">Mã lực / Tên đại diện (*)</label>
                       <input
                         type="text"
                         required
@@ -2037,7 +2037,7 @@ export function EasyHRMComponent() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Ghi chú bổ sung văn thư</label>
+                      <label className="block text-[10px] text-slate-500 mb-1">Ghi chú bổ sung văn thư</label>
                       <input
                         type="text"
                         value={selectedEntity.reason || selectedEntity.fileName || ""}

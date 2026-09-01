@@ -108,7 +108,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
       {/* Action Header & Toggle Form Button */}
       <div className="flex justify-between items-center bg-white rounded-lg border border-slate-300 p-5 shadow-sm">
         <div className="space-y-1">
-          <h2 className="text-base font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+          <h2 className="text-base font-semibold text-slate-800 uppercase tracking-tight flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-indigo-600" />
             Điều phối và Giám sát Công việc
           </h2>
@@ -131,7 +131,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white rounded-lg border-2 border-indigo-200/60 p-6 shadow-md space-y-5 animate-in slide-in-from-top duration-300">
           <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-black text-slate-800 uppercase flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-800 uppercase flex items-center gap-2">
               <Plus className="w-4 h-4 text-emerald-600" /> Form Giao Công Việc Mới
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">Mấu chốt của quy trình điều phối là định vị đúng người, đúng bộ phận và đúng cấp độ ưu tiên.</p>
@@ -141,7 +141,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
             {/* Title & Desc */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2 space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase">Tên công việc <span className="text-rose-500 mr-1">*</span></label>
+                <label className="font-medium text-slate-600 uppercase">Tên công việc <span className="text-rose-500 mr-1">*</span></label>
                 <input 
                   type="text"
                   required
@@ -153,7 +153,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase">Người được giao phụ trách</label>
+                <label className="font-medium text-slate-600 uppercase">Người được giao phụ trách</label>
                 <select
                   value={assigneeId}
                   onChange={(e) => setAssigneeId(e.target.value)}
@@ -168,7 +168,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
             {/* Description Area */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-600 uppercase">Mô tả chi tiết nội dung công việc</label>
+              <label className="font-medium text-slate-600 uppercase">Mô tả chi tiết nội dung công việc</label>
               <textarea 
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
@@ -181,7 +181,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {/* Scope */}
               <div className="space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" /> Phạm vi cấp độ</label>
+                <label className="font-medium text-slate-600 uppercase flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" /> Phạm vi cấp độ</label>
                 <select
                   value={scope}
                   onChange={(e) => setScope(e.target.value as any)}
@@ -196,7 +196,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
               {/* Department */}
               <div className="space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> Bộ phận chính</label>
+                <label className="font-medium text-slate-600 uppercase flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> Bộ phận chính</label>
                 <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
@@ -210,7 +210,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
               {/* Priority */}
               <div className="space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase flex items-center gap-1"><Sliders className="w-3.5 h-3.5" /> Mức độ ưu tiên</label>
+                <label className="font-medium text-slate-600 uppercase flex items-center gap-1"><Sliders className="w-3.5 h-3.5" /> Mức độ ưu tiên</label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as any)}
@@ -225,7 +225,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
               {/* Deadline */}
               <div className="space-y-1.5">
-                <label className="font-extrabold text-slate-600 uppercase flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Hạn hoàn thành</label>
+                <label className="font-medium text-slate-600 uppercase flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Hạn hoàn thành</label>
                 <input 
                   type="date"
                   required
@@ -238,7 +238,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
             {/* Labels (Multi-select) */}
             <div className="space-y-2">
-              <label className="font-extrabold text-slate-600 uppercase flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> Gắn nhãn công việc</label>
+              <label className="font-medium text-slate-600 uppercase flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> Gắn nhãn công việc</label>
               <div className="flex flex-wrap gap-1.5">
                 {LABELS.map(lbl => {
                   const isSelected = taskLabels.includes(lbl);
@@ -313,7 +313,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
           
           {/* Filter Scope */}
           <div className="space-y-1">
-            <span className="font-extrabold text-slate-500 uppercase tracking-wider">Cấp độ (Scope)</span>
+            <span className="font-bold text-slate-500 uppercase tracking-wider">Cấp độ (Scope)</span>
             <select
               value={filterScope}
               onChange={(e) => setFilterScope(e.target.value)}
@@ -329,7 +329,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
           {/* Filter Department */}
           <div className="space-y-1">
-            <span className="font-extrabold text-slate-500 uppercase tracking-wider">Bộ phận</span>
+            <span className="font-bold text-slate-500 uppercase tracking-wider">Bộ phận</span>
             <select
               value={filterDept}
               onChange={(e) => setFilterDept(e.target.value)}
@@ -344,7 +344,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
           {/* Filter Priority */}
           <div className="space-y-1">
-            <span className="font-extrabold text-[#64748B] uppercase tracking-wider">Ưu tiên</span>
+            <span className="font-bold text-[#64748B] uppercase tracking-wider">Ưu tiên</span>
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
@@ -360,7 +360,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
 
           {/* Filter Status */}
           <div className="space-y-1">
-            <span className="font-extrabold text-slate-500 uppercase tracking-wider">Trạng thái</span>
+            <span className="font-bold text-slate-500 uppercase tracking-wider">Trạng thái</span>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -384,7 +384,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
           <div className="overflow-x-auto min-w-0">
             <table className="w-full text-left border-collapse whitespace-nowrap font-sans">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-widest text-[9.5px]">
+                <tr className="bg-slate-50 border-b border-slate-200 font-bold text-slate-600 uppercase tracking-widest text-[9.5px]">
                   <th className="px-6 py-4">Mã việc</th>
                   <th className="px-6 py-4">Công việc chi tiết</th>
                   <th className="px-6 py-4">Cấp độ & Bộ phận</th>
@@ -403,13 +403,13 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
                   return (
                     <tr key={task.id} className="hover:bg-slate-50/50 transition-colors">
                       {/* ID */}
-                      <td className="px-6 py-4 font-mono font-bold text-slate-500">{task.id}</td>
+                      <td className="px-6 py-4 font-mono font-medium text-slate-500">{task.id}</td>
                       
                       {/* Title & Priority Badge in Column */}
                       <td className="px-6 py-4 max-w-sm">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={cn(
-                            "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border shrink-0",
+                            "px-2 py-0.5 rounded text-[8.5px] font-semibold uppercase tracking-wider border shrink-0",
                             task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200' :
                             task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
                             task.priority === 'medium' ? 'bg-primary-50 text-primary-600 border-blue-200' :
@@ -420,7 +420,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
                              task.priority === 'medium' ? 'Trung bình' : 'Thấp'}
                           </span>
                           <span className={cn(
-                            "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border shrink-0",
+                            "px-2 py-0.5 rounded text-[8.5px] font-semibold uppercase tracking-wider border shrink-0",
                             task.status === 'done' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                             task.status === 'testing' ? 'bg-amber-50 text-amber-600 border-amber-100' :
                             task.status === 'in_progress' ? 'bg-indigo-50 text-indigo-100 border-indigo-200' :
@@ -431,7 +431,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
                              task.status === 'in_progress' ? 'Đang làm' : 'Cần làm'}
                           </span>
                         </div>
-                        <h4 className="font-extrabold text-slate-900 text-sm hover:text-indigo-600 cursor-pointer" onClick={() => onSelectTask(task)}>
+                        <h4 className="font-bold text-slate-900 text-sm hover:text-indigo-600 cursor-pointer" onClick={() => onSelectTask(task)}>
                           {task.title}
                         </h4>
                         {task.desc && <p className="text-[10.5px] text-slate-500 truncate mt-0.5 leading-normal">{task.desc}</p>}
@@ -452,7 +452,7 @@ export function TaskDelegation({ tasks, onAddTask, onEditTask, onDeleteTask, onS
                             {task.assignee.initials}
                           </div>
                           <div>
-                            <span className="font-extrabold text-slate-800 text-xs block">{task.assignee.name}</span>
+                            <span className="font-bold text-slate-800 text-xs block">{task.assignee.name}</span>
                             <span className="text-[9.5px] text-slate-400 font-semibold block leading-tight">{task.assignee.position}</span>
                           </div>
                         </div>

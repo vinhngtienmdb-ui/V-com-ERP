@@ -46,16 +46,42 @@ const MOCK_LITIGATION = [
 export function Compliance() {
  const [activeTab, setActiveTab] = useState<'brand' | 'dispute' | 'policy' | 'clm' | 'litigation'>('brand');
 
- const { columns: brandCols, handleResize: handleBrandResize, getPinOffset: getBrandPinOffset } = useTableColumns('complianceBrand', ['brandName', 'owner', 'date', 'docs', 'status']);
- const { columns: disputeCols, handleResize: handleDisputeResize, getPinOffset: getDisputePinOffset } = useTableColumns('complianceDispute', ['id', 'type', 'target', 'evidence', 'status']);
- const { columns: clmCols, handleResize: handleClmResize, getPinOffset: getClmPinOffset } = useTableColumns('complianceClm', ['id', 'partner', 'type', 'value', 'expiry', 'status']);
- const { columns: litigationCols, handleResize: handleLitigationResize, getPinOffset: getLitigationPinOffset } = useTableColumns('complianceLitigation', ['id', 'plaintiff', 'defendant', 'type', 'court', 'status']);
+  const { columns: brandCols, handleResize: handleBrandResize, getPinOffset: getBrandPinOffset } = useTableColumns('complianceBrand', [
+    { id: 'brandName', initialWidth: 220, label: 'Thương hiệu' },
+    { id: 'owner', initialWidth: 160, label: 'Chủ sở hữu' },
+    { id: 'date', initialWidth: 120, label: 'Đăng ký' },
+    { id: 'docs', initialWidth: 200, label: 'Tài liệu' },
+    { id: 'status', initialWidth: 120, label: 'Trạng thái' }
+  ]);
+  const { columns: disputeCols, handleResize: handleDisputeResize, getPinOffset: getDisputePinOffset } = useTableColumns('complianceDispute', [
+    { id: 'id', initialWidth: 140, label: 'Mã khiếu nại' },
+    { id: 'type', initialWidth: 160, label: 'Loại' },
+    { id: 'target', initialWidth: 220, label: 'Đối tượng' },
+    { id: 'evidence', initialWidth: 200, label: 'Bằng chứng' },
+    { id: 'status', initialWidth: 120, label: 'Trạng thái' }
+  ]);
+  const { columns: clmCols, handleResize: handleClmResize, getPinOffset: getClmPinOffset } = useTableColumns('complianceClm', [
+    { id: 'id', initialWidth: 130, label: 'Mã hợp đồng' },
+    { id: 'partner', initialWidth: 200, label: 'Đối tác' },
+    { id: 'type', initialWidth: 170, label: 'Loại' },
+    { id: 'value', initialWidth: 150, label: 'Giá trị' },
+    { id: 'expiry', initialWidth: 120, label: 'Hết hạn' },
+    { id: 'status', initialWidth: 120, label: 'Trạng thái' }
+  ]);
+  const { columns: litigationCols, handleResize: handleLitigationResize, getPinOffset: getLitigationPinOffset } = useTableColumns('complianceLitigation', [
+    { id: 'id', initialWidth: 130, label: 'Mã vụ việc' },
+    { id: 'plaintiff', initialWidth: 170, label: 'Nguyên đơn' },
+    { id: 'defendant', initialWidth: 170, label: 'Bị đơn' },
+    { id: 'type', initialWidth: 160, label: 'Loại' },
+    { id: 'court', initialWidth: 170, label: 'Cơ quan' },
+    { id: 'status', initialWidth: 120, label: 'Trạng thái' }
+  ]);
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Pháp chế & Bảo vệ thương hiệu</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Pháp chế & Bảo vệ thương hiệu</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý bản quyền thương hiệu, xử lý tranh chấp hàng giả và giám sát tuân thủ sàn.</p>
  </div>
  <div className="flex gap-3">
@@ -73,7 +99,7 @@ export function Compliance() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Thương hiệu đã bảo quyền</span>
+ <span className="text-[10px] text-[#6B7280]">Thương hiệu đã bảo quyền</span>
  <ShieldCheck className="w-4 h-4 text-primary-600" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">842</div>
@@ -81,7 +107,7 @@ export function Compliance() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Tranh chấp đang xử lý</span>
+ <span className="text-[10px] text-[#6B7280]">Tranh chấp đang xử lý</span>
  <Gavel className="w-4 h-4 text-orange-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">15</div>
@@ -89,7 +115,7 @@ export function Compliance() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Cảnh báo vi phạm (Policy)</span>
+ <span className="text-[10px] text-[#6B7280]">Cảnh báo vi phạm (Policy)</span>
  <AlertTriangle className="w-4 h-4 text-red-500" />
  </div>
  <div className="text-2xl font-bold text-[#111827]">124</div>
@@ -97,7 +123,7 @@ export function Compliance() {
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
  <div className="flex justify-between items-start mb-2">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase">Compliance Score</span>
+ <span className="text-[10px] text-[#6B7280]">Compliance Score</span>
  <Scale className="w-4 h-4 text-emerald-500" />
  </div>
  <div className="text-2xl font-bold text-emerald-600">98/100</div>
@@ -148,40 +174,40 @@ export function Compliance() {
  <thead>
  {activeTab === 'brand' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <ResizableTh width={brandCols.find(c => c.id === 'brandName')?.currentWidth} onResize={(w) => handleBrandResize('brandName', w)} isPinned={brandCols.find(c => c.id === 'brandName')?.isPinned} pinOffset={getBrandPinOffset('brandName')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Tên thương hiệu</ResizableTh>
- <ResizableTh width={brandCols.find(c => c.id === 'owner')?.currentWidth} onResize={(w) => handleBrandResize('owner', w)} isPinned={brandCols.find(c => c.id === 'owner')?.isPinned} pinOffset={getBrandPinOffset('owner')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Mã sở hữu</ResizableTh>
- <ResizableTh width={brandCols.find(c => c.id === 'date')?.currentWidth} onResize={(w) => handleBrandResize('date', w)} isPinned={brandCols.find(c => c.id === 'date')?.isPinned} pinOffset={getBrandPinOffset('date')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Ngày đăng ký</ResizableTh>
- <ResizableTh width={brandCols.find(c => c.id === 'docs')?.currentWidth} onResize={(w) => handleBrandResize('docs', w)} isPinned={brandCols.find(c => c.id === 'docs')?.isPinned} pinOffset={getBrandPinOffset('docs')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Tệp đính kèm</ResizableTh>
- <ResizableTh width={brandCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleBrandResize('status', w)} isPinned={brandCols.find(c => c.id === 'status')?.isPinned} pinOffset={getBrandPinOffset('status')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-center">Trạng thái</ResizableTh>
+ <ResizableTh width={brandCols.find(c => c.id === 'brandName')?.currentWidth} onResize={(w) => handleBrandResize('brandName', w)} isPinned={brandCols.find(c => c.id === 'brandName')?.isPinned} pinOffset={getBrandPinOffset('brandName')} className="px-6 py-4 text-[11px] text-[#6B7280]">Tên thương hiệu</ResizableTh>
+ <ResizableTh width={brandCols.find(c => c.id === 'owner')?.currentWidth} onResize={(w) => handleBrandResize('owner', w)} isPinned={brandCols.find(c => c.id === 'owner')?.isPinned} pinOffset={getBrandPinOffset('owner')} className="px-6 py-4 text-[11px] text-[#6B7280]">Mã sở hữu</ResizableTh>
+ <ResizableTh width={brandCols.find(c => c.id === 'date')?.currentWidth} onResize={(w) => handleBrandResize('date', w)} isPinned={brandCols.find(c => c.id === 'date')?.isPinned} pinOffset={getBrandPinOffset('date')} className="px-6 py-4 text-[11px] text-[#6B7280]">Ngày đăng ký</ResizableTh>
+ <ResizableTh width={brandCols.find(c => c.id === 'docs')?.currentWidth} onResize={(w) => handleBrandResize('docs', w)} isPinned={brandCols.find(c => c.id === 'docs')?.isPinned} pinOffset={getBrandPinOffset('docs')} className="px-6 py-4 text-[11px] text-[#6B7280]">Tệp đính kèm</ResizableTh>
+ <ResizableTh width={brandCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleBrandResize('status', w)} isPinned={brandCols.find(c => c.id === 'status')?.isPinned} pinOffset={getBrandPinOffset('status')} className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</ResizableTh>
  </tr>
  )}
  {activeTab === 'dispute' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <ResizableTh width={disputeCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleDisputeResize('id', w)} isPinned={disputeCols.find(c => c.id === 'id')?.isPinned} pinOffset={getDisputePinOffset('id')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Mã tranh chấp</ResizableTh>
- <ResizableTh width={disputeCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleDisputeResize('type', w)} isPinned={disputeCols.find(c => c.id === 'type')?.isPinned} pinOffset={getDisputePinOffset('type')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Loại vi phạm</ResizableTh>
- <ResizableTh width={disputeCols.find(c => c.id === 'target')?.currentWidth} onResize={(w) => handleDisputeResize('target', w)} isPinned={disputeCols.find(c => c.id === 'target')?.isPinned} pinOffset={getDisputePinOffset('target')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Đơn hàng / Đối tượng</ResizableTh>
- <ResizableTh width={disputeCols.find(c => c.id === 'evidence')?.currentWidth} onResize={(w) => handleDisputeResize('evidence', w)} isPinned={disputeCols.find(c => c.id === 'evidence')?.isPinned} pinOffset={getDisputePinOffset('evidence')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Bằng chứng</ResizableTh>
- <ResizableTh width={disputeCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleDisputeResize('status', w)} isPinned={disputeCols.find(c => c.id === 'status')?.isPinned} pinOffset={getDisputePinOffset('status')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-center">Trạng thái</ResizableTh>
+ <ResizableTh width={disputeCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleDisputeResize('id', w)} isPinned={disputeCols.find(c => c.id === 'id')?.isPinned} pinOffset={getDisputePinOffset('id')} className="px-6 py-4 text-[11px] text-[#6B7280]">Mã tranh chấp</ResizableTh>
+ <ResizableTh width={disputeCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleDisputeResize('type', w)} isPinned={disputeCols.find(c => c.id === 'type')?.isPinned} pinOffset={getDisputePinOffset('type')} className="px-6 py-4 text-[11px] text-[#6B7280]">Loại vi phạm</ResizableTh>
+ <ResizableTh width={disputeCols.find(c => c.id === 'target')?.currentWidth} onResize={(w) => handleDisputeResize('target', w)} isPinned={disputeCols.find(c => c.id === 'target')?.isPinned} pinOffset={getDisputePinOffset('target')} className="px-6 py-4 text-[11px] text-[#6B7280]">Đơn hàng / Đối tượng</ResizableTh>
+ <ResizableTh width={disputeCols.find(c => c.id === 'evidence')?.currentWidth} onResize={(w) => handleDisputeResize('evidence', w)} isPinned={disputeCols.find(c => c.id === 'evidence')?.isPinned} pinOffset={getDisputePinOffset('evidence')} className="px-6 py-4 text-[11px] text-[#6B7280]">Bằng chứng</ResizableTh>
+ <ResizableTh width={disputeCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleDisputeResize('status', w)} isPinned={disputeCols.find(c => c.id === 'status')?.isPinned} pinOffset={getDisputePinOffset('status')} className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</ResizableTh>
  </tr>
  )}
  {activeTab === 'clm' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <ResizableTh width={clmCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleClmResize('id', w)} isPinned={clmCols.find(c => c.id === 'id')?.isPinned} pinOffset={getClmPinOffset('id')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Mã hợp đồng</ResizableTh>
- <ResizableTh width={clmCols.find(c => c.id === 'partner')?.currentWidth} onResize={(w) => handleClmResize('partner', w)} isPinned={clmCols.find(c => c.id === 'partner')?.isPinned} pinOffset={getClmPinOffset('partner')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Đối tác</ResizableTh>
- <ResizableTh width={clmCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleClmResize('type', w)} isPinned={clmCols.find(c => c.id === 'type')?.isPinned} pinOffset={getClmPinOffset('type')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Loại hợp đồng</ResizableTh>
- <ResizableTh width={clmCols.find(c => c.id === 'value')?.currentWidth} onResize={(w) => handleClmResize('value', w)} isPinned={clmCols.find(c => c.id === 'value')?.isPinned} pinOffset={getClmPinOffset('value')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Giá trị</ResizableTh>
- <ResizableTh width={clmCols.find(c => c.id === 'expiry')?.currentWidth} onResize={(w) => handleClmResize('expiry', w)} isPinned={clmCols.find(c => c.id === 'expiry')?.isPinned} pinOffset={getClmPinOffset('expiry')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Ngày hết hạn</ResizableTh>
- <ResizableTh width={clmCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleClmResize('status', w)} isPinned={clmCols.find(c => c.id === 'status')?.isPinned} pinOffset={getClmPinOffset('status')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-center">Trạng thái</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleClmResize('id', w)} isPinned={clmCols.find(c => c.id === 'id')?.isPinned} pinOffset={getClmPinOffset('id')} className="px-6 py-4 text-[11px] text-[#6B7280]">Mã hợp đồng</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'partner')?.currentWidth} onResize={(w) => handleClmResize('partner', w)} isPinned={clmCols.find(c => c.id === 'partner')?.isPinned} pinOffset={getClmPinOffset('partner')} className="px-6 py-4 text-[11px] text-[#6B7280]">Đối tác</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleClmResize('type', w)} isPinned={clmCols.find(c => c.id === 'type')?.isPinned} pinOffset={getClmPinOffset('type')} className="px-6 py-4 text-[11px] text-[#6B7280]">Loại hợp đồng</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'value')?.currentWidth} onResize={(w) => handleClmResize('value', w)} isPinned={clmCols.find(c => c.id === 'value')?.isPinned} pinOffset={getClmPinOffset('value')} className="px-6 py-4 text-[11px] text-[#6B7280]">Giá trị</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'expiry')?.currentWidth} onResize={(w) => handleClmResize('expiry', w)} isPinned={clmCols.find(c => c.id === 'expiry')?.isPinned} pinOffset={getClmPinOffset('expiry')} className="px-6 py-4 text-[11px] text-[#6B7280]">Ngày hết hạn</ResizableTh>
+ <ResizableTh width={clmCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleClmResize('status', w)} isPinned={clmCols.find(c => c.id === 'status')?.isPinned} pinOffset={getClmPinOffset('status')} className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</ResizableTh>
  </tr>
  )}
  {activeTab === 'litigation' && (
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <ResizableTh width={litigationCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleLitigationResize('id', w)} isPinned={litigationCols.find(c => c.id === 'id')?.isPinned} pinOffset={getLitigationPinOffset('id')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Mã vụ kiện</ResizableTh>
- <ResizableTh width={litigationCols.find(c => c.id === 'plaintiff')?.currentWidth} onResize={(w) => handleLitigationResize('plaintiff', w)} isPinned={litigationCols.find(c => c.id === 'plaintiff')?.isPinned} pinOffset={getLitigationPinOffset('plaintiff')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Nguyên đơn</ResizableTh>
- <ResizableTh width={litigationCols.find(c => c.id === 'defendant')?.currentWidth} onResize={(w) => handleLitigationResize('defendant', w)} isPinned={litigationCols.find(c => c.id === 'defendant')?.isPinned} pinOffset={getLitigationPinOffset('defendant')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Bị đơn</ResizableTh>
- <ResizableTh width={litigationCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleLitigationResize('type', w)} isPinned={litigationCols.find(c => c.id === 'type')?.isPinned} pinOffset={getLitigationPinOffset('type')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Loại vụ kiện</ResizableTh>
- <ResizableTh width={litigationCols.find(c => c.id === 'court')?.currentWidth} onResize={(w) => handleLitigationResize('court', w)} isPinned={litigationCols.find(c => c.id === 'court')?.isPinned} pinOffset={getLitigationPinOffset('court')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase">Cơ quan giải quyết</ResizableTh>
- <ResizableTh width={litigationCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleLitigationResize('status', w)} isPinned={litigationCols.find(c => c.id === 'status')?.isPinned} pinOffset={getLitigationPinOffset('status')} className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase text-center">Trạng thái</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleLitigationResize('id', w)} isPinned={litigationCols.find(c => c.id === 'id')?.isPinned} pinOffset={getLitigationPinOffset('id')} className="px-6 py-4 text-[11px] text-[#6B7280]">Mã vụ kiện</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'plaintiff')?.currentWidth} onResize={(w) => handleLitigationResize('plaintiff', w)} isPinned={litigationCols.find(c => c.id === 'plaintiff')?.isPinned} pinOffset={getLitigationPinOffset('plaintiff')} className="px-6 py-4 text-[11px] text-[#6B7280]">Nguyên đơn</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'defendant')?.currentWidth} onResize={(w) => handleLitigationResize('defendant', w)} isPinned={litigationCols.find(c => c.id === 'defendant')?.isPinned} pinOffset={getLitigationPinOffset('defendant')} className="px-6 py-4 text-[11px] text-[#6B7280]">Bị đơn</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleLitigationResize('type', w)} isPinned={litigationCols.find(c => c.id === 'type')?.isPinned} pinOffset={getLitigationPinOffset('type')} className="px-6 py-4 text-[11px] text-[#6B7280]">Loại vụ kiện</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'court')?.currentWidth} onResize={(w) => handleLitigationResize('court', w)} isPinned={litigationCols.find(c => c.id === 'court')?.isPinned} pinOffset={getLitigationPinOffset('court')} className="px-6 py-4 text-[11px] text-[#6B7280]">Cơ quan giải quyết</ResizableTh>
+ <ResizableTh width={litigationCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleLitigationResize('status', w)} isPinned={litigationCols.find(c => c.id === 'status')?.isPinned} pinOffset={getLitigationPinOffset('status')} className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</ResizableTh>
  </tr>
  )}
  </thead>
@@ -197,7 +223,7 @@ export function Compliance() {
  <td className="px-6 py-4">
  <div className="flex gap-2">
  {brand.documents.map((doc, idx) => (
- <span key={idx} className="px-2 py-0.5 bg-slate-100 text-[#6B7280] text-[9px] font-bold rounded flex items-center gap-1 cursor-pointer hover:bg-slate-200">
+ <span key={idx} className="px-2 py-0.5 bg-slate-100 text-[#6B7280] text-[9px] font-medium rounded flex items-center gap-1 cursor-pointer hover:bg-slate-200">
  <FileText className="w-3 h-3" /> {doc}
  </span>
  ))}
@@ -218,8 +244,8 @@ export function Compliance() {
  ))}
  {activeTab === 'dispute' && MOCK_DISPUTES.map(dispute => (
  <tr key={dispute.id} className="hover:bg-slate-50 transition-colors text-xs">
- <td className="px-6 py-4 font-bold text-[#111827] font-mono">{dispute.id}</td>
- <td className="px-6 py-4 uppercase font-bold text-red-600">{dispute.type}</td>
+ <td className="px-6 py-4 font-medium text-[#111827] font-mono">{dispute.id}</td>
+ <td className="px-6 py-4 uppercase font-medium text-red-600">{dispute.type}</td>
  <td className="px-6 py-4">
  <p className="font-bold">Order: {dispute.orderId}</p>
  <p className="text-[10px] text-slate-600">Người báo: {dispute.reporterId}</p>
@@ -239,10 +265,10 @@ export function Compliance() {
  ))}
  {activeTab === 'clm' && MOCK_CLM.map(clm => (
  <tr key={clm.id} className="hover:bg-slate-50 transition-colors text-xs">
- <td className="px-6 py-4 font-bold text-[#111827] font-mono">{clm.id}</td>
- <td className="px-6 py-4 font-bold text-[#111827]">{clm.partner}</td>
+ <td className="px-6 py-4 font-medium text-[#111827] font-mono">{clm.id}</td>
+ <td className="px-6 py-4 font-medium text-[#111827]">{clm.partner}</td>
  <td className="px-6 py-4 text-slate-600">{clm.type}</td>
- <td className="px-6 py-4 text-emerald-600 font-bold">{clm.value}</td>
+ <td className="px-6 py-4 text-emerald-600 font-medium">{clm.value}</td>
  <td className="px-6 py-4 text-slate-600">{clm.expiryDate}</td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
@@ -256,9 +282,9 @@ export function Compliance() {
  ))}
  {activeTab === 'litigation' && MOCK_LITIGATION.map(lit => (
  <tr key={lit.id} className="hover:bg-slate-50 transition-colors text-xs">
- <td className="px-6 py-4 font-bold text-[#111827] font-mono">{lit.id}</td>
- <td className="px-6 py-4 font-bold text-[#111827]">{lit.plaintiff}</td>
- <td className="px-6 py-4 font-bold text-slate-600">{lit.defendant}</td>
+ <td className="px-6 py-4 font-medium text-[#111827] font-mono">{lit.id}</td>
+ <td className="px-6 py-4 font-medium text-[#111827]">{lit.plaintiff}</td>
+ <td className="px-6 py-4 font-medium text-slate-600">{lit.defendant}</td>
  <td className="px-6 py-4 text-slate-600">{lit.type}</td>
  <td className="px-6 py-4 text-slate-600">{lit.court}</td>
  <td className="px-6 py-4 text-center">
@@ -283,7 +309,7 @@ export function Compliance() {
  <div className="p-3 bg-red-600 rounded-lg shadow-sm shadow-red-600/20">
  <ShieldAlert className="w-6 h-6" />
  </div>
- <h3 className="text-xl font-bold italic font-serif tracking-tight">Compliance Guardian</h3>
+ <h3 className="text-xl font-bold italic font-sans tracking-tight">Compliance Guardian</h3>
  </div>
  <p className="text-slate-500 text-sm leading-relaxed max-w-lg">
  Hệ thống tự động rà quét sản phẩm để phát hiện từ khóa cấm, hình ảnh nhạy cảm và các sản phẩm vi phạm bản quyền thương hiệu. Tự động tạm khóa các shop có Compliance Score dưới 60.

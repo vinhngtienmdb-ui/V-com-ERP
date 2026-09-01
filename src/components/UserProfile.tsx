@@ -214,7 +214,7 @@ export function UserProfile() {
  <div className="max-w-5xl mx-auto animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cài đặt tài khoản</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-slate-900">Cài đặt tài khoản</h1>
  <p className="text-sm text-slate-600 mt-1">Quản lý thông tin cá nhân, bảo mật và tùy chỉnh trải nghiệm của bạn.</p>
  </div>
  <button 
@@ -264,7 +264,7 @@ export function UserProfile() {
  </div>
  <div className="text-center sm:text-left">
  <h3 className="text-lg font-bold text-slate-900">{staffInfo?.name || 'Nguyễn Văn A'}</h3>
- <p className="text-sm text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full inline-block mt-1 uppercase tracking-wider text-[10px]">
+ <p className="text-sm text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full inline-block mt-1 text-[10px]">
  {staffInfo?.role?.name || 'Nhân viên vận hành'}
  </p>
  </div>
@@ -272,7 +272,7 @@ export function UserProfile() {
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Họ và tên</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Họ và tên</label>
  <div className="relative">
  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
  <input 
@@ -283,7 +283,7 @@ export function UserProfile() {
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">ID Nhân viên</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">ID Nhân viên</label>
  <input 
  type="text" 
  readOnly 
@@ -292,7 +292,7 @@ export function UserProfile() {
  />
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Email công việc</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Email công việc</label>
  <div className="relative">
  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
  <input 
@@ -303,7 +303,7 @@ export function UserProfile() {
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Số điện thoại</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Số điện thoại</label>
  <div className="relative">
  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
  <input 
@@ -339,7 +339,7 @@ export function UserProfile() {
  </h3>
  <div className="grid grid-cols-1 gap-4 max-w-md">
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Mật khẩu hiện tại</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Mật khẩu hiện tại</label>
  <div className="relative">
  <input 
  type={showCurrentPassword ? "text" : "password"} 
@@ -354,7 +354,7 @@ export function UserProfile() {
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Mật khẩu mới</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Mật khẩu mới</label>
  <div className="relative">
  <input 
  type={showNewPassword ? "text" : "password"} 
@@ -369,7 +369,7 @@ export function UserProfile() {
  </div>
  </div>
  <div className="space-y-2">
- <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Xác nhận mật khẩu mới</label>
+ <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Xác nhận mật khẩu mới</label>
  <input 
  type="password" 
  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-slate-900 transition-all"
@@ -400,14 +400,14 @@ export function UserProfile() {
             <div className="w-48 h-48 bg-slate-100 flex items-center justify-center text-xs text-slate-500">Đang tải QR...</div>
           )}
           <div className="mt-3 text-center w-full">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Khóa bí mật (Thủ công)</span>
+            <span className="text-[10px] text-slate-500 block">Khóa bí mật (Thủ công)</span>
             <code className="text-xs font-mono font-bold bg-slate-100 px-2.5 py-1.5 rounded block mt-1 select-all">{mfaSecret}</code>
           </div>
         </div>
 
         <div className="space-y-3 max-w-xs mx-auto">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">2. Nhập mã OTP 6 số để xác nhận</label>
+            <label className="text-[11px] text-slate-600">2. Nhập mã OTP 6 số để xác nhận</label>
             <input 
               type="text" 
               maxLength={6}
@@ -452,7 +452,7 @@ export function UserProfile() {
 
         <div className="space-y-3 max-w-xs">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Mã OTP 6 số</label>
+            <label className="text-[11px] text-slate-600">Mã OTP 6 số</label>
             <input 
               type="text" 
               maxLength={6}
@@ -497,7 +497,7 @@ export function UserProfile() {
         <div className="flex items-center gap-3">
           {isMfaEnabled ? (
             <>
-              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">Đang hoạt động</span>
+              <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">Đang hoạt động</span>
               <button 
                 onClick={() => {
                   setIsDisablingMfa(true);
@@ -512,7 +512,7 @@ export function UserProfile() {
             </>
           ) : (
             <>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">Chưa kích hoạt</span>
+              <span className="text-[10px] text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">Chưa kích hoạt</span>
               <button 
                 onClick={handleStartMfaSetup}
                 disabled={mfaLoading}

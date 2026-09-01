@@ -170,11 +170,11 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10 flex justify-between items-center shadow-sm shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono font-bold bg-slate-200 text-slate-800 px-2 py-1 rounded">
+            <span className="text-[11px] font-mono font-medium bg-slate-200 text-slate-800 px-2 py-1 rounded">
               {task.id}
             </span>
             <span className={cn(
-              "text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border",
+              "text-[10px] px-2.5 py-1 rounded-full border",
               task.scope === 'company' ? "bg-purple-50 text-purple-700 border-purple-200" :
               task.scope === 'department' ? "bg-primary-50 text-blue-700 border-blue-200" :
               task.scope === 'team' ? "bg-orange-50 text-orange-700 border-orange-200" :
@@ -218,7 +218,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
               type="text" 
               value={title} 
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-lg font-black text-slate-900 border-none px-0 focus:ring-0 focus:border-none placeholder-slate-400 font-sans tracking-tight focus:outline-none"
+              className="w-full text-lg font-semibold text-slate-900 border-none px-0 focus:ring-0 focus:border-none placeholder-slate-400 font-sans tracking-tight focus:outline-none"
               placeholder="Nhập tiêu đề công việc..."
             />
             
@@ -235,7 +235,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
             
             {/* Assignee Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <User className="w-3.5 h-3.5 text-slate-400" /> Người phụ trách
               </label>
               <select
@@ -251,7 +251,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
             {/* Deadline Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" /> Hạn hoàn thành
               </label>
               <input 
@@ -264,7 +264,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
             {/* Priority Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <Sliders className="w-3.5 h-3.5 text-slate-400" /> Mức độ ưu tiên
               </label>
               <select
@@ -281,7 +281,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
             {/* Status Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <Layers className="w-3.5 h-3.5 text-slate-400" /> Trạng thái
               </label>
               <select
@@ -298,7 +298,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
             {/* Scope (Phạm vi) Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <Briefcase className="w-3.5 h-3.5 text-slate-400" /> Cấp độ (Phạm vi)
               </label>
               <select
@@ -315,7 +315,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
             {/* Department Selection */}
             <div className="space-y-1.5">
-              <label className="font-extrabold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <label className="font-medium text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
                 <Building2 className="w-3.5 h-3.5 text-slate-400" /> Bộ phận / Phòng ban
               </label>
               <select
@@ -334,8 +334,8 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
           {/* Interactive Progress Slider */}
           <div className="space-y-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-extrabold text-slate-500 uppercase tracking-wider">Tiến độ thực hiện</span>
-              <span className="text-sm font-black text-primary-600 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{progress}%</span>
+              <span className="font-bold text-slate-500 uppercase tracking-wider">Tiến độ thực hiện</span>
+              <span className="text-sm font-semibold text-primary-600 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{progress}%</span>
             </div>
             <input 
               type="range" 
@@ -355,7 +355,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
           {/* Labels / Tags Multi-select */}
           <div className="space-y-2">
-            <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <Tag className="w-3.5 h-3.5" /> Nhãn công việc (Labels)
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -381,7 +381,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
           {/* Checklist (Subtasks) */}
           <div className="space-y-3.5 pt-2 border-t border-slate-200">
-            <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <CheckSquare className="w-4 h-4 text-slate-400" /> Danh mục việc phụ ({subtasks.filter(s => s.done).length}/{subtasks.length})
             </h4>
             
@@ -439,7 +439,7 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
 
           {/* Comments Section */}
           <div className="space-y-3.5 pt-4 border-t border-slate-200">
-            <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <MessageSquare className="w-4 h-4 text-slate-400" /> Thảo luận ({comments.length})
             </h4>
 

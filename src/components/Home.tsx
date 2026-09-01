@@ -219,10 +219,10 @@ export function Home() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-lg border border-slate-200 shadow-sm mt-1">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold text-primary-600 bg-primary-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Enterprise OS</span>
+            <span className="text-[10px] text-primary-600 bg-primary-50 border border-blue-200 px-2 py-0.5 rounded-full">Enterprise OS</span>
             <span className="text-[10px] font-medium text-slate-400">Ver 2.50</span>
           </div>
-          <h2 className="font-serif text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+          <h2 className="font-sans text-xl md:text-2xl font-semibold text-slate-900 tracking-tight">
             VComm ERP <span className="text-primary-600 font-sans font-bold">Intelligence</span>
           </h2>
         </div>
@@ -248,7 +248,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'chuc_nang'
-                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-bold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -261,7 +261,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'danh_dau'
-                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-bold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -274,7 +274,7 @@ export function Home() {
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
               activeTab === 'tat_ca'
-                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-extrabold"
+                ? "bg-primary-50 text-primary-600 border border-blue-200 shadow-xs font-bold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
             )}
           >
@@ -504,11 +504,11 @@ export function Home() {
             {filteredGroups.map((group, groupIdx) => (
               <div key={groupIdx} className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-[0.2em]">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
                     {group.title}
                   </h3>
                   <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-[10px] font-bold text-slate-400 px-2 py-0.5 bg-slate-100 rounded-full">{group.items.length} modules</span>
+                  <span className="text-[10px] font-medium text-slate-400 px-2 py-0.5 bg-slate-100 rounded-full">{group.items.length} modules</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
@@ -573,8 +573,8 @@ export function Home() {
       <footer className="mt-6 pt-12 border-t border-slate-200">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Hỗ trợ kỹ thuật: 1900 8888</div>
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Doanh nghiệp: Enterprise Edition</div>
+            <div className="text-[11px] text-slate-400">Hỗ trợ kỹ thuật: 1900 8888</div>
+            <div className="text-[11px] text-slate-400">Doanh nghiệp: Enterprise Edition</div>
           </div>
           <div className="flex gap-4">
             <button onClick={() => setShowCopyright(true)} className="text-xs font-bold text-primary-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
@@ -680,7 +680,7 @@ export function Home() {
                   )}
                 </div>
               </div>
-              <div className="p-4 border-t border-slate-100 bg-slate-50 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div className="p-4 border-t border-slate-100 bg-slate-50 text-center text-[10px] text-slate-400">
                 VCOMM ENTERPRISE WORK ENGINE
               </div>
             </motion.div>
@@ -709,7 +709,7 @@ export function Home() {
                 <div className="absolute top-0 right-0 opacity-[0.05] p-6 pointer-events-none">
                   <Shield className="w-48 h-48 rotate-12" />
                 </div>
-                <h3 className="font-serif text-lg font-black flex items-center justify-center sm:justify-start gap-2 text-white">
+                <h3 className="font-sans text-lg font-semibold flex items-center justify-center sm:justify-start gap-2 text-white">
                   <Shield className="w-5 h-5 text-blue-400" /> VComm ERP Enterprise License Key
                 </h3>
                 <p className="text-slate-400 text-xs mt-1">Hệ thống thông báo thông tin đăng ký bản quyền sản phẩm</p>
@@ -719,7 +719,7 @@ export function Home() {
                 <div className="border border-slate-200 rounded-lg p-5 bg-slate-50 space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Chủ sở hữu bản quyền</span>
-                    <span className="text-xs font-extrabold text-slate-800 font-mono">vinh.ngtienmdb@gmail.com</span>
+                    <span className="text-xs font-bold text-slate-800 font-mono">vinh.ngtienmdb@gmail.com</span>
                   </div>
 
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -734,7 +734,7 @@ export function Home() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái xác thực</span>
-                    <span className="text-xs font-extrabold text-emerald-600 flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
                       <UserCheck className="w-3 h-3" /> ĐÃ KÍCH HOẠT (ACTIVE)
                     </span>
                   </div>
@@ -748,7 +748,7 @@ export function Home() {
               <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
                 <button 
                   onClick={() => setShowCopyright(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-lg text-xs font-extrabold transition-all shadow-sm active:scale-95"
+                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
                 >
                   Đóng chứng chỉ
                 </button>
@@ -781,7 +781,7 @@ export function Home() {
                     <Factory className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-lg font-black text-white">Phân hệ Quản trị Sản xuất & Chế biến</h3>
+                    <h3 className="font-sans text-lg font-semibold text-white">Phân hệ Quản trị Sản xuất & Chế biến</h3>
                     <p className="text-slate-400 text-xs">Mô hình sản xuất khép kín MRP & ERP Warehouse Logistics</p>
                   </div>
                 </div>
@@ -798,7 +798,7 @@ export function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Item 1 */}
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 1: Lập kế hoạch (MRP)</p>
+                    <p className="text-[10px] text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full w-fit">Giai đoạn 1: Lập kế hoạch (MRP)</p>
                     <h4 className="font-bold text-slate-800 text-sm">Nhu cầu nguyên vật liệu</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Hệ thống phân tích báo cáo đơn hàng và cấu trúc sản phẩm BOM để xuất phiếu mua vật tư.</p>
                     <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
@@ -809,7 +809,7 @@ export function Home() {
 
                   {/* Item 2 */}
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-primary-600 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 2: Lệnh sản xuất</p>
+                    <p className="text-[10px] text-primary-600 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded-full w-fit">Giai đoạn 2: Lệnh sản xuất</p>
                     <h4 className="font-bold text-slate-800 text-sm">Chế tạo & Lắp ráp phân xưởng</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Phân bổ chỉ tiêu sản lượng theo dây chuyền lắp ráp công nghệ chính xác cao IoT.</p>
                     <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">
@@ -820,7 +820,7 @@ export function Home() {
 
                   {/* Item 3 */}
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 3: Kiểm định & Đóng gói</p>
+                    <p className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full w-fit">Giai đoạn 3: Kiểm định & Đóng gói</p>
                     <h4 className="font-bold text-slate-800 text-sm">Quản lý chất lượng (IQC/OQC)</h4>
                     <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Chứng thư kiểm tra chất lượng từ các kỹ sư đầu ngành, sấy dán mã vạch kho vận bốc xếp.</p>
                     <div className="p-3 bg-white border border-slate-100 rounded-lg text-[11px] text-slate-600 font-mono space-y-1">

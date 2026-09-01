@@ -17,8 +17,17 @@ CREATE TABLE IF NOT EXISTS public.settlements (
   created_at timestamp with time zone DEFAULT now()
 );
 
+-- settlements có thể đã được tạo bởi create_settlements_table.sql (không có tenant_id) → bổ sung
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='settlements' AND column_name='tenant_id') THEN
+    ALTER TABLE public.settlements ADD COLUMN tenant_id text NOT NULL DEFAULT 'tenant-vcomm-prod-01';
+  END IF;
+END $$;
+
 -- Enable RLS for settlements
 ALTER TABLE public.settlements ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for authenticated users on settlements" ON public.settlements;
 CREATE POLICY "Allow all actions for authenticated users on settlements" ON public.settlements
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
@@ -33,16 +42,22 @@ CREATE TABLE IF NOT EXISTS public.withdrawals (
 
 -- Enable RLS for withdrawals
 ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for authenticated users on withdrawals" ON public.withdrawals;
 CREATE POLICY "Allow all actions for authenticated users on withdrawals" ON public.withdrawals
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Indexes for orders
 CREATE INDEX IF NOT EXISTS idx_orders_tenant_status ON public.orders(tenant_id, status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON public.orders(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_orders_settlement ON public.orders(settlement_status, seller_id);
+-- orders có thể thiếu cột settlement_status/seller_id nếu schema mới chưa upgrade
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='settlement_status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_orders_settlement ON public.orders(settlement_status, seller_id)';
+  END IF;
+END $$;
 
 -- Indexes for products
-CREATE INDEX IF NOT EXISTS idx_products_tenant_status ON public.products(tenant_id, approval_status);
+CREATE INDEX IF NOT EXISTS idx_products_tenant_status ON public.products(tenant_id, status);
 CREATE INDEX IF NOT EXISTS idx_products_sku ON public.products(sku);
 
 -- Indexes for settlements

@@ -90,7 +90,7 @@ export function DynamicRequestForm() {
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[13px] font-bold text-slate-800 mb-2">Loại đề xuất</label>
+                <label className="block text-[13px] font-medium text-slate-800 mb-2">Loại đề xuất</label>
                 <select 
                   value={newRequest.subtype}
                   onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
@@ -106,7 +106,7 @@ export function DynamicRequestForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-[13px] font-bold text-slate-800 mb-2">Người đề xuất</label>
+                <label className="block text-[13px] font-medium text-slate-800 mb-2">Người đề xuất</label>
                 <input 
                   type="text" 
                   disabled
@@ -117,7 +117,7 @@ export function DynamicRequestForm() {
             </div>
             
             <div>
-              <label className="block text-[13px] font-bold text-slate-800 mb-2">Lý do / Nội dung chung</label>
+              <label className="block text-[13px] font-medium text-slate-800 mb-2">Lý do / Nội dung chung</label>
               <textarea 
                 value={newRequest.title}
                 onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
@@ -133,13 +133,13 @@ export function DynamicRequestForm() {
           <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden animate-in fade-in">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center">
               <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Chi tiết biểu mẫu: {matchedConfig.name}</h2>
-              <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded font-bold uppercase">{matchedConfig.category}</span>
+              <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded">{matchedConfig.category}</span>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {matchedConfig.fields.map((field: any) => (
                   <div key={field.id} className={cn(field.type === 'textarea' ? "col-span-1 md:col-span-2" : "")}>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wide">
                       {field.label} {field.required && <span className="text-rose-500">*</span>}
                     </label>
                     {field.type === 'textarea' ? (
@@ -184,7 +184,7 @@ export function DynamicRequestForm() {
             <div>
               <h4 className="text-sm font-bold text-orange-900 flex items-center gap-2">
                 Đối chiếu Ngân sách (Budget Control) 
-                <span className="text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-600 px-2 py-0.5 rounded shadow-sm">Over-budget Warning</span>
+                <span className="text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded shadow-sm">Over-budget Warning</span>
               </h4>
               <p className="text-[13px] text-orange-800/90 mt-1.5 leading-relaxed font-medium">
                 Ngân sách chi tiêu khả dụng của phòng ban đã đạt <b>85% hạn mức tháng</b>. Đề xuất khoản chi này có thể yêu cầu phê duyệt bổ sung (budget allocation) từ Giám đốc Tài chính (CFO).
@@ -221,7 +221,7 @@ export function DynamicRequestForm() {
                 {(newRequest.customReviewers || []).map((reviewer: any, index: number) => (
                   <div key={index} className="flex items-center gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div className="w-20 shrink-0">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-200 px-2 py-1 rounded">
+                      <span className="text-[10px] text-slate-500 bg-slate-200 px-2 py-1 rounded">
                         Bước {reviewer.step}
                       </span>
                     </div>

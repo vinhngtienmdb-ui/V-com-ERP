@@ -160,11 +160,11 @@ const logAdminAudit = async (
           getDoc(doc(db, 'staff', user.uid)),
           new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
          ]);
-         if (staffDoc.exists()) {
-           const data = staffDoc.data();
-           setIsStaff(true);
-           const isUserAdmin = data.role === 'admin';
-           setIsAdmin(isUserAdmin);
+          if (staffDoc.exists()) {
+            const data = staffDoc.data();
+            setIsStaff(true);
+            const isUserAdmin = data.role === 'admin' || data.role === 'super_admin';
+            setIsAdmin(isUserAdmin);
            setStaffInfo({
              ...data,
              twoFactorEnabled: twoFactorEnabled
@@ -238,7 +238,17 @@ const logAdminAudit = async (
  
  
   const login = async (username: string, password: string) => {
-    const email = username.includes('@') ? username : `${username}@v-erp.com`;
+    // Alias: username ngắn map sang email admin thật trong Supabase Auth.
+    // (admin@v-erp.com không tồn tại được trên GoTrue vì domain không có MX;
+    //  user thật là vinh.ngtienmdb@gmail.com — super_admin đã verify.)
+    const ADMIN_ALIAS: Record<string, string> = {
+      'admin': 'vinh.ngtienmdb@gmail.com',
+      'superadmin': 'vinh.ngtienmdb@gmail.com'
+    };
+    const isAlias = !!ADMIN_ALIAS[username.trim().toLowerCase()];
+    const email = isAlias
+      ? ADMIN_ALIAS[username.trim().toLowerCase()]
+      : (username.includes('@') ? username : `${username}@v-erp.com`);
     const isAdminAccount = username === 'admin' || username === 'superadmin' || email === 'admin@v-erp.com' || email === 'superadmin@v-erp.com' || email === 'vinh.ngtienmdb@gmail.com' || email === 'admin@vcomm.vn' || email === 'superadmin@vcomm.vn';
     const isBootstrapAdmin = (username === 'admin' && password === 'admin@1234') || (username === 'superadmin' && password === 'superadmin@1234');
     const isBootstrapSeller = username === 'seller' && password === 'seller@1234';
@@ -246,8 +256,9 @@ const logAdminAudit = async (
     try {
       await signIn(auth, email, password);
     } catch (error: any) {
+      const isNetworkError = error?.code === 'auth/network-request-failed';
       // Standard bootstrap check if database is online but user does not exist in Auth
-      const isUserNotFound = error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential';
+      const isUserNotFound = !isNetworkError && (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential');
       
       if (DEMO_MODE && (isBootstrapAdmin || isBootstrapSeller) && isUserNotFound) {
         try {
@@ -265,7 +276,11 @@ const logAdminAudit = async (
           if (createError.code === 'auth/email-already-in-use') {
             throw error; 
           }
-          throw createError;
+          // Provider có thể từ chối email domain nội bộ (admin@v-erp.com không có MX).
+          // Không re-throw ở đây — để luồng tiếp tục xuống offline bootstrap fallback
+          // bên dưới (vốn đã xác nhận đúng bootstrap credentials). Sai mật khẩu vẫn
+          // bị chặn vì các nhánh fallback đều yêu cầu isBootstrapAdmin/Seller.
+          console.warn('[Auth] Bootstrap signUp bị từ chối, chuyển sang offline fallback:', createError.message);
         }
       }
 

@@ -459,7 +459,7 @@ export function SignatureHub() {
         <div className="group bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8" />
           <div className="relative z-10">
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chờ tôi ký</h3>
+            <h3 className="text-[10px] text-slate-500 mb-1">Chờ tôi ký</h3>
             <p className="text-3xl font-bold text-slate-900">{signatures.filter(s => s.status === 'pending').length}</p>
             <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-amber-600">
               <Clock className="w-3 h-3" /> Cần xử lý gấp
@@ -469,7 +469,7 @@ export function SignatureHub() {
         <div className="group bg-white border border-slate-300 p-4 rounded-xl shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8" />
           <div className="relative z-10">
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
+            <h3 className="text-[10px] text-slate-500 mb-1">Đã hoàn tất</h3>
             <p className="text-3xl font-bold text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
             <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-primary-600">
               <CheckCircle2 className="w-3 h-3" /> Lưu trữ an toàn
@@ -480,7 +480,7 @@ export function SignatureHub() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12" />
           <div className="relative z-10 flex justify-between items-center h-full">
             <div>
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chứng thư đang hoạt động</h3>
+              <h3 className="text-[10px] text-slate-500 mb-1">Chứng thư đang hoạt động</h3>
               <p className="text-sm font-bold text-white">{userKeyPair ? userKeyPair.cert_subject : 'Chưa đăng ký chứng thư số'}</p>
               <div className="flex items-center gap-4 mt-3">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
@@ -591,12 +591,12 @@ export function SignatureHub() {
                           <input type="checkbox" checked={selectedDocs.size === pendingDocs.length && pendingDocs.length > 0} onChange={handleSelectAllDocs} className="rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
                         </th>
                       )}
-                      <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</ResizableTh>
-                      <ResizableTh width={listCols.find(c => c.id === 'ref')?.currentWidth} onResize={(w) => handleListResize('ref', w)} isPinned={listCols.find(c => c.id === 'ref')?.isPinned} pinOffset={getListPinOffset('ref')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</ResizableTh>
-                      <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</ResizableTh>
-                      <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</ResizableTh>
-                      <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</ResizableTh>
-                      <ResizableTh width={listCols.find(c => c.id === 'date')?.currentWidth} onResize={(w) => handleListResize('date', w)} isPinned={listCols.find(c => c.id === 'date')?.isPinned} pinOffset={getListPinOffset('date')} className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ngày</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[10px] text-slate-500">Mã trình ký</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'ref')?.currentWidth} onResize={(w) => handleListResize('ref', w)} isPinned={listCols.find(c => c.id === 'ref')?.isPinned} pinOffset={getListPinOffset('ref')} className="px-4 py-3 text-[10px] text-slate-500">Tài liệu tham chiếu</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[10px] text-slate-500">Phân loại</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[10px] text-slate-500">Tiến trình ký & Phân quyền</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[10px] text-slate-500 text-center">Trạng thái</ResizableTh>
+                      <ResizableTh width={listCols.find(c => c.id === 'date')?.currentWidth} onResize={(w) => handleListResize('date', w)} isPinned={listCols.find(c => c.id === 'date')?.isPinned} pinOffset={getListPinOffset('date')} className="px-4 py-3 text-[10px] text-slate-500">Ngày</ResizableTh>
                       <th className="px-4 py-3 w-10"></th>
                     </tr>
                   </thead>
@@ -622,7 +622,7 @@ export function SignatureHub() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <p className="text-[10px] text-slate-600 uppercase font-bold tracking-tight w-16">Luồng ký:</p>
+                            <p className="text-[10px] text-slate-600 tracking-tight w-16">Luồng ký:</p>
                             <div className="flex items-center gap-1">
                               <div className="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded">Người tạo</div>
                               <span className="text-slate-500">→</span>
@@ -644,7 +644,7 @@ export function SignatureHub() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className={cn(
-                            "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+                            "px-2.5 py-1 text-[10px] rounded-lg tracking-tight inline-flex items-center gap-1",
                             doc.status === 'signed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                           )}>
                             {doc.status === 'signed' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
@@ -811,7 +811,7 @@ export function SignatureHub() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-1">
                         <h4 className="font-bold text-slate-900 truncate">{cert.user_id}</h4>
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
                           Hoạt động
                         </span>
                       </div>
@@ -967,7 +967,7 @@ export function SignatureHub() {
                       )}
 
                       <div className="bg-slate-900 text-white rounded-lg p-4 space-y-3 shadow-md border border-slate-950">
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Thông tin Chứng thư & Chữ ký</span>
+                        <span className="text-[10px] text-slate-400">Thông tin Chứng thư & Chữ ký</span>
                         
                         <div className="space-y-2 text-[11px] leading-tight">
                           <div>
@@ -1026,7 +1026,7 @@ export function SignatureHub() {
 
               {/* Visual Placement Mock - Fully Interactive */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-700">Định vị Con dấu & Chữ ký trực quan</label>
+                <label className="block text-xs font-medium text-slate-700">Định vị Con dấu & Chữ ký trực quan</label>
                 <div 
                   ref={canvasContainerRef}
                   onMouseMove={handleCanvasMouseMove}
@@ -1035,7 +1035,7 @@ export function SignatureHub() {
                   className="border border-slate-300 rounded-lg p-4 bg-slate-100 flex flex-col items-center justify-center relative overflow-hidden h-48 select-none"
                 >
                   {/* Simulated document background */}
-                  <div className="absolute inset-0 bg-white/60 flex flex-col p-4 text-[9px] text-slate-400 font-serif leading-tight">
+                  <div className="absolute inset-0 bg-white/60 flex flex-col p-4 text-[9px] text-slate-400 font-sans leading-tight">
                     <p className="font-bold border-b border-slate-300 pb-1 mb-1">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
                     <p className="font-bold">ĐIỀU 3: ĐIỀU KHOẢN THI HÀNH</p>
                     <p className="mt-1">Quyết định này có hiệu lực kể từ ngày ký. Các đơn vị liên quan chịu trách nhiệm thi hành quyết định...</p>
@@ -1056,8 +1056,8 @@ export function SignatureHub() {
                       isDraggingStamp ? "border-emerald-500 bg-emerald-50/90 shadow-lg" : "border-rose-500 bg-rose-50/80"
                     )}
                   >
-                     <span className="text-[8px] font-black text-rose-600 uppercase tracking-tighter leading-none">CÔNG TY CP VCOMM</span>
-                     <span className="text-[8px] font-black text-rose-500 border border-rose-500 px-1 py-0.2 mt-0.5 rounded leading-none">ĐÃ KÝ SỐ</span>
+                     <span className="text-[8px] text-rose-600 tracking-tighter leading-none">CÔNG TY CP VCOMM</span>
+                     <span className="text-[8px] font-semibold text-rose-500 border border-rose-500 px-1 py-0.2 mt-0.5 rounded leading-none">ĐÃ KÝ SỐ</span>
                      <span className="text-[7px] text-slate-500 font-mono mt-0.5 leading-none">Vị trí: ${Math.round(stampPos.x)}, ${Math.round(stampPos.y)}</span>
                   </div>
                 </div>
@@ -1081,13 +1081,13 @@ export function SignatureHub() {
               ) : (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Chứng thư số đã chọn</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Chứng thư số đã chọn</label>
                     <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-xs text-slate-700 font-medium">
                       {userKeyPair.cert_subject}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Khóa riêng tư của bạn (Private Key PEM)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Khóa riêng tư của bạn (Private Key PEM)</label>
                     <textarea 
                       rows={6}
                       value={privateKeyInput}
@@ -1172,7 +1172,7 @@ export function SignatureHub() {
                       <div className="flex justify-between items-center mb-1">
                         <strong className="text-slate-800">{sig.signerName} ({sig.signerEmail})</strong>
                         <span className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+                          "px-2 py-0.5 rounded text-[10px]",
                           sig.verified ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
                         )}>
                           {sig.verified ? 'Verified' : 'Fail'}

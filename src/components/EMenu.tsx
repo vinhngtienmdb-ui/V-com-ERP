@@ -144,7 +144,7 @@ export function EMenu() {
  {/* Header */}
  <header className="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-6 border-b border-slate-200 flex items-center justify-between">
  <div className="flex flex-col">
- <h1 className="font-serif tracking-tight text-xs font-black text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
+ <h1 className="font-sans tracking-tight text-xs font-semibold text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
  <div className="flex items-center gap-2">
  <span className="text-xl font-bold text-slate-900 underline decoration-indigo-200 underline-offset-4">Bàn {tableId}</span>
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -211,7 +211,7 @@ export function EMenu() {
  <div className="flex-1 flex flex-col justify-between py-1">
  <div>
  <h3 className="font-bold text-slate-900 leading-tight">{product.name}</h3>
- <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">{product.category}</p>
+ <p className="text-[10px] text-slate-500 mt-1">{product.category}</p>
  </div>
  <div className="flex items-center justify-between">
  <span className="font-bold text-primary-600">{formatCurrency(product.price)}</span>
@@ -257,12 +257,12 @@ export function EMenu() {
  <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#FAF9F5] backdrop-blur-md">
  <ShoppingCart className="w-6 h-6" />
  </div>
- <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-[#FAF9F5] text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
+ <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-[#FAF9F5] text-[10px] font-medium rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
  {cartCount}
  </span>
  </div>
  <div className="flex flex-col">
- <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tổng tiền</span>
+ <span className="text-[10px] text-slate-500">Tổng tiền</span>
  <span className="text-lg font-bold text-[#FAF9F5]">{formatCurrency(cartTotal)}</span>
  </div>
  </div>

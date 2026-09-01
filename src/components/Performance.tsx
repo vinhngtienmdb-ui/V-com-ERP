@@ -75,7 +75,7 @@ export function Performance() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Hiệu suất & Đào tạo</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Hiệu suất & Đào tạo</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý mục tiêu KPIs/OKRs, đánh giá 360 độ và cổng học tập trực tuyến (LMS).</p>
  </div>
  <div className="flex gap-3">
@@ -95,7 +95,7 @@ export function Performance() {
  <div className="p-2 bg-slate-100 text-orange-700 rounded-lg w-fit mb-3">
  <Target className="w-5 h-5" />
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">KPI Hoàn thành TB (Toàn sàn)</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">KPI Hoàn thành TB (Toàn sàn)</p>
  <div className="text-2xl font-bold text-[#111827]">92.4%</div>
  <div className="mt-1 text-[10px] text-[#10B981] font-medium">+2.1% so với tháng trước</div>
  </div>
@@ -103,7 +103,7 @@ export function Performance() {
  <div className="p-2 bg-purple-50 text-purple-600 rounded-lg w-fit mb-3">
  <GraduationCap className="w-5 h-5" />
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Khóa học đang diễn ra</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Khóa học đang diễn ra</p>
  <div className="text-2xl font-bold text-[#111827]">08</div>
  <p className="text-[10px] text-[#6B7280] mt-1">1,240 lượt đăng ký học</p>
  </div>
@@ -111,7 +111,7 @@ export function Performance() {
  <div className="p-2 bg-orange-50 text-orange-600 rounded-lg w-fit mb-3">
  <Users className="w-5 h-5" />
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đánh giá 360 Độ</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Đánh giá 360 Độ</p>
  <div className="text-2xl font-bold text-[#F59E0B]">Đợt 1/2024</div>
  <p className="text-[10px] text-[#EF4444] font-medium">15 nhân sự chưa hoàn tất</p>
  </div>
@@ -119,7 +119,7 @@ export function Performance() {
  <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg w-fit mb-3">
  <Trophy className="w-5 h-5" />
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Nhân viên ưu tú tháng</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Nhân viên ưu tú tháng</p>
  <div className="text-2xl font-bold text-[#10B981]">05</div>
  <div className="mt-1 flex items-center gap-1 text-[10px] text-[#8B5CF6] font-medium">
  <Star className="w-3 h-3 fill-current" /> Thưởng nóng GMV
@@ -155,7 +155,7 @@ export function Performance() {
  <div className="flex justify-between items-start">
  <div>
  <h4 className="font-bold text-[#111827]">{kpi.title}</h4>
- <p className="text-[10px] text-[#6B7280] uppercase tracking-wider">{kpi.period}</p>
+ <p className="text-[10px] text-[#6B7280]">{kpi.period}</p>
  </div>
  <button className="text-[#9CA3AF] hover:text-[#111827]"><MoreVertical className="w-4 h-4" /></button>
  </div>
@@ -186,7 +186,7 @@ export function Performance() {
         <div key={course.id} className="bg-white border border-slate-300 p-5 rounded-lg space-y-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start">
             <span className={cn(
-              "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase",
+              "px-2.5 py-0.5 rounded text-[10px]",
               course.category === 'Bắt buộc' ? "bg-rose-50 text-rose-600 border border-rose-100" :
               course.category === 'Cơ bản' ? "bg-primary-50 text-primary-600 border border-primary-100" :
               "bg-purple-50 text-purple-600 border border-purple-100"
@@ -216,7 +216,7 @@ export function Performance() {
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-slate-50 border border-slate-300 p-5 rounded-lg space-y-4">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">Chọn nhân sự đánh giá</label>
+          <label className="block text-xs font-medium text-slate-700 uppercase tracking-wide">Chọn nhân sự đánh giá</label>
           <select 
             value={selectedEmpId}
             onChange={(e) => {
@@ -235,15 +235,15 @@ export function Performance() {
             return (
               <div className="space-y-4 pt-4 border-t border-slate-200">
                 <div>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Chức danh / Vai trò</span>
+                  <span className="text-[10px] text-slate-500 block">Chức danh / Vai trò</span>
                   <span className="text-sm font-semibold text-slate-800">{emp.role}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Điểm KPI Trung bình</span>
-                  <span className="text-xl font-black text-indigo-700">{emp.kpiScore} / 100</span>
+                  <span className="text-[10px] text-slate-500 block">Điểm KPI Trung bình</span>
+                  <span className="text-xl font-semibold text-indigo-700">{emp.kpiScore} / 100</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Thành tích nổi bật</span>
+                  <span className="text-[10px] text-slate-500 block mb-1">Thành tích nổi bật</span>
                   <ul className="list-disc pl-4 text-xs text-slate-700 space-y-1">
                     {emp.achievements.map((ach, idx) => (
                       <li key={idx}>{ach}</li>

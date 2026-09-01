@@ -120,7 +120,7 @@ export function LoyaltyManagement() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Loyalty & Club Prestige</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Loyalty & Club Prestige</h1>
  <p className="text-sm text-[#6B7280] mt-1">Hệ thống thành viên, Phần thưởng và Gamification tăng trưởng tỷ lệ quay lại.</p>
  </div>
  <div className="flex gap-3">
@@ -147,7 +147,7 @@ export function LoyaltyManagement() {
  <stat.icon className={cn("w-5 h-5", stat.color)} />
  </div>
  <div>
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
+ <p className="text-[10px] text-slate-500">{stat.label}</p>
  <h3 className="text-xl font-bold text-slate-900 mt-0.5">{stat.value}</h3>
  <p className={cn("text-[10px] font-bold mt-1", stat.sub.includes('+') ? "text-emerald-600" : "text-slate-500")}>{stat.sub}</p>
  </div>
@@ -202,20 +202,20 @@ export function LoyaltyManagement() {
   {tier.tier === 'diamond' ? <Gem className="w-6 h-6 text-[#FAF9F5]" /> : <Star className="w-6 h-6 text-[#FAF9F5]" />}
   </div>
   <div className="text-right">
-  <p className="text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">Available Points</p>
+  <p className="text-[10px] text-[#FAF9F5]/60">Available Points</p>
   <p className="text-xl font-bold text-[#FAF9F5]">{tier.points.toLocaleString()}</p>
   </div>
   </div>
   
   <div className="mt-8">
-  <h4 className="text-2xl font-black italic uppercase tracking-tighter text-[#FAF9F5]">{tier.tier.toUpperCase()} CLUB</h4>
+  <h4 className="text-2xl font-semibold italic uppercase tracking-tighter text-[#FAF9F5]">{tier.tier.toUpperCase()} CLUB</h4>
   <p className={cn("text-xs font-bold mt-1", tier.textColor)}>TIER STATUS: {tier.points >= 15000 ? 'ELITE' : 'ACTIVE'}</p>
   </div>
   </div>
 
   <div className="relative z-10 space-y-4">
   <div className="space-y-2">
-  <div className="flex justify-between text-[10px] font-bold text-[#FAF9F5]/60 uppercase tracking-widest">
+  <div className="flex justify-between text-[10px] text-[#FAF9F5]/60">
   <span>Tiến trình nâng hạng</span>
   <span>{tier.nextTierPoints.toLocaleString()} PTS</span>
   </div>
@@ -229,7 +229,7 @@ export function LoyaltyManagement() {
   </div>
 
   <div className="space-y-2">
-  <p className="text-[10px] font-bold text-[#FAF9F5]/40 uppercase tracking-widest border-b border-white/10 pb-1">Đặc quyền Tier</p>
+  <p className="text-[10px] text-[#FAF9F5]/40 border-b border-white/10 pb-1">Đặc quyền Tier</p>
   <div className="space-y-1.5">
   {tier.privileges.slice(0, 3).map((p, i) => (
   <div key={i} className="flex items-center gap-2 text-[11px] font-medium text-[#FAF9F5]/80">
@@ -255,7 +255,7 @@ export function LoyaltyManagement() {
         <h3 className="text-base font-bold text-slate-900">Quản lý Thành viên VIP & Tự động hóa ZNS</h3>
         <p className="text-xs text-slate-500">Mô phỏng thăng cấp thành viên hoặc gửi tin nhắn chăm sóc khách hàng tự động.</p>
       </div>
-      <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 border border-blue-200 rounded">LOYALTY ZNS ACTIVE</span>
+      <span className="text-[10px] bg-blue-100 text-blue-700 font-medium px-2 py-0.5 border border-blue-200 rounded">LOYALTY ZNS ACTIVE</span>
     </div>
     
     <div className="overflow-x-auto border border-slate-200 rounded-lg bg-white shadow-xs">
@@ -274,7 +274,7 @@ export function LoyaltyManagement() {
           {vipMembers.map(m => (
             <tr key={m.id} className="hover:bg-slate-50/50">
               <td className="p-3 font-mono font-semibold text-slate-800">{m.id}</td>
-              <td className="p-3 font-bold text-slate-900">{m.name}</td>
+              <td className="p-3 font-medium text-slate-900">{m.name}</td>
               <td className="p-3 font-mono text-slate-600">{m.phone}</td>
               <td className="p-3">
                 <span className={cn(
@@ -285,7 +285,7 @@ export function LoyaltyManagement() {
                   {m.tier}
                 </span>
               </td>
-              <td className="p-3 font-mono font-bold text-slate-900">{m.points.toLocaleString()} PTS</td>
+              <td className="p-3 font-mono font-medium text-slate-900">{m.points.toLocaleString()} PTS</td>
               <td className="p-3 text-center flex justify-center gap-2">
                 <button
                   onClick={() => handleRankUp(m.id)}
@@ -335,7 +335,7 @@ export function LoyaltyManagement() {
  </div>
  <div>
  <h4 className="font-bold text-slate-900">{task.title}</h4>
- <p className="text-[11px] font-bold text-orange-700 uppercase tracking-wider mt-1 flex items-center gap-1">
+ <p className="text-[11px] text-orange-700 mt-1 flex items-center gap-1">
  <Trophy className="w-3 h-3" /> THƯỞNG: {task.reward}
  </p>
  </div>
@@ -384,7 +384,7 @@ export function LoyaltyManagement() {
  <div key={reward.id} className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-sm transition-all">
  <div className="h-40 bg-slate-50 flex items-center justify-center relative">
  {reward.type === 'voucher' ? <Ticket className="w-12 h-12 text-orange-600 opacity-40" /> : <Gift className="w-12 h-12 text-pink-500 opacity-40" />}
- <div className="absolute top-4 right-4 px-2 py-1 bg-white/80 backdrop-blur-md rounded-lg text-[10px] font-bold text-slate-600 uppercase">
+ <div className="absolute top-4 right-4 px-2 py-1 bg-white/80 backdrop-blur-md rounded-lg text-[10px] text-slate-600">
  Còn {reward.stock} suất
  </div>
  </div>
@@ -393,7 +393,7 @@ export function LoyaltyManagement() {
  <h4 className="font-bold text-slate-900">{reward.title}</h4>
  <div className="flex items-center gap-2 mt-2">
  <Coins className="w-4 h-4 text-amber-500" />
- <span className="text-lg font-black text-slate-900">{reward.points.toLocaleString()}</span>
+ <span className="text-lg font-semibold text-slate-900">{reward.points.toLocaleString()}</span>
  <span className="text-xs font-bold text-slate-500 uppercase">Points</span>
  </div>
  </div>
@@ -425,14 +425,14 @@ export function LoyaltyManagement() {
  style={{ transform: `rotate(${deg}deg) translateX(-50%)` }} 
  />
  ))}
- <div className="absolute top-0 left-1/2 -translate-x-1/2 p-4 text-[10px] font-black text-orange-700">IPHONE 16</div>
- <div className="absolute bottom-0 left-1/2 -translate-x-1/2 p-4 text-[10px] font-black text-slate-500">MAY MẮN</div>
- <div className="absolute right-0 top-1/2 -translate-y-1/2 p-4 text-[10px] font-black text-slate-500 rotate-90">1k PTS</div>
- <div className="absolute left-0 top-1/2 -translate-y-1/2 p-4 text-[10px] font-black text-slate-500 -rotate-90">Voucher 50k</div>
+ <div className="absolute top-0 left-1/2 -translate-x-1/2 p-4 text-[10px] font-semibold text-orange-700">IPHONE 16</div>
+ <div className="absolute bottom-0 left-1/2 -translate-x-1/2 p-4 text-[10px] font-semibold text-slate-500">MAY MẮN</div>
+ <div className="absolute right-0 top-1/2 -translate-y-1/2 p-4 text-[10px] font-semibold text-slate-500 rotate-90">1k PTS</div>
+ <div className="absolute left-0 top-1/2 -translate-y-1/2 p-4 text-[10px] font-semibold text-slate-500 -rotate-90">Voucher 50k</div>
  </div>
  
  <div className="relative z-10 w-20 h-20 bg-red-600 rounded-full border-4 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] flex flex-col items-center justify-center text-[#FAF9F5] cursor-pointer  active:scale-95 transition-all">
- <p className="text-[10px] font-black tracking-tighter">SPIN</p>
+ <p className="text-[10px] font-semibold tracking-tighter">SPIN</p>
  <Play className="w-6 h-6 fill-current" />
  </div>
 
@@ -442,10 +442,10 @@ export function LoyaltyManagement() {
  </div>
 
  <div className="max-w-sm space-y-6">
- <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+ <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px]">
  <Sparkles className="w-3 h-3" /> Hot Content
  </div>
- <h3 className="text-3xl font-black italic text-slate-900 tracking-tight leading-none uppercase">Vòng quay May mắn<br/>(Elite Lucky Spin)</h3>
+ <h3 className="text-3xl font-semibold italic text-slate-900 tracking-tight leading-none uppercase">Vòng quay May mắn<br/>(Elite Lucky Spin)</h3>
  <p className="text-sm text-slate-600 leading-relaxed">Sử dụng lượt quay từ nhiệm vụ hàng ngày để nhận quà tặng hiện vật hoặc xu thưởng. Hạng Diamond được x2 tỷ lệ trúng quà giá trị.</p>
  
  <div className="p-4 bg-slate-50 rounded-lg space-y-3">
@@ -479,7 +479,7 @@ export function LoyaltyManagement() {
  </div>
  
  <div className="space-y-2 relative z-10">
- <h3 className="text-2xl font-black italic text-[#FAF9F5] uppercase tracking-wider">Retention AI Engine</h3>
+ <h3 className="text-2xl font-semibold italic text-[#FAF9F5] uppercase tracking-wider">Retention AI Engine</h3>
  <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
  Hệ thống tự động phát hiện người dùng có dấu hiệu "ngủ đông" (Churn Risk) và gửi mã Voucher đặc biệt qua Push Notification. Tăng tỷ lệ quay lại của khách hàng cũ lên đến 35%.
  </p>

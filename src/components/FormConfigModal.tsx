@@ -89,7 +89,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Mô tả</label>
+                <label className="block text-sm font-medium text-slate-900 mb-2">Mô tả</label>
                 <textarea 
                   value={config.description || ''}
                   onChange={(e) => setConfig({...config, description: e.target.value})}
@@ -99,7 +99,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Nhóm yêu cầu<span className="text-rose-500">*</span></label>
+                <label className="block text-sm font-medium text-slate-900 mb-2">Nhóm yêu cầu<span className="text-rose-500">*</span></label>
                 <select 
                   value={config.category}
                   onChange={(e) => setConfig({...config, category: e.target.value})}
@@ -115,7 +115,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-3">Đối tượng áp dụng<span className="text-rose-500">*</span></label>
+                <label className="block text-sm font-medium text-slate-900 mb-3">Đối tượng áp dụng<span className="text-rose-500">*</span></label>
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input 
@@ -139,7 +139,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Người tạo</label>
+                <label className="block text-sm font-medium text-slate-900 mb-2">Người tạo</label>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user?.photoURL ? (
@@ -190,7 +190,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                     </button>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tên trường (Label)</label>
+                        <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Tên trường (Label)</label>
                         <input 
                           type="text" 
                           value={field.label} 
@@ -204,7 +204,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Loại dữ liệu</label>
+                        <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Loại dữ liệu</label>
                         <select 
                           value={field.type}
                           onChange={(e) => {
@@ -224,7 +224,7 @@ export function FormConfigModal({ initialConfig, onClose, onSave }: FormConfigMo
                     </div>
                     {field.type === 'select' && (
                       <div className="mb-3">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Các tùy chọn (Ngăn cách bởi dấu phẩy)</label>
+                        <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Các tùy chọn (Ngăn cách bởi dấu phẩy)</label>
                         <input 
                           type="text"
                           value={field.options?.join(', ') || ''}

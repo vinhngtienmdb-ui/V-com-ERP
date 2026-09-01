@@ -199,10 +199,10 @@ const CustomerDetailModal = ({
         <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50 shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-[#111827]">Hồ sơ Khách hàng 360°</h2>
-            <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full uppercase flex items-center gap-1 border border-amber-200">
+            <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] rounded-full flex items-center gap-1 border border-amber-200">
               <Trophy className="w-3 h-3" /> Hạng Vàng
             </span>
-            <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase flex items-center gap-1 border border-blue-200">
+            <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-[10px] rounded-full flex items-center gap-1 border border-blue-200">
               {getSegmentLabel()}
             </span>
           </div>
@@ -251,8 +251,8 @@ const CustomerDetailModal = ({
 
             <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Mục tiêu lên hạng</h4>
-                <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
+                <h4 className="text-[10px] text-slate-500">Mục tiêu lên hạng</h4>
+                <span className="text-[10px] font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded">{Math.round(progressPercent)}%</span>
               </div>
               <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                 <div className="h-full bg-primary-600 transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
@@ -273,7 +273,7 @@ const CustomerDetailModal = ({
                   <div key={item.label} className="space-y-1">
                     <div className="flex justify-between items-center text-[10px]">
                       <span className="text-orange-700 font-bold uppercase tracking-tighter">{item.label}</span> 
-                      <span className="font-black text-primary-900">{item.score}/5</span>
+                      <span className="font-semibold text-primary-900">{item.score}/5</span>
                     </div>
                     <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                       <div className="h-full bg-slate-800 transition-all" style={{ width: `${(item.score / 5) * 100}%` }} />
@@ -290,24 +290,24 @@ const CustomerDetailModal = ({
               <div className="space-y-2">
                 <div className="bg-white p-3 rounded-lg border border-emerald-100/50 relative overflow-hidden">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Ví Hoàn Tiền (Cashback)</span>
-                    <button className="text-[9px] text-[#FAF9F5] bg-emerald-600 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-emerald-700 relative z-10">RÚT TIỀN</button>
+                    <span className="text-[10px] text-emerald-600">Ví Hoàn Tiền (Cashback)</span>
+                    <button className="text-[9px] text-[#FAF9F5] bg-emerald-600 px-1.5 py-0.5 rounded hover:bg-emerald-700 relative z-10">RÚT TIỀN</button>
                   </div>
                   <span className="text-lg font-bold text-emerald-900 leading-none tracking-tight">{formatCurrency(customer.walletBalance || 0)}</span>
                 </div>
                 
                 <div className="bg-white p-3 rounded-lg border border-primary-100/50 relative overflow-hidden">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[10px] text-primary-600 font-bold uppercase tracking-wider">Ví Khuyến Mại</span>
-                    <button className="text-[9px] text-primary-600 border border-blue-200 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-primary-50 relative z-10">Lịch sử</button>
+                    <span className="text-[10px] text-primary-600">Ví Khuyến Mại</span>
+                    <button className="text-[9px] text-primary-600 border border-blue-200 px-1.5 py-0.5 rounded hover:bg-primary-50 relative z-10">Lịch sử</button>
                   </div>
                   <span className="text-lg font-bold text-primary-900 leading-none tracking-tight">{formatCurrency(customer.promoBalance || 0)}</span>
                 </div>
 
                 <div className="bg-white p-3 rounded-lg border border-purple-100/50 relative overflow-hidden">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Ví Điểm Loyalty</span>
-                    <button className="text-[9px] text-[#FAF9F5] bg-purple-600 px-1.5 py-0.5 rounded font-bold uppercase hover:bg-purple-700 relative z-10">Shop Đổi Điểm</button>
+                    <span className="text-[10px] text-purple-600">Ví Điểm Loyalty</span>
+                    <button className="text-[9px] text-[#FAF9F5] bg-purple-600 px-1.5 py-0.5 rounded hover:bg-purple-700 relative z-10">Shop Đổi Điểm</button>
                   </div>
                   <span className="text-lg font-bold text-purple-900 leading-none tracking-tight">{customer.points || 0} <span className="text-xs font-medium text-purple-600">pts</span></span>
                 </div>
@@ -315,7 +315,7 @@ const CustomerDetailModal = ({
                 <div className="pt-1 space-y-3">
                   <button 
                     onClick={() => setShowConvertPanel(!showConvertPanel)} 
-                    className="w-full py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-[10px] font-bold uppercase rounded transition-colors flex justify-center items-center gap-1.5 shadow-sm"
+                    className="w-full py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-[10px] rounded transition-colors flex justify-center items-center gap-1.5 shadow-sm"
                   >
                     <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" /> ĐỔI HOÀN TIỀN LẤY KHUYẾN MẠI
                   </button>
@@ -352,7 +352,7 @@ const CustomerDetailModal = ({
                         <button 
                           type="button"
                           onClick={() => setConvertAmount(customer.walletBalance || 0)}
-                          className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-[10px] font-bold uppercase hover:bg-slate-200"
+                          className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-[10px] hover:bg-slate-200"
                         >
                           Tối đa
                         </button>
@@ -400,13 +400,13 @@ const CustomerDetailModal = ({
               <div className="space-y-6">
                 <DraggableGrid className="grid grid-cols-2 gap-4" columns={2} gap={16}>
                   <div className="p-5 border border-slate-200 rounded-lg bg-slate-50 shadow-sm group">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu mua sắm</p>
-                    <p className="text-2xl font-black text-slate-900">{formatCurrency(customer.totalSpent)}</p>
+                    <p className="text-[10px] text-slate-500 mb-1 group-hover:text-primary-500 transition-colors">Tổng chi tiêu mua sắm</p>
+                    <p className="text-2xl font-semibold text-slate-900">{formatCurrency(customer.totalSpent)}</p>
                   </div>
                   <div className="p-5 border border-slate-200 rounded-lg bg-slate-50 shadow-sm group">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng đã mua</p>
+                    <p className="text-[10px] text-slate-500 mb-1 group-hover:text-primary-500 transition-colors">Số đơn hàng đã mua</p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-black text-slate-900">{customer.orderCount}</span>
+                      <span className="text-2xl font-semibold text-slate-900">{customer.orderCount}</span>
                       <span className="text-xs font-bold text-slate-500">đơn</span>
                     </div>
                   </div>
@@ -498,7 +498,7 @@ const CustomerDetailModal = ({
                               <div className="mt-2 flex items-center justify-between">
                                 {item.status && (
                                   <span className={cn(
-                                    "text-[9px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded-full",
+                                    "text-[9px] tracking-tight px-1.5 py-0.5 rounded-full",
                                     item.status === 'Hoàn thành' ? "text-emerald-600 bg-emerald-50" : "text-slate-500 bg-slate-50"
                                   )}>
                                     {item.status}
@@ -547,14 +547,14 @@ const CustomerDetailModal = ({
                             </div>
                             <div className="flex gap-2">
                               <span className={cn(
-                                "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border",
+                                "px-2 py-0.5 rounded text-[9px] border",
                                 lease.knoxStatus === 'locked' ? "bg-red-50 text-red-700 border-red-200" :
                                 lease.knoxStatus === 'warning' ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
                               )}>
                                 Knox: {lease.knoxStatus || 'Unlocked'}
                               </span>
                               <span className={cn(
-                                "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border",
+                                "px-2 py-0.5 rounded text-[9px] border",
                                 lease.status === 'active' ? "bg-primary-50 text-blue-700 border-blue-200" :
                                 lease.status === 'late' ? "bg-red-50 text-red-700 border-red-200" : "bg-slate-100 text-slate-600 border-slate-200"
                               )}>
@@ -565,19 +565,19 @@ const CustomerDetailModal = ({
 
                           <div className="grid grid-cols-4 gap-4 bg-white p-3.5 border border-slate-200 rounded-lg text-xs">
                             <div>
-                              <p className="text-slate-500 text-[10px] uppercase font-bold mb-0.5">Giá thiết bị</p>
+                              <p className="text-slate-500 text-[10px] mb-0.5">Giá thiết bị</p>
                               <p className="font-bold text-slate-900">{formatCurrency(lease.devicePrice)}</p>
                             </div>
                             <div>
-                              <p className="text-slate-500 text-[10px] uppercase font-bold mb-0.5">Đã đặt cọc</p>
+                              <p className="text-slate-500 text-[10px] mb-0.5">Đã đặt cọc</p>
                               <p className="font-bold text-slate-900">{formatCurrency(lease.upfrontFee)}</p>
                             </div>
                             <div>
-                              <p className="text-slate-500 text-[10px] uppercase font-bold mb-0.5">Phí thuê/tháng</p>
+                              <p className="text-slate-500 text-[10px] mb-0.5">Phí thuê/tháng</p>
                               <p className="font-bold text-slate-900">{formatCurrency(lease.monthlyFee)}</p>
                             </div>
                             <div>
-                              <p className="text-slate-500 text-[10px] uppercase font-bold mb-0.5">Thời hạn</p>
+                              <p className="text-slate-500 text-[10px] mb-0.5">Thời hạn</p>
                               <p className="font-bold text-slate-900">{lease.durationMonths} tháng</p>
                             </div>
                           </div>
@@ -633,10 +633,10 @@ const CustomerDetailModal = ({
                   <div className="space-y-6">
                     <div className="grid grid-cols-3 gap-6 bg-slate-50 border border-slate-200 rounded-lg p-5">
                       <div className="text-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm">
-                        <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Điểm tín dụng</p>
-                        <p className="text-3xl font-black text-slate-900">{customerSeller.score}</p>
+                        <p className="text-[10px] text-slate-500 mb-1">Điểm tín dụng</p>
+                        <p className="text-3xl font-semibold text-slate-900">{customerSeller.score}</p>
                         <span className={cn(
-                          "inline-block mt-2 px-2.5 py-0.5 rounded text-[10px] font-black uppercase border",
+                          "inline-block mt-2 px-2.5 py-0.5 rounded text-[10px] border",
                           customerSeller.tier === 'AAA' ? "bg-amber-50 text-amber-700 border-amber-200" :
                           customerSeller.tier === 'AA' ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-primary-50 text-blue-700 border-blue-200"
                         )}>
@@ -661,8 +661,8 @@ const CustomerDetailModal = ({
 
                         <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg flex justify-between items-center text-xs">
                           <div>
-                            <p className="text-[10px] font-bold text-emerald-800 uppercase">Hạn mức khả dụng</p>
-                            <p className="text-lg font-black text-emerald-950 mt-0.5">{formatCurrency(customerSeller.availableCredit)}</p>
+                            <p className="text-[10px] text-emerald-800">Hạn mức khả dụng</p>
+                            <p className="text-lg font-semibold text-emerald-950 mt-0.5">{formatCurrency(customerSeller.availableCredit)}</p>
                           </div>
                           <ShieldCheck className="w-8 h-8 text-emerald-600 opacity-60" />
                         </div>
@@ -689,13 +689,13 @@ const CustomerDetailModal = ({
                             <tbody className="divide-y divide-slate-100">
                               {customerPayouts.map((pay: any) => (
                                 <tr key={pay.id} className="hover:bg-slate-50">
-                                  <td className="p-3 font-mono font-bold text-slate-900">{pay.id}</td>
-                                  <td className="p-3 font-bold text-slate-950">{formatCurrency(pay.amount)}</td>
+                                  <td className="p-3 font-mono font-medium text-slate-900">{pay.id}</td>
+                                  <td className="p-3 font-medium text-slate-950">{formatCurrency(pay.amount)}</td>
                                   <td className="p-3 text-red-600 font-medium">{formatCurrency(pay.discountFee)}</td>
                                   <td className="p-3 text-slate-600">{pay.requestDate}</td>
                                   <td className="p-3 text-center">
                                     <span className={cn(
-                                      "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border",
+                                      "px-2 py-0.5 rounded text-[9px] border",
                                       pay.status === 'disbursed' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
                                       pay.status === 'approved' ? "bg-primary-50 text-blue-700 border-blue-200" : "bg-amber-50 text-amber-700 border-amber-200"
                                     )}>
@@ -740,7 +740,7 @@ const CustomerDetailModal = ({
                             <p className="text-[10px] text-slate-500 font-mono mt-0.5">Số HĐ: {con.id} • Hết hạn: {con.expiry}</p>
                           </div>
                           <span className={cn(
-                            "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border",
+                            "px-2 py-0.5 rounded text-[9px] border",
                             con.status === 'active' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
                             con.status === 'pending' ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200"
                           )}>
@@ -756,7 +756,7 @@ const CustomerDetailModal = ({
                         {/* Signers Progress */}
                         {con.signers && (
                           <div className="bg-white border border-slate-200 p-3 rounded-lg space-y-2.5">
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình chữ ký số SmartCA</p>
+                            <p className="text-[10px] text-slate-500">Tiến trình chữ ký số SmartCA</p>
                             <div className="flex gap-4">
                               {con.signers.map((sig: any, sIdx: number) => (
                                 <div key={sIdx} className="flex-1 p-2 bg-slate-50 border border-slate-100 rounded flex items-center justify-between text-xs">
@@ -765,7 +765,7 @@ const CustomerDetailModal = ({
                                     <p className="text-[9px] text-slate-500">{sig.role}</p>
                                   </div>
                                   <span className={cn(
-                                    "px-1.5 py-0.5 rounded text-[8px] font-bold uppercase",
+                                    "px-1.5 py-0.5 rounded text-[8px]",
                                     sig.status === 'signed' ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"
                                   )}>
                                     {sig.status === 'signed' ? 'Đã ký' : 'Chờ ký'}
@@ -819,7 +819,7 @@ const CustomerDetailModal = ({
                               Nợ: {tx.debitAccount || '112'} / Có: {tx.creditAccount || '131'}
                             </td>
                             <td className={cn(
-                              "p-3 text-right font-black",
+                              "p-3 text-right font-semibold",
                               tx.type === 'income' ? "text-emerald-600" : "text-rose-600"
                             )}>
                               {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
@@ -933,11 +933,11 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
                   <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tích điểm</h4>
                   <div>
-                    <label className="text-xs font-bold text-slate-600">Giới hạn thời gian (Tháng)</label>
+                    <label className="text-xs font-medium text-slate-600">Giới hạn thời gian (Tháng)</label>
                     <input type="number" defaultValue={12} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
+                    <label className="text-xs font-medium text-slate-600">Chi tiêu (VNĐ) = Bằng</label>
                     <div className="flex items-center gap-2 mt-1">
                       <input type="number" defaultValue={100000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                       <span className="text-sm font-bold text-slate-700">=</span>
@@ -949,11 +949,11 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-slate-300">
                   <h4 className="font-bold text-sm text-slate-800 mb-2 border-b border-slate-200 pb-2">Tỉ lệ tiêu điểm (Thanh toán)</h4>
                   <div>
-                    <label className="text-xs font-bold text-slate-600">1 Điểm tương đương (VNĐ)</label>
+                    <label className="text-xs font-medium text-slate-600">1 Điểm tương đương (VNĐ)</label>
                     <input type="number" defaultValue={100} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
+                    <label className="text-xs font-medium text-slate-600">Tối đa sử dụng / Đơn hàng (%)</label>
                     <input type="number" defaultValue={50} className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-500 outline-none" />
                   </div>
                 </div>
@@ -1012,7 +1012,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   <p className="text-xs text-emerald-700 mt-1">Đang hoạt động (Tự động sync qua Webhook)</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs font-bold text-emerald-600 bg-white px-2 py-1 rounded">240 Leads</span>
-                    <button className="text-emerald-700 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
+                    <button className="text-emerald-700 text-[10px] hover:underline">Chỉnh sửa</button>
                   </div>
                 </div>
                 <div className="p-4 rounded-lg border border-slate-300 bg-white relative overflow-hidden group">
@@ -1020,7 +1020,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   <p className="text-xs text-slate-600 mt-1">Tạm dừng (Mất kết nối API)</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">0 Leads</span>
-                    <button className="text-orange-700 text-[10px] font-bold uppercase hover:underline">Kết nối lại</button>
+                    <button className="text-orange-700 text-[10px] hover:underline">Kết nối lại</button>
                   </div>
                 </div>
                 <div className="p-4 rounded-lg border border-slate-900 bg-slate-100 relative overflow-hidden group">
@@ -1028,7 +1028,7 @@ const CustomerConfigModal = ({ onClose }: { onClose: () => void }) => {
                   <p className="text-xs text-orange-800 mt-1">Đang hoạt động (Sync qua Meta Graph API)</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs font-bold text-orange-700 bg-white px-2 py-1 rounded">1,250 Leads</span>
-                    <button className="text-orange-800 text-[10px] font-bold uppercase hover:underline">Chỉnh sửa</button>
+                    <button className="text-orange-800 text-[10px] hover:underline">Chỉnh sửa</button>
                   </div>
                 </div>
               </DraggableGrid>
@@ -1100,7 +1100,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div>
-          <label className="text-xs font-bold text-slate-600 mb-1 block">Họ và tên *</label>
+          <label className="text-xs font-medium text-slate-600 mb-1 block">Họ và tên *</label>
           <input 
             required
             type="text" 
@@ -1111,7 +1111,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
           />
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-600 mb-1 block">Số điện thoại *</label>
+          <label className="text-xs font-medium text-slate-600 mb-1 block">Số điện thoại *</label>
           <input 
             required
             type="text" 
@@ -1122,7 +1122,7 @@ const AddCustomerModal = ({ onClose, onSuccess }: { onClose: () => void; onSucce
           />
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-600 mb-1 block">Email</label>
+          <label className="text-xs font-medium text-slate-600 mb-1 block">Email</label>
           <input 
             type="email" 
             value={formData.email}
@@ -1669,7 +1669,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <div className="flex items-center justify-between">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-1">
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Khách hàng & CRM</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Quản trị Khách hàng & CRM</h1>
  </div>
  <p className="text-sm text-[#6B7280]">Hệ thống chăm sóc khách hàng đa kênh, quản lý Loyalty & Pipeline.</p>
  </div>
@@ -1707,31 +1707,31 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <>
  <DraggableGrid className="grid grid-cols-1 lg:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng khách hàng</p>
+ <p className="text-[10px] text-[#6B7280] mb-3">Tổng khách hàng</p>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{totalCount}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
+ <span className="text-2xl font-semibold text-[#111827]">{totalCount}</span>
+ <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">+5.2%</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Active (Hệ thống)</p>
+ <p className="text-[10px] text-[#6B7280] mb-3">Active (Hệ thống)</p>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{totalCount}</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
+ <span className="text-2xl font-semibold text-[#111827]">{totalCount}</span>
+ <span className="text-[10px] text-orange-700 font-medium bg-slate-100 px-2 py-0.5 rounded">High Retention</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Chi tiêu TB (CLV)</p>
+ <p className="text-[10px] text-[#6B7280] mb-3">Chi tiêu TB (CLV)</p>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(24500000)}</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Synced</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(24500000)}</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">Synced</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Loyalty (Vàng+)</p>
+ <p className="text-[10px] text-[#6B7280] mb-3">Loyalty (Vàng+)</p>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-amber-600">{Math.round(totalCount * 0.15)}</span>
- <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">High Value</span>
+ <span className="text-2xl font-semibold text-amber-600">{Math.round(totalCount * 0.15)}</span>
+ <span className="text-[10px] text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
  </DraggableGrid>
@@ -1755,7 +1755,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <div key={i} className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
  <div className="flex justify-between items-start mb-2">
  <div className={cn("w-2 h-2 rounded-full", seg.color)} />
- <span className="text-xl font-black text-slate-900">{seg.val}%</span>
+ <span className="text-xl font-semibold text-slate-900">{seg.val}%</span>
  </div>
  <p className="text-xs font-bold text-slate-900 mb-1">{seg.name}</p>
  <p className="text-[10px] text-slate-500 leading-tight">{seg.desc}</p>
@@ -1783,20 +1783,20 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <div className="p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
  <Trophy className="w-6 h-6 text-amber-400" />
  </div>
- <h3 className="text-xl font-black italic tracking-tighter">Loyalty Wallet Insight</h3>
+ <h3 className="text-xl font-semibold italic tracking-tighter">Loyalty Wallet Insight</h3>
  </div>
  <div className="space-y-6">
  <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
- <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tổng điểm khả dụng</div>
- <div className="text-3xl font-black text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
+ <div className="flex justify-between items-center text-[10px] text-slate-500 mb-2">Tổng điểm khả dụng</div>
+ <div className="text-3xl font-semibold text-[#FAF9F5] leading-none">1,245,600 <span className="text-xs font-normal text-slate-500">pts</span></div>
  </div>
  <div className="flex gap-4">
  <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
- <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Số dư Ví khách</p>
+ <p className="text-[10px] text-slate-500 mb-1">Số dư Ví khách</p>
  <p className="text-lg font-bold">{formatCurrency(450000000)}</p>
  </div>
  <div className="flex-1 bg-white/5 border border-white/10 p-4 rounded-lg">
- <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Hạng Kim Cương</p>
+ <p className="text-[10px] text-slate-500 mb-1">Hạng Kim Cương</p>
  <p className="text-lg font-bold text-sky-400">08 KH</p>
  </div>
  </div>
@@ -1858,14 +1858,14 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200 italic">
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khách hàng</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Liên hệ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Kênh</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Chi tiêu</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Ví / Loyalty</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
-	<th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
- <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500">Khách hàng</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500">Liên hệ</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500 text-center">Kênh</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Chi tiêu</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Ví / Loyalty</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500 text-center">Trạng thái</th>
+	<th className="px-4 py-4 text-[10px] text-slate-500 text-center">Trạng thái Ghi sổ</th>
+ <th className="px-4 py-4 text-[10px] text-slate-500 text-right">Action</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-50">
@@ -1917,7 +1917,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  </div>
  </td>
  <td className="px-4 py-4 text-right">
- <p className="text-sm font-black text-slate-900">{formatCurrency(customer.totalSpent || 0)}</p>
+ <p className="text-sm font-semibold text-slate-900">{formatCurrency(customer.totalSpent || 0)}</p>
  <p className="text-[9px] text-slate-500">Đơn hàng: <span className="font-bold text-slate-700">{customer.orderCount || 0}</span></p>
  </td>
  <td className="px-4 py-4 text-right">
@@ -1927,7 +1927,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <td className="px-4 py-4 text-center">
  <div className="flex justify-center">
  <span className={cn(
- "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm",
+ "px-2 py-0.5 rounded-md text-[9px] shadow-sm",
  customer.status === 'active' ? "bg-emerald-500 text-[#FAF9F5]" : customer.status === 'locked' ? "bg-red-500 text-[#FAF9F5]" : "bg-slate-100 text-slate-700"
  )}>
  {customer.status === 'active' ? 'ACTIVE' : customer.status === 'locked' ? 'LOCKED' : 'OFF'}
@@ -1937,15 +1937,15 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
               <td className="px-4 py-4 text-center">
                 <div className="flex flex-col items-center justify-center gap-1">
                   {customer.misaSynced ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-medium flex items-center gap-1 shadow-sm">
                       Đã ghi sổ 🟢
                     </span>
                   ) : customer.misaSyncError ? (
-                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold flex items-center gap-1 shadow-sm" title={customer.misaSyncError}>
+                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-medium flex items-center gap-1 shadow-sm" title={customer.misaSyncError}>
                       Lỗi kiểm tra 🔴
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                    <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 text-[10px] font-medium flex items-center gap-1 shadow-sm">
                       Chờ ghi sổ 🟡
                     </span>
                   )}
@@ -2049,7 +2049,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <div className={cn("w-3 h-3 rounded-full", stage.color)}></div>
  <span className="font-bold text-sm text-slate-900">{stage.name}</span>
  </div>
- <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{stage.deals.length}</span>
+ <span className="bg-slate-100 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-full">{stage.deals.length}</span>
  </div>
  <div className="p-3 overflow-y-auto space-y-3 custom-scrollbar flex-1">
  {stage.deals.map((deal) => (
@@ -2092,7 +2092,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  </div>
  <form onSubmit={submitAdjust} className="p-6 space-y-6">
  <div>
- <label className="text-xs font-bold text-slate-800 uppercase mb-2 block">Loại điều chỉnh</label>
+ <label className="text-xs font-medium text-slate-800 uppercase mb-2 block">Loại điều chỉnh</label>
  <select 
  value={adjustType}
  onChange={(e) => setAdjustType(e.target.value as any)}
@@ -2104,7 +2104,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>
+ <label className="text-xs font-medium text-slate-800 uppercase">Số dư hiện tại</label>
  </div>
  <div className="text-xl font-bold text-slate-900">
  {adjustType === 'wallet' ? formatCurrency(adjustingCustomer.walletBalance || 0) : (adjustingCustomer.points || 0) + ' pts'}
@@ -2112,7 +2112,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số tiền/điểm cộng hoặc trừ</label>
+ <label className="text-xs font-medium text-slate-800 uppercase">Số tiền/điểm cộng hoặc trừ</label>
  </div>
  <input 
  type="number" 
@@ -2125,7 +2125,7 @@ const status = (orderCount > 0 || c.status === 'active') ? 'active' : 'inactive'
  <p className="text-[11px] text-slate-600 mt-2">Dùng số âm để trừ điểm/tiền. Viết liền không khoảng trắng.</p>
  {adjustType === 'wallet' && Number(adjustAmount) > 0 && (
    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center font-sans mt-4">
-     <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-2">Quét mã chuyển khoản VietQR Nạp tiền Ví</p>
+     <p className="text-[10px] text-emerald-800 mb-2">Quét mã chuyển khoản VietQR Nạp tiền Ví</p>
      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
        <div className="bg-white p-1.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
          <img

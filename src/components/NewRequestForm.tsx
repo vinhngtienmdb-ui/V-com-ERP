@@ -84,7 +84,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={24}>
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="block text-sm font-bold text-slate-800">Người đề xuất</label>
+            <label className="block text-sm font-medium text-slate-800">Người đề xuất</label>
             <input 
               type="text" 
               value={requester}
@@ -94,7 +94,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           </div>
           
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-slate-800">Loại đề xuất</label>
+            <label className="block text-sm font-medium text-slate-800">Loại đề xuất</label>
             <select 
               value={requestType}
               onChange={(e) => setRequestType(e.target.value)}
@@ -107,7 +107,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-slate-800">Ngày đề xuất</label>
+            <label className="block text-sm font-medium text-slate-800">Ngày đề xuất</label>
             <input 
               type="date"
               required
@@ -118,7 +118,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           </div>
 
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="block text-sm font-bold text-slate-800">Nội dung đề xuất</label>
+            <label className="block text-sm font-medium text-slate-800">Nội dung đề xuất</label>
             <textarea 
               value={content}
               required
@@ -131,7 +131,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           {/* Optional fields based on type */}
           {requestType === 'Hanh chinh' && (
             <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="block text-sm font-bold text-slate-800">Số ngày nghỉ</label>
+              <label className="block text-sm font-medium text-slate-800">Số ngày nghỉ</label>
               <input 
                 type="number"
                 min="0"
@@ -147,7 +147,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
           {requestType === 'Tai chinh' && (
             <>
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <label className="block text-sm font-bold text-slate-800">Nội dung chi phí</label>
+                <label className="block text-sm font-medium text-slate-800">Nội dung chi phí</label>
                 <input 
                   type="text"
                   value={expenseContent}
@@ -157,7 +157,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                 />
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <label className="block text-sm font-bold text-slate-800">Số tiền (VNĐ)</label>
+                <label className="block text-sm font-medium text-slate-800">Số tiền (VNĐ)</label>
                 <input 
                   type="number"
                   min="0"

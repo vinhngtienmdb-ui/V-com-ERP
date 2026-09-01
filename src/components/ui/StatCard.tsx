@@ -28,7 +28,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         )}>
           <Icon className="w-3.5 h-3.5 text-white" />
         </div>
-        <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{title}</div>
+        <div className="text-[11px] text-slate-500">{title}</div>
       </div>
       <div className={cn(
         'text-[10px] flex items-center gap-0.5 font-bold px-1.5 py-0.5 rounded border',

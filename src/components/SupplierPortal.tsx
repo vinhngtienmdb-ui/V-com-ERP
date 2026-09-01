@@ -173,7 +173,7 @@ export function SupplierPortal() {
             <div className="w-16 h-16 bg-primary-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
               <Building2 className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-sans font-semibold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               Supplier Portal
             </h1>
             <p className="text-sm text-slate-400 mt-2">Cổng thông tin giao hàng dành riêng cho Nhà cung cấp VComm</p>
@@ -181,7 +181,7 @@ export function SupplierPortal() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-blue-500" /> Chọn Nhà cung cấp
               </label>
               <select
@@ -196,7 +196,7 @@ export function SupplierPortal() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <Shield className="w-3.5 h-3.5 text-blue-500" /> Mật khẩu truy cập
               </label>
               <input
@@ -244,7 +244,7 @@ export function SupplierPortal() {
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <h1 className="text-lg font-sans font-semibold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 VComm Supplier Portal
               </h1>
               <p className="text-[10px] text-slate-400">Kênh tương tác và đối soát nhà cung cấp</p>
@@ -254,7 +254,7 @@ export function SupplierPortal() {
           <div className="flex items-center gap-4">
             <div className="text-right hidden md:block">
               <p className="text-xs font-bold text-slate-200">{currentSupplier?.name}</p>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mt-0.5">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Đang kết nối
               </span>
             </div>
@@ -306,19 +306,19 @@ export function SupplierPortal() {
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center">
                 <p className="text-xs text-slate-500 font-medium">Chờ xác nhận</p>
-                <p className="text-xl font-black text-amber-500 mt-1">
+                <p className="text-xl font-semibold text-amber-500 mt-1">
                   {supplierPos.filter(p => !p.deliveryStatus || p.deliveryStatus === 'pending').length}
                 </p>
               </div>
               <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center">
                 <p className="text-xs text-slate-500 font-medium">Đang giao</p>
-                <p className="text-xl font-black text-blue-400 mt-1">
+                <p className="text-xl font-semibold text-blue-400 mt-1">
                   {supplierPos.filter(p => p.deliveryStatus === 'shipping').length}
                 </p>
               </div>
               <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center col-span-2">
                 <p className="text-xs text-slate-500 font-medium">Đã giao thành công</p>
-                <p className="text-xl font-black text-emerald-400 mt-1">
+                <p className="text-xl font-semibold text-emerald-400 mt-1">
                   {supplierPos.filter(p => p.deliveryStatus === 'delivered').length}
                 </p>
               </div>
@@ -369,7 +369,7 @@ export function SupplierPortal() {
             <div className="overflow-x-auto min-w-0 mt-6">
               <table className="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
-                  <tr className="border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <tr className="border-b border-slate-800 text-[10px] text-slate-400">
                     <th className="py-3 px-4">Mã đơn PO</th>
                     <th className="py-3 px-4">Nội dung mua hàng</th>
                     <th className="py-3 px-4 text-right">Tổng giá trị</th>
@@ -397,12 +397,12 @@ export function SupplierPortal() {
                           </p>
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <p className="text-xs font-black text-emerald-400">{formatCurrency(po.value)}</p>
+                          <p className="text-xs font-semibold text-emerald-400">{formatCurrency(po.value)}</p>
                           <span className="text-[9px] text-slate-500">VAT bao gồm</span>
                         </td>
                         <td className="py-4 px-4 text-center">
                           <span className={cn(
-                            "px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider inline-flex items-center gap-1",
+                            "px-2.5 py-1 text-[10px] rounded-full inline-flex items-center gap-1",
                             dStatus === 'delivered' ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
                             dStatus === 'shipping' ? "bg-primary-500/10 text-blue-400 border border-blue-500/20" :
                             dStatus === 'confirmed' ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" :
@@ -476,7 +476,7 @@ export function SupplierPortal() {
                       </div>
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-900 text-xs font-bold text-slate-200">
                         <span>Tổng giá trị đơn hàng:</span>
-                        <span className="text-emerald-400 font-black">{formatCurrency(selectedPo.value)}</span>
+                        <span className="text-emerald-400 font-semibold">{formatCurrency(selectedPo.value)}</span>
                       </div>
                     </div>
                   </div>
@@ -503,7 +503,7 @@ export function SupplierPortal() {
                       {/* Date config */}
                       {(!selectedPo.deliveryStatus || selectedPo.deliveryStatus === 'pending' || selectedPo.deliveryStatus === 'confirmed') && (
                         <div className="pt-2 border-t border-slate-900">
-                          <label className="block text-[10px] text-slate-500 font-bold mb-1.5 uppercase">Thiết lập ngày giao dự kiến</label>
+                          <label className="block text-[10px] text-slate-500 mb-1.5">Thiết lập ngày giao dự kiến</label>
                           <div className="flex gap-2">
                             <input 
                               type="date"

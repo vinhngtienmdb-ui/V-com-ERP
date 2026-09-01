@@ -391,11 +391,11 @@ export function ContractManager() {
       <div className="flex-1 overflow-auto bg-[#e5e7eb] p-6 flex justify-center">
         {/* Mock Document Render */}
         <div className="bg-white w-[210mm] min-h-[297mm] shadow-sm p-[20mm]  mx-auto relative origin-top max-w-full">
-           <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[9px] font-bold rounded uppercase">
+           <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 px-2 py-1 text-[9px] rounded">
               Preview: {selectedContract.file.name}
            </div>
            
-           <div className="space-y-6 text-xs text-slate-800 leading-relaxed mt-12 font-serif">
+           <div className="space-y-6 text-xs text-slate-800 leading-relaxed mt-12 font-sans">
              <h1 className="text-2xl font-bold text-center mb-8 uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br/><span className="text-lg">Độc lập - Tự do - Hạnh phúc</span></h1>
              <h2 className="text-xl font-bold text-center mt-12 mb-8">{selectedContract.title.split('-')[0].toUpperCase()}</h2>
              <p className="text-right italic">Hà Nội, ngày ... tháng ... năm ...</p>
@@ -438,7 +438,7 @@ export function ContractManager() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <span className={cn(
-              "px-3 py-1.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1.5",
+              "px-3 py-1.5 text-[9px] rounded tracking-tight inline-flex items-center gap-1.5",
               selectedContract.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : 
               selectedContract.status === 'pending' ? "bg-amber-50 text-amber-600 border border-amber-200" : 
               selectedContract.status === "expiring_soon" ? "bg-orange-50 text-primary-600 border border-blue-200" :
@@ -456,7 +456,7 @@ export function ContractManager() {
             </div>
 
             <div className="border-t border-slate-200 pt-3">
-               <p className="text-[9px] text-slate-500 uppercase font-bold mb-1">Thời hạn</p>
+               <p className="text-[9px] text-slate-500 mb-1">Thời hạn</p>
                <p className={cn(
                   "text-xs font-bold",
                   selectedContract.status === 'expired' ? "text-red-600" :
@@ -465,7 +465,7 @@ export function ContractManager() {
             </div>
             
             <div className="border-t border-slate-200 pt-3">
-               <p className="text-[9px] text-slate-500 uppercase font-bold mb-1">Giá trị</p>
+               <p className="text-[9px] text-slate-500 mb-1">Giá trị</p>
                <p className="text-[13px] font-bold text-slate-900">{selectedContract.value}</p>
             </div>
           </div>
@@ -505,9 +505,9 @@ export function ContractManager() {
                  <p className="text-[13px] font-bold text-slate-900">{signer.name}</p>
                  <p className="text-[9px] text-slate-500">{signer.role}</p>
                  {signer.status === 'signed' ? (
-                   <span className="inline-block mt-1 text-[9px] uppercase font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Đã ký</span>
+                   <span className="inline-block mt-1 text-[9px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Đã ký</span>
                  ) : (
-                   <span className="inline-block mt-1 text-[9px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Đang chờ</span>
+                   <span className="inline-block mt-1 text-[9px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Đang chờ</span>
                  )}
               </div>
             </div>
@@ -615,7 +615,7 @@ export function ContractManager() {
  <label className="flex items-center gap-3 p-3 border border-primary-200 bg-primary-50/50 rounded-lg cursor-pointer hover:bg-primary-50 transition-colors">
  <input type="radio" name="signMethod" defaultChecked className="w-4 h-4 text-primary-600 border-slate-400 focus:ring-primary-600" />
  <div>
- <p className="text-[13px] font-bold text-slate-900 flex items-center gap-2">Ký số SmartCA (Viettel, VNPT) <span className="bg-emerald-100 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold">Khuyên dùng</span></p>
+ <p className="text-[13px] font-medium text-slate-900 flex items-center gap-2">Ký số SmartCA (Viettel, VNPT) <span className="bg-emerald-100 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-medium">Khuyên dùng</span></p>
  <p className="text-xs text-slate-600 mt-0.5">Xác thực qua ứng dụng trên điện thoại thông minh.</p>
  </div>
  </label>
@@ -708,11 +708,11 @@ export function ContractManager() {
  <table className="min-w-full w-max text-left border-collapse whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-100">
  <tr>
- <ResizableTh tableId="contractList" columnId="idTitle" initialWidth={250} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Mã HĐ / Tiêu đề</ResizableTh>
- <ResizableTh tableId="contractList" columnId="partner" initialWidth={200} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Đối tác / Nhân sự</ResizableTh>
- <ResizableTh tableId="contractList" columnId="value" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Giá trị</ResizableTh>
- <ResizableTh tableId="contractList" columnId="status" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Trạng thái</ResizableTh>
- <ResizableTh tableId="contractList" columnId="date" initialWidth={120} className="px-4 py-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-right">Ngày hết hạn</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="idTitle" initialWidth={250} className="px-4 py-3 text-[9px] text-slate-500 whitespace-nowrap">Mã HĐ / Tiêu đề</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="partner" initialWidth={200} className="px-4 py-3 text-[9px] text-slate-500 whitespace-nowrap">Đối tác / Nhân sự</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="value" initialWidth={120} className="px-4 py-3 text-[9px] text-slate-500 whitespace-nowrap">Giá trị</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="status" initialWidth={120} className="px-4 py-3 text-[9px] text-slate-500 whitespace-nowrap text-center">Trạng thái</ResizableTh>
+ <ResizableTh tableId="contractList" columnId="date" initialWidth={120} className="px-4 py-3 text-[9px] text-slate-500 whitespace-nowrap text-right">Ngày hết hạn</ResizableTh>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -720,7 +720,7 @@ export function ContractManager() {
  <tr key={doc.id} onClick={() => setSelectedContract(doc)} className="hover:bg-slate-50 transition-colors cursor-pointer">
  <td className="px-4 py-3">
  <p className="text-[13px] font-bold text-slate-900">{doc.title}</p>
- <p className="text-[9px] text-slate-600 font-bold uppercase">{doc.id}</p>
+ <p className="text-[9px] text-slate-600">{doc.id}</p>
  </td>
  <td className="px-4 py-3">
  <p className="text-[13px] font-medium text-slate-900">{doc.party}</p>
@@ -730,7 +730,7 @@ export function ContractManager() {
  </td>
  <td className="px-4 py-3 text-center">
  <span className={cn(
- "px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2.5 py-1 text-[9px] rounded-lg tracking-tight inline-flex items-center gap-1",
  doc.status === 'active' ? "bg-emerald-50 text-emerald-600" : 
  doc.status === 'pending' ? "bg-amber-50 text-amber-600" :
  doc.status === "expiring_soon" ? "bg-orange-50 text-primary-600" : doc.status === "returned" ? "bg-slate-100 text-slate-700" : "bg-red-50 text-red-600"
@@ -747,7 +747,7 @@ export function ContractManager() {
  {doc.signatureStatus && (
  <div className="mt-1.5">
  <span className={cn(
- "px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-tight inline-flex items-center gap-1",
+ "px-2 py-0.5 text-[9px] rounded tracking-tight inline-flex items-center gap-1",
  doc.signatureStatus === 'signed' ? "bg-slate-100 text-primary-600" : "bg-slate-100 text-slate-700"
  )}>
  <PenTool className="w-3 h-3" />
@@ -786,21 +786,21 @@ export function ContractManager() {
  </div>
  <div className="p-6 space-y-4">
  <div>
- <label className="block text-[13px] font-bold text-slate-800 mb-2">Tiêu đề hợp đồng</label>
+ <label className="block text-[13px] font-medium text-slate-800 mb-2">Tiêu đề hợp đồng</label>
  <input type="text" placeholder="Nhập tiêu đề..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
  </div>
  <div className="grid grid-cols-2 gap-4">
    <div>
-   <label className="block text-[13px] font-bold text-slate-800 mb-2">Đối tác / Nhân sự</label>
+   <label className="block text-[13px] font-medium text-slate-800 mb-2">Đối tác / Nhân sự</label>
    <input type="text" placeholder="Tên bên B..." className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
    </div>
    <div>
-   <label className="block text-[13px] font-bold text-slate-800 mb-2">Giá trị dự kiến</label>
+   <label className="block text-[13px] font-medium text-slate-800 mb-2">Giá trị dự kiến</label>
    <input type="text" placeholder="VD: 50,000,000 ₫" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" />
    </div>
  </div>
  <div>
-  <label className="block text-[13px] font-bold text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
+  <label className="block text-[13px] font-medium text-slate-800 mb-2">Đính kèm dự thảo (docx, xlsx, pdf...)</label>
   <div className="border-2 border-dashed border-slate-300 p-6 rounded-lg flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
     <div className="bg-white p-3 rounded-full shadow-sm border border-slate-200  transition-transform mb-3">
       <File className="w-6 h-6 text-primary-600" />

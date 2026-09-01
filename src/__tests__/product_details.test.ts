@@ -15,6 +15,7 @@ describe('Product Details Adapter Mapping & Supabase Integration', () => {
     price: 1500000,
     stock: 50,
     category: 'Thiết bị điện tử',
+    status: 'draft',
     image: 'https://picsum.photos/seed/test/200/200',
     image_urls: 'https://picsum.photos/seed/test/200/200',
     sellerName: 'Nhà cung cấp ABC',

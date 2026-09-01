@@ -17,7 +17,7 @@ export function ExportButton<T extends Record<string, unknown>>({
 }: Props<T>) {
   const [open, setOpen] = useState(false);
 
-  const doExcel = () => { exportToExcel(data, columns, fileName, sheetName); setOpen(false); };
+  const doExcel = () => { exportToExcel(data, columns, fileName, sheetName).catch(console.error); setOpen(false); };
   const doCSV   = () => { exportToCSV(data, columns, fileName); setOpen(false); };
 
   return (

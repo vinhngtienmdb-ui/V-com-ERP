@@ -62,7 +62,7 @@ export function LoginPage() {
   ) : (
     <>
       <div className="w-6 h-6 bg-primary-600 rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
-      <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
+      <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#FAF9F5] tracking-tight">
       VComm <span className="text-orange-500">ERP</span>
       </h1>
     </>
@@ -117,7 +117,7 @@ export function LoginPage() {
 
       <form onSubmit={handleMfaSubmit} className="space-y-6">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Mã xác thực OTP (6 chữ số)</label>
+          <label className="text-[11px] text-[#6B7280] tracking-[0.1em] ml-1">Mã xác thực OTP (6 chữ số)</label>
           <div className="relative group">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <ShieldCheck className="w-4 h-4" />
@@ -185,7 +185,7 @@ export function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Tên đăng nhập</label>
+          <label className="text-[11px] text-[#6B7280] tracking-[0.1em] ml-1">Tên đăng nhập</label>
           <div className="relative group">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <Rocket className="w-4 h-4" />
@@ -202,7 +202,7 @@ export function LoginPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-[#6B7280] uppercase tracking-[0.1em] ml-1">Mật khẩu</label>
+          <label className="text-[11px] text-[#6B7280] tracking-[0.1em] ml-1">Mật khẩu</label>
           <div className="relative group">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-600 transition-colors">
               <LogIn className="w-4 h-4" />
@@ -248,7 +248,7 @@ export function LoginPage() {
 
   <div className="pt-6 border-t border-[#F3F4F6]">
   <div className="flex items-center gap-4 justify-center grayscale opacity-40">
-  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-widest whitespace-nowrap">Trusted Enterprise System</p>
+  <p className="text-[10px] text-[#9CA3AF] whitespace-nowrap">Trusted Enterprise System</p>
   </div>
   </div>
   </div>

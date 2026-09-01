@@ -311,7 +311,7 @@ export function SellerManagement() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản lý Seller / Vendor</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Quản lý Seller / Vendor</h1>
  <p className="text-sm text-[#6B7280] mt-1">Hồ sơ nhà bán, đối soát MST/CCCD và quản lý hoa hồng. <span className="text-xs text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 ml-2">Đăng ký tại eCommerce • ERP chỉ duyệt & quản lý</span></p>
  </div>
  <div className="flex gap-3">
@@ -340,7 +340,7 @@ export function SellerManagement() {
  <div className="space-y-3">
  <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg bg-slate-50">
  <div>
- <label className="text-sm font-bold text-slate-800">Duyệt tự động (Auto-Approve)</label>
+ <label className="text-sm font-medium text-slate-800">Duyệt tự động (Auto-Approve)</label>
  <p className="text-xs text-slate-600">Tự động duyệt Seller nộp đủ hồ sơ không cần qua kiểm duyệt tay.</p>
  </div>
  <div 
@@ -354,7 +354,7 @@ export function SellerManagement() {
  <div className="flex items-center gap-4">
  <div className="flex-1 flex items-center justify-between p-3 border border-slate-300 rounded-lg">
  <div>
- <label className="text-sm font-bold text-slate-800">Bắt buộc CMND/CCCD/Mã số thuế</label>
+ <label className="text-sm font-medium text-slate-800">Bắt buộc CMND/CCCD/Mã số thuế</label>
  </div>
  <input 
  type="checkbox" 
@@ -365,7 +365,7 @@ export function SellerManagement() {
  </div>
  <div className="flex-1 flex items-center justify-between p-3 border border-slate-300 rounded-lg">
  <div>
- <label className="text-sm font-bold text-slate-800">Bắt buộc Giấy phép kinh doanh (Đối với DN)</label>
+ <label className="text-sm font-medium text-slate-800">Bắt buộc Giấy phép kinh doanh (Đối với DN)</label>
  </div>
  <input 
  type="checkbox" 
@@ -383,7 +383,7 @@ export function SellerManagement() {
  <h4 className="text-sm font-bold text-slate-900 mb-3">Giới hạn & Định mức mặc định</h4>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Số sản phẩm tối đa (Mới mở shop)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Số sản phẩm tối đa (Mới mở shop)</label>
  <input 
  type="number" 
  value={sellerUploadLimit}
@@ -392,7 +392,7 @@ export function SellerManagement() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Chu kỳ Đối soát / Payout mặc định</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Chu kỳ Đối soát / Payout mặc định</label>
  <select 
  value={sellerPayoutSchedule}
  onChange={(e) => setSellerPayoutSchedule(e.target.value)}
@@ -413,7 +413,7 @@ export function SellerManagement() {
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Chế độ kiểm duyệt sản phẩm mới</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Chế độ kiểm duyệt sản phẩm mới</label>
  <select 
  value={productModeration}
  onChange={(e) => setProductModeration(e.target.value)}
@@ -424,7 +424,7 @@ export function SellerManagement() {
  </select>
  </div>
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Yêu cầu tham gia FBP (Fulfillment By Platform)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Yêu cầu tham gia FBP (Fulfillment By Platform)</label>
  <select 
  value={requiredFulfillment ? "yes" : "no"}
  onChange={(e) => setRequiredFulfillment(e.target.value === "yes")}
@@ -438,7 +438,7 @@ export function SellerManagement() {
  
  <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border border-slate-300 rounded-lg bg-slate-50 gap-4">
  <div>
- <label className="text-sm font-bold text-slate-800">Cho phép Nhà bán bật COD</label>
+ <label className="text-sm font-medium text-slate-800">Cho phép Nhà bán bật COD</label>
  <p className="text-xs text-slate-600">Khách hàng được quyền nhận hàng mới thanh toán cho các đơn của Seller.</p>
  </div>
  <div className="flex-shrink-0">
@@ -458,7 +458,7 @@ export function SellerManagement() {
  <h4 className="text-sm font-bold text-slate-900 mb-3">Hiệu suất & Chế tài vi phạm</h4>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Điểm đánh giá tối thiểu (Duy trì Shop)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Điểm đánh giá tối thiểu (Duy trì Shop)</label>
  <div className="relative">
  <input 
  type="number" step="0.1"
@@ -470,7 +470,7 @@ export function SellerManagement() {
  </div>
  </div>
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Ngưỡng điểm phạt (Khóa tài khoản)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Ngưỡng điểm phạt (Khóa tài khoản)</label>
  <div className="relative">
  <input 
  type="number"
@@ -489,7 +489,7 @@ export function SellerManagement() {
  <h4 className="text-sm font-bold text-slate-900 mb-3">Vận chuyển & Xử lý đơn hàng (SLA)</h4>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Hình thức vận chuyển</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Hình thức vận chuyển</label>
  <select 
  value={sellerShippingMode}
  onChange={(e) => setSellerShippingMode(e.target.value)}
@@ -501,7 +501,7 @@ export function SellerManagement() {
  </select>
  </div>
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">SLA Xác nhận & Giao hàng (Giờ)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">SLA Xác nhận & Giao hàng (Giờ)</label>
  <div className="relative">
  <input 
  type="number"
@@ -513,7 +513,7 @@ export function SellerManagement() {
  </div>
  </div>
  <div>
- <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">Hạn mức hoàn trả tự động (VNĐ)</label>
+ <label className="block text-xs font-medium text-[#6B7280] mb-1.5 uppercase tracking-wider">Hạn mức hoàn trả tự động (VNĐ)</label>
  <div className="relative">
  <input 
  type="number"
@@ -624,11 +624,11 @@ export function SellerManagement() {
 <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hồ sơ Đối tác</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Xác thực Định danh</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">GMV / Phí Sàn</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Chỉ số Rating</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hành động</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Hồ sơ Đối tác</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Xác thực Định danh</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">GMV / Phí Sàn</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Chỉ số Rating</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Hành động</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -652,11 +652,11 @@ export function SellerManagement() {
  onClick={() => setSelectedSeller(seller)}
  >{seller.name}</p>
  {seller.partnerType === 'seller' ? (
- <span className="text-[9px] bg-primary-50 text-primary-600 border border-primary-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà bán</span>
+ <span className="text-[9px] bg-primary-50 text-primary-600 border border-primary-100 px-1.5 py-0.5 rounded">Nhà bán</span>
  ) : seller.partnerType === 'dealer' ? (
- <span className="text-[9px] bg-teal-50 text-teal-600 border border-teal-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Đại lý Offline</span>
+ <span className="text-[9px] bg-teal-50 text-teal-600 border border-teal-100 px-1.5 py-0.5 rounded">Đại lý Offline</span>
  ) : (
- <span className="text-[9px] bg-purple-50 text-purple-600 border border-purple-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Nhà máy (M2C)</span>
+ <span className="text-[9px] bg-purple-50 text-purple-600 border border-purple-100 px-1.5 py-0.5 rounded">Nhà máy (M2C)</span>
  )}
  </div>
  <p className="text-[10px] text-[#9CA3AF] mt-0.5">Ngày gia nhập: {seller.joinDate}</p>
@@ -792,7 +792,7 @@ export function SellerManagement() {
  <p className="text-[11px] text-slate-600 mb-4">Cấu hình Subdomain dành riêng cho nhân viên tại các chi nhánh/cửa hàng của Seller này đăng nhập hệ thống iPOS độc lập.</p>
  <div className="space-y-3">
  <div>
- <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Subdomain chính</label>
+ <label className="text-[10px] text-slate-500 block mb-1">Subdomain chính</label>
  <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg overflow-hidden">
  <span className="pl-4 pr-1 py-3 text-slate-500"><Globe className="w-4 h-4" /></span>
  <input type="text" className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-slate-900 focus:outline-none" defaultValue={(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')} />
@@ -815,7 +815,7 @@ export function SellerManagement() {
  <p className="text-sm font-bold text-slate-900">Chi nhánh Mặc định (Trụ sở)</p>
  <p className="text-[10px] text-slate-600">Mã: ST-001</p>
  </div>
- <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">ACTIVE</span>
+ <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-medium">ACTIVE</span>
  </div>
  </div>
  <button className="mt-4 w-full border-2 border-dashed border-slate-300 text-slate-600 py-2.5 rounded-lg text-sm font-bold hover:border-primary-400 hover:text-primary-600 transition-colors flex items-center justify-center gap-2">
@@ -876,7 +876,7 @@ export function SellerManagement() {
  <p className="text-sm font-bold text-slate-900">{selectedSeller.name}</p>
  <p className="text-[10px] text-slate-600">admin@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
- <span className="text-[9px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản trị viên (Admin)</span>
+ <span className="text-[9px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded">Quản trị viên (Admin)</span>
  </div>
  </div>
  </div>
@@ -893,7 +893,7 @@ export function SellerManagement() {
  <p className="text-sm font-bold text-slate-900">Quản lý Cửa hàng 1</p>
  <p className="text-[10px] text-slate-600">manager1@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
- <span className="text-[9px] bg-[#EAE7DF] text-orange-800 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Quản lý (Manager)</span>
+ <span className="text-[9px] bg-[#EAE7DF] text-orange-800 px-2 py-0.5 rounded">Quản lý (Manager)</span>
  </div>
  </div>
  </div>
@@ -916,7 +916,7 @@ export function SellerManagement() {
  <p className="text-sm font-bold text-slate-900">Thu Ngân (Ca 1)</p>
  <p className="text-[10px] text-slate-600">pos1@{(selectedSeller?.name || '').toLowerCase().replace(/\s/g, '')}.v-erp.com</p>
  <div className="mt-2 flex gap-2">
- <span className="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Nhân viên POS (Staff)</span>
+ <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Nhân viên POS (Staff)</span>
  </div>
  </div>
  </div>
@@ -1004,7 +1004,7 @@ export function SellerManagement() {
  </h3>
  <div className="space-y-4">
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mô hình kinh doanh</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Mô hình kinh doanh</label>
  <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500">
  <option>Cá nhân kinh doanh</option>
  <option>Hộ kinh doanh</option>
@@ -1012,15 +1012,15 @@ export function SellerManagement() {
  </select>
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mã số thuế</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Mã số thuế</label>
  <input type="text" defaultValue={approvingSeller.taxCode} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ đăng ký Thuế</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Địa chỉ đăng ký Thuế</label>
  <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Địa chỉ Cửa hàng / Kho hàng</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Địa chỉ Cửa hàng / Kho hàng</label>
  <input type="text" defaultValue="123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  </div>
@@ -1031,7 +1031,7 @@ export function SellerManagement() {
  <h3 className="font-bold text-slate-900 flex items-center gap-2">
  <ShieldCheck className="w-4 h-4 text-slate-500" /> Hồ sơ năng lực (Upload)
  </h3>
- <label className="cursor-pointer text-xs font-bold text-orange-700 hover:text-orange-800 bg-white border border-orange-200 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
+ <label className="cursor-pointer text-xs font-medium text-orange-700 hover:text-orange-800 bg-white border border-orange-200 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
  Tải lên
  <input type="file" className="hidden" multiple />
  </label>
@@ -1071,11 +1071,11 @@ export function SellerManagement() {
  {approvalType === 'seller' ? (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mức phí Sàn mặc định (%)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Mức phí Sàn mặc định (%)</label>
  <input type="number" defaultValue={5} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hạn mức hiển thị Sản phẩm (PIM Limit)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Hạn mức hiển thị Sản phẩm (PIM Limit)</label>
  <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500">
  <option>1,000 Sản phẩm (Cơ bản)</option>
  <option>5,000 Sản phẩm (Pro)</option>
@@ -1096,7 +1096,7 @@ export function SellerManagement() {
  ) : approvalType === 'dealer' ? (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Thiết lập Phí phần mềm iPOS</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Thiết lập Phí phần mềm iPOS</label>
  <select 
  value={iposFeeStatus}
  onChange={(e) => setIposFeeStatus(e.target.value)}
@@ -1111,7 +1111,7 @@ export function SellerManagement() {
  <div className="space-y-4 animate-in slide-in- duration-300">
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hình thức thanh toán</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Hình thức thanh toán</label>
  <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
  <option>Trả trước 6 tháng (Ưu đãi)</option>
  <option>Trả trước 1 năm (Ưu đãi + Tặng 1 tháng)</option>
@@ -1119,12 +1119,12 @@ export function SellerManagement() {
  </select>
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Số phí mỗi tháng (VND)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Số phí mỗi tháng (VND)</label>
  <input type="text" defaultValue="500,000" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
  </div>
  </div>
  <div className="p-3 bg-primary-50/50 border border-primary-100 rounded-lg">
- <label className="text-[11px] font-bold text-primary-900 uppercase block mb-2 flex items-center gap-2">
+ <label className="text-[11px] text-primary-900 block mb-2 flex items-center gap-2">
  <History className="w-3.5 h-3.5" /> Thời hạn sử dụng iPOS (Ngày hết hạn)
  </label>
  <div className="flex gap-2">
@@ -1142,11 +1142,11 @@ export function SellerManagement() {
  )}
 
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Phí thu bán hàng iPOS dựa trên Đơn hàng (%)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Phí thu bán hàng iPOS dựa trên Đơn hàng (%)</label>
  <input type="number" defaultValue={2} step="0.1" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Subdomain Khởi tạo truy cập ERP</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Subdomain Khởi tạo truy cập ERP</label>
  <div className="flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden">
  <input type="text" className="flex-1 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500" defaultValue={approvingSeller?.name?.toLowerCase().replace(/\s/g, '') || ''} />
  <span className="bg-slate-100 text-slate-600 px-3 py-2 text-sm border-l border-slate-300">.v-erp.com</span>
@@ -1174,15 +1174,15 @@ export function SellerManagement() {
  ) : (
  <div className="space-y-4 animate-in fade-in duration-300">
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Mức phí Sàn mặc định (M2C) (%)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Mức phí Sàn mặc định (M2C) (%)</label>
  <input type="number" defaultValue={2.5} step="0.1" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Phân bổ chiết khấu Nhà Máy - Sàn (%)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Phân bổ chiết khấu Nhà Máy - Sàn (%)</label>
  <input type="text" defaultValue="80 / 20" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div>
- <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">Hạn mức Lưu kho tĩnh (m³)</label>
+ <label className="text-[11px] text-slate-600 block mb-1">Hạn mức Lưu kho tĩnh (m³)</label>
  <input type="number" defaultValue={1000} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
  </div>
  <div className="pt-2">
@@ -1293,13 +1293,13 @@ export function SellerManagement() {
  <form onSubmit={submitAdjustBalance} className="p-6 space-y-6">
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số dư hiện tại</label>
+ <label className="text-xs font-medium text-slate-800 uppercase">Số dư hiện tại</label>
  </div>
  <div className="text-xl font-bold text-slate-900">{formatCurrency(adjustingSeller.walletBalance || 0)}</div>
  </div>
  <div>
  <div className="flex justify-between items-center mb-1.5">
- <label className="text-xs font-bold text-slate-800 uppercase">Số tiền cộng / trừ</label>
+ <label className="text-xs font-medium text-slate-800 uppercase">Số tiền cộng / trừ</label>
  </div>
  <input 
  type="number" 

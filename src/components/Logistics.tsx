@@ -2,59 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { Truck, MapPin, Package, Search, Filter, ChevronDown, CheckCircle2, AlertCircle, Clock, CreditCard, DollarSign } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
-import { db, collection, query, where, onSnapshot } from '../services/dbService';
+import { db, collection, query, where, onSnapshot, orderBy } from '../services/dbService';
 import { reconcileCodStatement } from '../services/codReconciliationService';
 
-const mockLogistics = [
-  {
-    id: 'LOG-88231',
-    orderId: 'ORD-5501',
-    customer: 'Nguyễn Văn A',
-    address: 'Quận 1, TP. Hồ Chí Minh',
-    partner: 'Giao Hàng Nhanh',
-    fee: 25000,
-    status: 'delivering',
-    trackingCode: 'GHN123456789',
-    estimatedDate: '2026-06-28',
-    seller: 'Mobile World'
-  },
-  {
-    id: 'LOG-88232',
-    orderId: 'ORD-5502',
-    customer: 'Trần Thị B',
-    address: 'Quận Cầu Giấy, Hà Nội',
-    partner: 'Giao Hàng Tiết Kiệm',
-    fee: 35000,
-    status: 'pending',
-    trackingCode: 'GHTK987654321',
-    estimatedDate: '2026-06-29',
-    seller: 'Fashion Hub'
-  },
-  {
-    id: 'LOG-88233',
-    orderId: 'ORD-5503',
-    customer: 'Lê Văn C',
-    address: 'Hải Châu, Đà Nẵng',
-    partner: 'Viettel Post',
-    fee: 40000,
-    status: 'delivered',
-    trackingCode: 'VTP11223344',
-    estimatedDate: '2026-06-26',
-    seller: 'Eco Mart'
-  },
-  {
-    id: 'LOG-88234',
-    orderId: 'ORD-5504',
-    customer: 'Phạm Thị D',
-    address: 'Quận 3, TP. Hồ Chí Minh',
-    partner: 'Ninja Van',
-    fee: 22000,
-    status: 'returned',
-    trackingCode: 'NJV55667788',
-    estimatedDate: '2026-06-27',
-    seller: 'Mobile World'
-  }
-];
+/**
+ * Shipment view-model build từ orders thật:
+ * - Đơn có carrier/tracking và status từ 'paid' trở đi → coi là đang trong hành trình vận chuyển.
+ * - Map order.status → shipment.status: pending (chờ lấy), delivering (đang giao),
+ *   delivered (đã giao), returned (chuyển hoàn/cancelled).
+ */
+interface ShipmentRow {
+  id: string;
+  orderId: string;
+  customer: string;
+  address: string;
+  partner: string;
+  fee: number;
+  status: 'pending' | 'delivering' | 'delivered' | 'returned';
+  trackingCode: string;
+  estimatedDate: string;
+  seller: string;
+}
+
+function orderToShipment(o: any): ShipmentRow | null {
+  // Chỉ những đơn đã vào chuỗi vận chuyển (có đối tác vận chuyển gán)
+  if (!o.carrier) return null;
+  const status: ShipmentRow['status'] =
+    o.status === 'delivered' || o.status === 'completed' ? 'delivered'
+    : o.status === 'cancelled' || o.status === 'returned' ? 'returned'
+    : o.status === 'shipped' ? 'delivering'
+    : 'pending'; // paid/confirmed/allocated/picking/packed → chờ lấy hàng
+  return {
+    id: o.id,
+    orderId: o.id,
+    customer: o.customerName || 'N/A',
+    address: o.customerAddress || o.customer_address || '',
+    partner: o.carrier,
+    fee: Number(o.shippingCost || o.shipping_cost || 0),
+    status,
+    trackingCode: o.tracking || o.id,
+    estimatedDate: o.estimatedDate || '',
+    seller: o.sellerName || o.sellerId || 'VComm'
+  };
+}
 
 export function Logistics() {
   const { staffInfo } = useAuth();
@@ -66,6 +56,8 @@ export function Logistics() {
   
   const [codOrders, setCodOrders] = useState<any[]>([]);
   const [loadingCod, setLoadingCod] = useState(false);
+  const [shipments, setShipments] = useState<ShipmentRow[]>([]);
+  const [loadingShipments, setLoadingShipments] = useState(true);
 
   const [selectedTrackingCode, setSelectedTrackingCode] = useState('');
   const [actualAmount, setActualAmount] = useState<number | ''>('');
@@ -76,6 +68,40 @@ export function Logistics() {
     message: string;
   } | null>(null);
   const [submittingReconcile, setSubmittingReconcile] = useState(false);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+
+  /**
+   * ⑥ Xác nhận giao hàng thành công → đồng bộ orders.status='delivered'.
+   * Kích hoạt chuỗi downstream tự động: settlement_status='pending' (đối soát seller),
+   * escrow delivered (đếm retention giải ngân), ZNS thông báo khách.
+   */
+  const confirmDelivery = async (item: { id: string; orderId: string }) => {
+    if (!item.orderId || item.orderId === 'N/A') return;
+    setSyncingId(item.id);
+    try {
+      const { updateDoc } = await import('../services/dbService');
+      const orderRef = { path: `orders/${item.orderId}`, tableName: 'orders', id: item.orderId };
+      await updateDoc(orderRef as any, {
+        status: 'delivered',
+        settlement_status: 'pending',
+        delivered_at: new Date().toISOString()
+      });
+      // Escrow: bắt đầu đếm retention (nếu đơn có escrow)
+      try {
+        const { getEscrowByOrderId, markEscrowDelivered } = await import('../services/escrowService');
+        const escrow = await getEscrowByOrderId(item.orderId);
+        if (escrow) await markEscrowDelivered(escrow.id);
+      } catch (e: any) {
+        console.warn('[Logistics] Escrow mark delivered thất bại:', e.message);
+      }
+      alert(`Đã xác nhận giao thành công đơn ${item.orderId}. Đơn chuyển sang "Đã hoàn tất", sẵn sàng đối soát seller.`);
+    } catch (err: any) {
+      console.error('[Logistics] Sync delivered thất bại:', err);
+      alert('Lỗi đồng bộ: ' + (err.message || err));
+    } finally {
+      setSyncingId(null);
+    }
+  };
 
   useEffect(() => {
     if (!isSeller && activeTab === 'reconciliation') {
@@ -96,6 +122,28 @@ export function Logistics() {
       return () => unsub();
     }
   }, [activeTab, isSeller]);
+
+  // Vận đơn thật từ orders (có carrier) — realtime
+  useEffect(() => {
+    setLoadingShipments(true);
+    const q = query(collection(db, 'orders'), orderBy('created_at', 'desc'));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const rows = snap.docs
+          .map(d => ({ id: d.id, ...d.data() } as any))
+          .map(orderToShipment)
+          .filter((s): s is ShipmentRow => s !== null);
+        setShipments(rows);
+        setLoadingShipments(false);
+      },
+      (err) => {
+        console.error('[Logistics] Lỗi tải vận đơn:', err);
+        setLoadingShipments(false);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   const handleReconcile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,12 +173,12 @@ export function Logistics() {
     }
   };
 
-  const filteredLogistics = mockLogistics.filter(item => {
-    const matchesSearch = (item.trackingCode?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || 
-                          (item.orderId?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+  const filteredLogistics = shipments.filter(item => {
+    const matchesSearch = (item.trackingCode?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                          (item.orderId?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                          (item.customer?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-    const matchesSeller = !isSeller || item.seller === 'Mobile World';
-    return matchesSearch && matchesStatus && matchesSeller;
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusDisplay = (status: string) => {
@@ -306,16 +354,35 @@ export function Logistics() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right font-medium text-slate-900">
-                          {formatCurrency(item.fee)}
+                          <div className="flex items-center justify-end gap-2">
+                            {formatCurrency(item.fee)}
+                            {!isSeller && item.status !== 'delivered' && (
+                              <button
+                                onClick={() => confirmDelivery(item)}
+                                disabled={syncingId === item.id}
+                                title="Xác nhận giao thành công — đồng bộ orders, kích hoạt kế toán, escrow & đối soát seller"
+                                className="px-2.5 py-1 text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-all disabled:opacity-50 shrink-0"
+                              >
+                                {syncingId === item.id ? 'Đang lưu...' : 'Xác nhận đã giao'}
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
                   })}
                   
-                  {filteredLogistics.length === 0 && (
+                  {loadingShipments ? (
                     <tr>
-                      <td colSpan={isSeller ? 5 : 6} className="px-6 py-12 text-center text-slate-500">
-                        Không tìm thấy dữ liệu vận đơn nào phù hợp.
+                      <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                        Đang tải vận đơn từ đơn hàng...
+                      </td>
+                    </tr>
+                  ) : filteredLogistics.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                        Chưa có vận đơn nào. Vận đơn tự xuất hiện khi đơn hàng được gắn
+                        đối tác vận chuyển (carrier) trong Quản lý Đơn hàng.
                       </td>
                     </tr>
                   )}
@@ -334,7 +401,7 @@ export function Logistics() {
 
             <form onSubmit={handleReconcile} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1.5">Mã vận đơn đối tác (GHTK/GHN...)</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1.5">Mã vận đơn đối tác (GHTK/GHN...)</label>
                 <select
                   value={selectedTrackingCode}
                   onChange={(e) => setSelectedTrackingCode(e.target.value)}
@@ -353,7 +420,7 @@ export function Logistics() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1.5">Số tiền COD thực nhận từ đối tác</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1.5">Số tiền COD thực nhận từ đối tác</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">đ</span>
                   <input
@@ -368,7 +435,7 @@ export function Logistics() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1.5">Đối tác vận chuyển</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1.5">Đối tác vận chuyển</label>
                 <select
                   value={carrierName}
                   onChange={(e) => setCarrierName(e.target.value)}
@@ -459,7 +526,7 @@ export function Logistics() {
                                 : 'Chờ đối soát'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right font-bold text-slate-900">
+                        <td className="px-4 py-3 text-right font-medium text-slate-900">
                           {formatCurrency(order.total)}
                         </td>
                       </tr>

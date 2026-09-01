@@ -46,7 +46,7 @@ export function Breadcrumb() {
               : (
                 <button
                   onClick={() => navigate(c.path)}
-                  className="font-mono text-[10px] uppercase tracking-wider text-slate-400 hover:text-blue-500 transition-colors"
+                  className="font-mono text-[10px] text-slate-400 hover:text-blue-500 transition-colors"
                 >
                   {c.label}
                 </button>

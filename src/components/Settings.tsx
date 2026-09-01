@@ -51,9 +51,10 @@ import {
  ShieldAlert,
  Eye,
  EyeOff,
- Play,
- Copy,
- Terminal
+  Play,
+  Copy,
+  Terminal,
+  Plug
 } from 'lucide-react';
 import { getMisaConfig, saveMisaConfig, type MisaConfig } from '../services/misaService';
 import { getZnsConfig, saveZnsConfig, type ZnsConfig } from '../services/znsService';
@@ -64,6 +65,7 @@ import { useAuth } from '../context/AuthContext';
 import { db, doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from '../services/dbService';
 import { PageEditorModal } from './PageEditorModal';
 import { Modal } from './ui/Modal';
+import { IntegrationsSettings } from './IntegrationsSettings';
 
 interface ShopifyHaravanConfig {
   shopUrl: string;
@@ -319,16 +321,17 @@ const SETTINGS_MODULE_GROUPS = [
  { id: 'address', label: 'Địa chỉ Hành chính', icon: MapPin, desc: 'Danh mục Tỉnh/Thành/Phường/Xã', color: 'slate' },
  ]
  },
- {
- title: 'Bảo mật & Tích hợp Hệ thống',
- items: [
- { id: 'rbac', label: 'Phân quyền (Roles)', icon: Lock, desc: 'Điều hướng truy cập và quản lý Matrix Roles', color: 'purple' },
- { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cấp API token và bắn sự kiện Server', color: 'rose' },
- { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare, desc: 'Cấu hình API gửi tin nhắn Zalo/SMS', color: 'cyan' },
-	{ id: 'saas_subscription', label: 'Quản lý SaaS', icon: ShieldCheck, desc: 'Giấy phép thuê bao SaaS, hạn mức tài nguyên hệ thống, dữ liệu cô lập và hóa đơn', color: 'emerald' },
-		{ id: 'ipos_licenses', label: 'Bản quyền iPOS', icon: Tablet, desc: 'Quản lý bản quyền theo chi nhánh, thiết lập custom domain và token API đối soát', color: 'blue' },
- ]
- }
+  {
+  title: 'Bảo mật & Tích hợp Hệ thống',
+  items: [
+   { id: 'rbac', label: 'Phân quyền (Roles)', icon: Lock, desc: 'Điều hướng truy cập và quản lý Matrix Roles', color: 'purple' },
+   { id: 'api', label: 'OpenAPI & Webhooks', icon: Webhook, desc: 'Cấp API token và bắn sự kiện Server', color: 'rose' },
+   { id: 'comms', label: 'Tích hợp Kênh', icon: MessageSquare, desc: 'Cấu hình API gửi tin nhắn Zalo/SMS', color: 'cyan' },
+  { id: 'integrations', label: 'Tích hợp Pháp lý', icon: Plug, desc: 'API key E-Invoice TT78, Databank BCT, CQT/HSM — add-key-sau', color: 'emerald' },
+ 	{ id: 'saas_subscription', label: 'Quản lý SaaS', icon: ShieldCheck, desc: 'Giấy phép thuê bao SaaS, hạn mức tài nguyên hệ thống, dữ liệu cô lập và hóa đơn', color: 'emerald' },
+ 		{ id: 'ipos_licenses', label: 'Bản quyền iPOS', icon: Tablet, desc: 'Quản lý bản quyền theo chi nhánh, thiết lập custom domain và token API đối soát', color: 'blue' },
+  ]
+  }
 ];
 
 function getColorClasses(color: string) {
@@ -369,7 +372,7 @@ export function SettingsPage() {
   const { log: logAction } = useAuditLog();
  const { primaryColor, setPrimaryColor, borderRadius, setBorderRadius, holidayTheme, setHolidayTheme } = usePreferences();
  const { staffInfo } = useAuth();
- const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules' | 'ipos_licenses'>('overview');
+ const [activeTab, setActiveTab] = useState<'overview' | 'general' | 'appearance' | 'wallet_crm' | 'rbac' | 'api' | 'address' | 'org' | 'comms' | 'website' | 'storefront' | 'stores' | 'fees' | 'popup' | 'inventory' | 'saas_subscription' | 'chart_of_accounts' | 'workflow_rules' | 'ipos_licenses' | 'integrations'>('overview');
 
   const [addressConfig, setAddressConfig] = useState<{
     activeProvinces: number[];
@@ -1335,6 +1338,7 @@ export function SettingsPage() {
 		{ id: 'ipos_licenses', label: 'Quản lý Bản quyền iPOS', icon: Tablet },
     { id: 'chart_of_accounts', label: 'Hệ thống tài khoản COA', icon: FileText },
     { id: 'workflow_rules', label: 'Quy trình No-code', icon: Zap },
+    { id: 'integrations', label: 'Tích hợp Pháp lý (API Key)', icon: Plug },
     ].filter(t => t.id === activeTab).map(t => (
    <React.Fragment key={t.id}>
    <t.icon className="w-5 h-5 text-primary-600" /> {t.label}
@@ -1665,7 +1669,7 @@ export function SettingsPage() {
 
  {showAddCategory && (
  <div className="mb-4 p-4 bg-slate-50 border border-slate-300 rounded-lg flex items-center gap-3 animate-in slide-in- duration-200">
- <label className="text-sm font-bold text-slate-800 whitespace-nowrap">Tên ngành hàng:</label>
+ <label className="text-sm font-medium text-slate-800 whitespace-nowrap">Tên ngành hàng:</label>
  <input 
  type="text" 
  placeholder="VD: Mẹ & Bé, Đồ gia dụng..." 
@@ -1683,26 +1687,26 @@ export function SettingsPage() {
  <table className="w-full text-sm whitespace-nowrap">
  <thead className="bg-slate-50 border-b border-slate-300">
  <tr>
- <th className="px-5 py-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
+ <th className="px-5 py-4 text-left font-medium text-slate-500 text-xs uppercase tracking-wider w-[30%]">Ngành hàng</th>
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-slate-100/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
- <span className="font-bold text-blue-800 text-[11px] uppercase tracking-wider">Seller Thường</span>
+ <span className="text-blue-800 text-[11px]">Seller Thường</span>
  <span className="text-[9px] font-medium text-primary-600">Nhà bán cá nhân/nhỏ lẻ</span>
  </div>
  </th>
  <th className="px-5 py-4 text-center border-l border-slate-300 bg-amber-50/50 w-[25%]">
  <div className="flex flex-col items-center gap-1">
- <span className="font-bold text-amber-800 text-[11px] uppercase tracking-wider">Shop Mall</span>
+ <span className="text-amber-800 text-[11px]">Shop Mall</span>
  <span className="text-[9px] font-medium text-amber-600">Đối tác chính hãng</span>
  </div>
  </th>
- <th className="px-5 py-4 text-right font-bold text-slate-500 text-[10px] uppercase tracking-wider w-[20%]">Tối ưu AI</th>
+ <th className="px-5 py-4 text-right text-slate-500 text-[10px] w-[20%]">Tối ưu AI</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#E5E7EB] bg-white">
  {categoryFees.map((cf) => (
  <tr key={cf.id} className="hover:bg-slate-50/50 transition-colors group">
- <td className="px-5 py-4 text-sm font-bold text-slate-900">{cf.name}</td>
+ <td className="px-5 py-4 text-sm font-medium text-slate-900">{cf.name}</td>
  <td className="px-5 py-4 border-l border-slate-200 bg-slate-100/10">
  <div className="flex justify-center flex-col items-center gap-1.5">
  <div className="flex items-center gap-2">
@@ -1715,7 +1719,7 @@ export function SettingsPage() {
  <span className="text-xs font-bold text-orange-500">%</span>
  </div>
  {cf.aiSuggestedSellerFee && cf.aiSuggestedSellerFee !== cf.sellerFee && (
- <span className="text-[10px] text-primary-600 font-bold bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-[#EAE7DF] px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedSellerFee}%</span>
  )}
  </div>
  </td>
@@ -1731,7 +1735,7 @@ export function SettingsPage() {
  <span className="text-xs font-bold text-amber-400">%</span>
  </div>
  {cf.aiSuggestedMallFee && cf.aiSuggestedMallFee !== cf.mallFee && (
- <span className="text-[10px] text-amber-600 font-bold bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
+ <span className="text-[10px] text-amber-600 font-medium bg-amber-100 px-2 py-0.5 rounded-full">AI khuyên dùng: {cf.aiSuggestedMallFee}%</span>
  )}
  </div>
  </td>
@@ -1776,7 +1780,7 @@ export function SettingsPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Danh sách tên miền</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Danh sách tên miền</label>
  <div className="space-y-2">
   {customDomains.map((domain, index) => {
     const diagState = dnsDiagnostics[domain] || 'idle';
@@ -1866,7 +1870,7 @@ export function SettingsPage() {
 
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Logo Toàn Hệ Thống</label>
  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
  <input 
  type="file" 
@@ -1891,7 +1895,7 @@ export function SettingsPage() {
  </div>
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Favicon Hệ Thống</label>
  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative min-h-[140px] flex items-center justify-center">
  <input 
  type="file" 
@@ -1979,7 +1983,7 @@ export function SettingsPage() {
                    { field: 'email', label: 'Email hỗ trợ', placeholder: 'support@vcomm.vn' },
                  ] as const).map(({ field, label, placeholder }) => (
                    <div key={field}>
-                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
+                     <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
                      <input
                        type="text"
                        value={siteConfig.companyInfo[field]}
@@ -1990,7 +1994,7 @@ export function SettingsPage() {
                    </div>
                  ))}
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Địa chỉ văn phòng</label>
+                   <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Địa chỉ văn phòng</label>
                    <VietnamAddressSelector
                      value={companyAddress}
                      onChange={addr => {
@@ -2011,7 +2015,7 @@ export function SettingsPage() {
                    return (
                      <div key={col} className="space-y-3">
                        <div>
-                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Tiêu đề cột</label>
+                         <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Tiêu đề cột</label>
                          <input
                            type="text"
                            value={siteConfig.footerLinks[titleKey]}
@@ -2020,7 +2024,7 @@ export function SettingsPage() {
                          />
                        </div>
                        <div className="space-y-2">
-                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Danh sách liên kết</label>
+                         <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider">Danh sách liên kết</label>
                          {siteConfig.footerLinks[colKey].map((item, idx) => (
                            <div key={idx} className="flex gap-2">
                              <input
@@ -2121,7 +2125,7 @@ export function SettingsPage() {
                        />
 
                        {/* Status badge */}
-                       <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0', pm.active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400')}>
+                       <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0', pm.active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400')}>
                          {pm.active ? 'Hiện' : 'Ẩn'}
                        </span>
 
@@ -2162,7 +2166,7 @@ export function SettingsPage() {
                    { field: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@your-page' },
                  ] as const).map(({ field, label, placeholder }) => (
                    <div key={field}>
-                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
+                     <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
                      <input
                        type="url"
                        value={siteConfig.socialLinks[field]}
@@ -2179,13 +2183,13 @@ export function SettingsPage() {
              {key === 'legalInfo' && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Tên công ty (đầy đủ theo pháp lý)</label>
+                   <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Tên công ty (đầy đủ theo pháp lý)</label>
                    <input type="text" value={siteConfig.legalInfo.companyName}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, companyName: e.target.value } }))}
                      className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                  </div>
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Địa chỉ pháp lý</label>
+                   <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Địa chỉ pháp lý</label>
                    <textarea value={siteConfig.legalInfo.legalAddress}
                      onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, legalAddress: e.target.value } }))}
                      rows={2} className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" />
@@ -2197,7 +2201,7 @@ export function SettingsPage() {
                    { field: 'businessRegDate' as const, label: 'Ngày cấp lần đầu', placeholder: 'DD/MM/YYYY' },
                  ]).map(({ field, label, placeholder }) => (
                    <div key={field}>
-                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
+                     <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">{label}</label>
                      <input type="text" value={siteConfig.legalInfo[field]}
                        onChange={e => setSiteConfig(c => ({ ...c, legalInfo: { ...c.legalInfo, [field]: e.target.value } }))}
                        placeholder={placeholder}
@@ -2205,7 +2209,7 @@ export function SettingsPage() {
                    </div>
                  ))}
                  <div className="md:col-span-2">
-                   <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Dòng bản quyền (Copyright)</label>
+                   <label className="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Dòng bản quyền (Copyright)</label>
                    <input type="text" value={siteConfig.copyrightText}
                      onChange={e => setSiteConfig(c => ({ ...c, copyrightText: e.target.value }))}
                      className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
@@ -2351,7 +2355,7 @@ export function SettingsPage() {
                         <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5 bg-slate-50 scrollbar-none">
                           {/* Store Header logo banner */}
                           <div className="p-2 bg-white rounded-lg shadow-3xs flex justify-between items-center">
-                            <span className="text-xs font-black text-slate-905 tracking-tight">{siteConfig.companyInfo.brandName}</span>
+                            <span className="text-xs font-semibold text-slate-905 tracking-tight">{siteConfig.companyInfo.brandName}</span>
                             <div className="flex gap-1.5 text-[8px] font-bold text-slate-500">
                               <span>Sản phẩm</span>
                               <span>Giỏ hàng</span>
@@ -2421,14 +2425,14 @@ export function SettingsPage() {
                      </div>
                      {/* Col 1 */}
                      <div className="space-y-2">
-                       <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">{siteConfig.footerLinks.col1Title}</div>
+                       <div className="text-[10px] text-slate-700">{siteConfig.footerLinks.col1Title}</div>
                        {siteConfig.footerLinks.col1Items.filter(l => l.label).map((l, i) => (
                          <div key={i} className="text-[11px] text-slate-500 hover:text-primary-600 cursor-pointer transition-colors">{l.label}</div>
                        ))}
                      </div>
                      {/* Col 2 */}
                      <div className="space-y-2">
-                       <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">{siteConfig.footerLinks.col2Title}</div>
+                       <div className="text-[10px] text-slate-700">{siteConfig.footerLinks.col2Title}</div>
                        {siteConfig.footerLinks.col2Items.filter(l => l.label).map((l, i) => (
                          <div key={i} className="text-[11px] text-slate-500 hover:text-primary-600 cursor-pointer transition-colors">{l.label}</div>
                        ))}
@@ -2437,7 +2441,7 @@ export function SettingsPage() {
                      <div className="space-y-4">
                        {siteConfig.paymentMethods.some(p => p.active) && (
                          <div className="space-y-1.5">
-                           <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THANH TOÁN</div>
+                           <div className="text-[10px] text-slate-700">THANH TOÁN</div>
                            <div className="flex flex-wrap gap-1.5 items-center">
                              {siteConfig.paymentMethods.filter(p => p.active).map(p => (
                                <div key={p.id} className="flex items-center justify-center h-7 px-2 rounded border border-slate-200 bg-white">
@@ -2451,7 +2455,7 @@ export function SettingsPage() {
                          </div>
                        )}
                        <div className="space-y-1.5">
-                         <div className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">THEO DÕI</div>
+                         <div className="text-[10px] text-slate-700">THEO DÕI</div>
                          <div className="flex gap-2">
                            {siteConfig.socialLinks.facebook && <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-[9px] font-bold">f</div>}
                            {siteConfig.socialLinks.instagram && <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-[9px] font-bold">in</div>}
@@ -2526,9 +2530,9 @@ export function SettingsPage() {
  <table className="w-full text-left whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-100">
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Tên Vai trò</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase">Số quyền hạn</th>
- <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Thao tác</th>
+ <th className="px-6 py-3 text-[10px] text-slate-500">Tên Vai trò</th>
+ <th className="px-6 py-3 text-[10px] text-slate-500">Số quyền hạn</th>
+ <th className="px-6 py-3 text-[10px] text-slate-500 text-right">Thao tác</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -2541,7 +2545,7 @@ export function SettingsPage() {
  </div>
  </td>
  <td className="px-6 py-4">
- <span className="px-2 py-0.5 bg-slate-100 text-primary-600 text-[10px] font-bold rounded-full border border-slate-300">
+ <span className="px-2 py-0.5 bg-slate-100 text-primary-600 text-[10px] font-medium rounded-full border border-slate-300">
  {role.permissions.includes('all') ? 'Toàn quyền' : `${role.permissions.length} quyền chi tiết`}
  </span>
  </td>
@@ -2675,7 +2679,7 @@ export function SettingsPage() {
  }}
  className="w-3.5 h-3.5 text-primary-600 rounded border-slate-400 focus:ring-primary-500"
  />
- <span className="text-[10px] font-bold uppercase tracking-tight">
+ <span className="text-[10px] tracking-tight">
  {action === 'view' ? 'Xem' : 
  action === 'create' ? 'Tạo' : 
  action === 'edit' ? 'Sửa' : 
@@ -2704,8 +2708,8 @@ export function SettingsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-indigo-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider font-bold text-indigo-600/70 dark:text-indigo-400/70">Tổng Kết Nối Hoạt Động</p>
-            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+            <p className="text-[10px] text-indigo-600/70 dark:text-indigo-400/70">Tổng Kết Nối Hoạt Động</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
               {[misaConfig.isActive, znsConfig.isActive, shopifyHaravanConfig.isActive, marketplaceConfig.isActive, true, true].filter(Boolean).length} / 6
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Các cổng kết nối dữ liệu ngoại</p>
@@ -2717,8 +2721,8 @@ export function SettingsPage() {
 
         <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-emerald-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-600/70 dark:text-emerald-400/70">Tỷ Lệ Đồng Bộ Thành Công</p>
-            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+            <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">Tỷ Lệ Đồng Bộ Thành Công</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
               {((syncLogs.filter(l => l.status === 'success').length / syncLogs.length) * 100).toFixed(1)}%
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Đạt chỉ tiêu SLA vận hành</p>
@@ -2730,8 +2734,8 @@ export function SettingsPage() {
 
         <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-purple-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider font-bold text-purple-600/70 dark:text-purple-400/70">Webhooks Đang Active</p>
-            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+            <p className="text-[10px] text-purple-600/70 dark:text-purple-400/70">Webhooks Đang Active</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
               {customWebhooks.filter(w => w.isActive).length} sự kiện
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Đẩy dữ liệu thời gian thực</p>
@@ -2743,8 +2747,8 @@ export function SettingsPage() {
 
         <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-slate-800 dark:to-slate-800/80 p-5 rounded-lg border border-rose-200/50 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider font-bold text-rose-600/70 dark:text-rose-400/70">Lỗi Hệ Thống Hôm Nay</p>
-            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+            <p className="text-[10px] text-rose-600/70 dark:text-rose-400/70">Lỗi Hệ Thống Hôm Nay</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
               {syncLogs.filter(l => l.status === 'failed').length} lỗi
             </p>
             <p className="text-[10px] text-slate-500 mt-1">Cần rà soát đối soát tài khoản</p>
@@ -3011,7 +3015,7 @@ export function SettingsPage() {
                     <p className="text-[9px] text-slate-500">Đẩy thông báo sự kiện ra ngoài</p>
                   </div>
                 </div>
-                <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">
                   {customWebhooks.length} Hook
                 </span>
               </div>
@@ -3062,7 +3066,7 @@ export function SettingsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="border-b border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-400">
                   <th className="py-2.5">Thời gian</th>
                   <th className="py-2.5">Hệ thống</th>
                   <th className="py-2.5">Sự kiện</th>
@@ -3101,7 +3105,7 @@ export function SettingsPage() {
                             <RefreshCw className="w-3 h-3" /> Thử lại
                           </button>
                         ) : (
-                          <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">Thành công</span>
+                          <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">Thành công</span>
                         )}
                       </td>
                     </tr>
@@ -3137,7 +3141,7 @@ export function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800 dark:text-slate-200 text-xs">{key.name}</span>
                   <span className={cn(
-                    "text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase",
+                    "text-[8px] px-1.5 py-0.5 rounded-full",
                     key.status === 'active' ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-200 text-slate-600 dark:bg-slate-700"
                   )}>
                     {key.status === 'active' ? 'Hoạt động' : 'Đã hủy'}
@@ -3206,7 +3210,7 @@ export function SettingsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">MISA App ID</label>
+                <label className="text-[10px] text-slate-500">MISA App ID</label>
                 <input 
                   type="text" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
@@ -3215,7 +3219,7 @@ export function SettingsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token (API Connect)</label>
+                <label className="text-[10px] text-slate-500">Access Token (API Connect)</label>
                 <input 
                   type="password" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
@@ -3230,7 +3234,7 @@ export function SettingsPage() {
               
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Nợ thu (Ngân hàng)</label>
+                  <label className="text-[9px] font-medium text-slate-500">Tài khoản Nợ thu (Ngân hàng)</label>
                   <input 
                     type="text" 
                     maxLength={5}
@@ -3240,7 +3244,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Doanh thu (Có)</label>
+                  <label className="text-[9px] font-medium text-slate-500">Tài khoản Doanh thu (Có)</label>
                   <input 
                     type="text" 
                     maxLength={5}
@@ -3250,7 +3254,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Tài khoản Phải thu (131)</label>
+                  <label className="text-[9px] font-medium text-slate-500">Tài khoản Phải thu (131)</label>
                   <input 
                     type="text" 
                     maxLength={5}
@@ -3260,7 +3264,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Thuế GTGT đầu ra (33311)</label>
+                  <label className="text-[9px] font-medium text-slate-500">Thuế GTGT đầu ra (33311)</label>
                   <input 
                     type="text" 
                     maxLength={5}
@@ -3270,7 +3274,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Mã kho mặc định</label>
+                  <label className="text-[9px] font-medium text-slate-500">Mã kho mặc định</label>
                   <input 
                     type="text" 
                     className="w-full text-xs p-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono uppercase"
@@ -3279,7 +3283,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">Phải trả nhà cung cấp (331)</label>
+                  <label className="text-[9px] font-medium text-slate-500">Phải trả nhà cung cấp (331)</label>
                   <input 
                     type="text" 
                     maxLength={5}
@@ -3335,7 +3339,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-primary-600" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Cổng Thanh toán SePay</h4>
+                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Cấu hình Cổng Thanh toán SePay</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                 <X className="w-4 h-4 text-slate-500" />
@@ -3344,7 +3348,7 @@ export function SettingsPage() {
 
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">SePay API JWT Token</label>
+                <label className="text-[10px] text-slate-500">SePay API JWT Token</label>
                 <input 
                   type="password" 
                   placeholder="Bearer JWT Token..."
@@ -3356,7 +3360,7 @@ export function SettingsPage() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client ID</label>
+                  <label className="text-[10px] text-slate-500">Client ID</label>
                   <input 
                     type="text" 
                     placeholder="SePay client ID"
@@ -3366,7 +3370,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client Secret</label>
+                  <label className="text-[10px] text-slate-500">Client Secret</label>
                   <input 
                     type="password" 
                     placeholder="SePay client secret"
@@ -3378,7 +3382,7 @@ export function SettingsPage() {
               </div>
 
               <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
-                <h5 className="font-bold text-[10px] text-slate-600 dark:text-slate-400 uppercase">SePay Webhook URL để nhận biến động số dư</h5>
+                <h5 className="text-[10px] text-slate-600 dark:text-slate-400">SePay Webhook URL để nhận biến động số dư</h5>
                 <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
                   <span className="font-mono text-[9px] text-slate-500 truncate select-all flex-1">https://api.vcomm.vn/v1/webhooks/sepay-callback</span>
                   <button 
@@ -3395,11 +3399,11 @@ export function SettingsPage() {
 
               {/* Webhook Simulator Section */}
               <div className="p-4 bg-primary-50/50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800/50 space-y-3 font-sans">
-                <h5 className="font-bold text-[10.5px] text-blue-800 dark:text-blue-400 uppercase tracking-wider">Bộ Giả Lập Webhook (Webhook Simulator)</h5>
+                <h5 className="text-[10.5px] text-blue-800 dark:text-blue-400">Bộ Giả Lập Webhook (Webhook Simulator)</h5>
                 
                 <div className="space-y-2.5">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">Nội dung chuyển khoản (Content)</label>
+                    <label className="text-[9px] text-slate-500">Nội dung chuyển khoản (Content)</label>
                     <input 
                       type="text" 
                       placeholder="Ví dụ: VCOMM_ORD_123 hoặc VCOMM_DEP_cust123"
@@ -3410,7 +3414,7 @@ export function SettingsPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">Số tiền chuyển khoản (Amount)</label>
+                    <label className="text-[9px] text-slate-500">Số tiền chuyển khoản (Amount)</label>
                     <input 
                       type="number" 
                       placeholder="Số tiền (VND)"
@@ -3459,7 +3463,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-sky-600" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Zalo ZNS (Zalo OA)</h4>
+                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Cấu hình Zalo ZNS (Zalo OA)</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                 <X className="w-4 h-4 text-slate-500" />
@@ -3468,7 +3472,7 @@ export function SettingsPage() {
 
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Official Account ID (OA ID)</label>
+                <label className="text-[10px] text-slate-500">Zalo Official Account ID (OA ID)</label>
                 <input 
                   type="text" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
@@ -3478,7 +3482,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Zalo Developer App ID</label>
+                <label className="text-[10px] text-slate-500">Zalo Developer App ID</label>
                 <input 
                   type="text" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
@@ -3488,7 +3492,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">OA Access Token</label>
+                <label className="text-[10px] text-slate-500">OA Access Token</label>
                 <input 
                   type="password" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 dark:text-slate-100 font-mono"
@@ -3542,7 +3546,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <Store className="w-5 h-5 text-teal-600" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopify / Haravan Integration</h4>
+                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopify / Haravan Integration</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                 <X className="w-4 h-4 text-slate-500" />
@@ -3551,7 +3555,7 @@ export function SettingsPage() {
 
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Shop URL (Domain hoặc sub-domain)</label>
+                <label className="text-[10px] text-slate-500">Shop URL (Domain hoặc sub-domain)</label>
                 <input 
                   type="text" 
                   placeholder="shop-retail.myshopify.com hoặc nexhubshop.vn"
@@ -3562,7 +3566,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Admin API Access Token</label>
+                <label className="text-[10px] text-slate-500">Admin API Access Token</label>
                 <input 
                   type="password" 
                   placeholder="shpat_..."
@@ -3644,7 +3648,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-orange-500" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopee / TikTok Shop Integration</h4>
+                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopee / TikTok Shop Integration</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                 <X className="w-4 h-4 text-slate-500" />
@@ -3654,7 +3658,7 @@ export function SettingsPage() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Sàn Thương mại</label>
+                  <label className="text-[10px] text-slate-500">Sàn Thương mại</label>
                   <select 
                     className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
                     value={marketplaceConfig.platform}
@@ -3665,7 +3669,7 @@ export function SettingsPage() {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gian hàng Shop ID</label>
+                  <label className="text-[10px] text-slate-500">Gian hàng Shop ID</label>
                   <input 
                     type="text" 
                     placeholder="shop_id_12345"
@@ -3678,7 +3682,7 @@ export function SettingsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Key (API Partner)</label>
+                  <label className="text-[10px] text-slate-500">App Key (API Partner)</label>
                   <input 
                     type="text" 
                     placeholder="app_key"
@@ -3688,7 +3692,7 @@ export function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Secret Key</label>
+                  <label className="text-[10px] text-slate-500">App Secret Key</label>
                   <input 
                     type="password" 
                     placeholder="app_secret"
@@ -3700,7 +3704,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token hiện tại</label>
+                <label className="text-[10px] text-slate-500">Access Token hiện tại</label>
                 <input 
                   type="password" 
                   className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100 font-mono"
@@ -3768,7 +3772,7 @@ export function SettingsPage() {
             <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
               <div className="flex items-center gap-2 text-emerald-600 border-b border-slate-100 dark:border-slate-700 pb-3">
                 <ShieldCheck className="w-5 h-5" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Client Key Đã Được Tạo Thành Công</h4>
+                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Client Key Đã Được Tạo Thành Công</h4>
               </div>
               <div className="space-y-3">
                 <p className="text-xs text-slate-500">
@@ -3802,7 +3806,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
                 <div className="flex items-center gap-2">
                   <Key className="w-5 h-5 text-indigo-600" />
-                  <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Tạo mới OpenAPI Client Key</h4>
+                  <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">Tạo mới OpenAPI Client Key</h4>
                 </div>
                 <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                   <X className="w-4 h-4 text-slate-500" />
@@ -3811,7 +3815,7 @@ export function SettingsPage() {
 
               <div className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Tên ứng dụng / Đối tác tích hợp</label>
+                  <label className="text-[10px] text-slate-500">Tên ứng dụng / Đối tác tích hợp</label>
                   <input 
                     type="text" 
                     placeholder="ví dụ: Giao Hàng Tiết Kiệm (GHTK)"
@@ -3822,7 +3826,7 @@ export function SettingsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gán Quyền Hạn (Scopes)</label>
+                  <label className="text-[10px] text-slate-500">Gán Quyền Hạn (Scopes)</label>
                   <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700/60 max-h-[140px] overflow-y-auto">
                     {[
                       { id: 'orders.read', name: 'Đọc Đơn hàng' },
@@ -4034,17 +4038,17 @@ export function SettingsPage() {
  <div className="grid grid-cols-2 gap-4">
  <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Quận 1</span>
+ <span className="text-[10px] text-slate-500">Chi nhánh Quận 1</span>
  <p className="font-mono text-sm text-slate-900">sg1.v-erp.com</p>
  </div>
- <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+ <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-medium">ACTIVE</span>
  </div>
  <div className="bg-white p-3 rounded-lg shadow-sm border border-primary-50 flex justify-between items-center">
  <div className="space-y-1">
- <span className="text-[10px] uppercase font-bold text-slate-500">Chi nhánh Cầu Giấy</span>
+ <span className="text-[10px] text-slate-500">Chi nhánh Cầu Giấy</span>
  <p className="font-mono text-sm text-slate-900">hn1.v-erp.com</p>
  </div>
- <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-bold">ACTIVE</span>
+ <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md text-[10px] font-medium">ACTIVE</span>
  </div>
  </div>
  </div>
@@ -4092,7 +4096,7 @@ export function SettingsPage() {
  <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
  <div>
  <h4 className="font-bold text-slate-900">Zalo ZNS (Zalo Notification Service)</h4>
- <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1 border border-emerald-100">Đang hoạt động</p>
+ <p className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded w-fit mt-1 border border-emerald-100">Đang hoạt động</p>
  </div>
  </div>
  <div className="h-8 w-14 bg-[#EAE7DF] rounded-full p-1 cursor-pointer">
@@ -4101,15 +4105,15 @@ export function SettingsPage() {
  </div>
  <div className="space-y-4">
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Official Account ID (OA ID)</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Official Account ID (OA ID)</label>
  <input type="text" defaultValue="2938475928374928" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Zalo App ID</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Zalo App ID</label>
  <input type="text" defaultValue="142345234523" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Access Token</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Access Token</label>
  <div className="flex gap-2">
  <input type="password" defaultValue="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-slate-900 font-mono" />
  <button className="px-3 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 text-sm font-bold text-slate-700">Đồng bộ</button>
@@ -4129,7 +4133,7 @@ export function SettingsPage() {
  <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white"><MessageSquare className="w-5 h-5" /></div>
  <div>
  <h4 className="font-bold text-slate-900">SMS OTP & Brandname</h4>
- <p className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-bold uppercase w-fit mt-1">Chưa thiết lập</p>
+ <p className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded w-fit mt-1">Chưa thiết lập</p>
  </div>
  </div>
  <div className="h-8 w-14 bg-slate-200 rounded-full p-1 cursor-pointer">
@@ -4138,7 +4142,7 @@ export function SettingsPage() {
  </div>
  <div className="space-y-4 opacity-70">
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Nhà cung cấp (SMS Vendor)</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Nhà cung cấp (SMS Vendor)</label>
  <select className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
  <option>eSMS.vn</option>
  <option>VietGuys</option>
@@ -4147,16 +4151,16 @@ export function SettingsPage() {
  </select>
  </div>
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Brandname đăng ký</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Brandname đăng ký</label>
  <input type="text" placeholder="Ví dụ: V-ECOM" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">API Key</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">API Key</label>
  <input type="password" placeholder="Nhập API Key..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  <div>
- <label className="text-xs font-bold text-slate-700 block mb-1">Secret Key</label>
+ <label className="text-xs font-medium text-slate-700 block mb-1">Secret Key</label>
  <input type="password" placeholder="Nhập Secret..." className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono" />
  </div>
  </div>
@@ -4174,12 +4178,12 @@ export function SettingsPage() {
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800 flex-1">Nhắn mã OTP xác thực khi đăng nhập/đổi mật khẩu</span>
- <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
+ <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded">Ưu tiên: SMS OTP</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" defaultChecked className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
  <span className="text-sm font-medium text-slate-800 flex-1">Gửi Zalo ZNS xác nhận Đặt hàng thành công</span>
- <span className="text-[10px] font-bold text-primary-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
+ <span className="text-[10px] font-medium text-primary-600 bg-[#EAE7DF] px-2 py-1 rounded">Template: ZNS_ORDER_01</span>
  </label>
  <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer">
  <input type="checkbox" className="w-4 h-4 text-primary-600 rounded border-slate-400 focus:ring-primary-500" />
@@ -4201,7 +4205,7 @@ export function SettingsPage() {
 
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tiêu đề thông báo</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">Tiêu đề thông báo</label>
  <input 
  type="text" 
  placeholder="VD: Thông báo bảo trì hệ thống" 
@@ -4212,7 +4216,7 @@ export function SettingsPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Nội dung thông báo (hỗ trợ văn bản)</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">Nội dung thông báo (hỗ trợ văn bản)</label>
  <textarea 
  rows={4} 
  placeholder="Chi tiết thông báo..." 
@@ -4223,7 +4227,7 @@ export function SettingsPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">Đối tượng nhận thông báo</label>
  <select className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white cursor-pointer mb-2">
  <option value="all">Tất cả nhân viên (Hệ thống ERP)</option>
  <option value="seller">Tất cả Nhà bán hàng (Seller Center)</option>
@@ -4263,9 +4267,9 @@ export function SettingsPage() {
  
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
+ <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider">Trạng thái Popup hiện vật / Quảng cáo</label>
  <div className="flex items-center gap-2">
- <span className={cn("text-[10px] font-bold px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-500 bg-slate-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
+ <span className={cn("text-[10px] font-medium px-2 py-1 rounded", isPopupActive ? "text-emerald-700 bg-emerald-100" : "text-slate-500 bg-slate-100")}>{isPopupActive ? 'Đang mở (Banner tự chèn)' : 'Không tự động hiển thị'}</span>
  <div 
  onClick={() => setIsPopupActive(!isPopupActive)}
  className={cn("w-10 h-5 rounded-full relative cursor-pointer transition-colors", isPopupActive ? "bg-emerald-500" : "bg-slate-200")}
@@ -4278,7 +4282,7 @@ export function SettingsPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
  <div className="space-y-4">
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Tiêu đề Popup</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5">Tiêu đề Popup</label>
  <input 
  type="text" 
  placeholder="VD: Khuyến Mãi Hè 2024" 
@@ -4288,7 +4292,7 @@ export function SettingsPage() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Nội dung / Mô tả</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5">Nội dung / Mô tả</label>
  <textarea 
  placeholder="Nhập nội dung hiển thị trong popup..." 
  value={popupDesc}
@@ -4298,7 +4302,7 @@ export function SettingsPage() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Hình ảnh (URL hoặc upload)</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5">Hình ảnh (URL hoặc upload)</label>
  <input 
  type="text" 
  placeholder="https://example.com/banner.jpg" 
@@ -4308,7 +4312,7 @@ export function SettingsPage() {
  />
  </div>
  <div>
- <label className="block text-xs font-bold text-slate-500 mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
+ <label className="block text-xs font-medium text-slate-500 mb-1.5">Nút Call-To-Action (Nút điều hướng)</label>
  <div className="flex gap-2">
  <input 
  type="text" 
@@ -4329,7 +4333,7 @@ export function SettingsPage() {
  </div>
  
  <div className="bg-slate-50 border border-slate-300 rounded-lg p-4 flex flex-col items-center justify-center min-h-[200px] relative">
- <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest absolute top-2 right-2">Xem trước</div>
+ <div className="text-[10px] text-slate-500 absolute top-2 right-2">Xem trước</div>
  <div className="w-full max-w-[240px] bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mt-4">
  {popupImage ? (
  <div className="h-24 overflow-hidden relative">
@@ -4419,7 +4423,7 @@ export function SettingsPage() {
 						<div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/20 border border-indigo-400/30 rounded-full text-indigo-300 text-xs font-semibold uppercase tracking-wider">
 							<Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" /> Bản Quyền SaaS Enterprise
 						</div>
-						<h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+						<h3 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
 							VComm Enterprise ERP
 						</h3>
 						<p className="text-slate-300 text-sm max-w-xl leading-relaxed">
@@ -4427,8 +4431,8 @@ export function SettingsPage() {
 						</p>
 					</div>
 					<div className="bg-white/10 backdrop-blur-md rounded-lg p-5 border border-white/10 flex flex-col items-center shrink-0 w-full md:w-auto text-center">
-						<span className="text-[10px] text-slate-300 uppercase tracking-widest font-semibold">Chu kỳ thanh toán tiếp theo</span>
-						<span className="text-2xl font-black text-amber-300 mt-1">20 / 06 / 2026</span>
+						<span className="text-[10px] text-slate-300">Chu kỳ thanh toán tiếp theo</span>
+						<span className="text-2xl font-semibold text-amber-300 mt-1">20 / 06 / 2026</span>
 						<span className="text-[11px] text-slate-400 mt-1">Số tiền: 15,000,000đ / Năm (Trực động)</span>
 					</div>
 				</div>
@@ -4498,7 +4502,7 @@ export function SettingsPage() {
 							</div>
 							<div className="flex justify-between items-center text-xs">
 								<span className="text-slate-500">Phân vùng CSDL (Schema)</span>
-								<span className="bg-indigo-100 text-indigo-700 font-mono text-[10px] font-bold px-2 py-0.5 border border-indigo-250 rounded">Isolate DB Node</span>
+								<span className="bg-indigo-100 text-indigo-700 font-mono text-[10px] font-medium px-2 py-0.5 border border-indigo-250 rounded">Isolate DB Node</span>
 							</div>
 							<div className="flex justify-between items-center text-xs">
 								<span className="text-slate-500">Vị trí địa lý (Region)</span>
@@ -4516,7 +4520,7 @@ export function SettingsPage() {
 							<span className="text-xs font-bold text-slate-800 uppercase tracking-widest block font-mono">Sao lưu Đám mây (Cloud Backups)</span>
 							
 							<div className="space-y-2">
-								<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Đám mây Lưu trữ</label>
+								<label className="block text-[10px] text-slate-550">Đám mây Lưu trữ</label>
 								<select 
 									value={backupCloud} 
 									onChange={e => setBackupCloud(e.target.value as any)}
@@ -4530,7 +4534,7 @@ export function SettingsPage() {
 
 							<div className="grid grid-cols-2 gap-2">
 								<div className="space-y-2">
-									<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Tần suất</label>
+									<label className="block text-[10px] text-slate-550">Tần suất</label>
 									<select 
 										value={backupFrequency} 
 										onChange={e => setBackupFrequency(e.target.value as any)}
@@ -4542,7 +4546,7 @@ export function SettingsPage() {
 									</select>
 								</div>
 								<div className="space-y-2">
-									<label className="block text-[10px] font-bold text-slate-550 uppercase tracking-wider">Giờ sao lưu</label>
+									<label className="block text-[10px] text-slate-550">Giờ sao lưu</label>
 									<select 
 										value={backupHour} 
 										onChange={e => setBackupHour(e.target.value)}
@@ -4671,7 +4675,7 @@ export function SettingsPage() {
 							{/* Badge tags */}
 							{plan.active ? (
 								<div className="absolute top-0 right-0">
-									<div className="flex items-center gap-1.5 bg-emerald-600 text-white text-[9px] uppercase tracking-widest font-extrabold py-1.5 px-4 rounded-bl-2xl shadow-xs">
+									<div className="flex items-center gap-1.5 bg-emerald-600 text-white text-[9px] py-1.5 px-4 rounded-bl-2xl shadow-xs">
 										<span className="flex h-1.5 w-1.5 relative">
 											<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
 											<span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-100"></span>
@@ -4681,13 +4685,13 @@ export function SettingsPage() {
 								</div>
 							) : plan.highlight ? (
 								<div className="absolute top-0 right-0">
-									<div className="flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] uppercase tracking-widest font-extrabold py-1.5 px-4 rounded-bl-2xl shadow-xs">
+									<div className="flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] py-1.5 px-4 rounded-bl-2xl shadow-xs">
 										<Zap className="w-2.5 h-2.5 animate-pulse" /> {plan.tag}
 									</div>
 								</div>
 							) : (
 								<div className="absolute top-3 right-4">
-									<span className="text-[9px] uppercase tracking-wider font-extrabold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md border border-slate-200">
+									<span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md border border-slate-200">
 										{plan.tag}
 									</span>
 								</div>
@@ -4695,13 +4699,13 @@ export function SettingsPage() {
 
 							<div>
 								{/* Card header */}
-								<span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-1">PRO-SaaS NODE</span>
-								<h5 className="font-extrabold text-slate-900 text-lg group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-700 transition-colors">
+								<span className="text-[10px] text-slate-400 block mb-1">PRO-SaaS NODE</span>
+								<h5 className="font-bold text-slate-900 text-lg group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-700 transition-colors">
 									{plan.name}
 								</h5>
 								
 								<div className="mt-3 flex items-baseline gap-1">
-									<span className={`text-xl font-black ${plan.active ? 'text-emerald-600' : plan.highlight ? 'text-primary-600' : 'text-slate-900'} tracking-tight`}>
+									<span className={`text-xl font-semibold ${plan.active ? 'text-emerald-600' : plan.highlight ? 'text-primary-600' : 'text-slate-900'} tracking-tight`}>
 										{plan.price}
 									</span>
 									<span className="text-xs text-slate-400 font-semibold">{plan.period}</span>
@@ -4717,7 +4721,7 @@ export function SettingsPage() {
 
 								{/* Features section */}
 								<div className="mt-4 space-y-2 flex-grow">
-									<span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-2">Đặc quyền cấp bậc:</span>
+									<span className="text-[10px] text-slate-400 block mb-2">Đặc quyền cấp bậc:</span>
 									<ul className="space-y-2">
 										{plan.features.map((feat, fidx) => {
 											const isBanned = feat.startsWith('Không');
@@ -4801,9 +4805,9 @@ export function SettingsPage() {
 									{ id: 'INV-2024-003', date: '19/06/2024', amt: '15,000,000đ', pMethod: 'Chuyển khoản Bank', status: 'Đã thanh toán' }
 								].map((invoice, i) => (
 									<tr key={i} className="hover:bg-slate-50/50">
-										<td className="p-3 font-mono font-bold text-slate-800">{invoice.id}</td>
+										<td className="p-3 font-mono font-medium text-slate-800">{invoice.id}</td>
 										<td className="p-3 text-slate-500">{invoice.date}</td>
-										<td className="p-3 text-slate-900 font-bold">{invoice.amt}</td>
+										<td className="p-3 text-slate-900 font-medium">{invoice.amt}</td>
 										<td className="p-3">
 											<span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-semibold border border-emerald-150 rounded">
 												{invoice.status}
@@ -4842,7 +4846,7 @@ export function SettingsPage() {
 
 						<div className="pt-2 flex items-center justify-between text-xs font-medium border-t border-slate-200">
 							<span className="text-slate-500">Trạng thái kết nối</span>
-							<span className="px-2 py-0.5 bg-primary-50 text-blue-700 text-[10px] font-bold rounded flex items-center gap-1 border border-blue-150">
+							<span className="px-2 py-0.5 bg-primary-50 text-blue-700 text-[10px] font-medium rounded flex items-center gap-1 border border-blue-150">
 								<span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span> Đang trỏ: erp.vcom.vn
 							</span>
 						</div>
@@ -4903,7 +4907,7 @@ export function SettingsPage() {
 									Thay đổi quyền hạn vai trò đột ngột: Tài khoản nhân viên <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">nv_nhan@vcomm.vn</code> được nâng cấp lên nhóm vai trò <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-rose-700 border border-rose-100">Siêu quản trị (Super Admin)</code> bởi IP lạ <code className="font-mono text-slate-700">113.161.42.99</code>.
 								</p>
 								<div className="bg-white/80 p-3 rounded-lg border border-rose-150/50 space-y-1.5">
-									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
+									<span className="text-[10px] text-indigo-650 flex items-center gap-1">
 										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
 									</span>
 									<p className="text-[11px] text-slate-600 leading-relaxed">
@@ -4931,7 +4935,7 @@ export function SettingsPage() {
 									Tải xuống dữ liệu CRM dung lượng lớn: Tài khoản kế toán <code className="font-mono bg-white/70 px-1.5 py-0.5 rounded text-amber-700 border border-amber-100">acc_accountant@vcomm.vn</code> tải xuống danh sách 1,200 khách hàng VIP (CRM) từ địa chỉ IP nước ngoài <code className="font-mono text-slate-700">198.51.100.4</code> (Unknown Cloud Provider).
 								</p>
 								<div className="bg-white/80 p-3 rounded-lg border border-amber-150/50 space-y-1.5">
-									<span className="text-[10px] uppercase font-bold text-indigo-650 flex items-center gap-1 tracking-wider">
+									<span className="text-[10px] text-indigo-650 flex items-center gap-1">
 										<Sparkles className="w-3.5 h-3.5 fill-indigo-100" /> AI Đề xuất khắc phục:
 									</span>
 									<p className="text-[11px] text-slate-600 leading-relaxed">
@@ -4955,7 +4959,7 @@ export function SettingsPage() {
 						<p className="text-xs text-slate-500 mt-0.5">Lịch sử đăng nhập chi tiết của các tài khoản Quản trị thuộc phân vùng Doanh nghiệp (Zero-Trust isolation).</p>
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-widest font-mono">
+						<span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200 font-mono">
 							Active Node: Singapore
 						</span>
 					</div>
@@ -5012,14 +5016,14 @@ export function SettingsPage() {
 													{log.action}
 												</span>
 											</td>
-											<td className="p-3 font-bold">
+											<td className="p-3 font-medium">
 												<span className={log.status === 'Success' ? 'text-emerald-600' : 'text-rose-600'}>
 													● {log.status}
 												</span>
 											</td>
 											<td className="p-3 font-mono text-slate-600">{log.ipAddress || '127.0.0.1'}</td>
 											<td className="p-3 text-slate-500 truncate max-w-[120px]" title={log.userAgent}>{log.browser || 'Unknown'}</td>
-											<td className="p-3 text-right font-mono font-bold text-slate-400">{log.tenantId}</td>
+											<td className="p-3 text-right font-mono font-medium text-slate-400">{log.tenantId}</td>
 										</tr>
 									);
 								})}
@@ -5111,7 +5115,7 @@ export function SettingsPage() {
 							<tbody className="divide-y divide-slate-100">
 								{coaList.map((account) => (
 									<tr key={account.code} className="hover:bg-slate-50/50 transition-colors">
-										<td className="p-3 font-mono font-bold text-slate-800">{account.code}</td>
+										<td className="p-3 font-mono font-medium text-slate-800">{account.code}</td>
 										<td className="p-3 text-slate-705 font-semibold">{account.name}</td>
 										<td className="p-3">
 											<span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
@@ -5130,11 +5134,11 @@ export function SettingsPage() {
 										<td className="p-3 text-slate-550">{account.parentCode ? `Tài khoản con (${account.parentCode})` : 'Tài khoản tổng hợp'}</td>
 										<td className="p-3">
 											{account.isLeaf ? (
-												<span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded">
+												<span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-medium rounded">
 													Cấp tài khoản lá
 												</span>
 											) : (
-												<span className="px-2 py-0.5 bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-bold rounded">
+												<span className="px-2 py-0.5 bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-medium rounded">
 													Tài khoản tổng hợp
 												</span>
 											)}
@@ -5181,7 +5185,7 @@ export function SettingsPage() {
 
 						<div className="space-y-3">
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mã tài khoản *</label>
+								<label className="text-[10px] text-slate-500">Mã tài khoản *</label>
 								<input 
 									type="text" 
 									value={newCoa.code} 
@@ -5192,7 +5196,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên tài khoản *</label>
+								<label className="text-[10px] text-slate-500">Tên tài khoản *</label>
 								<input 
 									type="text" 
 									value={newCoa.name} 
@@ -5204,7 +5208,7 @@ export function SettingsPage() {
 
 							<div className="grid grid-cols-2 gap-2">
 								<div className="space-y-1">
-									<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tính chất</label>
+									<label className="text-[10px] text-slate-500">Tính chất</label>
 									<select 
 										value={newCoa.type} 
 										onChange={e => setNewCoa(prev => ({ ...prev, type: e.target.value as any }))}
@@ -5218,7 +5222,7 @@ export function SettingsPage() {
 									</select>
 								</div>
 								<div className="space-y-1">
-									<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tài khoản mẹ</label>
+									<label className="text-[10px] text-slate-500">Tài khoản mẹ</label>
 									<select 
 										value={newCoa.parentCode || ''} 
 										onChange={e => setNewCoa(prev => ({ ...prev, parentCode: e.target.value }))}
@@ -5253,7 +5257,7 @@ export function SettingsPage() {
 
 						<div className="space-y-3">
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Thuế GTGT đầu vào được khấu trừ</label>
+								<label className="text-[10px] text-slate-500">Thuế GTGT đầu vào được khấu trừ</label>
 								<select 
 									value={taxMappings.inputTaxAccount} 
 									onChange={e => setTaxMappings(prev => ({ ...prev, inputTaxAccount: e.target.value }))}
@@ -5266,7 +5270,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Thuế GTGT đầu ra phải nộp (Bán hàng)</label>
+								<label className="text-[10px] text-slate-500">Thuế GTGT đầu ra phải nộp (Bán hàng)</label>
 								<select 
 									value={taxMappings.outputTaxAccount} 
 									onChange={e => setTaxMappings(prev => ({ ...prev, outputTaxAccount: e.target.value }))}
@@ -5353,7 +5357,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="flex justify-between items-center pt-4 border-t border-slate-100 mt-4">
-								<span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+								<span className="text-[10px] text-slate-400">
 									Quy trình {rule.isActive ? 'Đang chạy' : 'Đang Tắt'}
 								</span>
 								<button 
@@ -5379,7 +5383,7 @@ export function SettingsPage() {
 						<div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/50">
 							<div className="flex items-center gap-3">
 								<Zap className="w-5 h-5 text-amber-500 fill-amber-100" />
-								<h3 className="text-sm font-extrabold text-slate-950">Tạo quy trình tự động mới</h3>
+								<h3 className="text-sm font-bold text-slate-950">Tạo quy trình tự động mới</h3>
 							</div>
 							<button type="button" onClick={() => setShowAddWorkflowModal(false)} className="p-2 hover:bg-slate-100 rounded-full cursor-pointer border-0 bg-transparent">
 								<X className="w-4 h-4 text-slate-500" />
@@ -5388,7 +5392,7 @@ export function SettingsPage() {
 
 						<div className="p-6 space-y-4">
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tên quy trình</label>
+								<label className="text-[10px] text-slate-500">Tên quy trình</label>
 								<input 
 									type="text" 
 									value={newWorkflow.name} 
@@ -5399,7 +5403,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">IF (Sự kiện kích hoạt)</label>
+								<label className="text-[10px] text-slate-500">IF (Sự kiện kích hoạt)</label>
 								<select 
 									value={newWorkflow.trigger} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, trigger: e.target.value }))}
@@ -5412,7 +5416,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AND (Bộ lọc điều kiện)</label>
+								<label className="text-[10px] text-slate-500">AND (Bộ lọc điều kiện)</label>
 								<select 
 									value={newWorkflow.condition} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, condition: e.target.value }))}
@@ -5425,7 +5429,7 @@ export function SettingsPage() {
 							</div>
 
 							<div className="space-y-1">
-								<label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">THEN (Hành động phản hồi)</label>
+								<label className="text-[10px] text-slate-500">THEN (Hành động phản hồi)</label>
 								<select 
 									value={newWorkflow.action} 
 									onChange={e => setNewWorkflow(prev => ({ ...prev, action: e.target.value }))}
@@ -5450,15 +5454,19 @@ export function SettingsPage() {
 								type="button"
 								onClick={handleCreateWorkflow}
 								disabled={!newWorkflow.name}
-								className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg cursor-pointer border-0 animate-in fade-in"
-							>
-								Lưu Quy trình
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
-		</div>
+ 								className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg cursor-pointer border-0 animate-in fade-in"
+ 							>
+ 								Lưu Quy trình
+ 							</button>
+ 						</div>
+ 					</div>
+ 				</div>
+ 			)}
+ 		</div>
+ 	)}
+
+	{activeTab === 'integrations' && (
+		<IntegrationsSettings />
 	)}
   </div>
   </div>
@@ -5477,7 +5485,7 @@ export function SettingsPage() {
     >
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-slate-800 mb-1">Tên chức danh <span className="text-red-500">*</span></label>
           <input 
             type="text" 
             value={newJobTitle.name || ''} 
@@ -5487,7 +5495,7 @@ export function SettingsPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-slate-800 mb-1">Phòng ban <span className="text-red-500">*</span></label>
           <select 
             value={newJobTitle.department || ''} 
             onChange={e => setNewJobTitle({...newJobTitle, department: e.target.value})}
@@ -5498,7 +5506,7 @@ export function SettingsPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">Cấp bậc</label>
+          <label className="block text-sm font-medium text-slate-800 mb-1">Cấp bậc</label>
           <select 
             value={newJobTitle.rank || ''} 
             onChange={e => setNewJobTitle({...newJobTitle, rank: e.target.value})}
@@ -5509,7 +5517,7 @@ export function SettingsPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">Mô tả công việc</label>
+          <label className="block text-sm font-medium text-slate-800 mb-1">Mô tả công việc</label>
           <textarea 
             value={newJobTitle.description || ''} 
             onChange={e => setNewJobTitle({...newJobTitle, description: e.target.value})}
@@ -5545,7 +5553,7 @@ export function SettingsPage() {
       <div className="space-y-6">
         {/* Fee Name */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tên loại phí</label>
+          <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Tên loại phí</label>
           <input 
             type="text" 
             value={newFee.name || ''}
@@ -5557,7 +5565,7 @@ export function SettingsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Loại phí</label>
+            <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Loại phí</label>
             <div className="flex bg-slate-100 p-1 rounded-lg">
               <button 
                 onClick={() => setNewFee({ ...newFee, type: 'percentage' })}
@@ -5574,7 +5582,7 @@ export function SettingsPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Giá trị</label>
+            <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Giá trị</label>
             <div className="relative">
               <input 
                 type="number" 
@@ -5591,7 +5599,7 @@ export function SettingsPage() {
 
         {/* Targeting: Seller Type */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
+          <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Áp dụng cho Loại Nhà Bán</label>
           <div className="flex gap-4">
             {['mall', 'normal'].map((type) => {
               const isSelected = newFee.applyTo?.sellerTypes.includes(type as any);
@@ -5623,7 +5631,7 @@ export function SettingsPage() {
         {/* Targeting: Categories */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
+            <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Ngành hàng áp dụng</label>
             <button 
               onClick={() => setNewFee({ ...newFee, applyTo: { ...newFee.applyTo!, categories: ['all'] } })}
               className="text-[10px] font-bold text-primary-600 hover:underline"
@@ -5664,7 +5672,7 @@ export function SettingsPage() {
 
         {/* Description */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
+          <label className="text-xs font-medium text-slate-800 uppercase tracking-wider">Mô tả (Ghi chú)</label>
           <textarea 
             rows={2}
             value={newFee.description || ''}
@@ -5969,27 +5977,27 @@ function IPosLicensesPanel() {
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[80px]">Mã ID</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Chi nhánh / Cửa hàng</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Gói SaaS</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Tên miền riêng</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Khóa API Token</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Hạn sử dụng</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[100px]">Trạng thái</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px] text-right">Thao tác</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500 w-[80px]">Mã ID</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Chi nhánh / Cửa hàng</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Gói SaaS</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Tên miền riêng</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Khóa API Token</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Hạn sử dụng</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500 w-[100px]">Trạng thái</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500 w-[120px] text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredLicenses.map((lic) => (
                   <tr key={lic.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                    <td className="p-4 text-xs font-mono font-bold text-slate-600">{lic.id}</td>
+                    <td className="p-4 text-xs font-mono font-medium text-slate-600">{lic.id}</td>
                     <td className="p-4">
                       <p className="text-xs font-bold text-slate-800">{lic.storeName}</p>
                       <p className="text-[10px] text-slate-400 mt-0.5">Mã: {lic.storeId}</p>
                     </td>
                     <td className="p-4">
                       <span className={cn(
-                        "text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider",
+                        "text-[10px] px-2 py-0.5 rounded border",
                         lic.licenseType === 'SaaS Premium' 
                           ? "bg-primary-50 border-blue-200 text-blue-700" 
                           : "bg-slate-50 border-slate-200 text-slate-700"
@@ -6100,13 +6108,13 @@ function IPosLicensesPanel() {
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Họ tên / Email</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Số điện thoại</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Cửa hàng đăng ký</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Vai trò</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Ngày đăng ký</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Trạng thái</th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 w-[180px] text-right">Thao tác</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Họ tên / Email</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Số điện thoại</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Cửa hàng đăng ký</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Vai trò</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500">Ngày đăng ký</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500 w-[120px]">Trạng thái</th>
+                  <th className="p-4 text-xs font-medium uppercase tracking-wider text-slate-500 w-[180px] text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -6122,7 +6130,7 @@ function IPosLicensesPanel() {
                       <p className="text-[10px] text-slate-400 mt-0.5">{acc.storeAddress}</p>
                     </td>
                     <td className="p-4">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700 capitalize">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700 capitalize">
                         {acc.role === 'manager' ? 'Quản lý' : 'Thu ngân'}
                       </span>
                     </td>
@@ -6192,7 +6200,7 @@ function IPosLicensesPanel() {
             <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
               {/* Store Name */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Tên Chi nhánh / Cửa hàng</label>
+                <label className="text-[10px] text-slate-700 block">Tên Chi nhánh / Cửa hàng</label>
                 <input
                   type="text"
                   value={formStoreName}
@@ -6204,7 +6212,7 @@ function IPosLicensesPanel() {
 
               {/* License Type */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Gói Dịch vụ SaaS</label>
+                <label className="text-[10px] text-slate-700 block">Gói Dịch vụ SaaS</label>
                 <select
                   value={formLicenseType}
                   onChange={(e) => setFormLicenseType(e.target.value)}
@@ -6217,7 +6225,7 @@ function IPosLicensesPanel() {
 
               {/* Custom Domain */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Tên miền riêng (Custom Domain)</label>
+                <label className="text-[10px] text-slate-700 block">Tên miền riêng (Custom Domain)</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -6233,7 +6241,7 @@ function IPosLicensesPanel() {
 
               {/* API Token Key */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Khóa OpenAPI Token</label>
+                <label className="text-[10px] text-slate-700 block">Khóa OpenAPI Token</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -6257,7 +6265,7 @@ function IPosLicensesPanel() {
               {/* Max registers & Expiry Date row */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Số máy POS tối đa</label>
+                  <label className="text-[10px] text-slate-700 block">Số máy POS tối đa</label>
                   <input
                     type="number"
                     min={1}
@@ -6268,7 +6276,7 @@ function IPosLicensesPanel() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Hết hạn vào ngày</label>
+                  <label className="text-[10px] text-slate-700 block">Hết hạn vào ngày</label>
                   <input
                     type="date"
                     value={formExpiresAt}
@@ -6280,7 +6288,7 @@ function IPosLicensesPanel() {
 
               {/* Status */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block">Trạng thái Bản quyền</label>
+                <label className="text-[10px] text-slate-700 block">Trạng thái Bản quyền</label>
                 <select
                   value={formStatus}
                   onChange={(e) => setFormStatus(e.target.value)}

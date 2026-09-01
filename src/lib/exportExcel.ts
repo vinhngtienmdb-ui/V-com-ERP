@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export interface ExportColumn<T> {
   header: string;
@@ -6,39 +6,54 @@ export interface ExportColumn<T> {
   width?: number;
 }
 
-export function exportToExcel<T extends Record<string, unknown>>(
+/**
+ * Xuất Excel bằng exceljs (thay xlsx/SheetJS — GHSA-4r6h-8v6p-xvw6,
+ * ReDoS GHSA-5pgg-2g8v-p4x9, upstream không còn fix).
+ * Giữ nguyên API exportToExcel/exportToCSV để không phá nơi gọi.
+ */
+export async function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   columns: ExportColumn<T>[],
   fileName: string,
   sheetName = 'Sheet1'
 ) {
-  const rows = data.map(row =>
-    Object.fromEntries(
-      columns.map(col => [
-        col.header,
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet(sheetName);
+
+  // Header
+  const headerRow = ws.addRow(columns.map(c => c.header));
+  headerRow.font = { bold: true };
+  headerRow.eachCell(cell => {
+    cell.fill = {
+      type: 'pattern', pattern: 'solid',
+      fgColor: { argb: 'FFEFF6FF' }
+    };
+  });
+  columns.forEach((c, i) => {
+    ws.getColumn(i + 1).width = c.width ?? 20;
+  });
+
+  // Data
+  for (const row of data) {
+    ws.addRow(
+      columns.map(col =>
         typeof col.key === 'function'
           ? col.key(row)
-          : (row[col.key] ?? '') as string | number,
-      ])
-    )
-  );
-
-  const ws = XLSX.utils.json_to_sheet(rows);
-
-  // Column widths
-  ws['!cols'] = columns.map(c => ({ wch: c.width ?? 20 }));
-
-  // Header style (bold)
-  const range = XLSX.utils.decode_range(ws['!ref'] ?? 'A1');
-  for (let c = range.s.c; c <= range.e.c; c++) {
-    const addr = XLSX.utils.encode_cell({ r: 0, c });
-    if (!ws[addr]) continue;
-    ws[addr].s = { font: { bold: true }, fill: { fgColor: { rgb: 'EFF6FF' } } };
+          : (row[col.key] ?? '') as string | number
+      )
+    );
   }
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function exportToCSV<T extends Record<string, unknown>>(
@@ -56,7 +71,7 @@ export function exportToCSV<T extends Record<string, unknown>>(
       .join(',')
   );
   const csv = [headers, ...rows].join('\n');
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

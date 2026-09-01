@@ -343,7 +343,7 @@ export function CustomerService() {
      const data = payload[0].payload;
      return (
        <div className="bg-slate-900 text-white p-3 rounded-lg border border-slate-700 shadow-xl text-left text-xs space-y-1">
-         <p className="font-extrabold text-[#F59E0B]">{data.range}</p>
+         <p className="font-bold text-[#F59E0B]">{data.range}</p>
          <p className="font-semibold text-slate-100">Vé đã xử lý: <strong className="text-[#FAF9F5] text-sm">{data.count}</strong></p>
          <p className="text-slate-300">Đánh giá: <span className="font-bold uppercase tracking-wider" style={{ color: data.color }}>{data.label}</span></p>
          <p className="text-slate-400 text-[10px] italic">{data.desc}</p>
@@ -413,7 +413,7 @@ export function CustomerService() {
  <div className="flex items-center justify-between">
  <div className="header-title">
  <div className="flex items-center gap-3">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Chăm sóc Khách hàng</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Chăm sóc Khách hàng</h1>
  <div className="flex bg-slate-100/80 p-1 rounded-lg border border-slate-300 shadow-inner">
  <button 
  onClick={() => setRoleScope('platform')}
@@ -455,7 +455,7 @@ export function CustomerService() {
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiếp nhận mới (Mở)</p>
+ <p className="text-[10px] text-slate-500">Tiếp nhận mới (Mở)</p>
  <AlertCircle className="w-4 h-4 text-red-500" />
  </div>
  <p className="text-3xl font-bold text-slate-900 relative z-10">24</p>
@@ -465,20 +465,20 @@ export function CustomerService() {
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian P/hồi TB (SLA)</p>
+ <p className="text-[10px] text-slate-500">Thời gian P/hồi TB (SLA)</p>
  <Clock className="w-4 h-4 text-orange-600" />
  </div>
  <p className="text-3xl font-bold text-slate-900 relative z-10">14 <span className="text-sm font-medium text-slate-600">phút</span></p>
  <div className="flex justify-between items-center mt-2 group/btn">
 					<div className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Nhanh hơn 5p so với tuần trước</div>
-					<button onClick={(e) => { e.stopPropagation(); setActiveTab('dashboard'); }} className="text-[10px] text-primary-600 font-extrabold hover:underline flex items-center gap-0.5 transition-all">Biểu đồ &rarr;</button>
+					<button onClick={(e) => { e.stopPropagation(); setActiveTab('dashboard'); }} className="text-[10px] text-primary-600 font-bold hover:underline flex items-center gap-0.5 transition-all">Biểu đồ &rarr;</button>
 				</div>
  </div>
 
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đánh giá chung (CSAT)</p>
+ <p className="text-[10px] text-slate-500">Đánh giá chung (CSAT)</p>
  <Star className="w-4 h-4 text-yellow-500" />
  </div>
  <p className="text-3xl font-bold text-slate-900 relative z-10">4.8<span className="text-xl text-slate-500">/5</span></p>
@@ -488,7 +488,7 @@ export function CustomerService() {
  <div className="bg-white p-5 rounded-lg border border-slate-800 shadow-sm relative overflow-hidden group">
  <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform " />
  <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tính năng tự động</p>
+ <p className="text-[10px] text-slate-500">Tính năng tự động</p>
  <Sparkles className="w-4 h-4 text-primary-400" />
  </div>
  <p className="text-3xl font-bold text-[#FAF9F5] relative z-10">68%</p>
@@ -590,7 +590,7 @@ export function CustomerService() {
 						</div>
 
 						{/* Real-time Indicator Badge */}
-						<div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-50 border border-red-100 text-[10px] font-extrabold text-red-600 animate-pulse shrink-0 font-sans">
+						<div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-50 border border-red-100 text-[10px] font-bold text-red-600 animate-pulse shrink-0 font-sans">
 							<span className="w-2 h-2 rounded-full bg-red-500" />
 							REAL-TIME MONITORING
 						</div>
@@ -668,12 +668,12 @@ export function CustomerService() {
 					</div>
 
 					{/* Custom Legend / Guide */}
-					<div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-4 border-t border-slate-100 text-center text-[10px] font-bold text-slate-600 uppercase tracking-wider font-sans">
+					<div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-4 border-t border-slate-100 text-center text-[10px] text-slate-600 font-sans">
 						{dashboardData.map((item, idx) => (
 							<div key={idx} className="p-2 rounded bg-slate-50 border border-slate-200/60 flex flex-col items-center justify-center gap-1">
 								<span className="w-3 h-1.5 rounded" style={{ backgroundColor: item.color }} />
 								<span>{item.range}</span>
-								<span className="text-slate-900 text-xs font-black">{item.count} vé</span>
+								<span className="text-slate-900 text-xs font-semibold">{item.count} vé</span>
 							</div>
 						))}
 					</div>
@@ -690,30 +690,30 @@ export function CustomerService() {
 						<div className="space-y-3.5">
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Giải Quyết Lần Đầu (FCR)</p>
-									<p className="text-2xl font-black text-emerald-600 font-sans">85.2%</p>
+									<p className="text-[10px] text-slate-500">Giải Quyết Lần Đầu (FCR)</p>
+									<p className="text-2xl font-semibold text-emerald-600 font-sans">85.2%</p>
 								</div>
-								<div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-extrabold font-mono border border-emerald-100">
+								<div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold font-mono border border-emerald-100">
 									Mục tiêu: 80%
 								</div>
 							</div>
 
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Thời Gian Xử Lý TB (AHT)</p>
-									<p className="text-2xl font-black text-indigo-700 font-sans">11.8 phút</p>
+									<p className="text-[10px] text-slate-500">Thời Gian Xử Lý TB (AHT)</p>
+									<p className="text-2xl font-semibold text-indigo-700 font-sans">11.8 phút</p>
 								</div>
-								<div className="p-2 bg-indigo-50 text-indigo-100 rounded-lg text-xs font-extrabold font-mono border border-indigo-100">
+								<div className="p-2 bg-indigo-50 text-indigo-100 rounded-lg text-xs font-bold font-mono border border-indigo-100">
 									Hạn định: 15p
 								</div>
 							</div>
 
 							<div className="flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg border border-slate-200">
 								<div>
-									<p className="text-[10px] font-bold text-slate-500 uppercase">Tỷ Lệ Đạt SLA</p>
-									<p className="text-2xl font-black text-blue-600 font-sans">92.5%</p>
+									<p className="text-[10px] text-slate-500">Tỷ Lệ Đạt SLA</p>
+									<p className="text-2xl font-semibold text-blue-600 font-sans">92.5%</p>
 								</div>
-								<div className="p-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-extrabold font-mono border border-blue-100">
+								<div className="p-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold font-mono border border-blue-100">
 									Mục tiêu: 90%
 								</div>
 							</div>
@@ -754,7 +754,7 @@ export function CustomerService() {
 				<div className="overflow-x-auto min-w-0">
 					<table className="w-full text-left border-collapse whitespace-nowrap">
 						<thead>
-							<tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+							<tr className="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-600">
 								<th className="px-6 py-4">Mã Vé</th>
 								<th className="px-6 py-4">Khách Hàng</th>
 								<th className="px-6 py-4">Chủ Đề Yêu Cầu</th>
@@ -767,10 +767,10 @@ export function CustomerService() {
 						<tbody className="divide-y divide-slate-100 divide-dotted text-sm">
 							{activeAlerts.map(alert => (
 								<tr key={alert.id} className="hover:bg-slate-50/70 transition-colors">
-									<td className="px-6 py-4 font-mono font-bold text-slate-700 text-xs">{alert.id}</td>
+									<td className="px-6 py-4 font-mono font-medium text-slate-700 text-xs">{alert.id}</td>
 									<td className="px-6 py-4">
 										<div className="font-bold text-slate-900">{alert.customerName}</div>
-										<div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+										<div className="text-[10px] font-mono text-slate-500 flex items-center gap-1.5 mt-0.5">
 											{alert.channel === 'facebook' ? <span className="text-primary-600 font-bold">Facebook</span> : 
 											 alert.channel === 'zalo' ? <span className="text-sky-600 font-bold">Zalo</span> : 
 											 alert.channel === 'shopee' ? <span className="text-orange-600 font-bold">Shopee</span> : 
@@ -782,7 +782,7 @@ export function CustomerService() {
 									</td>
 									<td className="px-6 py-4 text-center">
 										<span className={cn(
-											"px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border",
+											"px-2 py-0.5 rounded-full text-[10px] border",
 											alert.priority === 'high' ? "border-red-200 text-red-700 bg-red-50" : "border-slate-300 text-slate-600"
 										)}>
 											{alert.priority === 'high' ? 'Khẩn cấp' : 'Bình thường'}
@@ -813,7 +813,7 @@ export function CustomerService() {
 													sentiment: alert.sentiment
 												});
 											}}
-											className="px-3.5 py-1.5 bg-red-600 text-white rounded-lg text-xs font-extrabold hover:bg-slate-900 shadow-sm transition-all flex items-center gap-1.5 ml-auto cursor-pointer"
+											className="px-3.5 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow-sm transition-all flex items-center gap-1.5 ml-auto cursor-pointer"
 										>
 											<Zap className="w-3 h-3" />
 											Xử lý khẩn
@@ -832,11 +832,11 @@ export function CustomerService() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Ticket ID & KH</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Vấn đề / Tiêu đề</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Mức độ ưu tiên</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Thời gian</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 leading-relaxed">Ticket ID & KH</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 leading-relaxed">Vấn đề / Tiêu đề</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">Mức độ ưu tiên</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right leading-relaxed">Thời gian</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -859,16 +859,16 @@ export function CustomerService() {
  <div className="flex items-center gap-2">
  <p className="text-sm font-bold text-slate-800">{ticket.subject}</p>
  {ticket.slaDeadline && ticket.status !== 'closed' && new Date() > new Date(ticket.slaDeadline) && (
-   <span className="px-1.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded text-[9px] font-bold">⚠️ TRỄ SLA</span>
+   <span className="px-1.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded text-[9px] font-medium">⚠️ TRỄ SLA</span>
  )}
  </div>
- <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{ticket.type}</p>
+ <p className="text-[10px] text-slate-500 mt-0.5">{ticket.type}</p>
  </div>
  </div>
  </td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
- "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+ "px-2.5 py-1 rounded-full text-[10px]",
  ticket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : 
  ticket.status === 'in_progress' ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-600"
  )}>
@@ -877,7 +877,7 @@ export function CustomerService() {
  </td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
- "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+ "px-2.5 py-1 rounded-full text-[10px] border",
  ticket.priority === 'high' ? "border-red-200 text-red-600 bg-red-50" : 
  ticket.priority === 'medium' ? "border-amber-200 text-amber-600 bg-amber-50" : "border-slate-300 text-slate-600 bg-white"
  )}>
@@ -898,7 +898,7 @@ export function CustomerService() {
  {activeTab === 'wfm' && (
  <div className="p-6">
    <div className="flex justify-between items-center mb-6">
-     <h2 className="text-lg font-bold text-slate-900 font-serif">Bảng Phân Ca & Chấm Công CSKH</h2>
+     <h2 className="text-lg font-bold text-slate-900 font-sans">Bảng Phân Ca & Chấm Công CSKH</h2>
      <button className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary-700 transition-colors">
        + Thêm Ca Trực Mới
      </button>
@@ -907,10 +907,10 @@ export function CustomerService() {
      <table className="w-full text-left border-collapse">
        <thead>
          <tr className="bg-slate-50 border-b border-slate-200">
-           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Nhân viên</th>
-           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Ca trực</th>
-           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
-           <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-right">Hiệu suất (SLA)</th>
+           <th className="px-6 py-4 text-xs font-medium text-slate-600 uppercase tracking-widest">Nhân viên</th>
+           <th className="px-6 py-4 text-xs font-medium text-slate-600 uppercase tracking-widest text-center">Ca trực</th>
+           <th className="px-6 py-4 text-xs font-medium text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
+           <th className="px-6 py-4 text-xs font-medium text-slate-600 uppercase tracking-widest text-right">Hiệu suất (SLA)</th>
          </tr>
        </thead>
        <tbody className="divide-y divide-slate-100">
@@ -935,7 +935,7 @@ export function CustomerService() {
              </td>
              <td className="px-6 py-4 text-center">
                <span className={cn(
-                 "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+                 "px-2.5 py-1 rounded-full text-[10px]",
                  agent.status === 'online' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
                  agent.status === 'busy' ? "bg-red-50 text-red-700 border border-red-200" :
                  "bg-slate-100 text-slate-600 border border-slate-200"
@@ -1008,7 +1008,7 @@ export function CustomerService() {
         <div className="flex items-center gap-3 mt-2">
           <span className="text-xs font-mono font-bold text-slate-500 uppercase">{selectedTicket.id}</span>
           <span className={cn(
-            "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+            "px-2 py-0.5 rounded text-[10px]",
             selectedTicket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : "bg-amber-100 text-amber-700"
           )}>
             {selectedTicket.status === 'open' ? 'MỚI' : 'ĐANG XỬ LÝ'}
@@ -1026,13 +1026,13 @@ export function CustomerService() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-900">{selectedTicket.customerName}</p>
-            <p className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded w-fit uppercase tracking-widest mt-1 border border-emerald-100">Khách hàng Vàng</p>
+            <p className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded w-fit mt-1 border border-emerald-100">Khách hàng Vàng</p>
           </div>
         </div>
 
         <div className="flex flex-col justify-center p-3 bg-[#FAF9F5] rounded-lg border border-slate-200 shadow-sm relative overflow-hidden group">
           <div className="absolute right-0 top-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-50" />
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest relative z-10 flex items-center gap-1">
+          <p className="text-[10px] text-slate-500 relative z-10 flex items-center gap-1">
             <Sparkles className="w-3 h-3 text-primary-500 animate-pulse" /> Tích hợp Dữ Liệu ERP
           </p>
           <div className="mt-1 flex items-center justify-between relative z-10">
@@ -1050,7 +1050,7 @@ export function CustomerService() {
 
       {/* AI Sentiment analysis */}
       <div className={cn("p-4 rounded-lg border", selectedTicket.sentiment === 'critical' ? 'bg-red-50 border-red-100' : 'bg-primary-50 border-primary-100')}>
-        <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
+        <p className="text-[10px] flex items-center gap-1.5 mb-2" style={{ color: selectedTicket.sentiment === 'critical' ? '#EF4444' : '#6366F1' }}>
           <Sparkles className="w-3 h-3" /> Nhận định AI
         </p>
         <p className="text-sm font-medium text-slate-800">
@@ -1094,11 +1094,11 @@ export function CustomerService() {
           Z
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">Zalo Notification Service (ZNS)</p>
+          <p className="text-[10px] text-blue-400">Zalo Notification Service (ZNS)</p>
           <p className="text-xs font-semibold text-slate-100 mt-1 leading-snug">{znsToast.message}</p>
           
           <div className="mt-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1 font-mono">Bản tin đã gửi:</p>
+            <p className="text-[8px] text-slate-500 mb-1 font-mono">Bản tin đã gửi:</p>
             <p className="text-[11px] text-slate-300 font-mono leading-relaxed max-h-24 overflow-y-auto">
               {znsToast.logContent}
             </p>
@@ -1187,12 +1187,12 @@ export function CustomerService() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50/50 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Khách hàng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Loại Hướng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Thời lượng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">File Ghi âm</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Thời gian / Ghi chú</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 leading-relaxed">Khách hàng</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">Loại Hướng</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">Thời lượng</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-center leading-relaxed">File Ghi âm</th>
+ <th className="px-6 py-4 text-[11px] text-slate-600 text-right leading-relaxed">Thời gian / Ghi chú</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
@@ -1207,16 +1207,16 @@ export function CustomerService() {
  <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.caller}</p>
  </td>
  <td className="px-6 py-4 text-center">
- <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border", log.type === 'inbound' ? "border-orange-200 text-orange-700 bg-slate-100" : "border-purple-200 text-purple-600 bg-purple-50")}>
+ <span className={cn("px-2.5 py-1 rounded-full text-[10px] border", log.type === 'inbound' ? "border-orange-200 text-orange-700 bg-slate-100" : "border-purple-200 text-purple-600 bg-purple-50")}>
  {log.type === 'inbound' ? 'GỌI VÀO' : 'GỌI RA'}
  </span>
  </td>
  <td className="px-6 py-4 text-center">
- <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest", log.status === 'completed' ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50")}>
+ <span className={cn("px-2.5 py-1 rounded-full text-[10px]", log.status === 'completed' ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50")}>
  {log.status === 'completed' ? 'THÀNH CÔNG' : 'GỌI NHỠ'}
  </span>
  </td>
- <td className="px-6 py-4 text-center text-sm font-mono text-slate-700 font-bold">
+ <td className="px-6 py-4 text-center text-sm font-mono text-slate-700 font-medium">
  {log.duration}
  </td>
  <td className="px-6 py-4 text-center">
@@ -1233,7 +1233,7 @@ export function CustomerService() {
  {log.time}
  </div>
  <div>
- <button className="text-[10px] font-bold text-orange-700 hover:text-blue-800 uppercase tracking-widest mt-0.5">Thêm ghi chú</button>
+ <button className="text-[10px] text-orange-700 hover:text-blue-800 mt-0.5">Thêm ghi chú</button>
  </div>
  </td>
  </tr>
@@ -1272,7 +1272,7 @@ export function CustomerService() {
  </div>
  <p className="text-xs text-slate-700 truncate">Sản phẩm này có size XL không shop?</p>
  <div className="mt-2 flex items-center gap-2">
- <span className="px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-[9px] font-bold uppercase tracking-wider border border-primary-100">Đang hoạt động trên web</span>
+ <span className="px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-[9px] border border-primary-100">Đang hoạt động trên web</span>
  </div>
  </div>
  
@@ -1283,7 +1283,7 @@ export function CustomerService() {
  </div>
  <p className="text-xs text-slate-700 truncate">Mình muốn đổi hàng thì làm sao?</p>
  <div className="mt-2 flex items-center gap-2">
- <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-bold uppercase tracking-wider">Đã rời web</span>
+ <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px]">Đã rời web</span>
  </div>
  </div>
  </div>
@@ -1298,7 +1298,7 @@ export function CustomerService() {
  </div>
  <div>
  <h3 className="font-bold text-slate-900 text-sm">Khách vãng lai #889</h3>
- <p className="text-[10px] text-emerald-500 font-bold flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Đang xem: Giày thể thao nam siêu nhẹ</p>
+ <p className="text-[10px] text-emerald-500 font-medium flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Đang xem: Giày thể thao nam siêu nhẹ</p>
  </div>
  </div>
  <div className="flex gap-2">
@@ -1339,7 +1339,7 @@ export function CustomerService() {
  <div className="my-6">
  <div className="flex items-center justify-center gap-4">
  <div className="h-px bg-rose-200 flex-1" />
- <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
+ <span className="text-[10px] text-rose-500 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
  CSKH Sàn (Admin) đã tham gia
  </span>
  <div className="h-px bg-rose-200 flex-1" />
@@ -1649,7 +1649,7 @@ export function CustomerService() {
                 <h5 className="text-xs font-bold text-slate-800 uppercase mb-3">Tùy chỉnh giao diện</h5>
                 <div className="space-y-4 opacity-70">
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">Màu chủ đạo (Hex code)</label>
+                    <label className="text-xs font-medium text-slate-700 block mb-1.5">Màu chủ đạo (Hex code)</label>
                     <div className="flex gap-2">
                       <input type="color" value="#10B981" readOnly className="w-8 h-8 rounded border-none cursor-not-allowed" />
                       <input type="text" value="#10B981" readOnly className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 font-mono text-sm text-slate-700" />

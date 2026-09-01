@@ -101,7 +101,7 @@ export function SignaturePad({ onSignatureChange, initialSignature }: SignatureP
           <PenTool className="w-4 h-4 text-primary-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
         </span>
         {drawnSignatureData && (
-          <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
+          <span className="text-[10px] bg-emerald-100 text-emerald-700 font-medium px-2 py-0.5 rounded">
             Đã thiết lập chữ ký
           </span>
         )}

@@ -87,7 +87,7 @@ export function StoreSelector() {
               <div className="w-10 h-10 bg-primary-600 rounded-sm flex items-center justify-center shadow-sm shadow-indigo-600/20 border border-white/10">
                 <Store className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
+              <h2 className="text-2xl font-semibold tracking-tight text-white">VComm<span className="text-orange-500">POS</span></h2>
             </div>
             
             <div className="space-y-4">
@@ -151,7 +151,7 @@ export function StoreSelector() {
           
           <button 
             onClick={handleGoBack}
-            className="relative z-10 w-fit text-[11px] font-bold text-slate-600 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-[0.15em] bg-white/5 hover:bg-white/10 px-5 py-3 rounded-sm backdrop-blur-sm"
+            className="relative z-10 w-fit text-[11px] text-slate-600 hover:text-white flex items-center gap-2 transition-colors tracking-[0.15em] bg-white/5 hover:bg-white/10 px-5 py-3 rounded-sm backdrop-blur-sm"
           >
             <Home className="w-4 h-4" /> Về trang quản trị ERP
           </button>
@@ -163,7 +163,7 @@ export function StoreSelector() {
             <div className="flex flex-col h-full animate-in fade-in duration-500">
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
                     <MapPin className="w-4 h-4" /> Chọn Chi Nhánh
                   </h3>
                   <p className="text-slate-600 text-sm">Hiển thị các chi nhánh bạn có quyền truy cập</p>
@@ -204,7 +204,7 @@ export function StoreSelector() {
                           </div>
                           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
                         </div>
-                        <h4 className="text-lg font-black text-slate-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
+                        <h4 className="text-lg font-semibold text-slate-900 group-hover:text-primary-900 transition-colors leading-tight">{store.name}</h4>
                         <p className="text-xs text-slate-600 flex items-start gap-1.5 mt-2 line-clamp-2 leading-relaxed">
                           <MapPin className="w-4 h-4 text-slate-500 shrink-0" /> {store.address}
                         </p>
@@ -229,13 +229,13 @@ export function StoreSelector() {
                   <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mb-2 shadow-inner ring-4 ring-primary-50/50">
                     <Lock className="w-7 h-7" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900">Bảo mật trạm POS</h3>
+                  <h3 className="text-2xl font-semibold text-slate-900">Bảo mật trạm POS</h3>
                   <div className="flex gap-4">
                     {[0, 1, 2, 3].map((index) => (
                       <div 
                         key={index}
                         className={cn(
-                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-black bg-slate-50 border-2 transition-all duration-300",
+                          "w-12 h-14 rounded-sm flex items-center justify-center text-3xl font-semibold bg-slate-50 border-2 transition-all duration-300",
                           pin.length > index ? "border-primary-600 text-primary-600 shadow-sm shadow-indigo-600/20 scale-110" : "border-slate-300 text-transparent",
                           isError && "border-rose-500 text-rose-500 animate-shake"
                         )}
@@ -252,7 +252,7 @@ export function StoreSelector() {
                     <button
                       key={num}
                       onClick={() => handlePinInput(num)}
-                      className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                      className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-semibold text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                     >
                       {num}
                     </button>
@@ -271,13 +271,13 @@ export function StoreSelector() {
                   </div>
                   <button
                     onClick={() => handlePinInput('0')}
-                    className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-black text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
+                    className="h-16 rounded-md bg-white border border-slate-300 text-2xl font-semibold text-slate-800 hover:bg-slate-50 hover:border-primary-200 hover:text-primary-600 active:scale-95 transition-all shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex items-center justify-center leading-none"
                   >
                     0
                   </button>
                   <button
                     onClick={handleDeletePin}
-                    className="h-16 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] uppercase tracking-widest font-bold hover:bg-slate-200 hover:text-slate-900 active:scale-95 transition-all flex items-center justify-center"
+                    className="h-16 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] hover:bg-slate-200 hover:text-slate-900 active:scale-95 transition-all flex items-center justify-center"
                   >
                     Xóa
                   </button>
@@ -285,7 +285,7 @@ export function StoreSelector() {
                 
                 <div className="w-full flex items-center gap-4 py-4 mb-4 border-t border-b border-slate-200">
                   <div className="flex-1 text-center">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Hoặc sử dụng</span>
+                    <span className="text-[10px] text-slate-500">Hoặc sử dụng</span>
                   </div>
                   <button 
                     onClick={() => {

@@ -164,7 +164,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
             <div>
-              <h2 className="text-lg font-black tracking-wider text-slate-800 uppercase font-sans">
+              <h2 className="text-lg font-semibold tracking-wider text-slate-800 uppercase font-sans">
                 THÔNG TIN NHÂN VIÊN
               </h2>
               <p className="text-xs text-slate-500 font-sans font-medium">
@@ -210,7 +210,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 type="button"
                 onClick={() => setActiveTab(t.key)}
                 className={cn(
-                  "px-3.5 pb-2 text-xs font-black tracking-tight border-b-2 transition-all font-sans select-none whitespace-nowrap",
+                  "px-3.5 pb-2 text-xs font-semibold tracking-tight border-b-2 transition-all font-sans select-none whitespace-nowrap",
                   activeTab === t.key
                     ? "border-orange-600 text-orange-700"
                     : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
@@ -233,7 +233,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
+              <label className="text-[10px] text-slate-500 block">
                 Xác thực danh tính
               </label>
               <div className="flex items-center gap-2">
@@ -258,8 +258,8 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
           <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-4 gap-4">
             {/* Mã nhân viên */}
             <div className="space-y-1">
-              <label className="text-[10px] sm:text-xs font-bold text-slate-500 flex items-center gap-1 font-sans">
-                Mã nhân viên <span className="text-rose-500 font-black">*</span>
+              <label className="text-[10px] sm:text-xs font-medium text-slate-500 flex items-center gap-1 font-sans">
+                Mã nhân viên <span className="text-rose-500 font-semibold">*</span>
               </label>
               <div className="relative">
                 <input
@@ -281,8 +281,8 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
             {/* Tên nhân viên */}
             <div className="space-y-1">
-              <label className="text-[10px] sm:text-xs font-bold text-slate-500 flex items-center gap-1 font-sans">
-                Tên nhân viên <span className="text-rose-500 font-black">*</span>
+              <label className="text-[10px] sm:text-xs font-medium text-slate-500 flex items-center gap-1 font-sans">
+                Tên nhân viên <span className="text-rose-500 font-semibold">*</span>
               </label>
               <div className="relative">
                 <input
@@ -304,7 +304,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
             {/* Tình trạng công tác */}
             <div className="space-y-1">
-              <label className="text-[10px] sm:text-xs font-bold text-slate-500 font-sans">
+              <label className="text-[10px] sm:text-xs font-medium text-slate-500 font-sans">
                 Tình trạng công tác
               </label>
               <select
@@ -321,7 +321,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
             {/* Mã đơn vị */}
             <div className="space-y-1">
-              <label className="text-[10px] sm:text-xs font-bold text-slate-500 font-sans">
+              <label className="text-[10px] sm:text-xs font-medium text-slate-500 font-sans">
                 Mã đơn vị
               </label>
               <select
@@ -343,7 +343,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
           {/* TAB BORDER CONTAINER BOX (Light blue border like theme in screenshot) */}
           <div className="border-2 border-primary-100 bg-white rounded-lg shadow-sm p-4 sm:p-6 min-h-[450px]">
             {/* Active Tab subtitle */}
-            <div className="text-xs uppercase font-black text-blue-800 tracking-wider mb-5 flex items-center gap-2 border-b border-blue-50 pb-2">
+            <div className="text-xs uppercase font-semibold text-blue-800 tracking-wider mb-5 flex items-center gap-2 border-b border-blue-50 pb-2">
               <span className="w-1.5 h-3.5 bg-primary-600 rounded" />
               {tabLabels.find((t) => t.key === activeTab)?.label}
             </div>
@@ -829,7 +829,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 text-[10px]">
                         <th className="p-3">Số quyết định</th>
                         <th className="p-3">Ngày ký</th>
                         <th className="p-3">Ngày chính thức hiệu lực</th>
@@ -843,7 +843,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-neutral-150">
                       {formState.salaryHistory && formState.salaryHistory.map((s: any, index: number) => (
                         <tr key={s.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-mono font-bold text-slate-850">
+                          <td className="p-3 font-mono font-medium text-slate-850">
                             <input 
                               type="text" 
                               value={s.decisionNo} 
@@ -976,7 +976,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 text-[10px]">
                         <th className="p-3">Họ và tên nhân thân</th>
                         <th className="p-3">Mối quan hệ</th>
                         <th className="p-3">Ngày sinh</th>
@@ -989,7 +989,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-neutral-150">
                       {formState.familyMembers && formState.familyMembers.map((member: any, index: number) => (
                         <tr key={member.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-bold">
+                          <td className="p-3 font-medium">
                             <input 
                               type="text" 
                               value={member.name} 
@@ -1103,7 +1103,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="font-bold text-slate-900 leading-snug uppercase text-[11px] tracking-tight">{doc.type}</div>
+                          <div className="text-slate-900 leading-snug text-[11px] tracking-tight">{doc.type}</div>
                           <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1.5 font-mono">
                             {doc.status === 'submitted' ? (
                               <span className="text-emerald-600 font-bold flex items-center gap-0.5">
@@ -1177,7 +1177,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 text-[10px]">
                         <th className="p-3">Tên thiết bị bàn giao</th>
                         <th className="p-3">Mã định danh tài sản/Serial No</th>
                         <th className="p-3">Ngày bàn giao sở hữu</th>
@@ -1189,7 +1189,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-neutral-150">
                       {formState.equipmentList && formState.equipmentList.map((eq: any, index: number) => (
                         <tr key={eq.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-bold text-slate-850 flex items-center gap-2">
+                          <td className="p-3 font-medium text-slate-850 flex items-center gap-2">
                             <Laptop className="w-4 h-4 text-slate-500" />
                             <input 
                               type="text" 
@@ -1202,7 +1202,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               className="border border-zinc-200 rounded px-2 py-0.5 bg-transparent font-bold text-slate-800 w-full"
                             />
                           </td>
-                          <td className="p-3 font-mono font-bold">
+                          <td className="p-3 font-mono font-medium">
                             <input 
                               type="text" 
                               value={eq.code} 
@@ -1226,7 +1226,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               className="border border-zinc-200 rounded px-2 py-0.5 bg-transparent font-mono text-slate-800 w-32"
                             />
                           </td>
-                          <td className="p-3 text-right font-bold font-mono">
+                          <td className="p-3 text-right font-medium font-mono">
                             <input 
                               type="number" 
                               value={eq.value} 
@@ -1300,7 +1300,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 text-[10px]">
                         <th className="p-3">Doanh nghiệp công tác</th>
                         <th className="p-3">Chức vụ đảm nhiệm</th>
                         <th className="p-3 text-center">Từ thời gian</th>
@@ -1312,7 +1312,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-neutral-150">
                       {formState.workHistory && formState.workHistory.map((w: any, index: number) => (
                         <tr key={w.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-bold text-slate-850">
+                          <td className="p-3 font-medium text-slate-850">
                             <input 
                               type="text" 
                               value={w.company} 
@@ -1430,7 +1430,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className={cn(
-                            "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider",
+                            "px-2 py-0.5 rounded text-[9px]",
                             item.type === 'reward' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                           )}>
                             {item.type === 'reward' ? 'KHEN THƯỞNG' : 'KỶ LUẬT'}
@@ -1439,7 +1439,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                           <span className="text-slate-400">•</span>
                           <span className="text-[10px] text-slate-500">{item.date}</span>
                         </div>
-                        <h4 className="font-sans font-black text-slate-900 text-sm leading-snug uppercase tracking-tight">
+                        <h4 className="font-sans font-semibold text-slate-900 text-sm leading-snug uppercase tracking-tight">
                           <input 
                             type="text" 
                             value={item.title} 
@@ -1448,7 +1448,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               updated[index].title = e.target.value;
                               updateNestedList('rewardsHistory', updated);
                             }}
-                            className="bg-transparent font-black text-slate-800 w-full outline-none focus:border-b focus:border-slate-400"
+                            className="bg-transparent font-semibold text-slate-800 w-full outline-none focus:border-b focus:border-slate-400"
                           />
                         </h4>
                         <p className="text-xs text-slate-600 mt-1">
@@ -1569,7 +1569,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200 bg-slate-50/50">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-100/80 border-b border-zinc-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-100/80 border-b border-zinc-200 text-slate-500 text-[10px]">
                         <th className="p-3 w-40">Thời điểm xảy ra</th>
                         <th className="p-3 w-48">Tác nhân sửa đổi</th>
                         <th className="p-3">Hành động/Thông báo chi tiết</th>
@@ -1578,8 +1578,8 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-zinc-200">
                       {formState.editRequests && formState.editRequests.map((req: any) => (
                         <tr key={req.id} className="hover:bg-slate-50 font-mono text-slate-800">
-                          <td className="p-3 font-bold text-slate-500">{req.timestamp}</td>
-                          <td className="p-3 text-orange-700 font-bold">{req.author}</td>
+                          <td className="p-3 font-medium text-slate-500">{req.timestamp}</td>
+                          <td className="p-3 text-orange-700 font-medium">{req.author}</td>
                           <td className="p-3 font-sans font-medium text-slate-700">{req.action}</td>
                         </tr>
                       ))}
@@ -1621,7 +1621,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <div className="overflow-x-auto border rounded-lg border-neutral-200">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <tr className="bg-slate-50 border-b border-neutral-200 text-slate-500 text-[10px]">
                         <th className="p-3">Chu kỳ đóng</th>
                         <th className="p-3">Đơn vị sử dụng lao động</th>
                         <th className="p-3 text-right">Phí đóng BHXH bắt buộc</th>
@@ -1631,13 +1631,13 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <tbody className="divide-y divide-neutral-150">
                       {formState.insuranceHistory && formState.insuranceHistory.map((item: any) => (
                         <tr key={item.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-mono font-bold text-slate-850">{item.month}</td>
+                          <td className="p-3 font-mono font-medium text-slate-850">{item.month}</td>
                           <td className="p-3 font-medium text-slate-700">{item.unit}</td>
-                          <td className="p-3 text-right font-mono font-bold text-slate-800">
+                          <td className="p-3 text-right font-mono font-medium text-slate-800">
                             {item.amount?.toLocaleString('vi-VN')} VND
                           </td>
                           <td className="p-3 text-center">
-                            <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full font-bold inline-block border border-emerald-100 text-[9px] uppercase tracking-wider">
+                            <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full inline-block border border-emerald-100 text-[9px]">
                               Đối soát hoàn thành
                             </span>
                           </td>
@@ -1652,9 +1652,9 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             {activeTab === 'others' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs text-slate-800 font-sans">
                 <div className="space-y-2 border p-4 bg-slate-50/50 rounded-lg">
-                  <span className="font-bold text-slate-650 block border-b pb-1 mb-2 uppercase tracking-tight text-[10px] text-orange-700">Chính đảng & Quân sự</span>
+                  <span className="text-slate-650 block border-b pb-1 mb-2 tracking-tight text-[10px] text-orange-700">Chính đảng & Quân sự</span>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer p-1 font-bold">
+                    <label className="flex items-center gap-2 cursor-pointer p-1 font-medium">
                       <input 
                         type="checkbox" 
                         checked={formState.isPartyMember ?? false} 
@@ -1663,7 +1663,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       />
                       Đoàn viên / Đảng viên ĐCSVN
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer p-1 font-bold">
+                    <label className="flex items-center gap-2 cursor-pointer p-1 font-medium">
                       <input 
                         type="checkbox" 
                         checked={formState.milServiceCompleted ?? false} 
@@ -1723,7 +1723,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 block animate-pulse" />
             Vui lòng xem xét đối chiếu thông tin chính xác trùng khớp với chứng minh thư, lý lịch và trích lục pháp lý.
           </div>
-          <div className="text-[10px] text-slate-400 font-mono font-bold uppercase tracking-widest">
+          <div className="text-[10px] text-slate-400 font-mono">
             VCOMM ERP HRMODULE V5.26
           </div>
         </div>

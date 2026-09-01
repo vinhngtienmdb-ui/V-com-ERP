@@ -1118,12 +1118,12 @@ export function DeviceLeasing() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent pointer-events-none"></div>
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-indigo-500/30 text-indigo-300 border border-indigo-400/40 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full">PRO-SaaS FINTECH</span>
-            <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <span className="bg-indigo-500/30 text-indigo-300 border border-indigo-400/40 text-[10px] px-2.5 py-0.5 rounded-full">PRO-SaaS FINTECH</span>
+            <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Sparkles className="w-2.5 h-2.5" /> Mượn Danh Cho Thuê
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-100">Trả Góp & Cho Thuê Thiết Bị</h2>
+          <h2 className="text-2xl md:text-3xl font-sans font-bold text-slate-100">Trả Góp & Cho Thuê Thiết Bị</h2>
           <p className="text-xs md:text-sm text-slate-400 max-w-2xl mt-1.5">
             Module quản lý phê duyệt đơn mua trả góp iPhone, Samsung, iPad, Macbook... sử dụng hình thức pháp chế "Cho thuê tài sản thiết bị" bảo hộ rủi ro của VComm Toàn Cầu.
           </p>
@@ -1142,7 +1142,7 @@ export function DeviceLeasing() {
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Hợp đồng hoạt động</span>
-              <h3 className="text-2xl font-black text-slate-900 mt-2">{stats.activeLeaseNum} / {stats.totalApplications}</h3>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-2">{stats.activeLeaseNum} / {stats.totalApplications}</h3>
               <p className="text-[11px] text-slate-500 mt-2">Tổng số hồ sơ trả góp đang bàn giao máy</p>
             </div>
             <div className="p-3 bg-primary-50 text-primary-600 rounded-lg">
@@ -1155,7 +1155,7 @@ export function DeviceLeasing() {
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Doanh thu dự kiến</span>
-              <h3 className="text-2xl font-black text-indigo-700 mt-2">{formatCurrency(stats.totalExpectedRevenue)}</h3>
+              <h3 className="text-2xl font-semibold text-indigo-700 mt-2">{formatCurrency(stats.totalExpectedRevenue)}</h3>
               <p className="text-[11px] text-emerald-600 mt-2 flex items-center gap-1 font-semibold">
                 Đã thu: {formatCurrency(stats.collectedPremium)}
               </p>
@@ -1170,7 +1170,7 @@ export function DeviceLeasing() {
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Đơn Chờ phê duyệt</span>
-              <h3 className="text-2xl font-black text-slate-900 mt-2">{stats.pendingApprovalNum}</h3>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-2">{stats.pendingApprovalNum}</h3>
               <p className="text-[11px] text-amber-600 mt-2 font-semibold">Khách hàng đang nộp đặt cọc online</p>
             </div>
             <div className="p-3 bg-amber-50 text-amber-600 rounded-lg">
@@ -1183,7 +1183,7 @@ export function DeviceLeasing() {
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider">Nợ xấu / Trễ hạn thanh toán</span>
-              <h3 className="text-2xl font-black text-rose-600 mt-2">{stats.overdueNum} KH</h3>
+              <h3 className="text-2xl font-semibold text-rose-600 mt-2">{stats.overdueNum} KH</h3>
               <p className="text-[11px] text-rose-500 mt-2">Thiết bị sẽ tự khoá từ xa Knox nếu không đóng</p>
             </div>
             <div className="p-3 bg-rose-50 text-rose-600 rounded-lg">
@@ -1210,7 +1210,7 @@ export function DeviceLeasing() {
                 >
                   Hồ Sơ Yêu Cầu Thuê/Trả Góp
                   {stats.pendingApprovalNum > 0 && (
-                    <span className="ml-1.5 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full align-middle">
+                    <span className="ml-1.5 bg-rose-500 text-white text-[10px] font-medium px-2 py-0.5 rounded-full align-middle">
                       {stats.pendingApprovalNum}
                     </span>
                   )}
@@ -1341,7 +1341,7 @@ export function DeviceLeasing() {
 
                 <table className="w-full text-left font-sans whitespace-nowrap">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-150 text-[10px] uppercase font-bold text-slate-500">
+                    <tr className="bg-slate-50 border-b border-slate-150 text-[10px] text-slate-500">
                       <th className="p-4 w-15">Mã số</th>
                       <th className="p-4">Khách hàng</th>
                       <th className="p-4">Sản Phẩm</th>
@@ -1378,11 +1378,11 @@ export function DeviceLeasing() {
                               selectedLease?.id === app.id ? "bg-indigo-50/30" : ""
                             )}
                           >
-                            <td className="p-4 font-mono font-bold text-slate-500 whitespace-nowrap">
+                            <td className="p-4 font-mono font-medium text-slate-500 whitespace-nowrap">
                               {app.id.slice(0, 8).toUpperCase()}
                             </td>
                             <td className="p-4">
-                              <p className="font-extrabold text-slate-900 leading-snug">{app.customerName}</p>
+                              <p className="font-bold text-slate-900 leading-snug">{app.customerName}</p>
                               <p className="text-[10px] text-slate-400">{app.phone} • {app.email}</p>
                             </td>
                             <td className="p-4">
@@ -1399,7 +1399,7 @@ export function DeviceLeasing() {
                               <span className="text-[10px] text-emerald-600 font-bold">Cọc: {formatCurrency(app.upfrontFee)}</span>
                             </td>
                             <td className="p-4">
-                              <p className="font-black text-slate-900">{formatCurrency(app.monthlyFee)}</p>
+                              <p className="font-semibold text-slate-900">{formatCurrency(app.monthlyFee)}</p>
                               <span className="text-[10.5px] text-indigo-500 font-bold">{app.durationMonths} kỳ (tháng)</span>
                             </td>
                             <td className="p-4 whitespace-nowrap">
@@ -1461,7 +1461,7 @@ export function DeviceLeasing() {
               <div className="space-y-5">
                 <div className="flex items-start justify-between border-b border-slate-150 pb-3">
                   <div>
-                    <h4 className="text-sm font-black text-slate-900 uppercase">Hồ sơ chi tiết</h4>
+                    <h4 className="text-sm font-semibold text-slate-900 uppercase">Hồ sơ chi tiết</h4>
                     <p className="text-[10px] text-slate-400 font-mono mt-0.5">ID: {selectedLease.id.toUpperCase()}</p>
                   </div>
                   <div>
@@ -1513,7 +1513,7 @@ export function DeviceLeasing() {
                       </h5>
                       <div className="grid grid-cols-2 gap-y-1.5 mt-2 text-slate-600">
                         <div>Tên KH:</div>
-                        <div className="font-extrabold text-slate-900 text-right">{selectedLease.customerName}</div>
+                        <div className="font-bold text-slate-900 text-right">{selectedLease.customerName}</div>
                         <div>Số CCCD:</div>
                         <div className="font-semibold text-right">{selectedLease.identityCard}</div>
                         <div>Liên hệ:</div>
@@ -1527,11 +1527,11 @@ export function DeviceLeasing() {
 
                     {/* Device Lease info */}
                     <div className="space-y-2 text-xs">
-                      <h5 className="font-extrabold text-slate-800">Thông số thanh toán</h5>
+                      <h5 className="font-bold text-slate-800">Thông số thanh toán</h5>
                       <div className="space-y-1.5 text-slate-600">
                         <div className="flex justify-between">
                           <span>Thiết bị bàn giao:</span>
-                          <span className="font-extrabold text-slate-900">{selectedLease.deviceModel}</span>
+                          <span className="font-bold text-slate-900">{selectedLease.deviceModel}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Giá niêm yết:</span>
@@ -1539,11 +1539,11 @@ export function DeviceLeasing() {
                         </div>
                         <div className="flex justify-between">
                           <span>Số tiền cọc đầu:</span>
-                          <span className="text-emerald-600 font-extrabold">{formatCurrency(selectedLease.upfrontFee)}</span>
+                          <span className="text-emerald-600 font-bold">{formatCurrency(selectedLease.upfrontFee)}</span>
                         </div>
                         <div className="flex justify-between border-t border-dashed border-slate-150 pt-1.5">
                           <span className="font-bold text-slate-700">Giá thuê định kỳ:</span>
-                          <span className="font-black text-slate-950 text-sm">{formatCurrency(selectedLease.monthlyFee)} / tháng</span>
+                          <span className="font-semibold text-slate-950 text-sm">{formatCurrency(selectedLease.monthlyFee)} / tháng</span>
                         </div>
                       </div>
                     </div>
@@ -1571,7 +1571,7 @@ export function DeviceLeasing() {
                               )}
                             >
                               <div>
-                                <p className="font-extrabold">Kỳ {inst.periodNum}/{selectedLease.durationMonths}</p>
+                                <p className="font-bold">Kỳ {inst.periodNum}/{selectedLease.durationMonths}</p>
                                 <p className="text-[9.5px] text-slate-400 font-semibold">Hạn đóng: {inst.dueDate}</p>
                               </div>
                               
@@ -1579,11 +1579,11 @@ export function DeviceLeasing() {
                                 <span className="font-bold text-slate-900">{formatCurrency(inst.amount)}</span>
                                 
                                 {isPaid ? (
-                                  <span className="text-[10px] text-emerald-650 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-250 font-bold">✓ Đã đóng</span>
+                                  <span className="text-[10px] text-emerald-650 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-250 font-medium">✓ Đã đóng</span>
                                 ) : (
                                   <div className="flex items-center gap-1">
                                     {isLate && (
-                                      <span className="text-[9px] text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-250 font-extrabold flex items-center gap-0.5">
+                                      <span className="text-[9px] text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-250 font-medium flex items-center gap-0.5">
                                         Quá hạn
                                       </span>
                                     )}
@@ -1605,7 +1605,7 @@ export function DeviceLeasing() {
                                         setPaymentVerified(false);
                                         setShowPaymentPortal(true);
                                       }}
-                                      className="p-1 px-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-650 cursor-pointer text-[9.5px] font-black"
+                                      className="p-1 px-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-650 cursor-pointer text-[9.5px] font-semibold"
                                       title="Mở cổng thanh toán VietQR và đóng phí"
                                     >
                                       Đóng
@@ -1626,7 +1626,7 @@ export function DeviceLeasing() {
                   <div className="space-y-4 animate-in fade-in duration-200">
                     <div className="p-3 bg-slate-900 text-slate-100 rounded-lg space-y-3">
                       <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Trạng thái Knox MDM</span>
+                        <span className="text-[11px] text-slate-400">Trạng thái Knox MDM</span>
                         <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
                           <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span>
                           Đã liên kết
@@ -1636,7 +1636,7 @@ export function DeviceLeasing() {
                       <div className="grid grid-cols-2 gap-3 text-xs">
                         <div>
                           <p className="text-slate-400 text-[10px]">Cơ chế pháp lý</p>
-                          <p className="font-extrabold text-indigo-400">Cho thuê tài sản số</p>
+                          <p className="font-bold text-indigo-400">Cho thuê tài sản số</p>
                         </div>
                         <div>
                           <p className="text-slate-400 text-[10px]">MDM Profile ID</p>
@@ -1649,9 +1649,9 @@ export function DeviceLeasing() {
                         <div className="text-[10px]">
                           <span className="text-slate-400 font-semibold">Khóa an toàn Knox: </span>
                           {selectedLease.knoxStatus === 'locked' ? (
-                            <span className="text-rose-400 font-black">Khóa máy khẩn cấp</span>
+                            <span className="text-rose-400 font-semibold">Khóa máy khẩn cấp</span>
                           ) : selectedLease.knoxStatus === 'warning' ? (
-                            <span className="text-amber-400 font-black">Đang cảnh báo đè (Warning)</span>
+                            <span className="text-amber-400 font-semibold">Đang cảnh báo đè (Warning)</span>
                           ) : (
                             <span className="text-emerald-400 font-bold">Hoạt động bình thường</span>
                           )}
@@ -1682,7 +1682,7 @@ export function DeviceLeasing() {
                         }}
                         className="w-4 h-4 text-indigo-600 border-slate-350 rounded focus:ring-indigo-500 cursor-pointer"
                       />
-                      <label htmlFor="autoLockRule" className="text-xs font-bold text-slate-700 cursor-pointer select-none">
+                      <label htmlFor="autoLockRule" className="text-xs font-medium text-slate-700 cursor-pointer select-none">
                         Tự động khóa nếu nợ trễ hạn trên 30 ngày (Auto-lock Knox)
                       </label>
                     </div>
@@ -1698,7 +1698,7 @@ export function DeviceLeasing() {
                         {selectedLease.knoxStatus === 'locked' ? (
                           <div className="absolute inset-0 bg-gradient-to-b from-rose-950 to-slate-950 flex flex-col items-center justify-center gap-2 p-3">
                             <Lock className="w-8 h-8 text-rose-400" />
-                            <p className="text-rose-300 font-black text-[9px] text-center uppercase tracking-widest">THIẾT BỊ BỊ KHÓA</p>
+                            <p className="text-rose-300 text-[9px] text-center">THIẾT BỊ BỊ KHÓA</p>
                             <p className="text-rose-500 font-mono text-[7px] text-center">V-Com Knox MDM</p>
                             <div className="mt-1 bg-rose-900/50 border border-rose-700 rounded-lg px-2 py-1 text-center">
                               <p className="text-rose-200 text-[7px] font-bold leading-snug">Liên hệ cửa hàng<br/>để mở khóa thiết bị</p>
@@ -1709,7 +1709,7 @@ export function DeviceLeasing() {
                         ) : selectedLease.knoxStatus === 'warning' ? (
                           <div className="absolute inset-0 bg-gradient-to-b from-amber-950 to-slate-950 flex flex-col items-center justify-center gap-2 p-3">
                             <AlertTriangle className="w-7 h-7 text-amber-400 animate-pulse" />
-                            <p className="text-amber-300 font-black text-[9px] text-center uppercase tracking-widest">CẢNH BÁO NỢ QUÁ HẠN</p>
+                            <p className="text-amber-300 text-[9px] text-center">CẢNH BÁO NỢ QUÁ HẠN</p>
                             <div className="mt-1 bg-amber-900/40 border border-amber-700 rounded-lg px-2 py-1 text-center">
                               <p className="text-amber-200 text-[7px] font-bold leading-snug">Vui lòng thanh toán<br/>kỳ hạn chưa đóng</p>
                             </div>
@@ -1740,7 +1740,7 @@ export function DeviceLeasing() {
                     {/* Integrated mini GPS Tracker simulation inside Vietnam zone */}
                     <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
                       <div className="flex justify-between items-center text-[11px]">
-                        <span className="font-extrabold text-slate-700 flex items-center gap-1">
+                        <span className="font-bold text-slate-700 flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-rose-500" /> Định vị thiết bị thật
                         </span>
                         <button
@@ -1781,7 +1781,7 @@ export function DeviceLeasing() {
 
                     {/* Remotes control actions */}
                     <div className="space-y-2">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Hành động điều độ từ xa:</span>
+                      <span className="text-[10px] text-slate-400 block">Hành động điều độ từ xa:</span>
                       
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <button
@@ -1822,7 +1822,7 @@ export function DeviceLeasing() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
-                          <span className="font-extrabold text-xs text-slate-800">Tra cứu CIC / PCB</span>
+                          <span className="font-bold text-xs text-slate-800">Tra cứu CIC / PCB</span>
                         </div>
                         <button
                           type="button"
@@ -1855,9 +1855,9 @@ export function DeviceLeasing() {
                         <div className="space-y-2 animate-in fade-in duration-300">
                           <div className="grid grid-cols-3 gap-2 text-center">
                             <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase">Nhóm nợ</p>
+                              <p className="text-[9px] text-slate-400">Nhóm nợ</p>
                               <p className={cn(
-                                "text-lg font-black font-mono",
+                                "text-lg font-semibold font-mono",
                                 selectedLease.cicGroup === 1 ? "text-emerald-600" :
                                 selectedLease.cicGroup === 2 ? "text-amber-500" :
                                 selectedLease.cicGroup === 3 ? "text-orange-500" :
@@ -1865,18 +1865,18 @@ export function DeviceLeasing() {
                               )}>{selectedLease.cicGroup}</p>
                             </div>
                             <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase">Điểm</p>
+                              <p className="text-[9px] text-slate-400">Điểm</p>
                               <p className={cn(
-                                "text-lg font-black font-mono",
+                                "text-lg font-semibold font-mono",
                                 (selectedLease.cicScore || 0) >= 700 ? "text-emerald-600" :
                                 (selectedLease.cicScore || 0) >= 500 ? "text-amber-500" :
                                 "text-rose-600"
                               )}>{selectedLease.cicScore}</p>
                             </div>
                             <div className="bg-slate-50 border border-slate-200 rounded-lg p-2">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase">Xếp hạng</p>
+                              <p className="text-[9px] text-slate-400">Xếp hạng</p>
                               <p className={cn(
-                                "text-sm font-black",
+                                "text-sm font-semibold",
                                 selectedLease.cicGroup === 1 ? "text-emerald-600" :
                                 selectedLease.cicGroup <= 2 ? "text-amber-500" :
                                 "text-rose-600"
@@ -1939,7 +1939,7 @@ export function DeviceLeasing() {
           >
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-lg">Mở Đơn Xin Thuê/Trả Góp</h3>
+                <h3 className="font-sans font-semibold text-lg">Mở Đơn Xin Thuê/Trả Góp</h3>
                 <p className="text-[11.5px] text-slate-400">Chọn dòng máy, cấu hình hợp đồng thuê góp theo tháng.</p>
               </div>
               <button 
@@ -1953,7 +1953,7 @@ export function DeviceLeasing() {
             <form onSubmit={handleCreateApplication} className="p-6 space-y-4 text-xs font-sans">
               {/* Product selection */}
               <div className="space-y-1.5">
-                <label className="font-bold text-slate-700 block">Chọn thiết bị cung cấp:</label>
+                <label className="font-medium text-slate-700 block">Chọn thiết bị cung cấp:</label>
                 <select 
                   value={selectedDeviceIndex}
                   onChange={(e) => handleDeviceChange(parseInt(e.target.value))}
@@ -1970,7 +1970,7 @@ export function DeviceLeasing() {
               {/* Lease settings configuration */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700 block">Kỳ hạn thuê góp:</label>
+                  <label className="font-medium text-slate-700 block">Kỳ hạn thuê góp:</label>
                   <select 
                     value={durationMonths}
                     onChange={(e) => setDurationMonths(parseInt(e.target.value))}
@@ -1984,7 +1984,7 @@ export function DeviceLeasing() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700 block">Tỷ lệ cọc trước (%):</label>
+                  <label className="font-medium text-slate-700 block">Tỷ lệ cọc trước (%):</label>
                   <select 
                     value={upfrontPercent}
                     onChange={(e) => setUpfrontPercent(parseInt(e.target.value))}
@@ -2002,11 +2002,11 @@ export function DeviceLeasing() {
               <div className="bg-indigo-50/40 border border-indigo-100 rounded-lg p-4 space-y-2 font-medium">
                 <div className="flex justify-between">
                   <span>Số tiền cọc (upfront):</span>
-                  <span className="font-extrabold text-slate-900">{formatCurrency(getLeasePriceStats().upfront)}</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(getLeasePriceStats().upfront)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Khấu hao + Phí dịch vụ góp tháng:</span>
-                  <span className="font-black text-indigo-700 text-sm">
+                  <span className="font-semibold text-indigo-700 text-sm">
                     {formatCurrency(getLeasePriceStats().monthly)} / tháng
                   </span>
                 </div>
@@ -2018,10 +2018,10 @@ export function DeviceLeasing() {
 
               {/* Customer documentation */}
               <div className="border-t border-slate-200 pt-4 space-y-3">
-                <h5 className="font-extrabold text-slate-800">Thông Tin Hồ Sơ Khách Hàng (Dùng KYC)</h5>
+                <h5 className="font-bold text-slate-800">Thông Tin Hồ Sơ Khách Hàng (Dùng KYC)</h5>
                 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-600 block">Họ và tên khách hàng:</label>
+                  <label className="font-medium text-slate-600 block">Họ và tên khách hàng:</label>
                   <input 
                     type="text" 
                     required
@@ -2034,7 +2034,7 @@ export function DeviceLeasing() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="font-bold text-slate-600 block">Số CCCD / Hộ chiếu:</label>
+                    <label className="font-medium text-slate-600 block">Số CCCD / Hộ chiếu:</label>
                     <input 
                       type="text" 
                       required
@@ -2045,7 +2045,7 @@ export function DeviceLeasing() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-bold text-slate-600 block">Số điện thoại liên hệ:</label>
+                    <label className="font-medium text-slate-600 block">Số điện thoại liên hệ:</label>
                     <input 
                       type="tel" 
                       required
@@ -2058,7 +2058,7 @@ export function DeviceLeasing() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-600 block">Địa chỉ Email:</label>
+                  <label className="font-medium text-slate-600 block">Địa chỉ Email:</label>
                   <input 
                     type="email" 
                     required
@@ -2105,7 +2105,7 @@ export function DeviceLeasing() {
                   <Bell className="w-4 h-4 animate-swing" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-sm text-slate-200">Cổng Cảnh Báo Thu Nợ Định Kỳ</h3>
+                  <h3 className="font-bold text-sm text-slate-200">Cổng Cảnh Báo Thu Nợ Định Kỳ</h3>
                   <p className="text-[10px] text-slate-400">Gửi nhắc nhở đa kênh (SMS, Zalo, Email) tự động</p>
                 </div>
               </div>
@@ -2120,7 +2120,7 @@ export function DeviceLeasing() {
             <div className="p-5 space-y-4">
               {/* Channel Selector */}
               <div className="space-y-1.5">
-                <span className="font-bold text-slate-400 block uppercase tracking-wider text-[10px]">Cấu hình kênh truyền thông:</span>
+                <span className="text-slate-400 block text-[10px]">Cấu hình kênh truyền thông:</span>
                 <div className="grid grid-cols-3 gap-2">
                   <button 
                     type="button"
@@ -2166,7 +2166,7 @@ export function DeviceLeasing() {
 
               {/* Message edit block */}
               <div className="space-y-1.5">
-                <span className="font-bold text-slate-400 block uppercase tracking-wider text-[10px]">Biên tập nội dung tin gửi:</span>
+                <span className="text-slate-400 block text-[10px]">Biên tập nội dung tin gửi:</span>
                 <textarea 
                   value={notifContent}
                   onChange={(e) => setNotifContent(e.target.value)}
@@ -2223,10 +2223,10 @@ export function DeviceLeasing() {
           >
             <div className="bg-gradient-to-r from-blue-700 to-indigo-850 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-sm flex items-center gap-1.5">
+                <h3 className="font-sans font-semibold text-sm flex items-center gap-1.5">
                   <CreditCard className="w-5 h-5 text-indigo-300" /> Thanh toán VietQR Fintech
                 </h3>
-                <p className="text-[9.5px] text-indigo-200 uppercase tracking-wider font-extrabold mt-0.5">Hệ thống đối soát sao kê tự động 24/7</p>
+                <p className="text-[9.5px] text-indigo-200 uppercase tracking-wider font-bold mt-0.5">Hệ thống đối soát sao kê tự động 24/7</p>
               </div>
               <button
                 type="button"
@@ -2245,16 +2245,16 @@ export function DeviceLeasing() {
                 <span className="text-slate-500">Gói thuê:</span>
                 <span className="font-bold text-slate-800 text-right text-[11px] truncate" title={payingLease.deviceModel}>{payingLease.deviceModel}</span>
                 <span className="text-slate-500">Kỳ trả góp góp:</span>
-                <span className="font-black text-slate-900 text-right">Kỳ số {paymentActiveInst.periodNum} / {payingLease.durationMonths}</span>
+                <span className="font-semibold text-slate-900 text-right">Kỳ số {paymentActiveInst.periodNum} / {payingLease.durationMonths}</span>
                 <span className="text-slate-500 font-bold">Số tiền định kỳ:</span>
-                <span className="font-black text-indigo-700 text-right text-sm">{formatCurrency(paymentActiveInst.amount)}</span>
+                <span className="font-semibold text-indigo-700 text-right text-sm">{formatCurrency(paymentActiveInst.amount)}</span>
               </div>
 
               {/* VietQR Mock graphic and Bank Account values */}
               <div className="border border-slate-200 rounded-lg p-4 bg-white space-y-3">
                 <div className="relative w-44 h-44 mx-auto border-2 border-indigo-500 rounded-lg overflow-hidden p-1 bg-white">
                   {/* Decorative VietQR Napas logo frames */}
-                  <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-blue-600 to-teal-500 flex items-center justify-between px-1 text-[7px] text-white font-extrabold uppercase tracking-widest">
+                  <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-blue-600 to-teal-500 flex items-center justify-between px-1 text-[7px] text-white font-bold uppercase tracking-widest">
                     <span>Napas 247</span>
                     <span>VietQR</span>
                   </div>
@@ -2269,21 +2269,21 @@ export function DeviceLeasing() {
                 <div className="space-y-1.5 pt-1 text-slate-650 leading-snug">
                   <div className="flex justify-between items-center pb-1 border-b border-slate-100">
                     <span className="font-bold">Nội dung chuyển khoản:</span>
-                    <span className="font-mono text-[9.5px] font-black text-rose-650 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-220 select-all cursor-pointer">
+                    <span className="font-mono text-[9.5px] font-semibold text-rose-650 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-220 select-all cursor-pointer">
                       VCOMM PAY {payingLease.id.slice(0, 8).toUpperCase()} K{paymentActiveInst.periodNum}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Ngân hàng:</span>
-                    <span className="font-black text-slate-800">MBBank (Quân Đội)</span>
+                    <span className="font-semibold text-slate-800">MBBank (Quân Đội)</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Chủ tài khoản:</span>
-                    <span className="font-extrabold text-slate-800 text-[9.5px]">CONG TY CP CONG NGHE VCOMM VN</span>
+                    <span className="font-bold text-slate-800 text-[9.5px]">CONG TY CP CONG NGHE VCOMM VN</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Số tài khoản:</span>
-                    <span className="font-black text-slate-950 font-mono text-xs">0003259821</span>
+                    <span className="font-semibold text-slate-950 font-mono text-xs">0003259821</span>
                   </div>
                 </div>
               </div>
@@ -2293,7 +2293,7 @@ export function DeviceLeasing() {
                 <div className="p-3.5 bg-emerald-50 border border-emerald-350 rounded-lg text-emerald-900 flex items-start gap-2.5 animate-in fade-in leading-relaxed">
                   <CheckCircle2 className="w-4 h-4 text-emerald-650 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-extrabold text-emerald-800">Đã kiểm tra chuyển khoản thành công!</p>
+                    <p className="font-bold text-emerald-800">Đã kiểm tra chuyển khoản thành công!</p>
                     <p className="text-[10px] text-emerald-655 mt-0.5 font-semibold">Mã bút toán #MB-VT91285. Thu tiền định kỳ đã hạch toán POS khớp quỹ VComm.</p>
                   </div>
                 </div>

@@ -92,7 +92,7 @@ export function Sidebar() {
   ) : (
     <>
      <div className="w-4 h-4 bg-primary-500 rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
-     <h1 className="font-sans tracking-tight text-xl font-black text-[#111c2d]">
+     <h1 className="font-sans tracking-tight text-xl font-semibold text-[#111c2d]">
      VComm <span className="text-primary-500">ERP</span>
      </h1>
     </>
@@ -102,7 +102,7 @@ export function Sidebar() {
   <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-6">
   {activeGroups.map((group, groupIdx) => (
   <div key={groupIdx} className="space-y-1">
-  <h3 className="px-4 text-[10px] font-bold text-[#9CA3AF] uppercase tracking-[0.2em] mb-3">
+  <h3 className="px-4 text-[10px] text-[#9CA3AF] tracking-[0.2em] mb-3">
   {group.title}
   </h3>
   <div className="space-y-0.5">

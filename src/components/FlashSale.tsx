@@ -152,7 +152,7 @@ export function FlashSale() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Khuyến mãi & Group Buy</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Khuyến mãi & Group Buy</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý giảm giá, chiến dịch Flash Sale, Mã ưu đãi và mô hình "Mua chung sập giá".</p>
  </div>
  <button 
@@ -212,11 +212,11 @@ export function FlashSale() {
   {/* General Settings */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Tên chiến dịch</label>
   <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: Mua chung Tủ Lạnh..." required />
   </div>
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">KOL/KOC Khởi tạo</label>
+  <label className="block text-[11px] text-slate-600 mb-1">KOL/KOC Khởi tạo</label>
   <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
   <option value="">-- Chọn KOL/KOC --</option>
   {MOCK_AFFILIATES.filter(a => a.type === 'kol').map(kol => (
@@ -225,7 +225,7 @@ export function FlashSale() {
   </select>
   </div>
   <div className="md:col-span-2">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Sản phẩm triển khai</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Sản phẩm triển khai</label>
   <select 
   className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
   required
@@ -239,11 +239,11 @@ export function FlashSale() {
   </select>
   </div>
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Bắt đầu</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Bắt đầu</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kết thúc</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Kết thúc</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   </div>
@@ -268,7 +268,7 @@ export function FlashSale() {
   {tiers.map((tier, index) => (
   <div key={index} className="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-300">
   <div className="flex-1">
-  <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Mốc đơn hàng đạt</label>
+  <label className="block text-[10px] text-slate-500 mb-1">Mốc đơn hàng đạt</label>
   <div className="relative">
   <input 
   type="number" 
@@ -283,7 +283,7 @@ export function FlashSale() {
   </div>
   </div>
   <div className="flex-1">
-  <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Giảm giá (%)</label>
+  <label className="block text-[10px] text-slate-500 mb-1">Giảm giá (%)</label>
   <div className="relative">
   <input 
   type="number" 
@@ -334,7 +334,7 @@ export function FlashSale() {
   <div className="overflow-x-auto min-w-0">
   <table className="w-full text-left whitespace-nowrap">
   <thead>
-  <tr className="bg-slate-50 text-[10px] uppercase font-black text-slate-600 tracking-widest">
+  <tr className="bg-slate-50 text-[10px] text-slate-600">
   <th className="p-3 rounded-tl-lg">Mốc đơn</th>
   <th className="p-3">Giá bán/SP</th>
   <th className="p-3 text-right">Lợi nhuận/SP</th>
@@ -351,12 +351,12 @@ export function FlashSale() {
 
   return (
   <tr key={idx} className="border-b border-slate-200 last:border-0 hover:bg-slate-50/50">
-  <td className="p-3 font-bold text-slate-900">{tier.quantity} x {tier.discount}%</td>
+  <td className="p-3 font-medium text-slate-900">{tier.quantity} x {tier.discount}%</td>
   <td className="p-3 font-mono text-orange-700">{formatCurrency(salePrice)}</td>
-  <td className={cn("p-3 font-mono text-right font-bold", profitPerItem > 0 ? "text-emerald-600" : "text-rose-600")}>
+  <td className={cn("p-3 font-mono text-right font-medium", profitPerItem > 0 ? "text-emerald-600" : "text-rose-600")}>
   {formatCurrency(profitPerItem)}
   </td>
-  <td className={cn("p-3 font-mono text-right font-black", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
+  <td className={cn("p-3 font-mono text-right font-semibold", totalProfit > 0 ? "text-emerald-600" : "text-rose-600")}>
   {formatCurrency(totalProfit)}
   </td>
   </tr>
@@ -389,16 +389,16 @@ export function FlashSale() {
   >
   <form className="space-y-4">
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch Flash Sale</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Tên chiến dịch Flash Sale</label>
   <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Deal khủng giữa tháng..." required />
   </div>
   <div className="grid grid-cols-2 gap-4">
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Thời gian Bắt đầu</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Thời gian Kết thúc</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   </div>
@@ -421,7 +421,7 @@ export function FlashSale() {
   {/* Table preview for added flash sale products */}
   <div className="bg-white border text-sm border-slate-300 rounded-lg overflow-hidden overflow-x-auto min-w-0">
   <table className="w-full text-left whitespace-nowrap">
-  <thead className="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
+  <thead className="bg-slate-100 text-[10px] text-slate-600">
   <tr>
   <th className="px-3 py-2">Sản phẩm</th>
   <th className="px-3 py-2 text-right">Giảm giá (%)</th>
@@ -432,7 +432,7 @@ export function FlashSale() {
   <tbody>
   <tr className="border-t border-slate-200">
   <td className="px-3 py-2 font-medium text-slate-800">iPhone 15 Pro Max 256GB</td>
-  <td className="px-3 py-2 text-right font-bold text-rose-600">8%</td>
+  <td className="px-3 py-2 text-right font-medium text-rose-600">8%</td>
   <td className="px-3 py-2 text-right font-mono">100</td>
   <td className="px-3 py-2 text-right">
   <button type="button" className="text-rose-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
@@ -459,12 +459,12 @@ export function FlashSale() {
   <form className="space-y-4">
   <div className="grid grid-cols-2 gap-4">
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mã Voucher (Code)</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Mã Voucher (Code)</label>
   <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm uppercase font-mono" placeholder="VD: SIEUSALE50" required />
   </div>
   {!isSeller && (
     <div>
-      <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Phân loại Voucher</label>
+      <label className="block text-[11px] text-slate-600 mb-1">Phân loại Voucher</label>
       <select 
         className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" 
         required
@@ -481,7 +481,7 @@ export function FlashSale() {
 
   {voucherType === 'seller' && !isSeller && (
   <div className="bg-slate-50 p-4 border border-slate-300 rounded-lg">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-2">Áp dụng cho Nhà bán / Cửa hàng</label>
+  <label className="block text-[11px] text-slate-600 mb-2">Áp dụng cho Nhà bán / Cửa hàng</label>
   <div className="max-h-40 overflow-y-auto border border-slate-300 rounded bg-white">
   {MOCK_SELLERS.length > 0 ? MOCK_SELLERS.map(seller => (
   <label key={seller.id} className="flex items-center gap-3 p-3 border-b border-slate-200 hover:bg-slate-50 cursor-pointer last:border-b-0">
@@ -511,40 +511,40 @@ export function FlashSale() {
 
   <div className="grid grid-cols-3 gap-4">
   <div className="col-span-1">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Loại Giảm Giá</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Loại Giảm Giá</label>
   <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white" required>
   <option value="percent">Giảm theo %</option>
   <option value="fixed">Giảm số tiền cố định</option>
   </select>
   </div>
   <div className="col-span-2">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Mức Giảm Tương Ứng</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Mức Giảm Tương Ứng</label>
   <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 50000 (VND) hoặc 10 (%)" required />
   </div>
   </div>
 
   <div className="grid grid-cols-2 gap-4">
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giá Trị Đơn Tối Thiểu (VND)</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Giá Trị Đơn Tối Thiểu (VND)</label>
   <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="0 nếu không yêu cầu" />
   </div>
   <div>
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Giảm Tối Đa (VND) (Chỉ dùng cho %)</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Giảm Tối Đa (VND) (Chỉ dùng cho %)</label>
   <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="Để trống nếu không giới hạn" />
   </div>
   </div>
 
   <div className="grid grid-cols-3 gap-4">
   <div className="col-span-1">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Số lượt sử dụng</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Số lượt sử dụng</label>
   <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" placeholder="VD: 1000" />
   </div>
   <div className="col-span-1">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Bắt đầu</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Thời gian Bắt đầu</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   <div className="col-span-1">
-  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Thời gian Kết thúc</label>
+  <label className="block text-[11px] text-slate-600 mb-1">Thời gian Kết thúc</label>
   <input type="datetime-local" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm" required />
   </div>
   </div>
@@ -561,7 +561,7 @@ export function FlashSale() {
  </div>
  <span className="text-[10px] text-rose-600 font-bold">HOT NEW</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Trưởng nhóm KOL tham gia</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Trưởng nhóm KOL tham gia</p>
  <div className="text-2xl font-bold text-[#111827]">24</div>
  </div>
 
@@ -572,7 +572,7 @@ export function FlashSale() {
  </div>
  <span className="text-[10px] text-primary-600 font-bold">Live Deal</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Flash Sale Đang chạy</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Flash Sale Đang chạy</p>
  <div className="text-2xl font-bold text-[#111827]">03</div>
  </div>
 
@@ -583,7 +583,7 @@ export function FlashSale() {
  </div>
  <span className="text-[10px] text-[#10B981] font-bold">+28%</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Người dùng tham gia mua</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Người dùng tham gia mua</p>
  <div className="text-2xl font-bold text-[#111827]">15,400</div>
  </div>
 
@@ -594,7 +594,7 @@ export function FlashSale() {
  </div>
  <span className="text-[10px] text-[#10B981] font-bold">+18.5% Margin</span>
  </div>
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">PnL Hiệu quả Tích lũy</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">PnL Hiệu quả Tích lũy</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(850000000)}</div>
  </div>
  </DraggableGrid>
@@ -624,11 +624,11 @@ export function FlashSale() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Chiến dịch Group Buy / Flash Sale</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Tiến độ người tham gia</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Khuyến mãi hiện tại</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Hiệu quả PnL</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Chiến dịch Group Buy / Flash Sale</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Tiến độ người tham gia</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Khuyến mãi hiện tại</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Hiệu quả PnL</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -646,7 +646,7 @@ export function FlashSale() {
  <p className="text-sm font-semibold text-[#111827]">{campaign.name}</p>
  <div className="flex items-center gap-2 mt-1">
  <span className={cn(
- "text-[10px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded flex items-center gap-1",
+ "text-[10px] tracking-tight px-1.5 py-0.5 rounded flex items-center gap-1",
  campaign.type === 'group_buy' ? "bg-rose-100 text-rose-600" : "bg-orange-100 text-orange-600"
  )}>
  {campaign.type === 'group_buy' ? <><Users2 className="w-3 h-3"/> MUA CHUNG</> : <><Zap className="w-3 h-3"/> FLASH SALE</>}
@@ -679,7 +679,7 @@ export function FlashSale() {
  <td className="px-6 py-4 text-right">
  {campaign.type === 'group_buy' ? (
  <>
- <p className="text-lg font-black text-rose-600 border-rose-200">-{Math.min((campaign.baseDiscount || 0) + Math.floor((campaign.currentParticipants || 0) / 100), campaign.maxDiscount || 0)}%</p>
+ <p className="text-lg font-semibold text-rose-600 border-rose-200">-{Math.min((campaign.baseDiscount || 0) + Math.floor((campaign.currentParticipants || 0) / 100), campaign.maxDiscount || 0)}%</p>
  <p className="text-[10px] text-[#6B7280]">Khởi điểm: -{campaign.baseDiscount}%</p>
  </>
  ) : (
@@ -737,11 +737,11 @@ export function FlashSale() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Mã Voucher</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nguồn (Admin/Nhà bán)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Chi tiết Giảm giá</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Lượt SC & Hạn sử dụng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Mã Voucher</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Nguồn (Admin/Nhà bán)</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Chi tiết Giảm giá</th>
+ <th className="px-6 py-4 text-[11px] text-[11px] text-[#6B7280]">Lượt SC & Hạn sử dụng</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -756,7 +756,7 @@ export function FlashSale() {
  <Ticket className="w-5 h-5" />
  </div>
  <div>
- <p className="font-mono text-base font-black text-slate-900 tracking-wide">{voucher.code}</p>
+ <p className="font-mono text-base font-semibold text-slate-900 tracking-wide">{voucher.code}</p>
  <p className="text-[10px] text-slate-600 mt-0.5">Giảm tối đa {formatCurrency(voucher.maxDiscount || voucher.value)}</p>
  </div>
  </div>

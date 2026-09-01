@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Printer, Check, Loader2, Sparkles, Smile } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
+import { computeOrderTax, resolveVatRate } from '../services/taxService';
 
 interface QuickPrintModalProps {
   order: {
@@ -43,7 +44,9 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
       ];
 
   const subtotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const vatAmount = Math.round(subtotal * 0.08); // 8% VAT
+  // Thuế suất cấu hình theo thời điểm — NĐ 72/2025 giảm 2% đến 31/12/2026, sau đó 10%
+  const { vatAmount } = computeOrderTax(normalizedItems.map(it => ({ ...it, category: '*' })));
+  const vatRatePct = ((resolveVatRate('*') ?? 0) * 100).toFixed(0);
   const shippingFee = order.shippingCost || 0;
   const discountAmount = Math.max(0, (subtotal + vatAmount + shippingFee) - order.total);
 
@@ -92,10 +95,10 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
               <Printer className="w-5 h-5 animate-pulse" />
             </span>
             <div>
-              <h3 className="font-black text-slate-800 text-sm uppercase tracking-wide">
+              <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">
                 Lệnh in nhanh Biên lai POS
               </h3>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest font-mono">
+              <p className="text-[10px] text-slate-500 font-mono">
                 Mã đơn: #{order.id.split('-').pop()}
               </p>
             </div>
@@ -111,25 +114,25 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
         {/* Live Status Banner */}
         <div className="shrink-0">
           {printStatus === 'linking' && (
-            <div className="bg-yellow-500 text-slate-950 text-xs font-black px-6 py-2.5 flex items-center gap-2 animate-pulse">
+            <div className="bg-yellow-500 text-slate-950 text-xs font-semibold px-6 py-2.5 flex items-center gap-2 animate-pulse">
               <Loader2 className="w-4 h-4 animate-spin" />
               ĐANG KẾT NỐI VỚI MÁY IN KHÔNG DÂY (CỔNG K80)... VUI LÒNG ĐỢI
             </div>
           )}
           {printStatus === 'printing' && (
-            <div className="bg-primary-600 text-white text-xs font-black px-6 py-2.5 flex items-center gap-2">
+            <div className="bg-primary-600 text-white text-xs font-semibold px-6 py-2.5 flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin" />
               ĐANG GỬI TẬP LỆNH IN K80 ĐỂ IN NATIVE...
             </div>
           )}
           {printStatus === 'completed' && (
-            <div className="bg-emerald-600 text-white text-xs font-black px-6 py-2.5 flex items-center gap-2">
+            <div className="bg-emerald-600 text-white text-xs font-semibold px-6 py-2.5 flex items-center gap-2">
               <Check className="w-4 h-4 shrink-0" />
               IN HOÀN TẤT! ĐÃ GHI NHẬN LỊCH SỬ BIÊN LAI TRỰC TIẾP.
             </div>
           )}
           {printStatus === 'idle' && (
-            <div className="bg-slate-800 text-slate-300 text-[10px] font-bold px-6 py-2 uppercase tracking-wider flex justify-between items-center">
+            <div className="bg-slate-800 text-slate-300 text-[10px] px-6 py-2 flex justify-between items-center">
               <span>Thiết bị: Citizen CT-S310II (80mm)</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" /> Trực tuyến</span>
             </div>
@@ -147,8 +150,8 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
 
             {/* Receipt Header */}
             <div className="text-center space-y-1 pb-4 border-b border-dashed border-slate-300">
-              <h4 className="font-extrabold text-sm uppercase tracking-tight leading-tight">iPOS OMNICHANNEL</h4>
-              <p className="text-[10px] text-slate-600 font-bold uppercase leading-tight">Hệ Thống Bán Lẻ & Giao Vận</p>
+              <h4 className="font-bold text-sm uppercase tracking-tight leading-tight">iPOS OMNICHANNEL</h4>
+              <p className="text-[10px] text-slate-600 leading-tight">Hệ Thống Bán Lẻ & Giao Vận</p>
               <div className="text-[9px] text-slate-500 mt-1 space-y-0.5">
                 <p>CS1: 128 Trần Hưng Đạo, Q1, TPHCM</p>
                 <p>CS2: Lô C3-2, KCN Cát Lái, Q2, TPHCM</p>
@@ -158,7 +161,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
 
             {/* Invoice Info */}
             <div className="py-3 border-b border-dashed border-slate-300 space-y-1 text-[10px] font-medium text-slate-700">
-              <div className="text-center font-extrabold text-slate-950 text-xs uppercase py-1 mb-1 tracking-wider border border-slate-900">
+              <div className="text-center font-bold text-slate-950 text-xs uppercase py-1 mb-1 tracking-wider border border-slate-900">
                 HÓA ĐƠN BÁN HÀNG CHUYỂN PHÁT
               </div>
               <p><span className="font-bold">Mã Đơn:</span> {order.id}</p>
@@ -171,7 +174,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
             </div>
 
             {/* Table Header */}
-            <div className="pt-2 text-[10px] font-bold text-slate-900 flex justify-between uppercase">
+            <div className="pt-2 text-[10px] text-slate-900 flex justify-between">
               <span className="w-1/12 text-center">SL</span>
               <span className="w-7/12 text-left">TÊN SP</span>
               <span className="w-4/12 text-right">ĐƠN GIÁ</span>
@@ -199,7 +202,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
                 <span className="font-bold text-slate-900">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span>VAT (8%):</span>
+                <span>VAT ({vatRatePct}%):</span>
                 <span>{formatCurrency(vatAmount)}</span>
               </div>
               {shippingFee > 0 && (
@@ -220,8 +223,8 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
 
             {/* Grand Total */}
             <div className="flex justify-between items-center text-right py-1">
-              <span className="text-xs font-black uppercase text-slate-950">TỔNG THANH TOÁN:</span>
-              <span className="text-sm font-black text-slate-950">{formatCurrency(order.total)}</span>
+              <span className="text-xs font-semibold uppercase text-slate-950">TỔNG THANH TOÁN:</span>
+              <span className="text-sm font-semibold text-slate-950">{formatCurrency(order.total)}</span>
             </div>
 
             <div className="h-0 border-b border-dashed border-slate-300 my-2" />
@@ -247,7 +250,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
                   />
                 ))}
               </div>
-              <p className="text-[8px] tracking-[0.25em] font-mono text-slate-500 uppercase">{order.id}</p>
+              <p className="text-[8px] tracking-[0.25em] font-mono text-slate-500">{order.id}</p>
             </div>
 
             {/* Bottom jagged paper edge effect */}
@@ -267,7 +270,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
           <button
             onClick={handlePrintAction}
             disabled={printStatus !== 'idle'}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2 rounded-sm text-xs font-black shadow-sm flex items-center gap-2 transition-all uppercase active:scale-95"
+            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2 rounded-sm text-xs font-semibold shadow-sm flex items-center gap-2 transition-all uppercase active:scale-95"
           >
             {printStatus === 'idle' ? (
               <>
@@ -339,7 +342,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
             <span>{formatCurrency(subtotal)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>VAT (8%):</span>
+            <span>VAT ({vatRatePct}%):</span>
             <span>{formatCurrency(vatAmount)}</span>
           </div>
           {shippingFee > 0 && (

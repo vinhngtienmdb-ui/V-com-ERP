@@ -68,6 +68,7 @@ export function useSepayListener() {
               let isMatchedOrder = false;
               let hasPriceDiscrepancy = false;
               let expectedAmount = 0;
+              let matchedOrderRef: { sellerId?: string; customerId?: string } | null = null;
               const match = transactionContent.match(/(?:IPOS_PAY_|ORD-|VCOM-)(\w+)/i);
               if (match) {
                 orderId = match[0];
@@ -77,6 +78,10 @@ export function useSepayListener() {
                   if (orderSnap.exists()) {
                     const orderData = orderSnap.data();
                     expectedAmount = Number(orderData.total || orderData.totalPrice || 0);
+                    matchedOrderRef = {
+                      sellerId: orderData.sellerId || orderData.seller_id || undefined,
+                      customerId: orderData.customerId || orderData.customer_id || undefined
+                    };
                     if (Math.abs(amount - expectedAmount) > 0.01) {
                       hasPriceDiscrepancy = true;
                       console.warn(`[SePay-Listener] Lệch tiền phát hiện cho đơn hàng ${orderId}: Nhận ${amount}đ, Kì vọng ${expectedAmount}đ`);
@@ -128,6 +133,26 @@ export function useSepayListener() {
                   console.log(`[SePay-Listener] Đã cập nhật trạng thái đơn hàng ${orderId} sang 'paid'`);
                 } catch (updateErr: any) {
                   console.error(`[SePay-Listener] Không thể cập nhật trạng thái đơn hàng ${orderId} sang 'paid':`, updateErr.message || updateErr);
+                }
+
+                // ② Escrow: tiền người mua vào vault sàn (Luật 36/2024).
+                // Idempotent: nếu đơn đã có escrow thì bỏ qua (unique order_id).
+                if (matchedOrderRef?.sellerId) {
+                  try {
+                    const { createEscrow, getEscrowByOrderId } = await import('../services/escrowService');
+                    const existing = await getEscrowByOrderId(orderId);
+                    if (!existing) {
+                      await createEscrow({
+                        orderId,
+                        amount: expectedAmount,
+                        sellerId: matchedOrderRef.sellerId,
+                        buyerId: matchedOrderRef.customerId || 'guest'
+                      });
+                      console.log(`[SePay-Listener] Đã tạo escrow cho đơn ${orderId}`);
+                    }
+                  } catch (escrowErr: any) {
+                    console.warn(`[SePay-Listener] Escrow tạo thất bại cho ${orderId}:`, escrowErr.message || escrowErr);
+                  }
                 }
               } else if (hasPriceDiscrepancy) {
                 creditAccount = misaConfig.partnerLiabilitiesAccount || '3388';

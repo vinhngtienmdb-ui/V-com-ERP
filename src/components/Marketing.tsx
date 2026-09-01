@@ -112,7 +112,7 @@ export function Marketing() {
  <ArrowUpRight className="w-4 h-4 rotate-225" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Marketing & Omnichannel</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Marketing & Omnichannel</h1>
  </div>
  <p className="text-sm text-[#6B7280]">Kết nối đa kênh (FB, TT, IG), Quản lý chiến dịch & Tự động hóa tiếp thị.</p>
  </div>
@@ -136,42 +136,42 @@ export function Marketing() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GMV từ Marketing</span>
+ <span className="text-[10px] text-[#6B7280]">GMV từ Marketing</span>
  <BarChart2 className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(900000000)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(900000000)}</span>
+ <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
+ <span className="text-[10px] text-[#6B7280]">Tổng Follower (Multi)</span>
  <Smartphone className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">1.2M</span>
- <span className="text-[10px] text-primary-600 font-bold bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
+ <span className="text-2xl font-semibold text-[#111827]">1.2M</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
+ <span className="text-[10px] text-[#6B7280]">Chi phí đã tiêu</span>
  <TrendingUp className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(85000000)}</span>
- <span className="text-[10px] text-primary-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(85000000)}</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
+ <span className="text-[10px] text-[#6B7280]">Campaign Active</span>
  <Megaphone className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">08</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
+ <span className="text-2xl font-semibold text-[#111827]">08</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
  </div>
  </div>
  </DraggableGrid>
@@ -269,13 +269,13 @@ export function Marketing() {
  </div>
  <div className="flex-1 min-w-0">
  <p className="font-bold text-slate-900 truncate text-sm">{acc.name}</p>
- <p className="text-[10px] text-slate-600 uppercase tracking-widest">{acc.platform}</p>
+ <p className="text-[10px] text-slate-600">{acc.platform}</p>
  </div>
  </div>
  
  <div className="flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
  <div className="flex flex-col">
- <span className="text-[10px] font-bold text-slate-500 uppercase">Followers</span>
+ <span className="text-[10px] text-slate-500">Followers</span>
  <span className="text-sm font-bold text-slate-900">{acc.followers}</span>
  </div>
  <div className={cn(
@@ -345,7 +345,7 @@ export function Marketing() {
  <div className="overflow-x-auto min-w-0">
 <table className="w-full text-left text-sm whitespace-nowrap">
  <thead>
- <tr className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
+ <tr className="bg-slate-50 text-slate-600 text-[10px]">
  <th className="px-6 py-3">Tên chiến dịch</th>
  <th className="px-6 py-3">Loại mã</th>
  <th className="px-6 py-3">Mức giảm</th>
@@ -355,7 +355,7 @@ export function Marketing() {
  </thead>
  <tbody className="divide-y divide-slate-100">
  <tr className="hover:bg-slate-50">
- <td className="px-6 py-4 font-bold text-slate-900">Flash Sale 15/3</td>
+ <td className="px-6 py-4 font-medium text-slate-900">Flash Sale 15/3</td>
  <td className="px-6 py-4">Giảm %</td>
  <td className="px-6 py-4">10%</td>
  <td className="px-6 py-4 text-xs text-slate-700">Điện tử, Thời trang</td>
@@ -364,7 +364,7 @@ export function Marketing() {
  </td>
  </tr>
  <tr className="hover:bg-slate-50">
- <td className="px-6 py-4 font-bold text-slate-900">Đơn hàng đầu tiên</td>
+ <td className="px-6 py-4 font-medium text-slate-900">Đơn hàng đầu tiên</td>
  <td className="px-6 py-4">Miễn phí vận chuyển</td>
  <td className="px-6 py-4">Tối đa 30k</td>
  <td className="px-6 py-4 text-xs text-slate-700">Tất cả sản phẩm</td>
@@ -410,11 +410,11 @@ export function Marketing() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-[10px]">Chiến dịch / Voucher</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-[10px]">Thời gian chạy</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right text-[10px]">Ngân sách / Đã dùng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center text-[10px]">Chỉ số ROAS</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-[10px]">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-[10px]">Chiến dịch / Voucher</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-[10px]">Thời gian chạy</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right text-[10px]">Ngân sách / Đã dùng</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center text-[10px]">Chỉ số ROAS</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-[10px]">Trạng thái</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -427,7 +427,7 @@ export function Marketing() {
  </div>
  <div>
  <p className="text-sm font-semibold text-[#111827]">{campaign.name}</p>
- <p className="text-[10px] text-[#6B7280] uppercase tracking-tight">{campaign.type.replace('_', ' ')}</p>
+ <p className="text-[10px] text-[#6B7280] tracking-tight">{campaign.type.replace('_', ' ')}</p>
  </div>
  </div>
  </td>
@@ -488,12 +488,12 @@ export function Marketing() {
    <div className="flex-1 overflow-y-auto p-6 flex justify-center">
    <form className="space-y-4 w-full max-w-lg">
  <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Tên chiến dịch</label>
+ <label className="block text-[11px] text-slate-600 mb-1">Tên chiến dịch</label>
  <input type="text" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" required />
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kênh mục tiêu</label>
+ <label className="block text-[11px] text-slate-600 mb-1">Kênh mục tiêu</label>
  <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white outline-none">
  <option value="fb">Facebook Fanpage</option>
  <option value="tt">TikTok Shop</option>
@@ -502,17 +502,17 @@ export function Marketing() {
  </select>
  </div>
  <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngân sách (VNĐ)</label>
+ <label className="block text-[11px] text-slate-600 mb-1">Ngân sách (VNĐ)</label>
  <input type="number" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" placeholder="0" required />
  </div>
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngày bắt đầu</label>
+ <label className="block text-[11px] text-slate-600 mb-1">Ngày bắt đầu</label>
  <input type="date" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" required />
  </div>
  <div>
- <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Ngày kết thúc</label>
+ <label className="block text-[11px] text-slate-600 mb-1">Ngày kết thúc</label>
  <input type="date" className="w-full border border-slate-400 rounded-lg p-2.5 text-sm outline-none" required />
  </div>
  </div>

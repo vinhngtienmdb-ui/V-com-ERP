@@ -97,7 +97,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
             {myMember.initials}
           </div>
           <div>
-            <h2 className="text-base font-black tracking-tight">{myMember.name}</h2>
+            <h2 className="text-base font-semibold tracking-tight">{myMember.name}</h2>
             <p className="text-[11px] text-slate-400 font-medium font-sans">
               Chức vụ: <strong>{myMember.position}</strong> — Bộ phận: <strong>{myMember.department}</strong>
             </p>
@@ -109,22 +109,22 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
           
           <div className="flex-1 min-w-[70px] bg-slate-800/60 border border-slate-700 p-2.5 rounded-lg">
             <span className="text-slate-400 block text-[9.5px] uppercase font-bold tracking-wider mb-0.5">Tổng số</span>
-            <span className="text-sm font-black block">{total} j</span>
+            <span className="text-sm font-semibold block">{total} j</span>
           </div>
 
           <div className="flex-1 min-w-[70px] bg-indigo-950/40 border border-indigo-900/60 p-2.5 rounded-lg">
             <span className="text-slate-400 block text-[9.5px] uppercase font-bold tracking-wider mb-0.5">Chưa xong</span>
-            <span className="text-sm font-black text-indigo-400 block">{pending} j</span>
+            <span className="text-sm font-semibold text-indigo-400 block">{pending} j</span>
           </div>
 
           <div className="flex-1 min-w-[70px] bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-lg">
             <span className="text-slate-400 block text-[9.5px] uppercase font-bold tracking-wider mb-0.5">Quá hạn</span>
-            <span className={cn("text-sm font-black block", overdue > 0 ? "text-rose-400 animate-pulse" : "text-slate-400")}>{overdue} j</span>
+            <span className={cn("text-sm font-semibold block", overdue > 0 ? "text-rose-400 animate-pulse" : "text-slate-400")}>{overdue} j</span>
           </div>
 
           <div className="flex-1 min-w-[70px] bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-lg">
             <span className="text-slate-400 block text-[9.5px] uppercase font-bold tracking-wider mb-0.5">Hoàn tất</span>
-            <span className="text-sm font-black text-emerald-400 block">{completed} j</span>
+            <span className="text-sm font-semibold text-emerald-400 block">{completed} j</span>
           </div>
 
         </div>
@@ -225,7 +225,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                     <span className="font-mono font-bold text-slate-400 text-[10px]">{task.id}</span>
                     
                     <span className={cn(
-                      "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border",
+                      "px-2 py-0.5 rounded text-[8.5px] font-semibold uppercase tracking-wider border",
                       task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200' :
                       task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
                       task.priority === 'medium' ? 'bg-primary-50 text-primary-600 border-blue-200' :
@@ -237,7 +237,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                     </span>
 
                     <span className={cn(
-                      "px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider border",
+                      "px-2 py-0.5 rounded text-[8.5px] font-semibold uppercase tracking-wider border",
                       task.scope === 'company' ? "bg-purple-50 text-purple-700 border-purple-200" :
                       task.scope === 'department' ? "bg-primary-50 text-blue-700 border-blue-200" :
                       task.scope === 'team' ? "bg-orange-50 text-orange-700 border-orange-200" :
@@ -255,7 +255,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
 
                   <h3 
                     onClick={() => onSelectTask(task)}
-                    className="font-black text-sm text-[#111827] hover:text-primary-600 cursor-pointer transition-colors"
+                    className="font-semibold text-sm text-[#111827] hover:text-primary-600 cursor-pointer transition-colors"
                   >
                     {task.title}
                   </h3>
@@ -269,7 +269,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                   {/* Subtask micro checklists */}
                   {task.subtasks && task.subtasks.length > 0 && (
                     <div className="bg-slate-50 border border-slate-200/60 rounded-lg p-3 mt-2.5 max-w-2xl space-y-2">
-                      <p className="font-extrabold text-[#64748B] text-[9.5px] uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                      <p className="font-bold text-[#64748B] text-[9.5px] uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
                         <CheckSquare className="w-3.5 h-3.5" />
                         Đầu việc chi tiết ({task.subtasks.filter(s => s.done).length}/{task.subtasks.length})
                       </p>
@@ -310,13 +310,13 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                   
                   {/* Status Dropdown control */}
                   <div className="space-y-1 w-full text-left md:text-right">
-                    <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-widest block">Trạng thái</span>
+                    <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-widest block">Trạng thái</span>
                     <select
                       value={task.status}
                       onChange={(e) => handleStatusChange(task, e.target.value as any)}
                       className={cn(
                         "font-bold text-[11px] rounded-lg px-2 py-1.5 bg-slate-50 border cursor-pointer border-slate-300 focus:ring-2 focus:ring-primary-500/20 outline-none w-full max-w-[150px] inline-block",
-                        task.status === 'done' ? "text-emerald-700 border-emerald-400 font-extrabold" : "text-slate-800"
+                        task.status === 'done' ? "text-emerald-700 border-emerald-400 font-bold" : "text-slate-800"
                       )}
                     >
                       <option value="todo">Cần làm</option>
@@ -328,7 +328,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
 
                   {/* Deadline displaying */}
                   <div className="space-y-1 w-full text-left md:text-right">
-                    <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-widest block">Kỳ hạn chót</span>
+                    <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-widest block">Kỳ hạn chót</span>
                     <span className={cn(
                       "font-mono font-bold text-xs inline-flex items-center gap-1",
                       isOverdue ? "text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-lg text-[10.5px] animate-pulse" : "text-slate-600"
@@ -342,7 +342,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                   <div className="space-y-1.5 w-full">
                     <div className="flex justify-between text-[10px] font-bold text-slate-500">
                       <span>Cập nhật tiến độ:</span>
-                      <span className="text-primary-600 font-black">{task.progress}%</span>
+                      <span className="text-primary-600 font-semibold">{task.progress}%</span>
                     </div>
                     <input 
                       type="range"
@@ -358,7 +358,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
                   {/* View Details Action Button */}
                   <button
                     onClick={() => onSelectTask(task)}
-                    className="p-1.5 w-full bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center gap-1 font-bold text-[10px] uppercase transition-all mt-4 cursor-pointer"
+                    className="p-1.5 w-full bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center gap-1 text-[10px] transition-all mt-4 cursor-pointer"
                   >
                     Xem Chi Tiết &rarr;
                   </button>
@@ -372,7 +372,7 @@ export function TaskMyTasks({ tasks, onUpdateTask, onSelectTask }: TaskMyTasksPr
       ) : (
         <div className="bg-white border rounded-lg p-12 text-center text-slate-500 space-y-2.5">
           <ListTodo className="w-12 h-12 text-slate-300 mx-auto" />
-          <h4 className="font-extrabold text-sm text-slate-700">Tuyệt vời! Bạn không có công vụ nào tồn đọng</h4>
+          <h4 className="font-bold text-sm text-slate-700">Tuyệt vời! Bạn không có công vụ nào tồn đọng</h4>
           <p className="text-xs text-slate-400">Không có công việc nào trong danh mục hoặc bộ lọc hiện tại.</p>
         </div>
       )}

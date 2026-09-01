@@ -198,7 +198,7 @@ export function Workspace() {
                 <ArrowLeft className="w-4 h-4 text-slate-600" />
               </button>
             )}
-            <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">
+            <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">
               {activeModule === 'overview' && "Không gian làm việc (eOffice)"}
               {activeModule === 'work_project' && "Quản lý Dự án (Kanban / Quy trình)"}
               {activeModule === 'work_mine' && "Công việc của tôi"}
@@ -256,7 +256,7 @@ export function Workspace() {
                   <Zap className="w-5 h-5 fill-current" />
                 </div>
                 <div>
-                  <h2 className="text-base font-black tracking-tight uppercase">Bảng Tin & Thông Báo Công Ty</h2>
+                  <h2 className="text-base font-semibold tracking-tight uppercase">Bảng Tin & Thông Báo Công Ty</h2>
                   <p className="text-[11px] text-slate-400 mt-0.5">Cập nhật chỉ thị, thông tin cơ quan và kế hoạch vận hành định kỳ.</p>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export function Workspace() {
                   <div key={news.id} className="bg-white/5 border border-white/10 p-4 rounded-lg hover:bg-white/10 transition-all cursor-pointer group">
                     <div className="flex justify-between items-start mb-2">
                       <span className={cn(
-                        "text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider",
+                        "text-[9px] px-2 py-0.5 rounded",
                         news.priority === 'high' ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : 
                         news.priority === 'medium' ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" : 
                         "bg-slate-800/20 text-slate-300 border border-slate-700"
@@ -275,7 +275,7 @@ export function Workspace() {
                       </span>
                       <span className="text-[10px] text-slate-400 font-bold">{news.date}</span>
                     </div>
-                    <h3 className="text-xs font-black text-slate-200 group-hover:text-orange-500 transition-colors line-clamp-2 leading-relaxed">
+                    <h3 className="text-xs font-semibold text-slate-200 group-hover:text-orange-500 transition-colors line-clamp-2 leading-relaxed">
                       {news.title}
                     </h3>
                   </div>
@@ -291,7 +291,7 @@ export function Workspace() {
           <div className="space-y-6">
             {MODULE_GROUPS.map((group, gIdx) => (
               <div key={gIdx} className="space-y-4">
-                <h3 className="text-xs font-extrabold text-slate-800 flex items-center gap-2 px-1 uppercase tracking-wider text-slate-500">
+                <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 px-1 uppercase tracking-wider text-slate-500">
                   <span className="w-1.5 h-3.5 bg-primary-600 rounded-full inline-block" />
                   {group.title}
                 </h3>
@@ -315,7 +315,7 @@ export function Workspace() {
                       </div>
                       
                       <div className="relative z-10 select-none">
-                        <h3 className="font-extrabold text-slate-900 text-xs mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-1">
+                        <h3 className="font-bold text-slate-900 text-xs mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-1">
                           {mod.label} <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
                         </h3>
                         <p className="text-[10.5px] text-[#6B7280] leading-relaxed line-clamp-2 font-medium">{mod.desc}</p>
@@ -389,7 +389,7 @@ export function Workspace() {
           </div>
 
           <div className="space-y-1.5">
-            <h3 className="font-black text-sm text-slate-800 uppercase tracking-tight">
+            <h3 className="font-semibold text-sm text-slate-800 uppercase tracking-tight">
               Giao diện Mô phỏng Tiện ích Hành chính
             </h3>
             <p className="text-xs text-slate-500 font-medium font-sans">
@@ -399,7 +399,7 @@ export function Workspace() {
 
           {/* Interactive features simulation list */}
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-left text-[11px] font-sans space-y-2">
-            <p className="font-extrabold text-[#64748B] uppercase tracking-wider">Lịch sử giao thức liên kết gần đây:</p>
+            <p className="font-bold text-[#64748B] uppercase tracking-wider">Lịch sử giao thức liên kết gần đây:</p>
             
             {activeModule === 'calendar' && (
               <div className="divide-y divide-slate-200 space-y-2 pt-1 font-bold">

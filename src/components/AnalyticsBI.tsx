@@ -408,18 +408,18 @@ export function AnalyticsBI() {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="header-title">
  <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
+ <span className="text-[10px] tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
  <div className="w-1 h-1 bg-slate-900 rounded-full animate-pulse" />
  </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Business Intelligence</h1>
+ <h1 className="font-sans tracking-tight text-3xl font-semibold text-slate-900 tracking-tight">Business Intelligence</h1>
  <p className="text-sm text-slate-600 font-medium mt-1">Hệ thống phân tích chuyên sâu RFM, LTV, CAC và Giám sát gian lận thời gian thực.</p>
  </div>
  <div className="flex flex-wrap gap-3">
- <button className="bg-white border border-slate-300 px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5">
+ <button className="bg-white border border-slate-300 px-5 py-2.5 rounded-none text-xs font-semibold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5">
  <Download className="w-4 h-4 text-slate-500" />
  Xuất báo cáo (PDF/XLS)
  </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+ <button className="bg-slate-900 text-[#FAF9F5] px-5 py-2.5 rounded-none text-xs font-semibold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
  <Zap className="w-4 h-4" />
  Đồng bộ dữ liệu LTV
  </button>
@@ -440,7 +440,7 @@ export function AnalyticsBI() {
  <div className="relative z-10 flex flex-col justify-between h-full">
  <div className="flex justify-between items-start mb-4">
  <span className={cn(
- "text-[10px] font-black uppercase tracking-widest",
+ "text-[10px]",
  stat.alert ? "text-rose-600" : "text-slate-500"
  )}>{stat.label}</span>
  <div className={cn(
@@ -451,7 +451,7 @@ export function AnalyticsBI() {
  </div>
  </div>
  <div>
- <div className={cn("text-2xl font-black tracking-tight mb-1", stat.alert ? "text-rose-700" : "text-slate-900")}>
+ <div className={cn("text-2xl font-semibold tracking-tight mb-1", stat.alert ? "text-rose-700" : "text-slate-900")}>
  {typeof stat.value === 'number' && stat.label !== 'Gian lận (Cảnh báo)' ? formatCurrency(stat.value) : stat.value}
  </div>
  <div className="flex items-center gap-2">
@@ -479,12 +479,12 @@ export function AnalyticsBI() {
     <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-6 border-b border-slate-200">
       <div>
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
+          <span className="text-[10px] tracking-[0.2em] text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
             Omnichannel performance
           </span>
           <span className="text-[10px] font-bold text-slate-400 font-mono">Real-time Sync</span>
         </div>
-        <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+        <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
           <BarChart3 className="w-5 h-5 text-primary-600" /> Báo cáo Hiệu quả Kênh bán hàng & Doanh thu hợp nhất
         </h2>
         <p className="text-xs text-slate-500 font-medium mt-1">
@@ -508,7 +508,7 @@ export function AnalyticsBI() {
               className={cn(
                 "px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-none",
                 timeRange === p.id 
-                  ? "bg-white text-slate-900 shadow-sm border border-slate-200 font-black" 
+                  ? "bg-white text-slate-900 shadow-sm border border-slate-200 font-semibold" 
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               )}
             >
@@ -531,7 +531,7 @@ export function AnalyticsBI() {
               className={cn(
                 "px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-none",
                 chartType === type.id 
-                  ? "bg-slate-900 text-[#FAF9F5] font-black" 
+                  ? "bg-slate-900 text-[#FAF9F5] font-semibold" 
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               )}
             >
@@ -559,7 +559,7 @@ export function AnalyticsBI() {
                 className={cn(
                   "px-2.5 py-1 text-[11px] font-bold border transition-all flex items-center gap-1.5 rounded-none shadow-sm",
                   isActive 
-                    ? "bg-white text-slate-800 border-b-2 font-black shadow-slate-900/5"
+                    ? "bg-white text-slate-800 border-b-2 font-semibold shadow-slate-900/5"
                     : "bg-slate-100 border-slate-200 text-slate-400 line-through hover:bg-slate-200"
                 )}
                 style={{ borderBottomColor: isActive ? ch.color : undefined }}
@@ -574,7 +574,7 @@ export function AnalyticsBI() {
 
       <div className="text-xs font-bold text-primary-600 bg-primary-50 border border-blue-200 px-3 py-1.5 rounded-none flex items-center gap-1.5">
         <Sparkles className="w-4 h-4 text-orange-600 animate-pulse" />
-        Kênh hiệu quả nhất: <span className="font-extrabold uppercase text-slate-900">{topChannelItem?.name}</span> ({topChannelItem ? formatCurrency(topChannelItem.value) : '0đ'} - tăng trưởng {topChannelItem?.growth})
+        Kênh hiệu quả nhất: <span className="font-bold uppercase text-slate-900">{topChannelItem?.name}</span> ({topChannelItem ? formatCurrency(topChannelItem.value) : '0đ'} - tăng trưởng {topChannelItem?.growth})
       </div>
     </div>
 
@@ -583,11 +583,11 @@ export function AnalyticsBI() {
       {/* Chart container */}
       <div className="lg:col-span-8 border border-slate-200 p-4 relative bg-[#FAF9F5]">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">
+          <span className="text-[10px] text-slate-400 font-mono">
             BI Comparison Chart ({timeRange === '7days' ? 'Hàng ngày' : timeRange === '30days' ? 'Hàng tuần' : 'Hàng tháng'})
           </span>
-          <span className="text-[11px] font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5">
-            Tổng cộng: <span className="text-slate-900 font-extrabold">{formatCurrency(totalOmnichannelSales)}</span>
+          <span className="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2 py-0.5">
+            Tổng cộng: <span className="text-slate-900 font-bold">{formatCurrency(totalOmnichannelSales)}</span>
           </span>
         </div>
 
@@ -651,7 +651,7 @@ export function AnalyticsBI() {
       {/* Share / Breakdown analysis */}
       <div className="lg:col-span-4 flex flex-col justify-between border border-slate-200 p-4 bg-white">
         <div>
-          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono block mb-3">
+          <span className="text-[10px] text-slate-400 font-mono block mb-3">
             Tỉ trọng Doanh số O2O (Online vs Offline)
           </span>
 
@@ -683,8 +683,8 @@ export function AnalyticsBI() {
                 </div>
                 {/* Central text for breakdown */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                  <span className="text-[10px] uppercase tracking-widest font-extrabold text-slate-400">Offline</span>
-                  <span className="text-lg font-black text-slate-800">{offlineRatio.toFixed(0)}%</span>
+                  <span className="text-[10px] text-slate-400">Offline</span>
+                  <span className="text-lg font-semibold text-slate-800">{offlineRatio.toFixed(0)}%</span>
                   <span className="text-[9px] font-bold text-slate-400">Online {onlineRatio.toFixed(0)}%</span>
                 </div>
               </>
@@ -723,7 +723,7 @@ export function AnalyticsBI() {
 
     {/* Financial Efficiency Comparer */}
     <div className="mt-4 pt-4 border-t border-slate-200">
-      <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5">
         <Percent className="w-4 h-4 text-emerald-600" /> Đánh giá hiệu suất ròng sau chiết khấu hoa hồng của các Kênh
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -747,12 +747,12 @@ export function AnalyticsBI() {
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1">
+                  <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
                     <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: ch.color }} />
                     {ch.name}
                   </span>
                   <span className={cn(
-                    "text-[10px] font-black px-1.5 py-0.5 font-mono",
+                    "text-[10px] font-semibold px-1.5 py-0.5 font-mono",
                     ch.commissionFee === '0%' ? 'bg-emerald-100 text-emerald-800 uppercase' : 'bg-red-50 text-red-700'
                   )}>
                     Phí: {ch.commissionFee}
@@ -774,7 +774,7 @@ export function AnalyticsBI() {
                     <span>-{formatCurrency(platformFeeAmount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center text-[11px] font-black text-emerald-700">
+                <div className="flex justify-between items-center text-[11px] font-semibold text-emerald-700">
                   <span>Ước lượng ròng:</span>
                   <span>{formatCurrency(netRevenue)}</span>
                 </div>
@@ -790,12 +790,12 @@ export function AnalyticsBI() {
   {/* ========================================================================================= */}
   <div className="bg-white border border-slate-200 shadow-sm p-6 space-y-6 mb-6">
     <div className="flex items-center gap-2 mb-1.5">
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+      <span className="text-[10px] tracking-[0.2em] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
         BI Margins & Profitability
       </span>
       <span className="text-[10px] font-bold text-slate-400 font-mono">Báo cáo thời gian thực</span>
     </div>
-    <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+    <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
       <Percent className="w-5 h-5 text-emerald-600" /> Phân tích Lãi Gộp & Biên Lợi Nhuận
     </h2>
     <p className="text-xs text-slate-500 font-medium">
@@ -805,7 +805,7 @@ export function AnalyticsBI() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
       {/* 1. Combo Margin */}
       <div className="p-4 bg-slate-50 border border-slate-200 space-y-3">
-        <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Lãi Gộp Combo & Sản phẩm</h4>
+        <h4 className="text-xs font-semibold uppercase text-slate-700 tracking-wider">Lãi Gộp Combo & Sản phẩm</h4>
         <div className="divide-y divide-slate-200">
           {profitMarginData.combos.map((cb, idx) => (
             <div key={idx} className="py-2.5 flex justify-between items-center text-xs">
@@ -814,7 +814,7 @@ export function AnalyticsBI() {
                 <p className="text-[10px] text-slate-400 mt-0.5">Vốn: {formatCurrency(cb.cost)} | Giá: {formatCurrency(cb.price)}</p>
               </div>
               <div className="text-right">
-                <span className="font-extrabold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">+{cb.marginPct}%</span>
+                <span className="font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">+{cb.marginPct}%</span>
                 <p className="text-[10px] text-slate-500 mt-1 font-mono">Lãi: {formatCurrency(cb.profit)}</p>
               </div>
             </div>
@@ -824,7 +824,7 @@ export function AnalyticsBI() {
 
       {/* 2. CTV / Seller Performance */}
       <div className="p-4 bg-slate-50 border border-slate-200 space-y-3">
-        <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Hiệu Quả Kênh CTV / Sellers</h4>
+        <h4 className="text-xs font-semibold uppercase text-slate-700 tracking-wider">Hiệu Quả Kênh CTV / Sellers</h4>
         <div className="space-y-4 pt-1">
           <div className="flex justify-between items-center text-xs">
             <span className="text-slate-500 font-medium">Tổng GMV CTV:</span>
@@ -835,11 +835,11 @@ export function AnalyticsBI() {
             <span className="font-bold text-red-500">-{formatCurrency(profitMarginData.ctf.commission)}</span>
           </div>
           <div className="flex justify-between items-center text-xs pt-2.5 border-t border-slate-200">
-            <span className="font-black text-slate-800">Lại ròng giữ lại:</span>
-            <span className="font-black text-emerald-700">{formatCurrency(profitMarginData.ctf.netProfit)}</span>
+            <span className="font-semibold text-slate-800">Lại ròng giữ lại:</span>
+            <span className="font-semibold text-emerald-700">{formatCurrency(profitMarginData.ctf.netProfit)}</span>
           </div>
           <div className="pt-2 text-center">
-            <span className="text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded">
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded">
               Biên Lợi Nhuận: {profitMarginData.ctf.marginPct}%
             </span>
           </div>
@@ -848,7 +848,7 @@ export function AnalyticsBI() {
 
       {/* 3. Group Buy Performance */}
       <div className="p-4 bg-slate-50 border border-slate-200 space-y-3">
-        <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Hiệu Quả Mua Chung (Group Buy)</h4>
+        <h4 className="text-xs font-semibold uppercase text-slate-700 tracking-wider">Hiệu Quả Mua Chung (Group Buy)</h4>
         <div className="space-y-4 pt-1">
           <div className="flex justify-between items-center text-xs">
             <span className="text-slate-500 font-medium">Doanh thu cụm:</span>
@@ -859,11 +859,11 @@ export function AnalyticsBI() {
             <span className="font-bold text-slate-600">{formatCurrency(profitMarginData.groupBuy.cogs)}</span>
           </div>
           <div className="flex justify-between items-center text-xs pt-2.5 border-t border-slate-200">
-            <span className="font-black text-slate-800">Lợi nhuận gộp:</span>
-            <span className="font-black text-emerald-700">{formatCurrency(profitMarginData.groupBuy.profit)}</span>
+            <span className="font-semibold text-slate-800">Lợi nhuận gộp:</span>
+            <span className="font-semibold text-emerald-700">{formatCurrency(profitMarginData.groupBuy.profit)}</span>
           </div>
           <div className="pt-2 text-center">
-            <span className="text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded">
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded">
               Lãi Gộp: {profitMarginData.groupBuy.marginPct}%
             </span>
           </div>
@@ -877,12 +877,12 @@ export function AnalyticsBI() {
  <div className="bg-white p-6 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
+ <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-3">
  <Users className="w-5 h-5 text-orange-700" /> Phân tích RFM (Recency/Frequency/Monetary)
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Phân vị khách hàng dựa trên lịch sử mua sắm</p>
  </div>
- <select className="text-[10px] font-bold uppercase tracking-widest bg-slate-50 border border-slate-300 rounded-none px-3 py-2 outline-none focus:ring-2 focus:ring-primary-500/20">
+ <select className="text-[10px] bg-slate-50 border border-slate-300 rounded-none px-3 py-2 outline-none focus:ring-2 focus:ring-primary-500/20">
  <option>Theo lượt khách hàng</option>
  <option>Theo giá trị quy đổi</option>
  </select>
@@ -921,7 +921,7 @@ export function AnalyticsBI() {
  <div className="bg-white p-6 rounded-none border border-slate-200 shadow-sm shadow-slate-200/40">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
+ <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-3">
  <TrendingUp className="w-5 h-5 text-emerald-600" /> Xu hướng AOV & CLV (Predictive)
  </h3>
  <p className="text-xs text-slate-500 font-medium mt-1">Dự báo chuyển động tài chính trong 6 tháng tới</p>
@@ -929,11 +929,11 @@ export function AnalyticsBI() {
  <div className="flex gap-4 p-1.5 bg-slate-50 rounded-lg">
  <div className="flex items-center gap-2 px-2">
  <div className="w-2 h-2 rounded-full bg-slate-900" />
- <span className="text-[10px] font-black uppercase text-slate-600">CLV</span>
+ <span className="text-[10px] text-slate-600">CLV</span>
  </div>
  <div className="flex items-center gap-2 px-2">
  <div className="w-2 h-2 rounded-full bg-emerald-500" />
- <span className="text-[10px] font-black uppercase text-slate-600">AOV</span>
+ <span className="text-[10px] text-slate-600">AOV</span>
  </div>
  </div>
  </div>
@@ -984,10 +984,10 @@ export function AnalyticsBI() {
  </div>
  <div>
  <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400">Security Node</span>
+ <span className="text-[10px] tracking-[0.2em] text-rose-400">Security Node</span>
  <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" />
  </div>
- <h3 className="text-2xl font-black tracking-tight">Fraud Detection Guardian</h3>
+ <h3 className="text-2xl font-semibold tracking-tight">Fraud Detection Guardian</h3>
  </div>
  </div>
  
@@ -996,10 +996,10 @@ export function AnalyticsBI() {
  </p>
  
  <div className="flex flex-wrap gap-4 pt-2">
- <button className="px-6 py-3 bg-white text-slate-900 font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm shadow-white/10 .5">
+ <button className="px-6 py-3 bg-white text-slate-900 rounded-none text-[11px] hover:bg-slate-100 transition-all shadow-sm shadow-white/10 .5">
  Open Security Console
  </button>
- <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] font-black rounded-none text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all">
+ <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 text-[#FAF9F5] rounded-none text-[11px] hover:bg-white/20 transition-all">
  Configure Policy
  </button>
  </div>
@@ -1008,7 +1008,7 @@ export function AnalyticsBI() {
  <div className="space-y-4">
  <div className="p-6 bg-white/5 backdrop-blur-2xl rounded-none border border-white/10 space-y-4 shadow-sm">
  <div className="flex justify-between items-center">
- <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest flex items-center gap-2">
+ <span className="text-[10px] text-rose-400 flex items-center gap-2">
  <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> Incident Detected
  </span>
  <span className="text-[10px] text-slate-600 font-bold font-mono">2 min ago</span>
@@ -1017,7 +1017,7 @@ export function AnalyticsBI() {
  "Detecting 124 orders using Voucher SALE153 from same Fingerprint ID cluster."
  </p>
  <div className="pt-2 border-t border-white/5">
- <button className="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-[#FAF9F5] rounded-none text-[10px] font-black uppercase tracking-widest transition-all border border-rose-500/30">
+ <button className="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-[#FAF9F5] rounded-none text-[10px] transition-all border border-rose-500/30">
  Immediate Block & Void
  </button>
  </div>

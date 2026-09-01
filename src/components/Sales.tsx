@@ -75,7 +75,7 @@ export function SalesManagement() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Quản trị Kinh doanh (Sales)</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Quản trị Kinh doanh (Sales)</h1>
  </div>
  <p className="text-sm text-[#6B7280]">Hệ thống quản lý KPI, tính hoa hồng tự động và thi đua đội ngũ Sales.</p>
  </div>
@@ -94,31 +94,31 @@ export function SalesManagement() {
  {/* Stats Cards */}
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-3">Tổng GMV chốt (T3)</p>
+ <p className="text-[10px] text-[#6B7280] mb-3">Tổng GMV chốt (T3)</p>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(12500000000)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+15.8%</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(12500000000)}</span>
+ <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">+15.8%</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tỉ lệ Hoàn thành KPI</p>
+ <p className="text-[10px] text-[#6B7280]">Tỉ lệ Hoàn thành KPI</p>
  <div className="flex items-end justify-between mt-3">
- <span className="text-2xl font-black text-[#111827]">88.5%</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">On Track</span>
+ <span className="text-2xl font-semibold text-[#111827]">88.5%</span>
+ <span className="text-[10px] text-orange-700 font-medium bg-slate-100 px-2 py-0.5 rounded">On Track</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Deal đang Open</p>
+ <p className="text-[10px] text-[#6B7280]">Deal đang Open</p>
  <div className="flex items-end justify-between mt-3">
- <span className="text-2xl font-black text-[#111827]">45 Leads</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">High Value</span>
+ <span className="text-2xl font-semibold text-[#111827]">45 Leads</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">High Value</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Hoa hồng tạm tính</p>
+ <p className="text-[10px] text-[#6B7280]">Hoa hồng tạm tính</p>
  <div className="flex items-end justify-between mt-3">
- <span className="text-2xl font-black text-amber-600">{formatCurrency(320000000)}</span>
- <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded">Commission</span>
+ <span className="text-2xl font-semibold text-amber-600">{formatCurrency(320000000)}</span>
+ <span className="text-[10px] text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">Commission</span>
  </div>
  </div>
  </DraggableGrid>
@@ -133,20 +133,20 @@ export function SalesManagement() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="space-y-1">
- <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">Dự báo doanh thu tháng</p>
- <p className="text-2xl font-black">{formatCurrency(15200000000)}</p>
+ <p className="text-[10px] text-primary-100 opacity-70">Dự báo doanh thu tháng</p>
+ <p className="text-2xl font-semibold">{formatCurrency(15200000000)}</p>
  <p className="text-[10px] font-bold text-emerald-300 flex items-center gap-1">
  <TrendingUp className="w-3 h-3" /> +21.4% vs T4
  </p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">Tỉ lệ chốt deal (Win Rate)</p>
- <p className="text-2xl font-black">34.2%</p>
+ <p className="text-[10px] text-primary-100 opacity-70">Tỉ lệ chốt deal (Win Rate)</p>
+ <p className="text-2xl font-semibold">34.2%</p>
  <p className="text-[10px] font-bold text-primary-200">Trên trung bình ngành</p>
  </div>
  <div className="space-y-1">
- <p className="text-[10px] text-primary-100 font-bold uppercase opacity-70">LTV Dự kiến (Next 90d)</p>
- <p className="text-2xl font-black">{formatCurrency(4500000000)}</p>
+ <p className="text-[10px] text-primary-100 opacity-70">LTV Dự kiến (Next 90d)</p>
+ <p className="text-2xl font-semibold">{formatCurrency(4500000000)}</p>
  <p className="text-[10px] font-bold text-primary-200">Từ khách hàng hiện tại</p>
  </div>
  </div>
@@ -162,7 +162,7 @@ export function SalesManagement() {
  </div>
  <p className="text-[10px] font-bold text-primary-100 italic">4 nhân viên đang có dấu hiệu bứt phá doanh số vượt bậc</p>
  </div>
- <button className="px-4 py-2 bg-white text-primary-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary-50 transition-all shadow-sm ring-4 ring-white/10">
+ <button className="px-4 py-2 bg-white text-primary-600 rounded-lg text-[10px] hover:bg-primary-50 transition-all shadow-sm ring-4 ring-white/10">
  Xem Recommendation
  </button>
  </div>
@@ -172,7 +172,7 @@ export function SalesManagement() {
 
  <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-sm flex flex-col justify-between">
  <div>
- <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+ <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
  <Clock className="w-4 h-4" /> Hoạt động gần đây
  </h4>
  <div className="space-y-4">
@@ -194,7 +194,7 @@ export function SalesManagement() {
  ))}
  </div>
  </div>
- <button className="w-full mt-6 py-3 border border-slate-300 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 uppercase tracking-widest">
+ <button className="w-full mt-6 py-3 border border-slate-300 rounded-lg text-[10px] text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
  Xem tất cả Log <ArrowRight className="w-3 h-3" />
  </button>
  </div>
@@ -259,11 +259,11 @@ export function SalesManagement() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nhân viên Sales</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Cấp bậc & Hoa hồng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Target Hoàn thành</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng tạm tính</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Phân hạng (Rank)</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Nhân viên Sales</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Cấp bậc & Hoa hồng</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Target Hoàn thành</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Hoa hồng tạm tính</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Phân hạng (Rank)</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -276,7 +276,7 @@ export function SalesManagement() {
  </div>
  <div>
  <p className="font-bold text-[#111827]">{sale.name}</p>
- <p className="text-[10px] text-[#6B7280] uppercase tracking-tight">{sale.id}</p>
+ <p className="text-[10px] text-[#6B7280] tracking-tight">{sale.id}</p>
  </div>
  </div>
  </td>
@@ -306,7 +306,7 @@ export function SalesManagement() {
  </div>
  </div>
  </td>
- <td className="px-6 py-4 text-right font-bold text-[#10B981]">
+ <td className="px-6 py-4 text-right font-medium text-[#10B981]">
  {formatCurrency((sale.achieved * sale.commissionRate) / 100)}
  </td>
  <td className="px-6 py-4 text-right">
@@ -371,11 +371,11 @@ export function SalesManagement() {
  </div>
  <div className="w-full md:w-2/3 grid grid-cols-2 gap-4">
  <div>
- <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Target tháng (VND)</label>
+ <label className="block text-[10px] text-slate-500 mb-1">Target tháng (VND)</label>
  <input type="text" className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500" defaultValue={i === 0 ? "5,000,000,000" : i === 1 ? "3,000,000,000" : "1,000,000,000"} />
  </div>
  <div className="relative">
- <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tỷ lệ HH (%)</label>
+ <label className="block text-[10px] text-slate-500 mb-1">Tỷ lệ HH (%)</label>
  <div className="relative">
  <input type="number" step="0.1" className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500" defaultValue={i === 0 ? "2.5" : i === 1 ? "1.8" : "1.2"} />
  <Percent className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />

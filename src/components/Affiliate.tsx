@@ -82,7 +82,7 @@ export function AffiliateManagement() {
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between">
  <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản lý KOL/KOC & Affiliate</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-semibold text-[#111827]">Quản lý KOL/KOC & Affiliate</h1>
  <p className="text-sm text-[#6B7280] mt-1">Quản lý mạng lưới KOL/KOC, Publisher. Booking, thiết lập hoa hồng và Đồng bộ Flash Sale.</p>
  </div>
  <div className="flex gap-3">
@@ -103,22 +103,22 @@ export function AffiliateManagement() {
 
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng Publisher/KOL</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Tổng Publisher/KOL</p>
  <div className="text-2xl font-bold text-[#111827]">1,240</div>
  <div className="mt-1 text-[10px] text-[#10B981] font-medium">+12 người mới tuần này</div>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Tổng hoa hồng đã chi</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Tổng hoa hồng đã chi</p>
  <div className="text-2xl font-bold text-[#111827]">{formatCurrency(2450000000)}</div>
  <div className="mt-1 text-[10px] text-[#6B7280]">Chiếm 8.2% tổng GMV sàn</div>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">CTR Trung bình</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">CTR Trung bình</p>
  <div className="text-2xl font-bold text-primary-600">6.8%</div>
  <div className="mt-1 text-[10px] text-primary-600 font-medium">+1.2% so với tháng trước</div>
  </div>
  <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đơn hàng Affiliate</p>
+ <p className="text-[10px] text-[#6B7280] mb-1">Đơn hàng Affiliate</p>
  <div className="text-2xl font-bold text-[#111827]">42,850</div>
  <div className="mt-1 text-[10px] text-[#111827]">24% tổng lượng đơn sàn</div>
  </div>
@@ -155,12 +155,12 @@ export function AffiliateManagement() {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">KOL / Publisher / Agent</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Nền tảng & Followers</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hiệu quả (Orders/CTR)</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hoa hồng & Booking</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Hành động</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">KOL / Publisher / Agent</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Nền tảng & Followers</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280]">Hiệu quả (Orders/CTR)</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Hoa hồng & Booking</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[11px] text-[#6B7280] text-right">Hành động</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-[#F3F4F6]">
@@ -174,10 +174,10 @@ export function AffiliateManagement() {
  <div>
  <div className="flex items-center gap-1">
   <p className="text-sm font-semibold text-[#111827]">{affiliate.name}</p>
-  {affiliate.vneidVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" title="Đã xác thực VNeID" />}
+  {affiliate.vneidVerified && <span title="Đã xác thực VNeID"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /></span>}
 </div>
  <div className="flex items-center gap-1 mt-0.5">
- <p className="text-[10px] text-[#6B7280] uppercase tracking-tight">{affiliate.type}</p>
+ <p className="text-[10px] text-[#6B7280] tracking-tight">{affiliate.type}</p>
  {affiliate.categoryTags && affiliate.categoryTags.length > 0 && (
  <span className="text-[10px] text-orange-700 bg-slate-100 px-1 rounded-sm ml-1">{affiliate.categoryTags[0]}</span>
  )}

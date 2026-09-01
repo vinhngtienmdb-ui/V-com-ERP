@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS zalo_accounts (
 CREATE TABLE IF NOT EXISTS zalo_customers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   zalo_global_id VARCHAR(255) UNIQUE,
-  crm_customer_id UUID REFERENCES customers(id),
+  crm_customer_id TEXT REFERENCES customers(id), -- customers.id là TEXT
   zalo_name VARCHAR(255) NOT NULL,
   alias_name VARCHAR(255),
   phone VARCHAR(20),
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS zalo_conversations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   account_id UUID REFERENCES zalo_accounts(id),
   customer_id UUID REFERENCES zalo_customers(id),
-  assigned_to UUID REFERENCES sellers(id), -- Lead Pool routing
+  assigned_to TEXT REFERENCES sellers(id), -- sellers.id là TEXT — Lead Pool routing
   is_group BOOLEAN DEFAULT false,
   unread_count INTEGER DEFAULT 0,
   is_pinned BOOLEAN DEFAULT false,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS zalo_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   shortcut VARCHAR(50) NOT NULL UNIQUE, -- e.g. /baogia
   content TEXT NOT NULL,
-  created_by UUID REFERENCES sellers(id),
+  created_by TEXT REFERENCES sellers(id), -- sellers.id là TEXT
   is_public BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS zalo_templates (
 CREATE TABLE IF NOT EXISTS zalo_appointments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   customer_id UUID REFERENCES zalo_customers(id),
-  seller_id UUID REFERENCES sellers(id),
+  seller_id TEXT REFERENCES sellers(id), -- sellers.id là TEXT
   title VARCHAR(255) NOT NULL,
   appointment_date TIMESTAMP NOT NULL,
   notes TEXT,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS zalo_appointments (
 CREATE TABLE IF NOT EXISTS zalo_audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   action_type VARCHAR(100) NOT NULL,
-  performed_by UUID REFERENCES sellers(id),
+  performed_by TEXT REFERENCES sellers(id), -- sellers.id là TEXT
   target_id UUID,
   details JSONB,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

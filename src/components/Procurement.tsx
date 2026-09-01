@@ -146,13 +146,13 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
  <tr className="bg-slate-50 border-b border-slate-300">
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Nhà cung cấp</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Ngành hàng</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Liên hệ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Chính sách & HĐ</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đánh giá</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái</th>
- <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600">Nhà cung cấp</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600">Ngành hàng</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600">Liên hệ</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600">Chính sách & HĐ</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Đánh giá</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Trạng thái</th>
+ <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Trạng thái Ghi sổ</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100 bg-white">
@@ -200,7 +200,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </td>
  <td className="px-6 py-4 text-center">
  <span className={cn(
- "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider",
+ "px-2 py-1 rounded text-[10px]",
  supplier.status === 'active' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"
  )}>
  {supplier.status === 'active' ? 'Đang hợp tác' : 'Tạm dừng'}
@@ -208,7 +208,7 @@ function SupplierManagement({ onBack }: { onBack: () => void }) {
  </td>
  <td className="px-6 py-4 text-center">
     {syncedSuppliers[supplier.id] ? (
-      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-medium border border-emerald-200 rounded-full">
         Đã ghi sổ 🟢
       </span>
     ) : (
@@ -405,19 +405,19 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
       <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-slate-200 bg-slate-50" columns={4} gap={16}>
         <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-orange-600" /> Tổng phiếu</h3>
-          <p className="text-2xl font-black text-slate-900 mt-2">{requests.length}</p>
+          <p className="text-2xl font-semibold text-slate-900 mt-2">{requests.length}</p>
         </div>
         <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Chờ duyệt</h3>
-          <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
+          <p className="text-2xl font-semibold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
         </div>
         <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
-          <p className="text-2xl font-black text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
+          <p className="text-2xl font-semibold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
         </div>
         <div className="bg-white border border-slate-300 p-4 rounded-lg shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2"><BadgeDollarSign className="w-4 h-4 text-purple-500" /> Tổng kinh phí duyệt</h3>
-          <p className="text-2xl font-black text-slate-900 mt-2">{formatCurrency(requests.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
+          <p className="text-2xl font-semibold text-slate-900 mt-2">{formatCurrency(requests.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.value, 0))}</p>
         </div>
       </DraggableGrid>
 
@@ -425,13 +425,13 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
         <table className="w-full text-left border-collapse whitespace-nowrap">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-300">
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-[15%]">Mã Phiếu / Khối</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest w-full">Nội dung & Người đề xuất</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-right">Dự toán / Mặt hàng</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái duyệt</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Hành động phê duyệt</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Đơn hàng PO</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest text-center">Trạng thái Ghi sổ</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 w-[15%]">Mã Phiếu / Khối</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 w-full">Nội dung & Người đề xuất</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 text-right">Dự toán / Mặt hàng</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Trạng thái duyệt</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Hành động phê duyệt</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Đơn hàng PO</th>
+              <th className="px-6 py-4 text-[10px] text-slate-600 text-center">Trạng thái Ghi sổ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white">
@@ -446,12 +446,12 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
                   <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5"><Users className="w-3 h-3" /> {req.requester}</p>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <p className="text-sm font-black text-rose-600">{formatCurrency(req.value)}</p>
+                  <p className="text-sm font-semibold text-rose-600">{formatCurrency(req.value)}</p>
                   <p className="text-[10px] text-slate-600 font-medium">{req.itemsCount} đơn vị</p>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className={cn(
-                    "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
+                    "px-2.5 py-1 text-[11px] rounded-lg tracking-tight inline-flex items-center gap-1",
                     req.status === 'approved' ? "bg-emerald-50 text-emerald-600" : 
                     req.status === 'pending' ? "bg-amber-50 text-amber-600" : "bg-rose-50 text-rose-600"
                   )}>
@@ -492,7 +492,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
                       </button>
                       {req.deliveryStatus && req.deliveryStatus !== 'none' && (
                         <span className={cn(
-                          "px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider block w-fit mx-auto",
+                          "px-2 py-0.5 rounded text-[8px] block w-fit mx-auto",
                           req.deliveryStatus === 'delivered' ? "bg-emerald-50 text-emerald-600" :
                           req.deliveryStatus === 'shipping' ? "bg-primary-50 text-primary-600 animate-pulse" :
                           "bg-amber-50 text-amber-600"
@@ -508,7 +508,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
                 <td className="px-6 py-4 text-center">
                   {req.status === 'approved' ? (
                     syncedRequests[req.id] ? (
-                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 rounded-full">
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-medium border border-emerald-200 rounded-full">
                         Đã ghi sổ 🟢
                       </span>
                     ) : (
@@ -564,7 +564,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
               {/* PDF Header */}
               <div className="flex justify-between items-start pb-4 border-b border-dashed border-slate-400">
                 <div>
-                  <h4 className="font-serif font-black text-sm text-slate-900">CÔNG TY CỔ PHẦN VCOMM</h4>
+                  <h4 className="font-sans font-semibold text-sm text-slate-900">CÔNG TY CỔ PHẦN VCOMM</h4>
                   <p className="text-[10px] text-slate-600 mt-1">15 Cầu Giấy, Quan Hoa, Cầu Giấy, Hà Nội</p>
                   <p className="text-[10px] text-slate-600">Mã số thuế: 0102030405</p>
                 </div>
@@ -610,16 +610,16 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
                   </thead>
                   <tbody>
                     <tr className="border-b border-slate-400">
-                      <td className="p-2 border-r border-slate-400 leading-normal font-sans font-bold text-slate-900">
+                      <td className="p-2 border-r border-slate-400 leading-normal font-sans font-medium text-slate-900">
                         {selectedRequestForPo.title}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-400 font-bold">{selectedRequestForPo.itemsCount}</td>
+                      <td className="p-2 text-right border-r border-slate-400 font-medium">{selectedRequestForPo.itemsCount}</td>
                       <td className="p-2 text-right border-r border-slate-400">{formatCurrency(selectedRequestForPo.value / (selectedRequestForPo.itemsCount || 1))}</td>
-                      <td className="p-2 text-right font-bold">{formatCurrency(selectedRequestForPo.value)}</td>
+                      <td className="p-2 text-right font-medium">{formatCurrency(selectedRequestForPo.value)}</td>
                     </tr>
                     <tr className="bg-slate-100 font-bold text-slate-900">
                       <td colSpan={3} className="p-2 text-right border-r border-slate-400">TỔNG CỘNG THANH TOÁN (ĐÃ VAT)</td>
-                      <td className="p-2 text-right text-rose-600 font-black">{formatCurrency(selectedRequestForPo.value)}</td>
+                      <td className="p-2 text-right text-rose-600 font-semibold">{formatCurrency(selectedRequestForPo.value)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -692,7 +692,7 @@ export function Procurement() {
  <ArrowLeft className="w-4 h-4 text-slate-600" />
  </button>
  )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
  </div>
  <p className="text-sm text-[#6B7280]">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
  </div>
@@ -712,42 +712,42 @@ export function Procurement() {
  <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
+ <span className="text-[10px] text-[#6B7280]">Chi phí mua hàng (T3)</span>
  <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(1850000000)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
+ <span className="text-2xl font-semibold text-[#111827]">{formatCurrency(1850000000)}</span>
+ <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
+ <span className="text-[10px] text-[#6B7280]">Đề xuất chờ duyệt</span>
  <Clock className="w-4 h-4 text-orange-700" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">12 Phiếu</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
+ <span className="text-2xl font-semibold text-[#111827]">12 Phiếu</span>
+ <span className="text-[10px] text-orange-700 font-medium bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
+ <span className="text-[10px] text-[#6B7280]">Nhà cung cấp Core</span>
  <Building2 className="w-4 h-4 text-orange-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">240 NCC</span>
- <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
+ <span className="text-2xl font-semibold text-[#111827]">240 NCC</span>
+ <span className="text-[10px] text-orange-600 font-medium bg-orange-50 px-2 py-0.5 rounded">8 New</span>
  </div>
  </div>
  <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
+ <span className="text-[10px] text-[#6B7280]">Đánh giá trung bình</span>
  <Star className="w-4 h-4 text-primary-600" />
  </div>
  <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">4.85/5</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
+ <span className="text-2xl font-semibold text-[#111827]">4.85/5</span>
+ <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
  </div>
  </div>
  </DraggableGrid>

@@ -46,6 +46,7 @@ const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m
 const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
 const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
 const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
+const PublicLegalInfo = React.lazy(() => import('./components/PublicLegalInfo').then(m => ({ default: m.PublicLegalInfo })));
 const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
 
 
@@ -372,6 +373,7 @@ function AppContent() {
   // Public E-Menu and Supplier Portal routes bypass standard staff-only authentication checks
   const isPublicEMenu = location.pathname.startsWith('/emenu/');
   const isSupplierPortal = location.pathname.startsWith('/supplier-portal');
+  const isPublicLegal = location.pathname.startsWith('/legal-info');
 
   if (isPublicEMenu) {
     return (
@@ -391,6 +393,18 @@ function AppContent() {
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route path="/supplier-portal" element={<SupplierPortal />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  if (isPublicLegal) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/legal-info" element={<PublicLegalInfo />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>

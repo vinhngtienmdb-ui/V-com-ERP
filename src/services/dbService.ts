@@ -130,6 +130,7 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.sku = jsData.sku || null;
     payload.category = jsData.category || null;
     payload.image_url = jsData.image || jsData.imageUrl || jsData.image_url || null;
+    payload.image_urls = jsData.image_urls ?? (Array.isArray(jsData.images) ? jsData.images : null);
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
     
     // Add missing relational fields
@@ -182,6 +183,8 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.payment_status = jsData.paymentStatus || jsData.payment_status || 'unpaid';
     payload.payment_method = jsData.paymentMethod || jsData.payment_method || 'cod';
     payload.channel = jsData.channel || null;
+    payload.transaction_id = jsData.transactionId || jsData.transaction_id || null;
+    payload.delivered_at = jsData.deliveredAt || jsData.delivered_at || null;
   } else if (tableName === 'warehouse_stock') {
     payload.warehouse_id = jsData.warehouseId || jsData.warehouse_id || jsData.storeId || jsData.store_id || null;
     payload.product_id = jsData.productId || jsData.materialId || jsData.product_id || null;
@@ -331,7 +334,8 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.sku = row.sku;
     jsData.category = row.category;
     jsData.imageUrl = row.image_url;
-    jsData.image = row.image_url; // Map to both image and imageUrl for frontend compatibility
+    jsData.image = row.image_urls || row.image_url; // Ưu tiên gallery (image_urls) cho frontend
+    jsData.image_urls = row.image_urls ?? (Array.isArray(row.images) ? row.images : null);
     jsData.createdAt = row.created_at;
     
     // Deserialize relational columns
@@ -1415,10 +1419,25 @@ export const onAuthStateChanged = (authObj: any, callback: (user: User | null) =
 };
 
 export const signIn = async (authObj: any, email: string, password: any) => {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    const customError = new Error(error.message) as any;
-    customError.code = 'auth/invalid-credential';
+  let data: any = null;
+  try {
+    const res = await supabase.auth.signInWithPassword({ email, password });
+    data = res.data;
+    if (res.error) throw res.error;
+  } catch (error: any) {
+    const customError = new Error(error.message || 'fetch failed') as any;
+    // Network/unreachable errors (e.g. unreachable Supabase host) must not be
+    // treated as an invalid credential, so offline fallback logins stay possible.
+    if (
+      error?.name === 'AuthRetryableFetchError' ||
+      error?.name === 'AuthUnknownError' ||
+      error?.status === 0 ||
+      /fetch failed|network|ENOTFOUND|ECONNREFUSED|Failed to fetch/i.test(error?.message || '')
+    ) {
+      customError.code = 'auth/network-request-failed';
+    } else {
+      customError.code = 'auth/invalid-credential';
+    }
     throw customError;
   }
   

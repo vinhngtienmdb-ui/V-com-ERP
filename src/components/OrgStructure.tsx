@@ -185,7 +185,7 @@ export function OrgStructure() {
     <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
+          <h1 className="font-sans tracking-tight text-2xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
           <p className="text-sm text-slate-600">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
         </div>
         {activeTab !== 'org_chart' && (
@@ -242,8 +242,8 @@ export function OrgStructure() {
               ) : (
                 departments.map(dept => (
                   <tr key={dept.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{dept.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900">{dept.name}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-medium">{dept.id}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900">{dept.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-700">{dept.manager || 'Chưa có'}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">
                       {departments.find(d => d.id === dept.parentId)?.name || '---'}
@@ -280,8 +280,8 @@ export function OrgStructure() {
               ) : (
                 jobTitles.map(title => (
                   <tr key={title.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{title.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900">{title.name}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-medium">{title.id}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900">{title.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-700">
                       {departments.find(d => d.id === title.departmentId)?.name || '---'}
                     </td>
@@ -318,9 +318,9 @@ export function OrgStructure() {
               ) : (
                 jobRanks.sort((a,b) => a.level - b.level).map(rank => (
                   <tr key={rank.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-bold">{rank.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900">{rank.name}</td>
-                    <td className="px-6 py-4 text-sm text-slate-700 font-bold">Lvl {rank.level}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-slate-600 font-medium">{rank.id}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900">{rank.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700 font-medium">Lvl {rank.level}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 text-slate-500">
                         <button onClick={() => handleOpenModal('rank', rank)} className="p-1 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"><Edit2 className="w-4 h-4" /></button>
@@ -373,7 +373,7 @@ export function OrgStructure() {
                 {modalType === 'department' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Phòng Ban</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Tên Phòng Ban</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
@@ -383,7 +383,7 @@ export function OrgStructure() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Quản Lý</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Tên Quản Lý</label>
                       <input 
                         type="text" 
                         value={formData.manager || ''} 
@@ -393,7 +393,7 @@ export function OrgStructure() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Trực thuộc phòng ban</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Trực thuộc phòng ban</label>
                       <select 
                         value={formData.parentId || ''} 
                         onChange={(e) => setFormData({...formData, parentId: e.target.value})}
@@ -411,7 +411,7 @@ export function OrgStructure() {
                 {modalType === 'title' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Chức Danh</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Tên Chức Danh</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
@@ -421,7 +421,7 @@ export function OrgStructure() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Thuộc phòng ban</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Thuộc phòng ban</label>
                       <select 
                         value={formData.departmentId || ''} 
                         onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
@@ -439,7 +439,7 @@ export function OrgStructure() {
                 {modalType === 'rank' && (
                   <>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tên Cấp Bậc</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Tên Cấp Bậc</label>
                       <input 
                         type="text" 
                         value={formData.name || ''} 
@@ -449,7 +449,7 @@ export function OrgStructure() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Level (Số nguyên dương)</label>
+                      <label className="block text-xs font-medium text-slate-600 uppercase tracking-widest mb-2">Level (Số nguyên dương)</label>
                       <input 
                         type="number" 
                         min="1"

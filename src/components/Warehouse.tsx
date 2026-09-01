@@ -1629,7 +1629,7 @@ export function WarehouseModule() {
                 <ArrowLeft className="w-4 h-4 text-slate-600" />
               </button>
             )}
-            <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">
+            <h1 className="font-sans tracking-tight text-2xl font-bold text-[#111827]">
               Quản trị Kho vận
             </h1>
           </div>
@@ -1653,58 +1653,58 @@ export function WarehouseModule() {
           <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
             <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
+                <span className="text-[10px] text-[#6B7280]">
                   Giá trị tồn kho
                 </span>
                 <DollarSign className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">
+                <span className="text-2xl font-semibold text-[#111827]">
                   {formatCurrency(4850000000)}
                 </span>
-                <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">
                   +5.2%
                 </span>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
+                <span className="text-[10px] text-[#6B7280]">
                   Đơn Fulfillment
                 </span>
                 <Truck className="w-4 h-4 text-orange-700" />
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">1,248</span>
-                <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">
+                <span className="text-2xl font-semibold text-[#111827]">1,248</span>
+                <span className="text-[10px] text-orange-700 font-medium bg-slate-100 px-2 py-0.5 rounded">
                   85 Đang giao
                 </span>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
+                <span className="text-[10px] text-[#6B7280]">
                   Hàng sắp hết (Alt)
                 </span>
                 <AlertCircle className="w-4 h-4 text-orange-600" />
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">42 SKUs</span>
-                <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">
+                <span className="text-2xl font-semibold text-[#111827]">42 SKUs</span>
+                <span className="text-[10px] text-orange-600 font-medium bg-orange-50 px-2 py-0.5 rounded">
                   Cần nhập
                 </span>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm transition-all">
               <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
+                <span className="text-[10px] text-[#6B7280]">
                   Uptime Kho vận
                 </span>
                 <Clock className="w-4 h-4 text-primary-600" />
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">99.8%</span>
-                <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">
+                <span className="text-2xl font-semibold text-[#111827]">99.8%</span>
+                <span className="text-[10px] text-primary-600 font-medium bg-primary-50 px-2 py-0.5 rounded">
                   Realtime
                 </span>
               </div>
@@ -1818,7 +1818,7 @@ export function WarehouseModule() {
                     <div className="bg-slate-100 border border-slate-300 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <Percent className="w-3.5 h-3.5 text-orange-700" />
-                        <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wider">
+                        <span className="text-[10px] text-orange-700">
                           Chính sách chiết khấu
                         </span>
                       </div>
@@ -1827,18 +1827,7 @@ export function WarehouseModule() {
                       </p>
                     </div>
 
-                    <div className="flex justify-between items-center mt-6 pt-4 border-t border-slate-200">
-                      <span
-                        className={cn(
-                          'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider',
-                          partner.status === 'Active'
-                            ? 'bg-emerald-50 text-emerald-600'
-                            : 'bg-orange-50 text-orange-600'
-                        )}
-                      >
-                        {partner.status}
-                      </span>
-                      <div className="flex gap-2">
+                    <div className="flex justify-between items-center mt-6 pt-4 border-t border-slate-200"> <span className={cn( 'text-[10px] px-2 py-0.5 rounded tracking-wider', partner.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600' )} > {partner.status} </span> <div className="flex gap-2">
                         <button
                           onClick={() => setSelectedPartnerForFees(partner.id)}
                           className="text-xs font-bold text-orange-700 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
@@ -1870,7 +1859,7 @@ export function WarehouseModule() {
                     Biểu phí dịch vụ:{' '}
                     {LOGISTICS_PARTNERS.find(p => p.id === selectedPartnerForFees)?.name}
                   </h3>
-                  <span className="text-[10px] bg-[#EAE7DF] text-orange-800 font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                  <span className="text-[10px] bg-[#EAE7DF] text-orange-800 px-2 py-0.5 rounded">
                     {selectedPartnerForFees}
                   </span>
                 </div>
@@ -1884,19 +1873,19 @@ export function WarehouseModule() {
                   <table className="w-full text-left border-collapse whitespace-nowrap">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-300">
-                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-[10px] text-slate-500">
                           Tên khoản phí
                         </th>
-                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-[10px] text-slate-500">
                           Loại phí
                         </th>
-                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-[10px] text-slate-500">
                           Giá trị
                         </th>
-                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-[10px] text-slate-500">
                           Trạng thái
                         </th>
-                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">
+                        <th className="px-6 py-4 text-[10px] text-slate-500 text-right">
                           Thao tác
                         </th>
                       </tr>
@@ -1916,26 +1905,14 @@ export function WarehouseModule() {
                             <span className="text-xs font-medium text-slate-600">{fee.type}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-sm font-black text-orange-700">{fee.value}</span>
+                            <span className="text-sm font-semibold text-orange-700">{fee.value}</span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {fee.status === 'Active' ? (
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                               ) : (
-                                <XCircle className="w-4 h-4 text-rose-500" />
-                              )}
-                              <span
-                                className={cn(
-                                  'text-[10px] font-bold uppercase tracking-wider',
-                                  fee.status === 'Active' ? 'text-emerald-600' : 'text-rose-600'
-                                )}
-                              >
-                                {fee.status}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
+                                <XCircle className="w-4 h-4 text-rose-500"/> )} <span className={cn( 'text-[10px] tracking-wider', fee.status === 'Active' ? 'text-emerald-600' : 'text-rose-600' )} > {fee.status} </span> </div> </td> <td className="px-6 py-4 text-right">
                             <button className="text-slate-500 hover:text-primary-600 transition-colors">
                               <MoreVertical className="w-5 h-5" />
                             </button>
@@ -2001,7 +1978,7 @@ export function WarehouseModule() {
               <div className="overflow-x-auto min-w-0">
                 <table className="w-full text-left border-collapse whitespace-nowrap">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-300 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr className="bg-slate-50 border-b border-slate-300 text-[10px] text-slate-500">
                       <th className="px-6 py-4">Vận đơn</th>
                       <th className="px-6 py-4">Đối tác</th>
                       <th className="px-6 py-4">Tài xế/Shipper</th>
@@ -2021,7 +1998,7 @@ export function WarehouseModule() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-bold text-sm text-slate-800">
+                        <td className="px-6 py-4 font-medium text-sm text-slate-800">
                           {ship.partner}
                         </td>
                         <td className="px-6 py-4">
@@ -2035,21 +2012,7 @@ export function WarehouseModule() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-slate-700">{ship.eta}</td>
-                        <td className="px-6 py-4 text-center">
-                          <span
-                            className={cn(
-                              'px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight',
-                              ship.status === 'In Transit'
-                                ? 'bg-slate-100 text-orange-700'
-                                : ship.status === 'Delivered'
-                                  ? 'bg-emerald-50 text-emerald-600'
-                                  : 'bg-slate-100 text-slate-600'
-                            )}
-                          >
-                            {ship.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-center"> <span className={cn( 'px-2.5 py-1 rounded-full text-[10px] tracking-tight', ship.status === 'In Transit' ? 'bg-slate-100 text-orange-700' : ship.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-600' )} > {ship.status} </span> </td> <td className="px-6 py-4 text-right">
                           <button className="p-2 text-slate-500 hover:text-primary-600 transition-colors">
                             <Navigation className="w-4 h-4" />
                           </button>
@@ -2078,7 +2041,7 @@ export function WarehouseModule() {
             </button>
             <div className={`flex items-center gap-2 text-primary-600 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-100 ${loadingForecast ? 'animate-pulse' : ''}`}>
               <Sparkles className="w-4 h-4" />
-              <span className="text-[10px] font-black uppercase tracking-widest">
+              <span className="text-[10px]">
                 AI Demand Forecasting Live
               </span>
             </div>
@@ -2102,7 +2065,7 @@ export function WarehouseModule() {
             <div className="p-6 space-y-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chọn mặt hàng phân tích</label>
+                  <label className="text-[10px] text-slate-400">Chọn mặt hàng phân tích</label>
                   <select
                     className="w-full md:w-80 text-xs font-bold p-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                     value={selectedProductForecast?.productId || ''}
@@ -2121,15 +2084,15 @@ export function WarehouseModule() {
                 <div className="flex gap-6 text-xs font-bold text-slate-700">
                   <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
                     <span className="block text-[9px] text-slate-400 uppercase">Tồn kho hiện tại</span>
-                    <span className="text-sm font-black text-slate-900">{selectedProductForecast?.currentStock || 0}</span>
+                    <span className="text-sm font-semibold text-slate-900">{selectedProductForecast?.currentStock || 0}</span>
                   </div>
                   <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
                     <span className="block text-[9px] text-slate-400 uppercase">Tiêu thụ / ngày</span>
-                    <span className="text-sm font-black text-slate-900">{selectedProductForecast?.dailyConsumption || 0}</span>
+                    <span className="text-sm font-semibold text-slate-900">{selectedProductForecast?.dailyConsumption || 0}</span>
                   </div>
                   <div className="text-center p-2 bg-white border border-slate-200 rounded-lg min-w-[80px]">
                     <span className="block text-[9px] text-slate-400 uppercase">Số ngày còn lại</span>
-                    <span className={`text-sm font-black ${selectedProductForecast?.daysOfStockLeft < 7 ? 'text-red-600' : 'text-slate-900'}`}>
+                    <span className={`text-sm font-semibold ${selectedProductForecast?.daysOfStockLeft < 7 ? 'text-red-600' : 'text-slate-900'}`}>
                       {selectedProductForecast?.daysOfStockLeft === 999 ? 'Không tiêu thụ' : `${selectedProductForecast?.daysOfStockLeft || 0} ngày`}
                     </span>
                   </div>
@@ -2173,7 +2136,7 @@ export function WarehouseModule() {
                   <div className="space-y-6">
                     <div className="bg-white border-2 border-primary-100 rounded-lg p-6 shadow-sm shadow-indigo-100/20 flex flex-col justify-between">
                       <div>
-                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
+                        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">
                           AI Recommendation
                         </h4>
                         
@@ -2194,7 +2157,7 @@ export function WarehouseModule() {
                                     {rec.reason}
                                   </p>
                                   {rec.action === 'buy' && rec.qty > 0 && (
-                                    <span className="inline-block bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded mt-2">
+                                    <span className="inline-block bg-amber-100 text-amber-800 text-[9px] font-medium px-2 py-0.5 rounded mt-2">
                                       Số lượng đề xuất: {rec.qty} đơn vị
                                     </span>
                                   )}
@@ -2218,7 +2181,7 @@ export function WarehouseModule() {
                           <button
                             onClick={() => handleCreateAutoRequest(selectedProductForecast)}
                             disabled={creatingRequest || !isBuy}
-                            className={`w-full mt-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            className={`w-full mt-6 py-3 rounded-lg text-xs font-semibold uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                               isBuy 
                                 ? 'bg-primary-600 hover:bg-primary-700 text-[#FAF9F5] shadow-indigo-200' 
                                 : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
@@ -2232,12 +2195,12 @@ export function WarehouseModule() {
                     </div>
 
                     <div className="bg-slate-50 border border-slate-300 rounded-lg p-6">
-                      <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">
                         Độ chính xác mô hình
                       </h4>
                       <div className="flex items-center gap-4">
                         <div className={`w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent flex items-center justify-center ${loadingForecast ? 'animate-spin' : ''}`}>
-                          <span className="text-xs font-black text-slate-900">94.2%</span>
+                          <span className="text-xs font-semibold text-slate-900">94.2%</span>
                         </div>
                         <div>
                           <p className="text-xs font-bold text-slate-900">Mô hình LSTM v4.2</p>
@@ -2308,7 +2271,7 @@ export function WarehouseModule() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 border border-slate-300 rounded-lg">
                 {/* Metric Switcher */}
                 <div className="space-y-1.5 text-left font-sans">
-                  <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest block">
+                  <span className="text-[10px] text-[#6B7280] block">
                     Loại bản đồ nhiệt
                   </span>
                   <div className="flex gap-1.5 bg-white border border-slate-300 p-1 rounded-lg w-fit shadow-xs">
@@ -2350,7 +2313,7 @@ export function WarehouseModule() {
 
                 {/* Locator Search */}
                 <div className="space-y-1.5 flex-1 max-w-sm text-left font-sans">
-                  <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest block">
+                  <span className="text-[10px] text-[#6B7280] block">
                     Định vị SKU trên sơ đồ
                   </span>
                   <div className="relative">
@@ -2447,7 +2410,7 @@ export function WarehouseModule() {
                               <LayoutGrid className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
                               Dãy {rack} (Shelving Unit)
                             </span>
-                            <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                               Khung cột chịu lực
                             </span>
                           </div>
@@ -2513,7 +2476,7 @@ export function WarehouseModule() {
                                     'bg-orange-50 text-orange-800 border-orange-200';
                                 } else {
                                   cellColorClass =
-                                    'bg-rose-50 text-rose-800 border-rose-300 font-black';
+                                    'bg-rose-50 text-rose-800 border-rose-300 font-semibold';
                                 }
                               } else if (heatmapMetric === 'expiry') {
                                 const minExpiry =
@@ -2573,7 +2536,7 @@ export function WarehouseModule() {
                                       {shelf.id}
                                     </span>
                                     <div className="text-left">
-                                      <p className="text-[9px] uppercase font-bold text-slate-500 tracking-tight leading-none mb-1 font-sans">
+                                      <p className="text-[9px] text-slate-500 tracking-tight leading-none mb-1 font-sans">
                                         {shelf.level}
                                       </p>
                                       <p className="text-xs truncate max-w-[130px] font-medium text-slate-800 font-sans">
@@ -2586,7 +2549,7 @@ export function WarehouseModule() {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-white/80 border shadow-2xs font-mono">
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/80 border shadow-2xs font-mono">
                                       {metricDisplay}
                                     </span>
                                   </div>
@@ -2688,15 +2651,15 @@ export function WarehouseModule() {
                   <div className="flex items-start justify-between border-b pb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1.5 font-sans">
-                        <span className="text-[10px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">
+                        <span className="text-[10px] font-medium text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">
                           Ô KỆ {selectedShelf.rack}
                         </span>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
+                        <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />{' '}
                           Cảm biến live
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                      <h3 className="text-xl font-bold font-sans text-slate-900 flex items-center gap-2">
                         Vị trí: {selectedShelf.id}
                       </h3>
                     </div>
@@ -2711,10 +2674,10 @@ export function WarehouseModule() {
                   {/* Sensor Telemetry widgets */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-left font-sans">
-                      <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wide block">
+                      <span className="text-[10px] text-[#6B7280] block">
                         Nhiệt độ cảm biến
                       </span>
-                      <p className="text-lg font-black text-slate-800 mt-1 flex items-center gap-1.5">
+                      <p className="text-lg font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
                         <Timer
                           className="w-4 h-4 text-orange-600 animate-spin"
                           style={{ animationDuration: '8s' }}
@@ -2723,10 +2686,10 @@ export function WarehouseModule() {
                       </p>
                     </div>
                     <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-left font-sans">
-                      <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wide block">
+                      <span className="text-[10px] text-[#6B7280] block">
                         Độ ẩm tương đối
                       </span>
-                      <p className="text-lg font-black text-slate-800 mt-1 flex items-center gap-1.5">
+                      <p className="text-lg font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
                         <Globe className="w-4 h-4 text-blue-500" />
                         {selectedShelf.sensorHumid}% rH
                       </p>
@@ -2791,7 +2754,7 @@ export function WarehouseModule() {
                             className="p-3 bg-slate-50 border rounded-lg text-xs space-y-1 hover:bg-slate-100 transition-colors"
                           >
                             <div className="flex justify-between items-start gap-2">
-                              <span className="font-extrabold text-slate-900 truncate">
+                              <span className="font-bold text-slate-900 truncate">
                                 {item.name}
                               </span>
                               <span className="font-mono text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded-sm shrink-0">
@@ -2801,7 +2764,7 @@ export function WarehouseModule() {
                             <div className="flex justify-between items-center text-[#6B7280]">
                               <span>
                                 Số lượng lưu:{' '}
-                                <strong className="text-orange-700 font-extrabold">
+                                <strong className="text-orange-700 font-bold">
                                   {item.qty || item.currentStock}
                                 </strong>
                               </span>
@@ -2809,7 +2772,7 @@ export function WarehouseModule() {
                                 className={cn(
                                   'px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase',
                                   item.expiryDays < 30
-                                    ? 'bg-rose-100 text-rose-700 font-extrabold animate-pulse'
+                                    ? 'bg-rose-100 text-rose-700 font-bold animate-pulse'
                                     : item.expiryDays < 90
                                       ? 'bg-amber-100 text-[#D97706]'
                                       : 'bg-emerald-100 text-emerald-800'
@@ -2856,7 +2819,7 @@ export function WarehouseModule() {
                       >
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1 text-left">
-                            <label className="text-[9px] font-semibold text-[#6B7280] uppercase tracking-wide block">
+                            <label className="text-[9px] text-[#6B7280] block">
                               Hàng dời
                             </label>
                             <select
@@ -2879,7 +2842,7 @@ export function WarehouseModule() {
                             </select>
                           </div>
                           <div className="space-y-1 text-left">
-                            <label className="text-[9px] font-semibold text-[#6B7280] uppercase tracking-wide block">
+                            <label className="text-[9px] text-[#6B7280] block">
                               Số lượng
                             </label>
                             <input
@@ -2905,7 +2868,7 @@ export function WarehouseModule() {
                         </div>
 
                         <div className="space-y-1 text-left">
-                          <label className="text-[9px] font-semibold text-[#6B7280] uppercase tracking-wide block">
+                          <label className="text-[9px] text-[#6B7280] block">
                             Kệ nhận đích
                           </label>
                           <select
@@ -2973,7 +2936,7 @@ export function WarehouseModule() {
                         <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block" />{' '}
                         Ô quá tải cần hạ tải (&gt;90%):
                       </span>
-                      <span className="font-mono text-xs font-black text-rose-600">
+                      <span className="font-mono text-xs font-semibold text-rose-600">
                         {shelves.filter(s => s.occupancy >= 90).length} ô kệ
                       </span>
                     </div>
@@ -2982,7 +2945,7 @@ export function WarehouseModule() {
                         <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />{' '}
                         Ô sắp hết hàng cần refill (&lt;15%):
                       </span>
-                      <span className="font-mono text-xs font-black text-amber-600">
+                      <span className="font-mono text-xs font-semibold text-amber-600">
                         {
                           shelves.filter(
                             s => s.occupancy > 0 && s.occupancy <= 15
@@ -2996,7 +2959,7 @@ export function WarehouseModule() {
                         <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />{' '}
                         Ô trống rỗng khả dụng:
                       </span>
-                      <span className="font-mono text-xs font-black text-emerald-600">
+                      <span className="font-mono text-xs font-semibold text-emerald-600">
                         {shelves.filter(s => s.occupancy === 0).length} ô trống
                       </span>
                     </div>
@@ -3225,7 +3188,7 @@ export function WarehouseModule() {
                       </div>
                     )}
                     
-                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider text-center max-w-xs leading-relaxed">
+                    <p className="text-[10px] text-slate-600 text-center max-w-xs leading-relaxed">
                       Vui lòng căn chỉnh mã QR / Barcode vào giữa khung hình để tự động nhận dạng và đối sánh dữ liệu tồn kho.
                     </p>
                   </div>
@@ -3248,10 +3211,10 @@ export function WarehouseModule() {
                     />
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+                    <p className="text-[10px] text-slate-600">
                       {item.materialId}
                     </p>
-                    <p className="text-lg font-black text-slate-900">{item.quantity.toFixed(2)}</p>
+                    <p className="text-lg font-semibold text-slate-900">{item.quantity.toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -3261,7 +3224,7 @@ export function WarehouseModule() {
               <div className="overflow-x-auto min-w-0">
                 <table className="w-full text-left border-collapse whitespace-nowrap">
                   <thead className="bg-slate-50 border-b border-slate-300">
-                    <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <tr className="text-[10px] text-slate-500">
                       <th className="px-6 py-4">Mã Nguyên liệu</th>
                       <th className="px-6 py-4 text-center">Tồn kho thực tế</th>
                       <th className="px-6 py-4 text-center">Tồn khả dụng</th>
@@ -3279,28 +3242,28 @@ export function WarehouseModule() {
                               {item.materialId}
                             </span>
                             {(Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)) < 20 && (
-                              <span className="text-[8px] bg-rose-50 text-rose-600 font-black px-1.5 py-0.5 rounded uppercase">
+                              <span className="text-[8px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
                                 Sắp hết
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="text-sm font-black text-slate-900 text-lg">
+                          <span className="text-sm font-semibold text-slate-900 text-lg">
                             {item.quantity.toFixed(2)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span
                             className={cn(
-                              'text-sm font-black',
+                              'text-sm font-semibold',
                               (Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)) < 20 ? 'text-rose-600' : 'text-slate-900 text-lg'
                             )}
                           >
                             {(Number(item.quantity || 0) - Number(item.allocated || 0) - Number(item.pendingProcessing || 0)).toFixed(2)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-center text-xs font-bold text-slate-600">
+                        <td className="px-6 py-4 text-center text-xs font-medium text-slate-600">
                           {item.materialId.includes('MAT-001')
                             ? 'KG'
                             : item.materialId.includes('MAT-004')
@@ -3394,7 +3357,7 @@ export function WarehouseModule() {
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] text-slate-600">
                     <th className="p-4">Mã phiếu</th>
                     <th className="p-4">Loại</th>
                     <th className="p-4">Trạng thái</th>
@@ -3408,10 +3371,10 @@ export function WarehouseModule() {
                 <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
                   {stockVouchers.map((voucher) => (
                     <tr key={voucher.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="p-4 text-primary-600 font-bold">{voucher.code}</td>
+                      <td className="p-4 text-primary-600 font-medium">{voucher.code}</td>
                       <td className="p-4">
                         <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          "px-2.5 py-1 rounded-full text-[10px]",
                           voucher.type === 'in' && "bg-emerald-50 text-emerald-700",
                           voucher.type === 'out' && "bg-rose-50 text-rose-700",
                           voucher.type === 'transfer' && "bg-blue-50 text-blue-700"
@@ -3421,7 +3384,7 @@ export function WarehouseModule() {
                       </td>
                       <td className="p-4">
                         <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          "px-2.5 py-1 rounded-full text-[10px]",
                           voucher.status === 'draft' && "bg-slate-100 text-slate-700",
                           voucher.status === 'pending_approval' && "bg-amber-50 text-amber-700",
                           voucher.status === 'approved' && "bg-emerald-50 text-emerald-700",
@@ -3437,7 +3400,7 @@ export function WarehouseModule() {
                       <td className="p-4 text-right flex justify-end gap-2">
                         <button 
                           onClick={() => setSelectedVoucher(voucher)}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded text-[11px] font-black uppercase tracking-wider"
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded text-[11px]"
                         >
                           Chi tiết
                         </button>
@@ -3445,13 +3408,13 @@ export function WarehouseModule() {
                           <>
                             <button 
                               onClick={() => handleApproveVoucher(voucher)}
-                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-black uppercase tracking-wider shadow-sm"
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] shadow-sm"
                             >
                               Duyệt
                             </button>
                             <button 
                               onClick={() => handleCancelVoucher(voucher.id)}
-                              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] font-black uppercase tracking-wider shadow-sm"
+                              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] shadow-sm"
                             >
                               Hủy
                             </button>
@@ -3496,7 +3459,7 @@ export function WarehouseModule() {
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] text-slate-600">
                     <th className="p-4">Thời gian</th>
                     <th className="p-4">Sản phẩm</th>
                     <th className="p-4">Giao dịch</th>
@@ -3514,7 +3477,7 @@ export function WarehouseModule() {
                       </td>
                       <td className="p-4">
                         <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                          "px-2.5 py-1 rounded-full text-[10px]",
                           log.type === 'in' && "bg-emerald-50 text-emerald-700",
                           log.type === 'out' && "bg-rose-50 text-rose-700",
                           log.type === 'transfer' && "bg-blue-50 text-blue-700",
@@ -3523,7 +3486,7 @@ export function WarehouseModule() {
                           {log.type === 'in' ? 'Nhập kho' : log.type === 'out' ? 'Xuất kho' : log.type === 'transfer' ? 'Điều chuyển' : 'Hoàn hàng'}
                         </span>
                       </td>
-                      <td className="p-4 font-black">{log.quantity}</td>
+                      <td className="p-4 font-semibold">{log.quantity}</td>
                       <td className="p-4 text-slate-600 font-medium">{log.reason}</td>
                     </tr>
                   ))}
@@ -3550,7 +3513,7 @@ export function WarehouseModule() {
             <div className="p-6 overflow-y-auto space-y-6 flex-1">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Loại phiếu</label>
+                  <label className="text-[11px] text-slate-700">Loại phiếu</label>
                   <select 
                     value={voucherType}
                     onChange={(e) => setVoucherType(e.target.value as any)}
@@ -3564,7 +3527,7 @@ export function WarehouseModule() {
 
                 {(voucherType === 'out' || voucherType === 'transfer') && (
                   <div className="space-y-2">
-                    <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Kho nguồn</label>
+                    <label className="text-[11px] text-slate-700">Kho nguồn</label>
                     <select 
                       value={sourceWh}
                       onChange={(e) => setSourceWh(e.target.value)}
@@ -3580,7 +3543,7 @@ export function WarehouseModule() {
 
                 {(voucherType === 'in' || voucherType === 'transfer') && (
                   <div className="space-y-2">
-                    <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Kho đích</label>
+                    <label className="text-[11px] text-slate-700">Kho đích</label>
                     <select 
                       value={targetWh}
                       onChange={(e) => setTargetWh(e.target.value)}
@@ -3597,10 +3560,10 @@ export function WarehouseModule() {
 
               {/* Add item row */}
               <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 space-y-4">
-                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Thêm mặt hàng</div>
+                <div className="text-[11px] text-slate-700">Thêm mặt hàng</div>
                 <div className="grid grid-cols-4 gap-4 items-end">
                   <div className="col-span-2 space-y-2">
-                    <label className="text-[10px] font-bold text-slate-600">Sản phẩm</label>
+                    <label className="text-[10px] font-medium text-slate-600">Sản phẩm</label>
                     <select
                       value={selectedProdId}
                       onChange={(e) => setSelectedProdId(e.target.value)}
@@ -3613,7 +3576,7 @@ export function WarehouseModule() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-600">Số lượng</label>
+                    <label className="text-[10px] font-medium text-slate-600">Số lượng</label>
                     <input 
                       type="number"
                       min="1"
@@ -3634,7 +3597,7 @@ export function WarehouseModule() {
 
               {/* Selected items list */}
               <div className="space-y-2">
-                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Danh sách mặt hàng đã chọn</div>
+                <div className="text-[11px] text-slate-700">Danh sách mặt hàng đã chọn</div>
                 {voucherItems.length === 0 ? (
                   <div className="text-center py-6 text-slate-500 text-xs font-medium border border-dashed border-slate-300 rounded-lg">
                     Chưa có sản phẩm nào được chọn.
@@ -3643,7 +3606,7 @@ export function WarehouseModule() {
                   <div className="border border-slate-200 rounded-lg overflow-hidden">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-600">
                           <th className="p-3">Sản phẩm</th>
                           <th className="p-3">SKU</th>
                           <th className="p-3">Số lượng</th>
@@ -3655,7 +3618,7 @@ export function WarehouseModule() {
                           <tr key={item.productId}>
                             <td className="p-3">{item.name}</td>
                             <td className="p-3 text-slate-600">{item.sku}</td>
-                            <td className="p-3 font-black">{item.quantity}</td>
+                            <td className="p-3 font-semibold">{item.quantity}</td>
                             <td className="p-3 text-right">
                               <button 
                                 onClick={() => setVoucherItems(prev => prev.filter(x => x.productId !== item.productId))}
@@ -3697,7 +3660,7 @@ export function WarehouseModule() {
             <div className="p-6 border-b border-[#F3F4F6] flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="text-base font-bold text-slate-900">Chi tiết phiếu kho {selectedVoucher.code}</h3>
-                <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">
+                <div className="text-[10px] text-slate-600 mt-1">
                   Trạng thái: <span className="text-primary-600">{selectedVoucher.status}</span>
                 </div>
               </div>
@@ -3738,11 +3701,11 @@ export function WarehouseModule() {
               </div>
 
               <div className="space-y-2">
-                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">Danh sách mặt hàng</div>
+                <div className="text-[11px] text-slate-700">Danh sách mặt hàng</div>
                 <div className="border border-slate-200 rounded-lg overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-600">
                         <th className="p-3">Sản phẩm</th>
                         <th className="p-3">SKU</th>
                         <th className="p-3 text-right">Số lượng</th>
@@ -3755,7 +3718,7 @@ export function WarehouseModule() {
                           <tr key={item.id}>
                             <td className="p-3">{prod ? prod.name : 'Sản phẩm ' + item.product_id}</td>
                             <td className="p-3 text-slate-600">{prod ? prod.sku : '-'}</td>
-                            <td className="p-3 font-black text-right">{item.quantity}</td>
+                            <td className="p-3 font-semibold text-right">{item.quantity}</td>
                           </tr>
                         );
                       })}

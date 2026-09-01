@@ -153,7 +153,7 @@ export function DocumentManager() {
     <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex items-center justify-between">
         <div className="header-title">
-          <h1 className="font-serif tracking-tight text-2xl font-semibold text-slate-900">Quản trị Công văn & e-Office</h1>
+          <h1 className="font-sans tracking-tight text-2xl font-semibold text-slate-900">Quản trị Công văn & e-Office</h1>
           <p className="text-sm text-slate-600 mt-1">Hệ thống quản lý văn bản, áp dụng Nghị định 30/CP, ký số và luân chuyển.</p>
         </div>
         <div className="flex gap-3 items-center">
@@ -247,7 +247,7 @@ export function DocumentManager() {
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><Share className="w-4 h-4" /> Luân chuyển văn bản</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-2">Người / Phòng ban nhận xử lý (Có thể chọn nhiều)</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-2">Người / Phòng ban nhận xử lý (Có thể chọn nhiều)</label>
                       <div className="space-y-1 max-h-48 overflow-y-auto p-2 border border-slate-300 rounded-md bg-slate-50">
                         {[
                           { id: 'bod', name: 'Ban Giám đốc', users: [{ id: 'u1', name: 'Nguyễn Văn A (Tổng GĐ)' }] },
@@ -275,7 +275,7 @@ export function DocumentManager() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại tiếp nhận</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Phân loại tiếp nhận</label>
                       <select className="w-full text-sm border border-slate-300 rounded-md p-2 bg-slate-50 focus:outline-none focus:border-slate-400">
                         <option>Để thi hành (Chủ trì / Xử lý chính)</option>
                         <option>Để phối hợp</option>
@@ -285,7 +285,7 @@ export function DocumentManager() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Ý kiến chỉ đạo / Ghi chú</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Ý kiến chỉ đạo / Ghi chú</label>
                       <textarea rows={3} className="w-full text-sm border border-slate-300 rounded-md p-2 bg-slate-50 focus:outline-none focus:border-slate-400" placeholder="Nhập ý kiến hoặc yêu cầu xử lý..."></textarea>
                     </div>
                     <div className="flex justify-end gap-2 pt-2">
@@ -302,7 +302,7 @@ export function DocumentManager() {
                   <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2"><ShieldCheck className="w-4 h-4" /> Ký & Thao tác</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Loại hình tác vụ</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Loại hình tác vụ</label>
                       <div className="grid grid-cols-2 gap-2">
                         <label className="flex items-center gap-2 text-sm p-2 border border-slate-300 rounded cursor-pointer hover:bg-slate-50">
                           <input type="radio" name="signType" className="text-orange-600" defaultChecked /> Ký chỉ đạo
@@ -321,7 +321,7 @@ export function DocumentManager() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Thiết bị ký / Chữ ký số</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Thiết bị ký / Chữ ký số</label>
                       <select className="w-full text-sm border border-slate-300 rounded-md p-2 bg-slate-50 focus:outline-none focus:border-slate-400">
                         <option>USB Token (VNPT CA)</option>
                         <option>Smart Sign (MobiFone)</option>
@@ -329,7 +329,7 @@ export function DocumentManager() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Nội dung phê duyệt</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Nội dung phê duyệt</label>
                       <textarea rows={2} className="w-full text-sm border border-slate-300 rounded-md p-2 bg-slate-50 focus:outline-none focus:border-slate-400" placeholder="Kính trình GĐ xem xét..."></textarea>
                     </div>
                     <div className="flex justify-end gap-2 pt-2">
@@ -347,14 +347,14 @@ export function DocumentManager() {
                   <div className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm shrink-0">
                     <div className="flex items-center gap-3 mb-2">
                       <span className={cn(
-                        "px-2.5 py-1 text-[11px] font-bold rounded uppercase tracking-tight",
+                        "px-2.5 py-1 text-[11px] rounded tracking-tight",
                         selectedDoc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
                         selectedDoc.type === 'outbound' ? "bg-slate-100 text-orange-700" : "bg-emerald-50 text-emerald-600"
                       )}>
                         {selectedDoc.category}
                       </span>
                       {selectedDoc.urgency === 'critical' && (
-                        <span className="px-2.5 py-1 text-[11px] font-bold rounded uppercase tracking-tight bg-red-50 text-red-600 flex items-center gap-1">
+                        <span className="px-2.5 py-1 text-[11px] rounded tracking-tight bg-red-50 text-red-600 flex items-center gap-1">
                           <AlertCircle className="w-3 h-3" /> Hỏa tốc
                         </span>
                       )}
@@ -466,12 +466,12 @@ export function DocumentManager() {
                         </div>
                       ) : (
                         // Mock PDF / Word Page
-                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-6 text-slate-900 font-serif relative transition-all">
+                        <div className="bg-white w-full max-w-[800px] min-h-[1000px] shadow-sm border border-slate-400 p-6 text-slate-900 font-sans relative transition-all">
                            {/* Watermark / Digital Signature Stamp mock */}
                            {selectedDoc.status === 'signed' && (
                              <div className="absolute top-12 right-12 border-2 border-red-600 text-red-600 px-3 py-2 rounded transform rotate-[-5deg] opacity-70 flex flex-col items-center max-w-[150px]">
                                <ShieldCheck className="w-6 h-6 mb-1"/>
-                               <span className="text-[10px] font-bold uppercase text-center">Ký số bởi CTY CP DỊCH VỤ MDB</span>
+                               <span className="text-[10px] text-center">Ký số bởi CTY CP DỊCH VỤ MDB</span>
                                <span className="text-[9px] font-mono mt-1">{selectedDoc.date}</span>
                              </div>
                            )}
@@ -520,7 +520,7 @@ export function DocumentManager() {
                                 {selectedDoc.status === 'signed' ? (
                                   <div className="py-2 text-blue-700">
                                      <div className="border border-blue-400 p-2 rounded-md inline-block bg-primary-50/50">
-                                        <p className="text-[10px] font-bold uppercase mb-1">KÝ BỞI: CA_MDB_HANOI</p>
+                                        <p className="text-[10px] mb-1">KÝ BỞI: CA_MDB_HANOI</p>
                                         <p className="text-[9px] font-mono">Dấu thời gian: 20/03 10:15:32</p>
                                      </div>
                                   </div>
@@ -582,7 +582,7 @@ export function DocumentManager() {
                                 <div className="w-0.5 h-full bg-slate-100 my-1"></div>
                              </div>
                              <div className="pb-2">
-                                <p className="text-sm font-bold text-slate-900 flex items-center gap-2">Ký duyệt <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-100 text-blue-700 border border-blue-200 uppercase font-bold tracking-wider">Ký chính</span></p>
+                                <p className="text-sm font-medium text-slate-900 flex items-center gap-2">Ký duyệt <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-100 text-blue-700 border border-blue-200">Ký chính</span></p>
                                 <p className="text-[11px] text-slate-600 flex items-center gap-1 mt-1"><UserCheck className="w-3 h-3"/> Trần Văn Sếp (Giám đốc)</p>
                                 <div className="bg-slate-50 border border-slate-300 p-2 rounded-md mt-2 text-xs italic text-slate-700 border-l-2 border-l-blue-400">
                                   "Đã xem xét và đồng ý ban hành."
@@ -651,7 +651,7 @@ export function DocumentManager() {
                             </div>
                             <div className="border border-slate-200 rounded-lg p-3 bg-white hover:bg-slate-50 cursor-pointer transition">
                                <div className="flex items-center justify-between">
-                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase">Văn bản đến</span>
+                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded">Văn bản đến</span>
                                   <span className="text-xs text-slate-500">19/03/2024</span>
                                </div>
                                <p className="text-sm font-bold text-slate-900 mt-2">CV-2024-001</p>
@@ -659,7 +659,7 @@ export function DocumentManager() {
                             </div>
                             <div className="border border-slate-200 rounded-lg p-3 bg-white hover:bg-slate-50 cursor-pointer transition">
                                <div className="flex items-center justify-between">
-                                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase">Hồ sơ</span>
+                                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded">Hồ sơ</span>
                                   <span className="text-xs text-slate-500">18/03/2024</span>
                                </div>
                                <p className="text-sm font-bold text-slate-900 mt-2">HS-24-005</p>
@@ -703,11 +703,11 @@ export function DocumentManager() {
                     <table className="w-max min-w-full text-left border-collapse whitespace-nowrap">
                       <thead className="bg-slate-50 border-b border-[#F3F4F6] sticky top-0 z-10 shadow-sm">
                         <tr>
-                          <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">SỐ KH/Ký hiệu</ResizableTh>
-                          <ResizableTh width={listCols.find(c => c.id === 'title')?.currentWidth} onResize={(w) => handleListResize('title', w)} isPinned={listCols.find(c => c.id === 'title')?.isPinned} pinOffset={getListPinOffset('title')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Trích yếu</ResizableTh>
-                          <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Hình thức</ResizableTh>
-                          <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest">Thiết lập luồng</ResizableTh>
-                          <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase tracking-widest text-right">Trạng thái</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'id')?.currentWidth} onResize={(w) => handleListResize('id', w)} isPinned={listCols.find(c => c.id === 'id')?.isPinned} pinOffset={getListPinOffset('id')} className="px-4 py-3 text-[11px] text-[#6B7280]">SỐ KH/Ký hiệu</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'title')?.currentWidth} onResize={(w) => handleListResize('title', w)} isPinned={listCols.find(c => c.id === 'title')?.isPinned} pinOffset={getListPinOffset('title')} className="px-4 py-3 text-[11px] text-[#6B7280]">Trích yếu</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'type')?.currentWidth} onResize={(w) => handleListResize('type', w)} isPinned={listCols.find(c => c.id === 'type')?.isPinned} pinOffset={getListPinOffset('type')} className="px-4 py-3 text-[11px] text-[#6B7280]">Hình thức</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'flow')?.currentWidth} onResize={(w) => handleListResize('flow', w)} isPinned={listCols.find(c => c.id === 'flow')?.isPinned} pinOffset={getListPinOffset('flow')} className="px-4 py-3 text-[11px] text-[#6B7280]">Thiết lập luồng</ResizableTh>
+                          <ResizableTh width={listCols.find(c => c.id === 'status')?.currentWidth} onResize={(w) => handleListResize('status', w)} isPinned={listCols.find(c => c.id === 'status')?.isPinned} pinOffset={getListPinOffset('status')} className="px-4 py-3 text-[11px] text-[#6B7280] text-right">Trạng thái</ResizableTh>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F3F4F6]">
@@ -719,7 +719,7 @@ export function DocumentManager() {
                           >
                             <td className="px-4 py-3">
                               <p className="text-sm font-bold text-[#111827] group-hover:text-primary-600 transition-colors">{doc.id}</p>
-                              <p className="text-[10px] text-slate-600 font-bold uppercase mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
+                              <p className="text-[10px] text-slate-600 mt-1 flex items-center gap-1"><UserCheck className="w-3 h-3"/> {doc.signer}</p>
                             </td>
                             <td className="px-4 py-3">
                               <p className="text-sm font-medium text-slate-900 line-clamp-2">{doc.title}</p>
@@ -731,7 +731,7 @@ export function DocumentManager() {
                             </td>
                             <td className="px-4 py-3">
                               <span className={cn(
-                                "px-2.5 py-1 text-[11px] font-bold rounded-lg uppercase tracking-tight",
+                                "px-2.5 py-1 text-[11px] rounded-lg tracking-tight",
                                 doc.type === 'inbound' ? "bg-amber-50 text-amber-600" : 
                                 doc.type === 'outbound' ? "bg-slate-100 text-orange-700" : "bg-emerald-50 text-emerald-600"
                               )}>
@@ -794,7 +794,7 @@ export function DocumentManager() {
                     <div className="border border-slate-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-sm">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-slate-900">Sổ công văn đến 2024</h4>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-emerald-50 text-emerald-600">Đang mở</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">Đang mở</span>
                         </div>
                         <div className="text-sm text-slate-600 mb-4 space-y-1">
                           <p>Số đến hiện tại: <span className="font-bold text-orange-700">345</span></p>
@@ -821,17 +821,17 @@ export function DocumentManager() {
                        <table className="w-max min-w-full text-left border-collapse whitespace-nowrap">
                          <thead className="bg-slate-50 border-b border-[#F3F4F6]">
                            <tr>
-                             <ResizableTh width={rolesCols.find(c => c.id === 'role')?.currentWidth} onResize={(w) => handleRolesResize('role', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Vai trò / Chức danh</ResizableTh>
-                             <ResizableTh width={rolesCols.find(c => c.id === 'dept')?.currentWidth} onResize={(w) => handleRolesResize('dept', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Phòng ban</ResizableTh>
-                             <ResizableTh width={rolesCols.find(c => c.id === 'perms')?.currentWidth} onResize={(w) => handleRolesResize('perms', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase">Quyền hạn hệ thống</ResizableTh>
-                             <ResizableTh width={rolesCols.find(c => c.id === 'actions')?.currentWidth} onResize={(w) => handleRolesResize('actions', w)} className="px-4 py-3 text-[11px] font-bold text-[#6B7280] uppercase text-right">Thao tác</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'role')?.currentWidth} onResize={(w) => handleRolesResize('role', w)} className="px-4 py-3 text-[11px] text-[#6B7280]">Vai trò / Chức danh</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'dept')?.currentWidth} onResize={(w) => handleRolesResize('dept', w)} className="px-4 py-3 text-[11px] text-[#6B7280]">Phòng ban</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'perms')?.currentWidth} onResize={(w) => handleRolesResize('perms', w)} className="px-4 py-3 text-[11px] text-[#6B7280]">Quyền hạn hệ thống</ResizableTh>
+                             <ResizableTh width={rolesCols.find(c => c.id === 'actions')?.currentWidth} onResize={(w) => handleRolesResize('actions', w)} className="px-4 py-3 text-[11px] text-[#6B7280] text-right">Thao tác</ResizableTh>
                            </tr>
                          </thead>
                          <tbody className="divide-y divide-[#F3F4F6]">
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Tổng Giám đốc</td>
                              <td className="px-4 py-3 text-slate-700">Ban Giám đốc</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded uppercase border border-emerald-100">Toàn quyền / Ký duyệt chính</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] rounded border border-emerald-100">Toàn quyền / Ký duyệt chính</span></td>
                              <td className="px-4 py-3 text-right">
                                <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
@@ -840,7 +840,7 @@ export function DocumentManager() {
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Giám đốc Khối</td>
                              <td className="px-4 py-3 text-slate-700">Khối Vận hành, Kinh doanh...</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-primary-50 text-blue-700 text-[10px] font-bold rounded uppercase border border-primary-100">Ký nháy / Phê duyệt khối</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-primary-50 text-blue-700 text-[10px] rounded border border-primary-100">Ký nháy / Phê duyệt khối</span></td>
                              <td className="px-4 py-3 text-right">
                                <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
@@ -849,7 +849,7 @@ export function DocumentManager() {
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Trưởng phòng / Trưởng bộ phận</td>
                              <td className="px-4 py-3 text-slate-700">Phòng Nhân sự, Kế toán...</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] font-bold rounded uppercase border border-slate-300">Điều phối / Phân công xử lý</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-slate-100 text-slate-800 text-[10px] rounded border border-slate-300">Điều phối / Phân công xử lý</span></td>
                              <td className="px-4 py-3 text-right">
                                <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
@@ -858,7 +858,7 @@ export function DocumentManager() {
                            <tr className="hover:bg-slate-50 transition-colors">
                              <td className="px-4 py-3 font-semibold text-slate-900">Cán bộ Văn thư</td>
                              <td className="px-4 py-3 text-slate-700">Phòng Hành chính</td>
-                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-orange-50 text-orange-700 text-[10px] font-bold rounded uppercase border border-orange-100">Văn thư / Cấp số / Ban hành</span></td>
+                             <td className="px-4 py-3"><span className="px-2.5 py-1 bg-orange-50 text-orange-700 text-[10px] rounded border border-orange-100">Văn thư / Cấp số / Ban hành</span></td>
                              <td className="px-4 py-3 text-right">
                                <button className="text-primary-600 hover:text-blue-800 text-sm font-medium mr-3">Sửa</button>
                                <button className="text-red-600 hover:text-red-800 text-sm font-medium">Xóa</button>
@@ -964,7 +964,7 @@ export function DocumentManager() {
               <div className="space-y-5">
                  <div className="grid grid-cols-2 gap-4">
                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Loại văn bản</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Loại văn bản</label>
                       <select className="w-full text-sm border border-slate-300 rounded-md p-2 focus:outline-none focus:border-slate-400 bg-slate-50">
                         <option value="inbound">Văn bản đến (Nhận)</option>
                         <option value="outbound">Văn bản đi (Khởi tạo)</option>
@@ -972,7 +972,7 @@ export function DocumentManager() {
                       </select>
                    </div>
                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Hình thức</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Hình thức</label>
                       <select className="w-full text-sm border border-slate-300 rounded-md p-2 focus:outline-none focus:border-slate-400 bg-slate-50">
                         <option>Quyết định</option>
                         <option>Công văn</option>
@@ -983,12 +983,12 @@ export function DocumentManager() {
                  </div>
                  
                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Số / Ký hiệu</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Số / Ký hiệu</label>
                     <input type="text" className="w-full text-sm border border-slate-300 rounded-md p-2 focus:outline-none focus:border-slate-400" placeholder="VD: CV-2024-005" />
                  </div>
                  
                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Trích yếu nội dung</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Trích yếu nội dung</label>
                     <textarea rows={4} className="w-full text-sm border border-slate-300 rounded-md p-2 focus:outline-none focus:border-slate-400" placeholder="Nhập trích yếu văn bản..."></textarea>
                  </div>
               </div>
@@ -1023,7 +1023,7 @@ export function DocumentManager() {
                        </label>
 
                        <div className="pt-3 border-t border-orange-200/50">
-                          <label className="block text-xs font-bold text-slate-800 mb-2">Hoặc chuyển trực tiếp các bộ phận/cá nhân:</label>
+                          <label className="block text-xs font-medium text-slate-800 mb-2">Hoặc chuyển trực tiếp các bộ phận/cá nhân:</label>
                           <div className="max-h-48 overflow-y-auto bg-white border border-orange-200 rounded-md p-2 space-y-1 shadow-inner">
                             {[
                               { id: 'bod', name: 'Ban Giám đốc', users: [{ id: 'u1', name: 'Nguyễn Văn A (Tổng GĐ)' }] },
@@ -1051,7 +1051,7 @@ export function DocumentManager() {
                           </div>
                           
                           <div className="mt-3">
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại tiếp nhận</label>
+                            <label className="block text-xs font-medium text-slate-700 mb-1">Phân loại tiếp nhận</label>
                             <select className="w-full text-sm border border-slate-300 rounded-md p-2 bg-slate-50 focus:outline-none focus:border-slate-400">
                               <option>Để thi hành (Chủ trì)</option>
                               <option>Để phối hợp</option>
@@ -1094,7 +1094,7 @@ export function DocumentManager() {
               </div>
            </div>
            <div className="flex-1 overflow-auto p-4 md:p-8 flex justify-center bg-slate-800">
-              <div className="bg-white w-full max-w-[900px] h-fit min-h-[1200px] shadow-2xl rounded p-12 text-slate-900 font-serif relative">
+              <div className="bg-white w-full max-w-[900px] h-fit min-h-[1200px] shadow-2xl rounded p-12 text-slate-900 font-sans relative">
                  {/* Re-use mock PDF content */}
                  <div className="flex justify-between items-start mb-12">
                    <div className="text-center w-48">

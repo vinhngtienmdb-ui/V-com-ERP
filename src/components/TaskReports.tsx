@@ -149,8 +149,8 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         {/* Metric 1 */}
         <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng số công việc</p>
-            <p className="text-3xl font-black text-slate-900">{totalCount}</p>
+            <p className="text-[10px] text-slate-500">Tổng số công việc</p>
+            <p className="text-3xl font-semibold text-slate-900">{totalCount}</p>
             <p className="text-[10.5px] text-slate-500 font-medium font-sans">Đang theo sát vận hành</p>
           </div>
           <div className="p-3 bg-slate-100 text-slate-600 rounded-lg">
@@ -161,8 +161,8 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         {/* Metric 2 */}
         <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tỷ lệ hoàn thành</p>
-            <p className="text-3xl font-black text-emerald-600">{completionRate}%</p>
+            <p className="text-[10px] text-slate-500">Tỷ lệ hoàn thành</p>
+            <p className="text-3xl font-semibold text-emerald-600">{completionRate}%</p>
             <p className="text-[10.5px] text-emerald-500 font-medium">Đồ thị tiến trình tổng quan</p>
           </div>
           <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
@@ -173,8 +173,8 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         {/* Metric 3 */}
         <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tiến độ trung bình</p>
-            <p className="text-3xl font-black text-indigo-600">{avgProgress}%</p>
+            <p className="text-[10px] text-slate-500">Tiến độ trung bình</p>
+            <p className="text-3xl font-semibold text-indigo-600">{avgProgress}%</p>
             <p className="text-[10.5px] text-indigo-500 font-medium">Độ hoàn thiện trung bình</p>
           </div>
           <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -185,8 +185,8 @@ export function TaskReports({ tasks }: TaskReportsProps) {
         {/* Metric 4 */}
         <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm flex items-center justify-between relative overflow-hidden">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Công việc quá hạn</p>
-            <p className={cn("text-3xl font-black", overdueCount > 0 ? "text-rose-600 animate-pulse" : "text-slate-900")}>
+            <p className="text-[10px] text-rose-500">Công việc quá hạn</p>
+            <p className={cn("text-3xl font-semibold", overdueCount > 0 ? "text-rose-600 animate-pulse" : "text-slate-900")}>
               {overdueCount}
             </p>
             <p className="text-[10.5px] text-slate-500 font-medium">Cần đôn đốc kiểm điểm</p>
@@ -258,8 +258,8 @@ export function TaskReports({ tasks }: TaskReportsProps) {
                 <div key={idx} className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                   <div className="flex-1">
-                    <div className="text-slate-500 text-[10px] font-bold uppercase">{item.name}</div>
-                    <div className="text-slate-900 text-xs font-black">
+                    <div className="text-slate-500 text-[10px]">{item.name}</div>
+                    <div className="text-slate-900 text-xs font-semibold">
                       {item.value} việc ({totalCount > 0 ? Math.round((item.value / totalCount) * 100) : 0}%)
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export function TaskReports({ tasks }: TaskReportsProps) {
                     <span className="w-2.5 h-2.5 rounded" style={{ backgroundColor: item.color }} />
                     {item.name}
                   </span>
-                  <span className="font-mono font-black text-slate-900">{item.count} việc</span>
+                  <span className="font-mono font-semibold text-slate-900">{item.count} việc</span>
                 </div>
                 {/* Custom bar indicator */}
                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">

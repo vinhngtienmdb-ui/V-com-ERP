@@ -69,7 +69,7 @@ export function Header() {
   <header className="h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-slate-300/50">
   <div className="header-title">
     <div>
-      <h1 className="font-serif tracking-tight text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
+      <h1 className="font-sans tracking-tight text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
       {'Chào buổi sáng'}, {staffInfo?.name || ('Quản trị hệ thống')}
       </h1>
       <p className="text-[11px] md:text-xs text-slate-600 font-medium mt-1">
@@ -147,7 +147,7 @@ export function Header() {
                 <div className="p-3.5 space-y-3.5 text-left">
                   {/* Font Size Selector */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Cỡ chữ hệ thống</span>
+                    <span className="text-[10px] text-slate-500">Cỡ chữ hệ thống</span>
                     <div className="grid grid-cols-2 gap-1.5">
                       <button
                         onClick={() => setFontSize('standard')}
@@ -174,7 +174,7 @@ export function Header() {
 
                   {/* Card Density Selector */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Mật độ Stat Cards</span>
+                    <span className="text-[10px] text-slate-500">Mật độ Stat Cards</span>
                     <div className="grid grid-cols-2 gap-1.5">
                       <button
                         onClick={() => setCardDensity('comfortable')}
@@ -201,7 +201,7 @@ export function Header() {
 
                   {/* Border Radius Selector */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Độ bo góc bảng biểu</span>
+                    <span className="text-[10px] text-slate-500">Độ bo góc bảng biểu</span>
                     <select
                       value={borderRadius}
                       onChange={(e: any) => setBorderRadius(e.target.value)}
@@ -217,7 +217,7 @@ export function Header() {
 
                   {/* Primary Color Selector */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Màu chủ đạo hệ thống</span>
+                    <span className="text-[10px] text-slate-500">Màu chủ đạo hệ thống</span>
                     <select
                       value={primaryColor}
                       onChange={(e: any) => setPrimaryColor(e.target.value)}
@@ -253,7 +253,7 @@ export function Header() {
   <div className="flex items-center gap-2">
   <h3 className="font-bold text-slate-900">{'Thông báo'}</h3>
   {unreadCount > 0 && (
-  <span className="bg-[#EAE7DF] text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadCount} {'mới'}</span>
+  <span className="bg-[#EAE7DF] text-orange-800 text-[10px] font-medium px-2 py-0.5 rounded-full">{unreadCount} {'mới'}</span>
   )}
   </div>
   <div className="flex items-center gap-2">
