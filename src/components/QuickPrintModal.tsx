@@ -44,7 +44,7 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
       ];
 
   const subtotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  // Thuế suất cấu hình theo thời điểm — NĐ 72/2025 giảm 2% đến 31/12/2026, sau đó 10%
+  // Thuế suất cấu hình theo thời điểm — NĐ 174/2025 giảm 2% đến 31/12/2026, sau đó 10%
   const { vatAmount } = computeOrderTax(normalizedItems.map(it => ({ ...it, category: '*' })));
   const vatRatePct = ((resolveVatRate('*') ?? 0) * 100).toFixed(0);
   const shippingFee = order.shippingCost || 0;

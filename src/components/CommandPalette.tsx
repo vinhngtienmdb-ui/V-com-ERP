@@ -5,6 +5,9 @@ import { Search, ArrowRight, Hash, Package, Users, ShoppingCart, X, Clock, Keybo
 import { db, collection, query, where, orderBy, limit, getDocs } from '../services/dbService';
 import { navGroups } from '../constants';
 import { cn } from '../lib/utils';
+import { createLogger } from '../lib/logger';
+
+const log = createLogger('components/CommandPalette');
 
 interface Result {
   id: string;
@@ -109,7 +112,11 @@ export function CommandPalette({ onClose }: Props) {
         });
 
         setResults(hits);
-      } catch { /* silent — offline or no index */ }
+      } catch (e) {
+        // GĐ 1.5 — ô tìm kiếm nhảy mỗi lần gõ phím, nên chỉ log mức debug:/n        // offline / index chưa sẵn sàng là chuyện bình thường, nhưng cần thấy
+        // khi điều tra vì sao tìm kiếm không ra kết quả.
+        log.debug('tìm kiếm nhanh thất bại', { keyword: q }, e);
+      }
       finally { setLoading(false); }
     }, 280);
     return () => clearTimeout(timer);

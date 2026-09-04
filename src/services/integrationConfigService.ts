@@ -40,8 +40,8 @@ export interface ProviderSchema {
 export const PROVIDER_SCHEMAS: Record<ProviderKey, ProviderSchema> = {
   einvoice: {
     key: 'einvoice',
-    label: 'Hóa đơn điện tử (TT 78/2021/TT-BTC)',
-    legalBasis: 'Thông tư 78/2021/TT-BTC — nhà cung cấp được CQT cấp phép (MISA / VNPT / FPT)',
+    label: 'Hóa đơn điện tử (TT 91/2026/TT-BTC)',
+    legalBasis: 'Thông tư 91/2026/TT-BTC — nhà cung cấp được CQT cấp phép (MISA / VNPT / FPT)',
     fields: [
       { name: 'vendor', label: 'Nhà cung cấp', type: 'text', required: true, placeholder: 'misa | vnpt | fpt', helpText: 'Chọn nhà cung cấp e-invoice đã đăng ký mẫu BC22 với CQT' },
       { name: 'endpoint', label: 'API Endpoint', type: 'url', required: true, placeholder: 'https://api.misa.vn/invoice-api/v1' },
@@ -53,8 +53,8 @@ export const PROVIDER_SCHEMAS: Record<ProviderKey, ProviderSchema> = {
   },
   databank: {
     key: 'databank',
-    label: 'Databank BCT & Truy xuất nguồn gốc (TT 13/2023/TT-BCT)',
-    legalBasis: 'Thông tư 13/2023/TT-BCT — đăng tải thông tin sản phẩm; truy xuất nguồn gốc hàng hóa',
+    label: 'Databank BCT & Truy xuất nguồn gốc (TT 31/2026/TT-BCT)',
+    legalBasis: 'TT 31/2026/TT-BCT (Bộ Công Thương, HL 01/7/2026) — Điều 10 đăng tải công khai thông tin sản phẩm; Điều 17 chuyển tiếp (hệ thống cũ tiếp tục áp dụng đến 01/01/2027); Điều 18 lộ trình (truy xuất đầy đủ từ 01/01/2027). LƯU Ý: TT 13/2023/TT-BCT là văn bản HẠN NGẠCH THUẾ QUAN (muối/trứng), KHÔNG phải truy xuất — không dùng làm căn cứ.',
     fields: [
       { name: 'endpoint', label: 'API Endpoint', type: 'url', required: true, placeholder: 'https://databank.moit.gov.vn/api/v1' },
       { name: 'api_key', label: 'API Key', type: 'password', required: true },
@@ -75,6 +75,41 @@ export const PROVIDER_SCHEMAS: Record<ProviderKey, ProviderSchema> = {
     ]
   }
 };
+
+/* -------------------------------------------------------------------------- */
+/*  GĐ 3.3 — Thông báo đổi cấu hình (để module đang cache tự vô hiệu NGAY)      */
+/* -------------------------------------------------------------------------- */
+
+export type ConfigChangedListener = (provider: ProviderKey) => void;
+const configChangedListeners = new Set<ConfigChangedListener>();
+
+/**
+ * Đăng ký nhận thông báo khi cấu hình 1 provider bị đổi (lưu hoặc bật/tắt).
+ * Dùng để XOÁ CACHE ngay thay vì chờ TTL — quan trọng với thứ nhạy cảm như nhà
+ * cung cấp HĐĐT: đổi provider mà cache còn cũ → phát hành sai mẫu đã đăng ký.
+ *
+ * Cơ chế listener (thay vì import trực tiếp) để TRÁNH IMPORT VÒNG:
+ * einvoiceService → integrationConfigService → einvoiceService.
+ *
+ * @returns hàm huỷ đăng ký.
+ */
+export function onIntegrationConfigChanged(fn: ConfigChangedListener): () => void {
+  configChangedListeners.add(fn);
+  return () => {
+    configChangedListeners.delete(fn);
+  };
+}
+
+function notifyConfigChanged(provider: ProviderKey): void {
+  configChangedListeners.forEach((fn) => {
+    try {
+      fn(provider);
+    } catch (err) {
+      // Listener lỗi KHÔNG được chặn việc lưu cấu hình.
+      console.error('[integrationConfig] listener onChange lỗi:', err);
+    }
+  });
+}
 
 /** Đọc config — trả về null nếu chưa cấu hình */
 export async function getIntegrationConfig(provider: ProviderKey): Promise<IntegrationConfig | null> {
@@ -141,6 +176,8 @@ export async function saveIntegrationConfig(
   }
 
   await auditConfigChange(provider, 'save', { changed_by: options.changedBy, fields: Object.keys(config) });
+  // GĐ 3.3: báo cho các module đang cache để chúng vô hiệu NGAY, không chờ TTL.
+  notifyConfigChanged(provider);
 }
 
 /** Bật/tắt provider không xóa key */
@@ -151,6 +188,8 @@ export async function toggleIntegration(provider: ProviderKey, enabled: boolean)
     .eq('provider_key', provider);
   if (error) throw new Error(`Bật/tắt ${provider} lỗi: ${error.message}`);
   await auditConfigChange(provider, enabled ? 'enable' : 'disable', {});
+  // GĐ 3.3: vô hiệu cache — bật/tắt cũng có thể làm thay đổi provider được chọn.
+  notifyConfigChanged(provider);
 }
 
 /**

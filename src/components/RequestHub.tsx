@@ -43,8 +43,10 @@ import { FormConfigModal } from './FormConfigModal';
 import { ResizableTh } from './ui/ResizableTh';
 import { useTableColumns } from '../hooks/useTableColumns';
 import { Modal } from './ui/Modal';
-import { db, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../services/dbService';
+import { db, collection, onSnapshot, updateDoc, doc, query, orderBy, limit, serverTimestamp } from '../services/dbService';
 import { syncTransactionToMisa } from '../services/misaService';
+// GĐ 2.6 — audit trail chuẩn hóa (một writer, một định dạng).
+import { recordAudit } from '../services/auditTrailService';
 import { sendZnsNotification } from '../services/znsService';
 import { INITIAL_FORM_CONFIGS } from '../lib/formConfigs';
 import { RequestDetail } from './requests/RequestDetail';
@@ -311,25 +313,26 @@ export function RequestHub() {
   }
  }
  
- // Add real logs to Admin Audit Logs too for total corporate consistency
- try {
-  const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
-  const auditPayload = {
+ // Luân chuyển chứng từ → ghi audit trail (GĐ 2.6: một writer, một định dạng).
+ // Bản cũ tự ráp payload rồi addDoc thẳng vào `admin_audit_logs` — bảng này hiện
+ // KHÔNG có reader nào trong code, nên log biến mất khỏi mọi màn hình.
+ // Nay ghi vào sink duy nhất mà Settings.tsx đang đọc.
+ recordAudit({
+  action: `Circulate Document [${routingRequest.id}] to ${selectedDeptLabel}`,
+  status: 'Success',
+  source: 'workflow',
+  sink: 'security',
+  actor: {
     email: user?.email || 'admin@v-erp.com',
-    userId: user?.uid || 'admin-ai-system',
-    action: `Circulate Document [${routingRequest.id}] to ${selectedDeptLabel}`,
-    status: 'Success',
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    browser: 'WorkFlow Routing Engine',
-    ipAddress: '127.0.0.1',
-    tenantId
-  };
-  
-  addDoc(collection(db, 'admin_audit_logs'), auditPayload).catch(err => console.error('Failed to log routing audit trail:', err));
- } catch (err) {
-  console.error('Failed to log routing audit trail:', err);
- }
+    uid: user?.uid || 'admin-ai-system',
+  },
+  tenantId: staffInfo?.tenantId || 'tenant-vcomm-prod-01',
+  targetId: routingRequest.id,
+  targetLabel: selectedDeptLabel,
+  userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+  ipAddress: '127.0.0.1',
+  details: { engine: 'WorkFlow Routing Engine' },
+ }).catch(err => console.error('Failed to log routing audit trail:', err));
  
  addNotification(
   'Luân chuyển thành công', 

@@ -359,7 +359,7 @@ function LegalEntityForm() {
           </div>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-slate-900">Thông tin Pháp nhân công ty</h3>
-            <p className="text-[11px] text-slate-500">Điều 21 NĐ 52/2013 + MST trên hóa đơn điện tử TT 78/2021 — cấu hình 1 lần dùng toàn hệ thống</p>
+            <p className="text-[11px] text-slate-500">Điều 21 NĐ 52/2013 + MST trên hóa đơn điện tử TT 91/2026 — cấu hình 1 lần dùng toàn hệ thống</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">

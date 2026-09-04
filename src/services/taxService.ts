@@ -1,17 +1,17 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * Tax Engine — TT 78/2021/TT-BTC (hóa đơn điện tử) + Luật Thuế GTGT
- * + NĐ 117/2025 (thuế seller — sàn không khấu trừ thay, seller tự kê)
+ * Tax Engine — TT 91/2026/TT-BTC (hóa đơn điện tử) + Luật Thuế GTGT
+ * + NĐ 252/2026 (nghĩa vụ sàn TMĐT — sàn không khấu trừ thay, seller tự kê)
  *
  * 1. Thuế suất cấu hình theo danh mục (category), không hardcode
- * 2. Áp dụng giảm trừ theo thời gian (VD: 2% giảm từ 1/7/2025 → 31/12/2025)
+ * 2. Áp dụng giảm trừ theo thời gian (VD: 2% giảm từ 1/7/2025 → 31/12/2026)
  * 3. Báo cáo thuế seller: tổng doanh thu theo kỳ cho seller tự kê khai
  *
  * Thuế suất VN hiện hành:
- * - 8%: hàng hóa thông thường (giai đoạn giảm thuế GTGT theo NĐ 72/2025 đến 31/12/2026)
+ * - 8%: hàng hóa thông thường (giai đoạn giảm thuế GTGT theo NĐ 174/2025 đến 31/12/2026)
  * - 10%: hàng hóa đặc thù hết ưu đãi
- * - 0%: hàng xuất khẩu, dịch vụ xuất khẩu (theo TT 219/2013)
+ * - 0%: hàng xuất khẩu, dịch vụ xuất khẩu (theo TT 69/2025)
  * - Không chịu thuế (NULL): y tế, giáo dục công, vàng miếng...
  */
 
@@ -23,7 +23,7 @@ export interface TaxRateRule {
   vat_rate: VatRate;
   effective_from: string;         // ISO date
   effective_to: string | null;    // null = vô hạn
-  legal_basis: string;            // 'NĐ 72/2025' etc.
+  legal_basis: string;            // 'NĐ 174/2025' etc.
   note: string | null;
 }
 
@@ -34,7 +34,7 @@ export const DEFAULT_TAX_RULES: Omit<TaxRateRule, 'id'>[] = [
     vat_rate: 0.08,
     effective_from: '2025-07-01',
     effective_to: '2026-12-31',
-    legal_basis: 'NĐ 72/2025/NĐ-CP (giảm 2% thuế GTGT)',
+    legal_basis: 'NĐ 174/2025/NĐ-CP (giảm 2% thuế GTGT)',
     note: 'Thuế suất giảm từ 10% xuống 8% cho hầu hết hàng hóa'
   },
   {
@@ -47,28 +47,92 @@ export const DEFAULT_TAX_RULES: Omit<TaxRateRule, 'id'>[] = [
   }
 ];
 
-/** Cache rules in-memory 5 phút để không query DB mỗi lần tính tiền */
-let rulesCache: { rules: TaxRateRule[]; loadedAt: number } | null = null;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+/**
+ * Cache thuế suất — GĐ 2.3.
+ *
+ * ══ LỖI ĐÃ SỬA Ở ĐÂY (đọc kỹ, đây không phải dọn dẹp cosmectic) ════════════
+ * Bản cũ có `loadRules()` giữ cache trong biến module-level, NHƯNG
+ * **`loadRules()` không được gọi ở BẤT KỲ ĐÂU trong toàn bộ `src/`** (đã grep
+ * toàn repo, chỉ thấy định nghĩa). Hệ quả: `rulesCache` LUÔN là `null`, nên
+ * `resolveVatRate()` / `computeOrderTax()` LUÔN rơi vào nhánh
+ * `DEFAULT_TAX_RULES` — tức là **bảng `tax_rate_rules` trên DB bị bỏ qua hoàn
+ * toàn**. Admin cấu hình thuế suất theo danh mục, `legal_basis`, hiệu lực theo
+ * thời gian… tất cả đều vô tác dụng; mọi đơn hàng tính theo 3 hằng số hardcode.
+ *
+ * Cách sửa:
+ *   1. `getTaxRules()` là hàm async DUY NHẤT nạp luật, đi qua cache tập trung
+ *      (L1 in-process + L2 `cache_entries`) → mọi instance nhìn cùng một bộ luật.
+ *   2. `resolveVatRate()` vẫn ĐỒNG BỘ (đang được gọi trong lúc render), đọc từ
+ *      snapshot đã nạp. Chưa nạp → dùng DEFAULT và CẢNH BÁO (không im lặng như cũ).
+ *   3. `primeTaxRules()` để gọi khi khởi động app (App.tsx) → snapshot sẵn sàng
+ *      trước khi render; `refreshTaxRules()` để gọi SAU KHI admin sửa luật.
+ *   4. Đường ASYNC: `computeOrderTaxAsync()` cho nơi cần chính xác tuyệt đối
+ *      (xuất hóa đơn) — nơi này KHÔNG được phép dùng hằng số hardcode.
+ */
 
-async function loadRules(force = false): Promise<TaxRateRule[]> {
-  if (!force && rulesCache && Date.now() - rulesCache.loadedAt < CACHE_TTL_MS) {
-    return rulesCache.rules;
-  }
-  const { data, error } = await supabase
-    .from('tax_rate_rules')
-    .select('*')
-    .order('effective_from', { ascending: false });
-  if (error) {
-    console.warn('[TaxEngine] Không tải được tax rules, dùng DEFAULT_TAX_RULES:', error.message);
-    return DEFAULT_TAX_RULES.map((r, i) => ({ ...r, id: `default-${i}` })) as TaxRateRule[];
-  }
-  rulesCache = { rules: (data || []) as TaxRateRule[], loadedAt: Date.now() };
-  return rulesCache.rules;
+/** Key cache trong bảng `cache_entries` (L2). */
+export const TAX_RULES_CACHE_KEY = 'tax_rules:all';
+const TAX_RULES_TTL_MS = 5 * 60 * 1000;
+
+/** Snapshot đồng bộ cho các hàm render (chỉ dùng khi đã prime). */
+let rulesSnapshot: TaxRateRule[] | null = null;
+let warnedAboutSnapshot = false;
+
+function defaultsAsRules(): TaxRateRule[] {
+  return DEFAULT_TAX_RULES.map((r, i) => ({ ...r, id: `default-${i}` })) as TaxRateRule[];
 }
 
-export function clearTaxRulesCache(): void {
-  rulesCache = null;
+/**
+ * Nạp bộ luật thuế. Đi qua cache tập trung: L1 (in-process) → L2 (`cache_entries`,
+ * dùng chung mọi instance) → query DB.
+ *
+ * Fail-soft: query DB lỗi → trả DEFAULT + cảnh báo, KHÔNG ném (đừng để không
+ * đọc được cấu hình mà hóa đơn không xuất được).
+ */
+export async function getTaxRules(force = false): Promise<TaxRateRule[]> {
+  try {
+    const { getDistributedCache } = await import('../lib/distributedCache');
+    const cache = await getDistributedCache({ ttlMs: TAX_RULES_TTL_MS });
+
+    if (force) {
+      // Admin vừa sửa luật: xóa CẢ L1 lẫn L2 → mọi instance phải lấy lại.
+      await cache.invalidate(TAX_RULES_CACHE_KEY);
+    }
+
+    const rules = await cache.getOrSet(TAX_RULES_CACHE_KEY, async () => {
+      const { data, error } = await supabase
+        .from('tax_rate_rules')
+        .select('*')
+        .order('effective_from', { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data || []) as TaxRateRule[];
+    });
+
+    rulesSnapshot = rules;
+    return rules;
+  } catch (error) {
+    console.warn(
+      '[TaxEngine] Không tải được tax_rate_rules, dùng DEFAULT_TAX_RULES. ' +
+        'THUẾ SUẤT CÓ THỂ KHÔNG ĐÚNG CẤU HÌNH:',
+      error
+    );
+    return defaultsAsRules();
+  }
+}
+
+/** Nạp trước vào snapshot để các hàm đồng bộ không phải dùng hằng số. */
+export async function primeTaxRules(): Promise<void> {
+  await getTaxRules();
+}
+
+/** Gọi SAU KHI ghi thay đổi `tax_rate_rules` — xóa cache trên MỌI instance. */
+export async function refreshTaxRules(): Promise<TaxRateRule[]> {
+  return getTaxRules(true);
+}
+
+/** @deprecated Dùng `refreshTaxRules()` — tên cũ gợi sai (chỉ xóa cache 1 instance). */
+export async function clearTaxRulesCache(): Promise<void> {
+  await refreshTaxRules();
 }
 
 /**
@@ -76,9 +140,17 @@ export function clearTaxRulesCache(): void {
  * Ưu tiên: rule match category cụ thể > rule '*' (default) — lấy rule có effective mới nhất.
  */
 export function resolveVatRate(categoryPath: string, atDate: Date = new Date()): VatRate {
-  // Dùng DEFAULT khi DB chưa có (không await — hàm sync cho UI tính tiền nhanh)
-  const rules = (rulesCache?.rules as TaxRateRule[]) ||
-    DEFAULT_TAX_RULES.map((r, i) => ({ ...r, id: `default-${i}` })) as TaxRateRule[];
+  // Hàm ĐỒNG BỘ (đang được gọi trong lúc render) → chỉ đọc snapshot đã nạp.
+  // Chưa nạp (chưa gọi primeTaxRules()) → rơi về hằng số. CẢNH BÁO MỘT LẦN để
+  // không còn chuyện "thuế tính bằng DEFAULT mà không ai hay biết" như trước.
+  if (!rulesSnapshot && !warnedAboutSnapshot) {
+    warnedAboutSnapshot = true;
+    console.warn(
+      '[TaxEngine] tax_rate_rules chưa được nạp (chưa gọi primeTaxRules()) — ' +
+        'đang dùng DEFAULT_TAX_RULES. Gọi primeTaxRules() khi khởi động app.'
+    );
+  }
+  const rules = rulesSnapshot || defaultsAsRules();
   return pickRate(rules, categoryPath, atDate);
 }
 
@@ -126,13 +198,29 @@ export function computeOrderTax(items: LineItemTax[], atDate: Date = new Date())
   const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0);
   const vatAmount = lines.reduce((s, l) => s + l.lineVat, 0);
   const primaryRate = lines.length > 0 ? lines[0].vatRate : 0.08;
-  const rules = (rulesCache?.rules as TaxRateRule[]) || DEFAULT_TAX_RULES.map((r, i) => ({ ...r, id: `default-${i}` })) as TaxRateRule[];
+  const rules = rulesSnapshot || defaultsAsRules();
   const basis = rules.find(r => r.vat_rate === primaryRate)?.legal_basis || null;
   return { subtotal, vatAmount, vatRate: primaryRate, lines, legalBasis: basis };
 }
 
 /**
- * NĐ 117/2025/NĐ-CP: từ 1/4/2025 sàn TMĐT KHÔNG khấu trừ thuế TNCN/TNDN thay seller.
+ * Bản ASYNC của `computeOrderTax` — BẮT BUỘC dùng ở nơi xuất chứng từ
+ * (`einvoiceService`, `einvoiceTax`): nạp luật thật từ DB/cache trước khi tính,
+ * thay vì trông vào snapshot đã được prime từ trước.
+ *
+ * Lý do: hóa đơn sai thuế suất là lỗi pháp lý, không phải lỗi hiển thị. Không
+ * được phép để việc "quên gọi primeTaxRules()" làm sai số tiền trên hóa đơn.
+ */
+export async function computeOrderTaxAsync(
+  items: LineItemTax[],
+  atDate: Date = new Date()
+): Promise<OrderTaxBreakdown> {
+  await getTaxRules();
+  return computeOrderTax(items, atDate);
+}
+
+/**
+ * NĐ 252/2026/NĐ-CP: từ sàn TMĐT KHÔNG khấu trừ thuế TNCN/TNDN thay seller.
  * Sàn chỉ cung cấp BÁO CÁO DOANH THU để seller tự kê khai.
  */
 export async function generateSellerTaxReport(params: {
@@ -169,7 +257,7 @@ export async function generateSellerTaxReport(params: {
     total_vat: totalVat,
     order_count: rows.length,
     generated_at: new Date().toISOString(),
-    note: 'Theo NĐ 117/2025/NĐ-CP: Sàn TMĐT không khấu trừ thuế TNDN/TNCN thay thế. ' +
+    note: 'Theo NĐ 252/2026/NĐ-CP: Sàn TMĐT không khấu trừ thuế TNDN/TNCN thay thế. ' +
       'Báo cáo này cung cấp cho nhà bán hàng tự kê khai thuế với cơ quan thuế. ' +
       'Vui lòng đối chiếu với sổ kế toán TT 99/2025/TT-BTC của công ty.'
   };

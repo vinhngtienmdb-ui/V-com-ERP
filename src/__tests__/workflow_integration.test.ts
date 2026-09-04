@@ -84,7 +84,7 @@ describe('Workflow liên thông toàn diện (fix ①-⑨)', () => {
     expect(existing).not.toBeNull(); // listener sẽ skip create
   });
 
-  it('④+⑨ VAT tính đúng cho e-invoice draft: 8% thời kỳ NĐ 72/2025', () => {
+  it('④+⑨ VAT tính đúng cho e-invoice draft: 8% thời kỳ NĐ 174/2025', () => {
     const draft = buildEInvoiceDraft(
       { id: 'ORD-7', customerName: 'Trần B', paymentMethod: 'bank_transfer' },
       [{ name: 'Tủ lạnh', price: 10000000, qty: 1 }],

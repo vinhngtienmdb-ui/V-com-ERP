@@ -107,11 +107,32 @@ class SePayService {
  }
 
  /**
+  * GĐ 2.4 — các endpoint `/webhook-events` đã được khóa bằng phiên đăng nhập
+  * (server từ chối request không có JWT). Lấy token của người dùng hiện tại.
+  *
+  * Import LAZY `lib/supabase` để module này không kéo theo cấu hình env khi
+  * chạy test/SSR. Trả object rỗng nếu lấy phiên lỗi → server sẽ trả 401 thay
+  * vì ném lỗi làm gãy màn hình chỉ vì không đọc được log giao dịch.
+  */
+ private async authHeaders(): Promise<Record<string, string>> {
+   try {
+     const { supabase } = await import('../lib/supabase');
+     const { data } = await supabase.auth.getSession();
+     const token = data?.session?.access_token;
+     return token ? { Authorization: `Bearer ${token}` } : {};
+   } catch {
+     return {};
+   }
+ }
+
+ /**
  * Get simulated/live webhook events from local backend
  */
  async getWebhookEvents() {
    try {
-     const response = await axios.get('/api/sepay/webhook-events');
+     const response = await axios.get('/api/sepay/webhook-events', {
+       headers: await this.authHeaders(),
+     });
      return response.data.events || [];
    } catch (error) {
      console.error('SePay getWebhookEvents error:', error);
@@ -124,7 +145,11 @@ class SePayService {
  */
  async clearWebhookEvents(ids: number[]) {
    try {
-     const response = await axios.post('/api/sepay/webhook-events/clear', { ids });
+     const response = await axios.post(
+       '/api/sepay/webhook-events/clear',
+       { ids },
+       { headers: await this.authHeaders() }
+     );
      return response.data;
    } catch (error) {
      console.error('SePay clearWebhookEvents error:', error);

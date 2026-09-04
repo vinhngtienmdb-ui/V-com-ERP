@@ -11,13 +11,13 @@ import {
 } from '../services/taxService';
 import { supabase } from '../lib/supabase';
 
-describe('Tax Engine — TT 78/2021 + NĐ 72/2025 + NĐ 117/2025', () => {
+describe('Tax Engine — TT 91/2026 + NĐ 174/2025 + NĐ 252/2026', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clearTaxRulesCache();
   });
 
-  it('DEFAULT rules: 8% trong giai đoạn giảm thuế NĐ 72/2025', () => {
+  it('DEFAULT rules: 8% trong giai đoạn giảm thuế NĐ 174/2025', () => {
     const atDate = new Date('2026-08-31T00:00:00Z');
     expect(resolveVatRate('*', atDate)).toBe(0.08);
   });
@@ -45,7 +45,7 @@ describe('Tax Engine — TT 78/2021 + NĐ 72/2025 + NĐ 117/2025', () => {
     expect(result.vatAmount).toBe(32000 + 1600000);
     expect(result.lines[0].lineVat).toBe(32000);
     expect(result.lines[1].lineVat).toBe(1600000);
-    expect(result.legalBasis).toContain('72/2025');
+    expect(result.legalBasis).toContain('174/2025');
   });
 
   it('computeOrderTax: 2027 thuế 10% tự động tăng', () => {
@@ -55,7 +55,7 @@ describe('Tax Engine — TT 78/2021 + NĐ 72/2025 + NĐ 117/2025', () => {
     expect(result.vatRate).toBe(0.1);
   });
 
-  it('generateSellerTaxReport: NĐ 117/2025 — sàn chỉ cung cấp báo cáo, seller tự kê', async () => {
+  it('generateSellerTaxReport: NĐ 252/2026 — sàn chỉ cung cấp báo cáo, seller tự kê', async () => {
     const chain: any = {};
     chain.select = vi.fn().mockReturnThis();
     chain.eq = vi.fn().mockReturnThis();
@@ -81,7 +81,7 @@ describe('Tax Engine — TT 78/2021 + NĐ 72/2025 + NĐ 117/2025', () => {
     expect(report.total_revenue).toBe(1500000);
     expect(report.total_vat).toBe(120000);
     expect(report.order_count).toBe(2);
-    expect(report.note).toContain('117/2025');       // trích dẫn đúng nghị định
+    expect(report.note).toContain('252/2026');       // trích dẫn đúng nghị định
     expect(report.note).toContain('không khấu trừ'); // nhấn mạnh sàn không khấu trừ
     expect(report.note).toContain('99/2025');        // đối chiếu chuẩn kế toán
   });

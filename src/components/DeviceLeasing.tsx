@@ -1,4 +1,7 @@
 import { safeLocalStorage } from '../lib/storage';
+import { createLogger } from '../lib/logger';
+
+const log = createLogger('components/DeviceLeasing');
 import React, { useState, useEffect } from 'react';
 import { 
   Smartphone, 
@@ -1673,7 +1676,14 @@ export function DeviceLeasing() {
                               autoLockOverdue: checked
                             });
                           } catch (err) {
-                            // Fallback
+                            // GĐ 1.5 — ⚠️ Lỗi nghiêm trọng: ghi DB thất bại NHƯNG
+                            // dòng dưới vẫn cập nhật state giao diện, nên màn hình
+                            // báo "đã bật" trong khi server chưa lưu. Cần thấy ngay.
+                            log.error(
+                              'lưu autoLockOverdue thất bại — giao diện sẽ LỆCH với dữ liệu thật',
+                              { leaseId: selectedLease.id, autoLockOverdue: checked },
+                              err
+                            );
                           }
                           setApplications(prev => prev.map(a => 
                             a.id === selectedLease.id ? { ...a, autoLockOverdue: checked } : a

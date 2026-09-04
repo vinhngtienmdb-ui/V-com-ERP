@@ -38,6 +38,7 @@ import { sendZnsNotification } from '../services/znsService';
 import { QuickPrintModal } from './QuickPrintModal';
 import { syncOrderToMisa } from '../services/misaService';
 import { supabase } from '../lib/supabase';
+import { handleInvoiceError, type InvoiceErrorFlow } from '../services/einvoiceService';
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // km
@@ -86,7 +87,42 @@ const OrderDetailModal = ({
   const [isSigningHsm, setIsSigningHsm] = useState(false);
   const [showXml, setShowXml] = useState(false);
   const [taxCode, setTaxCode] = useState<string>(order.taxCode || '0101234567');
+  // S2' — xử lý sai sót 4 luồng TT 91/2026 Điều 10
+  const [showErrorFlow, setShowErrorFlow] = useState(false);
+  const [errorFlow, setErrorFlow] = useState<InvoiceErrorFlow>('replace');
+  const [errorReason, setErrorReason] = useState('');
+  const [errorAdjustFields, setErrorAdjustFields] = useState('');
+  const [errorOriginalNo, setErrorOriginalNo] = useState('');
+  const [errorPeriod, setErrorPeriod] = useState('');
+  const [isHandlingError, setIsHandlingError] = useState(false);
+  const [errorFlowMsg, setErrorFlowMsg] = useState<string | null>(null);
   const isPaidOrBeyond = ['paid', 'confirmed', 'allocated', 'picking', 'packed', 'shipped', 'delivered', 'completed'].includes(order.status);
+
+  // Xử lý sai sót HĐĐT theo 4 luồng TT 91/2026 Điều 10 (thay thế hàm "hủy" cũ)
+  const handleInvoiceErrorClick = async () => {
+    setIsHandlingError(true);
+    setErrorFlowMsg(null);
+    try {
+      const result = await handleInvoiceError({
+        orderId: order.id,
+        flow: errorFlow,
+        reason: errorReason,
+        channel: 'platform',
+        adjustFields: errorFlow === 'announce_adjust'
+          ? errorAdjustFields.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined,
+        originalInvoiceNo: errorFlow === 'replace' ? errorOriginalNo : undefined,
+        period: errorFlow === 'monthly_consolidate' ? errorPeriod : undefined
+      });
+      setEinvoiceStatus(result.status);
+      setErrorFlowMsg(`Đã xử lý (${result.flow}): ${result.providerMessage || ''}`);
+      setShowErrorFlow(false);
+    } catch (e: any) {
+      setErrorFlowMsg(e.message || 'Xử lý hóa đơn thất bại.');
+    } finally {
+      setIsHandlingError(false);
+    }
+  };
 
   const handleDraftRma = async (order: any) => {
     setIsGenerating(true);
@@ -247,7 +283,7 @@ const OrderDetailModal = ({
   const handleSignHsm = async () => {
     setIsSigningHsm(true);
     try {
-      // ⑨ E-Invoice thật qua Integration Config (TT 78/2021/TT-BTC).
+      // ⑨ E-Invoice thật qua Integration Config (TT 91/2026/TT-BTC).
       // Nếu chưa add key provider → throw hướng dẫn rõ ràng (không tự ký giả).
       // MST/địa chỉ công ty đọc từ legalEntityService (single source of truth).
       const { issueEInvoice } = await import('../services/einvoiceService');
@@ -572,6 +608,21 @@ const OrderDetailModal = ({
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     Đã ký số Cloud HSM & Phát hành thành công 🟢
                   </span>
+                ) : einvoiceStatus === 'adjusted' ? (
+                  <span className="px-3 py-1 bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200 rounded-full flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+                    Đã điều chỉnh (TT 91 Điều 10) 🔵
+                  </span>
+                ) : einvoiceStatus === 'replaced' ? (
+                  <span className="px-3 py-1 bg-violet-50 text-violet-700 text-xs font-bold border border-violet-200 rounded-full flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500"></span>
+                    Đã thay thế (TT 91 Điều 10) 🟣
+                  </span>
+                ) : einvoiceStatus === 'consolidated' ? (
+                  <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200 rounded-full flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-teal-500"></span>
+                    Đã gộp tháng (Mẫu 01/BK-ĐCTT) 🟩
+                  </span>
                 ) : (
                   <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold border border-amber-200 rounded-full flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
@@ -624,6 +675,13 @@ const OrderDetailModal = ({
                   <Download className="w-3.5 h-3.5" />
                   Tải XML
                 </button>
+                <button
+                  onClick={() => setShowErrorFlow(v => !v)}
+                  className="px-3 py-1.5 border border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-semibold rounded-lg flex items-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Xử lý sai sót
+                </button>
               </div>
             )}
           </div>
@@ -652,6 +710,100 @@ const OrderDetailModal = ({
                 >
                   tracuu.vcomm.vn ↗
                 </a>
+              </div>
+            </div>
+          )}
+
+          {showErrorFlow && (
+            <div className="mt-4 pt-3 border-t border-slate-200 space-y-3">
+              <p className="text-[10px] text-slate-500 font-semibold">
+                Xử lý sai sót HĐĐT — TT 91/2026 Điều 10 (KHÔNG có "hủy")
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {([
+                  ['replace', 'Thay thế (sai hàng hóa/số lượng/thuế)'],
+                  ['announce_adjust', 'Điều chỉnh (sai tên/địa chỉ)'],
+                  ['monthly_consolidate', 'Gộp tháng (Mẫu 01/BK-ĐCTT)']
+                ] as [InvoiceErrorFlow, string][]).map(([val, label]) => (
+                  <button
+                    key={val}
+                    onClick={() => setErrorFlow(val)}
+                    className={cn(
+                      'px-3 py-2 text-xs font-semibold rounded-lg border text-left',
+                      errorFlow === val
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Lý do xử lý (bắt buộc)"
+                value={errorReason}
+                onChange={e => setErrorReason(e.target.value)}
+                className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs"
+              />
+
+              {errorFlow === 'announce_adjust' && (
+                <input
+                  type="text"
+                  placeholder="Trường điều chỉnh, cách nhau bởi dấu phẩy (vd: Tên người mua, Địa chỉ)"
+                  value={errorAdjustFields}
+                  onChange={e => setErrorAdjustFields(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs"
+                />
+              )}
+              {errorFlow === 'replace' && (
+                <input
+                  type="text"
+                  placeholder="Số hóa đơn gốc bị thay thế"
+                  value={errorOriginalNo}
+                  onChange={e => setErrorOriginalNo(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs"
+                />
+              )}
+              {errorFlow === 'monthly_consolidate' && (
+                <input
+                  type="text"
+                  placeholder="Kỳ gộp tháng YYYY-MM (vd: 2026-09)"
+                  value={errorPeriod}
+                  onChange={e => setErrorPeriod(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs"
+                />
+              )}
+
+              {errorFlowMsg && (
+                <p className="text-[11px] text-slate-600 bg-slate-100 rounded px-2 py-1.5">{errorFlowMsg}</p>
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleInvoiceErrorClick}
+                  disabled={isHandlingError || !errorReason.trim()}
+                  className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 disabled:from-orange-400 disabled:to-red-400 text-white text-xs font-bold rounded-lg flex items-center gap-2"
+                >
+                  {isHandlingError ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Đang xử lý...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Thực hiện xử lý
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => { setShowErrorFlow(false); setErrorFlowMsg(null); }}
+                  className="px-3 py-2 border border-slate-300 bg-white text-slate-600 text-xs rounded-lg"
+                >
+                  Đóng
+                </button>
               </div>
             </div>
           )}
@@ -1108,8 +1260,10 @@ export function Orders() {
     if (matchedOrder) {
       if (newStatus === 'completed') {
         try {
-          const { postOrderJournalEntries } = await import('../services/accountingService');
-          await postOrderJournalEntries(matchedOrder);
+          // GĐ 2.1/2.2 — ghi sổ qua OUTBOX: xếp hàng rồi worker nền xử lý, có retry.
+          // Outbox chưa sẵn sàng (chưa chạy migration 002) → tự rơi về đường đồng bộ cũ.
+          const { postOrderJournalViaOutbox } = await import('../services/accountingOutbox');
+          await postOrderJournalViaOutbox(matchedOrder);
         } catch (accErr: any) {
           console.error('[Accounting] Failed to post order journal entries:', accErr);
           alert(`Lỗi hạch toán kế toán: ${accErr.message || accErr}`);

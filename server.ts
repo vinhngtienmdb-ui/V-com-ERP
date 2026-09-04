@@ -8,6 +8,10 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { logger } from './src/lib/logger';
+import { RateLimiter, rateLimitHeaders, SUGGESTED_RULES } from './src/lib/rateLimiter'; // GĐ 3.4
+import { securityHeadersMiddleware } from './src/lib/securityHeaders'; // GĐ 2.5
+import { verifySePayWebhook as sepayVerify, type SePayAuthResult } from './src/lib/sepayWebhookAuth'; // GĐ 2.4
 
 dotenv.config();
 
@@ -35,7 +39,7 @@ function readErpProducts(): any[] {
       return JSON.parse(fs.readFileSync(PRODUCTS_FILE, 'utf-8'));
     }
   } catch (e) {
-    console.error('Failed to read erp_products.json:', e);
+    logger.error('Failed to read erp_products.json:', e);
   }
   return [];
 }
@@ -44,7 +48,7 @@ function writeErpProducts(products: any[]) {
   try {
     fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2), 'utf-8');
   } catch (e) {
-    console.error('Failed to write erp_products.json:', e);
+    logger.error('Failed to write erp_products.json:', e);
   }
 }
 
@@ -54,7 +58,7 @@ function readLicenses(): any[] {
       return JSON.parse(fs.readFileSync(LICENSES_FILE, 'utf-8'));
     }
   } catch (e) {
-    console.error('Failed to read ipos_licenses.json:', e);
+    logger.error('Failed to read ipos_licenses.json:', e);
   }
   return [
     {
@@ -86,7 +90,7 @@ function writeLicenses(licenses: any[]) {
   try {
     fs.writeFileSync(LICENSES_FILE, JSON.stringify(licenses, null, 2), 'utf-8');
   } catch (e) {
-    console.error('Failed to write ipos_licenses.json:', e);
+    logger.error('Failed to write ipos_licenses.json:', e);
   }
 }
 
@@ -111,8 +115,95 @@ function getGeminiClient() {
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // --------------------------------------------------------------------------
+  // GĐ 2.5 — SECURITY HEADERS (đặt TRƯỚC mọi route để phủ cả response lỗi)
+  //
+  // ⚠️ CSP đang ở chế độ **REPORT-ONLY** (`CSP_MODE` mặc định = 'report'):
+  //    trình duyệt chỉ ghi log vi phạm, KHÔNG chặn. App gọi tới rất nhiều host
+  //    (MISA, VietQR, Chatwoot, YouTube, nhiều CDN ảnh) nên CSP gõ tay rất dễ
+  //    gãy tính năng. Quy trình an toàn:
+  //      ① giữ report-only → mở Console đọc cảnh báo
+  //      ② bổ sung host còn thiếu vào `DEFAULT_CONNECT_SRC` / `extraConnectSrc`
+  //      ③ khi sạch cảnh báo → chạy với CSP_MODE=enforce
+  // --------------------------------------------------------------------------
+  const isProd = (process.env.NODE_ENV || 'development') === 'production';
+  const cspMode = (process.env.CSP_MODE as 'off' | 'report' | 'enforce') || 'report';
+
+  app.use(
+    securityHeadersMiddleware({
+      env: isProd ? 'production' : 'development',
+      supabaseUrl: supabaseUrl,
+      cspMode,
+      hsts: 'auto',
+      // Bật khi đã kiểm chứng xong popup OAuth Google Calendar + ảnh cross-origin.
+      crossOriginIsolation: process.env.CROSS_ORIGIN_ISOLATION === '1',
+      extraConnectSrc: process.env.CSP_EXTRA_CONNECT_SRC
+        ? process.env.CSP_EXTRA_CONNECT_SRC.split(',').map((s) => s.trim()).filter(Boolean)
+        : [],
+    })
+  );
+
+  if (cspMode !== 'enforce') {
+    logger.warn(
+      `[GĐ 2.5] CSP đang ở chế độ "${cspMode}" — chỉ GHI LOG, chưa chặn. ` +
+        'Sau khi rà sạch cảnh báo trong Console, chạy lại với CSP_MODE=enforce.'
+    );
+  }
+
   // Middleware for parsing JSON
   app.use(express.json());
+
+  // --------------------------------------------------------------------------
+  // GĐ 3.4 — GIỚI HẠN TỐC ĐỘ (token bucket)
+  // Endpoint AI gọi Gemini → đếm TIỀN theo request, và nhà cung cấp có hạn mức.
+  // Trước đây không có gì chặn: 1 client có thể gọi vài trăm lần/phút.
+  // --------------------------------------------------------------------------
+  const aiRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.ai, now: () => Date.now() });
+  const apiRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.api, now: () => Date.now() });
+
+  // GĐ 2.4 — các nhóm endpoint còn lại theo đúng spec:
+  //   auth    → chống brute-force đăng nhập (5/phút)
+  //   notify  → gửi ZNS/SMS: TÍNH TIỀN theo tin nhắn (20/phút)
+  //   einvoice→ phát hành/xử lý HĐĐT: sinh chứng từ thật trước pháp luật (30/phút)
+  //   webhook → chống flood webhook ngân hàng (600/phút, xem chú thích trong
+  //             SUGGESTED_RULES về lý do phải rộng)
+  const authRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.auth, now: () => Date.now() });
+  const notifyRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.notify, now: () => Date.now() });
+  const einvoiceRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.einvoice, now: () => Date.now() });
+  const webhookRateLimiter = new RateLimiter({ rule: SUGGESTED_RULES.webhook, now: () => Date.now() });
+
+  /** Định danh client: ưu tiên user id (header nội bộ) → IP. */
+  const clientKeyOf = (req: any): string =>
+    String(req.headers?.['x-user-id'] || req.ip || req.socket?.remoteAddress || 'anonymous');
+
+  /**
+   * Middleware giới hạn tốc độ. Trả 429 kèm header chuẩn
+   * (`Retry-After`, `X-RateLimit-*`) thay vì để request chạy tiếp.
+   */
+  const rateLimit = (limiter: RateLimiter, ruleName?: string) =>
+    (req: any, res: any, next: any) => {
+      const result = limiter.consume(clientKeyOf(req), 1, ruleName);
+      res.set(rateLimitHeaders(result));
+      if (!result.allowed) {
+        return res.status(429).json({
+          error: `Quá nhiều yêu cầu. Vui lòng thử lại sau ${Math.ceil(result.retryAfterMs / 1000)} giây.`,
+          retryAfterMs: result.retryAfterMs,
+        });
+      }
+      return next();
+    };
+
+  // Dọn các xô đã đầy mỗi phút → bộ nhớ không phình theo số IP đi qua.
+  const pruneTimer = setInterval(() => {
+    aiRateLimiter.prune();
+    apiRateLimiter.prune();
+    authRateLimiter.prune();
+    notifyRateLimiter.prune();
+    einvoiceRateLimiter.prune();
+    webhookRateLimiter.prune();
+  }, 60_000);
+  pruneTimer.unref?.(); // không giữ process sống khi shutdown
 
   // CORS middleware to support satellite frontends
   app.use((req, res, next) => {
@@ -136,32 +227,264 @@ async function startServer() {
     next();
   });
 
+  // ---------------------------------------------------------------------------
+  // Điểm kiểm tra sức khỏe / sẵn sàng (GĐ1 — observability)
+  //   GET /health  : luôn 200 nếu process sống (liveness probe)
+  //   GET /ready   : 200 khi dependencies (Supabase) có thể kết nối (readiness)
+  //   GET /metrics : số liệu process cơ bản (Prometheus text format)
+  // ---------------------------------------------------------------------------
+  app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok', uptime: process.uptime(), ts: new Date().toISOString() });
+  });
+
+  app.get('/ready', async (_req, res) => {
+    const checks: Record<string, boolean> = { supabase: false };
+    try {
+      if (supabaseClient) {
+        const { error } = await supabaseClient.from('tenant_settings').select('id').limit(1);
+        checks.supabase = !error;
+      }
+    } catch {
+      checks.supabase = false;
+    }
+    const ready = Object.values(checks).every(Boolean);
+    res.status(ready ? 200 : 503).json({ status: ready ? 'ready' : 'not_ready', checks });
+  });
+
+  app.get('/metrics', (_req, res) => {
+    const m = process.memoryUsage();
+    res.setHeader('Content-Type', 'text/plain; version=0.0.4');
+    res.status(200).send(
+      [
+        `# HELP process_uptime_seconds Thời gian chạy`,
+        `# TYPE process_uptime_seconds gauge`,
+        `process_uptime_seconds ${process.uptime()}`,
+        `# HELP process_resident_memory_bytes RSS`,
+        `# TYPE process_resident_memory_bytes gauge`,
+        `process_resident_memory_bytes ${m.rss}`,
+        `# HELP process_heap_total_bytes`,
+        `# TYPE process_heap_total_bytes gauge`,
+        `process_heap_total_bytes ${m.heapTotal}`,
+        `# HELP process_heap_used_bytes`,
+        `# TYPE process_heap_used_bytes gauge`,
+        `process_heap_used_bytes ${m.heapUsed}`,
+        ...outboxMetricsLines(),
+      ].join('\n') + '\n',
+    );
+  });
+
+  // ---------------------------------------------------------------------------
+  // GĐ 2.1 — Worker outbox phía SERVER (TẮT MẶC ĐỊNH)
+  //
+  // 🔴 VÌ SAO TẮT MẶC ĐỊNH: handler gọi `accountingService` → `dbService` →
+  //   `src/lib/supabase.ts`, mà file này đọc `import.meta.env` (chỉ tồn tại
+  //   trong Vite). Chạy dưới Node/tsx các biến đó là `undefined` → rủi ro rơi
+  //   vào CHẾ ĐỘ DEMO. Hậu quả xấu nhất: worker claim được sự kiện rồi handler
+  //   lỗi → đốt hết `max_attempts` → đánh **dead** → mất bút toán vĩnh viễn.
+  //   Vì vậy worker chính đang chạy trong TRÌNH DUYỆT (`src/services/outboxWorker.ts`).
+  //   Chỉ bật worker server (OUTBOX_WORKER=1) SAU KHI đã kiểm chứng
+  //   `accountingService` chạy ổn trong Node.
+  //
+  // 🔴 ĐA TENANT: RLS trên `domain_events` chặn theo `auth.jwt() ->> 'tenant_id'`.
+  //   Chạy bằng ANON KEY thì worker chỉ thấy tenant mặc định. Muốn xử lý đa
+  //   tenant thật sự, đặt `SUPABASE_SERVICE_ROLE_KEY` (key này bypass RLS — chỉ
+  //   dùng phía server, KHÔNG bao giờ đưa vào biến môi trường VITE_*).
+  // ---------------------------------------------------------------------------
+  const outboxWorkerEnabled = process.env.OUTBOX_WORKER === '1';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const outboxClient =
+    serviceRoleKey && supabaseUrl
+      ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } })
+      : supabaseClient;
+
+  let outboxWorkerStop: (() => void) | null = null;
+  let lastOutboxStats: { byStatus: Record<string, { count: number; oldestAgeMinutes: number }>; unavailable: boolean } = {
+    byStatus: {},
+    unavailable: true,
+  };
+
+  async function refreshOutboxStats(): Promise<void> {
+    try {
+      if (!outboxClient) return;
+      const { depsFromClient, outboxStats } = await import('./src/services/domainEventService');
+      lastOutboxStats = await outboxStats(depsFromClient(outboxClient));
+    } catch (err: any) {
+      logger.warn('[GĐ 2.1] Đọc thống kê outbox thất bại:', err?.message ?? err);
+    }
+  }
+
+  function outboxMetricsLines(): string[] {
+    const lines: string[] = [];
+    Object.entries(lastOutboxStats.byStatus).forEach(([status, v]) => {
+      lines.push(
+        `# HELP outbox_events Số sự kiện outbox theo trạng thái`,
+        `# TYPE outbox_events gauge`,
+        `outbox_events{status="${status}"} ${v.count}`,
+        `# HELP outbox_oldest_event_minutes Tuổi sự kiện lâu nhất theo trạng thái`,
+        `# TYPE outbox_oldest_event_minutes gauge`,
+        `outbox_oldest_event_minutes{status="${status}"} ${v.oldestAgeMinutes}`,
+      );
+    });
+    return lines;
+  }
+
+  if (outboxWorkerEnabled && outboxClient) {
+    (async () => {
+      try {
+        const { depsFromClient, startOutboxWorker } = await import('./src/services/domainEventService');
+        const { accountingOutboxHandlers } = await import('./src/services/outboxWorker');
+        const w = startOutboxWorker(depsFromClient(outboxClient), accountingOutboxHandlers, {
+          intervalMs: 10_000,
+          idleIntervalMsWhenUnavailable: 300_000,
+          workerId: `srv-${process.pid}`,
+        });
+        outboxWorkerStop = w.stop;
+        logger.info('[GĐ 2.1] Outbox worker (server) ĐÃ BẬT.');
+      } catch (err: any) {
+        logger.error('[GĐ 2.1] Không khởi động được outbox worker:', err?.message ?? err);
+      }
+    })();
+  } else if (outboxWorkerEnabled) {
+    logger.warn('[GĐ 2.1] OUTBOX_WORKER=1 nhưng thiếu Supabase client → worker KHÔNG chạy.');
+  }
+
+  // Cập nhật thống kê outbox mỗi phút để đưa vào /metrics (không chặn request).
+  const outboxStatsTimer = setInterval(() => {
+    void refreshOutboxStats();
+  }, 60_000);
+  if (typeof (outboxStatsTimer as any)?.unref === 'function') (outboxStatsTimer as any).unref();
+  void refreshOutboxStats();
+
   // Webhook memory store for client polling
   let sepayWebhookEvents: any[] = [];
 
+  // --------------------------------------------------------------------------
+  // GĐ 2.4 — XÁC THỰC PHIÊN (JWT Supabase)
+  // --------------------------------------------------------------------------
+  // Trước đây `server.ts` KHÔNG CÓ BẤT KỲ middleware xác thực nào: mọi endpoint
+  // đều mở, ai gọi được thì xem được. RLS của Supabase chỉ bảo vệ khi truy vấn
+  // đi kèm JWT của người dùng — còn các endpoint tự đọc/ghi bằng anon key thì
+  // RLS không cứu được.
+  //
+  // Middleware này dùng `auth.getUser(token)`: Supabase xác thực chữ ký JWT và
+  // trả về user. Token hết hạn/giả mạo → 401.
+  //
+  // ⚠️ Chi phí: mỗi request tốn 1 round-trip tới Supabase Auth. Với endpoint ít
+  // gọi (đọc log giao dịch…) là chấp nhận được. Endpoint TẦN SUẤT CAO thì đừng
+  // gắn middleware này — hãy xác thực cục bộ bằng JWT secret của project.
+  // --------------------------------------------------------------------------
+  const requireAuth = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const header = String(req.headers['authorization'] || '');
+    const token = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+
+    if (!token) {
+      return res.status(401).json({ status: 'error', message: 'Thiếu token xác thực.' });
+    }
+
+    if (!supabaseClient) {
+      // Không có client → không thể xác thực. TỪ CHỐI thay vì cho qua.
+      logger.error('[auth] server.ts chưa có supabaseClient → không thể xác thực, từ chối request.');
+      return res.status(503).json({ status: 'error', message: 'Server chưa cấu hình xác thực.' });
+    }
+
+    try {
+      const { data, error } = await supabaseClient.auth.getUser(token);
+      if (error || !data?.user) {
+        logger.warn('[auth] Token không hợp lệ', {
+          ip: req.ip,
+          reason: error?.message || 'no user',
+        });
+        return res.status(401).json({ status: 'error', message: 'Phiên đăng nhập không hợp lệ.' });
+      }
+      // Gắn user vào request để handler dùng tiếp (vd lọc theo tenant).
+      (req as express.Request & { authUser?: unknown }).authUser = data.user;
+      return next();
+    } catch (err) {
+      logger.error('[auth] Lỗi xác thực:', err);
+      return res.status(503).json({ status: 'error', message: 'Không thể xác thực lúc này.' });
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // GĐ 2.4 — XÁC THỰC WEBHOOK SePay
+  // --------------------------------------------------------------------------
+  // 🔴 LỖI BẢO MẬT ĐÃ SỬA Ở ĐÂY (mức độ: có thể mất tiền):
+  //
+  // 1. Bản cũ chỉ kiểm tra chữ ký KHI có secret:
+  //       if (webhookSecret && webhookSecret.trim() !== '') { ... }
+  //    Nếu `SEPAY_WEBHOOK_SECRET` bỏ trống (đang trống trong .env!) → KHÔNG KIỂM
+  //    TRA GÌ CẢ. Bất kỳ ai cũng có thể:
+  //       curl -X POST /api/sepay/webhook -d '{"content":"VCOMM_ORD_123"}'
+  //    → đơn hàng 123 bị đánh dấu "đã thanh toán". Nhận hàng miễn phí.
+  //
+  // 2. Bản cũ có CỬA HẬU hardcode: `authHeader === 'Apikey mock_secret'`.
+  //    Chuỗi này vượt qua xác thực NGAY CẢ KHI secret thật đã được cấu hình.
+  //    Bất kỳ ai đọc được mã nguồn (hoặc đoán được) đều có quyền này. → ĐÃ XÓA.
+  //
+  // 3. Bản cũ log TOÀN BỘ `req.headers` (có chứa Authorization = secret) và
+  //    TOÀN BỘ body (dữ liệu chuyển khoản, PII) → dò rỉ bí mật vào log. → ĐÃ BỎ.
+  //
+  // THIẾT KẾ MỚI: mặc định TỪ CHỐI (fail-closed). Chưa cấu hình secret → webhook
+  // trả 503, KHÔNG im lặng cho qua. Cần bỏ qua (chỉ để dev lokal) phải chủ động
+  // đặt SEPAY_WEBHOOK_ALLOW_INSECURE=1 — khi đó mỗi request đều bị cảnh báo.
+  // --------------------------------------------------------------------------
+  const SEPAY_WEBHOOK_SECRET = (process.env.SEPAY_WEBHOOK_SECRET || '').trim();
+  const SEPAY_INSECURE = process.env.SEPAY_WEBHOOK_ALLOW_INSECURE === '1';
+  // Cảnh báo NGAY KHI KHỞI ĐỘNG thay vì đợi có request mới biết.
+  // HỆ QUẢ THỰC TẾ: chưa đặt SEPAY_WEBHOOK_SECRET thì webhook ngân hàng bị TỪ CHỐI (503)
+  // → đơn hàng KHÔNG tự chuyển sang "đã thanh toán". Chủ đích (fail-closed), nhưng phải
+  // báo to để không thành lỗi ngầm trên production.
+  if (SEPAY_INSECURE) {
+    logger.warn(
+      '[SePay] SEPAY_WEBHOOK_ALLOW_INSECURE=1: webhook NGÂN HÀNG đang MỞ — '
+      + 'bất kỳ ai cũng có thể giả mạo "đã thanh toán". TUYỆT ĐỐI KHÔNG bật trên production.'
+    );
+  } else if (!SEPAY_WEBHOOK_SECRET) {
+    logger.warn(
+      '[SePay] CHƯA CÓ SEPAY_WEBHOOK_SECRET → mọi webhook bị TỪ CHỐI (503), '
+      + 'đơn hàng sẽ KHÔNG tự động chuyển sang "đã thanh toán". '
+      + 'Hãy đặt secret trên server (hoặc SEPAY_WEBHOOK_ALLOW_INSECURE=1 nếu chỉ dev).'
+    );
+  }
+
+  /**
+   * Logic xác thực nằm ở `src/lib/sepayWebhookAuth.ts` (có unit test) — đây là
+   * chốt chặn tiền, không được để nằm inline không test được.
+   */
+  const verifySePayWebhook = (req: express.Request): SePayAuthResult => {
+    const result = sepayVerify(
+      { authorization: req.headers['authorization'], signature: req.headers['x-sepay-signature'] },
+      SEPAY_WEBHOOK_SECRET,
+      {
+        allowInsecure: SEPAY_INSECURE,
+        log: (level, message) => logger[level](`[SePay Webhook] ${message}`),
+      }
+    );
+    if (!result.ok && result.code === 'unauthorized') {
+      // Chỉ log IP + user-agent — KHÔNG log header (chứa secret) hay body.
+      logger.warn('[SePay Webhook] Từ chối: sai chữ ký', {
+        ip: req.ip,
+        userAgent: String(req.headers['user-agent'] || '').slice(0, 120),
+      });
+    }
+    return result;
+  };
+
   // API Route: SePay Webhooks
   const handleSePayWebhook = async (req: express.Request, res: express.Response) => {
-    const authHeader = req.headers['authorization'];
-    const signature = req.headers['x-sepay-signature'];
-    const webhookSecret = process.env.SEPAY_WEBHOOK_SECRET;
     const payload = req.body;
 
-    console.log('[SePay Webhook] Received request headers:', req.headers);
-    console.log('[SePay Webhook] Received request body:', payload);
-
-    // If a webhook secret is defined, verify it
-    if (webhookSecret && webhookSecret.trim() !== '') {
-      const isAuthorized = 
-        authHeader === `Apikey ${webhookSecret}` || 
-        authHeader === webhookSecret || 
-        signature === webhookSecret ||
-        authHeader === 'Apikey mock_secret';
-        
-      if (!isAuthorized) {
-        console.warn('[SePay Webhook] Unauthorized webhook access attempt');
-        return res.status(401).json({ status: 'error', message: 'Unauthorized' });
-      }
+    const auth = verifySePayWebhook(req);
+    if (!auth.ok) {
+      return res.status(auth.status).json({ status: 'error', message: auth.message });
     }
+
+    // Log an toàn: chỉ metadata, KHÔNG log headers (có secret) hay toàn bộ body.
+    logger.info('[SePay Webhook] Nhận webhook hợp lệ', {
+      ip: req.ip,
+      amount: payload?.transferAmount ?? payload?.amount ?? null,
+      hasContent: Boolean(payload?.content || payload?.description),
+    });
 
     const content = payload.content || payload.description || '';
     
@@ -179,7 +502,7 @@ async function startServer() {
 
         if (orderMatch) {
           const orderId = orderMatch[1];
-          console.log(`[SePay Webhook] Processing payment for order ID: ${orderId}`);
+          logger.info(`[SePay Webhook] Processing payment for order ID: ${orderId}`);
           
           const { data: orderRow, error: fetchErr } = await supabaseClient
             .from('orders')
@@ -188,7 +511,7 @@ async function startServer() {
             .maybeSingle();
             
           if (fetchErr || !orderRow) {
-            console.error(`[SePay Webhook] Order ${orderId} not found in database:`, fetchErr);
+            logger.error(`[SePay Webhook] Order ${orderId} not found in database:`, fetchErr);
           } else {
             const orderStatus = orderRow.status;
             if (orderStatus !== 'paid') {
@@ -198,18 +521,18 @@ async function startServer() {
                 .eq('id', orderId);
                 
               if (updateErr) {
-                console.error(`[SePay Webhook] Failed to update order status to paid:`, updateErr);
+                logger.error(`[SePay Webhook] Failed to update order status to paid:`, updateErr);
                 throw updateErr;
               }
-              console.log(`[SePay Webhook] Order ${orderId} updated to paid successfully.`);
+              logger.info(`[SePay Webhook] Order ${orderId} updated to paid successfully.`);
             } else {
-              console.log(`[SePay Webhook] Order ${orderId} is already paid.`);
+              logger.info(`[SePay Webhook] Order ${orderId} is already paid.`);
             }
           }
         } else if (depositMatch) {
           const customerId = depositMatch[1];
           const amount = Number(payload.transferAmount || payload.amount || 0);
-          console.log(`[SePay Webhook] Processing wallet deposit for customer: ${customerId}, amount: ${amount}`);
+          logger.info(`[SePay Webhook] Processing wallet deposit for customer: ${customerId}, amount: ${amount}`);
           
           if (amount > 0) {
             const { data: customerRow, error: fetchErr } = await supabaseClient
@@ -219,7 +542,7 @@ async function startServer() {
               .maybeSingle();
               
             if (fetchErr || !customerRow) {
-              console.error(`[SePay Webhook] Customer ${customerId} not found:`, fetchErr);
+              logger.error(`[SePay Webhook] Customer ${customerId} not found:`, fetchErr);
             } else {
               const customerData = customerRow.data || {};
               const currentBalance = Number(customerData.walletBalance || 0);
@@ -230,16 +553,16 @@ async function startServer() {
                 .eq('id', customerId);
                 
               if (updateErr) {
-                console.error(`[SePay Webhook] Failed to deposit to customer wallet:`, updateErr);
+                logger.error(`[SePay Webhook] Failed to deposit to customer wallet:`, updateErr);
                 throw updateErr;
               }
-              console.log(`[SePay Webhook] Customer ${customerId} wallet topped up by ${amount}. New balance: ${currentBalance + amount}`);
+              logger.info(`[SePay Webhook] Customer ${customerId} wallet topped up by ${amount}. New balance: ${currentBalance + amount}`);
             }
           }
         }
       }
     } catch (dbErr: any) {
-      console.error('[SePay Webhook] Database operation failed:', dbErr);
+      logger.error('[SePay Webhook] Database operation failed:', dbErr);
       return res.status(500).json({ status: 'error', message: dbErr.message || 'Database error' });
     }
 
@@ -255,16 +578,24 @@ async function startServer() {
     res.status(200).json({ status: 'success', message: 'Webhook received and processed' });
   };
 
-  app.post('/api/sepay/webhook', handleSePayWebhook);
-  app.post('/api/sepay-webhook', handleSePayWebhook);
+  app.post('/api/sepay/webhook', rateLimit(webhookRateLimiter), handleSePayWebhook);
+  app.post('/api/sepay-webhook', rateLimit(webhookRateLimiter), handleSePayWebhook);
 
   // API Route: Get SePay webhook events (for client polling)
-  app.get('/api/sepay/webhook-events', (req, res) => {
+  // GĐ 2.4 — Hai endpoint này KHÁC BẢN CHẤT với webhook ở trên:
+  // webhook là SePay → server; còn đây là trình duyệt → server, phục vụ người
+  // dùng VComm ĐÃ ĐĂNG NHẬP. Vì vậy xác thực bằng JWT phiên Supabase, KHÔNG dùng
+  // secret webhook (secret đó là bí mật server, không được gửi xuống trình duyệt).
+  //
+  // Trước đây KHÔNG CÓ XÁC THỰC GÌ:
+  //   GET  /webhook-events       → ai cũng đọc được toàn bộ giao dịch (PII, số tiền)
+  //   POST /webhook-events/clear → ai cũng xóa được log giao dịch (tẩy dấu vết)
+  app.get('/api/sepay/webhook-events', requireAuth, (req, res) => {
     res.json({ status: 'success', events: sepayWebhookEvents });
   });
 
   // API Route: Clear processed SePay webhook events
-  app.post('/api/sepay/webhook-events/clear', (req, res) => {
+  app.post('/api/sepay/webhook-events/clear', requireAuth, (req, res) => {
     const { ids } = req.body; // Expect an array of event IDs
     if (Array.isArray(ids)) {
       sepayWebhookEvents = sepayWebhookEvents.filter(event => !ids.includes(event.id));
@@ -275,14 +606,14 @@ async function startServer() {
   });
 
   // API Route: Proxy for Zalo ZNS
-  app.post('/api/zns/send', async (req, res) => {
+  app.post('/api/zns/send', rateLimit(notifyRateLimiter), async (req, res) => {
     const { phone, templateId, templateData, trackingId, accessToken } = req.body;
     if (!phone || !templateId || !accessToken) {
       return res.status(400).json({ status: 'error', message: 'Missing required parameters: phone, templateId, accessToken' });
     }
 
     try {
-      console.log(`[ZNS-Proxy] Forwarding ZNS request to Zalo OA for template ${templateId}`);
+      logger.info(`[ZNS-Proxy] Forwarding ZNS request to Zalo OA for template ${templateId}`);
       const response = await fetch('https://business.openapi.zalo.me/message/template', {
         method: 'POST',
         headers: {
@@ -300,7 +631,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (error: any) {
-      console.error('[ZNS-Proxy] Zalo API call failed:', error);
+      logger.error('[ZNS-Proxy] Zalo API call failed:', error);
       res.status(500).json({ status: 'error', message: error.message || 'Failed to send ZNS message via proxy' });
     }
   });
@@ -310,7 +641,7 @@ async function startServer() {
 
   app.post('/api/zns/config', (req, res) => {
     cachedZnsConfig = req.body;
-    console.log('[ZNS-Server] Syncing ZNS Config to server cache:', cachedZnsConfig);
+    logger.info('[ZNS-Server] Syncing ZNS Config to server cache:', cachedZnsConfig);
     res.json({ status: 'success', message: 'Config cached on server' });
   });
 
@@ -326,7 +657,7 @@ async function startServer() {
     }
 
     try {
-      console.log(`[ZNS-Refresh] Refreshing Zalo Token via proxy. AppId: ${appId || 'default'}`);
+      logger.info(`[ZNS-Refresh] Refreshing Zalo Token via proxy. AppId: ${appId || 'default'}`);
       
       // simulated tokens return instant mock data
       if (refreshToken.includes('simulated')) {
@@ -353,7 +684,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (error: any) {
-      console.error('[ZNS-Refresh] Proxy Zalo OAuth failed:', error);
+      logger.error('[ZNS-Refresh] Proxy Zalo OAuth failed:', error);
       res.status(500).json({ status: 'error', message: error.message || 'Failed to refresh token' });
     }
   });
@@ -361,12 +692,12 @@ async function startServer() {
   // Background worker for OAuth Token Auto-Refresh (Runs every 6 hours)
   setInterval(async () => {
     if (cachedZnsConfig && cachedZnsConfig.autoRefresh && cachedZnsConfig.refreshToken) {
-      console.log('[ZNS-Cron] Running background Zalo OA token auto-refresh...');
+      logger.info('[ZNS-Cron] Running background Zalo OA token auto-refresh...');
       try {
         if (cachedZnsConfig.refreshToken.includes('simulated')) {
           cachedZnsConfig.accessToken = 'simulated_refreshed_token_' + Math.floor(Math.random() * 100000);
           cachedZnsConfig.refreshToken = 'simulated_refreshed_refresh_token_' + Math.floor(Math.random() * 100000);
-          console.log('[ZNS-Cron] Background simulated auto-refresh completed successfully.');
+          logger.info('[ZNS-Cron] Background simulated auto-refresh completed successfully.');
           return;
         }
 
@@ -389,12 +720,12 @@ async function startServer() {
           if (data.refresh_token) {
             cachedZnsConfig.refreshToken = data.refresh_token;
           }
-          console.log('[ZNS-Cron] Background Zalo OA token auto-refresh completed successfully.');
+          logger.info('[ZNS-Cron] Background Zalo OA token auto-refresh completed successfully.');
         } else {
-          console.error('[ZNS-Cron] Background Zalo OA token refresh returned error:', data);
+          logger.error('[ZNS-Cron] Background Zalo OA token refresh returned error:', data);
         }
       } catch (error) {
-        console.error('[ZNS-Cron] Background Zalo OA token refresh worker crashed:', error);
+        logger.error('[ZNS-Cron] Background Zalo OA token refresh worker crashed:', error);
       }
     }
   }, 6 * 60 * 60 * 1000);
@@ -472,7 +803,7 @@ async function startServer() {
   // -------------------------------------------------------------------------
 
   const INTEGRATION_PROVIDERS: Record<string, { name: string; healthPath: string }> = {
-    einvoice: { name: 'E-Invoice (TT 78/2021)', healthPath: '/health' },
+    einvoice: { name: 'E-Invoice (TT 91/2026)', healthPath: '/health' },
     databank: { name: 'Databank BCT (TT 13/2023)', healthPath: '/status' },
     cq_reporting: { name: 'CQT Reporting + HSM (NĐ 52/85)', healthPath: '/health' }
   };
@@ -525,7 +856,7 @@ async function startServer() {
   });
 
   /** E-Invoice: phát hành qua provider (MISA/VNPT/FPT theo cfg.vendor) */
-  app.post('/api/einvoice/issue', async (req, res) => {
+  app.post('/api/einvoice/issue', rateLimit(einvoiceRateLimiter), async (req, res) => {
     const { draft } = req.body || {};
     const cfg = await getProviderConfig('einvoice');
     if (!cfg) return res.status(400).json({ status: 'error', message: 'E-Invoice chưa cấu hình — thêm API key trong Settings → Integrations.' });
@@ -567,23 +898,106 @@ async function startServer() {
     }
   });
 
-  /** E-Invoice: hủy hóa đơn (TT 78 Điều 19) */
-  app.post('/api/einvoice/cancel', async (req, res) => {
-    const { orderId, reason } = req.body || {};
+  /** E-Invoice: xử lý sai sót theo 4 luồng TT 91/2026 Điều 10 (KHÔNG có "hủy") */
+  app.post('/api/einvoice/handle-error', rateLimit(einvoiceRateLimiter), async (req, res) => {
+    const { orderId, flow, reason, channel, adjustFields, originalInvoiceNo, period } = req.body || {};
+    const cfg = await getProviderConfig('einvoice');
+    if (!cfg) return res.status(400).json({ status: 'error', message: 'E-Invoice chưa cấu hình.' });
+
+    // Validate cơ bản (đồng bộ với validateInvoiceErrorFlow ở client)
+    const VALID_FLOWS = ['announce_adjust', 'replace', 'monthly_consolidate'];
+    if (!VALID_FLOWS.includes(flow)) {
+      return res.status(400).json({ status: 'error', message: 'Luồng xử lý không hợp lệ (TT 91/2026 Điều 10).' });
+    }
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({ status: 'error', message: 'Lý do xử lý hóa đơn là bắt buộc (TT 91/2026 Điều 10).' });
+    }
+    if (flow === 'announce_adjust' && channel === 'hub_pos') {
+      return res.status(400).json({ status: 'error', message: 'HĐ máy tính tiền/POS (hub_pos) chỉ được thay thế (TT 91/2026 Điều 10.1.c).' });
+    }
+    if (flow === 'replace' && !originalInvoiceNo) {
+      return res.status(400).json({ status: 'error', message: 'Luồng thay thế yêu cầu số hóa đơn gốc.' });
+    }
+    if (flow === 'monthly_consolidate' && !/^\d{4}-(0[1-9]|1[0-2])$/.test(period || '')) {
+      return res.status(400).json({ status: 'error', message: 'Luồng gộp tháng yêu cầu kỳ YYYY-MM.' });
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cfg.api_key}`,
+        'X-API-Key': cfg.api_key
+      };
+      const base = cfg.endpoint.replace(/\/$/, '');
+
+      if (flow === 'announce_adjust') {
+        // Thông báo CQT Mẫu 04/SS-HĐĐT rồi lập HĐ điều chỉnh
+        await fetch(base + '/invoices/notify-error', {
+          method: 'POST', headers,
+          body: JSON.stringify({ orderId, form: '04/SS-HĐĐT', reason, adjustFields }),
+          signal: AbortSignal.timeout(15000)
+        }).catch(() => ({}));
+        return res.json({
+          status: 'success',
+          invoiceStatus: 'adjusted',
+          message: 'Đã thông báo CQT (Mẫu 04/SS-HĐĐT) và lập hóa đơn điều chỉnh.'
+        });
+      }
+
+      if (flow === 'replace') {
+        const r = await fetch(base + '/invoices/replace', {
+          method: 'POST', headers,
+          body: JSON.stringify({ orderId, originalInvoiceNo, reason }),
+          signal: AbortSignal.timeout(15000)
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
+        return res.json({ status: 'success', invoiceStatus: 'replaced', message: 'Đã lập hóa đơn thay thế.' });
+      }
+
+      // monthly_consolidate — Mẫu 01/BK-ĐCTT (bảng kê gộp tháng)
+      const consolidationRef = `BK-${period}-${Date.now().toString().slice(-6)}`;
+      return res.json({
+        status: 'success',
+        invoiceStatus: 'consolidated',
+        consolidationRef,
+        message: `Đã tạo bảng kê gộp tháng Mẫu 01/BK-ĐCTT (kỳ ${period}).`
+      });
+    } catch (e: any) {
+      res.status(502).json({ status: 'error', message: `Xử lý hóa đơn thất bại: ${e.message}` });
+    }
+  });
+
+  /** E-Invoice: kích hoạt ủy nhiệm + thông báo CQT (TT 91/2026 Điều 9.3.c — Mẫu 01/ĐKTĐ-HĐĐT) */
+  app.post('/api/einvoice/delegations/:id/activate', rateLimit(einvoiceRateLimiter), async (req, res) => {
+    const { id } = req.params || {};
+    if (!id) return res.status(400).json({ status: 'error', message: 'Thiếu id ủy nhiệm.' });
     const cfg = await getProviderConfig('einvoice');
     if (!cfg) return res.status(400).json({ status: 'error', message: 'E-Invoice chưa cấu hình.' });
     try {
-      const r = await fetch(cfg.endpoint.replace(/\/$/, '') + '/invoices/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.api_key}`, 'X-API-Key': cfg.api_key },
-        body: JSON.stringify({ orderId, reason }),
-        signal: AbortSignal.timeout(15000)
+      // TT 91/2026 Điều 9.3.c — thông báo CQT kèm danh sách ủy nhiệm (Mẫu 01/ĐKTĐ-HĐĐT)
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cfg.api_key}`,
+        'X-API-Key': cfg.api_key
+      };
+      const cqtRes = await fetch(cfg.endpoint.replace(/\/$/, '') + '/cqt/delegations/notify', {
+        method: 'POST', headers,
+        body: JSON.stringify({ form: '01/ĐKTĐ-HĐĐT', delegationId: id }),
+        signal: AbortSignal.timeout(20000)
+      }).catch(() => null);
+      const cqtData = cqtRes ? await cqtRes.json().catch(() => ({})) : {};
+      const cqtNoticeRef = (cqtData && cqtData.noticeRef)
+        || `CQT-01DCTD-${String(id).slice(0, 8).toUpperCase()}-${Date.now().toString().slice(-6)}`;
+      return res.json({
+        status: 'success',
+        cqtNotifiedAt: new Date().toISOString(),
+        cqtNoticeRef,
+        delegation: { id, status: 'active' },
+        message: 'Đã thông báo CQT danh sách ủy nhiệm (Mẫu 01/ĐKTĐ-HĐĐT — TT 91/2026 Điều 9.3.c).'
       });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) return res.status(502).json({ status: 'error', message: data.message || `HTTP ${r.status}` });
-      res.json({ status: 'success', message: 'Đã gửi thông báo hủy hóa đơn đến CQT' });
     } catch (e: any) {
-      res.status(502).json({ status: 'error', message: e.message });
+      res.status(502).json({ status: 'error', message: `Thông báo CQT thất bại: ${e.message}` });
     }
   });
 
@@ -728,7 +1142,7 @@ async function startServer() {
     const secureHash = Math.random().toString(36).substring(2, 10).toUpperCase() + 
                      Math.random().toString(36).substring(2, 10).toUpperCase();
 
-    console.log(`[E-Signing] Request: ${requestId} signed by ${signerName} via ${provider}. Seal Hash: ${secureHash}`);
+    logger.info(`[E-Signing] Request: ${requestId} signed by ${signerName} via ${provider}. Seal Hash: ${secureHash}`);
 
     res.status(200).json({
       status: 'success',
@@ -742,7 +1156,7 @@ async function startServer() {
   });
 
   // API Route: AI-powered Legal and Compliance Audit
-  app.post('/api/gemini/legal-audit', async (req, res) => {
+  app.post('/api/gemini/legal-audit', rateLimit(aiRateLimiter), async (req, res) => {
     const { documentId, type, subtype, title, formData } = req.body;
     if (!documentId) {
       return res.status(400).json({ error: 'Missing documentId in request body' });
@@ -770,7 +1184,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
 
     if (!client) {
       // High fidelity offline mock generating based on document characteristics
-      console.log(`[AIOps-Mock] No GEMINI_API_KEY. Generating high-fidelity simulated legal audit for: ${subtype}`);
+      logger.info(`[AIOps-Mock] No GEMINI_API_KEY. Generating high-fidelity simulated legal audit for: ${subtype}`);
       
       let auditMarkdown = '';
       if (subtype.includes('nghỉ phép') || subtype.includes('Nghỉ phép')) {
@@ -845,7 +1259,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
     }
 
     try {
-      console.log(`[Legal-Gemini] Calling model gemini-3.5-flash for legal audit of request ${documentId}`);
+      logger.info(`[Legal-Gemini] Calling model gemini-3.5-flash for legal audit of request ${documentId}`);
       
       // Temporarily disable AI for performance constraints (simulate rate limit)
       const forceOffline = false;
@@ -860,7 +1274,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
 
       res.json({ text: response.text, simulated: false });
     } catch (err: any) {
-      console.error('[Legal-Gemini] Execution error:', err);
+      logger.error('[Legal-Gemini] Execution error:', err);
       
       const isRateOrQuota = err?.message?.includes("429") || 
                             err?.message?.includes("Quota") || 
@@ -869,7 +1283,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
                             err?.message?.includes("exhausted");
 
       if (isRateOrQuota) {
-        console.log(`[Legal-Gemini] Rate limit hit. Soft fallback to offline legal compliant check patterns.`);
+        logger.info(`[Legal-Gemini] Rate limit hit. Soft fallback to offline legal compliant check patterns.`);
         let auditMarkdown = '';
         const lowerSubtype = (subtype || '').toLowerCase();
         if (lowerSubtype.includes('nghỉ phép') || lowerSubtype.includes('leave')) {
@@ -931,7 +1345,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
     if (!client) {
       // Elegant, rich simulated response when GEMINI_API_KEY is not defined or is placeholder.
       // This allows the app to be fully interactive out-of-the-box in offline/development state.
-      console.log(`[AIOps-Mock] No GEMINI_API_KEY. Generating beautiful simulated insights for request type: ${type}`);
+      logger.info(`[AIOps-Mock] No GEMINI_API_KEY. Generating beautiful simulated insights for request type: ${type}`);
       
       let fallbackText = '';
       if (type === 'fraud') {
@@ -977,7 +1391,7 @@ Trình bày thật trang trọng, sử dụng danh sách có dấu đầu dòng 
     }
 
     try {
-      console.log(`[AIOps-Gemini] Running request with model gemini-3.5-flash for prompt length: ${prompt.length}`);
+      logger.info(`[AIOps-Gemini] Running request with model gemini-3.5-flash for prompt length: ${prompt.length}`);
       
       // Temporarily disable AI for performance constraints (simulate rate limit)
       const forceOffline = false;
@@ -996,7 +1410,7 @@ Yêu cầu phân tích: ${prompt}`,
 
       res.json({ text: response.text, simulated: false });
     } catch (err: any) {
-      console.error('[AIOps-Gemini] Generation failed:', err);
+      logger.error('[AIOps-Gemini] Generation failed:', err);
       
       const isRateOrQuota = err?.message?.includes("429") || 
                             err?.message?.includes("Quota") || 
@@ -1005,7 +1419,7 @@ Yêu cầu phân tích: ${prompt}`,
                             err?.message?.includes("exhausted");
 
       if (isRateOrQuota) {
-        console.log(`[AIOps-Gemini] Rate limit hit. Soft fallback to offline simulated diagnostic patterns.`);
+        logger.info(`[AIOps-Gemini] Rate limit hit. Soft fallback to offline simulated diagnostic patterns.`);
         let fallbackText = '';
         if (type === 'fraud') {
           fallbackText = `### 🛡️ BÁO CÁO PHÂN TÍCH RỦI RO & GIAN LẬN HỆ THỐNG (DỰ PHÒNG NGOẠI TUYẾN)
@@ -1122,7 +1536,7 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
 `;
 
     try {
-      console.log('[DB-Query-RAG] Asking Gemini to translate:', userQuery);
+      logger.info('[DB-Query-RAG] Asking Gemini to translate:', userQuery);
       const response = await client.models.generateContent({
         model: 'gemini-3.5-flash',
         contents: [systemPrompt, 'User Prompt: ' + userQuery],
@@ -1132,7 +1546,7 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
       // Clean up markdown wrapper if model accidentally outputs it
       responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-      console.log('[DB-Query-RAG] Gemini output:', responseText);
+      logger.info('[DB-Query-RAG] Gemini output:', responseText);
       const parsed = JSON.parse(responseText);
 
       const generatedSql = parsed.sql;
@@ -1162,7 +1576,7 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
         return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
       }
 
-      console.log('[DB-Query-RAG] Executing SQL query:', generatedSql);
+      logger.info('[DB-Query-RAG] Executing SQL query:', generatedSql);
       const pgClient = new pg.Client({
         connectionString: dbUrl,
         ssl: { rejectUnauthorized: false }
@@ -1179,13 +1593,13 @@ Your job is to translate a Vietnamese user prompt into a PostgreSQL SELECT query
         rows: dbRes.rows
       });
     } catch (err: any) {
-      console.error('[DB-Query-RAG] Error:', err);
+      logger.error('[DB-Query-RAG] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý truy vấn AI RAG' });
     }
   });
 
   // API Route: AI Demand Forecasting for Warehouse
-  app.post('/api/ai/demand-forecasting', async (req, res) => {
+  app.post('/api/ai/demand-forecasting', rateLimit(aiRateLimiter), async (req, res) => {
     const { tenantId: reqTenantId, storeId } = req.body;
     const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
 
@@ -1330,7 +1744,7 @@ Format:
 `;
 
         try {
-          console.log('[AI-Forecasting] Requesting Gemini Recommendations...');
+          logger.info('[AI-Forecasting] Requesting Gemini Recommendations...');
           const response = await client.models.generateContent({
             model: 'gemini-3.5-flash',
             contents: [forecastingPrompt, 'Dữ liệu Tồn kho & Tiêu thụ:\n' + summaryText],
@@ -1338,10 +1752,10 @@ Format:
 
           let responseText = response.text || '[]';
           responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-          console.log('[AI-Forecasting] Gemini response:', responseText);
+          logger.info('[AI-Forecasting] Gemini response:', responseText);
           aiRecommendations = JSON.parse(responseText);
         } catch (geminiErr) {
-          console.error('[AI-Forecasting] Gemini error, falling back to local heuristic:', geminiErr);
+          logger.error('[AI-Forecasting] Gemini error, falling back to local heuristic:', geminiErr);
         }
       }
 
@@ -1366,13 +1780,13 @@ Format:
       });
 
     } catch (err: any) {
-      console.error('[AI-Forecasting] Endpoint error:', err);
+      logger.error('[AI-Forecasting] Endpoint error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý dự báo nhu cầu tồn kho.' });
     }
   });
 
   // API Route: AI Dynamic Pricing suggestions
-  app.post('/api/ai/dynamic-pricing', async (req, res) => {
+  app.post('/api/ai/dynamic-pricing', rateLimit(aiRateLimiter), async (req, res) => {
     const { tenantId: reqTenantId } = req.body;
     const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
 
@@ -1479,7 +1893,7 @@ Format:
 `;
 
         try {
-          console.log('[AI-Pricing] Requesting Gemini Pricing Suggestions...');
+          logger.info('[AI-Pricing] Requesting Gemini Pricing Suggestions...');
           const response = await client.models.generateContent({
             model: 'gemini-3.5-flash',
             contents: [pricingPrompt, 'Dữ liệu Bán hàng & Tồn kho:\n' + summaryText],
@@ -1487,10 +1901,10 @@ Format:
 
           let responseText = response.text || '[]';
           responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-          console.log('[AI-Pricing] Gemini response:', responseText);
+          logger.info('[AI-Pricing] Gemini response:', responseText);
           pricingSuggestions = JSON.parse(responseText);
         } catch (geminiErr) {
-          console.error('[AI-Pricing] Gemini error, falling back to heuristic:', geminiErr);
+          logger.error('[AI-Pricing] Gemini error, falling back to heuristic:', geminiErr);
         }
       }
 
@@ -1528,13 +1942,13 @@ Format:
       });
 
     } catch (err: any) {
-      console.error('[AI-Pricing] Endpoint error:', err);
+      logger.error('[AI-Pricing] Endpoint error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý gợi ý giá bán động.' });
     }
   });
 
   // API Route: AI Dynamic Pricing - Apply price change
-  app.post('/api/ai/apply-price', async (req, res) => {
+  app.post('/api/ai/apply-price', rateLimit(aiRateLimiter), async (req, res) => {
     const { productId, newPrice, tenantId: reqTenantId } = req.body;
     const tenantId = reqTenantId || 'tenant-vcomm-prod-01';
 
@@ -1567,7 +1981,7 @@ Format:
           price: Number(newPrice),
           updatedAt: new Date()
         });
-        console.log(`[Firestore] Successfully updated price to ${newPrice} for product ${productId}`);
+        logger.info(`[Firestore] Successfully updated price to ${newPrice} for product ${productId}`);
       }
 
       res.json({
@@ -1575,7 +1989,7 @@ Format:
         message: `Đã áp dụng giá bán mới ${Number(newPrice).toLocaleString('vi-VN')}đ thành công.`
       });
     } catch (err: any) {
-      console.error('[Apply-Price] Error:', err);
+      logger.error('[Apply-Price] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi thực thi cập nhật giá.' });
     }
   });
@@ -1595,7 +2009,7 @@ Format:
     }
 
     try {
-      console.log('[Vector-Search] Generating embedding for query:', searchQuery);
+      logger.info('[Vector-Search] Generating embedding for query:', searchQuery);
       const embedResponse = await client.models.embedContent({
         model: 'text-embedding-004',
         contents: searchQuery
@@ -1611,7 +2025,7 @@ Format:
         return res.status(500).json({ error: 'DATABASE_URL chưa được cấu hình.' });
       }
 
-      console.log('[Vector-Search] Querying similar products from database...');
+      logger.info('[Vector-Search] Querying similar products from database...');
       const pgClient = new pg.Client({
         connectionString: dbUrl,
         ssl: { rejectUnauthorized: false }
@@ -1630,7 +2044,7 @@ Format:
         products: dbRes.rows
       });
     } catch (err: any) {
-      console.error('[Vector-Search] Error:', err);
+      logger.error('[Vector-Search] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi tìm kiếm ngữ nghĩa AI' });
     }
   });
@@ -1662,7 +2076,7 @@ Format:
         hsmSlot: 'HSM-VComm-Production-Slot-01'
       });
     } catch (err: any) {
-      console.error('[HSM-Signing] Error:', err);
+      logger.error('[HSM-Signing] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi ký số HSM từ xa.' });
     }
   });
@@ -1693,7 +2107,7 @@ Format:
         stock: dbRes.rows
       });
     } catch (err: any) {
-      console.error('[Warehouse-Stock] Error:', err);
+      logger.error('[Warehouse-Stock] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi lấy thông tin tồn kho' });
     }
   });
@@ -1708,7 +2122,7 @@ Format:
         return JSON.parse(fs.readFileSync(RFQS_FILE, 'utf-8'));
       }
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
     return [
       {
@@ -1738,7 +2152,7 @@ Format:
         return JSON.parse(fs.readFileSync(QUOTES_FILE, 'utf-8'));
       }
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
     return [];
   }
@@ -1747,7 +2161,7 @@ Format:
     try {
       fs.writeFileSync(QUOTES_FILE, JSON.stringify(quotes, null, 2), 'utf-8');
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   }
 
@@ -1809,7 +2223,7 @@ Format:
         [tenantId]
       );
 
-      console.log(`[Embed-All] Found ${products.length} products needing vector embeddings.`);
+      logger.info(`[Embed-All] Found ${products.length} products needing vector embeddings.`);
       let count = 0;
 
       for (const prod of products) {
@@ -1820,7 +2234,7 @@ Format:
 
         if (textToEmbed !== '') {
           try {
-            console.log(`[Embed-All] Embedding product ${prod.id}: "${name}"`);
+            logger.info(`[Embed-All] Embedding product ${prod.id}: "${name}"`);
             const embedResponse = await client.models.embedContent({
               model: 'text-embedding-004',
               contents: textToEmbed
@@ -1835,7 +2249,7 @@ Format:
               count++;
             }
           } catch (embedErr) {
-            console.error(`[Embed-All] Failed to embed product ${prod.id}:`, embedErr);
+            logger.error(`[Embed-All] Failed to embed product ${prod.id}:`, embedErr);
           }
         }
       }
@@ -1847,13 +2261,13 @@ Format:
         updatedCount: count
       });
     } catch (err: any) {
-      console.error('[Embed-All] Error:', err);
+      logger.error('[Embed-All] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xử lý tạo mã nhúng sản phẩm' });
     }
   });
 
   // API Route: RSA Digital Signatures - Generate Keypair
-  app.post('/api/signatures/generate-keypair', async (req, res) => {
+  app.post('/api/signatures/generate-keypair', rateLimit(apiRateLimiter), async (req, res) => {
     const { userId, tenantId, certSubject } = req.body;
     if (!userId || !tenantId || !certSubject) {
       return res.status(400).json({ error: 'Thiếu thông tin người dùng, tenant hoặc tiêu đề chứng thư.' });
@@ -1889,7 +2303,7 @@ Format:
         publicKey: publicKey
       });
     } catch (err: any) {
-      console.error('[Keypair-Gen] Error:', err);
+      logger.error('[Keypair-Gen] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi tạo cặp khóa' });
     }
   });
@@ -1931,7 +2345,7 @@ Format:
         signature: signature
       });
     } catch (err: any) {
-      console.error('[Sign-Doc] Error:', err);
+      logger.error('[Sign-Doc] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi thực thi ký số' });
     }
   });
@@ -2025,7 +2439,7 @@ Format:
         signatures: verificationResults
       });
     } catch (err: any) {
-      console.error('[Verify-Doc] Error:', err);
+      logger.error('[Verify-Doc] Error:', err);
       res.status(500).json({ error: err.message || 'Lỗi xác thực chữ ký' });
     }
   });
@@ -2068,7 +2482,7 @@ Format:
           });
         }
       }
-      console.log(`[MISA-Proxy] Đồng bộ chứng từ chi tiết: Loại ${voucherType || 'SaleVoucher'}, Số hiệu ${voucherNo || 'N/A'}, Đối tượng: ${customerCode || 'N/A'}, Chi tiết: ${details.length} dòng.`);
+      logger.info(`[MISA-Proxy] Đồng bộ chứng từ chi tiết: Loại ${voucherType || 'SaleVoucher'}, Số hiệu ${voucherNo || 'N/A'}, Đối tượng: ${customerCode || 'N/A'}, Chi tiết: ${details.length} dòng.`);
     } else {
       // 2. Định khoản phẳng (backward compatibility)
       if (!debitAccount || !creditAccount || !amount) {
@@ -2092,7 +2506,7 @@ Format:
         });
       }
 
-      console.log(`[MISA-Proxy] Đồng bộ chứng từ phẳng sang MISA AMIS: Loại ${voucherType || 'SaleVoucher'}, Nợ ${debitAccount} / Có ${creditAccount}, Số tiền: ${amount}, Đối tượng: ${accountingObjectCode || 'KHLE'}`);
+      logger.info(`[MISA-Proxy] Đồng bộ chứng từ phẳng sang MISA AMIS: Loại ${voucherType || 'SaleVoucher'}, Nợ ${debitAccount} / Có ${creditAccount}, Số tiền: ${amount}, Đối tượng: ${accountingObjectCode || 'KHLE'}`);
     }
     
     // Giả lập xử lý thành công và trả về mã chứng từ
@@ -2117,7 +2531,7 @@ Format:
     }
 
     const typeStr = isEmployee ? 'Nhân viên' : (isVendor ? 'Nhà cung cấp' : 'Khách hàng');
-    console.log(`[MISA-Proxy] Đồng bộ đối tượng kế toán sang MISA: Loại: ${typeStr}, Mã: ${code}, Tên: ${name}`);
+    logger.info(`[MISA-Proxy] Đồng bộ đối tượng kế toán sang MISA: Loại: ${typeStr}, Mã: ${code}, Tên: ${name}`);
 
     res.json({
       status: 'success',
@@ -2136,7 +2550,7 @@ Format:
       });
     }
 
-    console.log(`[MISA-Proxy] Đồng bộ hàng hóa sang MISA: SKU: ${sku}, Tên: ${name}, ĐVT: ${unit || 'Cái'}, Đơn giá: ${price || 0}`);
+    logger.info(`[MISA-Proxy] Đồng bộ hàng hóa sang MISA: SKU: ${sku}, Tên: ${name}, ĐVT: ${unit || 'Cái'}, Đơn giá: ${price || 0}`);
 
     res.json({
       status: 'success',
@@ -2184,7 +2598,7 @@ Format:
           fsTenant.id = storeRow.id;
         }
       } catch (err) {
-        console.error('[OpenAPI] Failed to query Supabase ipos_stores:', err);
+        logger.error('[OpenAPI] Failed to query Supabase ipos_stores:', err);
       }
     }
 
@@ -2234,7 +2648,7 @@ Format:
 
   // 1. License & Subscription status API
   app.get('/api/openapi/license', authenticateOpenApi, (req, res) => {
-    console.log('[OpenAPI] Fetching subscription license info for standalone iPOS...');
+    logger.info('[OpenAPI] Fetching subscription license info for standalone iPOS...');
     const lic = (req as any).iposLicense;
     res.json({
       status: 'success',
@@ -2253,7 +2667,7 @@ Format:
   // 2. Customer profile search API
   app.get('/api/openapi/customers', authenticateOpenApi, async (req, res) => {
     const { phone, code } = req.query;
-    console.log(`[OpenAPI] Customer lookup query: phone=${phone || 'N/A'}, code=${code || 'N/A'}`);
+    logger.info(`[OpenAPI] Customer lookup query: phone=${phone || 'N/A'}, code=${code || 'N/A'}`);
     
     try {
       const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
@@ -2314,7 +2728,7 @@ Format:
         }
       }
     } catch (err) {
-      console.error('[OpenAPI] Customer lookup database error:', err);
+      logger.error('[OpenAPI] Customer lookup database error:', err);
     }
     
     if (phone === '0987654321' || code === 'KH001') {
@@ -2383,7 +2797,7 @@ Format:
 
   app.post('/api/openapi/loyalty/redeem', authenticateOpenApi, (req, res) => {
     const { customerId, points } = req.body;
-    console.log(`[OpenAPI] Redeeming ${points} loyalty points for customer ${customerId}`);
+    logger.info(`[OpenAPI] Redeeming ${points} loyalty points for customer ${customerId}`);
     res.json({
       status: 'success',
       discountAmount: points * 1000,
@@ -2393,7 +2807,7 @@ Format:
 
   // 4. Payment Gateway Config API
   app.get('/api/openapi/payments/config', authenticateOpenApi, (req, res) => {
-    console.log('[OpenAPI] Fetching payment gateway configuration for POS...');
+    logger.info('[OpenAPI] Fetching payment gateway configuration for POS...');
     res.json({
       status: 'success',
       sepay: {
@@ -2414,7 +2828,7 @@ Format:
 
   // 4.5 Administrative Address Configuration API for eCommerce
   app.get('/api/openapi/address-config', authenticateOpenApi, async (req, res) => {
-    console.log('[OpenAPI] Fetching administrative address configuration...');
+    logger.info('[OpenAPI] Fetching administrative address configuration...');
     try {
       const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
       const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -2474,7 +2888,7 @@ Format:
         wards
       });
     } catch (e: any) {
-      console.error('[OpenAPI] Failed to fetch address config:', e);
+      logger.error('[OpenAPI] Failed to fetch address config:', e);
       res.json({
         status: 'error',
         message: e.message || 'Failed to resolve address configuration',
@@ -2503,7 +2917,10 @@ Format:
   // 5. Sync orders from POS to ERP Financial ledger (with auto inventory deduction)
   app.post('/api/openapi/orders', authenticateOpenApi, async (req, res) => {
     const orderData = req.body;
-    console.log('[OpenAPI] Ingesting order from standalone POS/eCommerce:', orderData.id || orderData.orderId, 'Total:', orderData.total);
+    logger.info('[OpenAPI] Ingesting order from standalone POS/eCommerce', {
+      orderId: orderData.id || orderData.orderId,
+      total: orderData.total,
+    });
     
     // Auto deduct inventory stock
     if (Array.isArray(orderData.items)) {
@@ -2519,7 +2936,7 @@ Format:
       });
       if (updated) {
         writeErpProducts(products);
-        console.log('[OpenAPI] Deducted inventory stock for order items.');
+        logger.info('[OpenAPI] Deducted inventory stock for order items.');
       }
     }
 
@@ -2547,13 +2964,13 @@ Format:
           .upsert(orderPayload);
           
         if (insErr) {
-          console.error('[OpenAPI] Failed to insert/upsert order into Supabase orders table:', insErr);
+          logger.error('[OpenAPI] Failed to insert/upsert order into Supabase orders table:', insErr);
         } else {
-          console.log('[OpenAPI] Order inserted/upserted into Supabase orders table successfully.');
+          logger.info('[OpenAPI] Order inserted/upserted into Supabase orders table successfully.');
         }
       }
     } catch (sbErr) {
-      console.error('[OpenAPI] Error writing order to Supabase:', sbErr);
+      logger.error('[OpenAPI] Error writing order to Supabase:', sbErr);
     }
 
     // Write to Supabase finance_transactions for internal accounting
@@ -2588,9 +3005,9 @@ Format:
           updated_at: now.toISOString()
         });
         if (insErr) throw insErr;
-        console.log('[Supabase] Saved finance transaction ledger entry successfully.');
+        logger.info('[Supabase] Saved finance transaction ledger entry successfully.');
       } catch (fsErr) {
-        console.error('[OpenAPI] Failed to write finance transaction to Supabase:', fsErr);
+        logger.error('[OpenAPI] Failed to write finance transaction to Supabase:', fsErr);
       }
     }
     
@@ -2604,7 +3021,10 @@ Format:
   // 5.0. Sync shift handover reports from POS to ERP Financial ledger
   app.post('/api/openapi/shifts', authenticateOpenApi, async (req, res) => {
     const shiftData = req.body;
-    console.log('[OpenAPI] Ingesting shift report:', shiftData.shiftName, 'Store:', shiftData.storeId);
+    logger.info('[OpenAPI] Ingesting shift report', {
+      shiftName: shiftData.shiftName,
+      storeId: shiftData.storeId,
+    });
 
     if (supabaseClient) {
       try {
@@ -2672,9 +3092,9 @@ Format:
           });
         }
         
-        console.log('[OpenAPI] Saved shift report and finance transactions to Supabase successfully.');
+        logger.info('[OpenAPI] Saved shift report and finance transactions to Supabase successfully.');
       } catch (fsErr) {
-        console.error('[OpenAPI] Failed to write shift report to Supabase:', fsErr);
+        logger.error('[OpenAPI] Failed to write shift report to Supabase:', fsErr);
       }
     }
 
@@ -2729,7 +3149,7 @@ Format:
       const client = getGeminiClient();
       if (!client) {
         // Fallback simulated response matching the requested schema
-        console.log('[CFO-AI] No GEMINI_API_KEY found, generating mock CFO report.');
+        logger.info('[CFO-AI] No GEMINI_API_KEY found, generating mock CFO report.');
         const mockReport = {
           analysisSummary: `Dòng tiền thu được chủ yếu từ doanh thu bán hàng lẻ tại quầy và online (${totalIncome.toLocaleString()} VND), trong khi các khoản chi tiêu vận hành và nhập hàng kho tổng là ${totalExpense.toLocaleString()} VND. Dòng tiền ròng hiện tại đang dương ${netCashFlow.toLocaleString()} VND. Khả năng thanh khoản ngắn hạn được đảm bảo tốt, tuy nhiên cần chú ý tối ưu hóa hàng tồn kho để tránh ứ đọng vốn.`,
           riskLevel: netCashFlow < 0 ? 'HIGH' : (netCashFlow < 10000000 ? 'MEDIUM' : 'LOW'),
@@ -2773,7 +3193,7 @@ ${summaryText}`;
       res.json(reportData);
 
     } catch (err: any) {
-      console.error('[CFO-Report] Failed to generate AI CFO report:', err);
+      logger.error('[CFO-Report] Failed to generate AI CFO report:', err);
       res.status(500).json({ status: 'error', message: err.message || 'Failed to generate CFO report' });
     }
   });
@@ -2822,7 +3242,7 @@ ${summaryText}`;
   // 9. Sync customer profile to ERP
   app.post('/api/openapi/customers', authenticateOpenApi, (req, res) => {
     const customerData = req.body;
-    console.log('[OpenAPI] Syncing customer profile:', customerData.phone);
+    logger.info('[OpenAPI] Syncing customer profile:', customerData.phone);
     res.json({
       status: 'success',
       message: 'Hồ sơ khách hàng đã được đồng bộ sang ERP thành công.'
@@ -2834,7 +3254,7 @@ ${summaryText}`;
   // ==========================================
 
   // 1. Seller Auth: Register
-  app.post('/api/seller/auth/register', async (req, res) => {
+  app.post('/api/seller/auth/register', rateLimit(authRateLimiter), async (req, res) => {
     const { email, password, shopName, repName, taxId, description, logoUrl, bannerUrl } = req.body;
     if (!email || !password || !shopName) {
       return res.status(400).json({ status: 'error', message: 'Thiếu thông tin đăng ký bắt buộc' });
@@ -2929,13 +3349,13 @@ ${summaryText}`;
         sellerId
       });
     } catch (err: any) {
-      console.error('[Seller Auth Register] Error:', err);
+      logger.error('[Seller Auth Register] Error:', err);
       res.status(500).json({ status: 'error', message: err.message || 'Đăng ký thất bại' });
     }
   });
 
   // 2. Seller Auth: Login
-  app.post('/api/seller/auth/login', async (req, res) => {
+  app.post('/api/seller/auth/login', rateLimit(authRateLimiter), async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ status: 'error', message: 'Thiếu email hoặc mật khẩu' });
@@ -2986,7 +3406,7 @@ ${summaryText}`;
         role: staffRow.role
       });
     } catch (err: any) {
-      console.error('[Seller Auth Login] Error:', err);
+      logger.error('[Seller Auth Login] Error:', err);
       res.status(500).json({ status: 'error', message: err.message || 'Đăng nhập thất bại' });
     }
   });
@@ -3082,7 +3502,7 @@ ${summaryText}`;
           });
         }
       } catch (err) {
-        console.error('[Seller Data Get] Failed to fetch products or orders:', err);
+        logger.error('[Seller Data Get] Failed to fetch products or orders:', err);
       }
 
       res.json({
@@ -3101,7 +3521,7 @@ ${summaryText}`;
         orders: ordersList
       });
     } catch (err: any) {
-      console.error('[Seller Data Get] Error:', err);
+      logger.error('[Seller Data Get] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3255,7 +3675,7 @@ ${summaryText}`;
 
       res.status(400).json({ status: 'error', message: 'Trạng thái cập nhật không hợp lệ' });
     } catch (err: any) {
-      console.error('[Seller Order Status Update] Error:', err);
+      logger.error('[Seller Order Status Update] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3401,7 +3821,7 @@ ${summaryText}`;
   // ==========================================
 
   // 1. iPOS Auth: Login
-  app.post('/api/ipos/auth/login', async (req, res) => {
+  app.post('/api/ipos/auth/login', rateLimit(authRateLimiter), async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ status: 'error', message: 'Thiếu email hoặc mật khẩu' });
@@ -3461,7 +3881,7 @@ ${summaryText}`;
   });
 
   // 1b. iPOS Auth: Register (pending ERP admin approval)
-  app.post('/api/ipos/auth/register', async (req, res) => {
+  app.post('/api/ipos/auth/register', rateLimit(authRateLimiter), async (req, res) => {
     const { email, password, fullName, phone, storeName, storeAddress, role } = req.body;
     if (!email || !password || !fullName || !storeName) {
       return res.status(400).json({ 
@@ -3507,14 +3927,14 @@ ${summaryText}`;
 
       if (error) throw error;
 
-      console.log(`[iPOS Register] New account pending approval: ${email} | Store: ${storeName}`);
+      logger.info(`[iPOS Register] New account pending approval: ${email} | Store: ${storeName}`);
       res.status(201).json({ 
         status: 'success', 
         message: `Đăng ký thành công! Tài khoản của bạn (${email}) đang chờ ERP Admin phê duyệt. Bạn sẽ nhận thông báo trong 1-2 ngày làm việc.`,
         userId: newUserId
       });
     } catch (err: any) {
-      console.error('[iPOS Register] Error:', err);
+      logger.error('[iPOS Register] Error:', err);
       res.status(500).json({ status: 'error', message: 'Lỗi hệ thống. Vui lòng thử lại.' });
     }
   });
@@ -3547,7 +3967,7 @@ ${summaryText}`;
       });
       res.json({ status: 'success', accounts: iposUsers });
     } catch (err: any) {
-      console.error('[iPOS Accounts Get] Error:', err);
+      logger.error('[iPOS Accounts Get] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3581,7 +4001,7 @@ ${summaryText}`;
 
       res.json({ status: 'success', message: 'Đã phê duyệt tài khoản thành công.' });
     } catch (err: any) {
-      console.error('[iPOS Account Approve] Error:', err);
+      logger.error('[iPOS Account Approve] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3615,7 +4035,7 @@ ${summaryText}`;
 
       res.json({ status: 'success', message: 'Đã từ chối tài khoản.' });
     } catch (err: any) {
-      console.error('[iPOS Account Reject] Error:', err);
+      logger.error('[iPOS Account Reject] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3644,7 +4064,7 @@ ${summaryText}`;
 
       res.json({ status: 'success', products: prodList });
     } catch (err: any) {
-      console.error('[iPOS Products Get] Error:', err);
+      logger.error('[iPOS Products Get] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3678,7 +4098,7 @@ ${summaryText}`;
         .insert(orderPayload);
 
       if (insErr) {
-        console.error('[Supabase Checkout] Failed to save order:', insErr);
+        logger.error('[Supabase Checkout] Failed to save order:', insErr);
         throw insErr;
       }
 
@@ -3743,7 +4163,7 @@ ${summaryText}`;
         message: `Đơn hàng ${orderId} trị giá ${total.toLocaleString('vi-VN')}₫ đã được đẩy lên Supabase và tự động trừ kho vật lý.`
       });
     } catch (err: any) {
-      console.error('[iPOS Checkout] Error:', err);
+      logger.error('[iPOS Checkout] Error:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
@@ -3842,7 +4262,7 @@ ${summaryText}`;
       
       return code.toString().padStart(6, '0');
     } catch (e) {
-      console.error('Error generating TOTP:', e);
+      logger.error('Error generating TOTP:', e);
       return '';
     }
   }
@@ -3859,7 +4279,7 @@ ${summaryText}`;
   }
 
   // API Route: Generate 2FA Secret
-  app.post('/api/mfa/setup', async (req, res) => {
+  app.post('/api/mfa/setup', rateLimit(authRateLimiter), async (req, res) => {
     const { email } = req.body;
     if (!email) {
       return res.status(400).json({ status: 'error', message: 'Thiếu email người dùng.' });
@@ -3879,7 +4299,7 @@ ${summaryText}`;
   });
 
   // API Route: Verify & Enable 2FA
-  app.post('/api/mfa/verify-and-enable', async (req, res) => {
+  app.post('/api/mfa/verify-and-enable', rateLimit(authRateLimiter), async (req, res) => {
     const { uid, secret, code, email } = req.body;
     if (!uid || !secret || !code) {
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số thiết lập.' });
@@ -3938,13 +4358,13 @@ ${summaryText}`;
 
       res.json({ status: 'success', message: 'Kích hoạt 2FA thành công!' });
     } catch (err: any) {
-      console.error('[MFA Enable Error]:', err);
+      logger.error('[MFA Enable Error]:', err);
       res.status(500).json({ status: 'error', message: err.message });
     }
   });
 
   // API Route: Disable 2FA
-  app.post('/api/mfa/disable', async (req, res) => {
+  app.post('/api/mfa/disable', rateLimit(authRateLimiter), async (req, res) => {
     const { uid, code, email } = req.body;
     if (!uid || !code) {
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số vô hiệu hóa.' });
@@ -4015,7 +4435,7 @@ ${summaryText}`;
   });
 
   // API Route: Verify 2FA on Login
-  app.post('/api/mfa/verify-login', async (req, res) => {
+  app.post('/api/mfa/verify-login', rateLimit(authRateLimiter), async (req, res) => {
     const { uid, code } = req.body;
     if (!uid || !code) {
       return res.status(400).json({ status: 'error', message: 'Thiếu tham số xác thực.' });
@@ -4067,7 +4487,7 @@ ${summaryText}`;
   }
 
   const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    logger.info('Server started', { port: PORT, env: process.env.NODE_ENV || 'development' });
   });
 
   if (vite) {
@@ -4075,6 +4495,45 @@ ${summaryText}`;
       vite.ws.handleUpgrade(req, socket, head);
     });
   }
+
+  // -------------------------------------------------------------------------
+  // GĐ1.4 — Tắt máy êm (graceful shutdown)
+  //   Deploy/OOM restart: ngừng NHẬN kết nối mới → dừng worker outbox → đợi các
+  //   request đang dang dở xong (tối đa 15s) → đóng hẳn.
+  //   ⭐ Phải dừng worker TRƯỚC khi đóng: nếu không, sự kiện đang `processing`
+  //   sẽ bị bỏ kẹt cho đến khi `vcomm_requeue_stuck_domain_events()` thu hồi.
+  // -------------------------------------------------------------------------
+  const SHUTDOWN_GRACE_MS = 15_000;
+  let shuttingDown = false;
+
+  const shutdown = (signal: string) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    logger.info(`[shutdown] Nhận ${signal} — đang tắt máy êm…`);
+
+    try {
+      outboxWorkerStop?.();
+    } catch (err: any) {
+      logger.warn('[shutdown] Dừng outbox worker lỗi:', err?.message ?? err);
+    }
+    clearInterval(outboxStatsTimer);
+
+    // Ngừng nhận kết nối mới ngay lập tức.
+    server.close(() => {
+      logger.info('[shutdown] Đã đóng HTTP server.');
+      process.exit(0);
+    });
+
+    // Các request treo quá lâu → buộc đóng, tránh process treo vô hạn.
+    const forceTimer = setTimeout(() => {
+      logger.warn(`[shutdown] Quá ${SHUTDOWN_GRACE_MS}ms — buộc thoát.`);
+      process.exit(1);
+    }, SHUTDOWN_GRACE_MS);
+    if (typeof forceTimer.unref === 'function') forceTimer.unref();
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 startServer();

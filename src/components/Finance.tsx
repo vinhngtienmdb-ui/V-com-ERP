@@ -1826,7 +1826,7 @@ function Circular99Reports({
 }) {
   const [activeReport, setActiveReport] = React.useState('B01');
 
-  // B01-HKD calculations
+  // B01-DN calculations
   const getAccBalance = (accId, side) => {
     const acc = trialData.find(d => d.id === accId);
     if (!acc) return 0;
@@ -1849,14 +1849,14 @@ function Circular99Reports({
 
   const handlePrintReport = () => {
     const printTitle = activeReport === 'B01' 
-      ? 'Mẫu B01-HKD: Báo cáo tình hình tài chính' 
-      : 'Mẫu B02-HKD: Báo cáo kết quả hoạt động kinh doanh';
+      ? 'Mẫu B01-DN: Báo cáo tình hình tài chính' 
+      : 'Mẫu B02-DN: Báo cáo kết quả hoạt động kinh doanh';
       
     const reportHtml = activeReport === 'B01' ? `
       <table class="header-table">
         <tr>
           <td class="font-medium">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
-          <td class="text-right font-medium">Mẫu số B01-HKD</td>
+          <td class="text-right font-medium">Mẫu số B01-DN</td>
         </tr>
         <tr>
           <td>Địa chỉ: Tầng 6, VComm Building, Hà Nội</td>
@@ -1982,7 +1982,7 @@ function Circular99Reports({
       <table class="header-table">
         <tr>
           <td class="font-medium">ĐƠN VỊ BÁO CÁO: TẬP ĐOÀN VCOMM</td>
-          <td class="text-right font-medium">Mẫu số B02-HKD</td>
+          <td class="text-right font-medium">Mẫu số B02-DN</td>
         </tr>
         <tr>
           <td>Địa chỉ: Tầng 6, VComm Building, Hà Nội</td>
@@ -2127,13 +2127,13 @@ function Circular99Reports({
             onClick={() => setActiveReport('B01')}
             className={activeReport === 'B01' ? "px-4 py-2 text-xs font-bold rounded-lg border bg-slate-900 text-white border-slate-900" : "px-4 py-2 text-xs font-bold rounded-lg border bg-white text-slate-700 border-slate-300 hover:bg-slate-50"}
           >
-            Tình hình Tài chính (B01-HKD)
+            Tình hình Tài chính (B01-DN)
           </button>
           <button 
             onClick={() => setActiveReport('B02')}
             className={activeReport === 'B02' ? "px-4 py-2 text-xs font-bold rounded-lg border bg-slate-900 text-white border-slate-900" : "px-4 py-2 text-xs font-bold rounded-lg border bg-white text-slate-700 border-slate-300 hover:bg-slate-50"}
           >
-            Kết quả Kinh doanh (B02-HKD)
+            Kết quả Kinh doanh (B02-DN)
           </button>
           
           <button 
@@ -2149,7 +2149,7 @@ function Circular99Reports({
         <div className="space-y-4">
           <div className="flex justify-between items-center text-xs font-bold text-slate-500 bg-slate-50 p-3 border border-slate-200">
             <span>Đơn vị: Tập đoàn VComm B2B</span>
-            <span>Mẫu số B01-HKD (Ban hành theo TT 99/2025/TT-BTC)</span>
+            <span>Mẫu số B01-DN (Ban hành theo TT 99/2025/TT-BTC)</span>
           </div>
 
           <div className="overflow-x-auto">
@@ -2251,7 +2251,7 @@ function Circular99Reports({
         <div className="space-y-4">
           <div className="flex justify-between items-center text-xs font-bold text-slate-500 bg-slate-50 p-3 border border-slate-200">
             <span>Đơn vị: Tập đoàn VComm B2B</span>
-            <span>Mẫu số B02-HKD (Ban hành theo TT 99/2025/TT-BTC)</span>
+            <span>Mẫu số B02-DN (Ban hành theo TT 99/2025/TT-BTC)</span>
           </div>
 
           <div className="overflow-x-auto">

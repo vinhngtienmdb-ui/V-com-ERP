@@ -67,6 +67,7 @@ import { Employee, AttendanceRecord, Payroll, KPI, Team } from '../types/erp';
 import { EmployeeDetailModal } from './EmployeeDetailModal';
 import { supabase } from '../lib/supabase';
 import { db, collection, addDoc, serverTimestamp } from '../services/dbService';
+import { currentTncDeclarationPeriod, formatDeclarationPeriod } from '../services/payrollDeclaration';
 import {
  BarChart,
  Bar,
@@ -2258,12 +2259,17 @@ const [copilotInput, setCopilotInput] = useState('');
  try {
  const totalPayroll = payrollList.reduce((acc, pay) => acc + pay.netSalary, 0);
  const totalBonus = payrollList.reduce((acc, pay) => acc + pay.bonus, 0);
- 
+
+ // TT 89/2026 Điều 22: khai TNCN tiền lương chuyển từ THÁNG → QUÝ + quyết toán năm.
+ // Nhãn kỳ khai lấy từ single source of truth thay vì hardcode "Tháng 03/2024".
+ const declPeriod = currentTncDeclarationPeriod();
+ const declLabel = formatDeclarationPeriod(declPeriod);
+
  await addDoc(collection(db, 'finance_transactions'), {
  type: 'expense',
  amount: totalPayroll,
  category: 'Chi phí nhân sự',
- description: `Quyết toán Quỹ lương & Thưởng Tháng 03/2024 (Tổng PN: ${payrollList.length})`,
+ description: `Quyết toán Quỹ lương & Thưởng ${declLabel} (Tổng PN: ${payrollList.length})`,
  date: serverTimestamp(),
  source: 'hrm_payroll'
  });
@@ -2273,7 +2279,7 @@ const [copilotInput, setCopilotInput] = useState('');
  type: 'expense',
  amount: totalBonus,
  category: 'Thưởng KPI/OT',
- description: `Chi thưởng KPI & OT Tháng 03/2024`,
+ description: `Chi thưởng KPI & OT ${declLabel}`,
  date: serverTimestamp(),
  source: 'hrm_bonus'
  });

@@ -1,4 +1,9 @@
 import axios from 'axios';
+import { createLogger } from '../lib/logger';
+
+// GĐ 1.5 — ZNS gửi thông báo cho khách. Nuốt lỗi im lặng ở đây đồng nghĩa
+// khách không nhận được tin mà không ai biết. Log phải kèm tên key để tra cứu.
+const log = createLogger('services/znsService');
 
 export interface ZnsTemplate {
   id: string;
@@ -190,8 +195,10 @@ export const getZnsTemplates = (): ZnsTemplate[] => {
   if (data) {
     try {
       return JSON.parse(data);
-    } catch {
-      // Use default
+    } catch (e) {
+      // Template hỏng → dùng DEFAULT_TEMPLATES. Lưu ý phone/name nằm trong
+      // log gửi, nên CHỈ log tên key, không log nội dung.
+      log.warn('template ZNS trong localStorage không đọc được — dùng mặc định', { key: STORAGE_KEYS.TEMPLATES }, e);
     }
   }
   return DEFAULT_TEMPLATES;
@@ -207,8 +214,10 @@ export const getZnsLogs = (): ZnsLog[] => {
   if (data) {
     try {
       return JSON.parse(data);
-    } catch {
-      // Use default
+    } catch (e) {
+      // Lịch sử gửi hỏng → tạo lịch sử ban đầu bên dưới. Chỉ log tên key:
+      // log gửi ZNS chứa SỐ ĐIỆN THOẠI khách hàng, không được đưa vào log.
+      log.warn('lịch sử ZNS trong localStorage không đọc được — tạo lại', { key: STORAGE_KEYS.LOGS }, e);
     }
   }
   

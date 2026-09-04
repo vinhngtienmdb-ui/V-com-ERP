@@ -1,10 +1,10 @@
 import { requireReadyProvider, getIntegrationConfig } from './integrationConfigService';
 
 /**
- * Databank Adapter — TT 13/2023/TT-BCT + truy xuất nguồn gốc hàng hóa
+ * Databank Adapter — TT 31/2026/TT-BCT + truy xuất nguồn gốc hàng hóa
  *
  * Chức năng:
- * 1. publishProductToDatabank: đăng tải công khai thông tin sản phẩm theo TT 13/2023
+ * 1. publishProductToDatabank: đăng tải công khai thông tin sản phẩm theo TT 31/2026/TT-BCT
  *    (chủ thể kinh doanh có trách nhiệm đăng tải công khai thông tin trước khi bán)
  * 2. verifyProductOrigin: kiểm tra chuỗi truy xuất nguồn gốc
  * 3. generateTraceQrPayload: tạo payload QR dán lên sản phẩm/bao bì
@@ -31,7 +31,7 @@ export interface OriginVerificationResult {
   message?: string;
 }
 
-/** Đăng tải sản phẩm lên databank BCT (TT 13/2023 Điều 10) */
+/** Đăng tải sản phẩm lên databank BCT (TT 31/2026/TT-BCT Điều 10) */
 export async function publishProductToDatabank(product: {
   id: string;
   name: string;

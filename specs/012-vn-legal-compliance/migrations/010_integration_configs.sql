@@ -1,5 +1,5 @@
 -- 010: Integration Config Layer — 3 nhà cung cấp add-key-sau
---   einvoice   : TT 78/2021/TT-BTC (MISA / VNPT / FPT eInvoice)
+--   einvoice   : TT 91/2026/TT-BTC (MISA / VNPT / FPT eInvoice)
 --   databank   : TT 13/2023/TT-BCT (databank BCT + truy xuất nguồn gốc)
 --   cq_reporting: NĐ 52/85 báo cáo CQT + HSM chữ ký số
 

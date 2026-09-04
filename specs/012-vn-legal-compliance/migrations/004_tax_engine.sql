@@ -1,4 +1,4 @@
--- Tax Engine migration — TT 78/2021/TT-BTC + NĐ 72/2025 (giảm thuế GTGT) + NĐ 117/2025 (seller tax)
+-- Tax Engine migration — TT 91/2026/TT-BTC + NĐ 174/2025 (giảm thuế GTGT) + NĐ 252/2026 (seller tax)
 
 create table if not exists public.tax_rate_rules (
   id uuid primary key default gen_random_uuid(),
@@ -13,11 +13,11 @@ create table if not exists public.tax_rate_rules (
   constraint vat_rate_valid check (vat_rate is null or (vat_rate >= 0 and vat_rate <= 0.15))
 );
 
--- Seed quy định hiện hành: 8% đến 31/12/2026 (NĐ 72/2025), quay lại 10% từ 2027
+-- Seed quy định hiện hành: 8% đến 31/12/2026 (NĐ 174/2025), quay lại 10% từ 2027
 insert into public.tax_rate_rules (category_path, vat_rate, effective_from, effective_to, legal_basis, note)
 values
-  ('*', 0.08, '2025-07-01', '2026-12-31', 'NĐ 72/2025/NĐ-CP', 'Giảm 2% thuế GTGT cho hầu hết hàng hóa'),
-  ('*', 0.10, '2027-01-01', null, 'Luật Thuế GTGT', 'Hết thời gian giảm thuế theo NĐ 72/2025')
+  ('*', 0.08, '2025-07-01', '2026-12-31', 'NĐ 174/2025/NĐ-CP', 'Giảm 2% thuế GTGT cho hầu hết hàng hóa'),
+  ('*', 0.10, '2027-01-01', null, 'Luật Thuế GTGT', 'Hết thời gian giảm thuế theo NĐ 174/2025')
 on conflict do nothing;
 
 alter table public.tax_rate_rules enable row level security;

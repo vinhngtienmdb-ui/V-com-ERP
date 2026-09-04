@@ -21,7 +21,12 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
     vi.mocked(axios.get).mockResolvedValue({ data: { events: mockEvents } });
 
     const events = await sePayService.getWebhookEvents();
-    expect(axios.get).toHaveBeenCalledWith('/api/sepay/webhook-events');
+    // GĐ 2.4: endpoint đã khóa bằng requireAuth -> client PHẢI gửi kèm header Authorization.
+    // Dùng objectContaining để test chỉ khẳng định "có gửi header", không phụ thuộc token.
+    expect(axios.get).toHaveBeenCalledWith(
+      '/api/sepay/webhook-events',
+      expect.objectContaining({ headers: expect.any(Object) })
+    );
     expect(events).toEqual(mockEvents);
   });
 
@@ -29,9 +34,11 @@ describe('Tích hợp Zalo ZNS & SePay Webhook Integration Tests', () => {
     vi.mocked(axios.post).mockResolvedValue({ data: { status: 'success' } });
 
     await sePayService.clearWebhookEvents([101, 102]);
+    // GĐ 2.4: thêm arg thứ 3 (config axios chứa Authorization) do endpoint đã requireAuth.
     expect(axios.post).toHaveBeenCalledWith(
       '/api/sepay/webhook-events/clear',
-      { ids: [101, 102] }
+      { ids: [101, 102] },
+      expect.objectContaining({ headers: expect.any(Object) })
     );
   });
 

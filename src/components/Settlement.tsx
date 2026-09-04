@@ -104,12 +104,15 @@ export function SettlementManagement() {
   const approveAffiliateSettlement = async (aff: any) => {
     if (!confirm('Duyệt chi trả hoa hồng cho CTV này?')) return;
     try {
-      const { postWithdrawalJournalEntries } = await import('../services/accountingService');
-      await postWithdrawalJournalEntries({
+      // GĐ 2.1/2.2 — ghi sổ qua OUTBOX (worker nền xử lý, có retry luỹ thừa).
+      // Rơi về đường đồng bộ cũ nếu outbox chưa sẵn sàng.
+      const { postWithdrawalJournalViaOutbox } = await import('../services/accountingOutbox');
+      await postWithdrawalJournalViaOutbox({
         id: aff.id,
         userId: aff.id,
         userType: 'agent',
-        amount: aff.commissionEarned
+        amount: aff.commissionEarned,
+        refType: 'settlement'
       });
 
       await recordPartnerLedgerEntry({
@@ -132,12 +135,14 @@ export function SettlementManagement() {
   const approvePickupSettlement = async (hub: any) => {
     if (!confirm('Duyệt thanh toán phí vận hành cho Điểm nhận hàng này?')) return;
     try {
-      const { postWithdrawalJournalEntries } = await import('../services/accountingService');
-      await postWithdrawalJournalEntries({
+      // GĐ 2.1/2.2 — ghi sổ qua OUTBOX (xem chú thích ở approveAffiliateSettlement).
+      const { postWithdrawalJournalViaOutbox } = await import('../services/accountingOutbox');
+      await postWithdrawalJournalViaOutbox({
         id: hub.id,
         userId: hub.id,
         userType: 'agent',
-        amount: hub.pickupFee
+        amount: hub.pickupFee,
+        refType: 'settlement'
       });
 
       await recordPartnerLedgerEntry({
@@ -325,6 +330,40 @@ export function SettlementManagement() {
     setPendingApproval({ kind: 'withdrawal-reject', data: withdrawal });
   };
 
+  /**
+   * GĐ 2.6a (B) — Ghi luồng tiền thật vào sổ cái (journal_entries).
+   *
+   *  Tại sao cần hàm này: trước đây `confirmPendingApproval` chỉ ghi sổ phụ
+   *  (`recordPartnerLedgerEntry`) và cập nhật trạng thái → tiền ĐÃ CHẠY nhưng sổ cái
+   *  KHÔNG có bút toán. Hậu quả: Báo cáo tài chính thiếu, đối chiếu thuế sai, không
+   *  truy xuất được dòng tiền khi quyết toán (Điều 12 TT99 — ghi kép bắt buộc).
+   *
+   *  Fail-soft: lỗi ghi sổ KHÔNG chặn nghiệp vụ (tránh kẹt giao diện duyệt chi), nhưng
+   *  PHẢI log lỗi rõ ràng để không ai tưởng là đã ghi sổ.
+   *
+   *  TODO (cần nguồn KYC trước khi bật khấu trừ tự động):
+   *  Khi đã có `seller_tax_methods.partner_type` (individual/legal), với userType='agent'
+   *  phải gọi `buildCommissionWithholding()` → `postCommissionWithholding()` trước khi chi,
+   *  rồi chỉ ghi sổ phần NET. Hiện tại ghi GROSS và log cảnh báo để tránh đoán sai luật.
+   */
+  const postCashJournal = async (
+    refId: string,
+    userId: string,
+    userType: 'seller' | 'agent',
+    amount: number,
+  ) => {
+    try {
+      // GĐ 2.1/2.2 — ghi sổ qua OUTBOX.
+      // dedupe_key = `withdrawal.approved:<refId>` → duyệt 2 lần cũng chỉ ghi sổ 1 lần.
+      const { postWithdrawalJournalViaOutbox } = await import('../services/accountingOutbox');
+      await postWithdrawalJournalViaOutbox({ id: refId, userId, userType, amount });
+    } catch (err) {
+      console.error('[Settlement] GHI SỔ CÁI THẤT BẠI — cần đối chiếu thủ công!', {
+        refId, userId, userType, amount, error: err,
+      });
+    }
+  };
+
   const confirmPendingApproval = async () => {
     if (!pendingApproval) return;
     const { kind, data } = pendingApproval as any;
@@ -352,6 +391,12 @@ export function SettlementManagement() {
           debit: 0,
           credit: settlement.netPayout
         });
+
+        // GĐ 2.6a (B) — LẤP LỖ HỔNG: luồng tiền thật PHẢI vào sổ cái (Điều 12 TT99).
+        // Trước đây chỉ updateDoc + sổ phụ → Báo cáo tài chính và đối chiếu thuế sai.
+        // Bút toán: Nợ 3388 (giảm phải trả) / Có 1121 (chi tiền từ ngân hàng).
+        // id chứng từ cố định `je-withdrawal-<id>` → idempotent, ghi lặp không sinh bản ghi thứ hai.
+        await postCashJournal(settlement.id, settlement.sellerId, 'seller', settlement.netPayout);
       } else if (kind === 'withdrawal') {
         const withdrawal = data as WithdrawalRequest;
         const mockDocRef = { path: `withdrawals/${withdrawal.id}`, tableName: 'withdrawals', id: withdrawal.id };
@@ -365,6 +410,14 @@ export function SettlementManagement() {
           debit: withdrawal.amount,
           credit: 0
         });
+
+        // GĐ 2.6a (B) — ghi sổ cái Nợ 3388 / Có 1121 (Điều 12 TT99).
+        // ⚠️ LƯU Ý THUẾ: nếu người nhận là CTV CÁ NHÂN (agent), VComm BẮT BUỘC khấu trừ
+        // TNCN 10% trước khi chi (NĐ 252/2026 Điều 44 + NĐ 253/2026 Điều 50.2). Phần khấu
+        // trừ được xử lý bằng commissionWithholdingService.postCommissionWithholding() và
+        // cần xác nhận partnerType từ seller KYC — xem TODO bên dưới hàm postCashJournal.
+        const userType = withdrawal.userType === 'seller' ? 'seller' : 'agent';
+        await postCashJournal(withdrawal.id, withdrawal.userId, userType, withdrawal.amount);
       } else if (kind === 'withdrawal-reject') {
         const withdrawal = data as WithdrawalRequest;
         const { updateWalletBalance } = await import('../services/dbService');

@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
-import { db, auth, collection, addDoc, serverTimestamp } from '../services/dbService';
+import { auth } from '../services/dbService';
+// GĐ 2.6 — audit trail: một writer, một định dạng.
+import { logActivity } from '../services/auditTrailService';
 
 export type AuditAction =
   | 'order.status_changed' | 'order.created' | 'order.deleted'
@@ -21,22 +23,31 @@ interface AuditEntry {
 export function useAuditLog() {
   const log = useCallback(async ({ action, targetId, targetLabel, meta }: AuditEntry) => {
     const user = auth.currentUser;
-    if (!user) return;
-    try {
-      await addDoc(collection(db, 'audit_logs'), {
-        action,
-        targetId: targetId ?? null,
-        targetLabel: targetLabel ?? null,
-        meta: meta ?? null,
-        actorUid: user.uid,
-        actorEmail: user.email,
-        actorName: user.displayName ?? user.email,
-        timestamp: serverTimestamp(),
-        path: window.location.pathname,
-      });
-    } catch {
-      // Non-blocking — audit failures must not interrupt UX
-    }
+
+    // ⚠️ Thay đổi hành vi so với bản cũ: bản cũ `if (!user) return;` → mọi thao
+    // tác của phiên chưa đăng nhập (hoặc worker nền) BIẾN MẤT khỏi audit mà
+    // không để lại dấu vết. Audit trail mà tự quyết định "người này không quan
+    // trọng" thì không còn là audit.
+    // → Vẫn ghi, với actor rỗng và status đánh dấu rõ.
+    const actor = user
+      ? {
+          uid: user.uid,
+          email: user.email ?? null,
+          name: (user as { displayName?: string | null }).displayName ?? user.email ?? null,
+        }
+      : { uid: null, email: null, name: null };
+
+    // Non-blocking — lỗi ghi audit không được phép chặn luồng nghiệp vụ.
+    // `logActivity` đã tự fail-soft; `.catch` ở đây chỉ để tránh unhandled rejection.
+    logActivity({
+      action,
+      actor,
+      targetId: targetId ?? null,
+      targetLabel: targetLabel ?? null,
+      details: meta ?? null,
+    }).catch(() => {
+      /* đã được log bên trong auditTrailService */
+    });
   }, []);
 
   return { log };

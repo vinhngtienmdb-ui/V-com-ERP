@@ -7,6 +7,9 @@ import "react-resizable/css/styles.css";
 import { cn } from "../../lib/utils";
 import { GripHorizontal, Save, RotateCcw } from "lucide-react";
 import { usePreferences } from '../../context/PreferencesContext';
+import { createLogger } from '../../lib/logger';
+
+const log = createLogger('components/ui/DraggableGrid');
 
 export function DraggableGrid({ 
   children, 
@@ -96,7 +99,11 @@ export function DraggableGrid({
           currentLayouts = { ...parsed, lg: mergedLg };
         }
       }
-    } catch(e) {}
+    } catch (e) {
+      // GĐ 1.5 — layout đã lưu hỏng → rớt về layout mặc định. Chỉ log tên key,
+      // không log nội dung (layout có thể chứa id nhạy cảm theo màn hình).
+      log.warn('layout đã lưu không đọc được — dùng layout mặc định', { gridId }, e);
+    }
 
     setLayouts(currentLayouts);
     setOriginalLayouts(JSON.parse(JSON.stringify(currentLayouts)));
@@ -133,7 +140,11 @@ export function DraggableGrid({
       safeLocalStorage.setItem(savedKey, JSON.stringify(layouts));
       setOriginalLayouts(JSON.parse(JSON.stringify(layouts))); // Deep clone to prevent reference issues
       setIsDirty(false);
-    } catch(e) {}
+    } catch (e) {
+      // GĐ 1.5 — lưu layout thất bại (thường do localStorage đầy / chế độ ẩn danh).
+      // Người dùng đã bấm Lưu nên cần log mức lỗi: họ tin là đã được lưu.
+      log.error('lưu layout thất bại — người dùng đã bấm Lưu nhưng không được ghi nhận', { gridId }, e);
+    }
   };
 
   const handleCancel = () => {

@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
  * Legal Entity Config — Single Source of Truth thông tin pháp nhân công ty
  * vận hành sàn. Dùng chung cho:
  * - Trang công khai Điều 21 NĐ 52/2013 (PublicLegalInfo)
- * - Hóa đơn điện tử TT 78/2021 (einvoiceService — MST bắt buộc đúng)
+ * - Hóa đơn điện tử TT 91/2026 (einvoiceService — MST bắt buộc đúng)
  * - Thông báo BCT (NĐ 85/2021 Điều 8)
  *
  * Lưu bảng tenant_settings (key='legal_entity', JSONB). Chưa cấu hình →

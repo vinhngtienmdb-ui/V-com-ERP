@@ -1,4 +1,20 @@
 import { db, doc, getDoc, updateDoc, addDoc, getDocs, collection, query, where } from './dbService';
+import {
+  computeRfmFromOrders,
+  rfmTierOf,
+  rfmSegmentOf,
+  computeSlaDeadline,
+} from './crmTicketService';
+
+/**
+ * GĐ 4.6 — các hàm RFM/SLA tính TOÁN đã chuyển sang `crmTicketService.ts`
+ * (module thuần, có test) để:
+ *   · RFM không còn bị tính ở 2 nơi với 2 kết quả khác nhau (xưa có thêm logic
+ *     rải rác trong Customers.tsx)
+ *   · SLA tính theo GIỜ HÀNH CHÍNH thay vì cộng giờ thực (T6 16:00 + 4h
+ *     từng ra T6 20:00 — ngoài giờ làm việc, vô nghĩa với tổng đài)
+ * File này chỉ giữ phần ĐỌC/GHI DB để không phá vỡ nơi đang gọi (Orders.tsx).
+ */
 
 export async function calculateRfmScores(customerId: string): Promise<any> {
   try {
@@ -7,47 +23,34 @@ export async function calculateRfmScores(customerId: string): Promise<any> {
     const q = query(ordersRef, where('customerId', '==', customerId));
     const snapshot = await getDocs(q);
 
-    const completedOrders = snapshot.docs
-      .map((d: any) => ({ id: d.id, ...d.data() }))
-      .filter((o: any) => o.status === 'completed' || o.status === 'delivered');
+    const orders = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
 
-    if (completedOrders.length === 0) {
+    // Thuật toán RFM dùng chung (đã có test riêng trong crmTicketService.test.ts)
+    const rfm = computeRfmFromOrders(orders);
+    if (!rfm) {
       return null;
     }
 
-    // 1. Calculate Recency
-    const now = new Date();
-    const orderDates = completedOrders.map((o: any) => new Date(o.date));
-    const mostRecentDate = new Date(Math.max(...orderDates.map(d => d.getTime())));
-    const diffTime = Math.abs(now.getTime() - mostRecentDate.getTime());
-    const recency = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Days since last order
+    const { recency, frequency, monetary } = rfm;
+    const tier = rfmTierOf(monetary);
+    const segment = rfmSegmentOf(rfm, tier);
 
-    // 2. Calculate Frequency
-    const frequency = completedOrders.length;
+    // Ngày ĐƠN GẦN NHẤT (lấy trực tiếp, không suy ngược từ recency — sẽ sai lệch
+    // do làm tròn số ngày).
+    const counted = orders
+      .map((o: any) => new Date(o.date))
+      .filter((d: Date) => !Number.isNaN(d.getTime()));
+    const lastOrderDate = new Date(Math.max(...counted.map((d: Date) => d.getTime())));
 
-    // 3. Calculate Monetary
-    const monetary = completedOrders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
-
-    // 4. Determine Tier
-    let tier = 'Bronze';
-    if (monetary >= 50000000) {
-      tier = 'Diamond';
-    } else if (monetary >= 15000000) {
-      tier = 'Platinum';
-    } else if (monetary >= 5000000) {
-      tier = 'Gold';
-    } else if (monetary >= 1000000) {
-      tier = 'Silver';
-    }
-
-    // 5. Update Customer profile
+    // 3. Update Customer profile
     const customerRef = doc(db, 'customers', customerId);
     const updatePayload = {
       rfmScore: { recency, frequency, monetary },
       tier,
+      segment,
       totalSpent: monetary,
       orderCount: frequency,
-      lastOrderDate: mostRecentDate.toLocaleDateString('vi-VN')
+      lastOrderDate: lastOrderDate.toLocaleDateString('vi-VN')
     };
 
     await updateDoc(customerRef, updatePayload);
@@ -121,17 +124,10 @@ export async function createSupportTicket(
     const customerName = customerSnap.exists() ? customerSnap.data().name : 'Khách hàng vãng lai';
 
     // 2. Calculate SLA Deadline based on priority
+    // ⚠️ GĐ 4.6: ĐỔI từ GIỜ THỰC sang GIỜ HÀNH CHÍNH. Cách cũ `now + 24h` cho ra
+    // hạn rơi vào nửa đêm/cuối tuần — KPI SLA của tổng đài không bao giờ đúng.
     const now = new Date();
-    let slaHours = 24; // default medium
-    if (priority === 'urgent') {
-      slaHours = 1;
-    } else if (priority === 'high') {
-      slaHours = 4;
-    } else if (priority === 'low') {
-      slaHours = 48;
-    }
-
-    const slaDeadline = new Date(now.getTime() + slaHours * 60 * 60 * 1000).toISOString();
+    const slaDeadline = computeSlaDeadline(now, priority).toISOString();
 
     // 3. Create ticket
     const ticketRef = collection(db, 'support_tickets');

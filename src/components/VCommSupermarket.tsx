@@ -188,7 +188,7 @@ export function VCommSupermarket() {
 
   // Pricing calculations
   const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  // Thuế suất cấu hình theo thời điểm (NĐ 72/2025: 8% đến 31/12/2026) — không hardcode
+  // Thuế suất cấu hình theo thời điểm (NĐ 174/2025: 8% đến 31/12/2026) — không hardcode
   const vatRate = resolveVatRate('*');
   const taxAmount = vatRate === null ? 0 : Math.round(subtotal * vatRate);
   const vatRatePct = ((vatRate ?? 0) * 100).toFixed(0);
@@ -266,14 +266,16 @@ export function VCommSupermarket() {
       // ⑧ HẠCH TOÁN KẾ TOÁN POS (TT 99/2025): bán hàng tại quầy phải vào sổ kép.
       // Nợ 1111/1121 (tiền mặt/chuyển khoản) — Có 5111 (doanh thu bán hàng).
       try {
-        const { postOrderJournalEntries } = await import('../services/accountingService');
-        await postOrderJournalEntries({
+        // GĐ 2.1/2.2 — ghi sổ qua OUTBOX. Bán tại quầy KHÔNG ĐƯỢC bị chặn bởi lỗi
+        // kế toán: xếp hàng là xong, worker nền lo phần còn lại (có retry luỹ thừa).
+        const { postPosSaleJournalViaOutbox } = await import('../services/accountingOutbox');
+        await postPosSaleJournalViaOutbox({
           id: orderId,
           customerName: customerName || 'Khách lẻ POS',
           total: finalTotal,
           items: billItems,
           paymentMethod
-        } as any);
+        });
       } catch (accErr: any) {
         console.warn('[Supermarket] Hạch toán POS thất bại (không chặn bán hàng):', accErr.message || accErr);
       }

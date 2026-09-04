@@ -1,12 +1,30 @@
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
+import { createLogger } from '../lib/logger';
 
 export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
+
+// GĐ 1.5 — đường đi nóng: mọi màn hình đều đọc qua đây. Dùng mức `debug` để
+// không ồn console production, nhưng vẫn tra được khi bật VITE_LOG_LEVEL=debug.
+const log = createLogger('services/dbService');
 
 // -----------------------------------------------------------------------------
 // Relational Database Mapping Configuration & Helpers
 // -----------------------------------------------------------------------------
-export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers', 'loyalty_points_ledger', 'support_tickets', 'combos', 'combo_items', 'group_buy_sessions', 'stock_vouchers', 'stock_voucher_items', 'journal_entries', 'wallet_transactions', 'seller_transactions'];
+export const RELATIONAL_TABLES = ['products', 'customers', 'orders', 'warehouse_stock', 'sellers', 'settlements', 'payments', 'product_price_history', 'partner_ledgers', 'loyalty_points_ledger', 'support_tickets', 'combos', 'combo_items', 'group_buy_sessions', 'group_buy_participants', 'f2b2b_sources', 'f2b2b_pool_orders', 'f2b2b_pool_participants',
+'dropship_partners', 'dropship_listings', 'dropship_orders', 'dropship_margin_ledger',
+'vcomm_hubs', 'hub_shipments',
+'vxu_accounts', 'vxu_ledger', 'vxu_redemptions',
+'stock_vouchers', 'stock_voucher_items', 'journal_entries', 'wallet_transactions', 'seller_transactions',
+'acc_accounts', 'acc_currencies', 'acc_fx_rates', 'acc_periods', 'acc_vouchers', 'acc_voucher_lines', 'acc_audit_log', 'acc_units', 'acc_internal_txn', 'acc_eliminations', 'acc_elimination_lines', 'rev_contracts', 'rev_performance_obligations', 'rev_price_allocations', 'rev_recognition', 'fs_reports', 'fs_report_lines', 'fs_account_mappings',
+'fixed_assets', 'fixed_asset_depreciation',
+// GĐ 2.1 — Outbox: hàng đợi sự kiện. Đưa vào danh sách này để CRUD qua
+// dbService tự map camelCase → snake_case (list/retry sự kiện `dead`).
+'domain_events',
+// GĐ 2.6 — audit trail. Trước đây KHÔNG nằm trong danh sách này → mọi bản ghi
+// bị nhét nguyên cục vào cột `data` JSONB, không query được theo action/email.
+// Đưa vào để ghi đúng cột (cần kèm 3 nhánh bên dưới, xem từng chỗ).
+'admin_audit_logs', 'tenant_audit_logs'];
 
 export function getRealTableName(tableName: string): string {
   if (tableName === 'wallet_transactions') return 'seller_transactions';
@@ -108,6 +126,14 @@ export function mapJsFieldToDbColumn(tableName: string, field: string): string {
       if (field === 'transactionId') return 'transaction_id';
       if (field === 'paymentGateway') return 'payment_gateway';
       if (field === 'createdAt') return 'created_at';
+    } else if (tableName === 'admin_audit_logs' || tableName === 'tenant_audit_logs') {
+      // GĐ 2.6 — code cũ sắp xếp/lọc theo 'timestamp', nhưng cột thật là
+      // `created_at`. Map ở đây để các truy vấn CŨ không đánh sập SQL.
+      if (field === 'timestamp') return 'created_at';
+      if (field === 'createdAt') return 'created_at';
+      if (field === 'userId') return 'user_id';
+      if (field === 'ipAddress') return 'ip_address';
+      if (field === 'userAgent') return 'user_agent';
     }
     // Default snake_case fallback for other fields in relational tables
     return field.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -172,6 +198,16 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.einvoice_xml = jsData.einvoiceXml || null;
     payload.einvoice_lookup_code = jsData.einvoiceLookupCode || null;
     payload.einvoice_signed_at = jsData.einvoiceSignedAt || null;
+    // Các cột dưới thuộc migration 015 (TT 91/2026 Điều 10). Chỉ ghi khi có giá trị
+    // thực — tránh đẩy cột NULL lên Supabase khi migration chưa được apply (postgrest
+    // sẽ ném "Could not find column ... in schema cache"). Khi migration đã chạy, ghi
+    // bình thường.
+    if (jsData.einvoiceErrorFlow != null) payload.einvoice_error_flow = jsData.einvoiceErrorFlow;
+    if (jsData.einvoiceErrorReason != null) payload.einvoice_error_reason = jsData.einvoiceErrorReason;
+    if (jsData.einvoiceReplacesInvoiceNo != null) payload.einvoice_replaces_invoice_no = jsData.einvoiceReplacesInvoiceNo;
+    if (jsData.einvoiceAdjustedAt != null) payload.einvoice_adjusted_at = jsData.einvoiceAdjustedAt;
+    if (jsData.einvoiceConsolidationRef != null) payload.einvoice_consolidation_ref = jsData.einvoiceConsolidationRef;
+    if (jsData.einvoiceErrorHandledAt != null) payload.einvoice_error_handled_at = jsData.einvoiceErrorHandledAt;
     payload.carrier = jsData.carrier || null;
     payload.tracking = jsData.tracking || null;
     payload.shipping_cost = Number(jsData.shippingCost || jsData.shipping_cost) || 0.00;
@@ -283,11 +319,229 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.product_id = jsData.productId || jsData.product_id || null;
     payload.quantity = Number(jsData.quantity) || 1;
   } else if (tableName === 'group_buy_sessions') {
+    // SỬA (spec 016): trước đây map sang min_qty / current_qty / end_time —
+    // các cột này KHÔNG tồn tại trong DDL (005 tạo min_participants /
+    // current_participants / expires_at), khiến ghi lỗi hoặc mất dữ liệu.
+    // Canonical = tên trong DDL.
     payload.combo_id = jsData.comboId || jsData.combo_id || null;
-    payload.status = jsData.status || 'open';
-    payload.min_qty = Number(jsData.minQty || jsData.min_qty) || 10;
-    payload.current_qty = Number(jsData.currentQty || jsData.current_qty) || 0;
-    payload.end_time = jsData.endTime || jsData.end_time || null;
+    payload.product_id = jsData.productId || jsData.product_id || null;
+    payload.status = jsData.status || 'group_open';
+    payload.min_participants = Number(jsData.minParticipants || jsData.min_participants) || 2;
+    payload.current_participants = Number(jsData.currentParticipants || jsData.current_participants) || 0;
+    payload.unit_price = Number(jsData.unitPrice || jsData.unit_price) || 0;
+    payload.expires_at = jsData.expiresAt || jsData.expires_at || null;
+    payload.leader_id = jsData.leaderId || jsData.leader_id || null;
+    payload.cancelled_reason = jsData.cancelledReason || jsData.cancelled_reason || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'group_buy_participants') {
+    payload.session_id = jsData.sessionId || jsData.session_id || null;
+    payload.customer_id = jsData.customerId || jsData.customer_id || null;
+    payload.customer_name = jsData.customerName || jsData.customer_name || null;
+    payload.quantity = Number(jsData.quantity) || 1;
+    payload.unit_price = Number(jsData.unitPrice || jsData.unit_price) || 0;
+    payload.amount = Number(jsData.amount) || 0;
+    payload.status = jsData.status || 'joined';
+    payload.payment_ref = jsData.paymentRef || jsData.payment_ref || null;
+    payload.order_id = jsData.orderId || jsData.order_id || null;
+    payload.joined_at = jsData.joinedAt || jsData.joined_at || new Date().toISOString();
+  } else if (tableName === 'f2b2b_sources') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.type = jsData.type || 'farm';
+    payload.tax_code = jsData.taxCode || jsData.tax_code || null;
+    payload.contact_name = jsData.contactName || jsData.contact_name || null;
+    payload.phone = jsData.phone || null;
+    payload.email = jsData.email || null;
+    payload.province_code = jsData.provinceCode || jsData.province_code || null;
+    payload.province_name = jsData.provinceName || jsData.province_name || null;
+    payload.address = jsData.address || null;
+    payload.capacity_per_cycle = Number(jsData.capacityPerCycle || jsData.capacity_per_cycle) || 0;
+    payload.capacity_unit = jsData.capacityUnit || jsData.capacity_unit || 'kg';
+    payload.lead_time_days = Number(jsData.leadTimeDays || jsData.leadTime_days) || 7;
+    payload.certifications = jsData.certifications || [];
+    payload.rating = Number(jsData.rating) || 0;
+    payload.total_completed_pools = Number(jsData.totalCompletedPools || jsData.total_completed_pools) || 0;
+    payload.status = jsData.status || 'active';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'f2b2b_pool_orders') {
+    payload.code = jsData.code || '';
+    payload.source_id = jsData.sourceId || jsData.source_id || null;
+    payload.product_id = jsData.productId || jsData.product_id || null;
+    payload.product_name = jsData.productName || jsData.product_name || '';
+    payload.unit = jsData.unit || 'kg';
+    payload.target_qty = Number(jsData.targetQty || jsData.target_qty) || 0;
+    payload.min_qty = Number(jsData.minQty || jsData.min_qty) || 0;
+    payload.pooled_qty = Number(jsData.pooledQty || jsData.pooled_qty) || 0;
+    payload.price_tiers = jsData.priceTiers || jsData.price_tiers || [];
+    payload.base_unit_price = Number(jsData.baseUnitPrice || jsData.base_unit_price) || 0;
+    payload.final_unit_price = jsData.finalUnitPrice ?? jsData.final_unit_price ?? null;
+    payload.status = jsData.status || 'draft';
+    payload.open_at = jsData.openAt || jsData.open_at || null;
+    payload.close_at = jsData.closeAt || jsData.close_at || null;
+    payload.expected_delivery_at = jsData.expectedDeliveryAt || jsData.expected_delivery_at || null;
+    payload.cancelled_reason = jsData.cancelledReason || jsData.cancelled_reason || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'f2b2b_pool_participants') {
+    payload.pool_id = jsData.poolId || jsData.pool_id || null;
+    payload.buyer_id = jsData.buyerId || jsData.buyer_id || null;
+    payload.buyer_name = jsData.buyerName || jsData.buyer_name || null;
+    payload.committed_qty = Number(jsData.committedQty || jsData.committed_qty) || 0;
+    payload.unit_price = Number(jsData.unitPrice || jsData.unit_price) || 0;
+    payload.amount = Number(jsData.amount) || 0;
+    payload.delivery_address = jsData.deliveryAddress || jsData.delivery_address || null;
+    payload.delivery_province_code = jsData.deliveryProvinceCode || jsData.delivery_province_code || null;
+    payload.status = jsData.status || 'committed';
+    payload.payment_ref = jsData.paymentRef || jsData.payment_ref || null;
+    payload.joined_at = jsData.joinedAt || jsData.joined_at || new Date().toISOString();
+  } else if (tableName === 'dropship_partners') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.shop_name = jsData.shopName || jsData.shop_name || null;
+    payload.channels = jsData.channels || [];
+    payload.tax_code = jsData.taxCode || jsData.tax_code || null;
+    payload.contact_name = jsData.contactName || jsData.contact_name || null;
+    payload.phone = jsData.phone || null;
+    payload.email = jsData.email || null;
+    payload.address = jsData.address || null;
+    payload.vneid_verified = Boolean(jsData.vneidVerified ?? jsData.vneid_verified ?? false);
+    payload.vneid_linked_at = jsData.vneidLinkedAt || jsData.vneid_linked_at || null;
+    payload.margin_split = Number(jsData.marginSplit ?? jsData.margin_split ?? 0.8);
+    payload.bank_name = jsData.bankName || jsData.bank_name || null;
+    payload.bank_account = jsData.bankAccount || jsData.bank_account || null;
+    payload.bank_account_name = jsData.bankAccountName || jsData.bank_account_name || null;
+    payload.outstanding_cod = Number(jsData.outstandingCod || jsData.outstanding_cod) || 0;
+    payload.status = jsData.status || 'pending';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'dropship_listings') {
+    payload.partner_id = jsData.partnerId || jsData.partner_id || null;
+    payload.product_id = jsData.productId || jsData.product_id || '';
+    payload.product_name = jsData.productName || jsData.product_name || '';
+    payload.external_sku = jsData.externalSku || jsData.external_sku || null;
+    payload.channel = jsData.channel || 'other';
+    payload.external_url = jsData.externalUrl || jsData.external_url || null;
+    payload.base_cost = Number(jsData.baseCost || jsData.base_cost) || 0;
+    payload.listed_price = Number(jsData.listedPrice || jsData.listed_price) || 0;
+    payload.min_selling_price = Number(jsData.minSellingPrice || jsData.min_selling_price) || 0;
+    payload.shipping_fee = Number(jsData.shippingFee || jsData.shipping_fee) || 0;
+    payload.stock_synced = Number(jsData.stockSynced || jsData.stock_synced) || 0;
+    payload.synced_at = jsData.syncedAt || jsData.synced_at || null;
+    payload.status = jsData.status || 'draft';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'dropship_orders') {
+    payload.partner_id = jsData.partnerId || jsData.partner_id || null;
+    payload.code = jsData.code || '';
+    payload.external_order_code = jsData.externalOrderCode || jsData.external_order_code || '';
+    payload.channel = jsData.channel || 'other';
+    payload.items = jsData.items || [];
+    payload.item_count = Number(jsData.itemCount || jsData.item_count) || (jsData.items?.length || 0);
+    payload.quantity = Number(jsData.quantity) || 0;
+    payload.buyer_name = jsData.buyerName || jsData.buyer_name || null;
+    payload.buyer_phone = jsData.buyerPhone || jsData.buyer_phone || null;
+    payload.shipping_address = jsData.shippingAddress || jsData.shipping_address || null;
+    payload.shipping_province_code = jsData.shippingProvinceCode || jsData.shipping_province_code || null;
+    payload.cod_amount = Number(jsData.codAmount || jsData.cod_amount) || 0;
+    payload.total_cost = Number(jsData.totalCost || jsData.total_cost) || 0;
+    payload.shipping_fee = Number(jsData.shippingFee || jsData.shipping_fee) || 0;
+    payload.gross_margin = Number(jsData.grossMargin || jsData.gross_margin) || 0;
+    payload.partner_margin = Number(jsData.partnerMargin || jsData.partner_margin) || 0;
+    payload.vcomm_margin = Number(jsData.vcommMargin || jsData.vcomm_margin) || 0;
+    payload.carrier = jsData.carrier || null;
+    payload.tracking_code = jsData.trackingCode || jsData.tracking_code || null;
+    payload.status = jsData.status || 'pending';
+    payload.reserved_at = jsData.reservedAt || jsData.reserved_at || null;
+    payload.shipped_at = jsData.shippedAt || jsData.shipped_at || null;
+    payload.delivered_at = jsData.deliveredAt || jsData.delivered_at || null;
+    payload.settled_at = jsData.settledAt || jsData.settled_at || null;
+    payload.cancelled_at = jsData.cancelledAt || jsData.cancelled_at || null;
+    payload.cancelled_reason = jsData.cancelledReason || jsData.cancelled_reason || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'dropship_margin_ledger') {
+    payload.partner_id = jsData.partnerId || jsData.partner_id || null;
+    payload.order_id = jsData.orderId || jsData.order_id || null;
+    payload.type = jsData.type || 'accrual';
+    payload.amount = Number(jsData.amount) || 0;
+    payload.note = jsData.note || null;
+    payload.status = jsData.status || 'pending';
+    payload.period = jsData.period || null;
+    payload.paid_at = jsData.paidAt || jsData.paid_at || null;
+    payload.payout_ref = jsData.payoutRef || jsData.payout_ref || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'vcomm_hubs') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.type = jsData.type || 'standard';
+    payload.province_code = jsData.provinceCode || jsData.province_code || null;
+    payload.province_name = jsData.provinceName || jsData.province_name || null;
+    payload.address = jsData.address || null;
+    payload.latitude = jsData.latitude != null ? Number(jsData.latitude) : null;
+    payload.longitude = jsData.longitude != null ? Number(jsData.longitude) : null;
+    payload.capacity = Number(jsData.capacity) || 100;
+    payload.current_load = Number(jsData.currentLoad || jsData.current_load) || 0;
+    payload.open_24_7 = Boolean(jsData.open247 ?? jsData.open_24_7 ?? false);
+    payload.operating_hours = jsData.operatingHours || jsData.operating_hours || null;
+    payload.manager_name = jsData.managerName || jsData.manager_name || null;
+    payload.phone = jsData.phone || null;
+    payload.status = jsData.status || 'active';
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'hub_shipments') {
+    payload.hub_id = jsData.hubId || jsData.hub_id || null;
+    payload.order_id = jsData.orderId || jsData.order_id || null;
+    payload.tracking_code = jsData.trackingCode || jsData.tracking_code || '';
+    payload.pickup_code = jsData.pickupCode || jsData.pickup_code || null;
+    payload.qr_secret = jsData.qrSecret || jsData.qr_secret || null;
+    payload.qr_issued_at = jsData.qrIssuedAt || jsData.qr_issued_at || null;
+    payload.recipient_name = jsData.recipientName || jsData.recipient_name || null;
+    payload.recipient_phone = jsData.recipientPhone || jsData.recipient_phone || null;
+    payload.cod_amount = Number(jsData.codAmount || jsData.cod_amount) || 0;
+    payload.insurance_fee = Number(jsData.insuranceFee || jsData.insurance_fee) || 0;
+    payload.penalty_amount = Number(jsData.penaltyAmount || jsData.penalty_amount) || 0;
+    payload.inspection_ok = jsData.inspectionOk ?? jsData.inspection_ok ?? null;
+    payload.refunded_amount = Number(jsData.refundedAmount || jsData.refunded_amount) || 0;
+    payload.status = jsData.status || 'in_transit';
+    payload.arrived_at = jsData.arrivedAt || jsData.arrived_at || null;
+    payload.ready_at = jsData.readyAt || jsData.ready_at || null;
+    payload.reminder_48h_at = jsData.reminder48hAt || jsData.reminder_48h_at || null;
+    payload.reminder_72h_at = jsData.reminder72hAt || jsData.reminder_72h_at || null;
+    payload.picked_up_at = jsData.pickedUpAt || jsData.picked_up_at || null;
+    payload.expired_at = jsData.expiredAt || jsData.expired_at || null;
+    payload.returned_at = jsData.returnedAt || jsData.returned_at || null;
+    payload.cancelled_reason = jsData.cancelledReason || jsData.cancelled_reason || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'vxu_accounts') {
+    payload.customer_id = jsData.customerId || jsData.customer_id || '';
+    payload.balance = Number(jsData.balance) || 0;
+    payload.lifetime_earned = Number(jsData.lifetimeEarned || jsData.lifetime_earned) || 0;
+    payload.lifetime_spend_vnd = Number(jsData.lifetimeSpendVnd || jsData.lifetime_spend_vnd) || 0;
+    payload.lifetime_orders = Number(jsData.lifetimeOrders || jsData.lifetime_orders) || 0;
+    payload.tier = jsData.tier || 'dong';
+    payload.tier_changed_at = jsData.tierChangedAt || jsData.tier_changed_at || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'vxu_ledger') {
+    payload.transaction_id = jsData.transactionId || jsData.transaction_id || '';
+    payload.side = jsData.side || 'debit';
+    payload.account = jsData.account || '';
+    payload.counter_account = jsData.counterAccount || jsData.counter_account || '';
+    payload.customer_id = jsData.customerId || jsData.customer_id || null;
+    payload.amount = Number(jsData.amount) || 0;
+    payload.type = jsData.type || 'earn';
+    payload.reference_type = jsData.referenceType || jsData.reference_type || null;
+    payload.reference_id = jsData.referenceId || jsData.reference_id || null;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'vxu_redemptions') {
+    payload.customer_id = jsData.customerId || jsData.customer_id || '';
+    payload.voucher_code = jsData.voucherCode || jsData.voucher_code || '';
+    payload.template_code = jsData.templateCode || jsData.template_code || '';
+    payload.vxu_cost = Number(jsData.vxuCost || jsData.vxu_cost) || 0;
+    payload.voucher_value_vnd = Number(jsData.voucherValueVnd || jsData.voucher_value_vnd) || 0;
+    payload.required_tier = jsData.requiredTier || jsData.required_tier || 'dong';
+    payload.min_spend_vnd = Number(jsData.minSpendVnd || jsData.min_spend_vnd) || 0;
+    payload.status = jsData.status || 'issued';
+    payload.transaction_id = jsData.transactionId || jsData.transaction_id || null;
+    payload.order_id = jsData.orderId || jsData.order_id || null;
+    payload.used_at = jsData.usedAt || jsData.used_at || null;
+    payload.expires_at = jsData.expiresAt || jsData.expires_at || null;
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
   } else if (tableName === 'stock_vouchers') {
     payload.code = jsData.code || '';
@@ -303,6 +557,269 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
     payload.product_id = jsData.productId || jsData.product_id || null;
     payload.quantity = Number(jsData.quantity) || 0;
+  } else if (tableName === 'acc_accounts') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.level = Number(jsData.level) || 1;
+    payload.parent_code = jsData.parentCode || jsData.parent_code || null;
+    payload.account_type = jsData.accountType || jsData.account_type || 'asset';
+    payload.balance_side = jsData.balanceSide || jsData.balance_side || 'debit';
+    payload.is_system = jsData.isSystem ?? jsData.is_system ?? false;
+    payload.regulation_ref = jsData.regulationRef || jsData.regulation_ref || null;
+    payload.is_active = jsData.isActive ?? jsData.is_active ?? true;
+    payload.track_partner = jsData.trackPartner ?? jsData.track_partner ?? false;
+    payload.track_unit = jsData.trackUnit ?? jsData.track_unit ?? false;
+    payload.is_intercompany = jsData.isIntercompany ?? jsData.is_intercompany ?? false;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_currencies') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.symbol = jsData.symbol || null;
+    payload.is_base = jsData.isBase ?? jsData.is_base ?? false;
+    payload.is_active = jsData.isActive ?? jsData.is_active ?? true;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_fx_rates') {
+    payload.currency_code = jsData.currencyCode || jsData.currency_code || 'VND';
+    payload.rate_date = jsData.rateDate || jsData.rate_date || new Date().toISOString().slice(0, 10);
+    payload.booked_rate = Number(jsData.bookedRate || jsData.booked_rate) || 1;
+    payload.actual_rate = jsData.actualRate ?? jsData.actual_rate ?? null;
+    payload.tolerance_pct = jsData.tolerancePct ?? jsData.tolerance_pct ?? 1.0;
+    payload.note = jsData.note || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_periods') {
+    payload.period_year = Number(jsData.periodYear || jsData.period_year) || 0;
+    payload.period_no = jsData.periodNo ?? jsData.period_no ?? null;
+    payload.start_date = jsData.startDate || jsData.start_date || new Date().toISOString().slice(0, 10);
+    payload.end_date = jsData.endDate || jsData.end_date || new Date().toISOString().slice(0, 10);
+    payload.status = jsData.status || 'open';
+    payload.closed_at = jsData.closedAt || jsData.closed_at || null;
+    payload.closed_by = jsData.closedBy || jsData.closed_by || null;
+    payload.closing_hash = jsData.closingHash || jsData.closing_hash || null;
+    payload.closing_note = jsData.closingNote || jsData.closing_note || null;
+    payload.exported_at = jsData.exportedAt || jsData.exported_at || null;
+    payload.exported_by = jsData.exportedBy || jsData.exported_by || null;
+    payload.export_format = jsData.exportFormat || jsData.export_format || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_vouchers') {
+    payload.voucher_no = jsData.voucherNo || jsData.voucher_no || '';
+    payload.voucher_type = jsData.voucherType || jsData.voucher_type || 'PKT';
+    payload.voucher_date = jsData.voucherDate || jsData.voucher_date || new Date().toISOString().slice(0, 10);
+    payload.post_date = jsData.postDate || jsData.post_date || payload.voucher_date;
+    payload.period_id = jsData.periodId || jsData.period_id || null;
+    payload.unit_id = jsData.unitId || jsData.unit_id || null;
+    payload.currency_code = jsData.currencyCode || jsData.currency_code || 'VND';
+    payload.fx_rate = Number(jsData.fxRate || jsData.fx_rate) || 1;
+    payload.description = jsData.description || '';
+    payload.attachments = jsData.attachments || null;
+    payload.status = jsData.status || 'draft';
+    payload.reversal_of = jsData.reversalOf || jsData.reversal_of || null;
+    payload.reversal_reason = jsData.reversalReason || jsData.reversal_reason || null;
+    payload.source_type = jsData.sourceType || jsData.source_type || null;
+    payload.source_id = jsData.sourceId || jsData.source_id || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.posted_by = jsData.postedBy || jsData.posted_by || null;
+    payload.posted_at = jsData.postedAt || jsData.posted_at || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_voucher_lines') {
+    payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
+    payload.line_no = Number(jsData.lineNo || jsData.line_no) || 1;
+    payload.account_code = jsData.accountCode || jsData.account_code || '';
+    payload.description = jsData.description || null;
+    payload.debit = Number(jsData.debit) || 0;
+    payload.credit = Number(jsData.credit) || 0;
+    payload.debit_orig = Number(jsData.debitOrig || jsData.debit_orig) || 0;
+    payload.credit_orig = Number(jsData.creditOrig || jsData.credit_orig) || 0;
+    payload.partner_id = jsData.partnerId || jsData.partner_id || null;
+    payload.partner_type = jsData.partnerType || jsData.partner_type || null;
+    payload.unit_id = jsData.unitId || jsData.unit_id || null;
+    payload.cost_center = jsData.costCenter || jsData.cost_center || null;
+    payload.is_internal = jsData.isInternal ?? jsData.is_internal ?? false;
+    payload.counterparty_unit_id = jsData.counterpartyUnitId || jsData.counterparty_unit_id || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'acc_audit_log') {
+    payload.table_name = jsData.tableName || jsData.table_name || '';
+    payload.record_id = jsData.recordId || jsData.record_id || '';
+    payload.action = jsData.action || 'INSERT';
+    payload.before_data = jsData.beforeData || jsData.before_data || null;
+    payload.after_data = jsData.afterData || jsData.after_data || null;
+    payload.changed_fields = jsData.changedFields || jsData.changed_fields || null;
+    payload.actor = jsData.actor || null;
+    payload.actor_ip = jsData.actorIp || jsData.actor_ip || null;
+    payload.reason = jsData.reason || null;
+    payload.occurred_at = jsData.occurredAt || jsData.occurred_at || new Date().toISOString();
+  } else if (tableName === 'acc_units') {
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.parent_id = jsData.parentId || jsData.parent_id || null;
+    payload.unit_type = jsData.unitType || jsData.unit_type || 'branch';
+    payload.consolidation_method = jsData.consolidationMethod || jsData.consolidation_method || 'full';
+    payload.is_head_office = jsData.isHeadOffice ?? jsData.is_head_office ?? false;
+    payload.address = jsData.address || null;
+    payload.tax_code = jsData.taxCode || jsData.tax_code || null;
+    payload.manager_name = jsData.managerName || jsData.manager_name || null;
+    payload.is_active = jsData.isActive ?? jsData.is_active ?? true;
+    payload.opened_at = jsData.openedAt || jsData.opened_at || new Date().toISOString().slice(0, 10);
+    payload.closed_at = jsData.closedAt || jsData.closed_at || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_internal_txn') {
+    payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
+    payload.line_id = jsData.lineId || jsData.line_id || null;
+    payload.period_id = jsData.periodId || jsData.period_id || null;
+    payload.from_unit_id = jsData.fromUnitId || jsData.from_unit_id || null;
+    payload.to_unit_id = jsData.toUnitId || jsData.to_unit_id || null;
+    payload.account_code = jsData.accountCode || jsData.account_code || '';
+    payload.amount = Number(jsData.amount) || 0;
+    payload.txn_type = jsData.txnType || jsData.txn_type || 'receivable_payable';
+    payload.status = jsData.status || 'unmatched';
+    payload.matched_txn_id = jsData.matchedTxnId || jsData.matched_txn_id || null;
+    payload.matched_at = jsData.matchedAt || jsData.matched_at || null;
+    payload.elimination_id = jsData.eliminationId || jsData.elimination_id || null;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_eliminations') {
+    payload.elimination_no = jsData.eliminationNo || jsData.elimination_no || '';
+    payload.period_id = jsData.periodId || jsData.period_id || null;
+    payload.elimination_date = jsData.eliminationDate || jsData.elimination_date || new Date().toISOString().slice(0, 10);
+    payload.elimination_type = jsData.eliminationType || jsData.elimination_type || 'receivable_payable';
+    payload.description = jsData.description || '';
+    payload.total_amount = Number(jsData.totalAmount || jsData.total_amount) || 0;
+    payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
+    payload.status = jsData.status || 'draft';
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.posted_by = jsData.postedBy || jsData.posted_by || null;
+    payload.posted_at = jsData.postedAt || jsData.posted_at || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'acc_elimination_lines') {
+    payload.elimination_id = jsData.eliminationId || jsData.elimination_id || null;
+    payload.line_no = Number(jsData.lineNo || jsData.line_no) || 1;
+    payload.account_code = jsData.accountCode || jsData.account_code || '';
+    payload.description = jsData.description || null;
+    payload.debit = Number(jsData.debit) || 0;
+    payload.credit = Number(jsData.credit) || 0;
+    payload.unit_id = jsData.unitId || jsData.unit_id || null;
+    payload.internal_txn_id = jsData.internalTxnId || jsData.internal_txn_id || null;
+  } else if (tableName === 'rev_contracts') {
+    payload.contract_no = jsData.contractNo || jsData.contract_no || '';
+    payload.customer_id = jsData.customerId || jsData.customer_id || '';
+    payload.order_id = jsData.orderId || jsData.order_id || null;
+    payload.f2b2b_source_id = jsData.f2b2bSourceId || jsData.f2b2b_source_id || null;
+    payload.signed_date = jsData.signedDate || jsData.signed_date || new Date().toISOString().slice(0, 10);
+    payload.effective_date = jsData.effectiveDate || jsData.effective_date || null;
+    payload.end_date = jsData.endDate || jsData.end_date || null;
+    payload.collectability = jsData.collectability || 'probable';
+    payload.status = jsData.status || 'draft';
+    payload.currency_code = jsData.currencyCode || jsData.currency_code || 'VND';
+    payload.fx_rate = Number(jsData.fxRate || jsData.fx_rate) || 1;
+    payload.fixed_amount = Number(jsData.fixedAmount || jsData.fixed_amount) || 0;
+    payload.variable_amount = Number(jsData.variableAmount || jsData.variable_amount) || 0;
+    payload.variable_constraint_pct = jsData.variableConstraintPct ?? jsData.variable_constraint_pct ?? 100;
+    payload.transaction_price = Number(jsData.transactionPrice || jsData.transaction_price) || 0;
+    payload.allocated_total = Number(jsData.allocatedTotal || jsData.allocated_total) || 0;
+    payload.recognized_total = Number(jsData.recognizedTotal || jsData.recognized_total) || 0;
+    payload.deferred_total = Number(jsData.deferredTotal || jsData.deferred_total) || 0;
+    payload.cancellation_date = jsData.cancellationDate || jsData.cancellation_date || null;
+    payload.note = jsData.note || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'rev_performance_obligations') {
+    payload.contract_id = jsData.contractId || jsData.contract_id || null;
+    payload.code = jsData.code || '';
+    payload.name = jsData.name || '';
+    payload.obligation_type = jsData.obligationType || jsData.obligation_type || 'point_in_time';
+    payload.progress_method = jsData.progressMethod || jsData.progress_method || null;
+    payload.standalone_selling_price = Number(jsData.standaloneSellingPrice || jsData.standalone_selling_price) || 0;
+    payload.allocation_pct = Number(jsData.allocationPct || jsData.allocation_pct) || 0;
+    payload.allocated_amount = Number(jsData.allocatedAmount || jsData.allocated_amount) || 0;
+    payload.revenue_account_code = jsData.revenueAccountCode || jsData.revenue_account_code || '5111';
+    payload.deferred_account_code = jsData.deferredAccountCode || jsData.deferred_account_code || '3387';
+    payload.satisfied_at = jsData.satisfiedAt || jsData.satisfied_at || null;
+    payload.progress_pct = Number(jsData.progressPct || jsData.progress_pct) || 0;
+    payload.recognized_amount = Number(jsData.recognizedAmount || jsData.recognized_amount) || 0;
+    payload.status = jsData.status || 'pending';
+    payload.display_order = Number(jsData.displayOrder || jsData.display_order) || 0;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'rev_price_allocations') {
+    payload.contract_id = jsData.contractId || jsData.contract_id || null;
+    payload.obligation_id = jsData.obligationId || jsData.obligation_id || null;
+    payload.standalone_selling_price = Number(jsData.standaloneSellingPrice || jsData.standalone_selling_price) || 0;
+    payload.allocation_pct = Number(jsData.allocationPct || jsData.allocation_pct) || 0;
+    payload.allocated_fixed = Number(jsData.allocatedFixed || jsData.allocated_fixed) || 0;
+    payload.allocated_variable = Number(jsData.allocatedVariable || jsData.allocated_variable) || 0;
+    payload.allocated_discount = Number(jsData.allocatedDiscount || jsData.allocated_discount) || 0;
+    payload.allocated_total = Number(jsData.allocatedTotal || jsData.allocated_total) || 0;
+    payload.basis = jsData.basis || 'relative_ssp';
+    payload.justification = jsData.justification || null;
+    payload.allocated_at = jsData.allocatedAt || jsData.allocated_at || new Date().toISOString();
+    payload.allocated_by = jsData.allocatedBy || jsData.allocated_by || null;
+    payload.is_superseded = jsData.isSuperseded ?? jsData.is_superseded ?? false;
+  } else if (tableName === 'rev_recognition') {
+    payload.obligation_id = jsData.obligationId || jsData.obligation_id || null;
+    payload.contract_id = jsData.contractId || jsData.contract_id || null;
+    payload.period_id = jsData.periodId || jsData.period_id || null;
+    payload.recognition_date = jsData.recognitionDate || jsData.recognition_date || new Date().toISOString().slice(0, 10);
+    payload.method = jsData.method || 'point_in_time';
+    payload.progress_pct = Number(jsData.progressPct || jsData.progress_pct) || 0;
+    payload.recognized_amount = Number(jsData.recognizedAmount || jsData.recognized_amount) || 0;
+    payload.cumulative_recognized = Number(jsData.cumulativeRecognized || jsData.cumulative_recognized) || 0;
+    payload.remaining_amount = Number(jsData.remainingAmount || jsData.remaining_amount) || 0;
+    payload.breakage_pct = jsData.breakagePct ?? jsData.breakage_pct ?? null;
+    payload.voucher_id = jsData.voucherId || jsData.voucher_id || null;
+    payload.status = jsData.status || 'draft';
+    payload.reason = jsData.reason || null;
+    payload.created_by = jsData.createdBy || jsData.created_by || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'fs_reports') {
+    payload.report_code = jsData.reportCode || jsData.report_code || 'B01-DN';
+    payload.period_id = jsData.periodId || jsData.period_id || null;
+    payload.scope = jsData.scope || 'company';
+    payload.report_type = jsData.reportType || jsData.report_type || 'annual';
+    payload.status = jsData.status || 'draft';
+    payload.revision_no = Number(jsData.revisionNo || jsData.revision_no) || 1;
+    payload.prepared_by = jsData.preparedBy || jsData.prepared_by || null;
+    payload.prepared_at = jsData.preparedAt || jsData.prepared_at || new Date().toISOString();
+    payload.approved_by = jsData.approvedBy || jsData.approved_by || null;
+    payload.approved_at = jsData.approvedAt || jsData.approved_at || null;
+    payload.submitted_at = jsData.submittedAt || jsData.submitted_at || null;
+    payload.content_hash = jsData.contentHash || jsData.content_hash || null;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+    payload.updated_at = jsData.updatedAt || jsData.updated_at || new Date().toISOString();
+  } else if (tableName === 'fs_report_lines') {
+    payload.report_id = jsData.reportId || jsData.report_id || null;
+    payload.line_code = jsData.lineCode || jsData.line_code || '';
+    payload.line_name = jsData.lineName || jsData.line_name || '';
+    payload.display_order = Number(jsData.displayOrder || jsData.display_order) || 0;
+    payload.indent_level = Number(jsData.indentLevel || jsData.indent_level) || 0;
+    payload.is_bold = jsData.isBold ?? jsData.is_bold ?? false;
+    payload.is_section = jsData.isSection ?? jsData.is_section ?? false;
+    payload.is_custom = jsData.isCustom ?? jsData.is_custom ?? false;
+    payload.current_amount = jsData.currentAmount ?? jsData.current_amount ?? null;
+    payload.prior_amount = jsData.priorAmount ?? jsData.prior_amount ?? null;
+    payload.formula = jsData.formula || null;
+    payload.data_type = jsData.dataType || jsData.data_type || null;
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'fs_account_mappings') {
+    payload.report_code = jsData.reportCode || jsData.report_code || 'B01-DN';
+    payload.line_code = jsData.lineCode || jsData.line_code || '';
+    payload.account_code = jsData.accountCode || jsData.account_code || '';
+    payload.sign = jsData.sign || '+';
+    payload.note = jsData.note || null;
+    payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
   } else if (tableName === 'journal_entries') {
     payload.date = jsData.date || jsData.dateStr || new Date().toISOString();
     payload.ref = jsData.ref || null;
@@ -314,6 +831,32 @@ export function toRelationalPayload(tableName: string, docId: string, tenantId: 
     payload.reference_id = jsData.referenceId || jsData.gateway || null;
     payload.status = jsData.status || 'success';
     payload.created_at = jsData.createdAt || jsData.created_at || new Date().toISOString();
+  } else if (tableName === 'admin_audit_logs' || tableName === 'tenant_audit_logs') {
+    // GĐ 2.6 — ghi ĐÚNG CỘT thay vì nhét nguyên cục vào JSONB (`data`), để
+    // query được theo action/email/tenant. Vẫn lưu kèm toàn bộ payload vào
+    // `data` để không mất trường ngoài lề (metadata, before/after…).
+    // Chấp nhận CẢ định dạng chuẩn mới (auditTrailService: actorEmail/actorUid…)
+    // lẫn định dạng cũ (email/userId…) để không phá log đã có.
+    payload.email = jsData.actorEmail || jsData.email || null;
+    payload.user_id = jsData.actorUid || jsData.userId || jsData.user_id || null;
+    payload.action = jsData.action || null;
+    payload.status = jsData.status || null;
+    payload.details = jsData.details ?? jsData.metadata ?? null;
+    payload.ip_address = jsData.ipAddress || jsData.ip_address || null;
+    payload.user_agent = jsData.userAgent || jsData.user_agent || null;
+    payload.created_at = jsData.timestamp || jsData.createdAt || jsData.created_at || new Date().toISOString();
+    // Các trường chuẩn KHÔNG có cột riêng → gom vào `data` để không mất:
+    // actorName, targetId/targetLabel, path, browser, source.
+    const extra: Record<string, unknown> = {};
+    if (jsData.actionKey) extra.actionKey = jsData.actionKey;
+    if (jsData.actorName) extra.actorName = jsData.actorName;
+    if (jsData.targetId) extra.targetId = jsData.targetId;
+    if (jsData.targetLabel) extra.targetLabel = jsData.targetLabel;
+    if (jsData.path) extra.path = jsData.path;
+    if (jsData.browser) extra.browser = jsData.browser;
+    if (jsData.source) extra.source = jsData.source;
+    if (jsData.data && typeof jsData.data === 'object') Object.assign(extra, jsData.data);
+    payload.data = Object.keys(extra).length ? extra : null;
   }
 
   return payload;
@@ -377,6 +920,12 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.einvoiceXml = row.einvoice_xml;
     jsData.einvoiceLookupCode = row.einvoice_lookup_code;
     jsData.einvoiceSignedAt = row.einvoice_signed_at;
+    jsData.einvoiceErrorFlow = row.einvoice_error_flow;
+    jsData.einvoiceErrorReason = row.einvoice_error_reason;
+    jsData.einvoiceReplacesInvoiceNo = row.einvoice_replaces_invoice_no;
+    jsData.einvoiceAdjustedAt = row.einvoice_adjusted_at;
+    jsData.einvoiceConsolidationRef = row.einvoice_consolidation_ref;
+    jsData.einvoiceErrorHandledAt = row.einvoice_error_handled_at;
     jsData.carrier = row.carrier;
     jsData.tracking = row.tracking;
     jsData.shippingCost = Number(row.shipping_cost || 0);
@@ -489,12 +1038,230 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.productId = row.product_id;
     jsData.quantity = Number(row.quantity || 0);
   } else if (tableName === 'group_buy_sessions') {
+    // SỬA (spec 016): đọc theo canonical trong DDL (xem toRelationalPayload)
     jsData.comboId = row.combo_id;
+    jsData.productId = row.product_id;
     jsData.status = row.status;
-    jsData.minQty = Number(row.min_qty || 0);
-    jsData.currentQty = Number(row.current_qty || 0);
-    jsData.endTime = row.end_time;
+    jsData.minParticipants = Number(row.min_participants || 0);
+    jsData.currentParticipants = Number(row.current_participants || 0);
+    jsData.unitPrice = Number(row.unit_price || 0);
+    jsData.expiresAt = row.expires_at;
+    jsData.leaderId = row.leader_id;
+    jsData.lockedAt = row.locked_at;
+    jsData.supplierConfirmedAt = row.supplier_confirmed_at;
+    jsData.completedAt = row.completed_at;
+    jsData.cancelledAt = row.cancelled_at;
+    jsData.cancelledReason = row.cancelled_reason;
     jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'group_buy_participants') {
+    jsData.sessionId = row.session_id;
+    jsData.customerId = row.customer_id;
+    jsData.customerName = row.customer_name;
+    jsData.quantity = Number(row.quantity || 0);
+    jsData.unitPrice = Number(row.unit_price || 0);
+    jsData.amount = Number(row.amount || 0);
+    jsData.status = row.status;
+    jsData.paymentRef = row.payment_ref;
+    jsData.orderId = row.order_id;
+    jsData.joinedAt = row.joined_at;
+    jsData.cancelledAt = row.cancelled_at;
+  } else if (tableName === 'f2b2b_sources') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.type = row.type;
+    jsData.taxCode = row.tax_code;
+    jsData.contactName = row.contact_name;
+    jsData.phone = row.phone;
+    jsData.email = row.email;
+    jsData.provinceCode = row.province_code;
+    jsData.provinceName = row.province_name;
+    jsData.address = row.address;
+    jsData.capacityPerCycle = Number(row.capacity_per_cycle || 0);
+    jsData.capacityUnit = row.capacity_unit;
+    jsData.leadTimeDays = Number(row.lead_time_days || 0);
+    jsData.certifications = row.certifications || [];
+    jsData.rating = Number(row.rating || 0);
+    jsData.totalCompletedPools = Number(row.total_completed_pools || 0);
+    jsData.status = row.status;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'f2b2b_pool_orders') {
+    jsData.code = row.code;
+    jsData.sourceId = row.source_id;
+    jsData.productId = row.product_id;
+    jsData.productName = row.product_name;
+    jsData.unit = row.unit;
+    jsData.targetQty = Number(row.target_qty || 0);
+    jsData.minQty = Number(row.min_qty || 0);
+    jsData.pooledQty = Number(row.pooled_qty || 0);
+    jsData.priceTiers = row.price_tiers || [];
+    jsData.baseUnitPrice = Number(row.base_unit_price || 0);
+    jsData.finalUnitPrice = row.final_unit_price ?? null;
+    jsData.status = row.status;
+    jsData.openAt = row.open_at;
+    jsData.closeAt = row.close_at;
+    jsData.expectedDeliveryAt = row.expected_delivery_at;
+    jsData.confirmedAt = row.confirmed_at;
+    jsData.completedAt = row.completed_at;
+    jsData.cancelledAt = row.cancelled_at;
+    jsData.cancelledReason = row.cancelled_reason;
+    jsData.createdBy = row.created_by;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'f2b2b_pool_participants') {
+    jsData.poolId = row.pool_id;
+    jsData.buyerId = row.buyer_id;
+    jsData.buyerName = row.buyer_name;
+    jsData.committedQty = Number(row.committed_qty || 0);
+    jsData.unitPrice = Number(row.unit_price || 0);
+    jsData.amount = Number(row.amount || 0);
+    jsData.deliveryAddress = row.delivery_address;
+    jsData.deliveryProvinceCode = row.delivery_province_code;
+    jsData.status = row.status;
+    jsData.paymentRef = row.payment_ref;
+    jsData.joinedAt = row.joined_at;
+    jsData.cancelledAt = row.cancelled_at;
+  } else if (tableName === 'dropship_partners') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.shopName = row.shop_name;
+    jsData.channels = row.channels || [];
+    jsData.taxCode = row.tax_code;
+    jsData.contactName = row.contact_name;
+    jsData.phone = row.phone;
+    jsData.email = row.email;
+    jsData.address = row.address;
+    jsData.vneidVerified = Boolean(row.vneid_verified);
+    jsData.vneidLinkedAt = row.vneid_linked_at;
+    jsData.marginSplit = Number(row.margin_split ?? 0.8);
+    jsData.bankName = row.bank_name;
+    jsData.bankAccount = row.bank_account;
+    jsData.bankAccountName = row.bank_account_name;
+    jsData.outstandingCod = Number(row.outstanding_cod || 0);
+    jsData.status = row.status;
+  } else if (tableName === 'dropship_listings') {
+    jsData.partnerId = row.partner_id;
+    jsData.productId = row.product_id;
+    jsData.productName = row.product_name;
+    jsData.externalSku = row.external_sku;
+    jsData.channel = row.channel;
+    jsData.externalUrl = row.external_url;
+    jsData.baseCost = Number(row.base_cost || 0);
+    jsData.listedPrice = Number(row.listed_price || 0);
+    jsData.minSellingPrice = Number(row.min_selling_price || 0);
+    jsData.shippingFee = Number(row.shipping_fee || 0);
+    jsData.stockSynced = Number(row.stock_synced || 0);
+    jsData.syncedAt = row.synced_at;
+    jsData.status = row.status;
+  } else if (tableName === 'dropship_orders') {
+    jsData.partnerId = row.partner_id;
+    jsData.code = row.code;
+    jsData.externalOrderCode = row.external_order_code;
+    jsData.channel = row.channel;
+    jsData.items = row.items || [];
+    jsData.itemCount = Number(row.item_count || 0);
+    jsData.quantity = Number(row.quantity || 0);
+    jsData.buyerName = row.buyer_name;
+    jsData.buyerPhone = row.buyer_phone;
+    jsData.shippingAddress = row.shipping_address;
+    jsData.shippingProvinceCode = row.shipping_province_code;
+    jsData.codAmount = Number(row.cod_amount || 0);
+    jsData.totalCost = Number(row.total_cost || 0);
+    jsData.shippingFee = Number(row.shipping_fee || 0);
+    jsData.grossMargin = Number(row.gross_margin || 0);
+    jsData.partnerMargin = Number(row.partner_margin || 0);
+    jsData.vcommMargin = Number(row.vcomm_margin || 0);
+    jsData.carrier = row.carrier;
+    jsData.trackingCode = row.tracking_code;
+    jsData.status = row.status;
+    jsData.reservedAt = row.reserved_at;
+    jsData.shippedAt = row.shipped_at;
+    jsData.deliveredAt = row.delivered_at;
+    jsData.settledAt = row.settled_at;
+    jsData.cancelledAt = row.cancelled_at;
+    jsData.cancelledReason = row.cancelled_reason;
+  } else if (tableName === 'dropship_margin_ledger') {
+    jsData.partnerId = row.partner_id;
+    jsData.orderId = row.order_id;
+    jsData.type = row.type;
+    jsData.amount = Number(row.amount || 0);
+    jsData.note = row.note;
+    jsData.status = row.status;
+    jsData.period = row.period;
+    jsData.paidAt = row.paid_at;
+    jsData.payoutRef = row.payout_ref;
+  } else if (tableName === 'vcomm_hubs') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.type = row.type;
+    jsData.provinceCode = row.province_code;
+    jsData.provinceName = row.province_name;
+    jsData.address = row.address;
+    jsData.latitude = row.latitude != null ? Number(row.latitude) : null;
+    jsData.longitude = row.longitude != null ? Number(row.longitude) : null;
+    jsData.capacity = Number(row.capacity || 100);
+    jsData.currentLoad = Number(row.current_load || 0);
+    jsData.open247 = Boolean(row.open_24_7);
+    jsData.operatingHours = row.operating_hours;
+    jsData.managerName = row.manager_name;
+    jsData.phone = row.phone;
+    jsData.status = row.status;
+  } else if (tableName === 'hub_shipments') {
+    jsData.hubId = row.hub_id;
+    jsData.orderId = row.order_id;
+    jsData.trackingCode = row.tracking_code;
+    jsData.pickupCode = row.pickup_code;
+    jsData.qrSecret = row.qr_secret;
+    jsData.qrIssuedAt = row.qr_issued_at;
+    jsData.recipientName = row.recipient_name;
+    jsData.recipientPhone = row.recipient_phone;
+    jsData.codAmount = Number(row.cod_amount || 0);
+    jsData.insuranceFee = Number(row.insurance_fee || 0);
+    jsData.penaltyAmount = Number(row.penalty_amount || 0);
+    jsData.inspectionOk = row.inspection_ok ?? null;
+    jsData.refundedAmount = Number(row.refunded_amount || 0);
+    jsData.status = row.status;
+    jsData.arrivedAt = row.arrived_at;
+    jsData.readyAt = row.ready_at;
+    jsData.reminder48hAt = row.reminder_48h_at;
+    jsData.reminder72hAt = row.reminder_72h_at;
+    jsData.pickedUpAt = row.picked_up_at;
+    jsData.expiredAt = row.expired_at;
+    jsData.returnedAt = row.returned_at;
+    jsData.cancelledReason = row.cancelled_reason;
+  } else if (tableName === 'vxu_accounts') {
+    jsData.customerId = row.customer_id;
+    jsData.balance = Number(row.balance || 0);
+    jsData.lifetimeEarned = Number(row.lifetime_earned || 0);
+    jsData.lifetimeSpendVnd = Number(row.lifetime_spend_vnd || 0);
+    jsData.lifetimeOrders = Number(row.lifetime_orders || 0);
+    jsData.tier = row.tier;
+    jsData.tierChangedAt = row.tier_changed_at;
+  } else if (tableName === 'vxu_ledger') {
+    jsData.transactionId = row.transaction_id;
+    jsData.side = row.side;
+    jsData.account = row.account;
+    jsData.counterAccount = row.counter_account;
+    jsData.customerId = row.customer_id;
+    jsData.amount = Number(row.amount || 0);
+    jsData.type = row.type;
+    jsData.referenceType = row.reference_type;
+    jsData.referenceId = row.reference_id;
+    jsData.note = row.note;
+  } else if (tableName === 'vxu_redemptions') {
+    jsData.customerId = row.customer_id;
+    jsData.voucherCode = row.voucher_code;
+    jsData.templateCode = row.template_code;
+    jsData.vxuCost = Number(row.vxu_cost || 0);
+    jsData.voucherValueVnd = Number(row.voucher_value_vnd || 0);
+    jsData.requiredTier = row.required_tier;
+    jsData.minSpendVnd = Number(row.min_spend_vnd || 0);
+    jsData.status = row.status;
+    jsData.transactionId = row.transaction_id;
+    jsData.orderId = row.order_id;
+    jsData.usedAt = row.used_at;
+    jsData.expiresAt = row.expires_at;
   } else if (tableName === 'stock_vouchers') {
     jsData.code = row.code;
     jsData.type = row.type;
@@ -509,6 +1276,274 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.voucherId = row.voucher_id;
     jsData.productId = row.product_id;
     jsData.quantity = Number(row.quantity || 0);
+  } else if (tableName === 'acc_accounts') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.level = Number(row.level || 1);
+    jsData.parentCode = row.parent_code;
+    jsData.accountType = row.account_type;
+    jsData.balanceSide = row.balance_side;
+    jsData.isSystem = !!row.is_system;
+    jsData.regulationRef = row.regulation_ref;
+    jsData.isActive = !!row.is_active;
+    jsData.trackPartner = !!row.track_partner;
+    jsData.trackUnit = !!row.track_unit;
+    jsData.isIntercompany = !!row.is_intercompany;
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_currencies') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.symbol = row.symbol;
+    jsData.isBase = !!row.is_base;
+    jsData.isActive = !!row.is_active;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_fx_rates') {
+    jsData.currencyCode = row.currency_code;
+    jsData.rateDate = row.rate_date;
+    jsData.bookedRate = Number(row.booked_rate || 0);
+    jsData.actualRate = row.actual_rate;
+    jsData.deviationPct = row.deviation_pct;
+    jsData.exceedsTolerance = !!row.exceeds_tolerance;
+    jsData.tolerancePct = Number(row.tolerance_pct || 1);
+    jsData.note = row.note;
+    jsData.createdBy = row.created_by;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_periods') {
+    jsData.periodYear = Number(row.period_year || 0);
+    jsData.periodNo = row.period_no;
+    jsData.startDate = row.start_date;
+    jsData.endDate = row.end_date;
+    jsData.status = row.status;
+    jsData.closedAt = row.closed_at;
+    jsData.closedBy = row.closed_by;
+    jsData.closingHash = row.closing_hash;
+    jsData.closingNote = row.closing_note;
+    jsData.exportedAt = row.exported_at;
+    jsData.exportedBy = row.exported_by;
+    jsData.exportFormat = row.export_format;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_vouchers') {
+    jsData.voucherNo = row.voucher_no;
+    jsData.voucherType = row.voucher_type;
+    jsData.voucherDate = row.voucher_date;
+    jsData.postDate = row.post_date;
+    jsData.periodId = row.period_id;
+    jsData.unitId = row.unit_id;
+    jsData.currencyCode = row.currency_code;
+    jsData.fxRate = Number(row.fx_rate || 1);
+    jsData.description = row.description;
+    jsData.attachments = row.attachments;
+    jsData.status = row.status;
+    jsData.reversalOf = row.reversal_of;
+    jsData.reversalReason = row.reversal_reason;
+    jsData.sourceType = row.source_type;
+    jsData.sourceId = row.source_id;
+    jsData.createdBy = row.created_by;
+    jsData.postedBy = row.posted_by;
+    jsData.postedAt = row.posted_at;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_voucher_lines') {
+    jsData.voucherId = row.voucher_id;
+    jsData.lineNo = Number(row.line_no || 0);
+    jsData.accountCode = row.account_code;
+    jsData.description = row.description;
+    jsData.debit = Number(row.debit || 0);
+    jsData.credit = Number(row.credit || 0);
+    jsData.debitOrig = Number(row.debit_orig || 0);
+    jsData.creditOrig = Number(row.credit_orig || 0);
+    jsData.partnerId = row.partner_id;
+    jsData.partnerType = row.partner_type;
+    jsData.unitId = row.unit_id;
+    jsData.costCenter = row.cost_center;
+    jsData.isInternal = !!row.is_internal;
+    jsData.counterpartyUnitId = row.counterparty_unit_id;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'acc_audit_log') {
+    jsData.tableName = row.table_name;
+    jsData.recordId = row.record_id;
+    jsData.action = row.action;
+    jsData.beforeData = row.before_data;
+    jsData.afterData = row.after_data;
+    jsData.changedFields = row.changed_fields;
+    jsData.actor = row.actor;
+    jsData.actorIp = row.actor_ip;
+    jsData.reason = row.reason;
+    jsData.occurredAt = row.occurred_at;
+    jsData.seq = Number(row.seq || 0);
+    jsData.prevHash = row.prev_hash;
+    jsData.hash = row.hash;
+  } else if (tableName === 'acc_units') {
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.parentId = row.parent_id;
+    jsData.unitType = row.unit_type;
+    jsData.consolidationMethod = row.consolidation_method;
+    jsData.isHeadOffice = !!row.is_head_office;
+    jsData.address = row.address;
+    jsData.taxCode = row.tax_code;
+    jsData.managerName = row.manager_name;
+    jsData.isActive = !!row.is_active;
+    jsData.openedAt = row.opened_at;
+    jsData.closedAt = row.closed_at;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_internal_txn') {
+    jsData.voucherId = row.voucher_id;
+    jsData.lineId = row.line_id;
+    jsData.periodId = row.period_id;
+    jsData.fromUnitId = row.from_unit_id;
+    jsData.toUnitId = row.to_unit_id;
+    jsData.accountCode = row.account_code;
+    jsData.amount = Number(row.amount || 0);
+    jsData.txnType = row.txn_type;
+    jsData.status = row.status;
+    jsData.matchedTxnId = row.matched_txn_id;
+    jsData.matchedAt = row.matched_at;
+    jsData.eliminationId = row.elimination_id;
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_eliminations') {
+    jsData.eliminationNo = row.elimination_no;
+    jsData.periodId = row.period_id;
+    jsData.eliminationDate = row.elimination_date;
+    jsData.eliminationType = row.elimination_type;
+    jsData.description = row.description;
+    jsData.totalAmount = Number(row.total_amount || 0);
+    jsData.voucherId = row.voucher_id;
+    jsData.status = row.status;
+    jsData.createdBy = row.created_by;
+    jsData.postedBy = row.posted_by;
+    jsData.postedAt = row.posted_at;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'acc_elimination_lines') {
+    jsData.eliminationId = row.elimination_id;
+    jsData.lineNo = Number(row.line_no || 0);
+    jsData.accountCode = row.account_code;
+    jsData.description = row.description;
+    jsData.debit = Number(row.debit || 0);
+    jsData.credit = Number(row.credit || 0);
+    jsData.unitId = row.unit_id;
+    jsData.internalTxnId = row.internal_txn_id;
+  } else if (tableName === 'rev_contracts') {
+    jsData.contractNo = row.contract_no;
+    jsData.customerId = row.customer_id;
+    jsData.orderId = row.order_id;
+    jsData.f2b2bSourceId = row.f2b2b_source_id;
+    jsData.signedDate = row.signed_date;
+    jsData.effectiveDate = row.effective_date;
+    jsData.endDate = row.end_date;
+    jsData.collectability = row.collectability;
+    jsData.status = row.status;
+    jsData.currencyCode = row.currency_code;
+    jsData.fxRate = Number(row.fx_rate || 1);
+    jsData.fixedAmount = Number(row.fixed_amount || 0);
+    jsData.variableAmount = Number(row.variable_amount || 0);
+    jsData.variableConstraintPct = Number(row.variable_constraint_pct ?? 100);
+    jsData.transactionPrice = Number(row.transaction_price || 0);
+    jsData.allocatedTotal = Number(row.allocated_total || 0);
+    jsData.recognizedTotal = Number(row.recognized_total || 0);
+    jsData.deferredTotal = Number(row.deferred_total || 0);
+    jsData.cancellationDate = row.cancellation_date;
+    jsData.note = row.note;
+    jsData.createdBy = row.created_by;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'rev_performance_obligations') {
+    jsData.contractId = row.contract_id;
+    jsData.code = row.code;
+    jsData.name = row.name;
+    jsData.obligationType = row.obligation_type;
+    jsData.progressMethod = row.progress_method;
+    jsData.standaloneSellingPrice = Number(row.standalone_selling_price || 0);
+    jsData.allocationPct = Number(row.allocation_pct || 0);
+    jsData.allocatedAmount = Number(row.allocated_amount || 0);
+    jsData.revenueAccountCode = row.revenue_account_code;
+    jsData.deferredAccountCode = row.deferred_account_code;
+    jsData.satisfiedAt = row.satisfied_at;
+    jsData.progressPct = Number(row.progress_pct || 0);
+    jsData.recognizedAmount = Number(row.recognized_amount || 0);
+    jsData.status = row.status;
+    jsData.displayOrder = Number(row.display_order || 0);
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'rev_price_allocations') {
+    jsData.contractId = row.contract_id;
+    jsData.obligationId = row.obligation_id;
+    jsData.standaloneSellingPrice = Number(row.standalone_selling_price || 0);
+    jsData.allocationPct = Number(row.allocation_pct || 0);
+    jsData.allocatedFixed = Number(row.allocated_fixed || 0);
+    jsData.allocatedVariable = Number(row.allocated_variable || 0);
+    jsData.allocatedDiscount = Number(row.allocated_discount || 0);
+    jsData.allocatedTotal = Number(row.allocated_total || 0);
+    jsData.basis = row.basis;
+    jsData.justification = row.justification;
+    jsData.allocatedAt = row.allocated_at;
+    jsData.allocatedBy = row.allocated_by;
+    jsData.isSuperseded = !!row.is_superseded;
+  } else if (tableName === 'rev_recognition') {
+    jsData.obligationId = row.obligation_id;
+    jsData.contractId = row.contract_id;
+    jsData.periodId = row.period_id;
+    jsData.recognitionDate = row.recognition_date;
+    jsData.method = row.method;
+    jsData.progressPct = Number(row.progress_pct || 0);
+    jsData.recognizedAmount = Number(row.recognized_amount || 0);
+    jsData.cumulativeRecognized = Number(row.cumulative_recognized || 0);
+    jsData.remainingAmount = Number(row.remaining_amount || 0);
+    jsData.breakagePct = row.breakage_pct;
+    jsData.voucherId = row.voucher_id;
+    jsData.status = row.status;
+    jsData.reason = row.reason;
+    jsData.createdBy = row.created_by;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'fs_reports') {
+    jsData.reportCode = row.report_code;
+    jsData.periodId = row.period_id;
+    jsData.scope = row.scope;
+    jsData.reportType = row.report_type;
+    jsData.status = row.status;
+    jsData.revisionNo = Number(row.revision_no || 1);
+    jsData.preparedBy = row.prepared_by;
+    jsData.preparedAt = row.prepared_at;
+    jsData.approvedBy = row.approved_by;
+    jsData.approvedAt = row.approved_at;
+    jsData.submittedAt = row.submitted_at;
+    jsData.contentHash = row.content_hash;
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
+    jsData.updatedAt = row.updated_at;
+  } else if (tableName === 'fs_report_lines') {
+    jsData.reportId = row.report_id;
+    jsData.lineCode = row.line_code;
+    jsData.lineName = row.line_name;
+    jsData.displayOrder = Number(row.display_order || 0);
+    jsData.indentLevel = Number(row.indent_level || 0);
+    jsData.isBold = !!row.is_bold;
+    jsData.isSection = !!row.is_section;
+    jsData.isCustom = !!row.is_custom;
+    jsData.currentAmount = row.current_amount;
+    jsData.priorAmount = row.prior_amount;
+    jsData.formula = row.formula;
+    jsData.dataType = row.data_type;
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
+  } else if (tableName === 'fs_account_mappings') {
+    jsData.reportCode = row.report_code;
+    jsData.lineCode = row.line_code;
+    jsData.accountCode = row.account_code;
+    jsData.sign = row.sign;
+    jsData.note = row.note;
+    jsData.createdAt = row.created_at;
   } else if (tableName === 'journal_entries') {
     jsData.date = row.date;
     jsData.ref = row.ref;
@@ -524,6 +1559,26 @@ export function fromRelationalRow(tableName: string, row: any) {
     jsData.status = row.status;
     jsData.createdAt = row.created_at;
     jsData.timestamp = new Date(row.created_at).toLocaleString('vi-VN');
+  } else if (tableName === 'admin_audit_logs' || tableName === 'tenant_audit_logs') {
+    // GĐ 2.6 — trả camelCase chuẩn.
+    // ⚠️ `timestamp` giữ nguyên kiểu ISO (KHÔNG format vi-VN): có nơi gọi
+    //    `new Date(log.timestamp)`; format sẵn sẽ sinh "Invalid Date".
+    // Trả CẢ 2 bộ khóa: chuẩn mới (actorEmail/actorUid) + cũ (email/userId)
+    // để Settings.tsx (đọc `email`) và code mới đều chạy.
+    jsData.email = row.email;
+    jsData.actorEmail = row.email;
+    jsData.userId = row.user_id;
+    jsData.actorUid = row.user_id;
+    jsData.action = row.action;
+    jsData.status = row.status;
+    jsData.details = row.details;
+    jsData.ipAddress = row.ip_address;
+    jsData.userAgent = row.user_agent;
+    jsData.createdAt = row.created_at;
+    // ⚠️ `timestamp` giữ nguyên ISO: có nơi gọi `new Date(log.timestamp)`.
+    jsData.timestamp = row.created_at;
+    // Các trường ngoài lề được writer nhét vào cột `data` → trả lại đủ.
+    if (row.data && typeof row.data === 'object') Object.assign(jsData, row.data);
   }
 
   return jsData;
@@ -948,7 +2003,9 @@ export const getDoc = async (docRef: SupabaseDocRef): Promise<any> => {
           id: docRef.id,
           ref: docRef
         };
-      } catch (e) {}
+      } catch (e) {
+        log.debug('bỏ qua cache đọc doc (parse lỗi)', { path: docRef.path }, e);
+      }
     }
     return {
       exists: () => false,
@@ -1024,7 +2081,9 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
           count: docs.length,
           forEach: (cb: any) => docs.forEach(cb)
         };
-      } catch (e) {}
+      } catch (e) {
+        log.debug('bỏ qua cache đọc collection (parse lỗi)', { path: docRef.path }, e);
+      }
     }
     return {
       docs: [],
@@ -1154,7 +2213,8 @@ export const updateDoc = async (docRef: SupabaseDocRef, data: any): Promise<any>
     const cached = safeLocalStorage.getItem(cacheKey);
     let currentData: any = {};
     if (cached) {
-      try { currentData = JSON.parse(cached).data; } catch (e) {}
+      try { currentData = JSON.parse(cached).data; }
+      catch (e) { log.debug('bỏ qua cache updateDoc (parse lỗi)', { path: docRef.path }, e); }
     } else {
       const selectFields = RELATIONAL_TABLES.includes(docRef.tableName) ? '*' : 'data';
       const { data: row } = await supabase
@@ -1280,9 +2340,13 @@ export const onSnapshot = (
               id: docRef.id,
               ref: docRef
             });
-          } catch (e) {}
+          } catch (e) {
+            log.debug('lỗi khi phát snapshot doc đã cache', { path: docRef.path }, e);
+          }
         }, 0);
-      } catch (e) {}
+      } catch (e) {
+        log.debug('bỏ qua cache snapshot doc (parse lỗi)', { path: docRef.path }, e);
+      }
     }
 
     // 2. Fetch fresh data right away
@@ -1331,9 +2395,13 @@ export const onSnapshot = (
             size: docs.length,
             forEach: (cb: any) => docs.forEach(cb)
           });
-        } catch (e) {}
+        } catch (e) {
+          log.debug('lỗi khi phát snapshot collection đã cache', { path: queryRef.path }, e);
+        }
       }, 0);
-    } catch (e) {}
+    } catch (e) {
+      log.debug('bỏ qua cache snapshot collection (parse lỗi)', { path: queryRef.path }, e);
+    }
   }
 
   // 2. Fetch fresh data right away

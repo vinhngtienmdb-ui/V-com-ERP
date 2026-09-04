@@ -41,6 +41,7 @@ import { Customer } from '../types/erp';
 import { db, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, orderBy, range, search, where } from '../services/dbService';
 import { syncCustomerToMisa } from '../services/misaService';
 import { supabase } from '../lib/supabase';
+import { searchCustomers } from '../services/fullTextSearchService'; // GĐ 4.2 — FTS tiếng Việt
 import { Modal } from './ui/Modal';
 
 const CopyButton = ({ value }: { value: string }) => {
@@ -1249,22 +1250,66 @@ export function Customers() {
       try {
         const from = (currentPage - 1) * pageSize;
         const to = from + pageSize - 1;
-        
-        let queryBuilder = supabase
-          .from('customers')
-          .select('*', { count: 'exact' });
+        const searchTerm = debouncedSearchQuery.trim();
 
-        if (debouncedSearchQuery.trim() !== '') {
-          queryBuilder = queryBuilder.or(`name.ilike.%${debouncedSearchQuery}%,phone.ilike.%${debouncedSearchQuery}%,email.ilike.%${debouncedSearchQuery}%`);
+        let custRows: any[] | null = null;
+        let count: number | null = null;
+
+        if (searchTerm !== '') {
+          // ------------------------------------------------------------------
+          // GĐ 4.2 — Tìm kiếm toàn văn (bỏ dấu tiếng Việt + GIN index).
+          // Trước đây dùng `.or('name.ilike...,phone.ilike...,email.ilike...')`:
+          //   · KHÔNG bỏ dấu → gõ "nguyen van a" không tìm thấy "Nguyễn Văn A"
+          //   · KHÔNG có index → seq scan 3 cột, chậm dần theo số khách hàng
+          // `searchCustomers()` tự escape input rồi gọi RPC vcomm_search_customers;
+          // nếu migration chưa apply (RPC chưa tồn tại) nó rơi về ILIKE và cảnh báo.
+          // ------------------------------------------------------------------
+          const outcome = await searchCustomers({ term: searchTerm, limit: pageSize, offset: from });
+
+          if (outcome.ids.length === 0) {
+            if (active) {
+              setCustomers([]);
+              setTotalCount(0);
+              setLoading(false);
+            }
+            return;
+          }
+
+          if (outcome.usedFts) {
+            // RPC chỉ trả id + rank → lấy đủ cột rồi KHÔI PHỤC đúng thứ tự rank
+            // (`.in()` của Postgres không bảo đảm thứ tự theo mảng truyền vào).
+            const { data: rowsById, error: byIdErr } = await supabase
+              .from('customers')
+              .select('*')
+              .in('id', outcome.ids);
+            if (byIdErr) throw byIdErr;
+
+            const byId = new Map((rowsById ?? []).map((r: any) => [r.id, r]));
+            custRows = outcome.ids.map((id) => byId.get(id)).filter(Boolean) as any[];
+            count = outcome.total ?? custRows.length;
+          } else {
+            // Fallback: giữ nguyên hành vi cũ để chức năng không chết.
+            const fb = await supabase
+              .from('customers')
+              .select('*', { count: 'exact' })
+              .or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`)
+              .order('name', { ascending: true })
+              .range(from, to);
+            if (fb.error) throw fb.error;
+            custRows = fb.data;
+            count = fb.count;
+          }
+        } else {
+          const res = await supabase
+            .from('customers')
+            .select('*', { count: 'exact' })
+            .order('name', { ascending: true })
+            .range(from, to);
+          if (res.error) throw res.error;
+          custRows = res.data;
+          count = res.count;
         }
 
-        queryBuilder = queryBuilder
-          .order('name', { ascending: true })
-          .range(from, to);
-
-        const { data: custRows, count, error } = await queryBuilder;
-        if (error) throw error;
-        
         if (active) {
           if (custRows && custRows.length > 0) {
             const userIds = custRows.map(c => c.id);

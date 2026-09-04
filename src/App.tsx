@@ -14,6 +14,11 @@ const Customers = React.lazy(() => import('./components/Customers').then(m => ({
 const Marketing = React.lazy(() => import('./components/Marketing').then(m => ({ default: m.Marketing })));
 const FlashSale = React.lazy(() => import('./components/FlashSale').then(m => ({ default: m.FlashSale })));
 const AffiliateManagement = React.lazy(() => import('./components/Affiliate').then(m => ({ default: m.AffiliateManagement })));
+const GroupBuyManager = React.lazy(() => import('./components/GroupBuy').then(m => ({ default: m.GroupBuyManager })));
+const F2B2BManager = React.lazy(() => import('./components/F2B2B').then(m => ({ default: m.F2B2BManager })));
+const DropshipManager = React.lazy(() => import('./components/Dropship').then(m => ({ default: m.DropshipManager })));
+const VCommHubManager = React.lazy(() => import('./components/VCommHub').then(m => ({ default: m.VCommHubManager })));
+const VXuManager = React.lazy(() => import('./components/VXu').then(m => ({ default: m.VXuManager })));
 const WarehouseModule = React.lazy(() => import('./components/Warehouse').then(m => ({ default: m.WarehouseModule })));
 const Procurement = React.lazy(() => import('./components/Procurement').then(m => ({ default: m.Procurement })));
 const Finance = React.lazy(() => import('./components/Finance').then(m => ({ default: m.Finance })));
@@ -50,6 +55,7 @@ const PublicLegalInfo = React.lazy(() => import('./components/PublicLegalInfo').
 const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
 const EasyHRM = React.lazy(() => import('./components/EasyHRM').then(m => ({ default: m.EasyHRMComponent })));
 const TasksPage = React.lazy(() => import('./components/TasksPage').then(m => ({ default: m.TasksPage })));
+const TT99Accounting = React.lazy(() => import('./components/TT99Accounting').then(m => ({ default: m.TT99Accounting })));
 
 
 import { DEMO_MODE } from './services/dbService';
@@ -63,6 +69,16 @@ import { AccessDenied } from './components/AccessDenied';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { supabase } from './lib/supabase';
 import { useNotifications } from './context/NotificationContext';
+import { startClientOutboxWorker } from './services/outboxWorker'; // GĐ 2.1
+import { primeTaxRules } from './services/taxService'; // GĐ 2.3
+import { setLogLevel } from './lib/logger'; // GĐ 1.3
+import { runMonthEndDepreciationLive } from './services/monthEndScheduler'; // GĐ 1.5
+
+// GĐ 1.3 — Mức log đọc ở đây (browser) chứ không đọc trong `lib/logger.ts`:
+// file đó được bundle cả sang CJS cho `server.ts`, mà `import.meta` không tồn
+// tại trong CJS. Mặc định `info`; muốn xem log debug thì cấu hình
+// `VITE_LOG_LEVEL=debug` trong `.env` (chỉ nên bật khi đang điều tra).
+setLogLevel(import.meta.env.VITE_LOG_LEVEL as string | undefined);
 
 function AppLayout() {
   const location = useLocation();
@@ -78,6 +94,54 @@ function AppLayout() {
   
   // Start SePay Webhook event polling globally
   useSepayListener();
+
+  // GĐ 2.1 — Worker outbox: xử lý NỀN các sự kiện nghiệp vụ (ghi sổ kế toán…).
+  // Chạy toàn cục; tự bỏ qua nhịp khi chưa đăng nhập hoặc mất mạng
+  // (xem `services/outboxWorker.ts`) nên không sinh request thừa.
+  React.useEffect(() => {
+    if (DEMO_MODE) return; // demo: không có migration 002 trên project demo
+    return startClientOutboxWorker();
+  }, []);
+
+  // GĐ 2.3 — Nạp trước bộ luật thuế từ DB/cache tập trung.
+  // Bắt buộc: trước đây `taxService.loadRules()` không được gọi ở đâu cả, nên
+  // mọi phép tính thuế dùng hằng số hardcode và BỎ QUA bảng `tax_rate_rules`.
+  // Nạp ở đây để snapshot sẵn sàng trước khi các màn hình render.
+  React.useEffect(() => {
+    if (DEMO_MODE) return;
+    primeTaxRules().catch((err) =>
+      console.warn('[App] Không nạp được tax_rate_rules khi khởi động:', err)
+    );
+  }, []);
+
+  // GĐ 1.5 — Trích khấu hao TSCĐ cuối tháng.
+  //
+  // ⚠️ VÌ SAO Ở ĐÂY MÀ KHÔNG PHẢI CRON TRÊN SERVER: `server.ts` được bundle sang
+  // CJS, `import.meta` không tồn tại trong CJS → `dbService.DEMO_MODE` thành
+  // `true`. Cron trên server gọi dbService sẽ âm thầm chạy ở CHẾ ĐỘ DEMO — với
+  // khấu hao (ảnh hưởng BCTC + thuế TNDN) là rủi ro không được phép.
+  //
+  // Chạy nền, KHÔNG chặn render. An toàn khi gọi lặp: chứng từ có ID cố định
+  // (`KH-TONG-<period>`) nên ghi lặp = ghi đè, không sinh bút toán thứ hai;
+  // thêm bảng dấu vết `month_end_runs` (migration 005) để khỏi tính lại mỗi lần
+  // mở app. Thiếu migration 005 thì vẫn chạy, chỉ mất tính năng bỏ qua.
+  React.useEffect(() => {
+    if (DEMO_MODE) return;
+    let cancelled = false;
+    // Nhường một nhịp để không tranh băng thông với dữ liệu màn hình đầu tiên.
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      runMonthEndDepreciationLive().then((result) => {
+        if (result.error) {
+          console.warn('[App] Chưa trích được khấu hao cuối tháng:', result.error);
+        }
+      });
+    }, 5_000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, []);
 
   React.useEffect(() => {
     // 1. Listen for new orders on Supabase Realtime
@@ -324,6 +388,12 @@ function AppLayout() {
     <Route path="/sellers" element={<SellerManagement />} />
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/flash-sale" element={<FlashSale />} />
+    <Route path="/group-buy" element={<GroupBuyManager />} />
+    <Route path="/f2b2b" element={<F2B2BManager />} />
+    <Route path="/dropship" element={<DropshipManager />} />
+    <Route path="/vcomm-hub" element={<VCommHubManager />} />
+    <Route path="/vxu" element={<VXuManager />} />
+    <Route path="/ke-toan-tt99" element={<TT99Accounting />} />
     <Route path="/affiliate" element={<AffiliateManagement />} />
     <Route path="/customers" element={<Customers />} />
     <Route path="/cskh" element={<CustomerService />} />

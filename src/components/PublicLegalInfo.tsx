@@ -10,9 +10,15 @@ import {
   User,
   ExternalLink,
   Scale,
-  AlertTriangle
+  AlertTriangle,
+  BadgeCheck
 } from 'lucide-react';
 import { getLegalEntityInfo, LegalEntityInfo, DEFAULT_LEGAL_ENTITY } from '../services/legalEntityService';
+import { getDelegations, type DelegationRecord } from '../services/einvoiceService';
+import { DelegationNotice } from './DelegationNotice';
+import { createLogger } from '../lib/logger';
+
+const log = createLogger('components/PublicLegalInfo');
 
 /**
  * Trang công khai thông tin sàn TMĐT — Điều 21 NĐ 52/2013/NĐ-CP
@@ -37,6 +43,8 @@ const LEGAL_LINKS = [
 export function PublicLegalInfo() {
   const [info, setInfo] = useState<LegalEntityInfo>(DEFAULT_LEGAL_ENTITY);
   const [usingDefault, setUsingDefault] = useState(true);
+  // S3 — TT 91/2026 Điều 9.1.đ: danh sách ủy nhiệm đang active (công khai trên gian hàng)
+  const [delegations, setDelegations] = useState<DelegationRecord[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,8 +56,28 @@ export function PublicLegalInfo() {
           // Nếu trùng taxCode default → chưa cấu hình thật
           setUsingDefault(loaded.taxCode === DEFAULT_LEGAL_ENTITY.taxCode);
         }
-      } catch {
-        // giữ default
+      } catch (e) {
+        // GĐ 1.5 — ⚠️ ĐÂY LÀ TRANG CÔNG KHAI THEO NGHĨA VỤ PHÁP LÝ (Điều 21
+        // NĐ 52/2013, sửa đổi bởi NĐ 85/2021). Khi đọc thất bại, trang vẫn
+        // hiển thị `DEFAULT_LEGAL_ENTITY` — tức là **MÃ SỐ THUẾ GIẢ** được
+        // công bố công khai. Lỗi này không được phép im lặng: phải log mức
+        // error để biết mà sửa trước khi bị cơ quan thuế/khách hàng phát hiện.
+        log.error(
+          'không đọc được thông tin pháp nhân — trang đang HIỂN THỊ MẶC ĐỊNH (MST chưa xác thực)',
+          {},
+          e
+        );
+      }
+    })();
+    (async () => {
+      try {
+        const list = await getDelegations();
+        if (!cancelled) setDelegations(list.filter(d => d.status === 'active' && d.noticePublishedAt));
+      } catch (e) {
+        // GĐ 1.5 — TT 91/2026 Điều 9.1.đ bắt buộc công khai danh sách ủy nhiệm
+        // xuất HĐ. Danh sách trống do LỖI khác hoàn toàn với "chưa có ủy nhiệm",
+        // nên phải log để phân biệt được khi điều tra.
+        log.warn('không tải được danh sách ủy nhiệm xuất hóa đơn — hiển thị rỗng', {}, e);
       }
     })();
     return () => { cancelled = true; };
@@ -88,6 +116,25 @@ export function PublicLegalInfo() {
               </p>
             </div>
           </div>
+        )}
+
+        {/* S3 — Danh sách Seller ủy nhiệm phát hành HĐĐT (TT 91/2026 Điều 9.1.đ, công khai) */}
+        {delegations.length > 0 && (
+          <section className="bg-white rounded-xl border border-blue-200 overflow-hidden">
+            <div className="bg-blue-900 text-white px-6 py-4 flex items-center gap-2">
+              <BadgeCheck className="w-5 h-5" />
+              <h2 className="text-base font-bold">Seller ủy nhiệm VComm phát hành hóa đơn điện tử</h2>
+            </div>
+            <div className="p-6 space-y-3">
+              <p className="text-[12px] text-slate-500">
+                VComm được các Seller dưới đây ủy nhiệm phát hành HĐĐT thay theo TT 91/2026/TT-BTC Điều 9.
+                Danh sách này cũng là nguồn dữ liệu thông báo CQT (Mẫu 01/ĐKTĐ-HĐĐT — Điều 9.3.c).
+              </p>
+              {delegations.map(d => (
+                <DelegationNotice key={d.id} delegation={d} />
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Thông tin pháp nhân */}
@@ -137,8 +184,8 @@ export function PublicLegalInfo() {
             <li>Hoạt động theo NĐ 52/2013/NĐ-CP và NĐ 85/2021/NĐ-CP về quản lý website TMĐT; đã thông báo với Bộ Công Thương.</li>
             <li>Bảo vệ quyền lợi người tiêu dùng theo Luật 36/2024/QH15: giữ tiền escrow, giải ngân khi giao hàng thành công, hoàn tiền khi khiếu nại hợp lệ.</li>
             <li>Bảo vệ dữ liệu cá nhân theo Luật 86/2025/QH15: thu thập khi có đồng ý, cho phép truy cập/xóa dữ liệu theo yêu cầu.</li>
-            <li>Kê khai và phát hành hóa đơn điện tử theo TT 78/2021/TT-BTC.</li>
-            <li>Không khấu trừ thuế TNDN/TNCN thay nhà bán hàng theo NĐ 117/2025/NĐ-CP — nhà bán tự kê khai với cơ quan thuế.</li>
+            <li>Kê khai và phát hành hóa đơn điện tử theo TT 91/2026/TT-BTC.</li>
+            <li>Không khấu trừ thuế TNDN/TNCN thay nhà bán hàng theo NĐ 252/2026/NĐ-CP — nhà bán tự kê khai với cơ quan thuế.</li>
           </ul>
         </section>
 

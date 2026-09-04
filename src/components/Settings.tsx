@@ -911,8 +911,10 @@ export function SettingsPage() {
     { code: '111', name: 'Tiền mặt', type: 'Asset', isLeaf: false, isActive: true },
     { code: '1111', name: 'Tiền Việt Nam (VNĐ)', type: 'Asset', parentCode: '111', isLeaf: true, isActive: true },
     { code: '1112', name: 'Ngoại tệ', type: 'Asset', parentCode: '111', isLeaf: true, isActive: true },
-    { code: '112', name: 'Tiền gửi Ngân hàng', type: 'Asset', isLeaf: false, isActive: true },
-    { code: '1121', name: 'Tiền Việt Nam gửi Ngân hàng', type: 'Asset', parentCode: '112', isLeaf: true, isActive: true },
+    // TT99/2025/TT-BTC đổi tên TK 112 từ "Tiền gửi ngân hàng"
+    // thành "Tiền gửi không kỳ hạn"; 1121 theo đó là tiền gửi thanh toán VND.
+    { code: '112', name: 'Tiền gửi không kỳ hạn', type: 'Asset', isLeaf: false, isActive: true },
+    { code: '1121', name: 'Tiền gửi không kỳ hạn — VND', type: 'Asset', parentCode: '112', isLeaf: true, isActive: true },
     { code: '133', name: 'Thuế GTGT được khấu trừ', type: 'Asset', isLeaf: false, isActive: true },
     { code: '1331', name: 'Thuế GTGT được khấu trừ của hàng hóa, dịch vụ', type: 'Asset', parentCode: '133', isLeaf: true, isActive: true },
     { code: '333', name: 'Thuế và các khoản phải nộp Nhà nước', type: 'Liability', isLeaf: false, isActive: true },

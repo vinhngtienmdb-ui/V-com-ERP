@@ -32,7 +32,11 @@ import {
  Zap,
  Key,
  Home,
- Truck
+ Truck,
+ Users2,
+ Factory,
+ Coins,
+ BookOpenCheck
 } from 'lucide-react';
 
 export const navGroups = [
@@ -65,6 +69,11 @@ export const navGroups = [
  { icon: Box, label: 'Quản lý sản phẩm', path: '/pim', color: 'teal', description: 'Thông tin sản phẩm tập trung (PIM)' },
  { icon: Megaphone, label: 'Marketing & Social', path: '/marketing', color: 'red', description: 'Chiến dịch tiếp thị và quảng bá' },
  { icon: Zap, label: 'Flash Sale & Mua chung', path: '/flash-sale', color: 'yellow', description: 'Quản lý chương trình khuyến mãi giờ vàng' },
+ { icon: Users2, label: 'Mua chung (Group Buy)', path: '/group-buy', color: 'rose', description: 'Trụ cột 3 — Phiên mua theo nhóm, chốt khi đạt tối thiểu' },
+ { icon: Factory, label: 'F2B2B — Gom đơn B2B', path: '/f2b2b', color: 'emerald', description: 'Trụ cột 4 — Gom đủ sản lượng đặt sản xuất từ nguồn, giá bậc thang' },
+ { icon: Truck, label: 'Dropship', path: '/dropship', color: 'orange', description: 'Trụ cột 1 — Đối tác bán trên kênh của họ, VComm giữ kho & giao hàng, đối tác ăn chênh lệch' },
+ { icon: Warehouse, label: 'VComm Hub (O2O)', path: '/vcomm-hub', color: 'cyan', description: 'Trụ cột 6 — Trạm giao hàng & shop offline do VComm tự vận hành, nhận hàng bằng QR, tự huỷ sau 72h' },
+ { icon: Coins, label: 'V-Xu', path: '/vxu', color: 'amber', description: 'Trụ cột 7 — Điểm thưởng xuyên suốt hệ sinh thái, hoàn tiền 1–5% theo hạng, sổ cái kế toán kép' },
  { icon: Share2, label: 'KOL/KOC & Affiliate', path: '/affiliate', color: 'purple', description: 'Mạng lưới cộng tác viên và tiếp thị liên kết' },
  { icon: Gem, label: 'Khách hàng thân thiết', path: '/loyalty', color: 'fuchsia', description: 'Chương trình điểm thưởng và hạng thành viên' },
  { icon: Megaphone, label: 'Quản lý Quảng cáo (Ads)', path: '/ads', color: 'blue', description: 'Tối ưu ngân sách và hiệu quả quảng cáo' },
@@ -83,6 +92,7 @@ export const navGroups = [
  title: 'Tài chính & Thanh toán',
  items: [
  { icon: Calculator, label: 'Tài chính - Kế toán', path: '/finance', color: 'emerald', description: 'Báo cáo tài chính và hạch toán kế toán' },
+ { icon: BookOpenCheck, label: 'Kế toán TT99/2025', path: '/ke-toan-tt99', color: 'violet', description: 'Chế độ kế toán doanh nghiệp TT99 — hệ tài khoản, sổ cái kép, lưu vết Điều 28, hợp nhất Điều 7, IFRS 15, BCTC B01-DN' },
  { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát và quản lý công nợ' },
  { icon: Smartphone, label: 'Ví & Thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch và cổng thanh toán' },
  { icon: Banknote, label: 'Hỗ trợ Tài chính Nhà bán', path: '/seller-finance', color: 'blue', description: 'Gói vay và hỗ trợ vốn cho nhà bán' },

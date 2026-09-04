@@ -83,24 +83,33 @@ describe('CRM, CSKH & Điểm Loyalty Unit Tests', () => {
   });
 
   describe('createSupportTicket()', () => {
-    it('should assign correct SLA deadline based on priority levels', async () => {
-      // Urgent priority - should have SLA of 1 hour
-      const ticketUrgent = await createSupportTicket('CUST-001', 'Giao sai màu sản phẩm', 'urgent', 'complaint');
-      expect(ticketUrgent).toBeDefined();
-      expect(ticketUrgent.priority).toBe('urgent');
-      
-      const diffUrgent = new Date(ticketUrgent.slaDeadline).getTime() - new Date(ticketUrgent.createdAt).getTime();
-      expect(diffUrgent).toBeCloseTo(1 * 60 * 60 * 1000, -2); // close to 1 hour
+    it('GĐ 4.6: SLA tính theo GIỜ HÀNH CHÍNH (không còn cộng giờ thực)', async () => {
+      // ⚠️ TRƯỚC ĐÂY test này khẳng định `deadline − createdAt ≈ 1h GIỜ THỰC`.
+      // Hành vi đó SAI: ticket tạo lúc 16:00 Thứ Sáu ra hạn 20:00 Thứ Sáu —
+      // ngoài giờ làm việc, KPI SLA của tổng đài không bao giờ đúng.
+      // Giờ deadline được tính trên lịch làm việc (T2–T6, 08:00–17:00).
+      const { computeSlaDeadline } = await import('../services/crmTicketService');
 
-      // High priority - should have SLA of 4 hours
-      const ticketHigh = await createSupportTicket('CUST-001', 'Không áp dụng được voucher', 'high', 'complaint');
-      const diffHigh = new Date(ticketHigh.slaDeadline).getTime() - new Date(ticketHigh.createdAt).getTime();
-      expect(diffHigh).toBeCloseTo(4 * 60 * 60 * 1000, -2); // close to 4 hours
+      const urgent = await createSupportTicket('CUST-001', 'Giao sai màu sản phẩm', 'urgent', 'complaint');
+      expect(urgent).toBeDefined();
+      expect(urgent.priority).toBe('urgent');
+      const createdAt = new Date(urgent.createdAt);
+      expect(new Date(urgent.slaDeadline).getTime())
+        .toBe(computeSlaDeadline(createdAt, 'urgent').getTime());
 
-      // Low priority - should have SLA of 48 hours
-      const ticketLow = await createSupportTicket('CUST-001', 'Hỏi thủ tục đăng ký nhà bán', 'low', 'inquiry');
-      const diffLow = new Date(ticketLow.slaDeadline).getTime() - new Date(ticketLow.createdAt).getTime();
-      expect(diffLow).toBeCloseTo(48 * 60 * 60 * 1000, -2); // close to 48 hours
+      const high = await createSupportTicket('CUST-001', 'Không áp dụng được voucher', 'high', 'complaint');
+      expect(new Date(high.slaDeadline).getTime())
+        .toBe(computeSlaDeadline(new Date(high.createdAt), 'high').getTime());
+
+      const low = await createSupportTicket('CUST-001', 'Hỏi thủ tục đăng ký nhà bán', 'low', 'inquiry');
+      expect(new Date(low.slaDeadline).getTime())
+        .toBe(computeSlaDeadline(new Date(low.createdAt), 'low').getTime());
+
+      // Thứ tự ưu tiên nghiêm ngặt: urgent xử lý trước high, high trước low
+      expect(computeSlaDeadline(createdAt, 'urgent').getTime())
+        .toBeLessThan(computeSlaDeadline(createdAt, 'high').getTime());
+      expect(computeSlaDeadline(createdAt, 'high').getTime())
+        .toBeLessThan(computeSlaDeadline(createdAt, 'low').getTime());
     });
   });
 });

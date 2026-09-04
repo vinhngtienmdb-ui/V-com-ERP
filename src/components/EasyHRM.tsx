@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { syncEmployeeToMisa, syncPayrollToMisa } from '../services/misaService';
+import { getDeclarationPeriodForDate, formatDeclarationPeriod } from '../services/payrollDeclaration';
 
 // Types for all core entities of EasyHRM
 export interface EmployeeProfile {
@@ -284,12 +285,14 @@ export function EasyHRMComponent() {
         details.push({ department: 'Marketing', amount: 15000000 });
       }
 
-      const result = await syncPayrollToMisa(bk.id, bk.name, bk.year, bk.month, details);
+      // TT 89/2026 Điều 22: kỳ khai TNCN tiền lương là QUÝ (+ quyết toán năm), không còn tháng.
+      const declPeriodKey = getDeclarationPeriodForDate(new Date(bk.year, (bk.month || 1) - 1, 1));
+      const result = await syncPayrollToMisa(bk.id, bk.name, bk.year, bk.month, details, declPeriodKey);
       if (result && result.status === 'success') {
         const updated = backups.map(b => b.id === bk.id ? { ...b, misaSynced: true, misaSyncedAt: new Date().toISOString(), misaSyncError: '' } : b);
         setBackups(updated);
         localStorage.setItem('easyhrm_backups', JSON.stringify(updated));
-        alert(`Ghi sổ chi phí lương tháng ${bk.month}/${bk.year} thành công! Chứng từ: ${result.voucherId || 'N/A'}`);
+        alert(`Ghi sổ chi phí lương ${formatDeclarationPeriod(declPeriodKey)} thành công! Chứng từ: ${result.voucherId || 'N/A'}`);
       } else {
         throw new Error(result.message || 'Lỗi không xác định');
       }

@@ -5,7 +5,7 @@
 ## Overview
 Nâng cấp VComm ERP để đáp ứng các quy chuẩn pháp luật Việt Nam cho sàn TMĐT:
 NĐ 52/2013 + 85/2021 (sàn TMĐT), Luật 36/2024/QH15 (bảo vệ NTD), TT 78/2021/TT-BTC
-(hóa đơn điện tử), TT 99/2025/TT-BTC (kế toán), NĐ 117/2025 (thuế seller),
+(hóa đơn điện tử), TT 99/2025/TT-BTC (kế toán), NĐ 252/2026 (thuế seller),
 Luật 86/2025/QH15 (dữ liệu cá nhân), TT 13/2023/TT-BCT (thông tin sản phẩm).
 
 ## Progress
@@ -52,7 +52,7 @@ Luật 86/2025/QH15 (dữ liệu cá nhân), TT 13/2023/TT-BCT (thông tin sản
 - [x] 1.1 Trang công khai Điều 21: `src/components/PublicLegalInfo.tsx` + route `/legal-info`
   - Hiển thị: tên sàn, pháp nhân, MST, GPKD, địa chỉ trụ sở, đại diện pháp luật, hotline, email
   - Danh sách chính sách bắt buộc: điều khoản, bảo mật (86/2025), khiếu nại (36/2024), hoàn tiền, onboarding
-  - Cam kết tuân thủ: NĐ 52/85, Luật 36, Luật 86, TT 78, NĐ 117/2025
+  - Cam kết tuân thủ: NĐ 52/85, Luật 36, Luật 86, TT 78, NĐ 252/2026
   - Route public (không cần đăng nhập) theo pattern /supplier-portal
   - LƯU Ý: dữ liệu pháp nhân đang là placeholder — cần cập nhật MST/GPKD thật trước go-live
 - [ ] 1.3 PIM liên thông databank BCT + truy xuất nguồn gốc QR (cần API BCT)
@@ -63,16 +63,17 @@ Luật 86/2025/QH15 (dữ liệu cá nhân), TT 13/2023/TT-BCT (thông tin sản
 - [ ] 2.3 Khiếu nại liên đới: ngưng bán SKU hàng giả trong SLA
 - [ ] 2.4 Return/refund wizard thay `confirm()`, timeline + audit
 
-### GĐ 3 — E-invoice & thuế (TT 78, NĐ 117/2025)
+### GĐ 3 — E-invoice & thuế (TT 78, NĐ 252/2026)
 - [x] 3.2 Bảng thuế suất cấu hình: `src/services/taxService.ts`
-  - `tax_rate_rules` theo thời gian: 8% (NĐ 72/2025, đến 31/12/2026) → 10% tự động từ 2027
+  - `tax_rate_rules` theo thời gian: 8% (NĐ 174/2025 — giảm 2% GTGT, đến 31/12/2026) → 10% tự động từ 2027
   - `computeOrderTax`: VAT từng dòng theo category, cache 5 phút, fallback an toàn
   - Thay TOÀN BỘ hardcode 8%: `QuickPrintModal.tsx` (bill in), `VCommSupermarket.tsx` (POS siêu thị)
   - Migration `004_tax_engine.sql`: bảng rules + seed + thêm cột vat_rate/vat_amount vào orders
-- [x] 3.3 Báo cáo thuế seller (NĐ 117/2025): `generateSellerTaxReport`
+- [x] 3.3 Báo cáo thuế seller (NĐ 252/2026): `generateSellerTaxReport`
   - Sàn KHÔNG khấu trừ thuế thay (từ 1/4/2025) — chỉ cung cấp báo cáo doanh thu/VAT theo kỳ
+  > 🔴 **CẦN RÀ LẠI (NĐ 252/2026):** Kết luận này chỉ đúng với sàn **KHÔNG** có chức năng thanh toán. VComm có đủ 5 dấu hiệu "nền tảng TMĐT có chức năng thanh toán" (NĐ 252/2026 Điều 3.5/3.6 — xem spec 024 §4.10) → **CÓ** nghĩa vụ khấu trừ & nộp thay GTGT + TNCN theo từng giao dịch (Điều 44). Xem spec 025.
   - Ghi chú đối chiếu chuẩn kế toán TT 99/2025 trong report
-- [x] Test `tax_engine.test.ts` — 7/7 pass (8%/10% theo thời kỳ, VAT từng dòng, report NĐ 117)
+- [x] Test `tax_engine.test.ts` — 7/7 pass (8%/10% theo thời kỳ, VAT từng dòng, report NĐ 252/2026)
 - [ ] 3.1 Tích hợp e-invoice provider được CQT cấp phép (MISA/VNPT/FPT) — cần chọn nhà cung cấp + đăng ký mẫu BC22 với CQT
 
 ### GĐ 4 — Dữ liệu cá nhân (Luật 86/2025, hiệu lực 1/1/2026)

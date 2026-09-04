@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, collection, addDoc, User, onAuthStateChanged, DEMO_MODE } from '../services/dbService';
+import { auth, db, logout, signIn, createUser, doc, getDoc, setDoc, User, onAuthStateChanged, DEMO_MODE } from '../services/dbService';
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
+// GĐ 2.6 — audit trail: một writer, một định dạng (thay cho logAdminAudit cũ
+// vốn ghi TRÙNG cùng một payload vào 2 bảng có RLS y hệt nhau).
+import { logLoginAudit } from '../services/auditTrailService';
 
 interface AuthContextType {
  user: User | null;
@@ -19,7 +22,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Helper to log admin login audits
+/**
+ * Nhật ký đăng nhập/quản trị (GĐ 2.6).
+ *
+ * Bản cũ tự detect trình duyệt rồi ghi CÙNG payload vào 2 collection
+ * (`admin_audit_logs` + `tenants/{id}/audit_logs`). Hai bảng đó có schema và policy
+ * RLS Y HỆT NHAU (migration 008) → ghi 2 lần không tạo thêm cách ly nào, chỉ
+ * nhân đôi dữ liệu. Nay gom về `logLoginAudit()` — một bản ghi, một định dạng.
+ * Việc detect trình duyệt + lấy IP đã chuyển vào auditTrailService (có unit test,
+ * và sửa lỗi nhận nhầm Edge thành Chrome).
+ */
 const logAdminAudit = async (
   email: string,
   action: string,
@@ -27,48 +39,7 @@ const logAdminAudit = async (
   userId?: string,
   tenantId: string = 'tenant-vcomm-prod-01'
 ) => {
-  try {
-    const userAgent = navigator.userAgent;
-    let browser = "Unknown Browser";
-    if (userAgent.indexOf("Firefox") > -1) browser = "Firefox";
-    else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browser = "Opera";
-    else if (userAgent.indexOf("Chrome") > -1) browser = "Chrome";
-    else if (userAgent.indexOf("Safari") > -1) browser = "Safari";
-    else if (userAgent.indexOf("Edge") > -1) browser = "Edge";
-    
-    // Obtain client's public IP
-    let ipAddress = '127.0.0.1';
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1500);
-      const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
-      clearTimeout(timeoutId);
-      const data = await res.json();
-      ipAddress = data.ip || '127.0.0.1';
-    } catch (e) {
-      // Ignored: network failure, request abort, or offline
-    }
-    
-    const payload = {
-      email,
-      userId: userId || null,
-      action,
-      status,
-      timestamp: new Date().toISOString(),
-      userAgent,
-      browser,
-      ipAddress,
-      tenantId
-    };
-
-    // Log to global root collection
-    await addDoc(collection(db, 'admin_audit_logs'), payload);
-    
-    // Log to nested tenant subcollection for isolated Zero-Trust access checks
-    await addDoc(collection(db, 'tenants', tenantId, 'audit_logs'), payload);
-  } catch (err) {
-    console.error("Failed to write admin audit log:", err);
-  }
+  await logLoginAudit({ email, action, status, userId: userId ?? null, tenantId });
 };
 
  export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

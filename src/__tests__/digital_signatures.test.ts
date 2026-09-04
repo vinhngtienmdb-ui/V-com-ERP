@@ -5,7 +5,11 @@ import crypto from 'crypto';
 
 dotenv.config();
 
-describe('Cryptographic Digital Signatures & Integrity Verification Tests', () => {
+// Integration test: requires a reachable live Postgres. Opt in explicitly so it
+// never runs (and never hangs) inside the default unit-test gate / CI.
+const RUN_INTEGRATION_TESTS = process.env.RUN_INTEGRATION_TESTS === '1';
+
+describe.skipIf(!RUN_INTEGRATION_TESTS)('Cryptographic Digital Signatures & Integrity Verification Tests', () => {
   let pgClient: pg.Client;
   const dbUrl = process.env.DATABASE_URL;
 
@@ -16,7 +20,8 @@ describe('Cryptographic Digital Signatures & Integrity Verification Tests', () =
     }
     pgClient = new pg.Client({
       connectionString: dbUrl,
-      ssl: { rejectUnauthorized: false }
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 10000,
     });
     await pgClient.connect();
   });

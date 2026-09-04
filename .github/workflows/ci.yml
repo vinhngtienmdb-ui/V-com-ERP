@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+# Tránh dồn ống: cùng branch đẩy liên tục thì chỉ giữ bản chạy mới nhất.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    # ⚠️ BẮT BUỘC có giới hạn: suite đầy đủ mất ~15–20 phút, và đã từng bị treo
+    # do test mở kết nối Postgres thật. Nếu không có timeout, job sẽ chiếm máy
+    # đến khi GitHub tự huỷ (mặc định 6 giờ) thay vì báo đỏ ngay.
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        # `npm ci` cần package-lock.json (đã có trong repo) và đảm bảo CI cài
+        # ĐÚNG phiên bản local — không tự nâng lên bản vá mới.
+        run: npm ci
+
+      # Cổng type-check (gate mỗi phase)
+      - name: Type-check (tsc --noEmit)
+        run: npm run lint
+        timeout-minutes: 10
+
+      # Test đơn vị (vitest).
+      #
+      # ⚠️ Dùng `test:ci` (chạy TỪNG FILE MỘT), KHÔNG dùng `npm test`.
+      # Lý do: `vitest run` chạy gom tất cả file thì test vẫn XONG nhưng
+      # process KHÔNG thoát → job treo đến khi bị timeout và báo ĐỎ oan.
+      # Chi tiết đã ghi trong `scripts/run-tests.mjs`.
+      #
+      # Hai test mở kết nối Postgres THẬT (`ai_vector_search_claims`,
+      # `digital_signatures`) được bỏ mặc định, nên không cần DATABASE_URL.
+      - name: Unit tests (vitest, từng file)
+        run: npm run test:ci
+        timeout-minutes: 30
+        env:
+          LOG_LEVEL: warn
+          VITE_DEMO_MODE: 'false'
+
+      # Build frontend + bundle server. Bắt lỗi chỉ lộ khi đóng gói
+      # (ví dụ import sai đường dẫn mà tsc vẫn qua do `strict: false`).
+      - name: Build
+        run: npm run build
+        timeout-minutes: 15

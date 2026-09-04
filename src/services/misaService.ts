@@ -3,6 +3,20 @@ import { db, doc, getDoc, updateDoc, collection, query, where, limit, getDocs } 
 import { supabase } from '../lib/supabase';
 import { FinanceTransaction } from '../types/erp';
 import { safeLocalStorage } from '../lib/storage';
+import { createLogger } from '../lib/logger';
+import { formatDeclarationPeriod, type DeclarationPeriodKey } from './payrollDeclaration';
+
+// GĐ 1.5 — log có module + ngữ cảnh thay vì nuốt lỗi im lặng.
+const log = createLogger('services/misaService');
+
+/** Format an period key; fallback to raw string nếu sai định dạng (không ném). */
+function formatDeclarationPeriodSafe(key: DeclarationPeriodKey): string {
+  try {
+    return formatDeclarationPeriod(key);
+  } catch {
+    return key;
+  }
+}
 
 export interface MisaConfig {
   appId: string;
@@ -31,8 +45,10 @@ export const getMisaConfig = (): MisaConfig => {
   if (data) {
     try {
       return JSON.parse(data);
-    } catch {
-      // Fallback below
+    } catch (e) {
+      // Cấu hình MISA hỏng → rớt về default bên dưới. Phải log vì cấu hình sai
+      // đồng nghĩa đồng bộ kế toán sẽ im lặng gửi sai hoặc không gửi.
+      log.warn('cấu hình MISA trong localStorage không đọc được — dùng mặc định', {}, e);
     }
   }
   return {
@@ -91,7 +107,9 @@ export const syncCustomerToMisa = async (
       }
     }
   } catch (err) {
-    // Treat as regular call if check fails
+    // Không tra được customer → xử lý như truyền mã thường. Log ở mức debug vì
+    // đây là đường fallback hợp lệ, nhưng cần thấy khi điều tra mã KH sai.
+    log.debug('không tra được khách hàng theo mã — dùng mã thường', { codeOrId }, err);
   }
 
   if (!finalName) {
@@ -205,7 +223,8 @@ export const syncProductToMisa = async (
       }
     }
   } catch (err) {
-    // Treat as regular call if check fails
+    // Không tra được vật tư → xử lý như truyền SKU thường.
+    log.debug('không tra được vật tư theo mã — dùng SKU thường', { skuOrId }, err);
   }
 
   if (!finalName) {
@@ -1070,12 +1089,20 @@ export const syncPayrollToMisa = async (
   name: string,
   year: number,
   month: number,
-  details: Array<{ department: string; amount: number }>
+  details: Array<{ department: string; amount: number }>,
+  periodKey?: string
 ): Promise<any> => {
   const config = getMisaConfig();
   if (!config.isActive) {
     throw new Error('Chức năng tích hợp MISA chưa được kích hoạt trong phần cài đặt.');
   }
+
+  // TT 89/2026 Điều 22: khai TNCN tiền lương chuyển THÁNG → QUÝ + quyết toán năm.
+  // Nếu gọi từ UI có periodKey (đã resolve theo chu kỳ hiện hành) thì ưu tiên dùng;
+  // nếu không (backward-compat) thì ghép tháng/năm.
+  const declLabel = periodKey
+    ? formatDeclarationPeriodSafe(periodKey)
+    : `Tháng ${month}/${year}`;
 
   const voucherNo = `PK-${backupId.substring(0, 8)}`;
   const totalAmount = details.reduce((sum, d) => sum + d.amount, 0);
@@ -1087,7 +1114,7 @@ export const syncPayrollToMisa = async (
 
     return {
       itemCode: `CP_LUONG_${d.department.toUpperCase()}`,
-      itemName: `Chi phí lương bộ phận ${d.department} - Tháng ${month}/${year}`,
+      itemName: `Chi phí lương bộ phận ${d.department} - ${declLabel}`,
       unit: 'Tháng',
       quantity: 1,
       unitPrice: d.amount,

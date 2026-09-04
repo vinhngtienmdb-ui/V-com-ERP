@@ -3,6 +3,9 @@ import { Modal } from './ui/Modal';
 import { OmniChat } from './OmniChat';
 import { db, collection, getDocs } from '../services/dbService';
 import { supabase } from '../lib/supabase';
+import { createLogger } from '../lib/logger';
+
+const log = createLogger('components/CustomerService');
 import { 
   BarChart, 
   Bar, 
@@ -102,7 +105,11 @@ export function CustomerService() {
   const [activeChannels, setActiveChannels] = useState<string[]>(() => {
     const saved = localStorage.getItem('vcomm_active_channels');
     if (saved) {
-      try { return JSON.parse(saved); } catch(e) {}
+      try { return JSON.parse(saved); }
+      catch (e) {
+        // GĐ 1.5 — cấu hình kênh hỏng → rớt về danh sách kênh mặc định.
+        log.warn('kênh đã lưu trong localStorage không đọc được — dùng mặc định', { key: 'vcomm_active_channels' }, e);
+      }
     }
     return ['web', 'facebook', 'zalo'];
   });
@@ -113,7 +120,12 @@ export function CustomerService() {
       return next;
     });
   };
-  const [tickets, setTickets] = useState<any[]>(MOCK_TICKETS);
+  // GĐ 4.6: KHÔNG khởi tạo bằng MOCK_TICKETS. Cách cũ có lỗi NGHIÊM TRỌNG:
+  // `if (data.length > 0)` → bảng thật đang TRỐNG thì MOCK giữ nguyên và nhân
+  // viên CSKH tưởng đó là dữ liệu thật. Giờ MOCK chỉ dùng khi fetch THẤT BẠI,
+  // và có banner cảnh báo rõ ràng.
+  const [tickets, setTickets] = useState<any[]>([]);
+  const [isDemoTickets, setIsDemoTickets] = useState(false);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
   const [draftedMessage, setDraftedMessage] = useState('');
@@ -122,23 +134,29 @@ export function CustomerService() {
 
   const fetchTickets = async () => {
     try {
-      const snapshot = await getDocs(collection(db, 'support_tickets'));
-      const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-      if (data.length > 0) {
-        const formatted = data.map((t: any) => ({
-          id: t.id,
-          customerName: t.customerName,
-          subject: t.subject,
-          status: t.status,
-          priority: t.priority,
-          type: t.type,
-          slaDeadline: t.slaDeadline,
-          createdAt: t.createdAt ? new Date(t.createdAt).toLocaleDateString('vi-VN') : 'Vừa xong'
-        }));
-        setTickets(formatted);
-      }
+      // GĐ 4.6: đọc qua crmTicketService (đã sắp xếp + tính sẵn trạng thái SLA)
+      const { listTickets, slaStatusOf } = await import('../services/crmTicketService');
+      const data = await listTickets({ limit: 200 });
+
+      const formatted = data.map((t: any) => ({
+        id: t.id,
+        customerName: t.customerName || 'Khách vãng lai',
+        subject: t.subject,
+        status: t.status,
+        priority: t.priority,
+        type: t.type,
+        slaDeadline: t.slaDeadline,
+        // Tính SLA 1 lần lúc fetch (không gọi new Date() trong render)
+        slaStatus: slaStatusOf(t),
+        createdAt: t.createdAt ? new Date(t.createdAt).toLocaleDateString('vi-VN') : 'Vừa xong'
+      }));
+
+      setTickets(formatted);
+      setIsDemoTickets(false);
     } catch (error) {
-      console.error('Error fetching tickets:', error);
+      console.error('[GĐ 4.6] Lỗi tải ticket thật — rơi về dữ liệu DEMO:', error);
+      setTickets(MOCK_TICKETS);
+      setIsDemoTickets(true);
     }
   };
 
@@ -831,6 +849,14 @@ export function CustomerService() {
 		</div>
 	)}
 
+{activeTab === 'tickets' && isDemoTickets && (
+ <div className="px-6 py-3 bg-amber-50 border-b border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+ <span>⚠️</span>
+ <span className="font-bold">Đang hiển thị DỮ LIỆU DEMO</span>
+ <span>— không tải được ticket thật từ bảng <code className="px-1 bg-amber-100 rounded">support_tickets</code>. Kiểm tra kết nối/migration rồi bấm làm mới.</span>
+ <button onClick={() => fetchTickets()} className="ml-auto px-2 py-1 bg-amber-200 hover:bg-amber-300 rounded font-bold">Thử lại</button>
+ </div>
+)}
 {activeTab === 'tickets' && (
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead>
@@ -861,8 +887,14 @@ export function CustomerService() {
  <div>
  <div className="flex items-center gap-2">
  <p className="text-sm font-bold text-slate-800">{ticket.subject}</p>
- {ticket.slaDeadline && ticket.status !== 'closed' && new Date() > new Date(ticket.slaDeadline) && (
+ {/* GĐ 4.6: dùng trạng thái SLA đã tính sẵn lúc fetch.
+     Cũ: `new Date() > new Date(slaDeadline)` → gọi new Date() trong render
+     (mỗi lần re-render cho kết quả khác) và KHÔNG có mức "sắp trễ". */}
+ {ticket.slaStatus === 'breached' && ticket.status !== 'closed' && ticket.status !== 'resolved' && (
    <span className="px-1.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded text-[9px] font-medium">⚠️ TRỄ SLA</span>
+ )}
+ {ticket.slaStatus === 'at_risk' && ticket.status !== 'closed' && ticket.status !== 'resolved' && (
+   <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 border border-amber-200 rounded text-[9px] font-medium">⏳ SẮP TRỄ SLA</span>
  )}
  </div>
  <p className="text-[10px] text-slate-500 mt-0.5">{ticket.type}</p>
