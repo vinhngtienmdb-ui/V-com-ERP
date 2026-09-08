@@ -30,12 +30,6 @@ export default defineConfig({
      *    Chặn luôn trường hợp teardown kẹt thay vì treo vô hạn.
      */
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        maxForks: 3,
-        singleFork: false,
-      },
-    },
     testTimeout: 30_000,
     hookTimeout: 30_000,
     teardownTimeout: 20_000,

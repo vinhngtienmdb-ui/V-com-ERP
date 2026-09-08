@@ -251,13 +251,13 @@ export class Logger {
     });
   }
 
-  debug(msg: string, ctx?: Record<string, unknown> | unknown): void {
+  debug(msg: string, ctx?: Record<string, unknown> | unknown, ...rest: unknown[]): void {
     this.write('debug', msg, ctx);
   }
-  info(msg: string, ctx?: Record<string, unknown> | unknown): void {
+  info(msg: string, ctx?: Record<string, unknown> | unknown, ...rest: unknown[]): void {
     this.write('info', msg, ctx);
   }
-  warn(msg: string, ctx?: Record<string, unknown> | unknown): void {
+  warn(msg: string, ctx?: Record<string, unknown> | unknown, ...rest: unknown[]): void {
     this.write('warn', msg, ctx);
   }
   error(msg: string, ctx?: Record<string, unknown> | unknown, err?: unknown): void {

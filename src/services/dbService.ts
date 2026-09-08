@@ -2082,7 +2082,7 @@ export const getDocs = async (queryRef: SupabaseQuery | SupabaseCollectionRef): 
           forEach: (cb: any) => docs.forEach(cb)
         };
       } catch (e) {
-        log.debug('bỏ qua cache đọc collection (parse lỗi)', { path: docRef.path }, e);
+        log.debug('bỏ qua cache đọc collection (parse lỗi)', { path: queryRef.path }, e);
       }
     }
     return {
