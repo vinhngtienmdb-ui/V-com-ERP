@@ -49,6 +49,7 @@ import { supabase } from '../lib/supabase';
 import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../services/dbService';
+import { validateVoucherApproval } from '../services/warehouseVoucherApproval';
 import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -675,6 +676,25 @@ export function WarehouseModule() {
         return;
       }
 
+      // 🔴 FIX (pattern #89): validate TRƯỚC khi ghi — không duyệt phiếu xuất/chuyển
+      // vượt tồn kho (clamp số dư về 0 che giấu thiếu hụt → phantom shipment) và không
+      // ghi log di chuyển ảo khi kho nguồn KHÔNG có mặt hàng.
+      const whIds = [voucher.source_warehouse_id, voucher.target_warehouse_id].filter(Boolean);
+      const { data: stockSnapshot } = await supabase
+        .from('warehouse_stock')
+        .select('*')
+        .in('warehouse_id', whIds as string[]);
+      const approvalPlan = validateVoucherApproval(
+        voucher.type,
+        voucher.source_warehouse_id,
+        items,
+        (stockSnapshot as Array<{ product_id: string; warehouse_id: string; quantity: number }>) || []
+      );
+      if ('code' in approvalPlan) {
+        alert('Không thể duyệt phiếu kho: ' + approvalPlan.message);
+        return;
+      }
+
       for (const item of items) {
         if (voucher.type === 'in' || voucher.type === 'transfer') {
           const { data: targetStock } = await supabase
@@ -717,7 +737,7 @@ export function WarehouseModule() {
           if (sourceStock) {
             await supabase
               .from('warehouse_stock')
-              .update({ quantity: Math.max(0, Number(sourceStock.quantity) - Number(item.quantity)) })
+              .update({ quantity: Number(sourceStock.quantity) - Number(item.quantity) })
               .eq('id', sourceStock.id);
           }
         }
