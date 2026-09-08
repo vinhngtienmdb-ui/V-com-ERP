@@ -67,3 +67,14 @@ export async function verifyPassword(
   }
   return { ok, needsUpgrade: ok };
 }
+
+/**
+ * Chỉ ra `stored` có phải mật khẩu PLAINTEXT cần nâng cấp hay không
+ * (dùng cho script backfill quét DB, KHÔNG cần biết plaintext).
+ * - bcrypt hash (`$2a$`/`$2b$`/`$2y$`) → false (đã an toàn).
+ * - rỗng / không phải chuỗi → false.
+ * - chuỗi thường → true (cần băm lại).
+ */
+export function isPlaintextPassword(stored: string | undefined | null): boolean {
+  return typeof stored === 'string' && stored.length > 0 && !BCRYPT_HASH_PREFIX.test(stored);
+}

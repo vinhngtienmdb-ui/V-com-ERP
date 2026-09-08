@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hashPassword, verifyPassword } from '../lib/passwordHash';
+import { hashPassword, verifyPassword, isPlaintextPassword } from '../lib/passwordHash';
 
 describe('passwordHash — hashPassword (bcrypt)', () => {
   it('băm ra chuỗi có tiền tố $2 (không lưu plaintext)', async () => {
@@ -55,5 +55,24 @@ describe('passwordHash — verifyPassword (tương thích ngược)', () => {
     // Sau khi upgrade (hashPassword), verify lần sau dùng bcrypt, không cần upgrade nữa.
     const upgraded = await hashPassword('legacy');
     expect(await verifyPassword('legacy', upgraded)).toEqual({ ok: true, needsUpgrade: false });
+  });
+});
+
+describe('passwordHash — isPlaintextPassword (cho backfill quét DB)', () => {
+  it('plaintext → true (cần nâng cấp)', () => {
+    expect(isPlaintextPassword('plain123')).toBe(true);
+    expect(isPlaintextPassword('a')).toBe(true);
+  });
+
+  it('bcrypt hash → false (đã an toàn, bỏ qua)', async () => {
+    const h = await hashPassword('anything');
+    expect(isPlaintextPassword(h)).toBe(false);
+  });
+
+  it('rỗng / undefined / null → false (không nâng cấp nhầm', () => {
+    expect(isPlaintextPassword('')).toBe(false);
+    expect(isPlaintextPassword(undefined)).toBe(false);
+    expect(isPlaintextPassword(null)).toBe(false);
+    expect(isPlaintextPassword(123 as unknown as string)).toBe(false);
   });
 });
