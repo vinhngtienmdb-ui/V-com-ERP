@@ -372,8 +372,19 @@ export interface Payroll {
  deduction: number;
  pitAmount: number; // Thuế TNCN
  insuranceAmount: number; // BHXH
- netSalary: number;
- status: 'pending' | 'paid';
+  netSalary: number;
+  status: 'pending' | 'paid';
+  // GĐ 2.5 — payrollEngine (optional để không phá MOCK_PAYROLL cũ chưa có field)
+  /** PROGRESSIVE | FLAT_ON_GROSS | NON_RESIDENT (payrollEngine). */
+  method?: 'PROGRESSIVE' | 'FLAT_ON_GROSS' | 'NON_RESIDENT';
+  /** Số người phụ thuộc đã dùng khi tính PIT (PROGRESSIVE). */
+  dependents?: number;
+  /** Chi phí tổng NSDLĐ = gross + BH 21,5% — ghi P&L đúng. */
+  employerCost?: number;
+  /** Cảnh báo (vượt trần BH, thiếu lương khai báo…). */
+  warnings?: string[];
+  /** Căn cứ chính sách (effectiveFrom) — giải trình khi bị hỏi. */
+  legalBasis?: string;
 }
 
 // --- PERFORMANCE & TRAINING ---

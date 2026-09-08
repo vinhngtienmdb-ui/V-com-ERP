@@ -68,6 +68,7 @@ import { EmployeeDetailModal } from './EmployeeDetailModal';
 import { supabase } from '../lib/supabase';
 import { db, collection, addDoc, serverTimestamp } from '../services/dbService';
 import { currentTncDeclarationPeriod, formatDeclarationPeriod } from '../services/payrollDeclaration';
+import { buildPayrollBatchFromEmployees, buildPayrollRowFromEmployee, recomputePayrollDraft } from '../services/hrPayrollBridge'; // GĐ 2.5 — engine lương đúng luật
 import {
  BarChart,
  Bar,
@@ -332,28 +333,75 @@ const INITIAL_CANDIDATES: Candidate[] = [
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-// --- PAYROLL INTELLIGENT ENGINE ---
-const autoCalculatePayroll = (employee: Employee, attendance: AttendanceRecord[], kpi: KPI[]) => {
- const baseSalary = 15000000;
- const attendanceRecords = attendance.filter(a => a.employeeId === employee.id);
- const overtimeHours = attendanceRecords.reduce((sum, a) => sum + a.overtimeHours, 0);
- const lateCount = attendanceRecords.filter(a => a.status === 'late').length;
- 
- const empKPI = kpi.find(k => k.employeeId === employee.id);
- const kpiBonus = empKPI ? (empKPI.current >= empKPI.target ? 2000000 : 0) : 0;
- 
- const bonus = (overtimeHours * 100000) + kpiBonus;
- const deduction = lateCount * 500000;
+// --- GĐ 2.5: TÍNH LƯƠNG ĐÚNG LUẬT (payrollEngine) ---
+// Công thức mock cũ (PIT 5% phẳng, BHXH 10%, lương cứng 15tr) đã XÓA — sai cả
+// 3 phương pháp TNCN. Mọi dòng lương giờ đi qua hrPayrollBridge → payrollEngine:
+//   - PROGRESSIVE  (HĐLĐ ≥ 3 tháng): biểu lũy tiến 5 bậc (Luật 109/2025 từ 01/7/2026,
+//                   giảm trừ 15,5tr/6,2tr) sau khi trừ BH 10,5% (trần 20× lương cơ sở).
+//   - FLAT_ON_GROSS (CTV/khoán/< 3 tháng): 10% × TỔNG khi ≥ 5tr/lần, không giảm trừ.
+// Thưởng/đi trễ của attendance + KPI vẫn được cộng/trừ vào gross NHƯNG thuế/BH/net
+// tính lại bằng engine — không còn công thức tay.
+const PAYROLL_ALLOWANCE_FALLBACK = 0; // không bịa phụ cấp 2tr — bridge nhận allowance từ caller
 
- return {
- baseSalary,
- allowance: 2000000,
- bonus,
- deduction,
- pitAmount: (baseSalary + 2000000 + bonus - deduction) * 0.05,
- insuranceAmount: baseSalary * 0.1,
- netSalary: baseSalary + 2000000 + bonus - deduction - ((baseSalary + 2000000 + bonus - deduction) * 0.05) - (baseSalary * 0.1)
- };
+/** Tính lương 1 nhân viên đúng luật, gồm thưởng KPI + phạt đi trễ từ chấm công. */
+const computePayrollWithEngine = (
+  employee: Employee,
+  attendance: AttendanceRecord[],
+  kpi: KPI[],
+  atDate: Date = new Date(),
+) => {
+  const attendanceRecords = attendance.filter(a => a.employeeId === employee.id);
+  const overtimeHours = attendanceRecords.reduce((sum, a) => sum + a.overtimeHours, 0);
+  const lateCount = attendanceRecords.filter(a => a.status === 'late').length;
+
+  const empKPI = kpi.find(k => k.employeeId === employee.id);
+  const kpiBonus = empKPI && empKPI.current >= empKPI.target ? 2_000_000 : 0;
+  const bonus = overtimeHours * 100_000 + kpiBonus;
+  const deduction = lateCount * 500_000;
+
+  const row = buildPayrollRowFromEmployee(employee, {
+    allowance: PAYROLL_ALLOWANCE_FALLBACK,
+    bonus,
+    deduction,
+    atDate,
+  });
+  return row;
+};
+
+/**
+ * GĐ 2.5 — SỬA TAY dòng lương: mọi thay đổi PHẢI đi qua payrollEngine.
+ *
+ * 🔴 Lỗi đã sửa: các onChange của modal "Sửa bảng lương" từng tự tính lại
+ * `pitAmount = gross × 5%` và `insuranceAmount = base × 10%`. Chỉ cần người dùng
+ * gõ lại bất kỳ ô nào, kết quả ĐÚNG LUẬT do batch vừa tạo bị GHI ĐÈ bằng công
+ * thức mock sai (không phân biệt HĐLĐ/CTV, không trần BH, không giảm trừ).
+ * Hàm này là đường DUY NHẤT modal được phép dùng để cập nhật thuế/BH/net.
+ */
+const applyPayrollDraft = (
+  prev: Partial<Payroll>,
+  patch: Partial<Payroll>,
+  atDate: Date = new Date(),
+): Partial<Payroll> => {
+  const draft: Partial<Payroll> = { ...prev, ...patch };
+  const r = recomputePayrollDraft(
+    {
+      baseSalary: draft.baseSalary,
+      allowance: draft.allowance,
+      bonus: draft.bonus,
+      deduction: draft.deduction,
+      method: draft.method,
+      dependents: draft.dependents,
+    },
+    atDate,
+  );
+  return {
+    ...draft,
+    pitAmount: r.pitAmount,
+    insuranceAmount: r.insuranceAmount,
+    netSalary: r.netSalary,
+    employerCost: r.employerCost,
+    warnings: r.warnings,
+  };
 };
 
 const HR_MODULE_GROUPS = [
@@ -516,7 +564,7 @@ export function HumanResources() {
   setModalTab('job');
  }, [editingEmployee, showEmployeeModal]);
 
-  const syncToSupabaseEmployees = async (emp: any) => {
+  const syncToSupabaseEmployees = async (emp: any): Promise<{ ok: boolean; error?: string }> => {
     try {
       const { error } = await supabase
         .from('employees')
@@ -528,16 +576,19 @@ export function HumanResources() {
           department_id: emp.department || 'Vận hành Sản'
         });
       if (error) {
+        // GĐ 2.4 / pattern #74: KHÔNG nuốt lỗi — trả về để caller báo thất bại.
         console.error('[Supabase Claims Sync] Error syncing employee:', error);
-      } else {
-        console.log('[Supabase Claims Sync] Synced employee custom claims successfully!');
+        return { ok: false, error: typeof error === 'object' ? (error as any).message || JSON.stringify(error) : String(error) };
       }
+      console.log('[Supabase Claims Sync] Synced employee custom claims successfully!');
+      return { ok: true };
     } catch (err) {
       console.error('[Supabase Claims Sync] Exception syncing employee:', err);
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
   };
 
-  const handleSaveEmployee = (updatedFormState: any) => {
+  const handleSaveEmployee = async (updatedFormState: any) => {
    if (!updatedFormState.fullName?.trim()) {
     alert('Vui lòng điền Họ tên nhân viên');
     return;
@@ -550,8 +601,13 @@ export function HumanResources() {
     if (selectedEmployee && selectedEmployee.id === editingEmployee.id) {
      setSelectedEmployee(updated);
     }
-    syncToSupabaseEmployees(updated);
-    alert('Đã cập nhật thông tin nhân viên thành công!');
+    const res = await syncToSupabaseEmployees(updated);
+    if (res.ok) {
+      alert('Đã cập nhật thông tin nhân viên thành công!');
+    } else {
+      // GĐ 2.4 / pattern #74: KHÔNG xướng "thành công" khi ghi Supabase thất bại.
+      alert('Không thể đồng bộ nhân viên lên cơ sở dữ liệu: ' + (res.error || 'lỗi không xác định') + '. Dữ liệu chỉ lưu tạm trên máy này (localStorage), sẽ mất khi tải lại trang.');
+    }
    } else {
     // Create new
     const lastIdNum = employees.reduce((max, emp) => {
@@ -566,8 +622,12 @@ export function HumanResources() {
     } as Employee;
     
     setEmployees(prev => [...prev, newEmp]);
-    syncToSupabaseEmployees(newEmp);
-    alert('Đã thêm mới nhân viên thành công!');
+    const res = await syncToSupabaseEmployees(newEmp);
+    if (res.ok) {
+      alert('Đã thêm mới nhân viên thành công!');
+    } else {
+      alert('Không thể đồng bộ nhân viên lên cơ sở dữ liệu: ' + (res.error || 'lỗi không xác định') + '. Dữ liệu chỉ lưu tạm trên máy này (localStorage), sẽ mất khi tải lại trang.');
+    }
    }
    setShowEmployeeModal(false);
    setEditingEmployee(null);
@@ -2239,17 +2299,29 @@ const [copilotInput, setCopilotInput] = useState('');
  <div className="flex justify-between items-center mb-8">
  <div>
  <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900"><Wallet className="w-6 h-6 text-orange-700"/> Quản lý Quỹ lương & Payslip</h2>
- <p className="text-xs text-slate-600 mt-1">Kỳ lương hiển thị: <strong className="text-slate-800">Tháng 03/2024</strong></p>
+ <p className="text-xs text-slate-600 mt-1">Kỳ lương hiển thị: <strong className="text-slate-800">{payrollList[0]?.month ?? formatDeclarationPeriod(currentTncDeclarationPeriod())}</strong> · Thuế TNCN theo <strong className="text-slate-800">Luật 109/2025</strong> (biểu 5 bậc từ 01/7/2026)</p>
  </div>
  <div className="flex gap-3">
  <button 
  onClick={() => {
- const results = employees.map(emp => ({
- employeeId: emp.id,
- ...autoCalculatePayroll(emp, [], MOCK_KPIs)
- })); 
- console.table(results); 
- alert("Đã tính lương tự động thành công (Kiểm tra console/table)!");
+ // GĐ 2.5: batch qua hrPayrollBridge → payrollEngine (đúng luật).
+ // Thưởng KPI + phạt đi trễ vẫn được tính vào gross; thuế/BH/net = engine.
+ const now = new Date();
+ const rows = employees.map(emp =>
+ computePayrollWithEngine(emp, MOCK_ATTENDANCE, MOCK_KPIs, now),
+ );
+ const nextPayroll: Payroll[] = rows.map(r => ({
+ id: `PAY-${r.employeeId}-${r.month.replace('/', '-')}`,
+ ...r,
+ }));
+ setPayrollList(nextPayroll);
+ const warnTotal = rows.reduce((n, r) => n + r.warnings.length, 0);
+ if (warnTotal > 0) {
+ console.warn(`[HR-Payroll] ${warnTotal} cảnh báo khi tính lương:`, rows.flatMap(r => r.warnings));
+ alert(`Đã tính lương cho ${rows.length} nhân viên theo đúng luật.\n⚠️ Có ${warnTotal} cảnh báo (chi tiết ở console) — chủ yếu do thiếu khai báo lương (salaryHistory trống).`);
+ } else {
+ alert(`Đã tính lương cho ${rows.length} nhân viên theo đúng luật (biểu thuế 5 bậc Luật 109/2025).`);
+ }
  }}
  className="bg-primary-600 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-indigo-600/20 active:scale-95 transition-all hover:bg-primary-700">
  <Zap className="w-4 h-4" /> Tính lương AI (Batch)
@@ -2257,7 +2329,13 @@ const [copilotInput, setCopilotInput] = useState('');
  <button 
  onClick={async () => {
  try {
- const totalPayroll = payrollList.reduce((acc, pay) => acc + pay.netSalary, 0);
+ // GĐ 2.5: chi phí nhân sự trên P&L = TỔNG CHI PHÍ NSDLĐ (gross + BH 21,5%),
+ // KHÔNG phải tổng net (net chỉ là tiền thực chi cho nhân viên — BH phần
+ // NSDLĐ vẫn là chi phí của công ty). Dòng cũ ghi net → P&L THẤP hơn thực tế.
+ const hasEmployerCost = payrollList.some(p => (p.employerCost ?? 0) > 0);
+ const totalPayroll = hasEmployerCost
+ ? payrollList.reduce((acc, pay) => acc + (pay.employerCost ?? pay.netSalary), 0)
+ : payrollList.reduce((acc, pay) => acc + pay.netSalary, 0);
  const totalBonus = payrollList.reduce((acc, pay) => acc + pay.bonus, 0);
 
  // TT 89/2026 Điều 22: khai TNCN tiền lương chuyển từ THÁNG → QUÝ + quyết toán năm.
@@ -2324,6 +2402,23 @@ const [copilotInput, setCopilotInput] = useState('');
  </div>
  </DraggableGrid>
 
+ {/* GĐ 2.5 — banner cảnh báo: dòng lương thiếu khai báo / vượt trần BH */}
+ {(() => {
+ const warns = payrollList.flatMap(p => p.warnings ?? []);
+ if (!warns.length) return null;
+ return (
+ <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+ <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+ <div className="text-xs text-amber-800 leading-relaxed">
+ <p className="font-bold mb-1">{warns.length} cảnh báo kỳ lương này — các dòng liên quan tính trên số liệu CHƯA khớp khai báo:</p>
+ <ul className="list-disc list-inside space-y-0.5 max-h-24 overflow-y-auto">
+ {warns.slice(0, 10).map((w, i) => <li key={i}>{w}</li>)}
+ </ul>
+ </div>
+ </div>
+ );
+ })()}
+
  {/* Advanced Payroll Table */}
  <div className="bg-white border border-slate-300 shadow-sm rounded-lg overflow-hidden">
  <div className="overflow-x-auto min-w-0">
@@ -2345,6 +2440,13 @@ const [copilotInput, setCopilotInput] = useState('');
  <td className="px-6 py-4">
  <p className="text-sm font-bold text-slate-900">{pay.employeeName}</p>
  <p className="text-[10px] text-slate-500 mt-0.5">{pay.employeeId}</p>
+ {/* GĐ 2.5 — phương pháp TNCN theo đúng luật (PROGRESSIVE/FLAT/NON_RESIDENT) */}
+ <span className={cn(
+ "inline-block mt-1 px-2 py-0.5 rounded-full text-[9px] font-bold",
+ pay.method === 'PROGRESSIVE' ? "bg-indigo-50 text-indigo-700" : "bg-orange-50 text-orange-700"
+ )}>
+ {pay.method === 'PROGRESSIVE' ? 'TNCN lũy tiến (HĐLĐ ≥3 tháng)' : pay.method === 'FLAT_ON_GROSS' ? 'TNCN khoán 10% (CTV/khoán)' : 'TNCN không cư trú'}
+ </span>
  </td>
  <td className="px-6 py-4 text-right font-mono font-medium text-sm text-slate-700">{formatCurrency(pay.baseSalary)}</td>
  <td className="px-6 py-4 text-right">
@@ -2428,13 +2530,7 @@ const [copilotInput, setCopilotInput] = useState('');
  value={editPayrollForm.baseSalary || 0}
  onChange={(e) => {
  const val = Number(e.target.value);
- setEditPayrollForm(prev => {
- const updated = { ...prev, baseSalary: val };
- updated.pitAmount = ((updated.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0)) * 0.05;
- updated.insuranceAmount = (updated.baseSalary || 0) * 0.1;
- updated.netSalary = (updated.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - updated.insuranceAmount;
- return updated;
- });
+ setEditPayrollForm(prev => applyPayrollDraft(prev, { baseSalary: val }));
  }}
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
@@ -2444,12 +2540,7 @@ const [copilotInput, setCopilotInput] = useState('');
  value={editPayrollForm.allowance || 0}
  onChange={(e) => {
  const val = Number(e.target.value);
- setEditPayrollForm(prev => {
- const updated = { ...prev, allowance: val };
- updated.pitAmount = ((prev.baseSalary || 0) + (updated.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0)) * 0.05;
- updated.netSalary = (prev.baseSalary || 0) + (updated.allowance || 0) + (prev.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
- return updated;
- });
+ setEditPayrollForm(prev => applyPayrollDraft(prev, { allowance: val }));
  }}
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500" />
  </div>
@@ -2459,12 +2550,7 @@ const [copilotInput, setCopilotInput] = useState('');
  value={editPayrollForm.bonus || 0}
  onChange={(e) => {
  const val = Number(e.target.value);
- setEditPayrollForm(prev => {
- const updated = { ...prev, bonus: val };
- updated.pitAmount = ((prev.baseSalary || 0) + (prev.allowance || 0) + (updated.bonus || 0) - (prev.deduction || 0)) * 0.05;
- updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (updated.bonus || 0) - (prev.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
- return updated;
- });
+ setEditPayrollForm(prev => applyPayrollDraft(prev, { bonus: val }));
  }}
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
  </div>
@@ -2474,12 +2560,7 @@ const [copilotInput, setCopilotInput] = useState('');
  value={editPayrollForm.deduction || 0}
  onChange={(e) => {
  const val = Number(e.target.value);
- setEditPayrollForm(prev => {
- const updated = { ...prev, deduction: val };
- updated.pitAmount = ((prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (updated.deduction || 0)) * 0.05;
- updated.netSalary = (prev.baseSalary || 0) + (prev.allowance || 0) + (prev.bonus || 0) - (updated.deduction || 0) - updated.pitAmount - (prev.insuranceAmount || 0);
- return updated;
- });
+ setEditPayrollForm(prev => applyPayrollDraft(prev, { deduction: val }));
  }}
  className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-mono font-bold text-slate-900 bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-500" />
  </div>
@@ -2557,12 +2638,9 @@ const [copilotInput, setCopilotInput] = useState('');
  
 //  setAiPayrollSuggestion(notes.join('\n'));
  
- setEditPayrollForm(prev => {
- const p = { ...prev, bonus: suggestBonus, deduction: suggestDed };
- p.pitAmount = ((p.baseSalary || 0) + (p.allowance || 0) + (p.bonus || 0) - (p.deduction || 0)) * 0.05;
- p.netSalary = (p.baseSalary || 0) + (p.allowance || 0) + (p.bonus || 0) - (p.deduction || 0) - (p.pitAmount || 0) - (p.insuranceAmount || 0);
- return p;
- });
+ setEditPayrollForm(prev =>
+ applyPayrollDraft(prev, { bonus: suggestBonus, deduction: suggestDed }),
+ );
  }}
  className="px-5 py-2.5 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors shadow-sm flex items-center gap-2 mr-auto"
  >
