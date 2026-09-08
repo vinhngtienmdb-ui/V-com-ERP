@@ -13,6 +13,7 @@ import { RateLimiter, rateLimitHeaders, SUGGESTED_RULES } from './src/lib/rateLi
 import { securityHeadersMiddleware } from './src/lib/securityHeaders'; // GĐ 2.5
 import { verifySePayWebhook as sepayVerify, type SePayAuthResult } from './src/lib/sepayWebhookAuth'; // GĐ 2.4
 import { verifyBearerToken } from './src/lib/bearerAuth'; // GĐ 2.4 — khoá quản trị iPOS / metrics
+import { hashPassword, verifyPassword } from './src/lib/passwordHash'; // GĐ 2.4 — băm mật khẩu iPOS/Seller
 
 dotenv.config();
 
@@ -3340,7 +3341,7 @@ ${summaryText}`;
         const { error: userErr } = await supabaseClient.from('users').insert({
           id: userId,
           tenant_id: 'tenant-vcomm-prod-01',
-          data: { email, password, role: 'seller', username: repName }
+          data: { email, password: await hashPassword(password), role: 'seller', username: repName }
         });
         if (userErr) throw userErr;
       }
@@ -3419,11 +3420,28 @@ ${summaryText}`;
         .from('users')
         .select('*')
         .eq('data->>email', email)
-        .eq('data->>password', password)
         .maybeSingle();
 
       if (!userRow) {
         return res.status(401).json({ status: 'error', message: 'Email hoặc mật khẩu không chính xác' });
+      }
+
+      // 🔴 GĐ 2.4: mật khẩu đã băm bcrypt → KHÔNG lọc theo password trên DB nữa.
+      const userData = (userRow.data || {}) as Record<string, any>;
+      const pwCheck = await verifyPassword(password, userData.password);
+      if (!pwCheck.ok) {
+        return res.status(401).json({ status: 'error', message: 'Email hoặc mật khẩu không chính xác' });
+      }
+      // Nâng cấp bản ghi cũ (plaintext) lên bcrypt trong suốt (fail-safe, không chặn login).
+      if (pwCheck.needsUpgrade) {
+        try {
+          await supabaseClient
+            .from('users')
+            .update({ data: { ...userData, password: await hashPassword(password) } })
+            .eq('id', userRow.id);
+        } catch (upErr: any) {
+          logger.warn('[Seller Login] Nâng cấp mật khẩu bcrypt thất bại (không chặn login):', upErr?.message ?? upErr);
+        }
       }
 
       // Check if user is seller or staff of seller
@@ -3882,11 +3900,28 @@ ${summaryText}`;
         .from('users')
         .select('*')
         .eq('data->>email', email)
-        .eq('data->>password', password)
         .maybeSingle();
 
       if (!userRow) {
         return res.status(401).json({ status: 'error', message: 'Email hoặc mật khẩu không đúng' });
+      }
+
+      // 🔴 GĐ 2.4: mật khẩu đã băm bcrypt → KHÔNG lọc theo password trên DB nữa.
+      const credData = (userRow.data || {}) as Record<string, any>;
+      const pwCheck = await verifyPassword(password, credData.password);
+      if (!pwCheck.ok) {
+        return res.status(401).json({ status: 'error', message: 'Email hoặc mật khẩu không đúng' });
+      }
+      // Nâng cấp bản ghi cũ (plaintext) lên bcrypt trong suốt (fail-safe, không chặn login).
+      if (pwCheck.needsUpgrade) {
+        try {
+          await supabaseClient
+            .from('users')
+            .update({ data: { ...credData, password: await hashPassword(password) } })
+            .eq('id', userRow.id);
+        } catch (upErr: any) {
+          logger.warn('[iPOS Login] Nâng cấp mật khẩu bcrypt thất bại (không chặn login):', upErr?.message ?? upErr);
+        }
       }
 
       // Check approval status
@@ -3963,7 +3998,7 @@ ${summaryText}`;
         data: {
           userId: newUserId,
           email,
-          password,
+          password: await hashPassword(password),
           full_name: fullName,
           username: fullName,
           phone: phone || '',
