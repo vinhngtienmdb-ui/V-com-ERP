@@ -2291,11 +2291,13 @@ export const addDoc = async (colRef: SupabaseCollectionRef, data: any): Promise<
     await setDoc(docRef, { id, ...data });
     return docRef;
   } catch (error: any) {
+    // ⚠️ GĐ 2.4 (pattern #84): trước đây bắt lỗi rồi TRẢ VỀ một ref GIẢ
+    // (`mock-id-...`) → caller tưởng ghi thành công, nhưng Supabase thực sự
+    // thất bại → MẤT ÂM THẦM mọi bản ghi tạo bằng addDoc (giao dịch tài chính,
+    // bút toán ví, đơn hàng...). Giờ NÉM lại cho khớp với setDoc/updateDoc:
+    // caller phải biết để báo lỗi / retry, không được giả "xong".
     console.warn(`[SupabaseAdapter] addDoc failed:`, error.message || error);
-    return {
-      id: `mock-id-${Date.now()}`,
-      path: `${colRef.tableName}/mock-id-${Date.now()}`
-    };
+    throw error;
   }
 };
 
