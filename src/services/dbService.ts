@@ -2607,10 +2607,18 @@ export const updateWalletBalance = async (
     }
     
     // 2. Add transaction record
+    // 🔴 FIX (pattern #61/#84): lưu ĐÚNG dấu của `amount`, KHÔNG dùng Math.abs.
+    // Trước đây rút 500k lưu `amount: 500000` (dương) dù số dư giảm 500k → tổng
+    // `wallet_transactions` LỆCH DẤU so với `sellers.walletBalance` (sai sổ phụ,
+    // không đối chiếu được). `type` ('withdraw'/'refund'/'payout') đã mã hoá
+    // hướng, nên lưu số có dấu là đủ và đúng.
+    // ⚠️ ATOMICITY: bước này (addDoc txn) chạy TRƯỚC bước 3 (updateDoc số dư),
+    // không có transaction → nếu ghi số dư lỗi sẽ để lại chứng từ ma. Cần đưa
+    // vào Firestore `runTransaction` (hoặc Supabase RPC) — ĐỂ DBA xử lý.
     const txnRef = collection(db, 'wallet_transactions');
     const newTxn = await addDoc(txnRef, {
       userId: sellerId,
-      amount: Math.abs(amount),
+      amount,
       type: transactionData.type,
       gateway: transactionData.gateway,
       status: transactionData.status,
