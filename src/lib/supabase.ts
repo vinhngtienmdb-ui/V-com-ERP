@@ -27,3 +27,18 @@ if (!isDemoEnv) {
 }
 
 export const supabase = createClient(finalUrl, finalKey);
+
+/**
+ * Lấy header `Authorization: Bearer <token>` từ phiên Supabase hiện tại.
+ * Dùng cho các fetch lên `/api/*` có gắn `requireAuth` ở server.ts (vd MFA).
+ * Nếu không có phiên → trả {} (route sẽ 401 fail-closed, đúng theo thiết kế).
+ */
+export async function getSupabaseAuthHeaders(): Promise<Record<string, string>> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}

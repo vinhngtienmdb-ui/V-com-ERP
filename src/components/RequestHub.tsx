@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sessionAuthHeaders } from '../lib/authHeaders';
+import { isSimulatedAiResult, withSimulatedBanner } from '../lib/aiResult';
+import { planZnsRecipient } from '../services/znsRecipient';
 import { 
  FileText, 
  Send, 
@@ -35,6 +38,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
+import { getSupabaseAuthHeaders } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
@@ -48,6 +52,7 @@ import { syncTransactionToMisa } from '../services/misaService';
 // GĐ 2.6 — audit trail chuẩn hóa (một writer, một định dạng).
 import { recordAudit } from '../services/auditTrailService';
 import { sendZnsNotification } from '../services/znsService';
+import { reportWriteFailure } from '../services/writeFailure';
 import { INITIAL_FORM_CONFIGS } from '../lib/formConfigs';
 import { RequestDetail } from './requests/RequestDetail';
 
@@ -189,7 +194,7 @@ export function RequestHub() {
 
       const res = await fetch('/api/signatures/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getSupabaseAuthHeaders()) },
         body: JSON.stringify({
           documentId: reqItem.id,
           documentData
@@ -276,43 +281,23 @@ export function RequestHub() {
  ];
  
  // Update local state
- setRequests(prevRequests => prevRequests.map(req => 
-  req.id === routingRequest.id 
-    ? { ...req, approvalLog: updatedApprovalLog, status: 'pending' } 
-    : req
- ));
- 
- // If we have selectedRequestForPrint open, update its state as well
- if (selectedRequestForPrint && selectedRequestForPrint.id === routingRequest.id) {
-  setSelectedRequestForPrint({
-    ...selectedRequestForPrint,
-    approvalLog: updatedApprovalLog,
-    status: 'pending'
-  });
- }
-
- // Also update selectedRequestForView if open
- if (selectedRequestForView && selectedRequestForView.id === routingRequest.id) {
-  setSelectedRequestForView({
-    ...selectedRequestForView,
-    approvalLog: updatedApprovalLog,
-    status: 'pending'
-  });
- }
- 
- // Check if DB record and update Firestore
- if (dbRequestIds.has(routingRequest.id)) {
-  try {
-    updateDoc(doc(db, 'requests', routingRequest.id), {
-      approvalLog: updatedApprovalLog,
-      status: 'pending',
-      updatedAt: serverTimestamp()
-    }).catch(err => console.error('Failed to update routed request in DB:', err));
-  } catch (err) {
-    console.error('Failed to update routed request in DB:', err);
+  if (dbRequestIds.has(routingRequest.id)) {
+    try {
+      await updateDoc(doc(db, 'requests', routingRequest.id), {
+        approvalLog: updatedApprovalLog,
+        status: 'pending',
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      reportWriteFailure(`luân chuyển chứng từ ${routingRequest.id}`, err);
+      addNotification(
+        'Luân chuyển thất bại',
+        `Không ghi được luân chuyển chứng từ ${routingRequest.id} xuống cơ sở dữ liệu. Vui lòng thử lại.`
+      );
+      setShowRouteModal(false);
+      return;
+    }
   }
- }
- 
  // Luân chuyển chứng từ → ghi audit trail (GĐ 2.6: một writer, một định dạng).
  // Bản cũ tự ráp payload rồi addDoc thẳng vào `admin_audit_logs` — bảng này hiện
  // KHÔNG có reader nào trong code, nên log biến mất khỏi mọi màn hình.
@@ -343,7 +328,7 @@ export function RequestHub() {
  setShowRouteModal(false);
  };
 
-  const handleStatusChange = (id: string, newStatus: string) => {
+  const handleStatusChange = async (id: string, newStatus: string) => {
     const isDbRecord = dbRequestIds.has(id);
     const currentReq = requests.find(r => r.id === id);
     if (!currentReq) return;
@@ -367,84 +352,100 @@ export function RequestHub() {
     }
 
     let updatedReq = null;
+    const config = formConfigs.find(c => c.name === currentReq.subtype);
+    const currentLevel = (currentReq as any).currentLevel || 1;
+    const workflowSteps = config?.workflow || [];
+    const totalLevels = workflowSteps.length || 1;
+    const approvalLog = (currentReq as any).approvalLog || [];
 
-    setRequests(requests.map(req => {
-      if (req.id === id) {
-        const config = formConfigs.find(c => c.name === req.subtype);
-        const currentLevel = (req as any).currentLevel || 1;
-        const workflowSteps = config?.workflow || [];
-        const totalLevels = workflowSteps.length || 1;
-        const approvalLog = (req as any).approvalLog || [];
+    if (newStatus === 'approved') {
+      if (currentLevel < totalLevels) {
+        updatedReq = { 
+          ...currentReq, 
+          currentLevel: currentLevel + 1, 
+          status: 'pending',
+          approvalLog: [...approvalLog, { 
+            level: currentLevel, 
+            status: 'approved', 
+            by: user?.displayName || 'Cấp duyệt 1', 
+            time: new Date().toLocaleString('vi-VN'),
+            stepName: `Duyệt cấp ${currentLevel}`
+          }]
+        };
+      } else {
+        updatedReq = { 
+          ...currentReq, 
+          status: 'approved',
+          approvalLog: [...approvalLog, { 
+            level: currentLevel, 
+            status: 'approved', 
+            by: user?.displayName || 'Director', 
+            time: new Date().toLocaleString('vi-VN'),
+            stepName: 'Duyệt cấp cuối'
+          }]
+        };
 
-        if (newStatus === 'approved') {
-          if (currentLevel < totalLevels) {
-            updatedReq = { 
-              ...req, 
-              currentLevel: currentLevel + 1, 
-              status: 'pending',
-              approvalLog: [...approvalLog, { 
-                level: currentLevel, 
-                status: 'approved', 
-                by: user?.displayName || 'Cấp duyệt 1', 
-                time: new Date().toLocaleString('vi-VN'),
-                stepName: `Duyệt cấp ${currentLevel}`
-              }]
-            };
-          } else {
-            updatedReq = { 
-              ...req, 
-              status: 'approved',
-              approvalLog: [...approvalLog, { 
-                level: currentLevel, 
-                status: 'approved', 
-                by: user?.displayName || 'Director', 
-                time: new Date().toLocaleString('vi-VN'),
-                stepName: 'Duyệt cấp cuối'
-              }]
-            };
-
-            // Trigger Zalo ZNS notification upon final approval
-            try {
-              sendZnsNotification('0912345678', 'ZNS_TICKET_CLOSED', {
-                'Tên_Khách_Hàng': req.requester || 'Nhân viên đề xuất',
-                'Mã_Phiếu': req.id
-              }, {
-                ticketId: req.id,
-                customerName: req.requester
-              });
-            } catch (znsErr) {
-              console.error('Failed to send approval ZNS notification:', znsErr);
-            }
-          }
-        } else if (newStatus === 'rejected') {
-          updatedReq = {
-            ...req,
-            status: 'rejected',
-            approvalLog: [...approvalLog, { 
-              level: currentLevel, 
-              status: 'rejected', 
-              by: user?.displayName || 'Manager', 
-              time: new Date().toLocaleString('vi-VN'),
-              stepName: `Từ chối tại cấp ${currentLevel}`
-            }]
-          };
+        // Trigger Zalo ZNS notification upon final approval
+        // ⚠️ Chốt cũ gửi về MỘT SỐ CỐ ĐỊNH ghi cứng trong mã nguồn: tin
+        // mang tên người đề xuất + mã phiếu đi sai người, còn người thật
+        // không bao giờ nhận được (pattern #71). Không giải được SĐT
+        // người nhận → KHÔNG gửi.
+        const znsPlan = planZnsRecipient({
+          purpose: `duyệt đề xuất ${currentReq.id}`,
+          phone: (currentReq as any).requesterPhone,
+        });
+        if (!znsPlan.ok) {
+          console.warn('[RequestHub] Bỏ qua ZNS phiếu duyệt:', znsPlan.message);
         } else {
-          updatedReq = { ...req, status: newStatus };
+          try {
+            sendZnsNotification(znsPlan.phone, 'ZNS_TICKET_CLOSED', {
+              'Tên_Khách_Hàng': currentReq.requester || 'Nhân viên đề xuất',
+              'Mã_Phiếu': currentReq.id
+            }, {
+              ticketId: currentReq.id,
+              customerName: currentReq.requester
+            });
+          } catch (znsErr) {
+            console.error('Failed to send approval ZNS notification:', znsErr);
+          }
         }
-        
-        return updatedReq;
       }
-      return req;
-    }));
+    } else if (newStatus === 'rejected') {
+      updatedReq = {
+        ...currentReq,
+        status: 'rejected',
+        approvalLog: [...approvalLog, { 
+          level: currentLevel, 
+          status: 'rejected', 
+          by: user?.displayName || 'Manager', 
+          time: new Date().toLocaleString('vi-VN'),
+          stepName: `Từ chối tại cấp ${currentLevel}`
+        }]
+      };
+    } else {
+      updatedReq = { ...currentReq, status: newStatus };
+    }
 
+    // Cập nhật state local lạc quan (onSnapshot sẽ đồng bộ lại từ Firestore).
+    const optimistic = updatedReq;
+    setRequests(requests.map(req => (req.id === id ? optimistic : req)));
+
+    // GĐ 2.4 / pattern #74: ghi DB TRƯỚC, báo lỗi nếu ghi hỏng (KHÔNG nuốt).
     if (isDbRecord && updatedReq) {
-      updateDoc(doc(db, 'requests', id), {
-        status: updatedReq.status,
-        currentLevel: updatedReq.currentLevel || 1,
-        approvalLog: updatedReq.approvalLog || [],
-        updatedAt: serverTimestamp()
-      })
-      .catch(err => console.error('RequestHub status update error:', err));
+      try {
+        await updateDoc(doc(db, 'requests', id), {
+          status: updatedReq.status,
+          currentLevel: updatedReq.currentLevel || 1,
+          approvalLog: updatedReq.approvalLog || [],
+          updatedAt: serverTimestamp()
+        });
+      } catch (err) {
+        reportWriteFailure(`cập nhật trạng thái đề xuất ${id}`, err);
+        addNotification(
+          'Cập nhật thất bại',
+          `Không ghi được thay đổi trạng thái của đề xuất ${id} xuống cơ sở dữ liệu. Vui lòng thử lại.`
+        );
+      }
     }
   };
  const [searchReqQuery, setSearchReqQuery] = useState('');
@@ -510,7 +511,7 @@ export function RequestHub() {
     // Gemini Legal Auditor thật — truyền hồ sơ để AI thẩm định theo nội dung
     const response = await fetch("/api/gemini/legal-audit", {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await sessionAuthHeaders()) },
       body: JSON.stringify({
         documentId: req.id,
         type: req.type || 'request',
@@ -522,8 +523,15 @@ export function RequestHub() {
 
     if (!response.ok) throw new Error('API Legal Audit failed');
     const data = await response.json();
-    setLegalAuditResult(data.text);
-    addNotification('Thẩm định AI hoàn tất', `Pháp chế VComm đã hoàn tất thẩm định tính tuân thủ cho hồ sơ ${req.id}.`);
+    // 🔴 LỖI ĐÁ SỬA (GĐ 2.4): thiếu GEMINI_API_KEY thì server rơi vào nhánh
+    //   sinh MẪU (`simulated: true`) nhưng client vẫn báo "đã thẩm định tuân
+    //   thủ" → hồ sơ được duyệt bằng nội dung KHÔNG có AI nào phân tích.
+    setLegalAuditResult(withSimulatedBanner(data.text, data));
+    if (isSimulatedAiResult(data)) {
+      addNotification('Thẩm định AI: KẾT QUẢ MẪU', `Máy chủ AI chưa sẵn sàng (thiếu cấu hình hoặc bị giới hạn) — hồ sơ ${req.id} chỉ nhận nội dung MẪU, KHÔNG dùng để phê duyệt.`);
+    } else {
+      addNotification('Thẩm định AI hoàn tất', `Pháp chế VComm đã hoàn tất thẩm định tính tuân thủ cho hồ sơ ${req.id}.`);
+    }
    } catch (err) {
     console.error('AI Legal Audit Error:', err);
     addNotification('Lỗi Thẩm định AI', 'Hệ thống thẩm định pháp lý AI đang bận. Vui lòng thử lại sau.');
@@ -545,7 +553,7 @@ export function RequestHub() {
         console.log('[Auto-CA] Generating RSA keypair for user:', userEmail);
         const genRes = await fetch('/api/signatures/generate-keypair', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(await getSupabaseAuthHeaders()) },
           body: JSON.stringify({
             userId: userEmail,
             tenantId: 'tenant-vcomm-prod-01',
@@ -574,7 +582,7 @@ export function RequestHub() {
 
       const signRes = await fetch('/api/signatures/sign', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getSupabaseAuthHeaders()) },
         body: JSON.stringify({
           privateKey: privateKey,
           documentId: reqObj.id,
@@ -604,20 +612,20 @@ export function RequestHub() {
         signatureDraw: sigImage
       };
 
-      setRequests(prev => prev.map(req =>
-        req.id === signingRequestId ? { ...req, ...signedData } : req
-      ));
-
-      if (selectedRequestForView && selectedRequestForView.id === signingRequestId) {
-        setSelectedRequestForView({ ...selectedRequestForView, ...signedData });
-      }
-
-      if (selectedRequestForPrint && selectedRequestForPrint.id === signingRequestId) {
-        setSelectedRequestForPrint({ ...selectedRequestForPrint, ...signedData });
-      }
-
+      // GĐ 2.4 / pattern #74: ghi DB TRƯỚC, chỉ báo "Ký số thành công" sau khi
+      // ghi xong. KHÔNG tự sửa state local rồi nuốt lỗi — onSnapshot sẽ đồng bộ
+      // state đã ký từ Firestore khi ghi thành công.
       if (dbRequestIds.has(signingRequestId)) {
-        await updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() });
+        try {
+          await updateDoc(doc(db, 'requests', signingRequestId), { ...signedData, updatedAt: serverTimestamp() });
+        } catch (err) {
+          reportWriteFailure(`ký số đề xuất ${signingRequestId}`, err);
+          addNotification(
+            'Ký số thất bại',
+            `Đã ký điện tử nhưng KHÔNG ghi được chữ ký của đề xuất ${signingRequestId} xuống cơ sở dữ liệu. Vui lòng thử lại.`
+          );
+          return;
+        }
       }
 
       addNotification('Ký số thành công', `Đề xuất mã ${signingRequestId} đã được niêm phong điện tử bằng thuật toán RSA.`);
