@@ -12,6 +12,7 @@ import { logger } from './src/lib/logger';
 import { RateLimiter, rateLimitHeaders, SUGGESTED_RULES } from './src/lib/rateLimiter'; // GĐ 3.4
 import { securityHeadersMiddleware } from './src/lib/securityHeaders'; // GĐ 2.5
 import { verifySePayWebhook as sepayVerify, type SePayAuthResult } from './src/lib/sepayWebhookAuth'; // GĐ 2.4
+import { verifyBearerToken } from './src/lib/bearerAuth'; // GĐ 2.4 — khoá quản trị iPOS / metrics
 
 dotenv.config();
 
@@ -251,7 +252,12 @@ async function startServer() {
     res.status(ready ? 200 : 503).json({ status: ready ? 'ready' : 'not_ready', checks });
   });
 
-  app.get('/metrics', (_req, res) => {
+  app.get('/metrics', (req, res) => {
+    // Khoá tuỳ chọn: nếu đặt METRICS_TOKEN → yêu cầu `Bearer <METRICS_TOKEN>`.
+    // Nếu chưa đặt → vẫn MỞ (cảnh báo ở trên) để không phá Prometheus scrape.
+    if (METRICS_TOKEN && !verifyBearerToken(req.headers['authorization'], METRICS_TOKEN)) {
+      return res.status(401).json({ status: 'error', message: 'Thiếu hoặc sai METRICS_TOKEN.' });
+    }
     const m = process.memoryUsage();
     res.setHeader('Content-Type', 'text/plain; version=0.0.4');
     res.status(200).send(
@@ -404,6 +410,49 @@ async function startServer() {
       return res.status(503).json({ status: 'error', message: 'Không thể xác thực lúc này.' });
     }
   };
+
+  // --------------------------------------------------------------------------
+  // GĐ 2.4 — KHOÁ QUẢN TRỊ iPOS (cho endpoint duyệt/từ chối/truy vấn tài khoản)
+  // --------------------------------------------------------------------------
+  // 🔴 LỖI BẢO MẬT ĐÃ SỬA (mức độ: leo quyền / lộ PII / tự duyệt tài khoản):
+  //   Trước đây `/api/ipos/accounts` (GET danh sách), `/api/ipos/accounts/approve`
+  //   và `/api/ipos/accounts/reject` HOÀN TOÀN KHÔNG CÓ XÁC THỰC. Bất kỳ ai gọi
+  //   được server đều: (1) liệt kê toàn bộ email/SĐT/tên/địa chỉ chi nhánh iPOS
+  //   (lộ PII), (2) TỰ DUYỆT tài khoản iPOS tự đăng ký → thành người dùng đã đăng
+  //   nhập, (3) kết hợp với register nhận `role` từ body → tự phong admin.
+  //
+  // THIẾT KẾ: endpoint nội bộ quản trị dùng khoá tĩnh `IPOS_ADMIN_API_KEY`
+  // (Bearer). Fail-closed: chưa đặt khoá → mọi request bị TỪ CHỐI (503) + cảnh
+  // báo khi khởi động (giống mẫu SePay). Logic so khớp nằm ở `src/lib/bearerAuth.ts`
+  // (có unit test, timing-safe).
+  // --------------------------------------------------------------------------
+  const IPOS_ADMIN_API_KEY = (process.env.IPOS_ADMIN_API_KEY || '').trim();
+  if (!IPOS_ADMIN_API_KEY) {
+    logger.warn(
+      '[iPOS Admin] CHƯA CÓ IPOS_ADMIN_API_KEY → /api/ipos/accounts/* (xem/duyệt/từ chối) '
+      + 'và /api/ipos/licenses (đọc/ghi bản quyền) bị TỪ CHỐI (503) cho tới khi đặt khoá. '
+      + 'Đặt IPOS_ADMIN_API_KEY trên server để mở lại quản trị iPOS.'
+    );
+  }
+  const requireIposAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (!IPOS_ADMIN_API_KEY) {
+      return res.status(503).json({ status: 'error', message: 'Server chưa cấu hình khoá quản trị iPOS.' });
+    }
+    if (!verifyBearerToken(req.headers['authorization'], IPOS_ADMIN_API_KEY)) {
+      return res.status(401).json({ status: 'error', message: 'Thiếu hoặc sai khoá quản trị iPOS.' });
+    }
+    return next();
+  };
+
+  // Khoá tuỳ chọn khoá /metrics (Prometheus scrape). Nếu không đặt → vẫn MỞ nhưng
+  // cảnh báo (để không phá scraped tần suất cao); khuyến nghị đặt METRICS_TOKEN.
+  const METRICS_TOKEN = (process.env.METRICS_TOKEN || '').trim();
+  if (!METRICS_TOKEN) {
+    logger.warn(
+      '[metrics] CHƯA CÓ METRICS_TOKEN → /metrics ĐANG MỞ (ai gọi được cũng xem process '
+      + 'memory/uptime/thống kê outbox). Đặt METRICS_TOKEN để khoá bằng Bearer.'
+    );
+  }
 
   // --------------------------------------------------------------------------
   // GĐ 2.4 — XÁC THỰC WEBHOOK SePay
@@ -2559,11 +2608,11 @@ Format:
   });
 
   // --- INTERNAL APIS FOR IPOS LICENSE MANAGEMENT ---
-  app.get('/api/ipos/licenses', (req, res) => {
+  app.get('/api/ipos/licenses', requireIposAdmin, (req, res) => {
     res.json({ status: 'success', licenses: readLicenses() });
   });
 
-  app.post('/api/ipos/licenses', (req, res) => {
+  app.post('/api/ipos/licenses', requireIposAdmin, (req, res) => {
     const { licenses } = req.body;
     if (Array.isArray(licenses)) {
       writeLicenses(licenses);
@@ -3882,7 +3931,11 @@ ${summaryText}`;
 
   // 1b. iPOS Auth: Register (pending ERP admin approval)
   app.post('/api/ipos/auth/register', rateLimit(authRateLimiter), async (req, res) => {
-    const { email, password, fullName, phone, storeName, storeAddress, role } = req.body;
+    const { email, password, fullName, phone, storeName, storeAddress } = req.body;
+    // ⚠️ KHÔNG đọc `role`/`ipos_role` từ req.body: nếu để caller tự truyền, kẻ tấn
+    // công đăng ký với `role: 'admin'` sẽ tự phong quyền admin (pattern: iPOS
+    // register leo quyền). Tài khoản mới LUÔN là cashier, chỉ ERP admin mới được
+    // nâng quyền qua luồng duyệt riêng (đã bắt bằng requireIposAdmin).
     if (!email || !password || !fullName || !storeName) {
       return res.status(400).json({ 
         status: 'error', 
@@ -3915,7 +3968,7 @@ ${summaryText}`;
           username: fullName,
           phone: phone || '',
           role: 'cashier',
-          ipos_role: role || 'cashier',
+          ipos_role: 'cashier', // cố định, KHÔNG lấy từ req.body (chặn leo quyền)
           ipos_status: 'pending_approval',
           store_name: storeName,
           store_address: storeAddress || '',
@@ -3940,7 +3993,7 @@ ${summaryText}`;
   });
 
   // 1c. iPOS Accounts: Get List, Approve, Reject
-  app.get('/api/ipos/accounts', async (req, res) => {
+  app.get('/api/ipos/accounts', requireIposAdmin, async (req, res) => {
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
       const { data, error } = await supabaseClient
@@ -3972,7 +4025,7 @@ ${summaryText}`;
     }
   });
 
-  app.post('/api/ipos/accounts/approve', async (req, res) => {
+  app.post('/api/ipos/accounts/approve', requireIposAdmin, async (req, res) => {
     const { userId } = req.body;
     if (!userId) {
       return res.status(400).json({ status: 'error', message: 'Thiếu mã tài khoản (userId)' });
@@ -4006,7 +4059,7 @@ ${summaryText}`;
     }
   });
 
-  app.post('/api/ipos/accounts/reject', async (req, res) => {
+  app.post('/api/ipos/accounts/reject', requireIposAdmin, async (req, res) => {
     const { userId } = req.body;
     if (!userId) {
       return res.status(400).json({ status: 'error', message: 'Thiếu mã tài khoản (userId)' });
