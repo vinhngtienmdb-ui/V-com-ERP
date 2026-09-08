@@ -4130,7 +4130,7 @@ ${summaryText}`;
 
 
   // 2. iPOS Products Get (fetched from Supabase)
-  app.get('/api/ipos/products', async (req, res) => {
+  app.get('/api/ipos/products', authenticateOpenApi, async (req, res) => {
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
       const { data, error } = await supabaseClient
@@ -4158,7 +4158,7 @@ ${summaryText}`;
   });
 
   // 3. iPOS Order Checkout (Resilient checkout offline log, O2O CRM integration)
-  app.post('/api/ipos/checkout', async (req, res) => {
+  app.post('/api/ipos/checkout', authenticateOpenApi, async (req, res) => {
     const { items, total, customerPhone, cashierId, storeId } = req.body;
     if (!items || items.length === 0) {
       return res.status(400).json({ status: 'error', message: 'Giỏ hàng rỗng' });
@@ -4257,7 +4257,7 @@ ${summaryText}`;
   });
 
   // 4. iPOS O2O online cart sync lookup
-  app.get('/api/ipos/o2o-cart', async (req, res) => {
+  app.get('/api/ipos/o2o-cart', authenticateOpenApi, async (req, res) => {
     const { phone } = req.query;
     if (!phone) {
       return res.status(400).json({ status: 'error', message: 'Thiếu số điện thoại' });
