@@ -50,6 +50,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../services/dbService';
 import { validateVoucherApproval } from '../services/warehouseVoucherApproval';
+import { withCannedBanner } from '../lib/aiResult';
 import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -854,7 +855,7 @@ export function WarehouseModule() {
         });
       } catch (aiErr) {
         console.warn('AI Stock reorder proposal failed, using fallback template:', aiErr);
-        content = `Hệ thống phân tích AI dự báo mặt hàng ${item.productName} (${item.productId}) có lượng tiêu thụ trung bình hàng ngày là ${item.dailyConsumption} đơn vị, tồn kho hiện tại còn ${item.currentStock} đơn vị và dự kiến sẽ hết hàng trong ${item.daysOfStockLeft} ngày. Khuyến nghị nhập thêm gấp ${item.recommendedOrderQty} đơn vị để đáp ứng nhu cầu 14 ngày tới.`;
+        content = withCannedBanner(`Hệ thống phân tích AI dự báo mặt hàng ${item.productName} (${item.productId}) có lượng tiêu thụ trung bình hàng ngày là ${item.dailyConsumption} đơn vị, tồn kho hiện tại còn ${item.currentStock} đơn vị và dự kiến sẽ hết hàng trong ${item.daysOfStockLeft} ngày. Khuyến nghị nhập thêm gấp ${item.recommendedOrderQty} đơn vị để đáp ứng nhu cầu 14 ngày tới.`);
       }
       
       await addDoc(colRef, {
@@ -863,7 +864,7 @@ export function WarehouseModule() {
         status: 'pending',
         content,
         createdAt: new Date().toISOString(),
-        createdBy: staffInfo?.email || 'system-ai-forecasting'
+        createdBy: staffInfo?.email || 'system-reorder-template'
       });
       
       setRequestSuccessMessage(`Đã tạo thành công đề xuất mua hàng cho ${item.productName}!`);
