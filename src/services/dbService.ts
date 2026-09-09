@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { safeLocalStorage } from '../lib/storage';
 import { createLogger } from '../lib/logger';
+import { reportWriteFailure } from './writeFailure';
 
 export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 
@@ -2125,7 +2126,12 @@ async function handleOrderPaymentTrigger(orderId: string, orderData: any, tenant
         console.log(`[Order-Payment-Trigger] Automatically recorded payment ${paymentId} for order ${orderId}`);
       }
     } catch (e) {
-      console.error('[Order-Payment-Trigger] Failed to check/record payment:', e);
+      // 🔴 FIX (pattern #74): trước đây chỉ console.error → mất THẦM LẶNG bản ghi
+      // thanh toán (đơn đã lưu `paid` nhưng bảng `payments` không có dòng tương ứng,
+      // gây hụt đối soát). Giờ báo rõ via reportWriteFailure (log + thông điệp
+      // "chưa được lưu") thay vì nuốt lỗi. KHÔNG rethrow: hàm này chạy SAU khi
+      // đơn đã upsert thành công, ném sẽ làm đơn được báo lỗi rồi user retry → lặp đơn.
+      reportWriteFailure(`ghi nhận thanh toán đơn hàng ${orderId}`, e);
     }
   }
 }
