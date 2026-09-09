@@ -116,7 +116,7 @@ function getGeminiClient() {
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   // --------------------------------------------------------------------------
   // GĐ 2.5 — SECURITY HEADERS (đặt TRƯỚC mọi route để phủ cả response lỗi)
