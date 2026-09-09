@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
 import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../services/dbService';
+import { closingCanonical, hashLedgerClosing } from '../services/ledgerClosing';
 import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
 
@@ -264,8 +265,19 @@ export function Finance() {
 
       await setDoc(doc(db, 'journal_entries', closeEntryId), closeEntry);
 
-      // Generate hash representing the ledger state being locked
-      const ledgerContentHash = String(Math.abs(netProfit) + totalRevenue + totalExpenses);
+      // 🔴 FIX (pattern #75): vân tay khóa sổ = SHA-256 trên chuỗi canonical GIỮ DẤU dấu,
+      // gắn kỳ + ngày chốt + bút toán. Không dùng Math.abs (lãi/lỗ cùng tổng → cùng vân tay,
+      // sửa sổ sau khóa không phát hiện được). Thiếu Web Crypto → hashLedgerClosing ném.
+      const ledgerCanonical = closingCanonical({
+        year: closingYear,
+        month: closingMonth,
+        endOfMonthISO: endOfMonth.toISOString(),
+        netProfit,
+        totalRevenue,
+        totalExpenses,
+        entries: closeItems,
+      });
+      const ledgerContentHash = await hashLedgerClosing(ledgerCanonical);
 
       // Remote Cloud HSM signing — qua Integration Config (server proxy giữ key).
       // Chưa cấu hình HSM → fallback chữ ký local + cảnh báo rõ (khóa sổ vẫn hợp lệ,
