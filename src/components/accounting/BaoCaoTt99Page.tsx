@@ -512,7 +512,7 @@ export function BaoCaoTt99Page() {
       {/* INTERACTIVE DRILL-DOWN SIDE DRAWER */}
       {drillDownAccount && drillDownSoCai && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-2xl h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="w-full max-w-3xl xl:max-w-4xl h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Drawer Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
               <div>

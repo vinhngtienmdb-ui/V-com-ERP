@@ -20,7 +20,11 @@ import {
   ChevronDown,
   Building2,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Maximize2,
+  Minimize2,
+  Expand,
+  Shrink
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ThietLapCongTyModal, ThietLapCongTy } from './ThietLapCongTyModal';
@@ -48,6 +52,10 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('vcomm_finance_theme') === 'dark';
   });
+  const [isWidescreen, setIsWidescreen] = useState<boolean>(() => {
+    return localStorage.getItem('vcomm_finance_widescreen') !== 'false';
+  });
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isCompanyConfigOpen, setIsCompanyConfigOpen] = useState(false);
   const [showLegacyMenu, setShowLegacyMenu] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
@@ -61,6 +69,38 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
     });
   };
 
+  // Mở rộng / Thu gọn không gian làm việc
+  const toggleWidescreen = () => {
+    setIsWidescreen(prev => {
+      const next = !prev;
+      localStorage.setItem('vcomm_finance_widescreen', String(next));
+      return next;
+    });
+  };
+
+  // Toàn màn hình trình duyệt (Native Fullscreen)
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
+
+  useEffect(() => {
+    const onFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const containerWidthClass = isWidescreen 
+    ? "w-full max-w-[2100px] px-3 sm:px-5 lg:px-7 mx-auto" 
+    : "max-w-7xl mx-auto px-4";
+
   // Keyboard shortcut listener toàn cục
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -73,6 +113,11 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
       if (e.key === 'F1') {
         e.preventDefault();
         setShowKeyboardHelp(prev => !prev);
+      }
+      // Alt + W: Bật/Tắt mở rộng màn hình làm việc
+      if (e.altKey && (e.key === 'w' || e.key === 'W')) {
+        e.preventDefault();
+        toggleWidescreen();
       }
       // Số 1..4 với Alt để chuyển nhanh 4 tab
       if (e.altKey && e.key === '1') { e.preventDefault(); setActiveTab('s03_nkc'); }
@@ -116,7 +161,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         "sticky top-0 z-30 border-b px-4 py-2.5 backdrop-blur-md transition-colors",
         isDarkMode ? "bg-[#111827]/90 border-slate-800" : "bg-white/90 border-slate-200/90 shadow-2xs"
       )}>
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div className={cn(containerWidthClass, "flex flex-wrap items-center justify-between gap-3")}>
           {/* Left: Brand & Company Legal Info */}
           <div className="flex items-center gap-3">
             <div className={cn(
@@ -162,6 +207,36 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
             >
               <HelpCircle className="w-4 h-4" />
               <span className="hidden sm:inline text-[11px]">Phím tắt (F1)</span>
+            </button>
+
+            {/* Widescreen / Fluid Toggle */}
+            <button
+              onClick={toggleWidescreen}
+              className={cn(
+                "p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold",
+                isDarkMode
+                  ? isWidescreen ? "bg-blue-950 text-blue-400 border border-blue-800" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  : isWidescreen ? "bg-blue-50 text-blue-700 border border-blue-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              )}
+              title={isWidescreen ? "Thu gọn màn hình về dạng hộp (1280px - Alt+W)" : "Mở rộng tối đa không gian làm việc (Toàn chiều rộng - Alt+W)"}
+            >
+              {isWidescreen ? <Minimize2 className="w-4 h-4 text-blue-500" /> : <Maximize2 className="w-4 h-4" />}
+              <span className="hidden lg:inline text-[11px]">{isWidescreen ? "Thu gọn" : "Mở rộng (Alt+W)"}</span>
+            </button>
+
+            {/* Browser Native Fullscreen Toggle */}
+            <button
+              onClick={toggleFullscreen}
+              className={cn(
+                "p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-xs font-semibold hidden xl:flex",
+                isDarkMode
+                  ? isFullscreen ? "bg-emerald-950 text-emerald-400 border border-emerald-800" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  : isFullscreen ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              )}
+              title={isFullscreen ? "Thoát toàn màn hình (Esc)" : "Toàn màn hình trình duyệt (F11)"}
+            >
+              {isFullscreen ? <Shrink className="w-4 h-4 text-emerald-500" /> : <Expand className="w-4 h-4" />}
+              <span className="text-[11px]">{isFullscreen ? "Cửa sổ" : "Toàn cảnh"}</span>
             </button>
 
             {/* Dark / Light Mode Switcher */}
@@ -210,7 +285,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         "border-b sticky top-[53px] z-20 backdrop-blur-md transition-colors",
         isDarkMode ? "bg-[#0B0F17]/95 border-slate-800/80" : "bg-white/95 border-slate-200/80 shadow-2xs"
       )}>
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between overflow-x-auto scrollbar-none">
+        <div className={cn(containerWidthClass, "flex items-center justify-between overflow-x-auto scrollbar-none")}>
           <div className="flex items-center gap-1 py-1.5">
             {[
               { id: 's03_nkc', label: '1. Nhật ký chung (S03-DN)', sub: 'Bàn phím F3/F4', icon: BookOpen, hotkey: 'Alt+1' },
@@ -297,7 +372,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
       </div>
 
       {/* 3. MAIN WORKSPACE */}
-      <main className="max-w-7xl mx-auto px-4 py-4">
+      <main className={cn(containerWidthClass, "py-3")}>
         {activeTab === 's03_nkc' && (
           <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
             <NhatKyChungPage />
@@ -328,7 +403,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         "fixed bottom-0 left-0 right-0 z-30 border-t px-4 py-2 backdrop-blur-md text-xs transition-colors",
         isDarkMode ? "bg-[#0B0F17]/95 border-slate-800 text-slate-400" : "bg-white/95 border-slate-200 text-slate-600 shadow-lg"
       )}>
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-[11px]">
+        <div className={cn(containerWidthClass, "flex flex-wrap items-center justify-between gap-2 text-[11px]")}>
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Phím tắt Speed-Entry:</span>
             <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
@@ -365,6 +440,12 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
               F12
             </span>
             <span className="text-slate-500">Ghi sổ</span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+
+            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-600">
+              Alt+W
+            </span>
+            <span className="text-slate-500">{isWidescreen ? "Thu hẹp" : "Mở rộng"}</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -434,6 +515,22 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
                   <div className="font-mono font-bold text-emerald-500">F12</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Ghi sổ chính thức chứng từ</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+                  <div className="font-mono font-bold text-purple-500">Alt + W</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">Bật/Tắt mở rộng màn hình làm việc</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+                  <div className="font-mono font-bold text-amber-500">Ctrl + Space</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">Đảo chiều Nợ ⇄ Có trên dòng định khoản</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+                  <div className="font-mono font-bold text-blue-500">Alt + 1..4</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">Chuyển nhanh giữa 4 phân hệ chính</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+                  <div className="font-mono font-bold text-emerald-500">F11</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">Toàn màn hình trình duyệt (Toàn cảnh)</div>
                 </div>
               </div>
             </div>

@@ -353,6 +353,7 @@ function AppLayout() {
   }, []);
 
   const isHomePage = location.pathname === '/';
+  const isFinancePage = location.pathname.startsWith('/finance') || location.pathname.startsWith('/ho-so');
   const isWorkspaceLikePage = ['/omnichat', '/chat', '/operations', '/bi'].includes(location.pathname);
 
   return (
@@ -364,7 +365,9 @@ function AppLayout() {
           ? "h-screen w-screen overflow-hidden" 
           : isWorkspaceLikePage
             ? "flex-1 overflow-hidden bg-slate-100"
-            : "flex-1 overflow-y-auto bg-slate-100 custom-scrollbar"
+            : isFinancePage
+              ? "flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0B0F17] custom-scrollbar"
+              : "flex-1 overflow-y-auto bg-slate-100 custom-scrollbar"
       )}>
         <div className={cn(
           "h-full w-full", 
@@ -372,7 +375,9 @@ function AppLayout() {
             ? "" 
             : isWorkspaceLikePage 
               ? "p-2 sm:p-2.5 overflow-hidden flex flex-col" 
-              : "p-4 md:p-6 lg:p-8"
+              : isFinancePage
+                ? "p-0"
+                : "p-4 md:p-6 lg:p-8"
         )}>
           <ErrorBoundary>
             <Suspense fallback={<LoadingScreen />}>
