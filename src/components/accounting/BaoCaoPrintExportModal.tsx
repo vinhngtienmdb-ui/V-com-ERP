@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
-import { Printer, Download, FileText, FileSpreadsheet, X, Eye, CheckCircle2 } from 'lucide-react';
+import React, { useRef, useState, useMemo } from 'react';
+import { Printer, Download, FileText, FileSpreadsheet, X, Eye, CheckCircle2, Code2, Copy, Check, ChevronDown, Sparkles, AlertCircle, FileCode } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { formatCurrency, cn } from '../../lib/utils';
 import { formatDateVN } from '../../lib/keToan/dateUtils';
 import { ThietLapCongTy } from './ThietLapCongTyModal';
+import { buildTaxXmlDocument, exportTaxXmlFile, generateTaxXmlFileName, validateTaxXmlContent } from '../../lib/keToan/taxXmlExportService';
 
 interface BaoCaoPrintExportModalProps {
   isOpen: boolean;
@@ -50,6 +51,58 @@ export const BaoCaoPrintExportModal: React.FC<BaoCaoPrintExportModalProps> = ({
     kyKeToan: 'THANG',
     phuongPhapKk: 'KKTX',
     linhVucKinhDoanh: ['E_COMMERCE', 'RETAIL', 'SERVICE']
+  };
+
+  const [previewMode, setPreviewMode] = useState<'A4' | 'XML'>('A4');
+  const [xmlExportType, setXmlExportType] = useState<'ALL_BCTC' | 'CURRENT'>('ALL_BCTC');
+  const [copiedXml, setCopiedXml] = useState(false);
+  const [showXmlDropdown, setShowXmlDropdown] = useState(false);
+
+  const xmlContent = useMemo(() => {
+    return buildTaxXmlDocument({
+      reportType: xmlExportType === 'ALL_BCTC' ? 'ALL_BCTC' : reportType,
+      companyInfo: defaultCompany,
+      fromDate,
+      toDate,
+      selectedAccount,
+      trialBalance,
+      nhatKyChung,
+      soCai,
+      b01,
+      b02
+    });
+  }, [xmlExportType, reportType, defaultCompany, fromDate, toDate, selectedAccount, trialBalance, nhatKyChung, soCai, b01, b02]);
+
+  const xmlValidation = useMemo(() => {
+    return validateTaxXmlContent(xmlContent);
+  }, [xmlContent]);
+
+  const handleExportXml = (type: 'ALL_BCTC' | 'CURRENT' = 'ALL_BCTC') => {
+    const xml = buildTaxXmlDocument({
+      reportType: type === 'ALL_BCTC' ? 'ALL_BCTC' : reportType,
+      companyInfo: defaultCompany,
+      fromDate,
+      toDate,
+      selectedAccount,
+      trialBalance,
+      nhatKyChung,
+      soCai,
+      b01,
+      b02
+    });
+    const fileName = generateTaxXmlFileName(
+      defaultCompany.maSoThue,
+      toDate ? toDate.substring(0, 4) : '2026',
+      type === 'ALL_BCTC' ? 'ALL_BCTC' : reportType
+    );
+    exportTaxXmlFile(xml, fileName);
+    setShowXmlDropdown(false);
+  };
+
+  const handleCopyXml = () => {
+    navigator.clipboard.writeText(xmlContent);
+    setCopiedXml(true);
+    setTimeout(() => setCopiedXml(false), 2000);
   };
 
   const getReportMeta = () => {
@@ -243,34 +296,105 @@ export const BaoCaoPrintExportModal: React.FC<BaoCaoPrintExportModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               title="In trực tiếp ra máy in hoặc Lưu dưới dạng PDF (Ctrl+P)"
             >
               <Printer className="w-4 h-4" />
-              <span>In trực tiếp / PDF</span>
+              <span>In / PDF</span>
             </button>
 
             <button
               onClick={handleExportExcel}
-              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               title="Xuất bảng tính Microsoft Excel (.xlsx)"
             >
               <FileSpreadsheet className="w-4 h-4" />
-              <span>Xuất Excel (.xlsx)</span>
+              <span>Excel (.xlsx)</span>
             </button>
 
             <button
               onClick={handleExportWord}
-              className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               title="Xuất văn bản Microsoft Word (.doc)"
             >
               <FileText className="w-4 h-4" />
-              <span>Xuất Word (.doc)</span>
+              <span>Word (.doc)</span>
             </button>
+
+            {/* Nút Xuất XML nộp Thuế Điện Tử */}
+            <div className="relative">
+              <div className="inline-flex rounded-lg shadow-2xs">
+                <button
+                  onClick={() => handleExportXml('ALL_BCTC')}
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 rounded-l-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border-r border-amber-600"
+                  title="Xuất trọn bộ Báo cáo tài chính XML nộp thuedientu.gdt.gov.vn"
+                >
+                  <FileCode className="w-4 h-4 text-slate-950" />
+                  <span>Xuất XML (eTax)</span>
+                </button>
+                <button
+                  onClick={() => setShowXmlDropdown(!showXmlDropdown)}
+                  className="px-1.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-r-lg transition-all cursor-pointer"
+                  title="Tùy chọn kết xuất XML"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {showXmlDropdown && (
+                <div className="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs">
+                  <button
+                    onClick={() => {
+                      setXmlExportType('ALL_BCTC');
+                      handleExportXml('ALL_BCTC');
+                    }}
+                    className="w-full text-left px-3.5 py-2 hover:bg-amber-50 dark:hover:bg-slate-700 flex flex-col gap-0.5 cursor-pointer"
+                  >
+                    <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      Trọn Bộ BCTC XML nộp Thuế
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Gồm B01-DN, B02-DN, F01-DN (chuẩn eTax)
+                    </span>
+                  </button>
+
+                  <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
+
+                  <button
+                    onClick={() => {
+                      setXmlExportType('CURRENT');
+                      handleExportXml('CURRENT');
+                    }}
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex flex-col gap-0.5 cursor-pointer"
+                  >
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      Chỉ xuất riêng {meta.code} XML
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Phục vụ lưu trữ & giải trình thanh tra
+                    </span>
+                  </button>
+
+                  <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
+
+                  <button
+                    onClick={() => {
+                      setPreviewMode('XML');
+                      setShowXmlDropdown(false);
+                    }}
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 text-blue-600 font-semibold cursor-pointer"
+                  >
+                    <Code2 className="w-4 h-4" />
+                    <span>Xem trước mã nguồn XML</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors ml-2 cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors ml-1 cursor-pointer"
               title="Đóng (Esc)"
             >
               <X className="w-5 h-5" />
@@ -278,12 +402,157 @@ export const BaoCaoPrintExportModal: React.FC<BaoCaoPrintExportModalProps> = ({
           </div>
         </div>
 
-        {/* Printable / Preview Document Container */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-slate-200/50 flex justify-center custom-scrollbar">
-          <div 
-            ref={printAreaRef}
-            className="w-full max-w-[800px] bg-white p-8 md:p-12 shadow-md border border-slate-200/90 rounded-xl font-sans text-slate-900 printable-report-sheet"
-          >
+        {/* View Mode Switcher Tabs */}
+        <div className="px-6 py-2 bg-slate-100 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
+          <div className="flex items-center gap-1.5 bg-slate-200/80 dark:bg-slate-900 p-1 rounded-lg">
+            <button
+              onClick={() => setPreviewMode('A4')}
+              className={cn(
+                "px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+                previewMode === 'A4'
+                  ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              )}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Văn bản in ấn (Mẫu A4)</span>
+            </button>
+
+            <button
+              onClick={() => setPreviewMode('XML')}
+              className={cn(
+                "px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+                previewMode === 'XML'
+                  ? "bg-slate-900 text-amber-300 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              )}
+            >
+              <Code2 className="w-3.5 h-3.5 text-amber-500" />
+              <span>Cấu trúc XML nộp Thuế (eTax Schema)</span>
+              <span className="px-1.5 py-0.2 rounded text-[10px] bg-amber-100 text-amber-800 font-extrabold ml-1">
+                GDT
+              </span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-[11px]">
+            {previewMode === 'A4' ? (
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                Chuẩn hóa Thông tư 99/2025/TT-BTC
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                Tương thích thuedientu.gdt.gov.vn & iTaxViewer
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content Container (XML Schema Preview vs A4 Printable Document) */}
+        {previewMode === 'XML' ? (
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-900 text-slate-100 flex flex-col gap-4 custom-scrollbar">
+            {/* Top XML Action Ribbon */}
+            <div className="bg-slate-800/90 border border-slate-700 p-3 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-md shrink-0">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-300">Phạm vi XML:</span>
+                  <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-700 text-xs">
+                    <button
+                      onClick={() => setXmlExportType('ALL_BCTC')}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer",
+                        xmlExportType === 'ALL_BCTC'
+                          ? "bg-amber-500 text-slate-950 font-bold shadow-xs"
+                          : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      Trọn bộ BCTC (B01+B02+F01)
+                    </button>
+                    <button
+                      onClick={() => setXmlExportType('CURRENT')}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer",
+                        xmlExportType === 'CURRENT'
+                          ? "bg-amber-500 text-slate-950 font-bold shadow-xs"
+                          : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      Chỉ riêng {meta.code}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="h-4 w-px bg-slate-700 hidden sm:block" />
+
+                <div className="flex items-center gap-1.5 text-[11px]">
+                  <span className="px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 font-mono">
+                    MST: {defaultCompany.maSoThue}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 font-mono">
+                    Kỳ: {toDate ? toDate.substring(0, 4) : '2026'}
+                  </span>
+                  {xmlValidation.isValid ? (
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold flex items-center gap-1 border border-emerald-500/30">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Chuẩn XSD Hợp lệ
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-semibold flex items-center gap-1 border border-rose-500/30">
+                      <AlertCircle className="w-3.5 h-3.5" /> Cảnh báo định dạng
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopyXml}
+                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border border-slate-600"
+                >
+                  {copiedXml ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedXml ? 'Đã sao chép XML' : 'Sao chép XML'}</span>
+                </button>
+
+                <button
+                  onClick={() => handleExportXml(xmlExportType)}
+                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Tải tệp .xml nộp Thuế</span>
+                </button>
+              </div>
+            </div>
+
+            {/* XML Code Container */}
+            <div className="flex-1 min-h-[360px] bg-slate-950 border border-slate-800 rounded-xl p-4 overflow-auto custom-scrollbar font-mono text-xs text-amber-200/90 leading-relaxed shadow-inner select-text">
+              <pre className="whitespace-pre">{xmlContent}</pre>
+            </div>
+
+            {/* Tax Filing 5-step Guidance */}
+            <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 text-xs text-slate-300 space-y-2 shrink-0">
+              <div className="flex items-center gap-2 text-amber-400 font-bold">
+                <Sparkles className="w-4 h-4" />
+                <span>Quy trình 5 bước nộp Báo cáo tài chính XML trên cổng thuedientu.gdt.gov.vn:</span>
+              </div>
+              <ol className="list-decimal list-inside space-y-1 text-slate-300 pl-1">
+                <li>Nhấn <strong>"Tải tệp .xml nộp Thuế"</strong> để lưu tệp tin <code>BCTC_{defaultCompany.maSoThue}_*.xml</code> về máy tính (không đổi tên tệp).</li>
+                <li>(Khuyên dùng) Mở tệp XML bằng ứng dụng <strong>iTaxViewer</strong> chính thức của Tổng cục Thuế để rà soát mẫu biểu trước khi nộp.</li>
+                <li>Đăng nhập cổng thuế <a href="https://thuedientu.gdt.gov.vn" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">thuedientu.gdt.gov.vn</a> bằng tài khoản Doanh nghiệp (MST-QL).</li>
+                <li>Vào menu <strong>Khai thuế</strong> &rarr; Chọn chức năng <strong>Nộp tờ khai XML</strong> &rarr; Bấm <strong>Chọn tệp tờ khai</strong> và chọn file vừa tải.</li>
+                <li>Cắm <strong>USB Token chữ ký số</strong> (hoặc chọn Ký số HSM/SmartCA), nhấn <strong>Ký điện tử</strong>, nhập mã PIN và bấm <strong>Nộp tờ khai</strong>.</li>
+              </ol>
+              <p className="text-[11px] text-slate-400 italic pt-0.5">
+                * Ghi chú: Nếu cơ quan thuế yêu cầu bản Thuyết minh BCTC (B09-DN), bạn chỉ cần chọn tab "Văn bản in ấn (Mẫu A4)" phía trên &rarr; bấm "Xuất Word (.doc)" hoặc "Xuất Excel (.xlsx)" để đính kèm phụ lục theo quy định.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-slate-200/50 flex justify-center custom-scrollbar">
+            <div 
+              ref={printAreaRef}
+              className="w-full max-w-[800px] bg-white p-8 md:p-12 shadow-md border border-slate-200/90 rounded-xl font-sans text-slate-900 printable-report-sheet"
+            >
             {/* 1. Header Đơn vị & Mẫu số */}
             <div className="flex justify-between items-start text-xs border-b pb-4 mb-6">
               <div className="space-y-0.5 max-w-[450px]">
@@ -540,6 +809,7 @@ export const BaoCaoPrintExportModal: React.FC<BaoCaoPrintExportModalProps> = ({
 
           </div>
         </div>
+        )}
       </div>
     </div>
   );
