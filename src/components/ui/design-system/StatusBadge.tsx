@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { cn } from '../../../lib/utils';
 import { LucideIcon } from 'lucide-react';
 
@@ -6,8 +6,10 @@ export type StatusVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral
 export type BadgeSize = 'xs' | 'sm' | 'md';
 
 interface StatusBadgeProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   variant?: StatusVariant;
+  status?: StatusVariant; // Backwards compatibility alias for variant
+  text?: string; // Backwards compatibility alias for children
   size?: BadgeSize;
   dot?: boolean;
   icon?: LucideIcon;
@@ -54,15 +56,19 @@ const sizeStyles: Record<BadgeSize, string> = {
 
 export function StatusBadge({
   children,
-  variant = 'neutral',
+  variant,
+  status,
+  text,
   size = 'sm',
   dot = false,
   icon: Icon,
   className,
   onClick,
 }: StatusBadgeProps) {
-  const styles = variantStyles[variant] || variantStyles.neutral;
+  const effectiveVariant = variant || status || 'neutral';
+  const styles = variantStyles[effectiveVariant] || variantStyles.neutral;
   const isClickable = !!onClick;
+  const content = children !== undefined ? children : text;
 
   return (
     <span
@@ -79,7 +85,7 @@ export function StatusBadge({
         <span className={cn('w-1.5 h-1.5 rounded-full shrink-0 animate-pulse', styles.dot)} />
       )}
       {Icon && <Icon className="w-3 h-3 shrink-0" />}
-      <span className="truncate">{children}</span>
+      <span className="truncate">{content}</span>
     </span>
   );
 }

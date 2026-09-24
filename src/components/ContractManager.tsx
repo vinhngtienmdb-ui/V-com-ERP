@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDocumentPreview, DocumentViewer } from './document-viewer';
 
 export interface SalesQuote {
   id: string; // BG-2026-001
@@ -151,6 +152,7 @@ export function ContractManager({ defaultTab }: { defaultTab?: string }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newComment, setNewComment] = useState('');
   const navigate = useNavigate();
+  const { openPreview } = useDocumentPreview();
 
   // New Quote Form State
   const [quoteForm, setQuoteForm] = useState({
@@ -585,9 +587,23 @@ export function ContractManager({ defaultTab }: { defaultTab?: string }) {
  </div>
  <div className="flex items-center gap-2">
  {selectedContract.file && (
-   <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm">
-     <Download className="w-4 h-4" /> Tải tệp ({selectedContract.file.type})
-   </button>
+   <>
+     <button
+       onClick={() => openPreview({
+         fileName: selectedContract.file.name,
+         fileType: selectedContract.file.type as any,
+         title: selectedContract.title,
+         subtitle: `Hợp đồng: ${selectedContract.id} • Đối tác: ${selectedContract.party}`
+       })}
+       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
+       title="Mở popup xem trực tiếp toàn màn hình (không cần tải về máy)"
+     >
+       <Eye className="w-4 h-4" /> Xem trực tiếp (Popup)
+     </button>
+     <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm">
+       <Download className="w-4 h-4" /> Tải tệp ({selectedContract.file.type})
+     </button>
+   </>
  )}
  <button 
  onClick={() => setSelectedContract(null)}
@@ -1326,11 +1342,30 @@ export function ContractManager({ defaultTab }: { defaultTab?: string }) {
       )}
       </td>
       <td className="px-4 py-3 text-right">
-      <p className={cn(
-      "text-xs font-mono font-medium",
-      doc.status === 'expired' ? "text-red-500" :
-      doc.status === 'expiring_soon' ? "text-blue-600 font-bold" : "text-slate-700"
-      )}>{doc.expiry}</p>
+      <div className="flex items-center justify-end gap-2">
+        <p className={cn(
+        "text-xs font-mono font-medium",
+        doc.status === 'expired' ? "text-red-500" :
+        doc.status === 'expiring_soon' ? "text-blue-600 font-bold" : "text-slate-700"
+        )}>{doc.expiry}</p>
+        {doc.file && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openPreview({
+                fileName: doc.file.name,
+                fileType: doc.file.type as any,
+                title: doc.title,
+                subtitle: `Hợp đồng: ${doc.id} • Đối tác: ${doc.party}`
+              });
+            }}
+            className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+            title="Xem trước trực tiếp (không cần tải về máy)"
+          >
+            <Eye className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
       </td>
       </tr>
       ))}

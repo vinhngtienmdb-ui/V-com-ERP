@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { SAMPLE_BO_HO_SO, BoHoSoItem, ThanhPhanHoSoItem, LichSuHoSoItem } from '../../data/danhMucHoSoData';
 import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
+import { useDocumentPreview } from '../../components/document-viewer';
 
 interface Props {
   hoSoId: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const ChiTietHoSoPage: React.FC<Props> = ({ hoSoId, onBack }) => {
+  const { openPreview, openDrawer } = useDocumentPreview();
   const [hoSo, setHoSo] = useState<BoHoSoItem>(() => {
     return SAMPLE_BO_HO_SO.find(h => h.id === hoSoId) || SAMPLE_BO_HO_SO[0];
   });
@@ -328,11 +330,19 @@ export const ChiTietHoSoPage: React.FC<Props> = ({ hoSoId, onBack }) => {
                   </td>
                   <td className="py-3 px-4">
                     {tp.daCo ? (
-                      <div className="flex items-center gap-2">
-                        <Paperclip className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <div
+                        onClick={() => openPreview({
+                          fileName: tp.tenTaiLieu || `${tp.soHieu}.pdf`,
+                          title: tp.tenThanhPhan,
+                          subtitle: `Số hiệu chứng từ: ${tp.soHieu} • Nguồn: ${tp.nguon} • Bộ hồ sơ: ${hoSo.soHoSo}`
+                        })}
+                        className="flex items-center gap-2 cursor-pointer group/file"
+                        title="Bấm để xem trước tài liệu trực tiếp"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-indigo-600 group-hover/file:scale-110 transition-transform shrink-0" />
                         <div>
-                          <div className="font-mono font-bold text-slate-800">{tp.soHieu}</div>
-                          <div className="text-[11px] text-slate-500">{tp.tenTaiLieu}</div>
+                          <div className="font-mono font-bold text-slate-800 group-hover/file:text-indigo-600 transition-colors">{tp.soHieu}</div>
+                          <div className="text-[11px] text-slate-500 group-hover/file:text-indigo-600 transition-colors underline decoration-slate-300">{tp.tenTaiLieu}</div>
                         </div>
                       </div>
                     ) : (
@@ -356,9 +366,13 @@ export const ChiTietHoSoPage: React.FC<Props> = ({ hoSoId, onBack }) => {
                     {tp.daCo ? (
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => alert(`Xem tài liệu: ${tp.tenTaiLieu}`)}
-                          className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100"
-                          title="Xem trước tài liệu"
+                          onClick={() => openPreview({
+                            fileName: tp.tenTaiLieu || `${tp.soHieu}.pdf`,
+                            title: tp.tenThanhPhan,
+                            subtitle: `Số hiệu chứng từ: ${tp.soHieu} • Nguồn: ${tp.nguon} • Bộ hồ sơ: ${hoSo.soHoSo}`
+                          })}
+                          className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100 transition-colors"
+                          title="Xem trước trực tiếp (không tải về)"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>

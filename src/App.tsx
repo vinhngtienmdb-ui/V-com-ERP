@@ -88,6 +88,7 @@ import { supabase } from './lib/supabase';
 import { useNotifications } from './context/NotificationContext';
 import { EntityProvider } from './context/EntityContext';
 import { UniversalEntityPeekDrawer } from './components/ui/design-system';
+import { DocumentPreviewProvider } from './components/document-viewer';
 
 function AppLayout() {
   const location = useLocation();
@@ -513,9 +514,11 @@ function AppContent() {
 
   return (
     <Router>
-      <EntityProvider>
-        <AppLayout />
-      </EntityProvider>
+      <DocumentPreviewProvider>
+        <EntityProvider>
+          <AppLayout />
+        </EntityProvider>
+      </DocumentPreviewProvider>
     </Router>
   );
 }

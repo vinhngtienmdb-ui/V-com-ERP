@@ -11,6 +11,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { cn } from '../../lib/utils';
 
 interface AddCustomerModalProps {
   onClose: () => void;

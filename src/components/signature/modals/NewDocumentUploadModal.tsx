@@ -11,10 +11,12 @@ import {
   Sparkles,
   DollarSign,
   File,
-  CheckCircle2
+  CheckCircle2,
+  Eye
 } from 'lucide-react';
 import { SigningDocument } from '../../../data/hsmSignatureData';
 import { formatCurrency, cn } from '../../../lib/utils';
+import { useDocumentPreview } from '../../document-viewer';
 
 export interface NewDocumentUploadModalProps {
   isOpen: boolean;
@@ -40,10 +42,12 @@ export const NewDocumentUploadModal: React.FC<NewDocumentUploadModalProps> = ({
   // File upload state
   const [uploadedFileName, setUploadedFileName] = useState<string>('Hop-dong-thuong-mai-mau-2026.pdf');
   const [uploadedFileSize, setUploadedFileSize] = useState<string>('1.2 MB');
+  const [uploadedFileObj, setUploadedFileObj] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { openPreview } = useDocumentPreview();
 
   // Sync category when docType changes
   const handleDocTypeChange = (type: SigningDocument['docType']) => {
@@ -96,6 +100,7 @@ export const NewDocumentUploadModal: React.FC<NewDocumentUploadModalProps> = ({
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
+      setUploadedFileObj(file);
       setUploadedFileName(file.name);
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
       setUploadedFileSize(`${sizeMB} MB`);
@@ -108,6 +113,7 @@ export const NewDocumentUploadModal: React.FC<NewDocumentUploadModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      setUploadedFileObj(file);
       setUploadedFileName(file.name);
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
       setUploadedFileSize(`${sizeMB} MB`);
@@ -268,6 +274,27 @@ export const NewDocumentUploadModal: React.FC<NewDocumentUploadModalProps> = ({
                 </p>
               </div>
             </div>
+            {uploadedFileName && (
+              <div className="mt-2 flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-slate-300 font-mono truncate">{uploadedFileName} ({uploadedFileSize})</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openPreview({
+                    file: uploadedFileObj || null,
+                    fileName: uploadedFileName,
+                    title: title || uploadedFileName,
+                    subtitle: `Tệp tải lên: ${uploadedFileName} • Dung lượng: ${uploadedFileSize}`
+                  })}
+                  className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
+                  title="Mở popup xem trước trực tiếp (không cần tải về máy)"
+                >
+                  <Eye className="w-3.5 h-3.5" /> Xem trước file
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Title */}

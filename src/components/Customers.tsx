@@ -31,7 +31,8 @@ import {
   MoreVertical,
   Check,
   Building2,
-  Trash2
+  Trash2,
+  Eye
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Customer } from '../types/erp';
@@ -40,6 +41,7 @@ import { db, collection, onSnapshot } from '../lib/firebase';
 import { syncCustomerToMisa } from '../services/misaService';
 import { CompactPageHeader } from './common/CompactPageHeader';
 import { CompactStatsRibbon, MetricRibbonItem } from './common/CompactStatsRibbon';
+import { useEntityPeek } from '../context/EntityContext';
 
 // VComm Design System UI Kit
 import { 
@@ -83,6 +85,9 @@ export function Customers() {
   const [tierFilter, setTierFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [spendRangeFilter, setSpendRangeFilter] = useState('all');
+  const [recencyFilter, setRecencyFilter] = useState('all');
+  const { openPeek } = useEntityPeek();
 
   // Cross-App Linked Data
   const [orders, setOrders] = useState<any[]>([]);
@@ -120,13 +125,38 @@ export function Customers() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch Customers from Supabase
+  // Fetch Customers from Core Backend API (fallback to Supabase)
   useEffect(() => {
     let active = true;
     setLoading(true);
 
     const load = async () => {
       try {
+        // 1. First attempt: Core Backend NestJS API
+        try {
+          const params = new URLSearchParams();
+          if (debouncedSearchQuery.trim()) params.append('search', debouncedSearchQuery.trim());
+          if (typeFilter !== 'all') params.append('customerType', typeFilter);
+          if (tierFilter !== 'all') params.append('tier', tierFilter);
+          if (statusFilter !== 'all') params.append('status', statusFilter);
+
+          const apiRes = await fetch(`/api/v1/crm/customers?${params.toString()}`);
+          if (apiRes.ok) {
+            const json = await apiRes.json();
+            if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+              if (active) {
+                setCustomers(json.data as Customer[]);
+                setTotalCount(json.total || json.data.length);
+                setLoading(false);
+                return;
+              }
+            }
+          }
+        } catch (apiErr) {
+          console.warn('[CRM Client] Core Backend /api/v1/crm/customers fallback to Supabase:', apiErr);
+        }
+
+        // 2. Second attempt: Direct Supabase query
         let queryBuilder = supabase
           .from('customers')
           .select('*', { count: 'exact' });
@@ -189,7 +219,7 @@ export function Customers() {
     return () => {
       active = false;
     };
-  }, [debouncedSearchQuery, refreshCount]);
+  }, [debouncedSearchQuery, refreshCount, typeFilter, tierFilter, statusFilter]);
 
   // Listen to linked collections for real-time consistency
   useEffect(() => {
@@ -255,9 +285,23 @@ export function Customers() {
       if (tierFilter !== 'all' && c.tier !== tierFilter) return false;
       if (statusFilter !== 'all' && c.status !== statusFilter) return false;
       if (typeFilter !== 'all' && (c as any).customerType !== typeFilter) return false;
+
+      // Spend Range Filter
+      if (spendRangeFilter === '<5m' && (c.totalSpent || 0) >= 5000000) return false;
+      if (spendRangeFilter === '5m-20m' && ((c.totalSpent || 0) < 5000000 || (c.totalSpent || 0) >= 20000000)) return false;
+      if (spendRangeFilter === '>20m' && (c.totalSpent || 0) < 20000000) return false;
+
+      // Recency Filter
+      if (recencyFilter !== 'all' && c.lastOrderDate) {
+        const days = Math.floor((Date.now() - new Date(c.lastOrderDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (recencyFilter === '<30d' && days > 30) return false;
+        if (recencyFilter === '30-90d' && (days <= 30 || days > 90)) return false;
+        if (recencyFilter === '>90d' && days <= 90) return false;
+      }
+
       return true;
     });
-  }, [enrichedCustomers, channelFilter, tierFilter, statusFilter, typeFilter]);
+  }, [enrichedCustomers, channelFilter, tierFilter, statusFilter, typeFilter, spendRangeFilter, recencyFilter]);
 
   // Lock / Unlock customer account
   const handleToggleLock = async (id: string, currentStatus: string, e: React.MouseEvent) => {
@@ -288,7 +332,7 @@ export function Customers() {
     e.stopPropagation();
     setSyncingCustomerId(customer.id);
     try {
-      const result = await syncCustomerToMisa(customer);
+      const result = await syncCustomerToMisa(customer.id, customer.name, customer.phone || '', customer.email || '');
       if (result.success) {
         alert(`✓ Đã đồng bộ khách hàng "${customer.name}" sang Kế toán VComm thành công!`);
         triggerRefresh();
@@ -526,6 +570,30 @@ export function Customers() {
       align: 'right',
       render: (row) => (
         <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
+          {/* Quick Peek Drawer 360 */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openPeek({
+                type: 'customer',
+                id: row.id,
+                title: row.name,
+                subtitle: `${row.phone || 'Chưa có SĐT'} • ${row.tier || 'Hạng Bạc'} • ${row.customerType === 'b2b' ? 'Doanh nghiệp B2B' : 'Cá nhân B2C'}`,
+                metadata: {
+                  ...row,
+                  statusBadge: row.status === 'locked' ? 'danger' : 'success',
+                  totalSpentFormatted: formatCurrency(row.totalSpent || 0),
+                  walletFormatted: formatCurrency(row.walletBalance || 0),
+                }
+              });
+            }}
+            className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-cyan-600 transition-colors"
+            title="Xem nhanh hồ sơ 360° (Peek Drawer)"
+          >
+            <Eye className="w-3.5 h-3.5" />
+          </button>
+
           {/* Sync to MISA */}
           <button
             type="button"
@@ -720,13 +788,15 @@ export function Customers() {
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder="Tìm kiếm theo Tên, Số điện thoại, Email, Mã định danh..."
-            activeFiltersCount={[channelFilter, tierFilter, typeFilter, statusFilter].filter(f => f !== 'all').length}
+            activeFiltersCount={[channelFilter, tierFilter, typeFilter, statusFilter, spendRangeFilter, recencyFilter].filter(f => f !== 'all').length}
             onResetFilters={() => {
               setSearchQuery('');
               setChannelFilter('all');
               setTierFilter('all');
               setTypeFilter('all');
               setStatusFilter('all');
+              setSpendRangeFilter('all');
+              setRecencyFilter('all');
             }}
             filterGroups={[
               {
@@ -739,6 +809,30 @@ export function Customers() {
                   { label: 'Cá nhân B2C', value: 'b2c' },
                 ],
                 onChange: setTypeFilter
+              },
+              {
+                id: 'spendRange',
+                label: 'Mức chi tiêu',
+                value: spendRangeFilter,
+                options: [
+                  { label: 'Tất cả mức chi', value: 'all' },
+                  { label: 'Dưới 5 triệu (< 5M)', value: '<5m' },
+                  { label: 'Từ 5M - 20 triệu', value: '5m-20m' },
+                  { label: 'VIP trên 20 triệu (> 20M)', value: '>20m' },
+                ],
+                onChange: setSpendRangeFilter
+              },
+              {
+                id: 'recency',
+                label: 'Lần mua gần nhất',
+                value: recencyFilter,
+                options: [
+                  { label: 'Tất cả mốc thời gian', value: 'all' },
+                  { label: 'Gần đây (≤ 30 ngày)', value: '<30d' },
+                  { label: 'Cần lưu ý (31 - 90 ngày)', value: '30-90d' },
+                  { label: 'Nguy cơ rời bỏ (> 90 ngày)', value: '>90d' },
+                ],
+                onChange: setRecencyFilter
               },
               {
                 id: 'channel',

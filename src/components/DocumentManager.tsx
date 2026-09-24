@@ -50,6 +50,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDocumentPreview, DocumentViewer } from './document-viewer';
 
 const MOCK_DOCS = [
   { id: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc Khối Vận hành', type: 'outbound', status: 'signed', date: '20/03/2024', signer: 'CEO', category: 'Quyết định', aiSummary: 'Bổ nhiệm ông Nguyễn Văn A giữ chức vụ Giám đốc Khối Vận hành từ ngày 01/04/2024.', department: 'Ban Giám đốc', urgency: 'high', fileType: 'pdf' },
@@ -200,6 +201,7 @@ export function DocumentManager() {
   const [approvalDocs, setApprovalDocs] = useState(MOCK_APPROVAL_DOCS);
   
   const navigate = useNavigate();
+  const { openPreview } = useDocumentPreview();
 
   const handleDocClick = (doc: any) => {
     setSelectedDoc(doc);
@@ -571,7 +573,19 @@ export function DocumentManager() {
                         <div className="w-px h-4 bg-slate-600"></div>
                         <span className="text-xs font-mono">Trang 1 / 1</span>
                         <div className="w-px h-4 bg-slate-600"></div>
-                        <button className="p-1 hover:bg-slate-700 rounded text-slate-300 transition"><Maximize2 className="w-4 h-4" /></button>
+                        <button
+                          onClick={() => openPreview({
+                            fileName: `${selectedDoc.id}.${selectedDoc.fileType}`,
+                            fileType: selectedDoc.fileType as any,
+                            title: selectedDoc.title,
+                            subtitle: `Số hiệu: ${selectedDoc.id} • Đơn vị: ${selectedDoc.department}`
+                          })}
+                          className="p-1 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition flex items-center gap-1"
+                          title="Phóng to xem Popup trực tiếp (không cần tải về)"
+                        >
+                          <Maximize2 className="w-4 h-4" />
+                          <span className="text-[10px] hidden sm:inline">Phóng to</span>
+                        </button>
                       </div>
                     </div>
                     
@@ -898,6 +912,21 @@ export function DocumentManager() {
                                       <FileText className="w-3 h-3" /> Bản dự thảo
                                     </span>
                                   )}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openPreview({
+                                        fileName: `${doc.id}.${doc.fileType}`,
+                                        fileType: doc.fileType as any,
+                                        title: doc.title,
+                                        subtitle: `Số hiệu: ${doc.id} • Ký bởi: ${doc.signer}`
+                                      });
+                                    }}
+                                    className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors ml-2"
+                                    title="Mở popup xem trước trực tiếp (không cần tải về máy)"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
                                </div>
                             </td>
                           </tr>
