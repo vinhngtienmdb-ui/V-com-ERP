@@ -14,11 +14,16 @@ describe('Cryptographic Digital Signatures & Integrity Verification Tests', () =
       console.warn('DATABASE_URL is not set. Skipping DB connection.');
       return;
     }
-    pgClient = new pg.Client({
-      connectionString: dbUrl,
-      ssl: { rejectUnauthorized: false }
-    });
-    await pgClient.connect();
+    try {
+      pgClient = new pg.Client({
+        connectionString: dbUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      await pgClient.connect();
+    } catch (err) {
+      console.warn('Could not connect to remote PostgreSQL DB:', (err as any)?.message);
+      pgClient = null as any;
+    }
   });
 
   afterAll(async () => {
