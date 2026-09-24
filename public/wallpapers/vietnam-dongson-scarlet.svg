@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient: Vivid Scarlet Crimson to Deep Imperial Red -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="30%" stop-color="#dc2626" />
+      <stop offset="65%" stop-color="#991b1b" />
+      <stop offset="100%" stop-color="#450a0a" />
+    </radialGradient>
+
+    <!-- Golden Drum Pattern Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="0.95" />
+      <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0.8" />
+    </linearGradient>
+
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#ef4444" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Lac Bird (Chim Lạc / Chim Hạc) Master Symbol -->
+    <g id="lacBird">
+      <!-- Body & Neck -->
+      <path d="M 0,0 C -15,-5 -35,-20 -50,-15 C -65,-10 -75,-25 -95,-20 C -75,-15 -60,-5 -50,5 C -35,20 -15,10 0,0 Z" fill="url(#goldGrad)" />
+      <!-- Long Crest / Beak -->
+      <path d="M 0,0 C 20,5 45,5 75,-2 C 50,3 25,6 0,0 Z" fill="url(#goldGrad)" />
+      <circle cx="15" cy="-2" r="2.5" fill="#450a0a" />
+      <path d="M 5,-1 C 15,-15 35,-25 55,-32 C 30,-22 15,-12 5,-1 Z" fill="url(#goldGrad)" />
+      <!-- Wings spread wide -->
+      <path d="M -25,2 C -40,35 -70,65 -110,80 C -85,55 -65,30 -40,10 Z" fill="url(#goldGrad)" opacity="0.95" />
+      <path d="M -35,5 C -55,40 -85,75 -130,90 C -100,65 -80,40 -50,15 Z" fill="url(#goldGrad)" opacity="0.75" />
+      <path d="M -15,-5 C -25,-35 -50,-65 -85,-85 C -65,-55 -45,-30 -25,-10 Z" fill="url(#goldGrad)" opacity="0.85" />
+      <!-- Long Tail Feathers -->
+      <path d="M -60,-10 C -95,-15 -135,-10 -170,-20 C -140,-10 -105,-5 -70,0 Z" fill="url(#goldGrad)" />
+      <path d="M -55,-5 C -90,-5 -130,5 -165,0 C -130,5 -95,5 -65,5 Z" fill="url(#goldGrad)" opacity="0.8" />
+    </g>
+
+    <!-- Solar Ray (14 rays) -->
+    <g id="solarRay">
+      <polygon points="0,-180 18,-45 0,0 -18,-45" fill="url(#goldGrad)" />
+      <polygon points="0,-160 10,-50 0,-15 -10,-50" fill="#fef08a" opacity="0.6" />
+      <!-- Feather ornament between rays -->
+      <path d="M 0,-55 Q 25,-110 32,-150 Q 20,-115 0,-70" fill="url(#goldGrad)" opacity="0.5" />
+    </g>
+  </defs>
+
+  <!-- 1. Background Surface -->
+  <rect width="1920" height="1080" fill="url(#bgGrad)" />
+
+  <!-- 2. Ambient Center Glow -->
+  <circle cx="960" cy="540" r="750" fill="url(#glowGrad)" />
+
+  <!-- 3. Fine Traditional Background Motif Overlay -->
+  <g opacity="0.08" stroke="#fef08a" stroke-width="1">
+    <pattern id="cloudPattern" width="120" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 20,40 Q 40,20 60,40 T 100,40 Q 110,60 90,60 T 30,60 Z" fill="none" />
+    </pattern>
+    <rect width="1920" height="1080" fill="url(#cloudPattern)" />
+  </g>
+
+  <!-- ================= MASTER DONG SON BRONZE DRUM (TRỐNG ĐỒNG) ================= -->
+  <g transform="translate(960, 540)">
+
+    <!-- Center Radial Glow -->
+    <circle cx="0" cy="0" r="180" fill="#fef08a" opacity="0.15" filter="blur(20px)" />
+
+    <!-- Innermost Solar Disc (Mặt trời 14 tia) -->
+    <circle cx="0" cy="0" r="45" fill="url(#goldGrad)" />
+    <circle cx="0" cy="0" r="25" fill="#b91c1c" />
+    <circle cx="0" cy="0" r="12" fill="url(#goldGrad)" />
+
+    <!-- 14 Sun Rays (Tia sáng mặt trời Đông Sơn) -->
+    <g>
+      <use href="#solarRay" transform="rotate(0)" />
+      <use href="#solarRay" transform="rotate(25.714)" />
+      <use href="#solarRay" transform="rotate(51.428)" />
+      <use href="#solarRay" transform="rotate(77.142)" />
+      <use href="#solarRay" transform="rotate(102.856)" />
+      <use href="#solarRay" transform="rotate(128.57)" />
+      <use href="#solarRay" transform="rotate(154.284)" />
+      <use href="#solarRay" transform="rotate(180)" />
+      <use href="#solarRay" transform="rotate(205.714)" />
+      <use href="#solarRay" transform="rotate(231.428)" />
+      <use href="#solarRay" transform="rotate(257.142)" />
+      <use href="#solarRay" transform="rotate(282.856)" />
+      <use href="#solarRay" transform="rotate(308.57)" />
+      <use href="#solarRay" transform="rotate(334.284)" />
+    </g>
+
+    <!-- Ring 1: Solid Bands & Dot Borders -->
+    <circle cx="0" cy="0" r="195" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.85" />
+    <circle cx="0" cy="0" r="205" fill="none" stroke="url(#goldGrad)" stroke-width="5" opacity="0.9" />
+    <circle cx="0" cy="0" r="215" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.85" />
+
+    <!-- Ring 2: Tangent Circles Pattern (Vòng tròn tiếp tuyến) -->
+    <circle cx="0" cy="0" r="250" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="3,6" opacity="0.75" />
+    <circle cx="0" cy="0" r="270" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.85" />
+
+    <!-- ================= RING 3: ĐÀN CHIM LẠC / HẠC BAY NỘI KHU (10 Lac Birds Flying Counter-Clockwise) ================= -->
+    <g transform="scale(0.85)">
+      <use href="#lacBird" transform="rotate(0) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(36) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(72) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(108) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(144) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(180) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(216) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(252) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(288) translate(0, -320) scale(0.65)" />
+      <use href="#lacBird" transform="rotate(324) translate(0, -320) scale(0.65)" />
+    </g>
+
+    <!-- Ring 4: Concentric Decorative Borders -->
+    <circle cx="0" cy="0" r="325" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8" />
+    <circle cx="0" cy="0" r="335" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.9" />
+    <circle cx="0" cy="0" r="345" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8" />
+
+    <!-- Ring 5: Geometric Sawtooth & Meander Pattern (Họa tiết răng cưa & hồi văn) -->
+    <circle cx="0" cy="0" r="380" fill="none" stroke="url(#goldGrad)" stroke-width="3" opacity="0.85" stroke-dasharray="8,8" />
+    <circle cx="0" cy="0" r="395" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.75" />
+
+    <!-- ================= RING 6: ĐÀN CHIM HẠC / LẠC VÒNG NGOÀI SẢI CÁNH LỚN (16 Majestic Cranes) ================= -->
+    <g transform="scale(1.2)">
+      <use href="#lacBird" transform="rotate(0) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(22.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(45) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(67.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(90) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(112.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(135) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(157.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(180) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(202.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(225) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(247.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(270) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(292.5) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(315) translate(0, -380) scale(0.9)" />
+      <use href="#lacBird" transform="rotate(337.5) translate(0, -380) scale(0.9)" />
+    </g>
+
+    <!-- Outermost Giant Concentric Rings -->
+    <circle cx="0" cy="0" r="520" fill="none" stroke="url(#goldGrad)" stroke-width="3" opacity="0.65" />
+    <circle cx="0" cy="0" r="535" fill="none" stroke="url(#goldGrad)" stroke-width="7" opacity="0.75" />
+    <circle cx="0" cy="0" r="550" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.5" />
+    <circle cx="0" cy="0" r="570" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="12,12" opacity="0.4" />
+    <circle cx="0" cy="0" r="620" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.35" />
+    <circle cx="0" cy="0" r="700" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.25" stroke-dasharray="16,16" />
+    <circle cx="0" cy="0" r="820" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.15" />
+  </g>
+
+  <!-- 4. Top Cultural Accent Inscriptions -->
+  <g fill="url(#goldGrad)" opacity="0.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="60" y="80" font-size="18" font-weight="bold" letter-spacing="4">HÀO KHÍ ĐÔNG SƠN</text>
+    <text x="60" y="105" font-size="12" letter-spacing="2" opacity="0.8">TINH HOA BẢN SẮC VIỆT NAM</text>
+  </g>
+
+  <g fill="url(#goldGrad)" opacity="0.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" text-anchor="end">
+    <text x="1860" y="80" font-size="18" font-weight="bold" letter-spacing="4">VCOMM ERP</text>
+    <text x="1860" y="105" font-size="12" letter-spacing="2" opacity="0.8">CÔNG NGHỆ QUẢN TRỊ DOANH NGHIỆP</text>
+  </g>
+
+  <!-- 5. Cinematic Vignette Overlay -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+    <stop offset="60%" stop-color="#000000" stop-opacity="0" />
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.65" />
+  </radialGradient>
+  <rect width="1920" height="1080" fill="url(#vignette)" pointer-events="none" />
+</svg>

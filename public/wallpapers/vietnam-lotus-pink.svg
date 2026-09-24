@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Deep Emerald Lake Gradient -->
+    <radialGradient id="lakeGrad" cx="50%" cy="60%" r="75%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="45%" stop-color="#022c22" />
+      <stop offset="85%" stop-color="#091310" />
+      <stop offset="100%" stop-color="#050a08" />
+    </radialGradient>
+
+    <!-- Lotus Petal Gradients -->
+    <linearGradient id="petalPink" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#fbcfe8" />
+      <stop offset="75%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="60%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+
+    <radialGradient id="lotusGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#059669" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <g id="lotusPetal">
+      <path d="M 0,0 C -35,-80 -45,-180 0,-240 C 45,-180 35,-80 0,0 Z" fill="url(#petalPink)" />
+    </g>
+  </defs>
+
+  <!-- Background Lake Surface -->
+  <rect width="1920" height="1080" fill="url(#lakeGrad)" />
+
+  <!-- Soft Ambient Glow -->
+  <circle cx="960" cy="580" r="550" fill="url(#lotusGlow)" />
+
+  <!-- Giant Emerald Lotus Leaves (Lá Sen Xanh Ngát) -->
+  <g opacity="0.65">
+    <ellipse cx="600" cy="720" rx="380" ry="160" fill="url(#leafGrad)" />
+    <ellipse cx="1320" cy="700" rx="420" ry="170" fill="url(#leafGrad)" />
+    <ellipse cx="960" cy="820" rx="480" ry="190" fill="url(#leafGrad)" opacity="0.85" />
+  </g>
+
+  <!-- Center Blooming Sacred Lotus (Đóa Sen Hồng Bừng Nở) -->
+  <g transform="translate(960, 620) scale(1.15)">
+    <!-- Back Outer Petals -->
+    <use href="#lotusPetal" transform="rotate(-65) scale(0.95)" opacity="0.75" />
+    <use href="#lotusPetal" transform="rotate(65) scale(0.95)" opacity="0.75" />
+    <use href="#lotusPetal" transform="rotate(-48) scale(1)" opacity="0.85" />
+    <use href="#lotusPetal" transform="rotate(48) scale(1)" opacity="0.85" />
+    <use href="#lotusPetal" transform="rotate(-32) scale(1.05)" />
+    <use href="#lotusPetal" transform="rotate(32) scale(1.05)" />
+
+    <!-- Center Main Petals -->
+    <use href="#lotusPetal" transform="rotate(-16) scale(1.1)" />
+    <use href="#lotusPetal" transform="rotate(16) scale(1.1)" />
+    <use href="#lotusPetal" transform="rotate(0) scale(1.15)" />
+
+    <!-- Golden Lotus Seed Head (Gương Sen Vàng Ngát) -->
+    <circle cx="0" cy="-65" r="28" fill="#facc15" />
+    <circle cx="0" cy="-65" r="22" fill="#ca8a04" />
+    <circle cx="-8" cy="-70" r="3" fill="#fef08a" />
+    <circle cx="8" cy="-70" r="3" fill="#fef08a" />
+    <circle cx="0" cy="-60" r="3.5" fill="#fef08a" />
+    <circle cx="-10" cy="-60" r="2.5" fill="#fef08a" />
+    <circle cx="10" cy="-60" r="2.5" fill="#fef08a" />
+  </g>
+
+  <!-- Title Accent -->
+  <text x="80" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#fbcfe8" opacity="0.8" letter-spacing="4">SEN HỒNG ĐỒNG THÁP</text>
+  <text x="80" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" fill="#a7f3d0" opacity="0.6" letter-spacing="2">QUỐC HOA THUẦN KHIẾT VIỆT NAM</text>
+</svg>
