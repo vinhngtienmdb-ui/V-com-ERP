@@ -53,6 +53,8 @@ import { InvoiceManager } from './InvoiceManager';
 import { SellerCredit } from './SellerCredit';
 import { ThietLapCongTyModal } from './accounting/ThietLapCongTyModal';
 import { NhatKyChungPage } from './accounting/NhatKyChungPage';
+import { BaoCaoTt99Page } from './accounting/BaoCaoTt99Page';
+import { KiemSoatDieu28Page } from './accounting/KiemSoatDieu28Page';
 import { HoSoApp } from '../pages/HoSo/HoSoApp';
 
 const FINANCE_MODULE_GROUPS = [
@@ -60,9 +62,11 @@ const FINANCE_MODULE_GROUPS = [
     title: 'Kế toán Chuẩn mực TT99 & Hồ sơ Lưu trữ',
     items: [
       { id: 'tt99_nkc', label: 'Nhật ký chung TT99 (S03-DN)', desc: 'Mẫu S03-DN chuẩn TT99/2025/TT-BTC, nhập liệu phím tắt F3/F4, tự động cân đối Nợ/Có.', icon: BookOpen, color: 'blue' },
-      { id: 'ho_so_archive', label: 'Hồ sơ – Lưu trữ kế toán', desc: 'Quy trình 18 phần chuẩn NĐ 174 & TT99 Điều 28, trích xuất 6 mức thời gian.', icon: FolderTree, color: 'indigo' },
-      { id: 'journal', label: 'Sổ Nhật ký chung', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'slate' },
-      { id: 'ledger', label: 'Sổ cái Tài khoản', desc: 'Chi tiết biến động từng tài khoản kế toán.', icon: FileText, color: 'indigo' },
+      { id: 'tt99_reports', label: 'Báo cáo & Sổ sách TT99', desc: 'Báo cáo tài chính B01-DN (mã 280), B02-DN, Bảng CĐPS F01-DN và Sổ cái S04-DN.', icon: PieChart, color: 'indigo' },
+      { id: 'tt99_dieu28', label: 'Kiểm soát Điều 28 & Khóa sổ', desc: 'Khóa sổ kỳ kế toán, đánh số liên tục không ngắt quãng, Merkle SHA-256 chống sửa lén.', icon: ShieldCheck, color: 'emerald' },
+      { id: 'ho_so_archive', label: 'Hồ sơ – Lưu trữ kế toán', desc: 'Quy trình 18 phần chuẩn NĐ 174 & TT99 Điều 28, trích xuất 6 mức thời gian.', icon: FolderTree, color: 'purple' },
+      { id: 'journal', label: 'Sổ Nhật ký chung cũ', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'slate' },
+      { id: 'ledger', label: 'Sổ cái Tài khoản cũ', desc: 'Chi tiết biến động từng tài khoản kế toán.', icon: FileText, color: 'indigo' },
       { id: 'vouchers', label: 'Quản lý Chứng từ', desc: 'Lưu trữ hóa đơn, phiếu thu/chi.', icon: Receipt, color: 'emerald' },
       { id: 'ocr', label: 'Smart OCR Scan', desc: 'Tự động nhận diện hóa đơn bằng AI.', icon: Scan, color: 'purple' },
       { id: 'reconciliation', label: 'Đối soát Ngân hàng', desc: 'Khớp nối dữ liệu bank và sổ sách.', icon: RefreshCw, color: 'orange' },
@@ -73,13 +77,13 @@ const FINANCE_MODULE_GROUPS = [
     items: [
       { id: 'tax_deduction', label: 'Khấu trừ Thuế & VComm Invoice', desc: 'Tờ khai 01/CNKD NĐ 126, HĐĐT VComm Cloud HSM tự động.', icon: ShieldCheck, color: 'indigo' },
       { id: 'audit_trail', label: 'Sổ cái Bất biến (Audit Trail)', desc: 'Chuỗi khối SHA-256 chống giả mạo kiểm toán độc lập.', icon: Lock, color: 'emerald' },
-      { id: 'closing', label: 'Khóa sổ Kế toán', desc: 'Chốt số liệu kỳ kế toán, kết chuyển tự động.', icon: Calendar, color: 'rose' },
+      { id: 'closing', label: 'Khóa sổ Kế toán cũ', desc: 'Chốt số liệu kỳ kế toán, kết chuyển tự động.', icon: Calendar, color: 'rose' },
     ]
   },
   {
     title: 'Báo cáo & Phân tích',
     items: [
-      { id: 'reports', label: 'Báo cáo Tài chính', desc: 'Bảng cân đối, kết quả KD, lưu chuyển tiền.', icon: PieChart, color: 'purple' },
+      { id: 'reports', label: 'Báo cáo Tài chính cũ', desc: 'Bảng cân đối, kết quả KD, lưu chuyển tiền.', icon: PieChart, color: 'purple' },
       { id: 'tax', label: 'Báo cáo Thuế/VAT', desc: 'Tờ khai thuế GTGT, TNCN, TNDN.', icon: FileBarChart, color: 'rose' },
       { id: 'budget', label: 'Ngân sách & KPI', desc: 'Theo dõi thực hiện so với kế hoạch.', icon: Target, color: 'emerald' },
       { id: 'cashflow', label: 'Dự báo Dòng tiền', desc: 'Phân tích dòng tiền tương lai.', icon: History, color: 'blue' },
@@ -107,11 +111,13 @@ export function Finance() {
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
-  type FinanceTab = 'overview' | 'tt99_nkc' | 'ho_so_archive' | 'journal' | 'ledger' | 'reports' | 'closing' | 'ocr' | 'tax_deduction' | 'audit_trail' | 'invoices' | 'credit';
+  type FinanceTab = 'overview' | 'tt99_nkc' | 'tt99_reports' | 'tt99_dieu28' | 'ho_so_archive' | 'journal' | 'ledger' | 'reports' | 'closing' | 'ocr' | 'tax_deduction' | 'audit_trail' | 'invoices' | 'credit';
 
   const getMappedFinanceTab = (tab: string | null): FinanceTab => {
     if (!tab) return 'overview';
     if (tab === 'tt99' || tab === 'tt99_nkc' || tab === 'nkc') return 'tt99_nkc';
+    if (tab === 'tt99_reports' || tab === 'bctc' || tab === 'f01' || tab === 'b01') return 'tt99_reports';
+    if (tab === 'tt99_dieu28' || tab === 'dieu28' || tab === 'compliance') return 'tt99_dieu28';
     if (tab === 'ho_so' || tab === 'ho_so_archive' || tab === 'archive') return 'ho_so_archive';
     if (tab === 'invoices' || tab === 'invoice') return 'invoices';
     if (tab === 'credit' || tab === 'lending') return 'credit';
@@ -752,6 +758,8 @@ export function Finance() {
   <div className="flex border-b border-slate-200/80 bg-slate-50/50 p-1.5 gap-1.5 overflow-x-auto scrollbar-none">
   {[
   { id: 'tt99_nkc', label: 'Nhật ký chung TT99 (S03-DN)', icon: BookOpen },
+  { id: 'tt99_reports', label: 'Báo cáo & Sổ sách TT99', icon: PieChart },
+  { id: 'tt99_dieu28', label: 'Kiểm soát Điều 28 & Khóa sổ', icon: ShieldCheck },
   { id: 'ho_so_archive', label: 'Hồ sơ – Lưu trữ (NĐ 174)', icon: FolderTree },
   { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
   { id: 'ledger', label: 'Sổ cái & Chứng từ', icon: FileText },
@@ -780,6 +788,18 @@ export function Finance() {
   {activeTab === 'tt99_nkc' && (
     <div className="p-4 bg-slate-50/50">
       <NhatKyChungPage />
+    </div>
+  )}
+
+  {activeTab === 'tt99_reports' && (
+    <div className="p-4 bg-slate-50/50">
+      <BaoCaoTt99Page />
+    </div>
+  )}
+
+  {activeTab === 'tt99_dieu28' && (
+    <div className="p-4 bg-slate-50/50">
+      <KiemSoatDieu28Page />
     </div>
   )}
 

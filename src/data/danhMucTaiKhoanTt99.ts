@@ -2183,3 +2183,8 @@ export const DANH_MUC_TAI_KHOAN_TT99: TaiKhoanTt99[] = [
     "laThue": false
   }
 ];
+
+export const TT99_ACCOUNTS_MAP: Record<string, TaiKhoanTt99> = Object.fromEntries(
+  DANH_MUC_TAI_KHOAN_TT99.map(tk => [tk.maTk, tk])
+);
+

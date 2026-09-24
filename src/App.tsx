@@ -72,6 +72,8 @@ const ITHelpdesk = lazyWithRetry(() => import('./components/ITHelpdesk'), 'ITHel
 const LMSManagement = lazyWithRetry(() => import('./components/LMSManagement'), 'LMSManagement');
 const HoSoApp = lazyWithRetry(() => import('./pages/HoSo/HoSoApp').then(m => ({ default: m.HoSoApp })), 'HoSoApp');
 const NhatKyChungPage = lazyWithRetry(() => import('./components/accounting/NhatKyChungPage').then(m => ({ default: m.NhatKyChungPage })), 'NhatKyChungPage');
+const BaoCaoTt99Page = lazyWithRetry(() => import('./components/accounting/BaoCaoTt99Page').then(m => ({ default: m.BaoCaoTt99Page })), 'BaoCaoTt99Page');
+const KiemSoatDieu28Page = lazyWithRetry(() => import('./components/accounting/KiemSoatDieu28Page').then(m => ({ default: m.KiemSoatDieu28Page })), 'KiemSoatDieu28Page');
 
 
 import { useAuth } from './context/AuthContext';
@@ -389,6 +391,8 @@ function AppLayout() {
     <Route path="/warehouse" element={<WarehouseModule />} />
     <Route path="/finance" element={<Finance />} />
     <Route path="/finance/nhat-ky-chung" element={<NhatKyChungPage />} />
+    <Route path="/finance/bao-cao-tt99" element={<BaoCaoTt99Page />} />
+    <Route path="/finance/kiem-soat-dieu-28" element={<KiemSoatDieu28Page />} />
     <Route path="/ho-so" element={<HoSoApp />} />
     <Route path="/ho-so/*" element={<HoSoApp />} />
     <Route path="/settlement" element={<SettlementManagement />} />

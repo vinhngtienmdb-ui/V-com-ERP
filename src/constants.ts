@@ -33,7 +33,9 @@ import {
  Home,
  GraduationCap,
  LifeBuoy,
- FolderTree
+ FolderTree,
+ FileBarChart,
+ ShieldCheck
 } from 'lucide-react';
 
 export const navGroups = [
@@ -66,6 +68,8 @@ export const navGroups = [
     title: 'Tài chính & Kế toán',
     items: [
       { icon: Calculator, label: 'Kế toán tổng hợp (TT99)', path: '/finance', color: 'emerald', description: 'Báo cáo tài chính chuẩn mực và hạch toán số' },
+      { icon: FileBarChart, label: 'Báo cáo & Sổ sách TT99', path: '/finance?tab=tt99_reports', color: 'purple', description: 'B01-DN, B02-DN, Bảng CĐPS F01-DN chuẩn TT99' },
+      { icon: ShieldCheck, label: 'Kiểm soát Điều 28 TT99', path: '/finance?tab=tt99_dieu28', color: 'rose', description: 'Khóa sổ kỳ kế toán, đánh số liên tục, Merkle SHA-256' },
       { icon: FolderTree, label: 'Hồ sơ – Lưu trữ kế toán', path: '/ho-so', color: 'indigo', description: 'Chuẩn NĐ 174 & TT99, 18 phần, trích xuất 6 mức' },
       { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát công nợ 3PL và sàn TMĐT' },
       { icon: Smartphone, label: 'Ví & Cổng thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch SePay QR và cổng thanh toán' },
