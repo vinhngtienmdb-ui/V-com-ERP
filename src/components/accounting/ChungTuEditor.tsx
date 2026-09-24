@@ -47,12 +47,32 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
   onClose,
   isDarkMode = false
 }) => {
-  const [formData, setFormData] = useState<ChungTuNhatKyChung>(initialData || DEFAULT_CHUNG_TU);
+  const [formData, setFormData] = useState<ChungTuNhatKyChung>(() => {
+    if (initialData) {
+      return {
+        ...initialData,
+        dinhKhoan: initialData.dinhKhoan && initialData.dinhKhoan.length > 0 ? initialData.dinhKhoan : DEFAULT_CHUNG_TU.dinhKhoan
+      };
+    }
+    return DEFAULT_CHUNG_TU;
+  });
   const [activeTab, setActiveTab] = useState<'DINH_KHOAN' | 'DINH_KEM' | 'LICH_SU'>('DINH_KHOAN');
   const [attachments, setAttachments] = useState<{ id: string; name: string; size: string; type: string }[]>([]);
 
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        dinhKhoan: initialData.dinhKhoan && initialData.dinhKhoan.length > 0 ? initialData.dinhKhoan : DEFAULT_CHUNG_TU.dinhKhoan
+      });
+    }
+  }, [initialData]);
+
   const ketQuaCanDoi = useMemo(() => {
-    return kiemTraChungTu(formData);
+    return kiemTraChungTu({
+      ...formData,
+      dinhKhoan: formData.dinhKhoan || []
+    });
   }, [formData]);
 
   const isReadOnly = formData.trangThai === 'DA_KHOA_SO' || formData.trangThai === 'DA_HUY';
@@ -244,6 +264,7 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
 
       {/* Header Fields Form */}
       <ChungTuHeader
+        data={formData}
         formData={formData}
         onChange={handleHeaderChange}
         readOnly={isReadOnly}

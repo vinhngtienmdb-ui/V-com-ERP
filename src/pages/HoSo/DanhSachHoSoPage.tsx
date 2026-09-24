@@ -1,22 +1,114 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   FolderPlus, Search, Filter, Calendar, AlertTriangle, CheckCircle2, 
-  Clock, ShieldAlert, ArrowUpDown, ChevronRight, FileText, ExternalLink, Plus
+  Clock, ShieldAlert, ArrowUpDown, ChevronRight, FileText, ExternalLink, Plus, Zap, Check
 } from 'lucide-react';
 import { SAMPLE_BO_HO_SO, BoHoSoItem, DANH_MUC_18_PHAN } from '../../data/danhMucHoSoData';
+import { layDanhSachHoSoLuuTru, dongBoTatCaChungTuVaoHoSo, HO_SO_SYNC_EVENT } from '../../lib/keToan/autoArchiveService';
 
 interface Props {
   onSelectHoSo: (hoSoId: string) => void;
 }
 
 export const DanhSachHoSoPage: React.FC<Props> = ({ onSelectHoSo }) => {
-  const [hoSoList, setHoSoList] = useState<BoHoSoItem[]>(SAMPLE_BO_HO_SO);
+  const [hoSoList, setHoSoList] = useState<BoHoSoItem[]>(() => layDanhSachHoSoLuuTru());
+  const [syncToast, setSyncToast] = useState<string | null>(null);
   const [selectedNam, setSelectedNam] = useState<number>(2026);
   const [selectedThang, setSelectedThang] = useState<string>('ALL');
   const [selectedPhan, setSelectedPhan] = useState<string>('ALL');
   const [selectedTrangThai, setSelectedTrangThai] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAsc, setSortAsc] = useState<boolean>(true); // Strictly sorted by ngay_phat_sinh asc by default
+
+  // Lắng nghe sự kiện đồng bộ tự động từ phân hệ Kế toán
+  useEffect(() => {
+    const handleUpdate = () => {
+      setHoSoList(layDanhSachHoSoLuuTru());
+    };
+    window.addEventListener(HO_SO_SYNC_EVENT, handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener(HO_SO_SYNC_EVENT, handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Xử lý tự động quét và đưa chứng từ kế toán vào Hồ sơ lưu trữ NĐ 174
+  const handleAutoSyncFromAccounting = () => {
+    // Lấy chứng từ mẫu thực tế phát sinh của VComm
+    const sampleVouchers = [
+      {
+        id: 'ct-sync-01',
+        tenantId: 'tenant-vcomm-prod-01',
+        loaiCt: 'BAN' as const,
+        soCt: 'HDB-2026-03-001',
+        ngayCt: '2026-03-01',
+        ngayHachToan: '2026-03-01',
+        kyKeToan: '2026-03',
+        dienGiai: 'Bán hàng điện thoại Flagship - Đơn hàng ORD-VC-88912',
+        nguoiLapId: 'user-sales-01',
+        trangThai: 'DA_GHI_SO' as const,
+        thongTuApDung: 'TT99' as const,
+        dinhKhoan: [
+          { soDong: 1, dienGiai: 'Phải thu khách lẻ', tkNo: '131', tkCo: '511', soTien: 12500000, loaiTien: 'VND', tyGia: 1, soTienQuyDoi: 12500000, tenDoiTuong: 'Khách hàng vãng lai' },
+          { soDong: 2, dienGiai: 'Thuế GTGT', tkNo: '131', tkCo: '3331', soTien: 1250000, loaiTien: 'VND', tyGia: 1, soTienQuyDoi: 1250000, tenDoiTuong: 'Khách hàng vãng lai' }
+        ]
+      },
+      {
+        id: 'ct-sync-02',
+        tenantId: 'tenant-vcomm-prod-01',
+        loaiCt: 'KHO' as const,
+        soCt: 'XK-2026-03-001',
+        ngayCt: '2026-03-01',
+        ngayHachToan: '2026-03-01',
+        kyKeToan: '2026-03',
+        dienGiai: 'Xuất kho giá vốn đơn hàng ORD-VC-88912',
+        nguoiLapId: 'user-wh-01',
+        trangThai: 'DA_GHI_SO' as const,
+        thongTuApDung: 'TT99' as const,
+        dinhKhoan: [
+          { soDong: 1, dienGiai: 'Giá vốn', tkNo: '632', tkCo: '156', soTien: 9800000, loaiTien: 'VND', tyGia: 1, soTienQuyDoi: 9800000 }
+        ]
+      },
+      {
+        id: 'ct-sync-03',
+        tenantId: 'tenant-vcomm-prod-01',
+        loaiCt: 'MUA' as const,
+        soCt: 'HDM-2026-03-005',
+        ngayCt: '2026-03-03',
+        ngayHachToan: '2026-03-03',
+        kyKeToan: '2026-03',
+        dienGiai: 'Mua phụ kiện điện thoại NCC Tổng kho',
+        nguoiLapId: 'user-proc-01',
+        trangThai: 'DA_GHI_SO' as const,
+        thongTuApDung: 'TT99' as const,
+        dinhKhoan: [
+          { soDong: 1, dienGiai: 'Nhập kho', tkNo: '156', tkCo: '331', soTien: 45000000, loaiTien: 'VND', tyGia: 1, soTienQuyDoi: 45000000, tenDoiTuong: 'Tổng kho Phân phối Phụ kiện Hà Nội' }
+        ]
+      },
+      {
+        id: 'ct-sync-04',
+        tenantId: 'tenant-vcomm-prod-01',
+        loaiCt: 'THU' as const,
+        soCt: 'PT-2026-03-001',
+        ngayCt: '2026-03-04',
+        ngayHachToan: '2026-03-04',
+        kyKeToan: '2026-03',
+        dienGiai: 'Rút tiền gửi ngân hàng nhập quỹ tiền mặt',
+        nguoiLapId: 'user-treasury-01',
+        trangThai: 'DA_GHI_SO' as const,
+        thongTuApDung: 'TT99' as const,
+        dinhKhoan: [
+          { soDong: 1, dienGiai: 'Thu tiền mặt', tkNo: '111', tkCo: '112', soTien: 20000000, loaiTien: 'VND', tyGia: 1, soTienQuyDoi: 20000000, tenDoiTuong: 'Ngân hàng Vietcombank' }
+        ]
+      }
+    ];
+
+    const result = dongBoTatCaChungTuVaoHoSo(sampleVouchers);
+    setHoSoList(layDanhSachHoSoLuuTru());
+    setSyncToast(`Đã tự động đưa ${result.addedCount + result.updatedCount} chứng từ kế toán vào các phần tương ứng của Hồ sơ lưu trữ theo NĐ 174!`);
+    setTimeout(() => setSyncToast(null), 5000);
+  };
 
   // Create Modal State
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
@@ -155,14 +247,39 @@ export const DanhSachHoSoPage: React.FC<Props> = ({ onSelectHoSo }) => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Tạo bộ hồ sơ mới
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleAutoSyncFromAccounting}
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition-colors cursor-pointer"
+            title="Tự động đồng bộ và gom các chứng từ từ Nhật ký chung vào 18 Phần Hồ sơ theo NĐ 174"
+          >
+            <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+            <span>Tự động thêm chứng từ vào Hồ sơ lưu trữ</span>
+          </button>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Tạo bộ hồ sơ mới
+          </button>
+        </div>
       </div>
+
+      {/* Sync Notification Banner */}
+      {syncToast && (
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 animate-in fade-in">
+          <div className="flex items-center gap-2 font-semibold">
+            <Check className="w-4 h-4 text-emerald-600" />
+            <span>{syncToast}</span>
+          </div>
+          <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
+            Nghị định 174/2016/NĐ-CP • Điều 28 TT99
+          </span>
+        </div>
+      )}
 
       {/* Axis Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">

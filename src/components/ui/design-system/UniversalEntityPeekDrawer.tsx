@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useEntityPeek, EntityType } from '../../../context/EntityContext';
 import { UniversalDrawer } from './UniversalDrawer';
 import { StatusBadge } from './StatusBadge';
@@ -86,6 +86,14 @@ export function UniversalEntityPeekDrawer() {
           icon: Headphones,
           iconColor: 'bg-rose-600 text-white',
           appName: 'App CSKH & Helpdesk',
+        };
+      default:
+        return {
+          title: title || `Chi tiết: ${id}`,
+          subtitle: subtitle || 'Thông tin chi tiết giao dịch / đối tượng nghiệp vụ',
+          icon: FileText,
+          iconColor: 'bg-blue-600 text-white',
+          appName: 'Hệ thống Kế toán',
         };
     }
   };

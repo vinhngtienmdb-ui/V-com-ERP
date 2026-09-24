@@ -4,16 +4,20 @@ import { Calendar, FileCode, Tag, CheckCircle2, Clock, Lock, Ban } from 'lucide-
 import { formatDateVN } from '../../lib/keToan/dateUtils';
 
 interface ChungTuHeaderProps {
-  data: ChungTuNhatKyChung;
+  data?: ChungTuNhatKyChung;
+  formData?: ChungTuNhatKyChung;
   onChange: (fields: Partial<ChungTuNhatKyChung>) => void;
   readOnly?: boolean;
 }
 
 export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
   data,
+  formData,
   onChange,
   readOnly = false
 }) => {
+  const currentData = data || formData;
+  if (!currentData) return null;
   const renderStatusBadge = (status: TrangThaiChungTu) => {
     switch (status) {
       case 'DA_GHI_SO':
@@ -70,7 +74,7 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          {renderStatusBadge(data.trangThai)}
+          {renderStatusBadge(currentData.trangThai || 'CHUA_GHI_SO')}
         </div>
       </div>
 
@@ -81,7 +85,7 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
           <label className="block font-bold text-slate-700 mb-1">Loại chứng từ</label>
           <select
             disabled={readOnly}
-            value={data.loaiCt}
+            value={currentData.loaiCt || 'THU'}
             onChange={(e) => onChange({ loaiCt: e.target.value as LoaiChungTu })}
             className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
           >
@@ -102,7 +106,7 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
           <input
             type="text"
             disabled={readOnly}
-            value={data.soCt}
+            value={currentData.soCt || ''}
             onChange={(e) => onChange({ soCt: e.target.value })}
             placeholder="VD: PT-2026-0001"
             className="w-full px-3 py-2 tabular-nums font-bold text-indigo-900 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
@@ -113,13 +117,13 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
         <div>
           <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
             <span>Ngày chứng từ</span>
-            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">{formatDateVN(data.ngayCt)}</span>
+            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">{formatDateVN(currentData.ngayCt || '')}</span>
           </label>
           <div className="relative">
             <input
               type="date"
               disabled={readOnly}
-              value={data.ngayCt}
+              value={currentData.ngayCt || ''}
               onChange={(e) => onChange({ ngayCt: e.target.value })}
               className="w-full px-3 py-2 tabular-nums font-medium rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
             />
@@ -130,16 +134,16 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
         <div>
           <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
             <span>Ngày hạch toán</span>
-            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">{formatDateVN(data.ngayHachToan)}</span>
+            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">{formatDateVN(currentData.ngayHachToan || '')}</span>
           </label>
           <div className="relative">
             <input
               type="date"
               disabled={readOnly}
-              value={data.ngayHachToan}
+              value={currentData.ngayHachToan || ''}
               onChange={(e) => {
                 const val = e.target.value;
-                const ky = val ? val.substring(0, 7) : data.kyKeToan;
+                const ky = val ? val.substring(0, 7) : currentData.kyKeToan;
                 onChange({ ngayHachToan: val, kyKeToan: ky });
               }}
               className="w-full px-3 py-2 tabular-nums font-bold text-slate-800 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
@@ -153,7 +157,7 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
           <input
             type="text"
             disabled={readOnly}
-            value={data.dienGiai}
+            value={currentData.dienGiai || ''}
             onChange={(e) => onChange({ dienGiai: e.target.value })}
             placeholder="Nhập nội dung diễn giải chung của chứng từ kế toán..."
             className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"

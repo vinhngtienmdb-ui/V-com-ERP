@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Plus, Search, Filter, FileSpreadsheet, Eye, CheckCircle2, Clock, Lock, ArrowUpDown, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
+import { Plus, Search, Filter, FileSpreadsheet, Eye, CheckCircle2, Clock, Lock, ArrowUpDown, TrendingUp, TrendingDown, BookOpen, FolderPlus, Sparkles, Check } from 'lucide-react';
 import { ChungTuNhatKyChung, LoaiChungTu, TrangThaiChungTu } from '../../lib/keToan/types';
 import { ChungTuEditor } from './ChungTuEditor';
 import { formatCurrency, cn } from '../../lib/utils';
 import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { tuDongLuuTruMotChungTu, dongBoTatCaChungTuVaoHoSo } from '../../lib/keToan/autoArchiveService';
 
 // Mock initial data for immediate interactive viewing
 const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
@@ -187,6 +188,8 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
     });
   }, [dataList, filterLoaiCt, filterTrangThai, searchTerm]);
 
+  const [archiveSyncToast, setArchiveSyncToast] = useState<string | null>(null);
+
   const handleSaveItem = (saved: ChungTuNhatKyChung) => {
     if (saved.id) {
       setDataList(prev => prev.map(item => item.id === saved.id ? saved : item));
@@ -203,6 +206,23 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
 
   const handlePostItem = (posted: ChungTuNhatKyChung) => {
     handleSaveItem(posted);
+    try {
+      tuDongLuuTruMotChungTu(posted);
+      setArchiveSyncToast(`Đã ghi sổ & tự động lưu trữ chứng từ ${posted.soCt} vào Hồ sơ NĐ 174!`);
+      setTimeout(() => setArchiveSyncToast(null), 4000);
+    } catch (e) {
+      console.error('Lỗi khi tự động lưu trữ hồ sơ:', e);
+    }
+  };
+
+  const handleSyncAllToArchive = () => {
+    try {
+      const res = dongBoTatCaChungTuVaoHoSo(dataList);
+      setArchiveSyncToast(`Đã tự động lưu trữ ${res.addedCount + res.updatedCount} chứng từ vào Hồ sơ NĐ 174!`);
+      setTimeout(() => setArchiveSyncToast(null), 4500);
+    } catch (e) {
+      console.error('Lỗi khi đồng bộ toàn bộ chứng từ vào hồ sơ:', e);
+    }
   };
 
   return (
@@ -320,6 +340,16 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
                 <option value="KHO">Phiếu xuất kho (KHO)</option>
                 <option value="PKT">Phiếu kế toán khác (PKT)</option>
               </select>
+
+              <button
+                type="button"
+                onClick={handleSyncAllToArchive}
+                className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Tự động thêm toàn bộ chứng từ vào Hồ sơ lưu trữ theo chuẩn NĐ 174 & TT99"
+              >
+                <FolderPlus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Thêm tự động vào Hồ sơ lưu trữ (NĐ 174)</span>
+              </button>
             </div>
 
             {/* Search Input */}
@@ -334,6 +364,17 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
               />
             </div>
           </div>
+
+          {/* Sync Success Toast Banner */}
+          {archiveSyncToast && (
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-200 animate-in fade-in">
+              <div className="flex items-center gap-2 font-semibold">
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>{archiveSyncToast}</span>
+              </div>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">Nghị định 174/2016/NĐ-CP</span>
+            </div>
+          )}
 
           {/* S03-DN Journal Entries Table */}
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
@@ -352,11 +393,11 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredList.map((ct) => {
-                    const tongTien = ct.dinhKhoan.reduce((sum, d) => sum + (d.soTien || 0), 0);
+                    const tongTien = (ct.dinhKhoan || []).reduce((sum, d) => sum + (d.soTien || 0), 0);
                     return (
                       <tr
                         key={ct.id}
-                        onClick={() => setEditingItem(ct)}
+                        onClick={() => setEditingItem({ ...ct })}
                         className="hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                       >
                         <td className="p-3 text-center tabular-nums font-bold text-blue-600 dark:text-blue-400 group-hover:underline">
@@ -401,7 +442,7 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setEditingItem(ct);
+                              setEditingItem({ ...ct });
                             }}
                             className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                             title="Xem / Chỉnh sửa"

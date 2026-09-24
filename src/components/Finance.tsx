@@ -2673,6 +2673,10 @@ export function Finance() {
  <p className="text-xs text-emerald-800 leading-relaxed max-w-2xl">Toàn bộ bút toán kết chuyển và khóa sổ kỳ kế toán được mã hóa và lưu trữ log thay đổi chi tiết (Auditing Log), đảm bảo tính toàn vẹn của dữ liệu theo Thông tư 99/2025/TT-BTC. Hệ thống tự động đối soát tiền về từ các Cổng thanh toán (Visa, MoMo, VNPay) với sổ ngân hàng.</p>
  </div>
  </div>
+ <ThietLapCongTyModal
+   isOpen={isCompanyConfigOpen}
+   onClose={() => setIsCompanyConfigOpen(false)}
+ />
  </div>
  );
 }
@@ -3186,11 +3190,6 @@ function Circular99Reports({
           </div>
         </div>
       )}
-
-      <ThietLapCongTyModal
-        isOpen={isCompanyConfigOpen}
-        onClose={() => setIsCompanyConfigOpen(false)}
-      />
     </div>
   );
 }
