@@ -131,7 +131,7 @@ export function Finance() {
   const [scanResult, setScanResult] = useState<any>(null);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [unpostingId, setUnpostingId] = useState<string | null>(null);
-  const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('1121');
+  const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('112');
 
   // Audit Trail & VComm Invoice Live State
   const [auditRecords, setAuditRecords] = useState<any[]>([]);
@@ -1560,17 +1560,17 @@ export function Finance() {
             onChange={(e) => setSelectedLedgerAccount(e.target.value)}
             className="p-2 border border-slate-300 rounded-lg text-sm bg-white font-mono font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
-            <option value="1111">1111 - Tiền mặt tại quỹ</option>
-            <option value="1121">1121 - Tiền gửi ngân hàng VND</option>
-            <option value="1311">1311 - Phải thu khách hàng</option>
+            <option value="111">111 - Tiền mặt tại quỹ</option>
+            <option value="112">112 - Tiền gửi ngân hàng</option>
+            <option value="131">131 - Phải thu khách hàng</option>
             <option value="141">141 - Tạm ứng nhân viên</option>
             <option value="331">331 - Phải trả người bán</option>
-            <option value="3341">3341 - Phải trả người lao động</option>
+            <option value="334">334 - Phải trả người lao động</option>
             <option value="3388">3388 - Phải trả khác (Thu hộ đối tác)</option>
-            <option value="5111">5111 - Doanh thu bán hàng</option>
+            <option value="511">511 - Doanh thu bán hàng</option>
             <option value="632">632 - Giá vốn hàng bán</option>
             <option value="6421">6421 - Chi phí bán hàng</option>
-            <option value="6422">6422 - Chi phí quản lý doanh nghiệp</option>
+            <option value="6427">6427 - Chi phí quản lý doanh nghiệp</option>
           </select>
         </div>
       </div>
@@ -1580,16 +1580,16 @@ export function Finance() {
         const isAssetOrExpense = ['1', '2', '6', '8'].includes(firstChar);
         
         let startingBalance = 0;
-        if (selectedLedgerAccount === '1121') startingBalance = 100000000;
-        else if (selectedLedgerAccount === '1111') startingBalance = 50000000;
-        else if (selectedLedgerAccount === '1311') startingBalance = 20000000;
+        if (selectedLedgerAccount === '112' || selectedLedgerAccount === '1121') startingBalance = 100000000;
+        else if (selectedLedgerAccount === '111' || selectedLedgerAccount === '1111') startingBalance = 50000000;
+        else if (selectedLedgerAccount === '131' || selectedLedgerAccount === '1311') startingBalance = 20000000;
 
         const displayEntries = journalEntries.length > 0 
           ? journalEntries 
           : transactions.map(tx => {
               const commissionRate = 10;
-              const defaultDebit = tx.debitAccount || (tx.type === 'income' ? '1121' : '1111');
-              const defaultCredit = tx.creditAccount || (tx.type === 'income' ? '5111' : '1311');
+              const defaultDebit = tx.debitAccount || (tx.type === 'income' ? '112' : '111');
+              const defaultCredit = tx.creditAccount || (tx.type === 'income' ? '511' : '6427');
               const isSplit = tx.type === 'income' && misaConfig.enableMarketplaceSplit;
               const objectCode = tx.accountingObjectCode || (tx.type === 'income' ? 'KHLE' : 'NCCLE');
 
@@ -1598,7 +1598,7 @@ export function Finance() {
                 const commissionAmount = Math.round(tx.amount * (commissionRate / 100));
                 const partnerAmount = tx.amount - commissionAmount;
                 items.push({ accountId: defaultDebit, debit: tx.amount, credit: 0, partnerId: objectCode });
-                items.push({ accountId: misaConfig.revenueAccountDefault || '5111', debit: 0, credit: commissionAmount, partnerId: objectCode });
+                items.push({ accountId: misaConfig.revenueAccountDefault || '511', debit: 0, credit: commissionAmount, partnerId: objectCode });
                 items.push({ accountId: misaConfig.partnerLiabilitiesAccount || '3388', debit: 0, credit: partnerAmount, partnerId: objectCode });
               } else {
                 items.push({ accountId: defaultDebit, debit: tx.amount, credit: 0, partnerId: objectCode });

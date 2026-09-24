@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS journal_entries (
 );
 
 -- 3. Bảng journal_items (Định khoản chi tiết Nợ/Có)
+-- Ghi chú (TT99 nâng cấp): Bảng cũ dùng NUMERIC(15,2). Bảng mới ct_hach_toan dùng NUMERIC(19,4) + loai_tien + ty_gia.
 CREATE TABLE IF NOT EXISTS journal_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   entry_id TEXT NOT NULL REFERENCES journal_entries(id) ON DELETE CASCADE,
@@ -65,6 +66,7 @@ CREATE POLICY journal_items_tenant_isolation ON journal_items
 
 -- =============================================================================
 -- SEED DATA: DANH MỤC TÀI KHOẢN KẾ TOÁN MẪU (VAS STANDARD)
+-- Bảng cũ đã đóng băng; bộ 172 tài khoản chuẩn TT99 đầy đủ nằm ở dm_tai_khoan
 -- =============================================================================
 
 INSERT INTO accounts (id, name, type, tenant_id) VALUES
@@ -73,10 +75,10 @@ INSERT INTO accounts (id, name, type, tenant_id) VALUES
   ('131', 'Phải thu của khách hàng', 'asset', 'tenant-vcomm-prod-01'),
   ('156', 'Hàng hóa', 'asset', 'tenant-vcomm-prod-01'),
   ('331', 'Phải trả cho người bán', 'liability', 'tenant-vcomm-prod-01'),
-  ('33311', 'Thuế GTGT đầu ra được khấu trừ', 'liability', 'tenant-vcomm-prod-01'),
+  ('33311', 'Thuế GTGT đầu ra', 'liability', 'tenant-vcomm-prod-01'),
   ('3388', 'Phải trả, phải nộp khác', 'liability', 'tenant-vcomm-prod-01'),
   ('4111', 'Vốn góp của chủ sở hữu', 'equity', 'tenant-vcomm-prod-01'),
   ('5111', 'Doanh thu bán hàng hóa', 'revenue', 'tenant-vcomm-prod-01'),
   ('632', 'Giá vốn hàng bán', 'expense', 'tenant-vcomm-prod-01'),
   ('642', 'Chi phí quản lý doanh nghiệp', 'expense', 'tenant-vcomm-prod-01')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
