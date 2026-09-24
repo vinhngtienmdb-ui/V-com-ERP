@@ -67,9 +67,8 @@ export const CertificateInspectorModal: React.FC<CertificateInspectorModalProps>
     // Generate standard RFC 7468 PEM-encoded certificate mock format
     const pemHeader = '-----BEGIN CERTIFICATE-----\n';
     const pemFooter = '\n-----END CERTIFICATE-----';
-    const fakeBase64Body = btoa(
-      `VCOMM-X509-CERT|Serial:${x509.serialNumber}|Subject:${x509.subjectCN}|Issuer:${x509.issuerCN}|SHA256:${x509.sha256Fingerprint}`
-    )
+    const rawPayload = `VCOMM-X509-CERT|Serial:${x509.serialNumber}|Subject:${x509.subjectCN}|Issuer:${x509.issuerCN}|SHA256:${x509.sha256Fingerprint}`;
+    const fakeBase64Body = btoa(unescape(encodeURIComponent(rawPayload)))
       .match(/.{1,64}/g)
       ?.join('\n') || '';
 
@@ -79,8 +78,11 @@ export const CertificateInspectorModal: React.FC<CertificateInspectorModalProps>
     const link = document.createElement('a');
     link.href = url;
     const cleanFileName = (x509.subjectCN || 'certificate')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
-      .replace(/[^a-z0-9]/g, '_');
+      .replace(/[^a-z0-9]/g, '_')
+      .replace(/_+/g, '_');
     link.download = `${cleanFileName}_x509.crt`;
     document.body.appendChild(link);
     link.click();
