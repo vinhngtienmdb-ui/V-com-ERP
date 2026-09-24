@@ -59,7 +59,7 @@ export const TaiKhoanPicker: React.FC<TaiKhoanPickerProps> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) {
-      if (e.key === 'F3' || e.key === 'Enter') {
+      if (e.key === 'F3' || (e.altKey && (e.key === 'k' || e.key === 'K')) || e.key === 'Enter') {
         e.preventDefault();
         setIsOpen(true);
       }
@@ -91,14 +91,14 @@ export const TaiKhoanPicker: React.FC<TaiKhoanPickerProps> = ({
           setIsOpen(true);
           setTimeout(() => inputRef.current?.focus(), 50);
         }}
-        className="w-full text-left font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 flex items-center justify-between transition-colors shadow-2xs"
-        title="Bấm F3 để mở bảng tài khoản TT99"
+        className="w-full text-left font-bold text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 flex items-center justify-between transition-colors shadow-2xs"
+        title="Bấm Alt+K hoặc F3 để mở bảng tài khoản TT99"
       >
         <span className={selectedAccount ? 'text-indigo-900' : 'text-slate-400 font-normal'}>
           {selectedAccount ? `${selectedAccount.maTk} - ${selectedAccount.tenTk}` : placeholder}
         </span>
         <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-sans font-semibold text-slate-400 bg-slate-100 rounded border border-slate-200">
-          F3
+          Alt+K
         </kbd>
       </button>
 
@@ -110,7 +110,7 @@ export const TaiKhoanPicker: React.FC<TaiKhoanPickerProps> = ({
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <span>Hệ thống 172 Tài khoản TT 99/2025/TT-BTC</span>
-                  <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-semibold">
+                  <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold tabular-nums">
                     148 TK Chi tiết
                   </span>
                 </h3>
@@ -189,7 +189,7 @@ export const TaiKhoanPicker: React.FC<TaiKhoanPickerProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-12 font-mono font-bold text-indigo-700">
+                        <span className="w-12 font-bold text-indigo-700 tabular-nums">
                           {acc.maTk}
                         </span>
                         <div className="flex items-center gap-2">

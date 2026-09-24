@@ -23,6 +23,9 @@ import {
   DongChungTuReport,
   SoDuDauKyItem
 } from '../../lib/keToan/financialReports';
+import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { BaoCaoPrintExportModal } from './BaoCaoPrintExportModal';
+import { ThietLapCongTy } from './ThietLapCongTyModal';
 
 // Mẫu dữ liệu chứng từ khởi tạo phục vụ tra cứu báo cáo
 const MOCK_SO_DU_DAU_KY: SoDuDauKyItem[] = [
@@ -89,12 +92,13 @@ const MOCK_CHUNG_TU_LIST: DongChungTuReport[] = [
   }
 ];
 
-export function BaoCaoTt99Page() {
+export function BaoCaoTt99Page({ companyInfo }: { companyInfo?: ThietLapCongTy } = {}) {
   const [reportType, setReportType] = useState<'F01' | 'S03' | 'S04' | 'B01' | 'B02'>('F01');
   const [fromDate, setFromDate] = useState('2026-01-01');
   const [toDate, setToDate] = useState('2026-01-31');
   const [selectedAccount, setSelectedAccount] = useState('112');
   const [searchFilter, setSearchFilter] = useState('');
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   
   // Interactive Drill-Down Drawer State
   const [drillDownAccount, setDrillDownAccount] = useState<string | null>(null);
@@ -131,16 +135,10 @@ export function BaoCaoTt99Page() {
 
         <div className="flex items-center gap-2">
           <button 
-            onClick={() => window.print()}
-            className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            onClick={() => setIsPrintModalOpen(true)}
+            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
           >
-            <Printer className="w-3.5 h-3.5" /> In báo cáo
-          </button>
-          <button 
-            onClick={() => alert('Đã xuất tệp bảng tính Excel chuẩn mẫu TT99.')}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" /> Xuất Excel
+            <Printer className="w-4 h-4" /> In & Xuất Báo cáo
           </button>
         </div>
       </div>
@@ -247,7 +245,7 @@ export function BaoCaoTt99Page() {
             <div>
               <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Mẫu số F01-DN</span>
               <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">BẢNG CÂN ĐỐI SỐ PHÁT SINH TÀI KHOẢN</h3>
-              <p className="text-xs text-slate-500">Từ {fromDate} đến {toDate} • Nhấp vào tài khoản để mở Sổ cái drill-down</p>
+              <p className="text-xs text-slate-500">Từ {formatDateVN(fromDate)} đến {formatDateVN(toDate)} • Nhấp vào tài khoản để mở Sổ cái drill-down</p>
             </div>
             <div className="flex items-center gap-2">
               <span className={cn(
@@ -289,28 +287,28 @@ export function BaoCaoTt99Page() {
                       onClick={() => setDrillDownAccount(tk.maTk)}
                       className="hover:bg-blue-50/40 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group"
                     >
-                      <td className="p-2.5 font-bold text-blue-600 dark:text-blue-400 text-center border-r border-slate-100 dark:border-slate-800 font-mono">
+                      <td className="p-2.5 font-bold text-blue-600 dark:text-blue-400 text-center border-r border-slate-100 dark:border-slate-800">
                         {tk.maTk}
                       </td>
                       <td className="p-2.5 font-medium text-slate-800 dark:text-slate-200 border-r border-slate-100 dark:border-slate-800">
                         {tk.tenTk}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 font-mono tabular-nums text-slate-500">
+                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 tabular-nums text-slate-500">
                         {tk.duNoDauKy > 0 ? formatCurrency(tk.duNoDauKy) : '-'}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 font-mono tabular-nums text-slate-500">
+                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 tabular-nums text-slate-500">
                         {tk.duCoDauKy > 0 ? formatCurrency(tk.duCoDauKy) : '-'}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 font-mono tabular-nums font-semibold text-slate-900 dark:text-slate-100">
+                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                         {tk.phatSinhNo > 0 ? formatCurrency(tk.phatSinhNo) : '-'}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 font-mono tabular-nums font-semibold text-slate-900 dark:text-slate-100">
+                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                         {tk.phatSinhCo > 0 ? formatCurrency(tk.phatSinhCo) : '-'}
                       </td>
-                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 font-mono tabular-nums font-bold text-emerald-600 dark:text-emerald-400">
+                      <td className="p-2 text-right border-r border-slate-100 dark:border-slate-800 tabular-nums font-bold text-emerald-600 dark:text-emerald-400">
                         {tk.duNoCuoiKy > 0 ? formatCurrency(tk.duNoCuoiKy) : '-'}
                       </td>
-                      <td className="p-2 text-right font-mono tabular-nums font-bold text-emerald-600 dark:text-emerald-400">
+                      <td className="p-2 text-right tabular-nums font-bold text-emerald-600 dark:text-emerald-400">
                         {tk.duCoCuoiKy > 0 ? formatCurrency(tk.duCoCuoiKy) : '-'}
                       </td>
                       <td className="p-2 text-center text-slate-400 group-hover:text-blue-500">
@@ -322,12 +320,12 @@ export function BaoCaoTt99Page() {
               <tfoot className="bg-slate-100/90 dark:bg-slate-800 font-bold text-slate-900 dark:text-slate-100 border-t-2 border-slate-300 dark:border-slate-700">
                 <tr>
                   <td colSpan={2} className="p-2.5 text-center uppercase tracking-wider">Tổng cộng</td>
-                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 font-mono tabular-nums">{formatCurrency(trialBalance.tongDuNoDauKy)}</td>
-                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 font-mono tabular-nums">{formatCurrency(trialBalance.tongDuCoDauKy)}</td>
-                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(trialBalance.tongPhatSinhNo)}</td>
-                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(trialBalance.tongPhatSinhCo)}</td>
-                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(trialBalance.tongDuNoCuoiKy)}</td>
-                  <td className="p-2 text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(trialBalance.tongDuCoCuoiKy)}</td>
+                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 tabular-nums">{formatCurrency(trialBalance.tongDuNoDauKy)}</td>
+                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 tabular-nums">{formatCurrency(trialBalance.tongDuCoDauKy)}</td>
+                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(trialBalance.tongPhatSinhNo)}</td>
+                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(trialBalance.tongPhatSinhCo)}</td>
+                  <td className="p-2 text-right border-r border-slate-200 dark:border-slate-700 tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(trialBalance.tongDuNoCuoiKy)}</td>
+                  <td className="p-2 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(trialBalance.tongDuCoCuoiKy)}</td>
                   <td></td>
                 </tr>
               </tfoot>
@@ -362,22 +360,22 @@ export function BaoCaoTt99Page() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {nhatKyChung.danhSachDong.map((d) => (
                   <tr key={d.stt} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-                    <td className="p-2 text-center text-slate-400 font-mono">{d.stt}</td>
-                    <td className="p-2 text-center text-slate-600 dark:text-slate-400">{d.ngayGhiSo}</td>
-                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400 font-mono">{d.soChungTu}</td>
-                    <td className="p-2 text-center text-slate-500">{d.ngayChungTu}</td>
+                    <td className="p-2 text-center text-slate-400">{d.stt}</td>
+                    <td className="p-2 text-center text-slate-600 dark:text-slate-400">{formatDateVN(d.ngayGhiSo)}</td>
+                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400">{d.soChungTu}</td>
+                    <td className="p-2 text-center text-slate-500">{formatDateVN(d.ngayChungTu)}</td>
                     <td className="p-2 text-slate-800 dark:text-slate-200">{d.dienGiai}</td>
-                    <td className="p-2 text-center font-mono font-medium text-slate-500">{d.tkDoiUng}</td>
-                    <td className="p-2 text-right font-mono tabular-nums font-medium text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
-                    <td className="p-2 text-right font-mono tabular-nums font-medium text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
+                    <td className="p-2 text-center font-medium text-slate-500">{d.tkDoiUng}</td>
+                    <td className="p-2 text-right tabular-nums font-medium text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
+                    <td className="p-2 text-right tabular-nums font-medium text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="bg-slate-100 dark:bg-slate-800 font-bold text-slate-900 dark:text-slate-100 border-t-2 border-slate-300 dark:border-slate-700">
                 <tr>
                   <td colSpan={6} className="p-2.5 text-center uppercase">Tổng cộng phát sinh</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(nhatKyChung.tongPhatSinhNo)}</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(nhatKyChung.tongPhatSinhCo)}</td>
+                  <td className="p-2.5 text-right tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(nhatKyChung.tongPhatSinhNo)}</td>
+                  <td className="p-2.5 text-right tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(nhatKyChung.tongPhatSinhCo)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -391,7 +389,7 @@ export function BaoCaoTt99Page() {
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Mẫu số S04-DN</span>
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">SỔ CÁI TÀI KHOẢN {soCai.maTk}</h3>
-            <p className="text-xs text-slate-500">Số dư đầu kỳ: <strong className="text-slate-800 dark:text-slate-200 font-mono">{formatCurrency(soCai.soDuDauKy)}</strong></p>
+            <p className="text-xs text-slate-500">Số dư đầu kỳ: <strong className="text-slate-800 dark:text-slate-200 tabular-nums">{formatCurrency(soCai.soDuDauKy)}</strong></p>
           </div>
 
           <div className="overflow-x-auto">
@@ -410,22 +408,22 @@ export function BaoCaoTt99Page() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {soCai.danhSachDong.map((d, i) => (
                   <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-                    <td className="p-2 text-center text-slate-500 font-mono">{d.ngayGhiSo}</td>
-                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400 font-mono">{d.soChungTu}</td>
+                    <td className="p-2 text-center text-slate-500">{formatDateVN(d.ngayGhiSo)}</td>
+                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400">{d.soChungTu}</td>
                     <td className="p-2 text-slate-800 dark:text-slate-200">{d.dienGiai}</td>
-                    <td className="p-2 text-center font-mono font-medium text-slate-500">{d.tkDoiUng}</td>
-                    <td className="p-2 text-right font-mono tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
-                    <td className="p-2 text-right font-mono tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
-                    <td className="p-2 text-right font-mono tabular-nums font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(d.soDu)}</td>
+                    <td className="p-2 text-center font-medium text-slate-500">{d.tkDoiUng}</td>
+                    <td className="p-2 text-right tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
+                    <td className="p-2 text-right tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
+                    <td className="p-2 text-right tabular-nums font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(d.soDu)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="bg-slate-100 dark:bg-slate-800 font-bold text-slate-900 dark:text-slate-100 border-t-2 border-slate-300 dark:border-slate-700">
                 <tr>
                   <td colSpan={4} className="p-2.5 text-center uppercase">Tổng phát sinh & Số dư cuối kỳ</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(soCai.tongPhatSinhNo)}</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(soCai.tongPhatSinhCo)}</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(soCai.soDuCuoiKy)}</td>
+                  <td className="p-2.5 text-right tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(soCai.tongPhatSinhNo)}</td>
+                  <td className="p-2.5 text-right tabular-nums text-blue-600 dark:text-blue-400">{formatCurrency(soCai.tongPhatSinhCo)}</td>
+                  <td className="p-2.5 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(soCai.soDuCuoiKy)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -439,7 +437,7 @@ export function BaoCaoTt99Page() {
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Mẫu số B01-DN</span>
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">BÁO CÁO TÌNH HÌNH TÀI CHÍNH</h3>
-            <p className="text-xs text-slate-500">Tại ngày {toDate} (Tổng cộng Tài sản mã 280 chuẩn TT99)</p>
+            <p className="text-xs text-slate-500">Tại ngày {formatDateVN(toDate)} (Tổng cộng Tài sản mã 280 chuẩn TT99)</p>
           </div>
 
           <div className="overflow-x-auto">
@@ -456,13 +454,13 @@ export function BaoCaoTt99Page() {
                 {b01.danhSachChiTieu.map((c) => (
                   <tr key={c.maSo} className={cn(
                     c.isHeader
-                      ? "bg-slate-50 dark:bg-slate-800/60 font-bold text-slate-900 dark:text-slate-100"
-                      : "hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
+                        ? "bg-slate-50 dark:bg-slate-800/60 font-bold text-slate-900 dark:text-slate-100"
+                        : "hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                   )}>
-                    <td className="p-2 text-center font-mono font-bold text-blue-600 dark:text-blue-400">{c.maSo}</td>
+                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400">{c.maSo}</td>
                     <td className={cn("p-2", c.isHeader ? "font-bold text-slate-900 dark:text-slate-100" : "text-slate-700 dark:text-slate-300 pl-6")}>{c.chiTieu}</td>
-                    <td className="p-2 text-right font-mono tabular-nums font-bold text-slate-900 dark:text-slate-100">{formatCurrency(c.soCuoiKy)}</td>
-                    <td className="p-2 text-right text-slate-400 font-mono">-</td>
+                    <td className="p-2 text-right tabular-nums font-bold text-slate-900 dark:text-slate-100">{formatCurrency(c.soCuoiKy)}</td>
+                    <td className="p-2 text-right text-slate-400">-</td>
                   </tr>
                 ))}
               </tbody>
@@ -477,7 +475,7 @@ export function BaoCaoTt99Page() {
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Mẫu số B02-DN</span>
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">BÁO CÁO KẾT QUẢ HOẠT ĐỘNG KINH DOANH</h3>
-            <p className="text-xs text-slate-500">Kỳ báo cáo: Từ {fromDate} đến {toDate}</p>
+            <p className="text-xs text-slate-500">Kỳ báo cáo: Từ {formatDateVN(fromDate)} đến {formatDateVN(toDate)}</p>
           </div>
 
           <div className="overflow-x-auto">
@@ -497,10 +495,10 @@ export function BaoCaoTt99Page() {
                       ? "bg-slate-50 dark:bg-slate-800/60 font-bold text-slate-900 dark:text-slate-100"
                       : "hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                   )}>
-                    <td className="p-2 text-center font-mono font-bold text-blue-600 dark:text-blue-400">{c.maSo}</td>
+                    <td className="p-2 text-center font-bold text-blue-600 dark:text-blue-400">{c.maSo}</td>
                     <td className={cn("p-2", c.isHeader ? "font-bold text-slate-900 dark:text-slate-100" : "text-slate-700 dark:text-slate-300 pl-6")}>{c.chiTieu}</td>
-                    <td className="p-2 text-right font-mono tabular-nums font-bold text-slate-900 dark:text-slate-100">{formatCurrency(c.kyNay)}</td>
-                    <td className="p-2 text-right text-slate-400 font-mono">-</td>
+                    <td className="p-2 text-right tabular-nums font-bold text-slate-900 dark:text-slate-100">{formatCurrency(c.kyNay)}</td>
+                    <td className="p-2 text-right text-slate-400">-</td>
                   </tr>
                 ))}
               </tbody>
@@ -521,7 +519,7 @@ export function BaoCaoTt99Page() {
                   Tài khoản {drillDownAccount}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Chi tiết chứng từ phát sinh trong kỳ {fromDate} ➔ {toDate}
+                  Chi tiết chứng từ phát sinh trong kỳ {formatDateVN(fromDate)} ➔ {formatDateVN(toDate)}
                 </p>
               </div>
 
@@ -536,8 +534,8 @@ export function BaoCaoTt99Page() {
             {/* Drawer Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 flex justify-between items-center text-xs">
-                <span className="font-semibold text-blue-900 dark:text-blue-300">Tổng phát sinh Nợ: <strong className="font-mono">{formatCurrency(drillDownSoCai.tongPhatSinhNo)}</strong></span>
-                <span className="font-semibold text-emerald-900 dark:text-emerald-300">Tổng phát sinh Có: <strong className="font-mono">{formatCurrency(drillDownSoCai.tongPhatSinhCo)}</strong></span>
+                <span className="font-semibold text-blue-900 dark:text-blue-300">Tổng phát sinh Nợ: <strong className="tabular-nums">{formatCurrency(drillDownSoCai.tongPhatSinhNo)}</strong></span>
+                <span className="font-semibold text-emerald-900 dark:text-emerald-300">Tổng phát sinh Có: <strong className="tabular-nums">{formatCurrency(drillDownSoCai.tongPhatSinhCo)}</strong></span>
               </div>
 
               {drillDownSoCai.danhSachDong.length === 0 ? (
@@ -559,11 +557,11 @@ export function BaoCaoTt99Page() {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {drillDownSoCai.danhSachDong.map((d, i) => (
                         <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                          <td className="p-2 font-mono text-slate-500">{d.ngayGhiSo}</td>
-                          <td className="p-2 font-mono font-bold text-blue-600 dark:text-blue-400">{d.soChungTu}</td>
+                          <td className="p-2 text-slate-500">{formatDateVN(d.ngayGhiSo)}</td>
+                          <td className="p-2 font-bold text-blue-600 dark:text-blue-400">{d.soChungTu}</td>
                           <td className="p-2 text-slate-800 dark:text-slate-200">{d.dienGiai}</td>
-                          <td className="p-2 text-right font-mono tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
-                          <td className="p-2 text-right font-mono tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
+                          <td className="p-2 text-right tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhNo > 0 ? formatCurrency(d.soPhatSinhNo) : '-'}</td>
+                          <td className="p-2 text-right tabular-nums text-slate-900 dark:text-slate-100">{d.soPhatSinhCo > 0 ? formatCurrency(d.soPhatSinhCo) : '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -584,6 +582,22 @@ export function BaoCaoTt99Page() {
           </div>
         </div>
       )}
+
+      {/* MODAL IN & XUẤT BÁO CÁO TOÀN DIỆN */}
+      <BaoCaoPrintExportModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        reportType={reportType}
+        fromDate={fromDate}
+        toDate={toDate}
+        selectedAccount={selectedAccount}
+        trialBalance={trialBalance}
+        nhatKyChung={nhatKyChung}
+        soCai={soCai}
+        b01={b01}
+        b02={b02}
+        companyInfo={companyInfo}
+      />
     </div>
   );
 }

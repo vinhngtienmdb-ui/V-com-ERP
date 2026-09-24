@@ -59,6 +59,12 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
   const [isCompanyConfigOpen, setIsCompanyConfigOpen] = useState(false);
   const [showLegacyMenu, setShowLegacyMenu] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+  const [createTrigger, setCreateTrigger] = useState(0);
+
+  const handleOpenCreateVoucher = () => {
+    setActiveTab('s03_nkc');
+    setCreateTrigger(Date.now());
+  };
 
   // Lưu theme vào localStorage
   const toggleTheme = () => {
@@ -101,21 +107,21 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
     ? "w-full max-w-[2100px] px-3 sm:px-5 lg:px-7 mx-auto" 
     : "max-w-7xl mx-auto px-4";
 
-  // Keyboard shortcut listener toàn cục
+  // Keyboard shortcut listener toàn cục không xung đột
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F2: Tạo chứng từ mới (Chuyển sang tab S03)
-      if (e.key === 'F2') {
+      // Alt + N hoặc F2: Tạo chứng từ mới
+      if ((e.altKey && (e.key === 'n' || e.key === 'N')) || e.key === 'F2') {
         e.preventDefault();
-        setActiveTab('s03_nkc');
+        handleOpenCreateVoucher();
       }
       // F1: Trợ giúp phím tắt
       if (e.key === 'F1') {
         e.preventDefault();
         setShowKeyboardHelp(prev => !prev);
       }
-      // Alt + W: Bật/Tắt mở rộng màn hình làm việc
-      if (e.altKey && (e.key === 'w' || e.key === 'W')) {
+      // Alt + M hoặc Alt + W: Bật/Tắt mở rộng màn hình làm việc
+      if (e.altKey && (e.key === 'm' || e.key === 'M' || e.key === 'w' || e.key === 'W')) {
         e.preventDefault();
         toggleWidescreen();
       }
@@ -177,7 +183,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
                   {companyInfo.tenCongTy}
                 </span>
                 <span className={cn(
-                  "px-2 py-0.5 rounded text-[10px] font-mono font-bold",
+                  "px-2 py-0.5 rounded text-[10px] tabular-nums font-bold",
                   isDarkMode ? "bg-blue-950 text-blue-300 border border-blue-800" : "bg-blue-50 text-blue-700 border border-blue-200"
                 )}>
                   MST: {companyInfo.maSoThue}
@@ -218,10 +224,10 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
                   ? isWidescreen ? "bg-blue-950 text-blue-400 border border-blue-800" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                   : isWidescreen ? "bg-blue-50 text-blue-700 border border-blue-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               )}
-              title={isWidescreen ? "Thu gọn màn hình về dạng hộp (1280px - Alt+W)" : "Mở rộng tối đa không gian làm việc (Toàn chiều rộng - Alt+W)"}
+              title={isWidescreen ? "Thu gọn màn hình về dạng hộp (Alt+M)" : "Mở rộng tối đa không gian làm việc (Toàn chiều rộng - Alt+M)"}
             >
               {isWidescreen ? <Minimize2 className="w-4 h-4 text-blue-500" /> : <Maximize2 className="w-4 h-4" />}
-              <span className="hidden lg:inline text-[11px]">{isWidescreen ? "Thu gọn" : "Mở rộng (Alt+W)"}</span>
+              <span className="hidden lg:inline text-[11px]">{isWidescreen ? "Thu gọn" : "Mở rộng (Alt+M)"}</span>
             </button>
 
             {/* Browser Native Fullscreen Toggle */}
@@ -254,13 +260,13 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
               <span className="hidden md:inline text-[11px]">{isDarkMode ? "Sáng" : "Tối"}</span>
             </button>
 
-            {/* Quick Button: Lập chứng từ mới (F2) */}
+            {/* Quick Button: Lập chứng từ mới (Alt+N) */}
             <button
-              onClick={() => setActiveTab('s03_nkc')}
+              onClick={handleOpenCreateVoucher}
               className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Lập chứng từ (F2)</span>
+              <span>Lập chứng từ (Alt+N)</span>
             </button>
 
             {/* Button: Cấu hình Doanh nghiệp TT99 */}
@@ -280,15 +286,15 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         </div>
       </header>
 
-      {/* 2. SUB-NAVIGATION TABS (4 CORE HUBS + LEGACY EXTENSIONS) */}
+      {/* 2. SUB-NAVIGATION TABS (4 CORE HUBS + UNCLIPPED EXTENSIONS) */}
       <div className={cn(
         "border-b sticky top-[53px] z-20 backdrop-blur-md transition-colors",
         isDarkMode ? "bg-[#0B0F17]/95 border-slate-800/80" : "bg-white/95 border-slate-200/80 shadow-2xs"
       )}>
-        <div className={cn(containerWidthClass, "flex items-center justify-between overflow-x-auto scrollbar-none")}>
-          <div className="flex items-center gap-1 py-1.5">
+        <div className={cn(containerWidthClass, "flex items-center justify-between")}>
+          <div className="flex items-center gap-1 py-1.5 overflow-x-auto scrollbar-none flex-1 min-w-0 mr-3">
             {[
-              { id: 's03_nkc', label: '1. Nhật ký chung (S03-DN)', sub: 'Bàn phím F3/F4', icon: BookOpen, hotkey: 'Alt+1' },
+              { id: 's03_nkc', label: '1. Nhật ký chung (S03-DN)', sub: 'Bàn phím siêu tốc', icon: BookOpen, hotkey: 'Alt+1' },
               { id: 'bctc_reports', label: '2. Báo cáo & Sổ sách TT99', sub: 'B01, B02, F01, S04', icon: PieChart, hotkey: 'Alt+2' },
               { id: 'dieu28_compliance', label: '3. Kiểm soát Điều 28 & Khóa sổ', sub: 'SHA-256 Chuỗi khối', icon: ShieldCheck, hotkey: 'Alt+3' },
               { id: 'ho_so_vault', label: '4. Hồ sơ – Lưu trữ (NĐ 174)', sub: '18 Phần lưu trữ', icon: FolderTree, hotkey: 'Alt+4' }
@@ -316,8 +322,8 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
             ))}
           </div>
 
-          {/* Legacy & Extension Dropdown */}
-          <div className="relative pl-3 border-l border-slate-200 dark:border-slate-800 flex items-center">
+          {/* Legacy & Extension Dropdown - Positioned outside overflow-x-auto to prevent clipping */}
+          <div className="relative shrink-0 flex items-center pl-3 border-l border-slate-200 dark:border-slate-800 py-2">
             <button
               onClick={() => setShowLegacyMenu(prev => !prev)}
               className={cn(
@@ -375,13 +381,13 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
       <main className={cn(containerWidthClass, "py-3")}>
         {activeTab === 's03_nkc' && (
           <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
-            <NhatKyChungPage />
+            <NhatKyChungPage forceCreateTrigger={createTrigger} />
           </div>
         )}
 
         {activeTab === 'bctc_reports' && (
           <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
-            <BaoCaoTt99Page />
+            <BaoCaoTt99Page companyInfo={companyInfo} />
           </div>
         )}
 
@@ -405,51 +411,51 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
       )}>
         <div className={cn(containerWidthClass, "flex flex-wrap items-center justify-between gap-2 text-[11px]")}>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Phím tắt Speed-Entry:</span>
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
-              F2
+            <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Phím tắt ERP Speed:</span>
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
+              Alt+N
             </span>
             <span className="text-slate-500">Tạo mới</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
-              F3
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
+              Alt+K
             </span>
             <span className="text-slate-500">Tìm TK (172 TK)</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
-              F4
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-blue-600">
+              Alt+D
             </span>
             <span className="text-slate-500">Đối tượng KH/NCC</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-emerald-600">
-              F9
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-emerald-600">
+              Alt+B
             </span>
-            <span className="text-slate-500">Tự động Cân đối Nợ/Có</span>
+            <span className="text-slate-500">Cân đối Nợ/Có</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-indigo-600">
-              Ctrl+S
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-indigo-600">
+              Ctrl+Enter
             </span>
             <span className="text-slate-500">Lưu nháp</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-emerald-600">
-              F12
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-emerald-600">
+              Alt+Enter
             </span>
             <span className="text-slate-500">Ghi sổ</span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
 
-            <span className="inline-flex items-center gap-1 font-mono font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-600">
-              Alt+W
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-600">
+              Alt+M
             </span>
             <span className="text-slate-500">{isWidescreen ? "Thu hẹp" : "Mở rộng"}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="font-mono text-emerald-500 font-bold flex items-center gap-1">
+            <span className="text-emerald-500 font-bold flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Sẵn sàng kết nối Cloud HSM
             </span>
@@ -457,12 +463,13 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         </div>
       </footer>
 
-      {/* Modal Cấu hình Doanh nghiệp */}
+      {/* Modal Cấu hình Doanh nghiệp TT99 */}
       {isCompanyConfigOpen && (
         <ThietLapCongTyModal
-          initialConfig={companyInfo}
+          isOpen={isCompanyConfigOpen}
+          currentConfig={companyInfo}
           onClose={() => setIsCompanyConfigOpen(false)}
-          onSave={(newCfg) => {
+          onSaved={(newCfg) => {
             setCompanyInfo(newCfg);
             localStorage.setItem('vcomm_company_config_tt99', JSON.stringify(newCfg));
             setIsCompanyConfigOpen(false);
@@ -493,43 +500,43 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
             <div className="space-y-2 text-xs">
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-blue-500">F2</div>
+                  <div className="font-bold text-blue-500">Alt + N</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Tạo nhanh chứng từ mới</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-blue-500">F3</div>
+                  <div className="font-bold text-blue-500">Alt + K</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Mở tìm kiếm nhanh 172 tài khoản TT99</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-blue-500">F4</div>
+                  <div className="font-bold text-blue-500">Alt + D</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Chọn đối tượng công nợ (KH / NCC)</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-emerald-500">F9</div>
+                  <div className="font-bold text-emerald-500">Alt + B</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Tự động điền số tiền cân đối Nợ = Có</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-indigo-500">Ctrl + S</div>
+                  <div className="font-bold text-indigo-500">Ctrl + Enter</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Lưu bản nháp chứng từ</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-emerald-500">F12</div>
+                  <div className="font-bold text-emerald-500">Alt + Enter</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Ghi sổ chính thức chứng từ</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-purple-500">Alt + W</div>
+                  <div className="font-bold text-purple-500">Alt + M</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Bật/Tắt mở rộng màn hình làm việc</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-amber-500">Ctrl + Space</div>
+                  <div className="font-bold text-amber-500">Ctrl + Space</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Đảo chiều Nợ ⇄ Có trên dòng định khoản</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-blue-500">Alt + 1..4</div>
+                  <div className="font-bold text-blue-500">Alt + 1..4</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Chuyển nhanh giữa 4 phân hệ chính</div>
                 </div>
                 <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-                  <div className="font-mono font-bold text-emerald-500">F11</div>
+                  <div className="font-bold text-emerald-500">F11</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">Toàn màn hình trình duyệt (Toàn cảnh)</div>
                 </div>
               </div>
@@ -538,7 +545,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
             <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">
               <button
                 onClick={() => setShowKeyboardHelp(false)}
-                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold"
+                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold cursor-pointer"
               >
                 Đã hiểu (Esc)
               </button>

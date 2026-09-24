@@ -71,7 +71,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
     >
       {/* STT */}
       <td className={cn(
-        "p-2 text-center font-mono font-bold w-10 select-none",
+        "p-2 text-center tabular-nums font-bold w-10 select-none",
         isDarkMode ? "bg-slate-900/60 text-slate-500" : "bg-slate-50/50 text-slate-400"
       )}>
         {index + 1}
@@ -105,7 +105,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
             };
             onChange(index, updated);
           }}
-          placeholder="Nợ TK (F3)..."
+          placeholder="Nợ TK (Alt+K)..."
         />
       </td>
 
@@ -133,7 +133,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
             };
             onChange(index, updated);
           }}
-          placeholder="Có TK (F3)..."
+          placeholder="Có TK (Alt+K)..."
         />
       </td>
 
@@ -146,7 +146,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
           onChange={(e) => handleChangeField('soTien', Number(e.target.value))}
           placeholder="0"
           className={cn(
-            "w-full px-2.5 py-1.5 text-xs font-mono font-bold text-right rounded-lg border tabular-nums transition-colors focus:outline-none focus:ring-1 focus:ring-blue-500",
+            "w-full px-2.5 py-1.5 text-xs font-bold text-right rounded-lg border tabular-nums transition-colors focus:outline-none focus:ring-1 focus:ring-blue-500",
             isDarkMode
               ? "bg-slate-900 border-slate-700 text-emerald-400 placeholder-slate-600"
               : "bg-white border-slate-200 text-slate-950 placeholder-slate-400"
@@ -160,7 +160,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
           value={dinhKhoan.loaiTien || 'VND'}
           onChange={(e) => handleChangeField('loaiTien', e.target.value)}
           className={cn(
-            "w-full px-2 py-1.5 text-xs font-mono font-semibold rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500",
+            "w-full px-2 py-1.5 text-xs font-semibold rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500",
             isDarkMode ? "bg-slate-900 border-slate-700 text-slate-200" : "bg-white border-slate-200 text-slate-800"
           )}
         >
@@ -178,7 +178,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
           value={dinhKhoan.loaiTien === 'VND' ? 1 : dinhKhoan.tyGia || 1}
           onChange={(e) => handleChangeField('tyGia', Number(e.target.value))}
           className={cn(
-            "w-full px-2 py-1.5 text-xs font-mono text-right rounded-lg border tabular-nums",
+            "w-full px-2 py-1.5 text-xs text-right rounded-lg border tabular-nums",
             dinhKhoan.loaiTien === 'VND' ? "opacity-40 cursor-not-allowed" : "",
             isDarkMode ? "bg-slate-900 border-slate-700 text-slate-300" : "bg-white border-slate-200 text-slate-800"
           )}
@@ -198,7 +198,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
             };
             onChange(index, updated);
           }}
-          placeholder="Đối tượng (F4)..."
+          placeholder="Đối tượng (Alt+D)..."
         />
       </td>
 
@@ -210,7 +210,7 @@ export const DinhKhoanRow: React.FC<DinhKhoanRowProps> = ({
           onChange={(e) => handleChangeField('maKho', e.target.value)}
           placeholder="Mã kho..."
           className={cn(
-            "w-full px-2 py-1.5 text-xs rounded-lg border font-mono",
+            "w-full px-2 py-1.5 text-xs rounded-lg border",
             isDarkMode ? "bg-slate-900 border-slate-700 text-slate-300" : "bg-white border-slate-200 text-slate-800"
           )}
         />

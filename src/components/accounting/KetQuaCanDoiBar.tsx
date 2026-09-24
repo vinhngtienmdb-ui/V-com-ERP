@@ -35,7 +35,7 @@ export const KetQuaCanDoiBar: React.FC<KetQuaCanDoiBarProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-slate-400">Số dòng định khoản:</span>
             <span className={cn(
-              "font-mono font-bold text-xs px-2 py-0.5 rounded",
+              "tabular-nums font-bold text-xs px-2 py-0.5 rounded",
               isDarkMode ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-700"
             )}>
               {soDong}
@@ -59,10 +59,10 @@ export const KetQuaCanDoiBar: React.FC<KetQuaCanDoiBarProps> = ({
                   type="button"
                   onClick={onAutoBalance}
                   className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-xs rounded-full flex items-center gap-1 shadow-xs transition-all cursor-pointer"
-                  title="Tự động bù số tiền chênh lệch vào dòng cuối cùng (Phím tắt F9)"
+                  title="Tự động bù số tiền chênh lệch vào dòng cuối cùng (Phím tắt Alt+B)"
                 >
                   <Zap className="w-3.5 h-3.5 fill-current" />
-                  <span>Tự cân đối (F9)</span>
+                  <span>Tự cân đối (Alt+B)</span>
                 </button>
               )}
             </div>
@@ -70,7 +70,7 @@ export const KetQuaCanDoiBar: React.FC<KetQuaCanDoiBarProps> = ({
         </div>
 
         {/* Financial Numbers with Tabular Alignment */}
-        <div className="flex items-center gap-6 font-mono">
+        <div className="flex items-center gap-6">
           <div className="text-right">
             <div className="text-[10px] uppercase tracking-wider font-sans text-slate-400 font-bold">Tổng Nợ</div>
             <div className="text-sm font-extrabold text-blue-500 tabular-nums">{formatVnd(tongNo)} đ</div>

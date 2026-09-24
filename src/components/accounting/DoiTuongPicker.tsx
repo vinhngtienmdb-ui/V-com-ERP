@@ -64,22 +64,38 @@ export const DoiTuongPicker: React.FC<DoiTuongPickerProps> = ({
     setSearchTerm('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen) {
+      if (e.key === 'F4' || (e.altKey && (e.key === 'd' || e.key === 'D')) || e.key === 'Enter') {
+        e.preventDefault();
+        setIsOpen(true);
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} onKeyDown={handleKeyDown}>
       <button
         type="button"
         onClick={() => {
           setIsOpen(true);
           setTimeout(() => inputRef.current?.focus(), 50);
         }}
-        className="w-full text-left font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 flex items-center justify-between transition-colors shadow-2xs"
-        title="Bấm F4 để chọn đối tượng theo dõi công nợ"
+        className="w-full text-left font-bold text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 flex items-center justify-between transition-colors shadow-2xs"
+        title="Bấm Alt+D hoặc F4 để chọn đối tượng theo dõi công nợ"
       >
         <span className={selectedDoiTuong ? 'text-slate-800' : 'text-slate-400 font-normal truncate'}>
           {selectedDoiTuong ? `${selectedDoiTuong.maDt} - ${selectedDoiTuong.tenDt}` : placeholder}
         </span>
         <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-sans font-semibold text-slate-400 bg-slate-100 rounded border border-slate-200">
-          F4
+          Alt+D
         </kbd>
       </button>
 
@@ -154,7 +170,7 @@ export const DoiTuongPicker: React.FC<DoiTuongPickerProps> = ({
 
                     <div>
                       <div className="font-bold text-slate-900 flex items-center gap-2">
-                        <span className="font-mono text-indigo-700">{dt.maDt}</span>
+                        <span className="font-bold text-indigo-700 tabular-nums">{dt.maDt}</span>
                         <span>{dt.tenDt}</span>
                       </div>
                       {dt.maSoThue && (

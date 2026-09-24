@@ -91,7 +91,7 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
             Chi tiết Định khoản (S03-DN)
           </span>
           <span className="text-[11px] text-slate-400">
-            • F3 chọn TK • F4 chọn đối tượng • Ctrl+Space đảo Nợ Có • Ctrl+Enter thêm dòng
+            • Alt+K chọn TK • Alt+D chọn đối tượng • Ctrl+Space đảo Nợ Có • Alt+A thêm dòng
           </span>
         </div>
 
@@ -103,7 +103,7 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Thêm dòng (Ctrl+Enter)</span>
+              <span>Thêm dòng (Alt+A)</span>
             </button>
           </div>
         )}

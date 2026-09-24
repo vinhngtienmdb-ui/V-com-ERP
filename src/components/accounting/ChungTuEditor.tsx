@@ -91,18 +91,21 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
     setFormData(prev => ({ ...prev, dinhKhoan: nextLines }));
   };
 
-  // Keyboard shortcut listener: Ctrl+S (Lưu), F9 (Tự cân đối), F12 (Ghi sổ), Esc (Thoát)
+  // Keyboard shortcut listener không xung đột: Ctrl+Enter / Ctrl+S (Lưu), Alt+B / F9 (Tự cân đối), Alt+Enter / F12 (Ghi sổ), Esc (Thoát)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      // Lưu nháp: Ctrl + Enter hoặc Ctrl + S
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'Enter' || e.key === 's' || e.key === 'S')) {
         e.preventDefault();
         handleSaveDraft();
       }
-      if (e.key === 'F9') {
+      // Tự cân đối: Alt + B hoặc F9
+      if ((e.altKey && (e.key === 'b' || e.key === 'B')) || e.key === 'F9') {
         e.preventDefault();
         handleAutoBalance();
       }
-      if (e.key === 'F12') {
+      // Ghi sổ chính thức: Alt + Enter hoặc F12
+      if ((e.altKey && e.key === 'Enter') || e.key === 'F12') {
         e.preventDefault();
         handlePostJournal();
       }
@@ -129,7 +132,7 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
 
   const handlePostJournal = () => {
     if (!ketQuaCanDoi.canDoi) {
-      alert('Bút toán chưa cân đối hoặc có lỗi. Vui lòng nhấn F9 để tự cân đối hoặc kiểm tra lại!');
+      alert('Bút toán chưa cân đối hoặc có lỗi. Vui lòng nhấn Alt+B để tự cân đối hoặc kiểm tra lại!');
       return;
     }
     const updated = { ...formData, trangThai: 'DA_GHI_SO' as const };
@@ -191,9 +194,10 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
                   type="button"
                   onClick={handleAutoBalance}
                   className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  title="Tự động cân đối Nợ = Có (Alt + B)"
                 >
                   <Zap className="w-3.5 h-3.5 fill-current" />
-                  <span>Cân đối (F9)</span>
+                  <span>Cân đối (Alt+B)</span>
                 </button>
               )}
 
@@ -206,20 +210,20 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
                     ? "bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
                     : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                 )}
-                title="Lưu nháp (Ctrl + S)"
+                title="Lưu nháp (Ctrl + Enter)"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Lưu nháp (Ctrl+S)</span>
+                <span>Lưu nháp (Ctrl+Enter)</span>
               </button>
 
               <button
                 type="button"
                 onClick={handlePostJournal}
                 className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                title="Ghi sổ kế toán chính thức (F12)"
+                title="Ghi sổ kế toán chính thức (Alt + Enter)"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
-                <span>Ghi sổ (F12)</span>
+                <span>Ghi sổ (Alt+Enter)</span>
               </button>
             </>
           )}
@@ -261,7 +265,7 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
           )}
         >
           <span>Chi tiết Định khoản (S03-DN)</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500">
+          <span className="tabular-nums font-bold text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500">
             {formData.dinhKhoan.length}
           </span>
         </button>
@@ -278,7 +282,7 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
         >
           <Paperclip className="w-3.5 h-3.5" />
           <span>Hồ sơ & Hóa đơn đính kèm</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400">
+          <span className="tabular-nums font-bold text-[10px] px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400">
             {attachments.length}
           </span>
         </button>
@@ -355,14 +359,14 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
               <div>
                 <span className="font-bold text-blue-500">TẠO MỚI CHỨNG TỪ:</span> Khởi tạo chứng từ bởi user-current.
               </div>
-              <span className="font-mono text-slate-400 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
+              <span className="tabular-nums text-slate-400 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
             </div>
             {formData.trangThai === 'DA_GHI_SO' && (
               <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
                 <div>
                   <span className="font-bold text-emerald-600">GHI SỔ CHÍNH THỨC:</span> Bút toán đã ghi sổ, khóa sửa xóa trực tiếp.
                 </div>
-                <span className="font-mono text-emerald-600 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
+                <span className="tabular-nums text-emerald-600 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
               </div>
             )}
           </div>

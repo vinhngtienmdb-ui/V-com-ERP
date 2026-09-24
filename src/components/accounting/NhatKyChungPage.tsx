@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Plus, Search, Filter, FileSpreadsheet, Eye, CheckCircle2, Clock, Lock, ArrowUpDown, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
 import { ChungTuNhatKyChung, LoaiChungTu, TrangThaiChungTu } from '../../lib/keToan/types';
 import { ChungTuEditor } from './ChungTuEditor';
 import { formatCurrency, cn } from '../../lib/utils';
+import { formatDateVN } from '../../lib/keToan/dateUtils';
 
 // Mock initial data for immediate interactive viewing
 const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
@@ -112,13 +113,38 @@ const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
   }
 ];
 
-export const NhatKyChungPage: React.FC = () => {
+export interface NhatKyChungPageProps {
+  forceCreateTrigger?: number;
+}
+
+export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTrigger }) => {
   const [dataList, setDataList] = useState<ChungTuNhatKyChung[]>(MOCK_CHUNG_TU_LIST);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLoaiCt, setFilterLoaiCt] = useState<string>('ALL');
   const [filterTrangThai, setFilterTrangThai] = useState<string>('ALL');
   const [editingItem, setEditingItem] = useState<ChungTuNhatKyChung | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+
+  useEffect(() => {
+    if (forceCreateTrigger && forceCreateTrigger > 0) {
+      setIsCreating(true);
+      setEditingItem(null);
+    }
+  }, [forceCreateTrigger]);
+
+  // Phím tắt Alt + N lập chứng từ mới
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === 'n' || e.key === 'N')) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsCreating(true);
+        setEditingItem(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Tính toán số liệu thống kê nhanh
   const stats = useMemo(() => {
@@ -199,7 +225,7 @@ export const NhatKyChungPage: React.FC = () => {
             <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
               <div>
                 <span className="text-xs text-slate-500 font-medium">Tổng phát sinh kỳ này:</span>
-                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 font-mono tabular-nums mt-0.5">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums mt-0.5">
                   {formatCurrency(stats.tongPhatSinh)}
                 </p>
               </div>
@@ -211,7 +237,7 @@ export const NhatKyChungPage: React.FC = () => {
             <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
               <div>
                 <span className="text-xs text-slate-500 font-medium">Đã ghi sổ chính thức:</span>
-                <p className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
+                <p className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums mt-0.5">
                   {stats.soDaGhiSo} <span className="text-xs font-normal text-slate-400">chứng từ</span>
                 </p>
               </div>
@@ -223,7 +249,7 @@ export const NhatKyChungPage: React.FC = () => {
             <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
               <div>
                 <span className="text-xs text-slate-500 font-medium">Chưa ghi sổ (Bản nháp):</span>
-                <p className="text-base font-extrabold text-amber-600 dark:text-amber-400 font-mono mt-0.5">
+                <p className="text-base font-extrabold text-amber-600 dark:text-amber-400 tabular-nums mt-0.5">
                   {stats.soChuaGhiSo} <span className="text-xs font-normal text-slate-400">chứng từ</span>
                 </p>
               </div>
@@ -238,7 +264,7 @@ export const NhatKyChungPage: React.FC = () => {
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
                   TT 99/2025/TT-BTC
                 </p>
-                <span className="text-[10px] text-emerald-500 font-mono font-semibold">172 Tài khoản • Bất biến</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">172 Tài khoản • Bất biến</span>
               </div>
               <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center">
                 <Lock className="w-4 h-4" />
@@ -251,10 +277,11 @@ export const NhatKyChungPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setIsCreating(true)}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                title="Lập chứng từ mới (Alt+N)"
               >
                 <Plus className="w-4 h-4" />
-                <span>Lập Chứng từ mới (F2)</span>
+                <span>Lập Chứng từ mới (Alt+N)</span>
               </button>
 
               {/* Status filter pills */}
@@ -332,11 +359,11 @@ export const NhatKyChungPage: React.FC = () => {
                         onClick={() => setEditingItem(ct)}
                         className="hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                       >
-                        <td className="p-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400 group-hover:underline">
+                        <td className="p-3 text-center tabular-nums font-bold text-blue-600 dark:text-blue-400 group-hover:underline">
                           {ct.soCt}
                         </td>
-                        <td className="p-3 text-center text-slate-600 dark:text-slate-400">
-                          {ct.ngayHachToan}
+                        <td className="p-3 text-center text-slate-600 dark:text-slate-400 tabular-nums">
+                          {formatDateVN(ct.ngayHachToan)}
                         </td>
                         <td className="p-3">
                           <div className="font-semibold text-slate-900 dark:text-slate-100">{ct.dienGiai}</div>
@@ -346,7 +373,7 @@ export const NhatKyChungPage: React.FC = () => {
                             </div>
                           )}
                         </td>
-                        <td className="p-3 font-mono text-[11px]">
+                        <td className="p-3 text-xs">
                           {ct.dinhKhoan.map((dk, idx) => (
                             <div key={idx} className="flex items-center gap-1">
                               <span className="font-bold text-blue-600 dark:text-blue-400">Nợ {dk.tkNo}</span>
@@ -355,7 +382,7 @@ export const NhatKyChungPage: React.FC = () => {
                             </div>
                           ))}
                         </td>
-                        <td className="p-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                        <td className="p-3 text-right font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                           {formatCurrency(tongTien)}
                         </td>
                         <td className="p-3 text-center">

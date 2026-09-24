@@ -148,6 +148,8 @@ export const ThietLapCongTyModal: React.FC<ThietLapCongTyModalProps> = ({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -160,7 +162,7 @@ export const ThietLapCongTyModal: React.FC<ThietLapCongTyModalProps> = ({
             <div>
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span>Cấu hình Pháp nhân & Lĩnh vực Hoạt động</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
                   Thông tư 99/2025
                 </span>
               </h2>
@@ -219,7 +221,7 @@ export const ThietLapCongTyModal: React.FC<ThietLapCongTyModalProps> = ({
                   value={formData.maSoThue}
                   onChange={(e) => setFormData({ ...formData, maSoThue: e.target.value })}
                   placeholder="VD: 0101234567"
-                  className="w-full px-3 py-2 font-mono font-bold text-indigo-900 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-3 py-2 tabular-nums font-bold text-indigo-900 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
@@ -229,7 +231,7 @@ export const ThietLapCongTyModal: React.FC<ThietLapCongTyModalProps> = ({
                   type="text"
                   value={formData.maCongTy}
                   onChange={(e) => setFormData({ ...formData, maCongTy: e.target.value })}
-                  className="w-full px-3 py-2 font-mono rounded-xl border border-slate-200 bg-slate-50 text-slate-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-semibold"
                 />
               </div>
 

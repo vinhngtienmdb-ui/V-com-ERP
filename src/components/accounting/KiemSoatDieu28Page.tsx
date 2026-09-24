@@ -24,6 +24,7 @@ import {
   AuditTrailManager,
   NhatKyKiemToan
 } from '../../lib/keToan/dieu28Compliance';
+import { formatDateVN } from '../../lib/keToan/dateUtils';
 
 // Dữ liệu mẫu khởi tạo kỳ kế toán
 const INITIAL_PERIODS: KyKeToan[] = [
@@ -391,8 +392,8 @@ export function KiemSoatDieu28Page() {
                   <tr key={v.id} className="hover:bg-slate-50/80">
                     <td className="p-2 text-center text-slate-400 font-sans">{idx + 1}</td>
                     <td className="p-2 font-bold text-blue-600 font-sans">{v.soChungTu}</td>
-                    <td className="p-2 text-slate-600 font-sans">{v.ngayHachToan}</td>
-                    <td className="p-2 text-right font-bold text-slate-900 font-sans">{formatCurrency(v.tongTien)}</td>
+                    <td className="p-2 text-slate-600 font-sans">{formatDateVN(v.ngayHachToan)}</td>
+                    <td className="p-2 text-right font-bold text-slate-900 font-sans tabular-nums">{formatCurrency(v.tongTien)}</td>
                     <td className="p-2 text-slate-400 truncate max-w-xs">{v.prevHash}</td>
                     <td className="p-2 text-emerald-700 truncate max-w-xs font-semibold">{v.currentHash}</td>
                   </tr>
