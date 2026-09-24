@@ -37,6 +37,20 @@ export interface AuthorityMatrixTabProps {
 // Comprehensive default authority matrix covering all enterprise tiers
 const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
   {
+    roleName: 'Văn thư Công ty / Bộ phận Phát hành Văn bản',
+    department: 'Văn phòng Hành chính & Pháp chế',
+    documentTypes: [
+      'Hóa đơn điện tử VAT (TT78)',
+      'Hợp đồng kinh tế đã phê duyệt',
+      'Báo cáo tài chính năm kiểm toán',
+      'Tờ khai thuế định kỳ',
+      'Quyết định ban hành nội bộ'
+    ],
+    maxLimitVND: 0,
+    requiredSignType: 'Ký số HSM Doanh nghiệp',
+    description: 'Bộ phận Văn thư tiếp nhận hồ sơ đã có đủ chữ ký số cá nhân phê duyệt, kiểm tra thể thức và thực hiện ký số ban hành đóng dấu mộc pháp nhân bằng Cloud HSM Doanh nghiệp (NĐ 30/2020/NĐ-CP).'
+  },
+  {
     roleName: 'Tổng Giám đốc (CEO) / Ban Giám Đốc',
     department: 'Ban Giám Đốc & Hội đồng Quản trị',
     documentTypes: [
@@ -47,8 +61,8 @@ const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
       'Quyết định đầu tư vốn'
     ],
     maxLimitVND: 0, // Không giới hạn
-    requiredSignType: 'Ký số HSM Doanh nghiệp',
-    description: 'Đại diện pháp luật tối cao thay mặt công ty giao kết mọi giao dịch thương mại và quyết định đầu tư không giới hạn giá trị.'
+    requiredSignType: 'Ký số Cá nhân',
+    description: 'Ký số cá nhân phê duyệt tối cao với tư cách Người đại diện theo pháp luật, giao kết hợp đồng và phê duyệt mọi quyết định đầu tư không giới hạn giá trị trước khi chuyển Văn thư ký số HSM ban hành.'
   },
   {
     roleName: 'Giám đốc Tài chính / Kế toán trưởng',
@@ -62,7 +76,7 @@ const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
     ],
     maxLimitVND: 500000000, // 500 triệu
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Chịu trách nhiệm kiểm soát dòng tiền, ký duyệt giải ngân tài chính và báo cáo thuế điện tử trong hạn mức đến 500 triệu đồng.'
+    description: 'Chịu trách nhiệm kiểm soát dòng tiền, ký duyệt giải ngân tài chính và báo cáo thuế điện tử trong hạn mức đến 500 triệu đồng; vượt hạn mức thì luân chuyển lên Tổng Giám đốc.'
   },
   {
     roleName: 'Trưởng phòng Kinh doanh & Mua hàng',
@@ -75,7 +89,7 @@ const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
     ],
     maxLimitVND: 200000000, // 200 triệu
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Ký kết hợp đồng phân phối, đơn mua sắm trang thiết bị và chính sách thương mại đối tác đến 200 triệu đồng.'
+    description: 'Ký số cá nhân phê duyệt hợp đồng phân phối, đơn mua sắm trang thiết bị và chính sách thương mại đối tác đến 200 triệu đồng; vượt hạn mức thì luân chuyển lên cấp trên.'
   },
   {
     roleName: 'Trưởng kho & Điều phối Vận tải',
@@ -88,7 +102,7 @@ const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
     ],
     maxLimitVND: 50000000, // 50 triệu
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Xác thực luân chuyển hàng hóa đa kho, điều chuyển tài sản vận tải và biên bản nhập xuất tồn đến 50 triệu đồng.'
+    description: 'Ký số cá nhân phê duyệt xác thực luân chuyển hàng hóa đa kho, điều chuyển tài sản vận tải và biên bản nhập xuất tồn đến 50 triệu đồng; vượt hạn mức thì luân chuyển lên cấp trên.'
   },
   {
     roleName: 'Chuyên viên & Nhân viên Nghiệp vụ',
@@ -101,7 +115,7 @@ const EXTENDED_DEFAULT_RULES: SigningAuthorityRule[] = [
     ],
     maxLimitVND: 0,
     requiredSignType: 'Ký nháy',
-    description: 'Ký nháy kiểm tra xác thực tính chính xác của dữ liệu và hồ sơ chứng từ trước khi trình lên cấp thẩm quyền phê duyệt chính thức.'
+    description: 'Ký số cá nhân người lập biểu hoặc ký nháy kiểm tra xác thực tính chính xác của dữ liệu và hồ sơ chứng từ trước khi trình lên cấp Quản lý phê duyệt chính thức.'
   }
 ];
 
@@ -175,43 +189,51 @@ export const AuthorityMatrixTab: React.FC<AuthorityMatrixTabProps> = ({
 
   // Helper for role icon and styling
   const getRoleBadgeStyle = (rule: SigningAuthorityRule) => {
-    if (rule.maxLimitVND === 0 && rule.requiredSignType === 'Ký số HSM Doanh nghiệp') {
+    if (rule.requiredSignType === 'Ký số HSM Doanh nghiệp') {
+      return {
+        icon: Building2,
+        badgeBg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300',
+        cardBorder: 'border-purple-200 hover:border-purple-300 dark:border-purple-800',
+        limitBg: 'bg-purple-500/10 text-purple-800 dark:text-purple-300'
+      };
+    }
+    if (rule.maxLimitVND === 0 && rule.requiredSignType === 'Ký số Cá nhân') {
       return {
         icon: Crown,
-        badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        cardBorder: 'border-emerald-200 hover:border-emerald-300',
-        limitBg: 'bg-emerald-500/10 text-emerald-800'
+        badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
+        cardBorder: 'border-emerald-200 hover:border-emerald-300 dark:border-emerald-800',
+        limitBg: 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
       };
     }
     if (rule.maxLimitVND >= 500000000) {
       return {
         icon: DollarSign,
-        badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        cardBorder: 'border-indigo-200 hover:border-indigo-300',
-        limitBg: 'bg-indigo-500/10 text-indigo-800'
+        badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300',
+        cardBorder: 'border-indigo-200 hover:border-indigo-300 dark:border-indigo-800',
+        limitBg: 'bg-indigo-500/10 text-indigo-800 dark:text-indigo-300'
       };
     }
     if (rule.maxLimitVND >= 100000000) {
       return {
         icon: Briefcase,
-        badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
-        cardBorder: 'border-blue-200 hover:border-blue-300',
-        limitBg: 'bg-blue-500/10 text-blue-800'
+        badgeBg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300',
+        cardBorder: 'border-blue-200 hover:border-blue-300 dark:border-blue-800',
+        limitBg: 'bg-blue-500/10 text-blue-800 dark:text-blue-300'
       };
     }
     if (rule.maxLimitVND > 0) {
       return {
         icon: Warehouse,
-        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-        cardBorder: 'border-amber-200 hover:border-amber-300',
-        limitBg: 'bg-amber-500/10 text-amber-800'
+        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300',
+        cardBorder: 'border-amber-200 hover:border-amber-300 dark:border-amber-800',
+        limitBg: 'bg-amber-500/10 text-amber-800 dark:text-amber-300'
       };
     }
     return {
       icon: FileCheck,
-      badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
-      cardBorder: 'border-slate-200 hover:border-slate-300',
-      limitBg: 'bg-slate-100 text-slate-700'
+      badgeBg: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300',
+      cardBorder: 'border-slate-200 hover:border-slate-300 dark:border-slate-700',
+      limitBg: 'bg-slate-100 text-slate-700 dark:text-slate-300'
     };
   };
 
@@ -426,27 +448,27 @@ export const AuthorityMatrixTab: React.FC<AuthorityMatrixTabProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1 relative z-10 text-xs">
           <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bước 1: Soạn thảo & Ký nháy</div>
-            <div className="font-bold text-slate-100">Chuyên viên phòng ban</div>
-            <div className="text-[11px] text-indigo-300">Ký nháy nội bộ xác thực hồ sơ</div>
+            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bước 1: Trình duyệt & Ký nháy</div>
+            <div className="font-bold text-slate-100">Chuyên viên / Người lập</div>
+            <div className="text-[11px] text-indigo-300">Ký số cá nhân hoặc ký nháy xác thực tuỳ văn bản</div>
           </div>
 
           <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bước 2: Quản lý bộ phận</div>
-            <div className="font-bold text-slate-100">Trưởng phòng / Trưởng kho</div>
-            <div className="text-[11px] text-indigo-300">Ký số cá nhân (≤ 200 triệu)</div>
+            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bước 2: Cấp Quản lý phê duyệt</div>
+            <div className="font-bold text-slate-100">Trưởng phòng / Trưởng kho / CFO</div>
+            <div className="text-[11px] text-indigo-300">Ký số cá nhân (luân chuyển cấp trên nếu vượt hạn mức)</div>
           </div>
 
           <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bước 3: Thẩm định tài chính</div>
-            <div className="font-bold text-slate-100">Kế toán trưởng / CFO</div>
-            <div className="text-[11px] text-indigo-300">Ký số cá nhân (≤ 500 triệu)</div>
+            <div className="text-[10px] text-emerald-300 font-semibold uppercase">Bước 3: Phê duyệt tối cao</div>
+            <div className="font-bold text-emerald-200">Tổng Giám Đốc (CEO)</div>
+            <div className="text-[11px] text-emerald-300">Ký số cá nhân đại diện pháp luật (không giới hạn)</div>
           </div>
 
           <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="text-[10px] text-amber-300 font-semibold uppercase">Bước 4: Phê duyệt tối cao</div>
-            <div className="font-bold text-amber-200">Tổng Giám Đốc (CEO)</div>
-            <div className="text-[11px] text-amber-300">Đóng mộc số Cloud HSM (&gt; 500 triệu)</div>
+            <div className="text-[10px] text-amber-300 font-semibold uppercase">Bước 4: Ký số ban hành</div>
+            <div className="font-bold text-amber-200">Văn thư Công ty</div>
+            <div className="text-[11px] text-amber-300">Chữ ký số HSM Công ty đóng mộc pháp nhân ban hành</div>
           </div>
         </div>
       </div>

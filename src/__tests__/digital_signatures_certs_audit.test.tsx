@@ -439,9 +439,10 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
       expect(html).toContain('Ký số Cá nhân');
     });
 
-    it('should render all 5 authority tiers when no rules prop is passed', () => {
+    it('should render all authority tiers when no rules prop is passed', () => {
       const html = renderToString(<AuthorityMatrixTab />);
 
+      expect(html).toContain('Văn thư Công ty / Bộ phận Phát hành Văn bản');
       expect(html).toContain('Tổng Giám đốc (CEO) / Ban Giám Đốc');
       expect(html).toContain('Giám đốc Tài chính / Kế toán trưởng');
       expect(html).toContain('Trưởng phòng Kinh doanh &amp; Mua hàng');
@@ -528,9 +529,9 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
       expect(container?.textContent).toContain('Khối Vận Hành');
       expect(container?.textContent).toContain(formatCurrency(350000000));
 
-      // Callbacks invoked with 5 items (4 original + 1 new)
+      // Callbacks invoked with original + 1 items
       expect(onUpdateRulesMock).toHaveBeenCalledTimes(1);
-      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(5);
+      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(INITIAL_AUTHORITY_RULES.length + 1);
       expect(onSaveMatrixMock).toHaveBeenCalledTimes(1);
     });
 
@@ -546,8 +547,8 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
         );
       });
 
-      // Click Edit on Rule 1 (Kế toán trưởng)
-      const editBtn = container?.querySelector('button[data-testid="btn-edit-rule-1"]') as HTMLButtonElement;
+      // Click Edit on Rule 2 (Kế toán trưởng)
+      const editBtn = container?.querySelector('button[data-testid="btn-edit-rule-2"]') as HTMLButtonElement;
       expect(editBtn).toBeTruthy();
 
       await act(async () => {
@@ -590,11 +591,11 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
         );
       });
 
-      // Initially 4 rules
-      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(4);
+      // Initially INITIAL_AUTHORITY_RULES.length rules
+      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(INITIAL_AUTHORITY_RULES.length);
 
-      // Click Delete on Rule 3 (Quản lý Kho Tổng)
-      const deleteBtn = container?.querySelector('button[data-testid="btn-delete-rule-3"]') as HTMLButtonElement;
+      // Click Delete on Rule 4 (Quản lý Kho Tổng)
+      const deleteBtn = container?.querySelector('button[data-testid="btn-delete-rule-4"]') as HTMLButtonElement;
       expect(deleteBtn).toBeTruthy();
 
       await act(async () => {
@@ -614,12 +615,12 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
         confirmDeleteBtn.click();
       });
 
-      // Should now have 3 rules
-      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(3);
+      // Should now have INITIAL_AUTHORITY_RULES.length - 1 rules
+      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(INITIAL_AUTHORITY_RULES.length - 1);
       const grid = container?.querySelector('[data-testid="authority-rules-grid"]');
       expect(grid?.textContent).not.toContain('Quản lý Kho Tổng');
       expect(onUpdateRulesMock).toHaveBeenCalledTimes(1);
-      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(3);
+      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(INITIAL_AUTHORITY_RULES.length - 1);
       expect(onSaveMatrixMock).toHaveBeenCalledTimes(1);
     });
 

@@ -963,12 +963,20 @@ export const INITIAL_SIGNING_DOCUMENTS: SigningDocument[] = [
 // Initial Signing Authority Matrix Rules
 export const INITIAL_AUTHORITY_RULES: SigningAuthorityRule[] = [
   {
-    roleName: 'Tổng Giám đốc (CEO)',
-    department: 'Ban Giám Đốc',
-    documentTypes: ['Hợp đồng kinh tế lớn', 'Quyết định bổ nhiệm', 'Báo cáo tài chính năm'],
+    roleName: 'Văn thư Công ty / Bộ phận Phát hành Văn bản',
+    department: 'Văn phòng Hành chính & Pháp chế',
+    documentTypes: ['Hóa đơn điện tử VAT', 'Hợp đồng kinh tế đã phê duyệt', 'Báo cáo tài chính & thuế', 'Quyết định ban hành'],
     maxLimitVND: 0,
     requiredSignType: 'Ký số HSM Doanh nghiệp',
-    description: 'Toàn quyền ký pháp nhân thay mặt công ty không giới hạn số tiền'
+    description: 'Đóng dấu mộc số pháp nhân bằng Cloud HSM Doanh nghiệp để chính thức ban hành văn bản ra bên ngoài sau khi đã có đầy đủ chữ ký số cá nhân phê duyệt hợp lệ (Nghị định 30/2020/NĐ-CP).'
+  },
+  {
+    roleName: 'Tổng Giám đốc (CEO)',
+    department: 'Ban Giám Đốc',
+    documentTypes: ['Hợp đồng kinh tế lớn', 'Quyết định bổ nhiệm', 'Báo cáo tài chính năm', 'Tờ khai thuế định kỳ'],
+    maxLimitVND: 0,
+    requiredSignType: 'Ký số Cá nhân',
+    description: 'Sử dụng Chữ ký số Cá nhân để phê duyệt tối cao với tư cách Người đại diện pháp luật không giới hạn số tiền, trước khi chuyển Văn thư đóng dấu HSM ban hành.'
   },
   {
     roleName: 'Kế toán trưởng',
@@ -976,7 +984,7 @@ export const INITIAL_AUTHORITY_RULES: SigningAuthorityRule[] = [
     documentTypes: ['Hóa đơn điện tử', 'Lệnh chi ngân hàng VietQR', 'Đối soát công nợ', 'Báo cáo thuế'],
     maxLimitVND: 500000000,
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Ký duyệt chứng từ kế toán, ngân sách đến 500 triệu đồng'
+    description: 'Ký số cá nhân phê duyệt chứng từ kế toán, ngân sách đến 500 triệu đồng; nếu vượt hạn mức thì luân chuyển lên Tổng Giám đốc.'
   },
   {
     roleName: 'Trưởng phòng Nhân sự',
@@ -984,7 +992,7 @@ export const INITIAL_AUTHORITY_RULES: SigningAuthorityRule[] = [
     documentTypes: ['Hợp đồng lao động', 'Quyết định tăng lương', 'Khen thưởng / Kỷ luật'],
     maxLimitVND: 100000000,
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Ký duyệt hồ sơ nhân sự và ngân sách đào tạo phúc lợi đến 100 triệu'
+    description: 'Ký số cá nhân phê duyệt hồ sơ nhân sự đến 100 triệu; nếu vượt hạn mức thì luân chuyển lên quản lý cấp trên.'
   },
   {
     roleName: 'Quản lý Kho Tổng',
@@ -992,7 +1000,15 @@ export const INITIAL_AUTHORITY_RULES: SigningAuthorityRule[] = [
     documentTypes: ['Phiếu nhập kho PO', 'Phiếu xuất kho điều chuyển', 'Biên bản kiểm kê'],
     maxLimitVND: 50000000,
     requiredSignType: 'Ký số Cá nhân',
-    description: 'Ký xác nhận xuất nhập hàng hóa và điều chuyển kho nội bộ đến 50 triệu'
+    description: 'Ký số cá nhân phê duyệt xuất nhập kho và điều chuyển nội bộ đến 50 triệu đồng.'
+  },
+  {
+    roleName: 'Chuyên viên & Nhân viên Nghiệp vụ',
+    department: 'Các Phòng ban Chức năng',
+    documentTypes: ['Tờ trình đề xuất chi phí', 'Bảng chấm công', 'Phiếu yêu cầu vật tư', 'Dự thảo hồ sơ trình duyệt'],
+    maxLimitVND: 0,
+    requiredSignType: 'Ký nháy',
+    description: 'Ký số cá nhân người lập biểu hoặc ký nháy xác thực tính chính xác của dữ liệu trước khi trình lên cấp Quản lý phê duyệt.'
   }
 ];
 
