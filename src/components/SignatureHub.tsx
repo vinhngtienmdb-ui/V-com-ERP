@@ -24,7 +24,8 @@ import {
   INITIAL_SIGNING_DOCUMENTS,
   INITIAL_AUTHORITY_RULES,
   INITIAL_HSM_LOGS,
-  calculateDocumentHashSHA256
+  calculateDocumentHashSHA256,
+  sha256Sync
 } from '../data/hsmSignatureData';
 import {
   SignatureDashboard,
@@ -302,6 +303,24 @@ export function SignatureHub() {
     setShowIssueCertModal(true);
   };
 
+  // --- Handlers: Authority Matrix Updates ---
+  const handleUpdateAuthorityRules = (updatedRules: SigningAuthorityRule[], actionDesc?: string) => {
+    setAuthorityRules(updatedRules);
+    const newLog: HSMAuditLog = {
+      id: `LOG-AUTH-${Date.now().toString().slice(-4)}`,
+      timestamp: new Date().toLocaleString('vi-VN'),
+      action: actionDesc || `Cập nhật Ma trận thẩm quyền ký duyệt (${updatedRules.length} cấp bậc phân quyền)`,
+      performedBy: 'Nguyễn Tiến Vĩnh (Super Admin)',
+      certSerial: companyHsm.serialNumber,
+      targetDocCode: 'AUTH-MATRIX',
+      algorithm: 'SHA-256',
+      hashSHA256: sha256Sync(`auth-matrix:${JSON.stringify(updatedRules)}`),
+      ipAddress: '118.69.182.10 (Admin Security Console)',
+      status: 'success'
+    };
+    setAuditLogs(prev => [newLog, ...prev]);
+  };
+
   // Navigation tab definitions
   const TABS = [
     { id: 'dashboard' as const, label: 'Tổng Quan', icon: Sparkles },
@@ -443,8 +462,13 @@ export function SignatureHub() {
         {activeTab === 'authority_matrix' && (
           <AuthorityMatrixTab
             rules={authorityRules}
-            onSaveMatrix={() => {
-              // Saved successfully - banner is displayed in AuthorityMatrixTab
+            onSaveMatrix={(updatedRules) => {
+              if (updatedRules) {
+                handleUpdateAuthorityRules(updatedRules, 'Lưu đồng bộ Ma trận thẩm quyền ký duyệt');
+              }
+            }}
+            onUpdateRules={(updatedRules) => {
+              handleUpdateAuthorityRules(updatedRules);
             }}
           />
         )}

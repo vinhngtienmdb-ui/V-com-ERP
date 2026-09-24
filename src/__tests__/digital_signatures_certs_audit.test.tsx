@@ -29,6 +29,16 @@ function setInputValue(input: HTMLInputElement, value: string) {
   input.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
+function setTextareaValue(textarea: HTMLTextAreaElement, value: string) {
+  const nativeSetter = Object.getOwnPropertyDescriptor(
+    window.HTMLTextAreaElement.prototype,
+    'value'
+  )?.set;
+  nativeSetter?.call(textarea, value);
+  textarea.dispatchEvent(new Event('input', { bubbles: true }));
+  textarea.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 6)', () => {
   let container: HTMLDivElement | null = null;
   let root: Root | null = null;
@@ -460,6 +470,186 @@ describe('Personal Certs Manager, Authority Matrix & Signature Audit Logs (Task 
       expect(onSaveMatrixMock).toHaveBeenCalledTimes(1);
       expect(container?.querySelector('[data-testid="matrix-save-success-alert"]')).toBeTruthy();
       expect(container?.textContent).toContain('Cập nhật ma trận thẩm quyền thành công!');
+    });
+
+    it('should allow adding a new authority rule via modal and sync with parent', async () => {
+      const onUpdateRulesMock = vi.fn();
+      await act(async () => {
+        root?.render(
+          <AuthorityMatrixTab
+            rules={INITIAL_AUTHORITY_RULES}
+            onSaveMatrix={onSaveMatrixMock}
+            onUpdateRules={onUpdateRulesMock}
+          />
+        );
+      });
+
+      // 1. Click Add Rule button
+      const addBtn = container?.querySelector('button[data-testid="btn-add-authority-rule"]') as HTMLButtonElement;
+      expect(addBtn).toBeTruthy();
+
+      await act(async () => {
+        addBtn.click();
+      });
+
+      // Modal should be open
+      const modal = container?.querySelector('[data-testid="authority-rule-modal"]');
+      expect(modal).toBeTruthy();
+
+      // 2. Fill form inputs
+      const roleInput = container?.querySelector('input[data-testid="input-rule-role"]') as HTMLInputElement;
+      const deptInput = container?.querySelector('input[data-testid="input-rule-dept"]') as HTMLInputElement;
+      const limitInput = container?.querySelector('input[data-testid="input-rule-limit"]') as HTMLInputElement;
+      const descInput = container?.querySelector('textarea[data-testid="textarea-rule-desc"]') as HTMLTextAreaElement;
+
+      expect(roleInput).toBeTruthy();
+      expect(deptInput).toBeTruthy();
+
+      await act(async () => {
+        setInputValue(roleInput, 'Phó Tổng Giám Đốc (COO)');
+        setInputValue(deptInput, 'Khối Vận Hành');
+        setInputValue(limitInput, '350000000');
+        setTextareaValue(descInput, 'Phê duyệt chi phí vận hành kho bãi và logistics.');
+      });
+
+      // 3. Submit form
+      const saveModalBtn = container?.querySelector('button[data-testid="btn-save-rule-modal"]') as HTMLButtonElement;
+      expect(saveModalBtn).toBeTruthy();
+
+      await act(async () => {
+        saveModalBtn.click();
+      });
+
+      // Modal should close
+      expect(container?.querySelector('[data-testid="authority-rule-modal"]')).toBeNull();
+
+      // New rule should be displayed
+      expect(container?.textContent).toContain('Phó Tổng Giám Đốc (COO)');
+      expect(container?.textContent).toContain('Khối Vận Hành');
+      expect(container?.textContent).toContain(formatCurrency(350000000));
+
+      // Callbacks invoked with 5 items (4 original + 1 new)
+      expect(onUpdateRulesMock).toHaveBeenCalledTimes(1);
+      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(5);
+      expect(onSaveMatrixMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow editing an existing authority rule', async () => {
+      const onUpdateRulesMock = vi.fn();
+      await act(async () => {
+        root?.render(
+          <AuthorityMatrixTab
+            rules={INITIAL_AUTHORITY_RULES}
+            onSaveMatrix={onSaveMatrixMock}
+            onUpdateRules={onUpdateRulesMock}
+          />
+        );
+      });
+
+      // Click Edit on Rule 1 (Kế toán trưởng)
+      const editBtn = container?.querySelector('button[data-testid="btn-edit-rule-1"]') as HTMLButtonElement;
+      expect(editBtn).toBeTruthy();
+
+      await act(async () => {
+        editBtn.click();
+      });
+
+      // Modal should open pre-filled with "Kế toán trưởng"
+      const roleInput = container?.querySelector('input[data-testid="input-rule-role"]') as HTMLInputElement;
+      expect(roleInput?.value).toBe('Kế toán trưởng');
+
+      const limitInput = container?.querySelector('input[data-testid="input-rule-limit"]') as HTMLInputElement;
+      expect(limitInput?.value).toBe('500000000');
+
+      // Update limit to 750,000,000 VND
+      await act(async () => {
+        setInputValue(limitInput, '750000000');
+      });
+
+      // Save
+      const saveModalBtn = container?.querySelector('button[data-testid="btn-save-rule-modal"]') as HTMLButtonElement;
+      await act(async () => {
+        saveModalBtn.click();
+      });
+
+      // Verify updated limit in UI
+      expect(container?.textContent).toContain(formatCurrency(750000000));
+      expect(onUpdateRulesMock).toHaveBeenCalled();
+      expect(onSaveMatrixMock).toHaveBeenCalled();
+    });
+
+    it('should allow deleting an authority rule with confirmation', async () => {
+      const onUpdateRulesMock = vi.fn();
+      await act(async () => {
+        root?.render(
+          <AuthorityMatrixTab
+            rules={INITIAL_AUTHORITY_RULES}
+            onSaveMatrix={onSaveMatrixMock}
+            onUpdateRules={onUpdateRulesMock}
+          />
+        );
+      });
+
+      // Initially 4 rules
+      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(4);
+
+      // Click Delete on Rule 3 (Quản lý Kho Tổng)
+      const deleteBtn = container?.querySelector('button[data-testid="btn-delete-rule-3"]') as HTMLButtonElement;
+      expect(deleteBtn).toBeTruthy();
+
+      await act(async () => {
+        deleteBtn.click();
+      });
+
+      // Confirmation modal should appear
+      const confirmModal = container?.querySelector('[data-testid="delete-rule-confirm-modal"]');
+      expect(confirmModal).toBeTruthy();
+      expect(confirmModal?.textContent).toContain('Quản lý Kho Tổng');
+
+      // Click Confirm Delete
+      const confirmDeleteBtn = container?.querySelector('button[data-testid="btn-confirm-delete-rule"]') as HTMLButtonElement;
+      expect(confirmDeleteBtn).toBeTruthy();
+
+      await act(async () => {
+        confirmDeleteBtn.click();
+      });
+
+      // Should now have 3 rules
+      expect(container?.querySelectorAll('[data-testid^="authority-rule-card-"]').length).toBe(3);
+      const grid = container?.querySelector('[data-testid="authority-rules-grid"]');
+      expect(grid?.textContent).not.toContain('Quản lý Kho Tổng');
+      expect(onUpdateRulesMock).toHaveBeenCalledTimes(1);
+      expect(onUpdateRulesMock.mock.calls[0][0].length).toBe(3);
+      expect(onSaveMatrixMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should filter authority rules by search query', async () => {
+      await act(async () => {
+        root?.render(
+          <AuthorityMatrixTab rules={INITIAL_AUTHORITY_RULES} />
+        );
+      });
+
+      const searchInput = container?.querySelector('input[data-testid="input-search-authority-rules"]') as HTMLInputElement;
+      expect(searchInput).toBeTruthy();
+
+      // Search by role: "Nhân sự"
+      await act(async () => {
+        setInputValue(searchInput, 'Nhân sự');
+      });
+
+      const grid = container?.querySelector('[data-testid="authority-rules-grid"]');
+      expect(grid?.textContent).toContain('Trưởng phòng Nhân sự');
+      expect(grid?.textContent).not.toContain('Quản lý Kho Tổng');
+      expect(grid?.textContent).not.toContain('Kế toán trưởng');
+
+      // Reset search
+      await act(async () => {
+        setInputValue(searchInput, '');
+      });
+
+      expect(grid?.textContent).toContain('Tổng Giám đốc (CEO)');
+      expect(grid?.textContent).toContain('Kế toán trưởng');
     });
   });
 
