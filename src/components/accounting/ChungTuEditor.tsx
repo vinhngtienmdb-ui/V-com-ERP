@@ -1,16 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Save, CheckCircle, ArrowLeft, Printer, Paperclip, History, ShieldAlert } from 'lucide-react';
+import { Save, CheckCircle, ArrowLeft, Printer, Paperclip, History, ShieldAlert, Zap } from 'lucide-react';
 import { ChungTuNhatKyChung, DinhKhoan } from '../../lib/keToan/types';
 import { kiemTraChungTu } from '../../lib/keToan/validate';
 import { ChungTuHeader } from './ChungTuHeader';
 import { DinhKhoanGrid } from './DinhKhoanGrid';
 import { KetQuaCanDoiBar } from './KetQuaCanDoiBar';
+import { cn } from '../../lib/utils';
 
 interface ChungTuEditorProps {
   initialData?: ChungTuNhatKyChung;
   onSave: (ct: ChungTuNhatKyChung) => void;
   onPost?: (ct: ChungTuNhatKyChung) => void;
   onClose: () => void;
+  isDarkMode?: boolean;
 }
 
 const DEFAULT_CHUNG_TU: ChungTuNhatKyChung = {
@@ -42,7 +44,8 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
   initialData,
   onSave,
   onPost,
-  onClose
+  onClose,
+  isDarkMode = false
 }) => {
   const [formData, setFormData] = useState<ChungTuNhatKyChung>(initialData || DEFAULT_CHUNG_TU);
   const [activeTab, setActiveTab] = useState<'DINH_KHOAN' | 'DINH_KEM' | 'LICH_SU'>('DINH_KHOAN');
@@ -54,17 +57,63 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
 
   const isReadOnly = formData.trangThai === 'DA_KHOA_SO' || formData.trangThai === 'DA_HUY';
 
-  // Keyboard shortcut Ctrl+S
+  // Chức năng F9: Tự động cân đối số tiền
+  const handleAutoBalance = () => {
+    if (ketQuaCanDoi.canDoi) return;
+    const chenhLech = ketQuaCanDoi.chenhLech;
+    if (chenhLech === 0) return;
+
+    const nextLines = [...formData.dinhKhoan];
+    const lastIdx = nextLines.length - 1;
+    const currentLast = nextLines[lastIdx];
+
+    // Nếu dòng cuối chưa có số tiền hoặc đang chênh lệch, tự bù số tiền còn thiếu
+    if (currentLast.soTien === 0) {
+      nextLines[lastIdx] = {
+        ...currentLast,
+        soTien: Math.abs(chenhLech),
+        soTienQuyDoi: Math.abs(chenhLech) * (currentLast.tyGia || 1)
+      };
+    } else {
+      // Thêm dòng mới bù đúng khoản chênh lệch
+      nextLines.push({
+        soDong: nextLines.length + 1,
+        dienGiai: currentLast.dienGiai || 'Cân đối bút toán phát sinh',
+        tkNo: currentLast.tkCo, // Đảo tài khoản để đối ứng
+        tkCo: currentLast.tkNo,
+        soTien: Math.abs(chenhLech),
+        loaiTien: 'VND',
+        tyGia: 1,
+        soTienQuyDoi: Math.abs(chenhLech)
+      });
+    }
+
+    setFormData(prev => ({ ...prev, dinhKhoan: nextLines }));
+  };
+
+  // Keyboard shortcut listener: Ctrl+S (Lưu), F9 (Tự cân đối), F12 (Ghi sổ), Esc (Thoát)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         handleSaveDraft();
       }
+      if (e.key === 'F9') {
+        e.preventDefault();
+        handleAutoBalance();
+      }
+      if (e.key === 'F12') {
+        e.preventDefault();
+        handlePostJournal();
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [formData]);
+  }, [formData, ketQuaCanDoi]);
 
   const handleHeaderChange = (fields: Partial<ChungTuNhatKyChung>) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -80,7 +129,7 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
 
   const handlePostJournal = () => {
     if (!ketQuaCanDoi.canDoi) {
-      alert('Bút toán chưa cân đối hoặc có lỗi. Vui lòng kiểm tra lại trước khi ghi sổ!');
+      alert('Bút toán chưa cân đối hoặc có lỗi. Vui lòng nhấn F9 để tự cân đối hoặc kiểm tra lại!');
       return;
     }
     const updated = { ...formData, trangThai: 'DA_GHI_SO' as const };
@@ -90,92 +139,129 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
   };
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-200">
+    <div className={cn(
+      "space-y-4 animate-in fade-in duration-200 transition-colors",
+      isDarkMode ? "text-slate-100" : "text-slate-900"
+    )}>
       {/* Action Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+      <div className={cn(
+        "flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border shadow-xs transition-colors",
+        isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+      )}>
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-            title="Quay lại danh sách chứng từ"
+            className={cn(
+              "p-2 rounded-xl transition-colors cursor-pointer",
+              isDarkMode ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+            )}
+            title="Đóng (Esc)"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <span className="text-[11px] font-mono uppercase text-indigo-600 font-bold">
-              Phân hệ Kế toán TT99
-            </span>
-            <h1 className="text-sm font-bold text-slate-900">
-              {formData.id ? `Chỉnh sửa chứng từ: ${formData.soCt}` : 'Lập chứng từ Kế toán mới'}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold">
+                {formData.id ? `Chứng từ ${formData.soCt}` : 'Lập Chứng từ Kế toán mới (S03-DN)'}
+              </h2>
+              <span className={cn(
+                "px-2.5 py-0.5 rounded-full text-xs font-bold",
+                formData.trangThai === 'DA_GHI_SO'
+                  ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
+                  : formData.trangThai === 'CHUA_GHI_SO'
+                  ? "bg-amber-500/10 text-amber-500 border border-amber-500/30"
+                  : "bg-slate-500/10 text-slate-400 border border-slate-500/30"
+              )}>
+                {formData.trangThai === 'DA_GHI_SO' ? 'ĐÃ GHI SỔ' : formData.trangThai === 'CHUA_GHI_SO' ? 'CHƯA GHI SỔ (NHÁP)' : 'ĐÃ KHÓA SỔ'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Nhập liệu bàn phím siêu tốc • Tự động hạch toán kép theo TT99/2025/TT-BTC
+            </p>
           </div>
         </div>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleSaveDraft}
-            disabled={isReadOnly}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
-            title="Lưu nháp chứng từ (Ctrl+S)"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>Lưu nháp (Ctrl+S)</span>
-          </button>
+          {!isReadOnly && (
+            <>
+              {!ketQuaCanDoi.canDoi && (
+                <button
+                  type="button"
+                  onClick={handleAutoBalance}
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>Cân đối (F9)</span>
+                </button>
+              )}
 
-          {formData.trangThai !== 'DA_GHI_SO' ? (
-            <button
-              type="button"
-              onClick={handlePostJournal}
-              disabled={isReadOnly || !ketQuaCanDoi.canDoi}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 rounded-xl shadow-xs transition-colors"
-            >
-              <CheckCircle className="w-4 h-4" />
-              <span>Ghi sổ kế toán</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                const updated = { ...formData, trangThai: 'CHUA_GHI_SO' as const };
-                setFormData(updated);
-                onSave(updated);
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-colors"
-            >
-              <span>Bỏ ghi sổ</span>
-            </button>
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer",
+                  isDarkMode
+                    ? "bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                )}
+                title="Lưu nháp (Ctrl + S)"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Lưu nháp (Ctrl+S)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePostJournal}
+                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                title="Ghi sổ kế toán chính thức (F12)"
+              >
+                <CheckCircle className="w-3.5 h-3.5" />
+                <span>Ghi sổ (F12)</span>
+              </button>
+            </>
           )}
 
           <button
             type="button"
             onClick={() => window.print()}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
-            title="In phiếu chứng từ (Ctrl+P)"
+            className={cn(
+              "p-2 rounded-lg border transition-colors cursor-pointer",
+              isDarkMode ? "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700" : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+            )}
+            title="In chứng từ kế toán"
           >
             <Printer className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Header Info */}
-      <ChungTuHeader data={formData} onChange={handleHeaderChange} readOnly={isReadOnly} />
+      {/* Header Fields Form */}
+      <ChungTuHeader
+        formData={formData}
+        onChange={handleHeaderChange}
+        readOnly={isReadOnly}
+      />
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-200 gap-1 text-xs font-bold">
+      {/* Tabs navigation */}
+      <div className={cn(
+        "flex gap-4 border-b px-4 text-xs font-bold transition-colors",
+        isDarkMode ? "border-slate-800" : "border-slate-200"
+      )}>
         <button
           type="button"
           onClick={() => setActiveTab('DINH_KHOAN')}
-          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+          className={cn(
+            "pb-2.5 transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer",
             activeTab === 'DINH_KHOAN'
-              ? 'border-indigo-600 text-indigo-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
+              ? "border-blue-500 text-blue-500"
+              : "border-transparent text-slate-400 hover:text-slate-200"
+          )}
         >
-          <span>Định khoản hạch toán</span>
-          <span className="px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-mono text-[10px]">
+          <span>Chi tiết Định khoản (S03-DN)</span>
+          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500">
             {formData.dinhKhoan.length}
           </span>
         </button>
@@ -183,15 +269,16 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('DINH_KEM')}
-          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+          className={cn(
+            "pb-2.5 transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer",
             activeTab === 'DINH_KEM'
-              ? 'border-indigo-600 text-indigo-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
+              ? "border-blue-500 text-blue-500"
+              : "border-transparent text-slate-400 hover:text-slate-200"
+          )}
         >
           <Paperclip className="w-3.5 h-3.5" />
-          <span>Hồ sơ đính kèm (NĐ 174)</span>
-          <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono text-[10px]">
+          <span>Hồ sơ & Hóa đơn đính kèm</span>
+          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400">
             {attachments.length}
           </span>
         </button>
@@ -199,82 +286,83 @@ export const ChungTuEditor: React.FC<ChungTuEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('LICH_SU')}
-          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+          className={cn(
+            "pb-2.5 transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer",
             activeTab === 'LICH_SU'
-              ? 'border-indigo-600 text-indigo-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
+              ? "border-blue-500 text-blue-500"
+              : "border-transparent text-slate-400 hover:text-slate-200"
+          )}
         >
           <History className="w-3.5 h-3.5" />
-          <span>Audit Trail (Điều 28 TT99)</span>
+          <span>Vết kiểm toán Điều 28</span>
         </button>
       </div>
 
-      {/* Tab 1: Định khoản */}
+      {/* Tab 1: Dinh Khoan Grid */}
       {activeTab === 'DINH_KHOAN' && (
-        <div className="space-y-4">
+        <div className="space-y-0">
           <DinhKhoanGrid
             items={formData.dinhKhoan}
             onChange={handleGridChange}
             readOnly={isReadOnly}
+            isDarkMode={isDarkMode}
           />
-          <KetQuaCanDoiBar ketQua={ketQuaCanDoi} />
+
+          {/* Equalizer Balance Bar */}
+          <KetQuaCanDoiBar
+            ketQua={ketQuaCanDoi}
+            onAutoBalance={handleAutoBalance}
+            isDarkMode={isDarkMode}
+          />
         </div>
       )}
 
-      {/* Tab 2: Đính kèm hồ sơ */}
+      {/* Tab 2: Attachments */}
       {activeTab === 'DINH_KEM' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-          <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50 hover:bg-indigo-50/20 transition-colors">
-            <Paperclip className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <div className="text-xs font-bold text-slate-800">
-              Kéo thả tài liệu chứng từ gốc hoặc bấm để tải lên
-            </div>
-            <div className="text-[11px] text-slate-400 mt-1">
-              Hỗ trợ PDF, XML hóa đơn điện tử, PNG, JPG (tối đa 15MB/file)
-            </div>
-            <button
-              type="button"
-              className="mt-4 px-4 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs"
-            >
-              Chọn tệp đính kèm
-            </button>
+        <div className={cn(
+          "p-6 rounded-2xl border text-center space-y-3 transition-colors",
+          isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+        )}>
+          <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto">
+            <Paperclip className="w-6 h-6" />
           </div>
-
-          <div className="text-xs text-slate-500 bg-blue-50/70 border border-blue-200 p-3 rounded-xl flex items-start gap-2">
-            <ShieldAlert className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-blue-900">Quy chuẩn lưu trữ NĐ 174/2016/NĐ-CP:</span> Các tệp đính kèm tại đây sẽ được tự động đồng bộ vào <strong>Bộ hồ sơ kế toán (Phân hệ Hồ sơ & Lưu trữ)</strong> và trích xuất nguyên vẹn khi có yêu cầu kiểm toán hoặc thanh tra thuế.
-            </div>
-          </div>
+          <h3 className="font-bold text-sm">Đính kèm Hóa đơn điện tử & Chứng từ gốc</h3>
+          <p className="text-xs text-slate-400 max-w-md mx-auto">
+            Kéo thả tệp XML hóa đơn hoặc PDF bảng kê vào đây để lưu trữ an toàn vào Hồ sơ kế toán theo Nghị định 174/2016/NĐ-CP.
+          </p>
+          <button
+            type="button"
+            onClick={() => alert('Chọn tệp hóa đơn đính kèm...')}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer"
+          >
+            Tải tệp lên
+          </button>
         </div>
       )}
 
-      {/* Tab 3: Lịch sử Audit Trail */}
+      {/* Tab 3: History Audit Trail */}
       {activeTab === 'LICH_SU' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-            Nhật ký kiểm toán biến động (Append-only - TT 99 Điều 28.1.b)
-          </h3>
-          <div className="divide-y divide-slate-100 text-xs">
-            <div className="py-2.5 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-emerald-600 font-bold">[KHỞI TẠO]</span>
-                <span className="text-slate-700">Tạo mới chứng từ {formData.soCt}</span>
+        <div className={cn(
+          "p-6 rounded-2xl border space-y-3 transition-colors",
+          isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+        )}>
+          <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-slate-400">
+            <History className="w-4 h-4 text-blue-500" />
+            <span>Nhật ký Vết kiểm toán bất biến (Điều 28.1.b)</span>
+          </div>
+          <div className="space-y-2 text-xs">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span className="font-bold text-blue-500">TẠO MỚI CHỨNG TỪ:</span> Khởi tạo chứng từ bởi user-current.
               </div>
-              <span className="text-slate-400 font-mono text-[11px]">
-                {formData.ngayCt} 08:30 • {formData.nguoiLapId}
-              </span>
+              <span className="font-mono text-slate-400 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
             </div>
             {formData.trangThai === 'DA_GHI_SO' && (
-              <div className="py-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-indigo-600 font-bold">[GHI SỔ]</span>
-                  <span className="text-slate-700">Hạch toán ghi sổ kế toán thành công</span>
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-emerald-600">GHI SỔ CHÍNH THỨC:</span> Bút toán đã ghi sổ, khóa sửa xóa trực tiếp.
                 </div>
-                <span className="text-slate-400 font-mono text-[11px]">
-                  {formData.ngayHachToan} 08:35 • Kế toán trưởng
-                </span>
+                <span className="font-mono text-emerald-600 text-[11px]">{new Date().toLocaleString('vi-VN')}</span>
               </div>
             )}
           </div>

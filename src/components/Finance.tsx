@@ -56,6 +56,7 @@ import { NhatKyChungPage } from './accounting/NhatKyChungPage';
 import { BaoCaoTt99Page } from './accounting/BaoCaoTt99Page';
 import { KiemSoatDieu28Page } from './accounting/KiemSoatDieu28Page';
 import { HoSoApp } from '../pages/HoSo/HoSoApp';
+import { FinancialShell, AccountingTab } from './accounting/FinancialShell';
 
 const FINANCE_MODULE_GROUPS = [
   {
@@ -670,6 +671,33 @@ export function Finance() {
     }
   ];
 
+  const isModernAccountingTab = (tab: FinanceTab): boolean => {
+    return ['overview', 'tt99_nkc', 'tt99_reports', 'tt99_dieu28', 'ho_so_archive'].includes(tab);
+  };
+
+  const mapToFinancialShellTab = (tab: FinanceTab): AccountingTab => {
+    switch (tab) {
+      case 'tt99_reports': return 'bctc_reports';
+      case 'tt99_dieu28': return 'dieu28_compliance';
+      case 'ho_so_archive': return 'ho_so_vault';
+      case 'tt99_nkc':
+      case 'overview':
+      default:
+        return 's03_nkc';
+    }
+  };
+
+  if (isModernAccountingTab(activeTab)) {
+    return (
+      <FinancialShell
+        initialTab={mapToFinancialShellTab(activeTab)}
+        onOpenLegacyInvoice={() => setActiveTab('invoices')}
+        onOpenLegacyTax={() => setActiveTab('tax_deduction')}
+        onOpenLegacyCredit={() => setActiveTab('credit')}
+      />
+    );
+  }
+
   return (
     <div className="space-y-3 animate-in fade-in slide-in- duration-500 pb-12 font-sans">
       {/* Compact Standardized Header */}
@@ -677,8 +705,9 @@ export function Finance() {
         icon={
           activeTab !== 'overview' ? (
             <button 
-              onClick={() => setActiveTab('overview')} 
+              onClick={() => setActiveTab('tt99_nkc')} 
               className="p-1 hover:bg-slate-200 rounded-lg transition-colors text-slate-600 hover:text-slate-900 cursor-pointer"
+              title="Quay lại Kế toán Chuẩn mực TT99"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
@@ -691,6 +720,14 @@ export function Finance() {
         description="Sổ cái kép tự động, khấu trừ thuế sàn TMĐT theo NĐ 126/TT 88 và phát hành HĐĐT VComm Invoice chữ ký số HSM."
         actions={
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setActiveTab('tt99_nkc')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              title="Quay lại Hệ điều hành Tài chính Chuẩn mực TT99"
+            >
+              <BookOpen className="w-3.5 h-3.5" /> 
+              <span>Về Kế toán TT99</span>
+            </button>
             <button 
               onClick={() => setIsCompanyConfigOpen(true)}
               className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"

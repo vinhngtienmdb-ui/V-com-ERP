@@ -1,18 +1,21 @@
 import React from 'react';
-import { Plus, ClipboardPaste } from 'lucide-react';
+import { Plus, Zap, Copy } from 'lucide-react';
 import { DinhKhoan } from '../../lib/keToan/types';
 import { DinhKhoanRow } from './DinhKhoanRow';
+import { cn } from '../../lib/utils';
 
 interface DinhKhoanGridProps {
   items: DinhKhoan[];
   onChange: (items: DinhKhoan[]) => void;
   readOnly?: boolean;
+  isDarkMode?: boolean;
 }
 
 export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
   items,
   onChange,
-  readOnly = false
+  readOnly = false,
+  isDarkMode = false
 }) => {
   const handleRowChange = (index: number, updated: DinhKhoan) => {
     const next = [...items];
@@ -22,7 +25,6 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
 
   const handleRowRemove = (index: number) => {
     if (items.length <= 1) {
-      // Keep at least one empty row
       onChange([
         {
           soDong: 1,
@@ -63,16 +65,33 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
     }
   };
 
+  const handleDuplicateRow = (index: number) => {
+    const target = items[index];
+    const newRow: DinhKhoan = {
+      ...target,
+      soDong: items.length + 1
+    };
+    const next = [...items];
+    next.splice(index + 1, 0, newRow);
+    onChange(next.map((r, i) => ({ ...r, soDong: i + 1 })));
+  };
+
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex flex-col">
+    <div className={cn(
+      "border rounded-xl overflow-hidden shadow-xs flex flex-col transition-colors",
+      isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+    )}>
       {/* Grid Toolbar */}
-      <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className={cn(
+        "px-4 py-2.5 border-b flex flex-wrap items-center justify-between gap-2 transition-colors",
+        isDarkMode ? "bg-slate-900/90 border-slate-800" : "bg-slate-50 border-slate-200"
+      )}>
         <div className="flex items-center gap-2">
-          <span className="font-bold text-xs text-slate-800 uppercase tracking-wider">
+          <span className="font-bold text-xs uppercase tracking-wider text-blue-500">
             Chi tiết Định khoản (S03-DN)
           </span>
-          <span className="text-[11px] text-slate-500">
-            • Nhấn F3 chọn TK • F4 chọn đối tượng • Ctrl+Enter thêm dòng
+          <span className="text-[11px] text-slate-400">
+            • F3 chọn TK • F4 chọn đối tượng • Ctrl+Space đảo Nợ Có • Ctrl+Enter thêm dòng
           </span>
         </div>
 
@@ -81,7 +100,7 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
             <button
               type="button"
               onClick={() => handleAddRow()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Thêm dòng (Ctrl+Enter)</span>
@@ -94,27 +113,34 @@ export const DinhKhoanGrid: React.FC<DinhKhoanGridProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-100/70 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+            <tr className={cn(
+              "border-b text-[11px] font-bold uppercase tracking-wider transition-colors",
+              isDarkMode ? "bg-slate-800/60 border-slate-800 text-slate-400" : "bg-slate-100/70 border-slate-200 text-slate-600"
+            )}>
               <th className="p-2.5 text-center w-10">STT</th>
               <th className="p-2.5 min-w-[200px]">Diễn giải nghiệp vụ</th>
-              <th className="p-2.5 min-w-[170px]">TK Nợ</th>
-              <th className="p-2.5 min-w-[170px]">TK Có</th>
-              <th className="p-2.5 text-right min-w-[130px]">Số tiền phát sinh</th>
+              <th className="p-2.5 min-w-[170px]">Tài khoản Nợ</th>
+              <th className="p-2.5 w-6 text-center">⇄</th>
+              <th className="p-2.5 min-w-[170px]">Tài khoản Có</th>
+              <th className="p-2.5 min-w-[140px] text-right">Số tiền</th>
               <th className="p-2.5 w-20">Loại tiền</th>
-              <th className="p-2.5 text-right w-24">Tỷ giá</th>
-              <th className="p-2.5 min-w-[180px]">Đối tượng (Công nợ)</th>
-              <th className="p-2.5 text-center w-12">Xóa</th>
+              <th className="p-2.5 w-24 text-right">Tỷ giá</th>
+              <th className="p-2.5 min-w-[200px]">Đối tượng</th>
+              <th className="p-2.5 w-32">Kho hàng</th>
+              <th className="p-2.5 text-center w-16">Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            {items.map((item, index) => (
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            {items.map((row, idx) => (
               <DinhKhoanRow
-                key={index}
-                index={index}
-                dinhKhoan={item}
+                key={idx}
+                dinhKhoan={row}
+                index={idx}
                 onChange={handleRowChange}
                 onRemove={handleRowRemove}
                 onAddNewBelow={handleAddRow}
+                onDuplicateRow={handleDuplicateRow}
+                isDarkMode={isDarkMode}
               />
             ))}
           </tbody>
