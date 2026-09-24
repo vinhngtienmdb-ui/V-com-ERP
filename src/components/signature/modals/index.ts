@@ -3,3 +3,4 @@ export * from './VerifyIntegrityModal';
 export * from './DocumentSigningStudioModal';
 export * from './NewDocumentUploadModal';
 export * from './BatchSigningModal';
+export * from './IssueCertificateModal';

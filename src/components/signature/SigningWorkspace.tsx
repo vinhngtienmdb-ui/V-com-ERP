@@ -157,7 +157,7 @@ export const SigningWorkspace: React.FC<SigningWorkspaceProps> = ({
   };
 
   return (
-    <div className="space-y-6 relative pb-16 animate-in fade-in duration-200">
+    <div data-testid="signing-workspace" className="space-y-6 relative pb-16 animate-in fade-in duration-200">
       {/* Top Filter and Actions Bar */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

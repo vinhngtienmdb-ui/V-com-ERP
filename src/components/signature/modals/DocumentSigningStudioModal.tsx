@@ -279,6 +279,7 @@ export const DocumentSigningStudioModal: React.FC<DocumentSigningStudioModalProp
       role="dialog"
       aria-modal="true"
       aria-labelledby="signing-studio-title"
+      data-testid="signing-studio-modal"
       className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex flex-col animate-in fade-in duration-200"
     >
       {/* Top Header Bar */}
