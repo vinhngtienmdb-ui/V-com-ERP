@@ -443,7 +443,9 @@ export function SignatureHub() {
         {activeTab === 'authority_matrix' && (
           <AuthorityMatrixTab
             rules={authorityRules}
-            onSaveMatrix={() => alert('Đã lưu thành công Ma trận Thẩm quyền ký duyệt!')}
+            onSaveMatrix={() => {
+              // Saved successfully - banner is displayed in AuthorityMatrixTab
+            }}
           />
         )}
 

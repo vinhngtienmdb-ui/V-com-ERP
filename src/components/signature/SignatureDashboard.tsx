@@ -25,7 +25,8 @@ import { cn, formatCurrency } from '../../lib/utils';
 import {
   CompanyHSMProfile,
   PersonalCertificate,
-  SigningDocument
+  SigningDocument,
+  isExpiringSoon
 } from '../../data/hsmSignatureData';
 
 export interface SignatureDashboardProps {
@@ -91,20 +92,7 @@ export const SignatureDashboard: React.FC<SignatureDashboardProps> = ({
 
   // Certs expiring within 90 days
   const expiringSoonCerts = useMemo(() => {
-    return personalCerts.filter(c => {
-      if (c.status !== 'active') return false;
-      const parts = c.expiryDate?.split('/');
-      if (parts && parts.length === 3) {
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        const expiry = new Date(year, month, day);
-        const now = new Date();
-        const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDays > 0 && diffDays <= 90;
-      }
-      return false;
-    });
+    return personalCerts.filter(c => c.status === 'active' && isExpiringSoon(c.expiryDate, 90));
   }, [personalCerts]);
 
   // Pending Documents calculations

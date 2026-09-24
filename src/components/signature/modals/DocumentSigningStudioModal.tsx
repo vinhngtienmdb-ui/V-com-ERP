@@ -239,8 +239,8 @@ export const DocumentSigningStudioModal: React.FC<DocumentSigningStudioModalProp
     setIsSigning(true);
     setErrorMsg(null);
 
-    // Calculate deterministic SHA-256 hash
-    const hashSHA256 = calculateDocumentHashSHA256(doc, pinCode);
+    // Calculate deterministic SHA-256 hash of document content
+    const hashSHA256 = calculateDocumentHashSHA256(doc);
 
     let signerName = companyHsm.companyName;
     let certSerial = companyHsm.serialNumber;

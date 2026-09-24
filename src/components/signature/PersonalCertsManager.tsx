@@ -19,7 +19,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { cn, formatCurrency } from '../../lib/utils';
-import { PersonalCertificate } from '../../data/hsmSignatureData';
+import { PersonalCertificate, isExpiringSoon } from '../../data/hsmSignatureData';
 
 export interface PersonalCertsManagerProps {
   certs: PersonalCertificate[];
@@ -37,25 +37,6 @@ export const PersonalCertsManager: React.FC<PersonalCertsManagerProps> = ({
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedSerial, setCopiedSerial] = useState<string | null>(null);
-
-  // Helper to check if a certificate is expiring within 90 days
-  const isExpiringSoon = (expiryDateStr: string): boolean => {
-    try {
-      let expDate: Date;
-      if (expiryDateStr.includes('/')) {
-        const parts = expiryDateStr.split('/');
-        expDate = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-      } else {
-        expDate = new Date(expiryDateStr);
-      }
-      if (isNaN(expDate.getTime())) return false;
-      const now = new Date();
-      const diffDays = Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      return diffDays > 0 && diffDays <= 90;
-    } catch {
-      return false;
-    }
-  };
 
   // Filter certs based on status and search query
   const filteredCerts = useMemo(() => {

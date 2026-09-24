@@ -84,7 +84,7 @@ Ngày xuất chứng nhận: ${new Date().toLocaleString('vi-VN')}
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Giay_Chung_Nhan_Ky_So_${doc.docCode}.pdf`;
+    link.download = `Giay_Chung_Nhan_Ky_So_${doc.docCode}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

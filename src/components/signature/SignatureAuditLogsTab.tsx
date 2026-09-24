@@ -129,11 +129,8 @@ export const SignatureAuditLogsTab: React.FC<SignatureAuditLogsTabProps> = ({ lo
       URL.revokeObjectURL(url);
 
       setExportNotification('Đã xuất file log audit (.CSV) thành công!');
-      setTimeout(() => {
-        setExportNotification(null);
-      }, 3000);
-    } catch {
-      alert('Đã xuất toàn bộ dữ liệu nhật ký ký số ra định dạng file Excel / CSV thẩm tra!');
+    } catch (err) {
+      console.error('Lỗi khi xuất file log audit:', err);
     }
   };
 

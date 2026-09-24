@@ -267,6 +267,34 @@ export function calculateDocumentHashSHA256(doc: SigningDocument, pinOrSecret?: 
 }
 
 /**
+ * Calculates remaining days from a date string (supports DD/MM/YYYY and ISO formats)
+ */
+export function calculateDaysRemaining(expiryDateStr: string): number {
+  try {
+    let expDate: Date;
+    if (expiryDateStr.includes('/')) {
+      const parts = expiryDateStr.split('/');
+      expDate = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+    } else {
+      expDate = new Date(expiryDateStr);
+    }
+    if (isNaN(expDate.getTime())) return 0;
+    const now = new Date();
+    return Math.max(0, Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Checks if a certificate is expiring within a given threshold (default 90 days)
+ */
+export function isExpiringSoon(expiryDateStr: string, thresholdDays = 90): boolean {
+  const days = calculateDaysRemaining(expiryDateStr);
+  return days > 0 && days <= thresholdDays;
+}
+
+/**
  * Generates X.509 v3 certificate structure, trust chain hierarchy, and cryptographic fingerprints
  */
 export function generateX509Details(certOrHsm: CompanyHSMProfile | PersonalCertificate): X509CertificateDetails {
@@ -361,6 +389,7 @@ export function generateX509Details(certOrHsm: CompanyHSMProfile | PersonalCerti
   }
 
   const isEcc = cert.algorithm.includes('ECC');
+  const calculatedDays = calculateDaysRemaining(cert.expiryDate);
 
   return {
     subjectCN: cert.fullName,
@@ -371,7 +400,7 @@ export function generateX509Details(certOrHsm: CompanyHSMProfile | PersonalCerti
     issuerOrg: 'Viettel-CA Cloud HSM Root Authority',
     validFrom: cert.issuedDate,
     validTo: cert.expiryDate,
-    daysRemaining: 480,
+    daysRemaining: calculatedDays,
     status: certStatus,
     serialNumber: cert.serialNumber,
     publicKeyAlgorithm: isEcc ? 'ECC (Elliptic Curve Cryptography)' : 'RSA (Rivest-Shamir-Adleman)',
@@ -524,7 +553,7 @@ export const INITIAL_PERSONAL_CERTS: PersonalCertificate[] = [
     certType: 'accounting_warehouse',
     algorithm: 'ECC P-256',
     status: 'active',
-    signingLimitVND: 50000000, // 500 triệu
+    signingLimitVND: 50000000, // 50 triệu
     issuedDate: '10/06/2024',
     expiryDate: '10/06/2027',
     pinCodeMasked: '••••••'
