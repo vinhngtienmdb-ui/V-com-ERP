@@ -24,17 +24,20 @@ import {
   Maximize2,
   Minimize2,
   Expand,
-  Shrink
+  Shrink,
+  Receipt
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { formatMonthVN } from '../../lib/keToan/dateUtils';
 import { ThietLapCongTyModal, ThietLapCongTy } from './ThietLapCongTyModal';
-import { NhatKyChungPage } from './NhatKyChungPage';
+import { NhatKyChungPage, MOCK_CHUNG_TU_LIST } from './NhatKyChungPage';
 import { BaoCaoTt99Page } from './BaoCaoTt99Page';
 import { KiemSoatDieu28Page } from './KiemSoatDieu28Page';
 import { HoSoApp } from '../../pages/HoSo/HoSoApp';
+import { DoiChieuHoaDonPage } from './DoiChieuHoaDonPage';
+import { ChungTuNhatKyChung } from '../../lib/keToan/types';
 
-export type AccountingTab = 's03_nkc' | 'bctc_reports' | 'dieu28_compliance' | 'ho_so_vault' | 'legacy_invoices' | 'legacy_tax' | 'legacy_credit' | 'legacy_ocr';
+export type AccountingTab = 's03_nkc' | 'bctc_reports' | 'dieu28_compliance' | 'ho_so_vault' | 'doi_chieu_hd' | 'legacy_invoices' | 'legacy_tax' | 'legacy_credit' | 'legacy_ocr';
 
 interface FinancialShellProps {
   initialTab?: AccountingTab;
@@ -50,6 +53,24 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
   onOpenLegacyCredit
 }) => {
   const [activeTab, setActiveTab] = useState<AccountingTab>(initialTab);
+  const [vouchers, setVouchers] = useState<ChungTuNhatKyChung[]>(() => {
+    try {
+      const saved = localStorage.getItem('vcomm_accounting_vouchers');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return MOCK_CHUNG_TU_LIST;
+  });
+
+  const handleAddVoucher = (newV: ChungTuNhatKyChung) => {
+    setVouchers(prev => {
+      const next = [newV, ...prev];
+      try {
+        localStorage.setItem('vcomm_accounting_vouchers', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('vcomm_finance_theme') === 'dark';
   });
@@ -126,11 +147,12 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         e.preventDefault();
         toggleWidescreen();
       }
-      // Số 1..4 với Alt để chuyển nhanh 4 tab
+      // Số 1..5 với Alt để chuyển nhanh các tab
       if (e.altKey && e.key === '1') { e.preventDefault(); setActiveTab('s03_nkc'); }
       if (e.altKey && e.key === '2') { e.preventDefault(); setActiveTab('bctc_reports'); }
       if (e.altKey && e.key === '3') { e.preventDefault(); setActiveTab('dieu28_compliance'); }
       if (e.altKey && e.key === '4') { e.preventDefault(); setActiveTab('ho_so_vault'); }
+      if (e.altKey && e.key === '5') { e.preventDefault(); setActiveTab('doi_chieu_hd'); }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -298,7 +320,8 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
               { id: 's03_nkc', label: '1. Nhật ký chung (S03-DN)', sub: 'Bàn phím siêu tốc', icon: BookOpen, hotkey: 'Alt+1' },
               { id: 'bctc_reports', label: '2. Báo cáo & Sổ sách TT99', sub: 'B01, B02, F01, S04', icon: PieChart, hotkey: 'Alt+2' },
               { id: 'dieu28_compliance', label: '3. Kiểm soát Điều 28 & Khóa sổ', sub: 'SHA-256 Chuỗi khối', icon: ShieldCheck, hotkey: 'Alt+3' },
-              { id: 'ho_so_vault', label: '4. Hồ sơ – Lưu trữ (NĐ 174)', sub: '18 Phần lưu trữ', icon: FolderTree, hotkey: 'Alt+4' }
+              { id: 'ho_so_vault', label: '4. Hồ sơ – Lưu trữ (NĐ 174)', sub: '18 Phần lưu trữ', icon: FolderTree, hotkey: 'Alt+4' },
+              { id: 'doi_chieu_hd', label: '5. Hóa đơn XML & Đối chiếu (TCT)', sub: 'Thuế & Email tự động', icon: Receipt, hotkey: 'Alt+5' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -382,7 +405,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
       <main className={cn(containerWidthClass, "py-3")}>
         {activeTab === 's03_nkc' && (
           <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
-            <NhatKyChungPage forceCreateTrigger={createTrigger} />
+            <NhatKyChungPage forceCreateTrigger={createTrigger} vouchers={vouchers} onAddVoucher={handleAddVoucher} />
           </div>
         )}
 
@@ -401,6 +424,12 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
         {activeTab === 'ho_so_vault' && (
           <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
             <HoSoApp />
+          </div>
+        )}
+
+        {activeTab === 'doi_chieu_hd' && (
+          <div className={cn("rounded-2xl transition-colors", isDarkMode ? "dark" : "")}>
+            <DoiChieuHoaDonPage vouchers={vouchers} onAddVoucher={handleAddVoucher} companyInfo={companyInfo} />
           </div>
         )}
       </main>
@@ -453,6 +482,12 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
               Alt+M
             </span>
             <span className="text-slate-500">{isWidescreen ? "Thu hẹp" : "Mở rộng"}</span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+
+            <span className="inline-flex items-center gap-1 font-bold bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-amber-600">
+              Alt+5
+            </span>
+            <span className="text-slate-500">Đối chiếu HĐ</span>
           </div>
 
           <div className="flex items-center gap-3">

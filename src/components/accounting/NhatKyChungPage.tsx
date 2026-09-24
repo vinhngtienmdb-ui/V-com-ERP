@@ -7,7 +7,7 @@ import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 import { tuDongLuuTruMotChungTu, dongBoTatCaChungTuVaoHoSo } from '../../lib/keToan/autoArchiveService';
 
 // Mock initial data for immediate interactive viewing
-const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
+export const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
   {
     id: 'ct-1',
     tenantId: 'tenant-vcomm-prod-01',
@@ -116,10 +116,23 @@ const MOCK_CHUNG_TU_LIST: ChungTuNhatKyChung[] = [
 
 export interface NhatKyChungPageProps {
   forceCreateTrigger?: number;
+  vouchers?: ChungTuNhatKyChung[];
+  onAddVoucher?: (v: ChungTuNhatKyChung) => void;
 }
 
-export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTrigger }) => {
-  const [dataList, setDataList] = useState<ChungTuNhatKyChung[]>(MOCK_CHUNG_TU_LIST);
+export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({
+  forceCreateTrigger,
+  vouchers,
+  onAddVoucher
+}) => {
+  const [dataList, setDataList] = useState<ChungTuNhatKyChung[]>(() => vouchers || MOCK_CHUNG_TU_LIST);
+
+  useEffect(() => {
+    if (vouchers) {
+      setDataList(vouchers);
+    }
+  }, [vouchers]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLoaiCt, setFilterLoaiCt] = useState<string>('ALL');
   const [filterTrangThai, setFilterTrangThai] = useState<string>('ALL');
