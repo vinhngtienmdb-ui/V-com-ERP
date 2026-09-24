@@ -42,7 +42,8 @@ import {
   Link2,
   Copy,
   Eye,
-  X
+  X,
+  FolderTree
 } from 'lucide-react';
 import { getMisaConfig, syncTransactionToMisa, unpostTransaction } from '../services/misaService';
 import { db, auth, collection, onSnapshot, query, addDoc, serverTimestamp, limit, doc, setDoc } from '../lib/firebase';
@@ -50,12 +51,17 @@ import { formatCurrency, cn } from '../lib/utils';
 import { FinanceTransaction } from '../types/erp';
 import { InvoiceManager } from './InvoiceManager';
 import { SellerCredit } from './SellerCredit';
+import { ThietLapCongTyModal } from './accounting/ThietLapCongTyModal';
+import { NhatKyChungPage } from './accounting/NhatKyChungPage';
+import { HoSoApp } from '../pages/HoSo/HoSoApp';
 
 const FINANCE_MODULE_GROUPS = [
   {
-    title: 'Kế toán Tổng hợp',
+    title: 'Kế toán Chuẩn mực TT99 & Hồ sơ Lưu trữ',
     items: [
-      { id: 'journal', label: 'Sổ Nhật ký chung', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'blue' },
+      { id: 'tt99_nkc', label: 'Nhật ký chung TT99 (S03-DN)', desc: 'Mẫu S03-DN chuẩn TT99/2025/TT-BTC, nhập liệu phím tắt F3/F4, tự động cân đối Nợ/Có.', icon: BookOpen, color: 'blue' },
+      { id: 'ho_so_archive', label: 'Hồ sơ – Lưu trữ kế toán', desc: 'Quy trình 18 phần chuẩn NĐ 174 & TT99 Điều 28, trích xuất 6 mức thời gian.', icon: FolderTree, color: 'indigo' },
+      { id: 'journal', label: 'Sổ Nhật ký chung', desc: 'Ghi chép toàn bộ nghiệp vụ phát sinh.', icon: BookOpen, color: 'slate' },
       { id: 'ledger', label: 'Sổ cái Tài khoản', desc: 'Chi tiết biến động từng tài khoản kế toán.', icon: FileText, color: 'indigo' },
       { id: 'vouchers', label: 'Quản lý Chứng từ', desc: 'Lưu trữ hóa đơn, phiếu thu/chi.', icon: Receipt, color: 'emerald' },
       { id: 'ocr', label: 'Smart OCR Scan', desc: 'Tự động nhận diện hóa đơn bằng AI.', icon: Scan, color: 'purple' },
@@ -101,8 +107,12 @@ export function Finance() {
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
-  const getMappedFinanceTab = (tab: string | null): 'overview' | 'journal' | 'ledger' | 'reports' | 'closing' | 'ocr' | 'tax_deduction' | 'audit_trail' | 'invoices' | 'credit' => {
+  type FinanceTab = 'overview' | 'tt99_nkc' | 'ho_so_archive' | 'journal' | 'ledger' | 'reports' | 'closing' | 'ocr' | 'tax_deduction' | 'audit_trail' | 'invoices' | 'credit';
+
+  const getMappedFinanceTab = (tab: string | null): FinanceTab => {
     if (!tab) return 'overview';
+    if (tab === 'tt99' || tab === 'tt99_nkc' || tab === 'nkc') return 'tt99_nkc';
+    if (tab === 'ho_so' || tab === 'ho_so_archive' || tab === 'archive') return 'ho_so_archive';
     if (tab === 'invoices' || tab === 'invoice') return 'invoices';
     if (tab === 'credit' || tab === 'lending') return 'credit';
     if (tab === 'tax') return 'tax_deduction';
@@ -117,7 +127,8 @@ export function Finance() {
 
   const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'journal' | 'ledger' | 'reports' | 'closing' | 'ocr' | 'tax_deduction' | 'audit_trail' | 'invoices' | 'credit'>(() => getMappedFinanceTab(tabParam));
+  const [activeTab, setActiveTab] = useState<FinanceTab>(() => getMappedFinanceTab(tabParam));
+  const [isCompanyConfigOpen, setIsCompanyConfigOpen] = useState(false);
 
   useEffect(() => {
     if (tabParam) {
@@ -674,6 +685,14 @@ export function Finance() {
         description="Sổ cái kép tự động, khấu trừ thuế sàn TMĐT theo NĐ 126/TT 88 và phát hành HĐĐT VComm Invoice chữ ký số HSM."
         actions={
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsCompanyConfigOpen(true)}
+              className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              title="Cấu hình thông tin pháp lý doanh nghiệp & lĩnh vực hoạt động TT99"
+            >
+              <Building2 className="w-3.5 h-3.5 text-indigo-600" /> 
+              <span>Cấu hình TT99</span>
+            </button>
             <button className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer">
               <Download className="w-3.5 h-3.5 text-slate-500" /> 
               <span>Xuất Excel</span>
@@ -732,6 +751,8 @@ export function Finance() {
   <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
   <div className="flex border-b border-slate-200/80 bg-slate-50/50 p-1.5 gap-1.5 overflow-x-auto scrollbar-none">
   {[
+  { id: 'tt99_nkc', label: 'Nhật ký chung TT99 (S03-DN)', icon: BookOpen },
+  { id: 'ho_so_archive', label: 'Hồ sơ – Lưu trữ (NĐ 174)', icon: FolderTree },
   { id: 'journal', label: 'Sổ Nhật ký', icon: BookOpen },
   { id: 'ledger', label: 'Sổ cái & Chứng từ', icon: FileText },
   { id: 'invoices', label: 'Hóa đơn VComm Invoice (NĐ 123)', icon: Receipt },
@@ -756,6 +777,18 @@ export function Finance() {
   </div>
 
   <div className="p-0">
+  {activeTab === 'tt99_nkc' && (
+    <div className="p-4 bg-slate-50/50">
+      <NhatKyChungPage />
+    </div>
+  )}
+
+  {activeTab === 'ho_so_archive' && (
+    <div className="p-0">
+      <HoSoApp />
+    </div>
+  )}
+
   {activeTab === 'invoices' && (
     <div className="p-6 bg-slate-900 min-h-[600px]">
       <InvoiceManager />
@@ -3096,6 +3129,11 @@ function Circular99Reports({
           </div>
         </div>
       )}
+
+      <ThietLapCongTyModal
+        isOpen={isCompanyConfigOpen}
+        onClose={() => setIsCompanyConfigOpen(false)}
+      />
     </div>
   );
 }

@@ -70,6 +70,8 @@ const InsuranceApp = lazyWithRetry(() => import('./components/InsuranceApp'), 'I
 const LaborCompliance = lazyWithRetry(() => import('./components/LaborCompliance'), 'LaborCompliance');
 const ITHelpdesk = lazyWithRetry(() => import('./components/ITHelpdesk'), 'ITHelpdesk');
 const LMSManagement = lazyWithRetry(() => import('./components/LMSManagement'), 'LMSManagement');
+const HoSoApp = lazyWithRetry(() => import('./pages/HoSo/HoSoApp').then(m => ({ default: m.HoSoApp })), 'HoSoApp');
+const NhatKyChungPage = lazyWithRetry(() => import('./components/accounting/NhatKyChungPage').then(m => ({ default: m.NhatKyChungPage })), 'NhatKyChungPage');
 
 
 import { useAuth } from './context/AuthContext';
@@ -386,6 +388,9 @@ function AppLayout() {
     <Route path="/scm" element={<Procurement />} />
     <Route path="/warehouse" element={<WarehouseModule />} />
     <Route path="/finance" element={<Finance />} />
+    <Route path="/finance/nhat-ky-chung" element={<NhatKyChungPage />} />
+    <Route path="/ho-so" element={<HoSoApp />} />
+    <Route path="/ho-so/*" element={<HoSoApp />} />
     <Route path="/settlement" element={<SettlementManagement />} />
     <Route path="/hr" element={<HumanResources />} />
     <Route path="/performance" element={<Performance />} />

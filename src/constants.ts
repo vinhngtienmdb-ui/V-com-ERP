@@ -32,7 +32,8 @@ import {
  Key,
  Home,
  GraduationCap,
- LifeBuoy
+ LifeBuoy,
+ FolderTree
 } from 'lucide-react';
 
 export const navGroups = [
@@ -65,6 +66,7 @@ export const navGroups = [
     title: 'Tài chính & Kế toán',
     items: [
       { icon: Calculator, label: 'Kế toán tổng hợp (TT99)', path: '/finance', color: 'emerald', description: 'Báo cáo tài chính chuẩn mực và hạch toán số' },
+      { icon: FolderTree, label: 'Hồ sơ – Lưu trữ kế toán', path: '/ho-so', color: 'indigo', description: 'Chuẩn NĐ 174 & TT99, 18 phần, trích xuất 6 mức' },
       { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát công nợ 3PL và sàn TMĐT' },
       { icon: Smartphone, label: 'Ví & Cổng thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch SePay QR và cổng thanh toán' },
       { icon: Banknote, label: 'Tài chính Nhà bán (Credit)', path: '/seller-finance', color: 'blue', description: 'Gói giải ngân vốn lưu động và hạn mức tín dụng' },
